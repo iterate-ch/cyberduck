@@ -42,12 +42,18 @@ import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
 import ch.cyberduck.ui.cocoa.controller.UploadPromptController;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.RollingFileAppender;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.AppenderRef;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
@@ -122,18 +128,24 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
     @Override
     protected void configureLogging(final String level) {
         super.configureLogging(level);
-        final Logger root = Logger.getRootLogger();
         final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
-                this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
-        try {
-            RollingFileAppender appender = new RollingFileAppender(new PatternLayout("%d [%t] %-5p %c - %m%n"), file.getAbsolute(), true);
-            appender.setEncoding(StandardCharsets.UTF_8.name());
-            appender.setMaxFileSize(Level.DEBUG.toString().equals(level) ? "250MB" : "10MB");
-            appender.setMaxBackupIndex(0);
-            root.addAppender(appender);
-        }
-        catch(IOException e) {
-            // Ignore failure
-        }
+            this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender appender = RollingFileAppender.newBuilder()
+            .withFileName(file.getAbsolute())
+            .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("250MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
+            .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("1").build())
+            .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+            .build();
+        appender.start();
+        config.addAppender(appender);
+        final AppenderRef ref = AppenderRef.createAppenderRef("File", null, null);
+        final AppenderRef[] refs = new AppenderRef[]{ref};
+        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, Level.getLevel(level), LogManager.ROOT_LOGGER_NAME,
+            "true", refs, null, config, null);
+        loggerConfig.addAppender(appender, null, null);
+        config.addLogger(LogManager.ROOT_LOGGER_NAME, loggerConfig);
+        ctx.updateLoggers();
     }
 }

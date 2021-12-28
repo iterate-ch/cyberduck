@@ -27,10 +27,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class ListFilteringFeature {
-    private static final Logger log = Logger.getLogger(ListFilteringFeature.class);
+    private static final Logger log = LogManager.getLogger(ListFilteringFeature.class);
 
     private final Session<?> session;
 

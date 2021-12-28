@@ -16,14 +16,14 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -31,7 +31,7 @@ import java.nio.file.Files;
 import java.util.EnumSet;
 
 public class LocalListService implements ListService {
-    private static final Logger log = Logger.getLogger(LocalListService.class);
+    private static final Logger log = LogManager.getLogger(LocalListService.class);
 
     private final LocalSession session;
     private final LocalAttributesFinderFeature feature;

@@ -24,13 +24,14 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
-    private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptControllerFactory.class);
 
     public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool source, final SessionPool destination) {
         final String clazz = PreferencesFactory.get().getProperty(

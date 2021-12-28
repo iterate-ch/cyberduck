@@ -34,7 +34,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class CryptoChecksumCompute extends AbstractChecksumCompute {
-    private static final Logger log = Logger.getLogger(CryptoChecksumCompute.class);
+    private static final Logger log = LogManager.getLogger(CryptoChecksumCompute.class);
 
     private final CryptoVault cryptomator;
     private final ChecksumCompute delegate;

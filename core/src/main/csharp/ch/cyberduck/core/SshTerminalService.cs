@@ -19,7 +19,7 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -34,7 +34,7 @@ namespace Ch.Cyberduck.Core
 {
     public class SshTerminalService : TerminalService
     {
-        private static Logger logger = Logger.getLogger(typeof(SshTerminalService).FullName);
+        private static Logger logger = LogManager.getLogger(typeof(SshTerminalService).FullName);
 
         public void open(Host host, ch.cyberduck.core.Path workdir)
         {

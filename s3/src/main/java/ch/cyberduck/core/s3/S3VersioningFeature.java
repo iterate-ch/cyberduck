@@ -33,13 +33,14 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
 
 public class S3VersioningFeature implements Versioning {
-    private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
+    private static final Logger log = LogManager.getLogger(S3VersioningFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

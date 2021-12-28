@@ -58,7 +58,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -75,7 +76,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class CteraSession extends DAVSession {
-    private static final Logger log = Logger.getLogger(CteraSession.class);
+    private static final Logger log = LogManager.getLogger(CteraSession.class);
 
     private final CteraAuthenticationHandler authentication = new CteraAuthenticationHandler(this);
 

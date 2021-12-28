@@ -56,7 +56,8 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -84,7 +85,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SDSDirectS3UploadFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSDirectS3UploadFeature.class);
 
     /**
      * The maximum allowed parts in a multipart upload.

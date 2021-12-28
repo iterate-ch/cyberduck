@@ -28,14 +28,14 @@ using ch.cyberduck.core.local;
 using java.util;
 using Microsoft.Win32;
 using org.apache.commons.io;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.Local
 {
     public class RegistryApplicationFinder : ApplicationFinder
     {
         private static readonly Guid CLSID_QueryAssociations = new Guid("a07034fd-6caa-4954-ac3f-97a27216f98a");
-        private static readonly Logger Log = Logger.getLogger(typeof(RegistryApplicationFinder).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof(RegistryApplicationFinder).Name);
 
         private static readonly LRUCache applicationNameCache = LRUCache.build(100);
         private static readonly LRUCache defaultApplicationCache = LRUCache.build(100);

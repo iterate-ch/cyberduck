@@ -18,10 +18,11 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TransferSpeedometer extends Speedometer {
-    private static final Logger log = Logger.getLogger(TransferSpeedometer.class);
+    private static final Logger log = LogManager.getLogger(TransferSpeedometer.class);
 
     private final Transfer transfer;
 

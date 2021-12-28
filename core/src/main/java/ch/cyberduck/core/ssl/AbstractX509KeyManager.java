@@ -18,7 +18,8 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.security.auth.x500.X500Principal;
@@ -31,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractX509KeyManager extends X509ExtendedKeyManager implements X509KeyManager {
-    private static final Logger log = Logger.getLogger(AbstractX509KeyManager.class);
+    private static final Logger log = LogManager.getLogger(AbstractX509KeyManager.class);
 
     /**
      * @param issuers The list of acceptable CA issuer subject names or null if it does not matter which issuers are used

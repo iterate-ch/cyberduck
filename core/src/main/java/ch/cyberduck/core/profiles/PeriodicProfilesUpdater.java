@@ -19,7 +19,8 @@ import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.Set;
@@ -28,7 +29,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Future;
 
 public class PeriodicProfilesUpdater implements ProfilesUpdater {
-    private static final Logger log = Logger.getLogger(PeriodicProfilesUpdater.class.getName());
+    private static final Logger log = LogManager.getLogger(PeriodicProfilesUpdater.class.getName());
 
     private final Controller controller;
     private final Duration delay;

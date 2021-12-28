@@ -71,7 +71,8 @@ import ch.cyberduck.core.worker.*;
 import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -94,7 +95,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class InfoController extends ToolbarWindowController {
-    private static final Logger log = Logger.getLogger(InfoController.class);
+    private static final Logger log = LogManager.getLogger(InfoController.class);
 
     private static NSPoint cascade = new NSPoint(0, 0);
 

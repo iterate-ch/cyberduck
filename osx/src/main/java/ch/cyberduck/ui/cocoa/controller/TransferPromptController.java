@@ -51,7 +51,8 @@ import ch.cyberduck.ui.cocoa.datasource.TransferPromptDataSource;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -62,7 +63,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.text.MessageFormat;
 
 public abstract class TransferPromptController extends SheetController implements TransferPrompt, ProgressListener, TranscriptListener {
-    private static final Logger log = Logger.getLogger(TransferPromptController.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptController.class);
 
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             LocaleFactory.localizedString("Unknown"),

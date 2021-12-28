@@ -28,7 +28,8 @@ import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,7 +37,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedulerFeature<Set<Distribution>> {
-    private static final Logger log = Logger.getLogger(CloudFrontDistributionConfigurationPreloader.class);
+    private static final Logger log = LogManager.getLogger(CloudFrontDistributionConfigurationPreloader.class);
 
     private final S3Session session;
 

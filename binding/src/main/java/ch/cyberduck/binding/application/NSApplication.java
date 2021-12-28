@@ -25,7 +25,8 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
@@ -36,7 +37,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class NSApplication extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSApplication", _Class.class); //$NON-NLS-1$
 
-    private static final Logger log = Logger.getLogger(NSApplication.class);
+    private static final Logger log = LogManager.getLogger(NSApplication.class);
 
     public interface Delegate {
         /**

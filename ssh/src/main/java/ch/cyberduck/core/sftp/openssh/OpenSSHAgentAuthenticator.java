@@ -20,7 +20,8 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.sftp.auth.AgentAuthenticator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,7 +35,7 @@ import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 import com.jcraft.jsch.agentproxy.usocket.JNAUSocketFactory;
 
 public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
-    private static final Logger log = Logger.getLogger(OpenSSHAgentAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHAgentAuthenticator.class);
 
     private AgentProxy proxy;
 

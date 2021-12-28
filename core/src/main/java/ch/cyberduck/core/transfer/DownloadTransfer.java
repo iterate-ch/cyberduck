@@ -48,7 +48,8 @@ import ch.cyberduck.core.transfer.download.TrashFilter;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DownloadTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(DownloadTransfer.class);
+    private static final Logger log = LogManager.getLogger(DownloadTransfer.class);
 
     private final Filter<Path> filter;
     private final Comparator<Path> comparator;

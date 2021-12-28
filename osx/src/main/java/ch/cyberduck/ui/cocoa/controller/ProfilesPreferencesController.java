@@ -50,7 +50,8 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.CGFloat;
@@ -67,7 +68,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ProfilesPreferencesController extends BundleController {
-    private static final Logger log = Logger.getLogger(ProfilesPreferencesController.class);
+    private static final Logger log = LogManager.getLogger(ProfilesPreferencesController.class);
 
     private final ProtocolFactory protocols = ProtocolFactory.get();
 

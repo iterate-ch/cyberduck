@@ -24,7 +24,8 @@ import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.List;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageLifecycleFeature implements Lifecycle {
-    private static final Logger log = Logger.getLogger(GoogleStorageLifecycleFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageLifecycleFeature.class);
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;

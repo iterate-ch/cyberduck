@@ -49,12 +49,13 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class BrickPairingFeature implements Pairing {
-    private static final Logger log = Logger.getLogger(BrickPairingFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickPairingFeature.class);
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
 

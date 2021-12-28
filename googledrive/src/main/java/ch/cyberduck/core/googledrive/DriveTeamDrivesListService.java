@@ -22,7 +22,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -31,7 +32,7 @@ import com.google.api.services.drive.model.TeamDrive;
 import com.google.api.services.drive.model.TeamDriveList;
 
 public class DriveTeamDrivesListService implements ListService {
-    private static final Logger log = Logger.getLogger(DriveTeamDrivesListService.class);
+    private static final Logger log = LogManager.getLogger(DriveTeamDrivesListService.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;

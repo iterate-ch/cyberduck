@@ -18,13 +18,14 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NamedThreadFactory implements ThreadFactory {
-    private static final Logger log = Logger.getLogger(NamedThreadFactory.class);
+    private static final Logger log = LogManager.getLogger(NamedThreadFactory.class);
 
     private final AtomicInteger threadNumber
         = new AtomicInteger(1);

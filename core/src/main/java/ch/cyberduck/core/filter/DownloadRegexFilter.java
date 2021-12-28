@@ -21,13 +21,14 @@ package ch.cyberduck.core.filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class DownloadRegexFilter extends DownloadDuplicateFilter {
-    private static final Logger log = Logger.getLogger(DownloadRegexFilter.class);
+    private static final Logger log = LogManager.getLogger(DownloadRegexFilter.class);
 
     private final Pattern pattern;
 

@@ -24,13 +24,14 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Comparator;
 
 public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
-    private static final Logger log = Logger.getLogger(MonitorFolderHostCollection.class);
+    private static final Logger log = LogManager.getLogger(MonitorFolderHostCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
     private final FileWatcher monitor = new FileWatcher(WatchServiceFactory.get());

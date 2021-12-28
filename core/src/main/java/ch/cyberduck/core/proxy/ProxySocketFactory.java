@@ -18,13 +18,13 @@ package ch.cyberduck.core.proxy;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.HttpProxySocketFactory;
 import ch.cyberduck.core.socket.SocketConfigurator;
 
 import org.apache.commons.net.DefaultSocketFactory;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.SocketFactory;
 import java.io.IOException;
@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ProxySocketFactory extends SocketFactory {
-    private static final Logger log = Logger.getLogger(ProxySocketFactory.class);
+    private static final Logger log = LogManager.getLogger(ProxySocketFactory.class);
 
     private final SocketConfigurator configurator;
     private final ProxyFinder proxyFinder;

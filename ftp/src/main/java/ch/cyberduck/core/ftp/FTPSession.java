@@ -64,7 +64,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -73,7 +74,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class FTPSession extends SSLSession<FTPClient> {
-    private static final Logger log = Logger.getLogger(FTPSession.class);
+    private static final Logger log = LogManager.getLogger(FTPSession.class);
 
     private final PreferencesReader preferences
         = new HostPreferences(host, PreferencesFactory.get());

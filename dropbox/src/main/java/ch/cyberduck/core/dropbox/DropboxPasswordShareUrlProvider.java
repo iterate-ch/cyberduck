@@ -27,7 +27,8 @@ import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -40,7 +41,7 @@ import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 import com.dropbox.core.v2.sharing.SharedLinkSettings;
 
 public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, Void> {
-    private static final Logger log = Logger.getLogger(DropboxPasswordShareUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(DropboxPasswordShareUrlProvider.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;

@@ -34,7 +34,8 @@ import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
@@ -50,7 +51,7 @@ import java.util.Calendar;
 import java.util.Map;
 
 public class RequestEntityRestStorageService extends RestS3Service {
-    private static final Logger log = Logger.getLogger(RequestEntityRestStorageService.class);
+    private static final Logger log = LogManager.getLogger(RequestEntityRestStorageService.class);
 
     private final S3Session session;
     private final Jets3tProperties properties;

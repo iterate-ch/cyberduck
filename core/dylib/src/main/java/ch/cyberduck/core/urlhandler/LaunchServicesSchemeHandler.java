@@ -27,7 +27,8 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 
@@ -38,7 +39,7 @@ import java.util.List;
  * A wrapper for the handler functions in ApplicationServices.h
  */
 public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
-    private static final Logger log = Logger.getLogger(LaunchServicesSchemeHandler.class);
+    private static final Logger log = LogManager.getLogger(LaunchServicesSchemeHandler.class);
 
     static {
         Native.load("core");

@@ -45,7 +45,8 @@ import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
 import org.apache.commons.collections4.map.LRUMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SyncTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(SyncTransfer.class);
+    private static final Logger log = LogManager.getLogger(SyncTransfer.class);
 
     /**
      * The delegate for files to upload

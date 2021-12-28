@@ -22,7 +22,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,7 +31,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 public class BackgroundActionPauser {
-    private static final Logger log = Logger.getLogger(BackgroundActionPauser.class);
+    private static final Logger log = LogManager.getLogger(BackgroundActionPauser.class);
 
     /**
      * The delay to wait before execution of the action in seconds

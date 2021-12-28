@@ -20,14 +20,15 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.Quota;
 
 import java.util.EnumSet;
 
 public abstract class AbstractDriveListService extends AbstractListService<Drive.Metadata> {
-    private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
+    private static final Logger log = LogManager.getLogger(AbstractDriveListService.class);
 
     public AbstractDriveListService(final GraphFileIdProvider fileid) {
         super(fileid);

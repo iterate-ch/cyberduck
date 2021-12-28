@@ -23,7 +23,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Date;
@@ -33,7 +34,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
-    private static final Logger log = Logger.getLogger(Host.class);
+    private static final Logger log = LogManager.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN

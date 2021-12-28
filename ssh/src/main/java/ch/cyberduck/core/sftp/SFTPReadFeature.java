@@ -25,7 +25,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,7 @@ import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
 public class SFTPReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(SFTPReadFeature.class);
+    private static final Logger log = LogManager.getLogger(SFTPReadFeature.class);
 
     private final SFTPSession session;
 

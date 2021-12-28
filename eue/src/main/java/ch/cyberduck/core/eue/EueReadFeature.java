@@ -36,14 +36,15 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 
 public class EueReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(EueReadFeature.class);
+    private static final Logger log = LogManager.getLogger(EueReadFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;

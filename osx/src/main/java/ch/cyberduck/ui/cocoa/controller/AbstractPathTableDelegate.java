@@ -35,12 +35,13 @@ import ch.cyberduck.ui.comparator.StorageClassComparator;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 import ch.cyberduck.ui.comparator.VersionComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path, BrowserColumn> {
-    private static final Logger log = Logger.getLogger(AbstractTableDelegate.class);
+    private static final Logger log = LogManager.getLogger(AbstractTableDelegate.class);
 
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);

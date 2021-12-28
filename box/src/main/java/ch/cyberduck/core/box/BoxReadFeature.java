@@ -27,13 +27,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BoxReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(BoxReadFeature.class);
+    private static final Logger log = LogManager.getLogger(BoxReadFeature.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;

@@ -41,7 +41,8 @@ import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.security.MessageDigest;
@@ -53,7 +54,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-    private static final Logger log = Logger.getLogger(BrickUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
      * The maximum allowed parts in a multipart upload.

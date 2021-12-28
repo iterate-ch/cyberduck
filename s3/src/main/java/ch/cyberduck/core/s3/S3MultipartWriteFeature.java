@@ -18,7 +18,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
 import org.jets3t.service.model.MultipartPart;
@@ -37,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> {
-    private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MultipartWriteFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;

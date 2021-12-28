@@ -29,7 +29,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -43,7 +44,7 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
 public class SFTPExceptionMappingService extends AbstractExceptionMappingService<IOException> {
-    private static final Logger log = Logger.getLogger(SFTPExceptionMappingService.class);
+    private static final Logger log = LogManager.getLogger(SFTPExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException e) {

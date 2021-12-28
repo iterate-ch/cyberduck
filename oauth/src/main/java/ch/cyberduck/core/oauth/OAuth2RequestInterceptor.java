@@ -30,7 +30,8 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,7 +40,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 
 public class OAuth2RequestInterceptor extends OAuth2AuthorizationService implements HttpRequestInterceptor {
-    private static final Logger log = Logger.getLogger(OAuth2RequestInterceptor.class);
+    private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
 
     /**
      * Currently valid tokens

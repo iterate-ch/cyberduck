@@ -17,13 +17,14 @@ package ch.cyberduck.core.io;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class BufferSegmentingOutputStream extends SegmentingOutputStream {
-    private static final Logger log = Logger.getLogger(BufferSegmentingOutputStream.class);
+    private static final Logger log = LogManager.getLogger(BufferSegmentingOutputStream.class);
 
     private final OutputStream proxy;
     private final Buffer buffer;

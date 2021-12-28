@@ -17,10 +17,11 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TransferAdapter implements TransferListener {
-    private static final Logger log = Logger.getLogger(TransferAdapter.class);
+    private static final Logger log = LogManager.getLogger(TransferAdapter.class);
 
     @Override
     public void transferDidStart(final Transfer transfer) {

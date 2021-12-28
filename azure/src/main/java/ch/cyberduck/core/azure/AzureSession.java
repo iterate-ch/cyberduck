@@ -58,7 +58,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -77,7 +78,7 @@ import com.microsoft.azure.storage.StorageEvent;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 
 public class AzureSession extends SSLSession<CloudBlobClient> {
-    private static final Logger log = Logger.getLogger(AzureSession.class);
+    private static final Logger log = LogManager.getLogger(AzureSession.class);
 
     private final OperationContext context
         = new OperationContext();

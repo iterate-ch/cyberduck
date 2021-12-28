@@ -30,8 +30,6 @@ import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
@@ -76,7 +74,8 @@ import ch.cyberduck.ui.cocoa.toolbar.TransferToolbarFactory;
 import ch.cyberduck.ui.cocoa.toolbar.TransferToolbarValidator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -92,7 +91,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public final class TransferController extends WindowController implements TransferListener, NSToolbar.Delegate, NSMenu.Validation {
-    private static final Logger log = Logger.getLogger(TransferController.class);
+    private static final Logger log = LogManager.getLogger(TransferController.class);
 
     private final TransferToolbarValidator toolbarValidator = new TransferToolbarValidator(this);
 

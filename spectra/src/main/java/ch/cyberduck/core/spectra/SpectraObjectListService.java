@@ -29,7 +29,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3AbstractListService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ import com.spectralogic.ds3client.models.common.CommonPrefixes;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraObjectListService extends S3AbstractListService {
-    private static final Logger log = Logger.getLogger(SpectraObjectListService.class);
+    private static final Logger log = LogManager.getLogger(SpectraObjectListService.class);
 
     private final PathContainerService containerService;
     private final SpectraSession session;

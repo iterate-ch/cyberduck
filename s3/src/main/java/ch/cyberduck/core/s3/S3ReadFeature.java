@@ -33,7 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class S3ReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(S3ReadFeature.class);
+    private static final Logger log = LogManager.getLogger(S3ReadFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;

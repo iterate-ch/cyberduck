@@ -49,7 +49,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
 using Application = ch.cyberduck.core.local.Application;
@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public delegate bool DialogCallbackDelegate(DialogResult result);
 
-        private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(BrowserController).FullName);
         protected static string DEFAULT = LocaleFactory.localizedString("Default");
         private readonly AbstractHostCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;

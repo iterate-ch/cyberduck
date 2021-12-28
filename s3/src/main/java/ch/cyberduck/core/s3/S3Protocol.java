@@ -29,7 +29,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 
 public class S3Protocol extends AbstractProtocol {
-    private static final Logger log = Logger.getLogger(S3Protocol.class);
+    private static final Logger log = LogManager.getLogger(S3Protocol.class);
 
     private final AWSCredentialsConfigurator credentials = new AWSCredentialsConfigurator(
         new AWSCredentialsProviderChain(

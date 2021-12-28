@@ -25,12 +25,13 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class KeychainLoginService implements LoginService {
-    private static final Logger log = Logger.getLogger(KeychainLoginService.class);
+    private static final Logger log = LogManager.getLogger(KeychainLoginService.class);
 
     private final HostPasswordStore keychain;
 

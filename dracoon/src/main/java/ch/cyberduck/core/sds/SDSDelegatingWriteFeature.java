@@ -26,10 +26,11 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
-    private static final Logger log = Logger.getLogger(SDSDelegatingWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSDelegatingWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

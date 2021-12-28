@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Restore;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class RestoreWorker extends Worker<List<Path>> {
-    private static final Logger log = Logger.getLogger(RestoreWorker.class);
+    private static final Logger log = LogManager.getLogger(RestoreWorker.class);
 
     private final List<Path> files;
     private final LoginCallback prompt;

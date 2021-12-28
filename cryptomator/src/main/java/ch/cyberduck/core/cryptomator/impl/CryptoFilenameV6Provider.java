@@ -27,7 +27,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
 import java.util.EnumSet;
@@ -37,7 +38,7 @@ import com.google.common.io.BaseEncoding;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CryptoFilenameV6Provider implements CryptoFilename {
-    private static final Logger log = Logger.getLogger(CryptoFilenameV6Provider.class);
+    private static final Logger log = LogManager.getLogger(CryptoFilenameV6Provider.class);
 
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final String LONG_NAME_FILE_EXT = ".lng";

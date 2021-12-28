@@ -31,14 +31,15 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EueResourceIdProvider implements FileIdProvider {
 
     public static final String ROOT = "ROOT";
     public static final String TRASH = "TRASH";
 
-    private static final Logger log = Logger.getLogger(EueResourceIdProvider.class);
+    private static final Logger log = LogManager.getLogger(EueResourceIdProvider.class);
 
     private final EueSession session;
     private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));

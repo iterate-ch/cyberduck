@@ -28,14 +28,14 @@ using java.io;
 using java.security;
 using java.security.cert;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core
 {
     public class SystemCertificateStore : CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SystemCertificateStore).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(SystemCertificateStore).FullName);
 
         public X509Certificate choose(CertificateIdentityCallback prompt, string[] keyTypes, Principal[] issuers, Host bookmark)
         {

@@ -18,10 +18,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R> {
-    private static final Logger log = Logger.getLogger(S3PathStyleFallbackAdapter.class);
+    private static final Logger log = LogManager.getLogger(S3PathStyleFallbackAdapter.class);
 
     private final S3Session session;
     private final BackgroundExceptionCallable<R> proxy;

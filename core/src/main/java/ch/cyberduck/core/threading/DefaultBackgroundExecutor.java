@@ -18,14 +18,15 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Controller;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 
 public class DefaultBackgroundExecutor implements BackgroundExecutor {
-    private static final Logger log = Logger.getLogger(DefaultBackgroundExecutor.class);
+    private static final Logger log = LogManager.getLogger(DefaultBackgroundExecutor.class);
 
     private static final DefaultBackgroundExecutor DEFAULT = new DefaultBackgroundExecutor();
 

@@ -36,13 +36,14 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BrickReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(BrickReadFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickReadFeature.class);
 
     private final BrickSession session;
 

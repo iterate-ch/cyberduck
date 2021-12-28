@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.serializer.Reader;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -40,7 +41,7 @@ import com.dd.plist.PropertyListFormatException;
 import com.dd.plist.XMLPropertyListParser;
 
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
-    private static final Logger log = Logger.getLogger(PlistReader.class);
+    private static final Logger log = LogManager.getLogger(PlistReader.class);
 
     @Override
     public Collection<S> readCollection(final Local file) throws AccessDeniedException {

@@ -29,10 +29,11 @@ import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class VaultRegistryListService implements ListService {
-    private static final Logger log = Logger.getLogger(VaultRegistryListService.class);
+    private static final Logger log = LogManager.getLogger(VaultRegistryListService.class);
 
     private final VaultRegistry registry;
     private final VaultLookupListener lookup;

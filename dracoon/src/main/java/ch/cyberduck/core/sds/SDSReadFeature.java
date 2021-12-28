@@ -37,13 +37,14 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class SDSReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(SDSReadFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSReadFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

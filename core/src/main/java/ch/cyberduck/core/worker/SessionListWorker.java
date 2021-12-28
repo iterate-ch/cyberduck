@@ -28,13 +28,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public class SessionListWorker extends Worker<AttributedList<Path>> {
-    private static final Logger log = Logger.getLogger(SessionListWorker.class);
+    private static final Logger log = LogManager.getLogger(SessionListWorker.class);
 
     private final Cache<Path> cache;
     private final Path directory;

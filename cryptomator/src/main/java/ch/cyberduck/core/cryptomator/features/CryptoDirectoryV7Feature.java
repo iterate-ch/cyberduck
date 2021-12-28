@@ -29,14 +29,15 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
-    private static final Logger log = Logger.getLogger(CryptoDirectoryV7Feature.class);
+    private static final Logger log = LogManager.getLogger(CryptoDirectoryV7Feature.class);
 
     private final Session<?> session;
     private final Write<Reply> writer;

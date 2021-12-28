@@ -26,12 +26,13 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class SDSDelegatingMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(SDSDelegatingMoveFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSDelegatingMoveFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

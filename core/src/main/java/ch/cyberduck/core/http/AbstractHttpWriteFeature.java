@@ -29,7 +29,8 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -39,7 +40,7 @@ import java.util.concurrent.ThreadFactory;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> implements HttpWriteFeature<T> {
-    private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
 
     private abstract class FutureHttpResponse implements Runnable {
         Exception exception;

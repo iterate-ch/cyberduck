@@ -32,12 +32,13 @@ import ch.cyberduck.core.features.AttributesFinder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class EueAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(EueAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(EueAttributesFinderFeature.class);
 
     protected static final String OPTION_WIN_32_PROPS = "win32props";
     protected static final String OPTION_SHARES = "shares";

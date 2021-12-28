@@ -22,12 +22,13 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
-    private static final Logger log = Logger.getLogger(DefaultHostPasswordStore.class);
+    private static final Logger log = LogManager.getLogger(DefaultHostPasswordStore.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

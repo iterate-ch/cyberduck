@@ -23,10 +23,11 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class LaunchServicesQuarantineService implements QuarantineService {
-    private static final Logger log = Logger.getLogger(LaunchServicesQuarantineService.class);
+    private static final Logger log = LogManager.getLogger(LaunchServicesQuarantineService.class);
 
     static {
         Native.load("core");

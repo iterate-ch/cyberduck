@@ -17,27 +17,28 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.PostChildrenForAliasApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationRepresentationArrayInner;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntries;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntity;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 public class EueDirectoryFeature implements Directory<Void> {
-    private static final Logger log = Logger.getLogger(EueDirectoryFeature.class);
+    private static final Logger log = LogManager.getLogger(EueDirectoryFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;

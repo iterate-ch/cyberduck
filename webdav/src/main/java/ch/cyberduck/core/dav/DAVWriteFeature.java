@@ -37,7 +37,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ETagResponseHandler;
 
 public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
-    private static final Logger log = Logger.getLogger(DAVWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(DAVWriteFeature.class);
 
     private final DAVSession session;
 

@@ -20,12 +20,13 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.cache.LRUCache;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 public abstract class AbstractCache<T extends Referenceable> implements Cache<T> {
-    private static final Logger log = Logger.getLogger(AbstractCache.class);
+    private static final Logger log = LogManager.getLogger(AbstractCache.class);
 
     private final LRUCache<T, AttributedList<T>> impl;
 

@@ -33,7 +33,8 @@ import ch.cyberduck.core.preferences.PreferencesReader;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class FTPListService implements ListService {
-    private static final Logger log = Logger.getLogger(FTPListService.class);
+    private static final Logger log = LogManager.getLogger(FTPListService.class);
 
     private final FTPSession session;
 

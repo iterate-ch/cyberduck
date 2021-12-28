@@ -24,14 +24,15 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<TransferItem>> {
-    private static final Logger log = Logger.getLogger(DownloadRootPathsNormalizer.class);
+    private static final Logger log = LogManager.getLogger(DownloadRootPathsNormalizer.class);
 
     @Override
     public List<TransferItem> normalize(final List<TransferItem> roots) {

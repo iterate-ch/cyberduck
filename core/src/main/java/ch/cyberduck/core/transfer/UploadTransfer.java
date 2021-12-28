@@ -45,7 +45,8 @@ import ch.cyberduck.core.transfer.upload.SkipFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 public class UploadTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(UploadTransfer.class);
+    private static final Logger log = LogManager.getLogger(UploadTransfer.class);
 
     private final Filter<Local> filter;
     private final Comparator<Local> comparator;

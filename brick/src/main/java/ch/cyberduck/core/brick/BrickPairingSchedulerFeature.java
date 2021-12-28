@@ -37,7 +37,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.AbstractResponseHandler;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -52,7 +53,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class BrickPairingSchedulerFeature {
-    private static final Logger log = Logger.getLogger(BrickPairingSchedulerFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickPairingSchedulerFeature.class);
 
     private final BrickSession session;
     private final String token;

@@ -30,7 +30,8 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,7 +44,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Profile implements Protocol {
-    private static final Logger log = Logger.getLogger(Profile.class);
+    private static final Logger log = LogManager.getLogger(Profile.class);
 
     private final Deserializer<String> dict;
     /**

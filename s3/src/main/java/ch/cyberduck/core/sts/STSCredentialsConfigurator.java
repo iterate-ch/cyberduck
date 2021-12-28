@@ -32,10 +32,11 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
@@ -70,7 +71,7 @@ import com.google.common.io.BaseEncoding;
 
 
 public class STSCredentialsConfigurator {
-    private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
+    private static final Logger log = LogManager.getLogger(STSCredentialsConfigurator.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
     static {
         MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

@@ -24,7 +24,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ import java.util.Set;
  * Merge local set with latest versions from server
  */
 public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
-    private static final Logger log = Logger.getLogger(ProfilesSynchronizeWorker.class.getName());
+    private static final Logger log = LogManager.getLogger(ProfilesSynchronizeWorker.class.getName());
 
     private final ProtocolFactory registry;
     private final Local directory;

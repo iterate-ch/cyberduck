@@ -32,7 +32,8 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonObject;
@@ -45,7 +46,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GraphWriteFeature implements Write<Void> {
-    private static final Logger log = Logger.getLogger(GraphWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphWriteFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;

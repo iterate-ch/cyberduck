@@ -3,7 +3,7 @@ using Ch.Cyberduck.Core.Refresh.Models;
 using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
 using DynamicData.Binding;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
@@ -21,7 +21,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
     public class ProfilesViewModel : ReactiveObject
     {
-        private static Logger log = Logger.getLogger(typeof(ProfilesViewModel).FullName);
+        private static Logger log = LogManager.getLogger(typeof(ProfilesViewModel).FullName);
 
         private readonly Dictionary<ProfileDescription, DescribedProfile> installed = new();
 

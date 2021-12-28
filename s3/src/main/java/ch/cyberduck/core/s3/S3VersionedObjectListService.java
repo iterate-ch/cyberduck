@@ -34,7 +34,8 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
@@ -52,7 +53,7 @@ import java.util.concurrent.Future;
 import com.google.common.collect.ImmutableMap;
 
 public class S3VersionedObjectListService extends S3AbstractListService implements ListService {
-    private static final Logger log = Logger.getLogger(S3VersionedObjectListService.class);
+    private static final Logger log = LogManager.getLogger(S3VersionedObjectListService.class);
 
     public static final String KEY_DELETE_MARKER = "delete_marker";
 

@@ -27,13 +27,14 @@ import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Date;
 
 public class LoginConnectionService implements ConnectionService {
-    private static final Logger log = Logger.getLogger(LoginConnectionService.class);
+    private static final Logger log = LogManager.getLogger(LoginConnectionService.class);
 
     private final Resolver resolver = new Resolver();
     private final HostKeyCallback key;

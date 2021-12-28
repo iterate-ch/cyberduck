@@ -26,7 +26,8 @@ import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Date;
@@ -42,7 +43,7 @@ import com.dropbox.core.v2.files.UploadSessionStartUploader;
 import com.dropbox.core.v2.files.WriteMode;
 
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
-    private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(DropboxWriteFeature.class);
 
     private final DropboxSession session;
     private final Long chunksize;

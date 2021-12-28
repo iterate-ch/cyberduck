@@ -32,7 +32,8 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ import synapticloop.b2.response.BaseB2Response;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
-    private static final Logger log = Logger.getLogger(B2WriteFeature.class);
+    private static final Logger log = LogManager.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
         = new B2PathContainerService();

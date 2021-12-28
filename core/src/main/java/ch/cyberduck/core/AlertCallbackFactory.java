@@ -19,13 +19,14 @@ import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class AlertCallbackFactory extends Factory<AlertCallback> {
-    private static final Logger log = Logger.getLogger(AlertCallbackFactory.class);
+    private static final Logger log = LogManager.getLogger(AlertCallbackFactory.class);
 
     private Constructor<AlertCallback> constructor;
 

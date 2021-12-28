@@ -27,7 +27,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Native;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.util.concurrent;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
 using Path = System.IO.Path;
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class PromptLoginController : PromptPasswordController, LoginCallback
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(PromptLoginController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(PromptLoginController).FullName);
         private readonly WindowController _browser;
         private readonly List<string> _keys = new List<string> { LocaleFactory.localizedString("None") };
 

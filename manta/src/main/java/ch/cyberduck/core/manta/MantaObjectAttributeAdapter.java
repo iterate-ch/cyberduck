@@ -25,7 +25,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +35,7 @@ import java.util.EnumSet;
 import com.joyent.manta.client.MantaObject;
 
 public final class MantaObjectAttributeAdapter {
-    private static final Logger log = Logger.getLogger(MantaObjectAttributeAdapter.class);
+    private static final Logger log = LogManager.getLogger(MantaObjectAttributeAdapter.class);
 
     private final MantaSession session;
 

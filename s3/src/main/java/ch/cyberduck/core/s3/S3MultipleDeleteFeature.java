@@ -30,7 +30,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.MultipleDeleteResult;
@@ -43,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 public class S3MultipleDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MultipleDeleteFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

@@ -26,13 +26,14 @@ import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public abstract class ListDataSource extends ProxyController implements NSTableView.DataSource, NSDraggingSource {
-    private static final Logger log = Logger.getLogger(ListDataSource.class);
+    private static final Logger log = LogManager.getLogger(ListDataSource.class);
 
     @Override
     public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row) {

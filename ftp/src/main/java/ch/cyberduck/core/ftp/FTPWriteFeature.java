@@ -26,14 +26,15 @@ import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FTPWriteFeature extends AppendWriteFeature<Integer> {
-    private static final Logger log = Logger.getLogger(FTPWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(FTPWriteFeature.class);
 
     private final FTPSession session;
 

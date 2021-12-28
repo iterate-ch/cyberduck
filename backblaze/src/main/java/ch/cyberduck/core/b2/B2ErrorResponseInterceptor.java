@@ -28,14 +28,15 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
-    private static final Logger log = Logger.getLogger(B2ErrorResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(B2ErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 

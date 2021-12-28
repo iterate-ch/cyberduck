@@ -31,7 +31,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.CanonicalGrantee;
@@ -49,7 +50,7 @@ import java.util.List;
 import java.util.Set;
 
 public class S3AccessControlListFeature extends DefaultAclFeature implements AclPermission {
-    private static final Logger log = Logger.getLogger(S3AccessControlListFeature.class);
+    private static final Logger log = LogManager.getLogger(S3AccessControlListFeature.class);
 
     public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
         Acl.CANNED_PRIVATE,

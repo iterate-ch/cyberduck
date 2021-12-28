@@ -41,7 +41,8 @@ import ch.cyberduck.ui.cocoa.controller.MainController;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -49,7 +50,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.text.MessageFormat;
 
 public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
-    private static final Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
+    private static final Logger log = LogManager.getLogger(BookmarkMenuDelegate.class);
 
     private static final int BOOKMARKS_INDEX = 8;
 

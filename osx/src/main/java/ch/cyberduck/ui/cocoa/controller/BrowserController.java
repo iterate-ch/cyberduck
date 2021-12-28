@@ -130,7 +130,8 @@ import ch.cyberduck.ui.quicklook.QuickLookFactory;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -159,7 +160,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class BrowserController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
-    private static final Logger log = Logger.getLogger(BrowserController.class);
+    private static final Logger log = LogManager.getLogger(BrowserController.class);
 
     private static NSPoint cascade = new NSPoint(0, 0);
 

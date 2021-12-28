@@ -20,7 +20,7 @@ using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using sun.security.mscapi;
 using System;
 using System.Diagnostics;
@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Core.Preferences
 {
     public class SettingsDictionaryPreferences : AppConfigPreferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SettingsDictionaryPreferences).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(SettingsDictionaryPreferences).FullName);
 
         public SettingsDictionaryPreferences() : base(new DefaultLocales())
         {

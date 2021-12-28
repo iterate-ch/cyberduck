@@ -30,7 +30,8 @@ import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +44,7 @@ import java.util.Set;
 import com.github.sardine.impl.SardineException;
 
 public class DAVReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(DAVReadFeature.class);
+    private static final Logger log = LogManager.getLogger(DAVReadFeature.class);
 
     private final DAVSession session;
 

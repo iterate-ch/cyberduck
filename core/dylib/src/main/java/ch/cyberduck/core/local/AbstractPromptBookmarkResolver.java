@@ -31,7 +31,8 @@ import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFin
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
@@ -41,7 +42,7 @@ import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
-    private static final Logger log = Logger.getLogger(AbstractPromptBookmarkResolver.class);
+    private static final Logger log = LogManager.getLogger(AbstractPromptBookmarkResolver.class);
 
     private final int create;
     private final int resolve;

@@ -27,7 +27,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public class S3LocationFeature implements Location {
-    private static final Logger log = Logger.getLogger(S3LocationFeature.class);
+    private static final Logger log = LogManager.getLogger(S3LocationFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

@@ -15,7 +15,8 @@ package ch.cyberduck.core.profiles;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -25,7 +26,7 @@ import java.util.Set;
  * Match checksum with all versions found in repository
  */
 public class ChecksumProfileMatcher implements ProfileMatcher {
-    private static final Logger log = Logger.getLogger(ChecksumProfileMatcher.class.getName());
+    private static final Logger log = LogManager.getLogger(ChecksumProfileMatcher.class.getName());
 
     /**
      * Remote list of profiles

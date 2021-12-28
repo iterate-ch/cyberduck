@@ -21,14 +21,15 @@ import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.util.Iterator;
 
 public class GraphItemListService extends AbstractItemListService {
-    private static final Logger log = Logger.getLogger(GraphItemListService.class);
+    private static final Logger log = LogManager.getLogger(GraphItemListService.class);
 
     private final GraphSession session;
 

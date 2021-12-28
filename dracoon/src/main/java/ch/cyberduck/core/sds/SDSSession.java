@@ -64,7 +64,8 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -96,7 +97,7 @@ import com.migcomponents.migbase64.Base64;
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
-    private static final Logger log = Logger.getLogger(SDSSession.class);
+    private static final Logger log = LogManager.getLogger(SDSSession.class);
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;

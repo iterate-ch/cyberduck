@@ -28,7 +28,8 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.util.Collections;
@@ -36,7 +37,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NotificationCenter extends ProxyController implements NotificationService, NSUserNotificationCenter.Delegate {
-    private static final Logger log = Logger.getLogger(NotificationCenter.class);
+    private static final Logger log = LogManager.getLogger(NotificationCenter.class);
 
     /**
      * Methods involve talking to a server process, so calling them repeatedly can have a negative effect on

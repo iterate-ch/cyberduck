@@ -24,7 +24,8 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ import java.util.Objects;
  * Attributes of a remote directory or file.
  */
 public class PathAttributes extends Attributes implements Serializable {
-    private static final Logger log = Logger.getLogger(PathAttributes.class);
+    private static final Logger log = LogManager.getLogger(PathAttributes.class);
 
     public static final PathAttributes EMPTY = new PathAttributes();
 

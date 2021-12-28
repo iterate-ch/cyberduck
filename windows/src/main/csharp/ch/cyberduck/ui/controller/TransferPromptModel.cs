@@ -29,14 +29,14 @@ using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public abstract class TransferPromptModel
     {
-        protected static Logger log = Logger.getLogger(typeof (TransferPromptModel).FullName);
+        protected static Logger log = LogManager.getLogger(typeof (TransferPromptModel).FullName);
         private readonly TransferItemCache _cache = new TransferItemCache(int.MaxValue);
         private readonly TransferPromptController _controller;
         private readonly List<TransferItem> _roots = new List<TransferItem>();

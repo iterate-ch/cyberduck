@@ -31,12 +31,13 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(FlowBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(FlowBookmarkCollection.class);
 
     private static final long serialVersionUID = 2017398431454618548L;
 

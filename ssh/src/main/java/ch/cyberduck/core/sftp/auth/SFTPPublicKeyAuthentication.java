@@ -29,7 +29,8 @@ import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,7 +51,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boolean> {
-    private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);
+    private static final Logger log = LogManager.getLogger(SFTPPublicKeyAuthentication.class);
 
     private final SSHClient client;
 

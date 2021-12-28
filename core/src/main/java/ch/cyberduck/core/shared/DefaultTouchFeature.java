@@ -28,12 +28,13 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class DefaultTouchFeature<T> implements Touch<T> {
-    private static final Logger log = Logger.getLogger(DefaultTouchFeature.class);
+    private static final Logger log = LogManager.getLogger(DefaultTouchFeature.class);
 
     private final AttributesFinder attributes;
     private Write<T> write;

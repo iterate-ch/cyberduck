@@ -29,7 +29,8 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.ui.cocoa.controller.ChangedHostKeyAlertController;
 import ch.cyberduck.ui.cocoa.controller.UnknownHostKeyAlertController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.PublicKey;
 
@@ -37,7 +38,7 @@ import java.security.PublicKey;
  * Using known_hosts from OpenSSH to store accepted host keys.
  */
 public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
-    private static final Logger log = Logger.getLogger(PromptHostKeyCallback.class);
+    private static final Logger log = LogManager.getLogger(PromptHostKeyCallback.class);
 
     private final WindowController controller;
 

@@ -64,7 +64,7 @@ using Ch.Cyberduck.Ui.Core.UWP;
 using java.util;
 using Microsoft.WindowsAPICodePack.Shell;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using ReactiveUI;
 using Splat;
 using StructureMap;
@@ -91,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         public static readonly string StartupLanguage;
         private static readonly IList<BrowserController> _browsers = new List<BrowserController>();
-        private static readonly Logger Logger = Logger.getLogger(typeof(MainController).FullName);
+        private static readonly Logger Logger = LogManager.getLogger(typeof(MainController).FullName);
         private static MainController _application;
         private static JumpList _jumpListManager;
         private static AutoResetEvent applicationShutdown = new AutoResetEvent(true);

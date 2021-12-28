@@ -25,7 +25,8 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,7 +37,7 @@ import java.util.Set;
  * Preload CDN configuration
  */
 public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeature<Set<Distribution>> {
-    private static final Logger log = Logger.getLogger(SwiftDistributionConfigurationLoader.class);
+    private static final Logger log = LogManager.getLogger(SwiftDistributionConfigurationLoader.class);
 
     private final SwiftSession session;
 

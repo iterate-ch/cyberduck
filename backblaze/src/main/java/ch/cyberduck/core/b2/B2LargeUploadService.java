@@ -38,7 +38,8 @@ import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -59,7 +60,7 @@ import synapticloop.b2.response.BaseB2Response;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
-    private static final Logger log = Logger.getLogger(B2LargeUploadService.class);
+    private static final Logger log = LogManager.getLogger(B2LargeUploadService.class);
 
     /**
      * The maximum allowed parts in a multipart upload.

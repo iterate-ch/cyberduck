@@ -52,7 +52,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
@@ -74,7 +75,7 @@ import com.amazonaws.services.cloudfront.model.*;
  * Amazon CloudFront CDN configuration.
  */
 public class CloudFrontDistributionConfiguration implements DistributionConfiguration, Purge, Index, DistributionLogging, Cname {
-    private static final Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
+    private static final Logger log = LogManager.getLogger(CloudFrontDistributionConfiguration.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

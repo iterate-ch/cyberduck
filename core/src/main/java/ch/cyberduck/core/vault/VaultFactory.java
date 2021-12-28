@@ -20,13 +20,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class VaultFactory extends Factory<Vault> {
-    private static final Logger log = Logger.getLogger(VaultFactory.class);
+    private static final Logger log = LogManager.getLogger(VaultFactory.class);
 
     protected VaultFactory() {
         super("factory.vault.class");

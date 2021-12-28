@@ -41,7 +41,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -55,7 +56,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
-    private static final Logger log = Logger.getLogger(EueLargeUploadService.class);
+    private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
     public static final String RESOURCE_ID = "resourceId";
 

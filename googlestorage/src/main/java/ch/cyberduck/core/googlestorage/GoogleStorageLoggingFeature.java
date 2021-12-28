@@ -27,7 +27,8 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -35,7 +36,7 @@ import java.util.EnumSet;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageLoggingFeature implements Logging, DistributionLogging {
-    private static final Logger log = Logger.getLogger(GoogleStorageLoggingFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageLoggingFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;

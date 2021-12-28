@@ -43,7 +43,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
-    private static final Logger log = Logger.getLogger(MoveWorker.class);
+    private static final Logger log = LogManager.getLogger(MoveWorker.class);
 
     private final Map<Path, Path> files;
     private final SessionPool target;

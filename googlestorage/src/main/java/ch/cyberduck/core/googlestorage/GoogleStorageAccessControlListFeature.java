@@ -28,7 +28,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ import com.google.api.services.storage.model.ObjectAccessControls;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
-    private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageAccessControlListFeature.class);
 
     public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
         Acl.CANNED_PRIVATE,

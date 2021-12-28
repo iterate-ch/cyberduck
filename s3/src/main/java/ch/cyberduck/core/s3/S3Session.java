@@ -66,7 +66,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.StorageObject;
@@ -79,7 +80,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
-    private static final Logger log = Logger.getLogger(S3Session.class);
+    private static final Logger log = LogManager.getLogger(S3Session.class);
 
     private final PreferencesReader preferences
         = new HostPreferences(host);

@@ -30,7 +30,8 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -45,7 +46,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<StorageObject>> {
-    private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftLargeUploadWriteFeature.class);
 
     private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;

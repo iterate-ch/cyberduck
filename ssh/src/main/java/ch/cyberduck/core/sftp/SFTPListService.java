@@ -28,7 +28,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -41,7 +42,7 @@ import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPException;
 
 public class SFTPListService implements ListService {
-    private static final Logger log = Logger.getLogger(SFTPListService.class);
+    private static final Logger log = LogManager.getLogger(SFTPListService.class);
 
     private final SFTPSession session;
     private final SFTPAttributesFinderFeature attributes;

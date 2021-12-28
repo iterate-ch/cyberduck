@@ -66,7 +66,8 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.RequestExecutor;
@@ -83,7 +84,7 @@ import java.util.Set;
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     private final static String API_VERSION = "v1.0";
 
-    private static final Logger log = Logger.getLogger(GraphSession.class);
+    private static final Logger log = LogManager.getLogger(GraphSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
 

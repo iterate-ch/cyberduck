@@ -28,14 +28,15 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.registry.*;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements VaultRegistry {
-    private static final Logger log = Logger.getLogger(DefaultVaultRegistry.class);
+    private static final Logger log = LogManager.getLogger(DefaultVaultRegistry.class);
 
     public static final String DEFAULT_MASTERKEY_FILE_NAME =
             PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");

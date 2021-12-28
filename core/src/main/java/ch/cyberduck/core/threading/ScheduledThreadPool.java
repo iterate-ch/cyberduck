@@ -18,7 +18,8 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,7 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ScheduledThreadPool {
-    private static final Logger log = Logger.getLogger(ScheduledThreadPool.class);
+    private static final Logger log = LogManager.getLogger(ScheduledThreadPool.class);
 
     private final ScheduledExecutorService pool;
 

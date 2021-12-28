@@ -30,7 +30,8 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -47,7 +48,7 @@ import java.util.Objects;
  * A window controller with a toolbar populated from a tabbed view.
  */
 public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
-    private static final Logger log = Logger.getLogger(ToolbarWindowController.class);
+    private static final Logger log = LogManager.getLogger(ToolbarWindowController.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

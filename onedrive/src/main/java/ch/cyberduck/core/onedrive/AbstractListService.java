@@ -22,13 +22,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.Iterator;
 
 public abstract class AbstractListService<T> implements ListService {
-    private static final Logger log = Logger.getLogger(AbstractListService.class);
+    private static final Logger log = LogManager.getLogger(AbstractListService.class);
 
     private final GraphFileIdProvider fileid;
 

@@ -32,7 +32,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.StorageObject;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class S3SingleUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
-    private static final Logger log = Logger.getLogger(S3SingleUploadService.class);
+    private static final Logger log = LogManager.getLogger(S3SingleUploadService.class);
 
     private final S3Session session;
     private Write<StorageObject> writer;

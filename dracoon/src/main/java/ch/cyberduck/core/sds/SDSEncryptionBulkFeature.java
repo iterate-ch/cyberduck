@@ -26,13 +26,14 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
-    private static final Logger log = Logger.getLogger(SDSEncryptionBulkFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSEncryptionBulkFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

@@ -29,13 +29,14 @@ import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
-    private static final Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
+    private static final Logger log = LogManager.getLogger(AbstractFolderHostCollection.class);
 
     public static final Comparator<Host> SORT_BY_NICKNAME = new Comparator<Host>() {
         @Override

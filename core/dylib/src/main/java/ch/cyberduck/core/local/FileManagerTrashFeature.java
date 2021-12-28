@@ -21,12 +21,13 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Trash;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
 
 public class FileManagerTrashFeature implements Trash {
-    private static final Logger log = Logger.getLogger(FileManagerTrashFeature.class);
+    private static final Logger log = LogManager.getLogger(FileManagerTrashFeature.class);
 
     @Override
     public void trash(final Local file) throws LocalAccessDeniedException {

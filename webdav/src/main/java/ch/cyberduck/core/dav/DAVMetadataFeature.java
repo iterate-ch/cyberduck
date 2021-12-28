@@ -29,7 +29,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
@@ -47,7 +48,7 @@ import static com.github.sardine.util.SardineUtil.CUSTOM_NAMESPACE_PREFIX;
 import static com.github.sardine.util.SardineUtil.CUSTOM_NAMESPACE_URI;
 
 public class DAVMetadataFeature implements Headers {
-    private static final Logger log = Logger.getLogger(DAVMetadataFeature.class);
+    private static final Logger log = LogManager.getLogger(DAVMetadataFeature.class);
 
     private final DAVSession session;
 

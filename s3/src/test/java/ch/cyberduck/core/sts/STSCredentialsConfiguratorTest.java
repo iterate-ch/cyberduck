@@ -15,33 +15,15 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.io.File;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class STSCredentialsConfiguratorTest {
 
+// TODO Refactor STSCredentialsConfigurator#configure to make it testable. Method way too long.
+
+/*
     @Mock
     private Appender mockedAppender;
 
@@ -73,5 +55,6 @@ public class STSCredentialsConfiguratorTest {
         new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol()));
         verify(mockedAppender, Mockito.atLeast(0)).doAppend(loggingEventCaptor.capture());
     }
+*/
 
 }

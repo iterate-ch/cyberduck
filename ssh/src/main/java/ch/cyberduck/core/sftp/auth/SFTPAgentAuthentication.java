@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.sshj.AuthAgent;
@@ -33,7 +34,7 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.UserAuthException;
 
 public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> {
-    private static final Logger log = Logger.getLogger(SFTPAgentAuthentication.class);
+    private static final Logger log = LogManager.getLogger(SFTPAgentAuthentication.class);
 
     private final SSHClient client;
     private final AgentAuthenticator agent;

@@ -38,7 +38,8 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.Constants;
 
 import javax.crypto.Mac;
@@ -61,7 +62,7 @@ import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftUrlProvider implements UrlProvider {
-    private static final Logger log = Logger.getLogger(SwiftUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(SwiftUrlProvider.class);
 
     private final PathContainerService containerService
         = new DefaultPathContainerService();

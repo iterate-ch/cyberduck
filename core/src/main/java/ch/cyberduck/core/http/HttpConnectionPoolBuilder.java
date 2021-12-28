@@ -54,7 +54,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -62,7 +63,7 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 
 public class HttpConnectionPoolBuilder {
-    private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
+    private static final Logger log = LogManager.getLogger(HttpConnectionPoolBuilder.class);
 
     private final ConnectionSocketFactory socketFactory;
     private final ConnectionSocketFactory sslSocketFactory;

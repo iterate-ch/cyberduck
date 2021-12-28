@@ -56,13 +56,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
 
 public abstract class AbstractUploadFilter implements TransferPathFilter {
-    private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
+    private static final Logger log = LogManager.getLogger(AbstractUploadFilter.class);
 
     private final Preferences preferences
         = PreferencesFactory.get();

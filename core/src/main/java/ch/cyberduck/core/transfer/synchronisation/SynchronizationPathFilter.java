@@ -32,10 +32,11 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SynchronizationPathFilter implements TransferPathFilter {
-    private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
+    private static final Logger log = LogManager.getLogger(SynchronizationPathFilter.class);
 
     private final ComparePathFilter comparison;
 

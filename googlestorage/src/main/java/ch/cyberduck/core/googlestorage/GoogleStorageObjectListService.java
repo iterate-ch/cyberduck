@@ -36,7 +36,8 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,10 +48,9 @@ import java.util.concurrent.Future;
 
 import com.google.api.services.storage.model.Objects;
 import com.google.api.services.storage.model.StorageObject;
-import com.google.common.collect.ImmutableMap;
 
 public class GoogleStorageObjectListService implements ListService {
-    private static final Logger log = Logger.getLogger(GoogleStorageObjectListService.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageObjectListService.class);
 
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;

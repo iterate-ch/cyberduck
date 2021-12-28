@@ -33,7 +33,8 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +49,7 @@ import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.core.SR;
 
 public class AzureReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(AzureReadFeature.class);
+    private static final Logger log = LogManager.getLogger(AzureReadFeature.class);
 
     private final AzureSession session;
 

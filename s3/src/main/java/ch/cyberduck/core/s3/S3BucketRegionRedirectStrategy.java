@@ -27,12 +27,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
-    private static final Logger log = Logger.getLogger(S3BucketRegionRedirectStrategy.class);
+    private static final Logger log = LogManager.getLogger(S3BucketRegionRedirectStrategy.class);
 
     private final RequestEntityRestStorageService requestEntityRestStorageService;
     private final S3Session session;

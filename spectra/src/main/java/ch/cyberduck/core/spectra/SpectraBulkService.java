@@ -40,7 +40,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
@@ -72,7 +73,7 @@ import com.spectralogic.ds3client.networking.FailedRequestException;
 import com.spectralogic.ds3client.serializer.XmlProcessingException;
 
 public class SpectraBulkService implements Bulk<Set<UUID>> {
-    private static final Logger log = Logger.getLogger(SpectraBulkService.class);
+    private static final Logger log = LogManager.getLogger(SpectraBulkService.class);
 
     private final SpectraSession session;
     private Delete delete;

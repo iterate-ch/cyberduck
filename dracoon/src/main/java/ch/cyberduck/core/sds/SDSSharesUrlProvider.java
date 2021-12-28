@@ -42,7 +42,8 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -54,7 +55,7 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
-    private static final Logger log = Logger.getLogger(SDSSharesUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(SDSSharesUrlProvider.class);
 
     private final PathContainerService containerService
         = new SDSPathContainerService();

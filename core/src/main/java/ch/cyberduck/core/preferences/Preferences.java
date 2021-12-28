@@ -67,10 +67,14 @@ import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 import ch.cyberduck.ui.quicklook.ApplicationLauncherQuicklook;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -80,8 +84,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -94,7 +98,7 @@ import com.google.common.collect.ImmutableMap;
  * Singleton class.
  */
 public abstract class Preferences implements Locales, PreferencesReader {
-    private static final Logger log = Logger.getLogger(Preferences.class);
+    private static final Logger log = LogManager.getLogger(Preferences.class);
 
     protected static final String LIST_SEPERATOR = StringUtils.SPACE;
 
@@ -1202,13 +1206,18 @@ public abstract class Preferences implements Locales, PreferencesReader {
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);
         }
-        LogManager.resetConfiguration();
-        final Logger root = Logger.getRootLogger();
+        Configurator.initialize(new DefaultConfiguration());
+        final Logger root = LogManager.getRootLogger();
         if(null != configuration) {
-            DOMConfigurator.configure(configuration);
+            try {
+                Configurator.initialize(null, new ConfigurationSource(configuration.openStream()));
+            }
+            catch(IOException e) {
+                log.error(String.format("Unable to load log4j configuration from %s", configuration.toExternalForm()));
+            }
         }
         // Allow to override default logging level
-        root.setLevel(Level.toLevel(level, Level.ERROR));
+        Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
         // Map logging level to pass through bridge
         final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
             .put(Level.ALL, java.util.logging.Level.ALL)
@@ -1221,11 +1230,11 @@ public abstract class Preferences implements Locales, PreferencesReader {
             .put(Level.WARN, java.util.logging.Level.WARNING)
             .build();
         java.util.logging.Logger.getLogger("").setLevel(map.get(root.getLevel()));
-        final Enumeration loggers = LogManager.getCurrentLoggers();
-        while(loggers.hasMoreElements()) {
-            final Logger logger = (Logger) loggers.nextElement();
-            if(logger.getLevel() != null) {
-                java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
+        final LoggerContext logContext = (LoggerContext) LogManager.getContext(false);
+        final Collection<LoggerConfig> loggerConfigs = logContext.getConfiguration().getLoggers().values();
+        for(LoggerConfig loggerConfig : loggerConfigs) {
+            if(loggerConfig.getLevel() != null) {
+                java.util.logging.Logger.getLogger(loggerConfig.getName()).setLevel(map.get(loggerConfig.getLevel()));
             }
         }
     }

@@ -25,14 +25,15 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class DonationKeyFactory extends LicenseFactory {
-    private static final Logger log = Logger.getLogger(DonationKeyFactory.class);
+    private static final Logger log = LogManager.getLogger(DonationKeyFactory.class);
 
     @Override
     protected License create() {

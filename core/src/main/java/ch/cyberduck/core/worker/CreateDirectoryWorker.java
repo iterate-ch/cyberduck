@@ -28,14 +28,15 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
 public class CreateDirectoryWorker extends Worker<Path> {
-    private static final Logger log = Logger.getLogger(CreateDirectoryWorker.class);
+    private static final Logger log = LogManager.getLogger(CreateDirectoryWorker.class);
 
     private final Path folder;
     private final String region;

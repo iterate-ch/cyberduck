@@ -15,8 +15,6 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.JSON;
 import ch.cyberduck.core.eue.io.swagger.client.api.PostChildrenApi;
@@ -30,11 +28,14 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceResourceIdBody;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,7 +45,7 @@ import java.util.Collections;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public final class EueUploadHelper {
-    private static final Logger log = Logger.getLogger(EueUploadHelper.class);
+    private static final Logger log = LogManager.getLogger(EueUploadHelper.class);
 
     private static final String refId = "X-UI-CDOS-RefId";
     private static final String storeId = "X-UI-CDOS-StoreId";

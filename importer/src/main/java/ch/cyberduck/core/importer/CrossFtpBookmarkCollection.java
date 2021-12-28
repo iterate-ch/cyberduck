@@ -26,11 +26,12 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 
 public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
-    private static final Logger log = Logger.getLogger(CrossFtpBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(CrossFtpBookmarkCollection.class);
 
     private static final long serialVersionUID = 7442378118872253601L;
 

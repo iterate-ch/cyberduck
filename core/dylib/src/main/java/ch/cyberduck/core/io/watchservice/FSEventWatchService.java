@@ -23,7 +23,8 @@ import ch.cyberduck.binding.foundation.CFRunLoopRef;
 import ch.cyberduck.binding.foundation.CFStringRef;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ import com.sun.jna.Pointer;
  * @author Steve McLeod
  */
 public class FSEventWatchService extends AbstractWatchService {
-    private static final Logger log = Logger.getLogger(FSEventWatchService.class);
+    private static final Logger log = LogManager.getLogger(FSEventWatchService.class);
 
     private final FSEvents library = FSEvents.library;
 

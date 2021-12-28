@@ -35,7 +35,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.irods.jargon.core.checksum.ChecksumValue;
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.packinstr.TransferOptions;
@@ -50,7 +51,7 @@ import java.io.File;
 import java.text.MessageFormat;
 
 public class IRODSUploadFeature implements Upload<Checksum> {
-    private static final Logger log = Logger.getLogger(IRODSUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(IRODSUploadFeature.class);
 
     private final IRODSSession session;
 

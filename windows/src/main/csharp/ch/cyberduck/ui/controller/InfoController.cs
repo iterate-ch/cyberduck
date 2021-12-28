@@ -44,7 +44,7 @@ using java.lang;
 using java.text;
 using java.util;
 using org.apache.commons.lang3;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using org.jets3t.service.model;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class InfoController : WindowController<IInfoView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(InfoController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(InfoController).FullName);
 
         private static readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
 

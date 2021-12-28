@@ -21,10 +21,11 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class IOKitSleepPreventer implements SleepPreventer {
-    private static final Logger log = Logger.getLogger(IOKitSleepPreventer.class);
+    private static final Logger log = LogManager.getLogger(IOKitSleepPreventer.class);
 
     static {
         Native.load("core");

@@ -42,7 +42,8 @@ import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -56,7 +57,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SwiftLargeObjectUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftLargeObjectUploadFeature.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();

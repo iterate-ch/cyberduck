@@ -25,14 +25,14 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.pool;
 using java.util;
 using Microsoft.Win32;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core.Editor
 {
     public class SystemWatchEditorFactory : EditorFactory
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SystemWatchEditorFactory).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof (SystemWatchEditorFactory).Name);
         private readonly IList<Application> _registeredEditors = new List<Application>();
 
         public SystemWatchEditorFactory()

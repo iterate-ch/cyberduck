@@ -26,7 +26,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -35,7 +36,7 @@ import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(GoogleStorageMoveFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageMoveFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;

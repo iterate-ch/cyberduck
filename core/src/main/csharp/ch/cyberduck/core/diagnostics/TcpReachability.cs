@@ -23,13 +23,13 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
     public class TcpReachability : Reachability
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(TcpReachability).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(TcpReachability).FullName);
 
         static TcpReachability()
         {

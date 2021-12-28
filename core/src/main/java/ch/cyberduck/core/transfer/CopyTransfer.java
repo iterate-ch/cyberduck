@@ -35,7 +35,8 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CopyTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(CopyTransfer.class);
+    private static final Logger log = LogManager.getLogger(CopyTransfer.class);
 
     private final Filter<Path> filter = new NullFilter<>();
     private final Comparator<Path> comparator = new NullComparator<>();

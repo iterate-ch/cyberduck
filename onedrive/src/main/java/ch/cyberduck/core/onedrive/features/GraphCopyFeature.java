@@ -28,7 +28,8 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.CopyOperation;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -38,7 +39,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class GraphCopyFeature implements Copy {
-    private static final Logger logger = Logger.getLogger(GraphCopyFeature.class);
+    private static final Logger logger = LogManager.getLogger(GraphCopyFeature.class);
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;

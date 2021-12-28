@@ -36,14 +36,15 @@ import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeVersionsList;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SDSAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(SDSAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSAttributesFinderFeature.class);
 
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";

@@ -38,13 +38,14 @@ import org.apache.commons.pool2.impl.EvictionConfig;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.NoSuchElementException;
 
 public class DefaultSessionPool implements SessionPool {
-    private static final Logger log = Logger.getLogger(DefaultSessionPool.class);
+    private static final Logger log = LogManager.getLogger(DefaultSessionPool.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
     private static final int POOL_WARNING_THRESHOLD = 5;

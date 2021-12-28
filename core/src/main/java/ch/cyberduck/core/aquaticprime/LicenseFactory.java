@@ -30,14 +30,15 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public abstract class LicenseFactory extends Factory<License> {
-    private static final Logger log = Logger.getLogger(LicenseFactory.class);
+    private static final Logger log = LogManager.getLogger(LicenseFactory.class);
 
     private static final Preferences preferences
         = PreferencesFactory.get();

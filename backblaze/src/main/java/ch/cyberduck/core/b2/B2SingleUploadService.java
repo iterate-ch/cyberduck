@@ -24,7 +24,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,7 @@ import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, MessageDigest> {
-    private static final Logger log = Logger.getLogger(B2SingleUploadService.class);
+    private static final Logger log = LogManager.getLogger(B2SingleUploadService.class);
 
     private final B2Session session;
     private Write<BaseB2Response> writer;

@@ -15,7 +15,8 @@ package ch.cyberduck.core.cache;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,7 +32,7 @@ import com.google.common.cache.RemovalNotification;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class LRUCache<Key, Value> {
-    private static final Logger log = Logger.getLogger(LRUCache.class);
+    private static final Logger log = LogManager.getLogger(LRUCache.class);
 
     public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader) {
         return usingLoader(loader, null, -1L, -1L);

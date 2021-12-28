@@ -36,7 +36,8 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class BoxMultipartWriteFeature implements Write<Files> {
-    private static final Logger log = Logger.getLogger(BoxMultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(BoxMultipartWriteFeature.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;

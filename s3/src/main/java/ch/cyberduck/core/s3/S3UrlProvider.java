@@ -36,7 +36,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
@@ -50,7 +51,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class S3UrlProvider implements UrlProvider {
-    private static final Logger log = Logger.getLogger(S3UrlProvider.class);
+    private static final Logger log = LogManager.getLogger(S3UrlProvider.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

@@ -28,12 +28,13 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy {
-    private static final Logger log = Logger.getLogger(BrickCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickCopyFeature.class);
 
     private final BrickSession session;
 
