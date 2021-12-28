@@ -163,13 +163,7 @@ namespace Ch.Cyberduck.Core.Preferences
                 .build();
             appender.start();
             config.addAppender(appender);
-            AppenderRef aref = AppenderRef.createAppenderRef("File", null, null);
-            AppenderRef[] refs = new AppenderRef[] { aref };
-            LoggerConfig loggerConfig = LoggerConfig.createLogger(false, Level.getLevel(level),
-                LogManager.ROOT_LOGGER_NAME,
-                "true", refs, null, config, null);
-            loggerConfig.addAppender(appender, null, null);
-            config.addLogger(LogManager.ROOT_LOGGER_NAME, loggerConfig);
+            config.getRootLogger().addAppender(appender, null, null);
             if (Debugger.IsAttached)
             {
                 Configurator.setRootLevel(Level.DEBUG);

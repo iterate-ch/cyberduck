@@ -15,20 +15,30 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LogEvent;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class STSCredentialsConfiguratorTest {
 
-// TODO Refactor STSCredentialsConfigurator#configure to make it testable. Method way too long.
-
-/*
     @Mock
     private Appender mockedAppender;
 
     @Captor
-    ArgumentCaptor<LoggingEvent> loggingEventCaptor;
+    ArgumentCaptor<LogEvent> loggingEventCaptor;
 
     @Test
     public void testConfigure() throws Exception {
@@ -36,7 +46,9 @@ public class STSCredentialsConfiguratorTest {
     }
 
     @Test
+    @Ignore
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
+/*
         PreferencesFactory.get().setProperty("local.user.home", new File("src/test/resources/invalid").getAbsolutePath());
         Logger root = Logger.getRootLogger();
         root.addAppender(mockedAppender);
@@ -44,17 +56,19 @@ public class STSCredentialsConfiguratorTest {
         new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol()));
         verify(mockedAppender, Mockito.atLeast(1)).doAppend(loggingEventCaptor.capture());
         assertTrue(loggingEventCaptor.getAllValues().get(0).getMessage().toString().contains("Failure reading Local"));
+*/
     }
 
     @Test
+    @Ignore
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
+/*
         PreferencesFactory.get().setProperty("local.user.home", new File("src/test/resources/valid").getAbsolutePath());
         Logger root = Logger.getRootLogger();
         root.addAppender(mockedAppender);
         root.setLevel(Level.WARN);
         new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol()));
         verify(mockedAppender, Mockito.atLeast(0)).doAppend(loggingEventCaptor.capture());
-    }
 */
-
+    }
 }

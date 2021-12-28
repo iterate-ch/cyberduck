@@ -1206,10 +1206,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);
         }
-        Configurator.initialize(new DefaultConfiguration());
-        final Logger root = LogManager.getRootLogger();
+        final LoggerContext context = Configurator.initialize(new DefaultConfiguration());
         if(null != configuration) {
             try {
+                context.initialize();
                 Configurator.initialize(null, new ConfigurationSource(configuration.openStream()));
             }
             catch(IOException e) {
@@ -1229,7 +1229,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
             .put(Level.TRACE, java.util.logging.Level.FINEST)
             .put(Level.WARN, java.util.logging.Level.WARNING)
             .build();
-        java.util.logging.Logger.getLogger("").setLevel(map.get(root.getLevel()));
+        java.util.logging.Logger.getLogger("").setLevel(map.get(LogManager.getRootLogger().getLevel()));
         final LoggerContext logContext = (LoggerContext) LogManager.getContext(false);
         final Collection<LoggerConfig> loggerConfigs = logContext.getConfiguration().getLoggers().values();
         for(LoggerConfig loggerConfig : loggerConfigs) {
