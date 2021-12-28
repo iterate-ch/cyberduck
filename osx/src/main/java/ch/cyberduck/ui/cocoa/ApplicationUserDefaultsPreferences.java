@@ -133,7 +133,9 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
         final Appender appender = RollingFileAppender.newBuilder()
+            .setName(RollingFileAppender.class.getName())
             .withFileName(file.getAbsolute())
+            .withFilePattern(file.getAbsolute())
             .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("250MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
             .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("1").build())
             .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())

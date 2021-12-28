@@ -36,7 +36,9 @@ using ch.cyberduck.core.googlestorage;
 using java.util;
 using java.util.regex;
 using org.apache.logging.log4j;
+using org.apache.logging.log4j.core;
 using StructureMap;
+using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -1027,7 +1029,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
             View.ConnectionTimeout = PreferencesFactory.get().getInteger("connection.timeout.seconds");
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
-            View.DebugLog = Level.DEBUG.equals(Logger.getRootLogger().getLevel()) ? true : false;
+            View.DebugLog = Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ? true : false;
 
             #endregion
 
