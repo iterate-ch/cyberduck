@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class S3TimestampFeature extends DefaultTimestampFeature {
 
-    // Interoperable with rsync
+    // Interoperable with rclone
     public static final String METADATA_MODIFICATION_DATE = "Mtime";
 
     private final S3Session session;
