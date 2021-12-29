@@ -36,6 +36,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -50,6 +51,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
@@ -192,10 +194,19 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
             return;
         }
-        final Location.Name location = new S3LocationFeature(this, client.getRegionEndpointCache())
-                .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Retrieved %s", location));
+        try {
+            final Location.Name location = new S3LocationFeature(this, client.getRegionEndpointCache())
+                    .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %s", location));
+            }
+        }
+        catch(LoginFailureException | AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Failure %s querying region", e));
+            final Path home = new DefaultHomeFinderService(this).find();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %s", home));
+            }
         }
     }
 
