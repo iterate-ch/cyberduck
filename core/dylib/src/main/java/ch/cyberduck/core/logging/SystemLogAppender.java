@@ -54,7 +54,6 @@ public class SystemLogAppender extends AbstractAppender {
         final StringBuilder buffer = new StringBuilder();
         buffer.append(new String(getLayout().toByteArray(event), StandardCharsets.UTF_8));
         if(ignoreExceptions()) {
-
             final Throwable thrown = event.getThrown();
             if(thrown != null) {
                 buffer.append(Strings.LINE_SEPARATOR);
