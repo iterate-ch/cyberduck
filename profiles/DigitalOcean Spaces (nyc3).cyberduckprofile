@@ -37,6 +37,12 @@
         <string>Secret Key</string>
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
+        <key>Region</key>
+        <string>nyc3</string>
+        <key>Regions</key>
+        <array>
+            <string>nyc3</string>
+        </array>
         <key>Properties</key>
         <array>
             <string>s3.storage.class.options=STANDARD</string>

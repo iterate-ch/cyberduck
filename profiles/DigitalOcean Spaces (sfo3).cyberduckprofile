@@ -20,13 +20,13 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>digitalocean-sfo2</string>
+        <string>digitalocean-sfo3</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Description</key>
-        <string>DigitalOcean Spaces (sfo2)</string>
+        <string>DigitalOcean Spaces (sfo3)</string>
         <key>Default Hostname</key>
-        <string>sfo2.digitaloceanspaces.com</string>
+        <string>sfo3.digitaloceanspaces.com</string>
         <key>Hostname Configurable</key>
         <false/>
         <key>Port Configurable</key>
@@ -38,10 +38,10 @@
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
         <key>Region</key>
-        <string>sfo2</string>
+        <string>sfo3</string>
         <key>Regions</key>
         <array>
-            <string>sfo2</string>
+            <string>sfo3</string>
         </array>
         <key>Properties</key>
         <array>
