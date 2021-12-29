@@ -15,30 +15,22 @@ package ch.cyberduck.core.sts;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.LogEvent;
-import org.junit.Ignore;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+import java.io.File;
+
+import static org.junit.Assert.assertEquals;
+
 public class STSCredentialsConfiguratorTest {
-
-    @Mock
-    private Appender mockedAppender;
-
-    @Captor
-    ArgumentCaptor<LogEvent> loggingEventCaptor;
 
     @Test
     public void testConfigure() throws Exception {
@@ -46,29 +38,19 @@ public class STSCredentialsConfiguratorTest {
     }
 
     @Test
-    @Ignore
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
-/*
         PreferencesFactory.get().setProperty("local.user.home", new File("src/test/resources/invalid").getAbsolutePath());
-        Logger root = Logger.getRootLogger();
-        root.addAppender(mockedAppender);
-        root.setLevel(Level.WARN);
-        new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol()));
-        verify(mockedAppender, Mockito.atLeast(1)).doAppend(loggingEventCaptor.capture());
-        assertTrue(loggingEventCaptor.getAllValues().get(0).getMessage().toString().contains("Failure reading Local"));
-*/
+        final Credentials credentials = new Credentials("test_s3_profile");
+        final Credentials verify = new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
+        assertEquals(credentials, verify);
     }
 
     @Test
-    @Ignore
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
-/*
         PreferencesFactory.get().setProperty("local.user.home", new File("src/test/resources/valid").getAbsolutePath());
-        Logger root = Logger.getRootLogger();
-        root.addAppender(mockedAppender);
-        root.setLevel(Level.WARN);
-        new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol()));
-        verify(mockedAppender, Mockito.atLeast(0)).doAppend(loggingEventCaptor.capture());
-*/
+        final Credentials verify = new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
+        assertEquals("EXAMPLEKEYID", verify.getUsername());
+        assertEquals("EXAMPLESECRETKEY", verify.getPassword());
+        assertEquals("EXAMPLETOKEN", verify.getToken());
     }
 }
