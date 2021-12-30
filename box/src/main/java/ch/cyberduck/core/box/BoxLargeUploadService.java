@@ -36,7 +36,8 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class BoxLargeUploadService extends HttpUploadFeature<BoxUploadHelper.BoxUploadResponse, MessageDigest> {
-    private static final Logger log = Logger.getLogger(BoxLargeUploadService.class);
+    private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
 
     public static final String UPLOAD_SESSION_ID = "uploadSessionId";
     public static final String OVERALL_LENGTH = "overall-length";

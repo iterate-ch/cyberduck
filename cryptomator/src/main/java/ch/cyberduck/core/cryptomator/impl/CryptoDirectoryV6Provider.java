@@ -32,7 +32,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -40,7 +41,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CryptoDirectoryV6Provider implements CryptoDirectory {
-    private static final Logger log = Logger.getLogger(CryptoDirectoryV6Provider.class);
+    private static final Logger log = LogManager.getLogger(CryptoDirectoryV6Provider.class);
 
     private static final String DATA_DIR_NAME = "d";
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;

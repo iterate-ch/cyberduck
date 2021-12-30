@@ -19,7 +19,8 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -28,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
 
 public final class URIEncoder {
-    private static final Logger log = Logger.getLogger(URIEncoder.class);
+    private static final Logger log = LogManager.getLogger(URIEncoder.class);
 
     private URIEncoder() {
         //

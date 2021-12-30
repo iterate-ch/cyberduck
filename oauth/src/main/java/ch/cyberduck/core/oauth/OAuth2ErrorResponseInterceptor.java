@@ -27,10 +27,11 @@ import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
-    private static final Logger log = Logger.getLogger(OAuth2ErrorResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 

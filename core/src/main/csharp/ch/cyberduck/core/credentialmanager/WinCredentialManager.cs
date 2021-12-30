@@ -16,7 +16,7 @@
 // feedback@cyberduck.io
 // 
 
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
     public static class WinCredentialManager
     {
-        private static readonly Logger log = Logger.getLogger(typeof(WinCredentialManager).AssemblyQualifiedName);
+        private static readonly Logger log = LogManager.getLogger(typeof(WinCredentialManager).AssemblyQualifiedName);
 
         /// <summary>
         /// Saves teh given Network Credential into Windows Credential store

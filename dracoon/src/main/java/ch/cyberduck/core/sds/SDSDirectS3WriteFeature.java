@@ -37,12 +37,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
-    private static final Logger log = Logger.getLogger(SDSDirectS3WriteFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSDirectS3WriteFeature.class);
 
     private final SDSSession session;
 

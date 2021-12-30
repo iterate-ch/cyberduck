@@ -34,13 +34,14 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
-    private static final Logger log = Logger.getLogger(BrickUnauthorizedRetryStrategy.class);
+    private static final Logger log = LogManager.getLogger(BrickUnauthorizedRetryStrategy.class);
 
     private static final int MAX_RETRIES = 1;
 

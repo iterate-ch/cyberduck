@@ -32,7 +32,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.model.StorageObject;
@@ -41,7 +42,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 public class S3ObjectListService extends S3AbstractListService implements ListService {
-    private static final Logger log = Logger.getLogger(S3ObjectListService.class);
+    private static final Logger log = LogManager.getLogger(S3ObjectListService.class);
 
     private final PathContainerService containerService;
     private final S3Session session;

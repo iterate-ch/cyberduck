@@ -28,7 +28,8 @@ import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ChunkedOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -38,7 +39,7 @@ import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
 public class SFTPWriteFeature extends AppendWriteFeature<Void> {
-    private static final Logger log = Logger.getLogger(SFTPWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(SFTPWriteFeature.class);
 
     private final SFTPSession session;
     private final PreferencesReader preferences;

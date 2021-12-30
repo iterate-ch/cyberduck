@@ -30,14 +30,15 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
-    private static final Logger log = Logger.getLogger(S3BulkTransferAccelerationFeature.class);
+    private static final Logger log = LogManager.getLogger(S3BulkTransferAccelerationFeature.class);
 
     private final S3Session session;
     private final TransferAcceleration accelerationService;

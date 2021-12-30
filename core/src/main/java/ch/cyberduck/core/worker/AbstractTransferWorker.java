@@ -52,7 +52,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -61,7 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
-    private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
+    private static final Logger log = LogManager.getLogger(AbstractTransferWorker.class);
 
     private final SleepPreventer sleep = SleepPreventerFactory.get();
     private final NotificationService notification;

@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
@@ -38,7 +39,7 @@ import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxListService implements ListService {
-    private static final Logger log = Logger.getLogger(DropboxListService.class);
+    private static final Logger log = LogManager.getLogger(DropboxListService.class);
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;

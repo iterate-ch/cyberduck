@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
@@ -34,7 +35,7 @@ import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DropboxAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(DropboxAttributesFinderFeature.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;

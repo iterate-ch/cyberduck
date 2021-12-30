@@ -21,7 +21,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -35,7 +36,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
 
 public class LocalAttributes extends Attributes {
-    private static final Logger log = Logger.getLogger(LocalAttributes.class);
+    private static final Logger log = LogManager.getLogger(LocalAttributes.class);
 
     private final String path;
     private Checksum checksum = Checksum.NONE;

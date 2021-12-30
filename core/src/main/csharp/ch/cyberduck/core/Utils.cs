@@ -31,7 +31,7 @@ using ch.cyberduck.core.local;
 using java.util;
 using Microsoft.Win32;
 using org.apache.commons.io;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Collection = java.util.Collection;
 using Path = ch.cyberduck.core.Path;
 
@@ -104,7 +104,7 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (Utils).FullName);
 
         public static bool IsBlank(string value)
         {

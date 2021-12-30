@@ -20,12 +20,13 @@ package ch.cyberduck.core.proxy;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.regex.PatternSyntaxException;
 
 public abstract class AbstractProxyFinder implements ProxyFinder {
-    private static final Logger log = Logger.getLogger(AbstractProxyFinder.class);
+    private static final Logger log = LogManager.getLogger(AbstractProxyFinder.class);
 
     /**
      * @param wildcard Pattern

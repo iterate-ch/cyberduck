@@ -16,7 +16,8 @@ package ch.cyberduck.core.dav;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.ErrorHandler;
@@ -38,7 +39,7 @@ import com.github.sardine.model.*;
 import com.github.sardine.util.SardineUtil;
 
 public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
-    private static final Logger log = Logger.getLogger(SaxPropFindResponseHandler.class);
+    private static final Logger log = LogManager.getLogger(SaxPropFindResponseHandler.class);
 
     @Override
     protected Multistatus getMultistatus(final InputStream stream) throws IOException {

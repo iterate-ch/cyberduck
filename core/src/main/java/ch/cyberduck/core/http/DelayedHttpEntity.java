@@ -21,7 +21,8 @@ package ch.cyberduck.core.http;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class DelayedHttpEntity extends AbstractHttpEntity {
-    private static final Logger log = Logger.getLogger(DelayedHttpEntity.class);
+    private static final Logger log = LogManager.getLogger(DelayedHttpEntity.class);
 
     private final CountDownLatch entry;
     private final CountDownLatch exit = new CountDownLatch(1);

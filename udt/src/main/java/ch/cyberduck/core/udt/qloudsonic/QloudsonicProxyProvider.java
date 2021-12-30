@@ -30,13 +30,14 @@ import ch.cyberduck.core.udt.UDTProtocol;
 import ch.cyberduck.core.udt.UDTProxyProvider;
 import ch.cyberduck.core.udt.UDTTLSProtocol;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class QloudsonicProxyProvider implements UDTProxyProvider {
-    private static final Logger log = Logger.getLogger(QloudsonicProxyProvider.class);
+    private static final Logger log = LogManager.getLogger(QloudsonicProxyProvider.class);
 
     private final LicenseFactory factory;
 

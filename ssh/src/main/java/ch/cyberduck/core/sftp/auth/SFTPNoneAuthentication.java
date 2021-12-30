@@ -22,7 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.userauth.method.AuthNone;
 
 public class SFTPNoneAuthentication implements AuthenticationProvider<Boolean> {
-    private static final Logger log = Logger.getLogger(SFTPNoneAuthentication.class);
+    private static final Logger log = LogManager.getLogger(SFTPNoneAuthentication.class);
 
     private final SSHClient client;
 

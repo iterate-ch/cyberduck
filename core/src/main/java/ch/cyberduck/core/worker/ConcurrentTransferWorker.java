@@ -38,7 +38,8 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -47,7 +48,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
-    private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
+    private static final Logger log = LogManager.getLogger(ConcurrentTransferWorker.class);
 
     private final SessionPool source;
     private final SessionPool destination;

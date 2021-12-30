@@ -29,7 +29,8 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
@@ -45,7 +46,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class S3MultipartCopyFeature extends S3CopyFeature {
-    private static final Logger log = Logger.getLogger(S3MultipartCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MultipartCopyFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

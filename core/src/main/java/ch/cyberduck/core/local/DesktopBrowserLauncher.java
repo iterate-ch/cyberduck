@@ -15,14 +15,15 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 
 public class DesktopBrowserLauncher implements BrowserLauncher {
-    private static final Logger log = Logger.getLogger(DesktopBrowserLauncher.class);
+    private static final Logger log = LogManager.getLogger(DesktopBrowserLauncher.class);
 
     @Override
     public boolean open(final String url) {

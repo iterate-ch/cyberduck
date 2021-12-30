@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.keychain.SecKeychainItemRef;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 
@@ -33,7 +34,7 @@ import com.sun.jna.ptr.PointerByReference;
 import static ch.cyberduck.core.keychain.SecurityFunctions.*;
 
 public final class KeychainPasswordStore extends DefaultHostPasswordStore implements PasswordStore {
-    private static final Logger log = Logger.getLogger(KeychainPasswordStore.class);
+    private static final Logger log = LogManager.getLogger(KeychainPasswordStore.class);
 
     private static final Object lock = new Object();
 

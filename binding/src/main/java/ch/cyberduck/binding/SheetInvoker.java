@@ -21,7 +21,8 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
@@ -32,7 +33,7 @@ import java.util.concurrent.CountDownLatch;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SheetInvoker extends ProxyController {
-    private static final Logger log = Logger.getLogger(SheetInvoker.class);
+    private static final Logger log = LogManager.getLogger(SheetInvoker.class);
 
     /**
      * Keep a reference to the sheet to protect it from being deallocated as a weak reference before the callback from

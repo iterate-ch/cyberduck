@@ -31,7 +31,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -47,7 +48,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2ObjectListService implements ListService {
-    private static final Logger log = Logger.getLogger(B2ObjectListService.class);
+    private static final Logger log = LogManager.getLogger(B2ObjectListService.class);
 
     private final PathContainerService containerService
         = new DefaultPathContainerService();

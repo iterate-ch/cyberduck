@@ -28,14 +28,15 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.StringAppender;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.concurrent.CountDownLatch;
 
 public class ProgressAlertController extends AlertController {
-    private static final Logger log = Logger.getLogger(ProgressAlertController.class);
+    private static final Logger log = LogManager.getLogger(ProgressAlertController.class);
 
     private final CountDownLatch signal;
     private final String title;

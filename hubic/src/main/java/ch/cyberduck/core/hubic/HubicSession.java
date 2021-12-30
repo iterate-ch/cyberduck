@@ -33,7 +33,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -41,7 +42,7 @@ import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class HubicSession extends SwiftSession {
-    private static final Logger log = Logger.getLogger(HubicSession.class);
+    private static final Logger log = LogManager.getLogger(HubicSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
 

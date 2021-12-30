@@ -21,7 +21,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChecker {
-    private static final Logger log = Logger.getLogger(AbstractPeriodicUpdateChecker.class.getName());
+    private static final Logger log = LogManager.getLogger(AbstractPeriodicUpdateChecker.class.getName());
 
     private final Controller controller;
     private final Duration delay;

@@ -20,7 +20,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -31,7 +32,7 @@ import net.schmizz.sshj.sftp.SFTPEngine;
 public class SFTPQuotaFeature implements Quota {
     private static final int MIN_SFTP_SPACE_AVAILABLE_VERSION = 6;
 
-    private static final Logger log = Logger.getLogger(SFTPQuotaFeature.class);
+    private static final Logger log = LogManager.getLogger(SFTPQuotaFeature.class);
 
     private final SFTPSession session;
 

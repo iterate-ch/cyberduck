@@ -48,7 +48,8 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -63,7 +64,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BookmarkController extends SheetController implements CollectionListener {
-    private static final Logger log = Logger.getLogger(BookmarkController.class);
+    private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
     private static NSPoint cascade = new NSPoint(0, 0);
 

@@ -29,7 +29,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CryptoDeleteV7Feature implements Delete {
-    private static final Logger log = Logger.getLogger(CryptoDeleteV7Feature.class);
+    private static final Logger log = LogManager.getLogger(CryptoDeleteV7Feature.class);
 
     private final Session<?> session;
     private final Delete proxy;

@@ -35,8 +35,10 @@ using Ch.Cyberduck.Core.Date;
 using ch.cyberduck.core.googlestorage;
 using java.util;
 using java.util.regex;
-using org.apache.log4j;
+using org.apache.logging.log4j;
+using org.apache.logging.log4j.core;
 using StructureMap;
+using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -44,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly string ForFiles = LocaleFactory.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = LocaleFactory.localizedString("for Folders", "Preferences");
-        private static readonly Logger Log = Logger.getLogger(typeof(PreferencesController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(PreferencesController).FullName);
 
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);
@@ -1027,7 +1029,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
             View.ConnectionTimeout = PreferencesFactory.get().getInteger("connection.timeout.seconds");
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
-            View.DebugLog = Level.DEBUG.equals(Logger.getRootLogger().getLevel()) ? true : false;
+            View.DebugLog = Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ? true : false;
 
             #endregion
 

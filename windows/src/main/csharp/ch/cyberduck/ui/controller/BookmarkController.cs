@@ -30,7 +30,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Splat;
 using StructureMap;
 using System;
@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected readonly LoginInputValidator _validator;
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         private static readonly string Default = LocaleFactory.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController<>).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(BookmarkController<>).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
         private readonly HostPasswordStore _keychain = PasswordStoreFactory.get();

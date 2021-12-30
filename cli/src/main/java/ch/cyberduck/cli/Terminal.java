@@ -92,7 +92,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,7 +105,7 @@ import java.util.concurrent.ExecutionException;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class Terminal {
-    private static final Logger log = Logger.getLogger(Terminal.class);
+    private static final Logger log = LogManager.getLogger(Terminal.class);
 
     static {
         System.err.close();

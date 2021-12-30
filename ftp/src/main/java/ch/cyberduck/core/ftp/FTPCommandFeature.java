@@ -23,12 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Command;
 
 import org.apache.commons.net.ProtocolCommandListener;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class FTPCommandFeature implements Command {
-    private static final Logger log = Logger.getLogger(FTPCommandFeature.class);
+    private static final Logger log = LogManager.getLogger(FTPCommandFeature.class);
 
     private final FTPSession session;
 

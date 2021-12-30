@@ -22,10 +22,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LoadingVaultLookupListener implements VaultLookupListener {
-    private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
+    private static final Logger log = LogManager.getLogger(LoadingVaultLookupListener.class);
 
     private final VaultRegistry registry;
     private final PasswordStore keychain;

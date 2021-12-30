@@ -22,7 +22,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import java.util.Locale;
 
  */
 public abstract class Archive {
-    private static final Logger log = Logger.getLogger(Archive.class);
+    private static final Logger log = LogManager.getLogger(Archive.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();

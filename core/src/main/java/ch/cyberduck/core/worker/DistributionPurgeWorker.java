@@ -26,14 +26,15 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 
 public class DistributionPurgeWorker extends Worker<Boolean> {
-    private static final Logger log = Logger.getLogger(DistributionPurgeWorker.class);
+    private static final Logger log = LogManager.getLogger(DistributionPurgeWorker.class);
 
     /**
      * Selected files.

@@ -17,7 +17,7 @@
 //
 
 using ch.cyberduck.core.i18n;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System;
 using System.Resources;
 
@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Core.I18n
 
     public class DictionaryLocale : Locale
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(DictionaryLocale).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(DictionaryLocale).FullName);
 
         private readonly bool _enabled;
         private readonly Preferences preferences;

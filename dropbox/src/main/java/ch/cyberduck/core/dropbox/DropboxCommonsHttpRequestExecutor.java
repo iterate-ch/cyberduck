@@ -28,7 +28,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -46,7 +47,7 @@ import com.dropbox.core.http.HttpRequestor;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
-    private static final Logger log = Logger.getLogger(DropboxCommonsHttpRequestExecutor.class);
+    private static final Logger log = LogManager.getLogger(DropboxCommonsHttpRequestExecutor.class);
 
     private final CloseableHttpClient client;
 

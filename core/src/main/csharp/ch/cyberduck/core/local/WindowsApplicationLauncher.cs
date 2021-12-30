@@ -18,13 +18,13 @@
 
 using System.Diagnostics;
 using ch.cyberduck.core.local;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.Local
 {
     public sealed class WindowsApplicationLauncher : ApplicationLauncher
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WindowsApplicationLauncher).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof (WindowsApplicationLauncher).Name);
 
         public void bounce(ch.cyberduck.core.Local local)
         {

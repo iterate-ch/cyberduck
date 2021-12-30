@@ -30,7 +30,8 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -50,7 +51,7 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
-    private static final Logger log = Logger.getLogger(DAVClient.class);
+    private static final Logger log = LogManager.getLogger(DAVClient.class);
 
     private final String uri;
 

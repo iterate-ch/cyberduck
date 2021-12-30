@@ -41,7 +41,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -57,7 +58,7 @@ import ch.iterate.openstack.swift.model.AccountInfo;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftSession extends HttpSession<Client> {
-    private static final Logger log = Logger.getLogger(SwiftSession.class);
+    private static final Logger log = LogManager.getLogger(SwiftSession.class);
 
     private final SwiftRegionService regionService
         = new SwiftRegionService(this);

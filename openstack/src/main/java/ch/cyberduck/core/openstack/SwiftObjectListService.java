@@ -31,7 +31,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -41,7 +42,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftObjectListService implements ListService {
-    private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
+    private static final Logger log = LogManager.getLogger(SwiftObjectListService.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();

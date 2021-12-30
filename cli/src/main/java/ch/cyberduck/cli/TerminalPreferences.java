@@ -22,14 +22,21 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.AppenderRef;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class TerminalPreferences extends Preferences {
-    private static final Logger log = Logger.getLogger(TerminalPreferences.class);
+    private static final Logger log = LogManager.getLogger(TerminalPreferences.class);
 
     private final Preferences proxy;
 
@@ -58,11 +65,18 @@ public class TerminalPreferences extends Preferences {
     @Override
     protected void configureLogging(final String level) {
         super.configureLogging(level);
-        // Send log output to system.log
-        Logger root = Logger.getRootLogger();
-        final Appender appender = new TerminalAppender();
-        appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
-        root.addAppender(appender);
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender appender = new TerminalAppender(PatternLayout.newBuilder().withConfiguration(config).withPattern("[%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build());
+        appender.start();
+        config.addAppender(appender);
+        final AppenderRef ref = AppenderRef.createAppenderRef("File", null, null);
+        final AppenderRef[] refs = new AppenderRef[]{ref};
+        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, Level.getLevel(level), LogManager.ROOT_LOGGER_NAME,
+            "true", refs, null, config, null);
+        loggerConfig.addAppender(appender, null, null);
+        config.addLogger(LogManager.ROOT_LOGGER_NAME, loggerConfig);
+        ctx.updateLoggers();
     }
 
     @Override

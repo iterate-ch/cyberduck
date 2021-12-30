@@ -23,13 +23,13 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
 using java.time;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.Sparkle
 {
     public class WinSparklePeriodicUpdateChecker : AbstractPeriodicUpdateChecker, IDisposable
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
 
         [DllImport("advapi32.dll", SetLastError = true)]

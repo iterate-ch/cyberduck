@@ -21,7 +21,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LocalProfilesFinder implements ProfilesFinder {
-    private static final Logger log = Logger.getLogger(LocalProfilesFinder.class);
+    private static final Logger log = LogManager.getLogger(LocalProfilesFinder.class);
 
     private final ProtocolFactory protocols;
     private final Local directory;

@@ -17,14 +17,16 @@ package ch.cyberduck.core.logging;
 
 import ch.cyberduck.core.library.Native;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
 
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
  */
-public class UnifiedSystemLogAppender extends AppenderSkeleton {
+public class UnifiedSystemLogAppender extends AbstractAppender {
 
     static {
         Native.load("core");
@@ -69,34 +71,35 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
      */
     public static final int OS_LOG_TYPE_FAULT = 0x11;
 
+    public UnifiedSystemLogAppender() {
+        super(UnifiedSystemLogAppender.class.getName(), null, null, true, Property.EMPTY_ARRAY);
+    }
+
     @Override
-    protected void append(final LoggingEvent event) {
+    public void append(final LogEvent event) {
         if(null == event.getMessage()) {
             return;
         }
         // Category name
-        final String logger = String.format("%s %s", event.getThreadName(), event.getLogger().getName());
-        switch(event.getLevel().toInt()) {
-            case Level.FATAL_INT:
-            case Level.ERROR_INT:
-                this.log(OS_LOG_TYPE_ERROR, logger, event.getMessage().toString());
-                break;
-            case Level.TRACE_INT:
-                this.log(OS_LOG_TYPE_DEBUG, logger, event.getMessage().toString());
-                break;
-            case Level.DEBUG_INT:
-            case Level.INFO_INT:
-                this.log(OS_LOG_TYPE_INFO, logger, event.getMessage().toString());
-                break;
-            case Level.WARN_INT:
-            default:
-                this.log(OS_LOG_TYPE_DEFAULT, logger, event.getMessage().toString());
-                break;
+        final String logger = String.format("%s %s", event.getThreadName(), event.getLoggerName());
+        Level level = event.getLevel();
+        if(Level.FATAL.equals(level) || Level.ERROR.equals(level)) {
+            this.log(OS_LOG_TYPE_ERROR, logger, event.getMessage().toString());
         }
-        if(layout.ignoresThrowable()) {
+        else if(Level.TRACE.equals(level)) {
+            this.log(OS_LOG_TYPE_DEBUG, logger, event.getMessage().toString());
+        }
+        else if(Level.DEBUG.equals(level) || Level.INFO.equals(level)) {
+            this.log(OS_LOG_TYPE_INFO, logger, event.getMessage().toString());
+        }
+        else {
+            this.log(OS_LOG_TYPE_DEFAULT, logger, event.getMessage().toString());
+        }
+        if(ignoreExceptions()) {
             // Appender responsible for rendering
-            final String[] trace = event.getThrowableStrRep();
-            if(trace != null) {
+            final Throwable thrown = event.getThrown();
+            if(thrown != null) {
+                final String[] trace = ExceptionUtils.getStackFrames(thrown);
                 for(final String t : trace) {
                     this.log(OS_LOG_TYPE_DEFAULT, logger, t);
                 }
@@ -105,15 +108,5 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
     }
 
     public native void log(int type, String category, String message);
-
-    @Override
-    public void close() {
-        //
-    }
-
-    @Override
-    public boolean requiresLayout() {
-        return true;
-    }
 }
 

@@ -20,11 +20,15 @@ package ch.cyberduck.core.logging;
 
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Layout;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
+import org.apache.logging.log4j.util.Strings;
 import org.rococoa.internal.RococoaTypeMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import com.sun.jna.Library;
@@ -33,37 +37,32 @@ import com.sun.jna.Native;
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
  */
-public class SystemLogAppender extends AppenderSkeleton {
+public class SystemLogAppender extends AbstractAppender {
 
     private static final FoundationKitFunctions library = Native.load(
         "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
+    public SystemLogAppender(final Layout layout) {
+        super(SystemLogAppender.class.getName(), null, layout, true, Property.EMPTY_ARRAY);
+    }
+
     @Override
-    protected void append(final LoggingEvent event) {
+    public void append(final LogEvent event) {
         if(null == event.getMessage()) {
             return;
         }
         final StringBuilder buffer = new StringBuilder();
-        buffer.append(layout.format(event));
-        if(layout.ignoresThrowable()) {
-            final String[] trace = event.getThrowableStrRep();
-            if(trace != null) {
-                buffer.append(Layout.LINE_SEP);
+        buffer.append(new String(getLayout().toByteArray(event), StandardCharsets.UTF_8));
+        if(ignoreExceptions()) {
+            final Throwable thrown = event.getThrown();
+            if(thrown != null) {
+                buffer.append(Strings.LINE_SEPARATOR);
+                final String[] trace = ExceptionUtils.getStackFrames(thrown);
                 for(final String t : trace) {
-                    buffer.append(t).append(Layout.LINE_SEP);
+                    buffer.append(t).append(Strings.LINE_SEPARATOR);
                 }
             }
         }
         library.NSLog("%@", buffer.toString());
-    }
-
-    @Override
-    public void close() {
-        //
-    }
-
-    @Override
-    public boolean requiresLayout() {
-        return true;
     }
 }

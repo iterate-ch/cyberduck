@@ -28,7 +28,8 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
@@ -37,7 +38,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 public class S3LoggingFeature implements Logging {
-    private static final Logger log = Logger.getLogger(S3LoggingFeature.class);
+    private static final Logger log = LogManager.getLogger(S3LoggingFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

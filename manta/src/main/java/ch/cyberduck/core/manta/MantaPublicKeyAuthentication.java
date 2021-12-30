@@ -32,7 +32,8 @@ import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.openssl.EncryptionException;
 import org.bouncycastle.openssl.PasswordException;
 
@@ -54,7 +55,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class MantaPublicKeyAuthentication implements AuthenticationProvider<String> {
-    private static final Logger log = Logger.getLogger(MantaPublicKeyAuthentication.class);
+    private static final Logger log = LogManager.getLogger(MantaPublicKeyAuthentication.class);
 
     private final MantaSession session;
 

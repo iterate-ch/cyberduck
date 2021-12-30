@@ -31,10 +31,11 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class BundleController extends ProxyController {
-    private static final Logger log = Logger.getLogger(BundleController.class);
+    private static final Logger log = LogManager.getLogger(BundleController.class);
 
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;

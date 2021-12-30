@@ -28,14 +28,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.pool.SessionPool;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
-    private static final Logger log = Logger.getLogger(CopyURLMenuDelegate.class);
+    private static final Logger log = LogManager.getLogger(CopyURLMenuDelegate.class);
 
     @Override
     protected String getKeyEquivalent() {

@@ -31,7 +31,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
@@ -42,7 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public final class ActivityController extends WindowController {
-    private static final Logger log = Logger.getLogger(ActivityController.class);
+    private static final Logger log = LogManager.getLogger(ActivityController.class);
 
     private final BackgroundActionRegistry registry
         = BackgroundActionRegistry.global();

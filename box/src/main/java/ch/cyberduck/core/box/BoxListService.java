@@ -30,7 +30,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -38,7 +39,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class BoxListService implements ListService {
-    private static final Logger log = Logger.getLogger(BoxListService.class);
+    private static final Logger log = LogManager.getLogger(BoxListService.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;

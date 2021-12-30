@@ -72,7 +72,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.impl.client.WinHttpClients;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -84,7 +85,7 @@ import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
 
 public class DAVSession extends HttpSession<DAVClient> {
-    private static final Logger log = Logger.getLogger(DAVSession.class);
+    private static final Logger log = LogManager.getLogger(DAVSession.class);
 
     private final RedirectCallback redirect;
     private final PreferencesReader preferences

@@ -22,7 +22,8 @@ import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Encapsulating UNIX file permissions.
@@ -59,7 +60,7 @@ public class Permission implements Serializable {
             return LocaleFactory.localizedString("--");
         }
     };
-    private static final Logger log = Logger.getLogger(Permission.class);
+    private static final Logger log = LogManager.getLogger(Permission.class);
     private Action user;
     private Action group;
     private Action other;

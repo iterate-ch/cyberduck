@@ -18,7 +18,8 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -31,7 +32,7 @@ import java.util.Set;
 
  */
 public abstract class AbstractX509TrustManager implements X509TrustManager {
-    private static final Logger log = Logger.getLogger(AbstractX509TrustManager.class);
+    private static final Logger log = LogManager.getLogger(AbstractX509TrustManager.class);
 
     /**
      * A set of all X509 certificates accepted by the user that contains

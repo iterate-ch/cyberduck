@@ -36,7 +36,8 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.util.Collections;
@@ -44,7 +45,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
-    private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
+    private static final Logger log = LogManager.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
 
     private final Host origin;
 

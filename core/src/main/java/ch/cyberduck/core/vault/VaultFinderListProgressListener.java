@@ -24,12 +24,13 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
-    private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
+    private static final Logger log = LogManager.getLogger(VaultFinderListProgressListener.class);
 
     private final Session<?> session;
     private final VaultLookupListener listener;

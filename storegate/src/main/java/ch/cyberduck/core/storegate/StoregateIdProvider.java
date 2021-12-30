@@ -31,10 +31,11 @@ import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StoregateIdProvider implements FileIdProvider {
-    private static final Logger log = Logger.getLogger(StoregateIdProvider.class);
+    private static final Logger log = LogManager.getLogger(StoregateIdProvider.class);
 
     private final StoregateSession session;
     private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));

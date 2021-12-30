@@ -58,7 +58,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -82,7 +83,7 @@ import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIR
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class StoregateSession extends HttpSession<StoregateApiClient> {
-    private static final Logger log = Logger.getLogger(StoregateSession.class);
+    private static final Logger log = LogManager.getLogger(StoregateSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
     private List<RootFolder> roots = Collections.emptyList();

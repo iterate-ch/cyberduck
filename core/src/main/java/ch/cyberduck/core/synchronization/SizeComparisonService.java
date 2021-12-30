@@ -20,10 +20,11 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Attributes;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SizeComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(SizeComparisonService.class);
+    private static final Logger log = LogManager.getLogger(SizeComparisonService.class);
 
     @Override
     public Comparison compare(final Attributes remote, final Attributes local) {

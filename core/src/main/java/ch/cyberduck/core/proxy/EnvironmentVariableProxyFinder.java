@@ -5,13 +5,14 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class EnvironmentVariableProxyFinder implements ProxyFinder {
-    private static final Logger log = Logger.getLogger(EnvironmentVariableProxyFinder.class);
+    private static final Logger log = LogManager.getLogger(EnvironmentVariableProxyFinder.class);
 
     private final Preferences preferences
             = PreferencesFactory.get();

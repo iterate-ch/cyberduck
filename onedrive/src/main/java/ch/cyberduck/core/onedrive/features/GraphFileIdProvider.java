@@ -28,10 +28,11 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class GraphFileIdProvider implements FileIdProvider {
-    private static final Logger log = Logger.getLogger(GraphFileIdProvider.class);
+    private static final Logger log = LogManager.getLogger(GraphFileIdProvider.class);
 
     private final GraphSession session;
     private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));

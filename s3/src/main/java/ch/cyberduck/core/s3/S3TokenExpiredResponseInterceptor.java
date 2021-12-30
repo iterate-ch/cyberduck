@@ -30,13 +30,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 
 import java.io.IOException;
 
 public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
-    private static final Logger log = Logger.getLogger(S3TokenExpiredResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(S3TokenExpiredResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 

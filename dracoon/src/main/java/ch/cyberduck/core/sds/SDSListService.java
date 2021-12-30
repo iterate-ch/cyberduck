@@ -31,12 +31,13 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class SDSListService implements ListService {
-    private static final Logger log = Logger.getLogger(SDSListService.class);
+    private static final Logger log = LogManager.getLogger(SDSListService.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

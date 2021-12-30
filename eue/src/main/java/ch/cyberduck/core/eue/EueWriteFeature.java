@@ -48,12 +48,13 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Chunk> {
-    private static final Logger log = Logger.getLogger(EueWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(EueWriteFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;

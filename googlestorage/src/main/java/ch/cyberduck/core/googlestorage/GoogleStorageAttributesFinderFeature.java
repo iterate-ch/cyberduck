@@ -32,7 +32,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -41,7 +42,7 @@ import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(GoogleStorageAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageAttributesFinderFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;

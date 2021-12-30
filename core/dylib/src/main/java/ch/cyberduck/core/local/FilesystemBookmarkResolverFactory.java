@@ -18,10 +18,11 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Factory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FilesystemBookmarkResolverFactory extends Factory<FilesystemBookmarkResolver<NSURL>> {
-    private static final Logger log = Logger.getLogger(FilesystemBookmarkResolverFactory.class);
+    private static final Logger log = LogManager.getLogger(FilesystemBookmarkResolverFactory.class);
 
     public FilesystemBookmarkResolverFactory() {
         super("factory.bookmarkresolver.class");

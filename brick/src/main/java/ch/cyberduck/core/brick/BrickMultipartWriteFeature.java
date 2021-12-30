@@ -36,7 +36,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.ByteArrayInputStream;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
-    private static final Logger log = Logger.getLogger(BrickMultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickMultipartWriteFeature.class);
 
     private final BrickSession session;
     private final Integer partsize;

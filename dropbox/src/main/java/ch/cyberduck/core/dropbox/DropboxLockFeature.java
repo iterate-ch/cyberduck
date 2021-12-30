@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
@@ -36,7 +37,7 @@ import com.dropbox.core.v2.files.LockFileResultEntry;
 import com.dropbox.core.v2.files.UnlockFileArg;
 
 public class DropboxLockFeature implements Lock<String> {
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
+    private static final Logger log = LogManager.getLogger(DropboxSession.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;

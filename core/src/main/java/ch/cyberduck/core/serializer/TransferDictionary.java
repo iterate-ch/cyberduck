@@ -32,7 +32,8 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TransferDictionary {
-    private static final Logger log = Logger.getLogger(TransferDictionary.class);
+    private static final Logger log = LogManager.getLogger(TransferDictionary.class);
 
     private final DeserializerFactory factory;
     private final ProtocolFactory protocols;

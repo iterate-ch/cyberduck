@@ -50,10 +50,10 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -66,7 +66,7 @@ import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
-    private static final Logger log = Logger.getLogger(DropboxSession.class);
+    private static final Logger log = LogManager.getLogger(DropboxSession.class);
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();

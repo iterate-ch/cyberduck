@@ -25,10 +25,11 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.HostParserException;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CommandLineUriParser {
-    private static final Logger log = Logger.getLogger(CommandLineUriParser.class);
+    private static final Logger log = LogManager.getLogger(CommandLineUriParser.class);
 
     private final CommandLine input;
     private final ProtocolFactory factory;

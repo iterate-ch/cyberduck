@@ -34,7 +34,8 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -56,7 +57,7 @@ import synapticloop.b2.response.B2UploadPartResponse;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFileResponse> {
-    private static final Logger log = Logger.getLogger(B2LargeUploadWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(B2LargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
         = new B2PathContainerService();

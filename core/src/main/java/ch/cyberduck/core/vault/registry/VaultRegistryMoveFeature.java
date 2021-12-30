@@ -28,12 +28,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class VaultRegistryMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(VaultRegistryMoveFeature.class);
+    private static final Logger log = LogManager.getLogger(VaultRegistryMoveFeature.class);
 
     private final Session<?> session;
     private Session<?> destination;

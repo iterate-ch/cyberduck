@@ -40,7 +40,8 @@ import ch.cyberduck.core.worker.TransferPromptFilterWorker;
 import ch.cyberduck.core.worker.TransferPromptListWorker;
 import ch.cyberduck.ui.cocoa.controller.TransferPromptController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -49,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class TransferPromptDataSource extends OutlineDataSource {
-    private static final Logger log = Logger.getLogger(TransferPromptDataSource.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptDataSource.class);
 
     private final TransferPromptController controller;
 

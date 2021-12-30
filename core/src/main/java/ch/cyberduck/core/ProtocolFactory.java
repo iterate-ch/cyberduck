@@ -28,7 +28,8 @@ import ch.cyberduck.core.profiles.ProfilesFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,7 +43,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public final class ProtocolFactory {
-    private static final Logger log = Logger.getLogger(ProtocolFactory.class);
+    private static final Logger log = LogManager.getLogger(ProtocolFactory.class);
 
     private static final ProtocolFactory global = new ProtocolFactory();
 

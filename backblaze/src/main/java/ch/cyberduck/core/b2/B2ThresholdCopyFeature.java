@@ -23,10 +23,11 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class B2ThresholdCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(B2ThresholdCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(B2ThresholdCopyFeature.class);
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;

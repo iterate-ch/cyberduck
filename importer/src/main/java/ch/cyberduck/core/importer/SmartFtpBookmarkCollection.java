@@ -30,13 +30,14 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 
 import java.util.regex.Pattern;
 
 public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
-    private static final Logger log = Logger.getLogger(SmartFtpBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(SmartFtpBookmarkCollection.class);
 
     private static final long serialVersionUID = 6455585501577444740L;
 

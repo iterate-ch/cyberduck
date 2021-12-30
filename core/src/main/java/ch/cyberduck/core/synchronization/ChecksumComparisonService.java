@@ -21,10 +21,11 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.io.Checksum;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ChecksumComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(ChecksumComparisonService.class);
+    private static final Logger log = LogManager.getLogger(ChecksumComparisonService.class);
 
     @Override
     public Comparison compare(final Attributes remote, final Attributes local) {

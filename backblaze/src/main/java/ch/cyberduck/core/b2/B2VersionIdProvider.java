@@ -27,7 +27,8 @@ import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
 public class B2VersionIdProvider implements VersionIdProvider {
-    private static final Logger log = Logger.getLogger(B2VersionIdProvider.class);
+    private static final Logger log = LogManager.getLogger(B2VersionIdProvider.class);
 
     private final PathContainerService containerService = new B2PathContainerService();
     private final B2Session session;

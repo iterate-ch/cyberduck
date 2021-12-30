@@ -4,13 +4,14 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSThread;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 
 public class Proxy {
-    private static final Logger log = Logger.getLogger(Proxy.class);
+    private static final Logger log = LogManager.getLogger(Proxy.class);
 
     /**
      * You need to keep a reference to the returned value for as long as it is

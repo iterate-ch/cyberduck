@@ -37,7 +37,8 @@ import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,7 +49,7 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class SDSNodeIdProvider implements VersionIdProvider {
-    private static final Logger log = Logger.getLogger(SDSNodeIdProvider.class);
+    private static final Logger log = LogManager.getLogger(SDSNodeIdProvider.class);
 
     private static final UnicodeNormalizer normalizer = new NFCNormalizer();
     private static final String ROOT_NODE_ID = "0";

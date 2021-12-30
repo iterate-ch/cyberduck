@@ -32,7 +32,8 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -41,7 +42,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
-    private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptFilterWorker.class);
 
     private final Transfer transfer;
     private final TransferAction action;

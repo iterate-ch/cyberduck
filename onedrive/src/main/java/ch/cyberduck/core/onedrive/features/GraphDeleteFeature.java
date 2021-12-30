@@ -25,7 +25,8 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
@@ -34,7 +35,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class GraphDeleteFeature implements Delete {
-    private static final Logger logger = Logger.getLogger(GraphDeleteFeature.class);
+    private static final Logger logger = LogManager.getLogger(GraphDeleteFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;

@@ -28,10 +28,11 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferQueue;
 import ch.cyberduck.core.transfer.TransferQueueFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TransferCollectionBackgroundAction extends TransferBackgroundAction {
-    private static final Logger log = Logger.getLogger(TransferCollectionBackgroundAction.class);
+    private static final Logger log = LogManager.getLogger(TransferCollectionBackgroundAction.class);
 
     private final TransferQueue queue = TransferQueueFactory.get();
 

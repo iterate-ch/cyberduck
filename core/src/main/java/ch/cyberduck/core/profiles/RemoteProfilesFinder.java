@@ -36,7 +36,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +47,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class RemoteProfilesFinder implements ProfilesFinder {
-    private static final Logger log = Logger.getLogger(RemoteProfilesFinder.class);
+    private static final Logger log = LogManager.getLogger(RemoteProfilesFinder.class);
 
     private final ProtocolFactory protocols;
     private final Session<?> session;

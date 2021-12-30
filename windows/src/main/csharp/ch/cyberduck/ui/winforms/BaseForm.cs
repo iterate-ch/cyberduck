@@ -35,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Winforms
     {
         private Font _defaultFontBold;
         private bool _releaseWhenClose = true;
-        //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).FullName);
+        //private static readonly Logger Log = LogManager.getLogger(typeof (BaseForm).FullName);
         protected Commands Commands = new Commands();
 
         public BaseForm()

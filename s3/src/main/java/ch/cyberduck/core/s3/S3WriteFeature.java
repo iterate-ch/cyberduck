@@ -37,7 +37,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
@@ -49,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
-    private static final Logger log = Logger.getLogger(S3WriteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;

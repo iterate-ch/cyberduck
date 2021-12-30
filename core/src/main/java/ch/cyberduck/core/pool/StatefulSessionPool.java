@@ -23,13 +23,14 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class StatefulSessionPool extends StatelessSessionPool {
-    private static final Logger log = Logger.getLogger(StatefulSessionPool.class);
+    private static final Logger log = LogManager.getLogger(StatefulSessionPool.class);
 
     private final Lock lock = new ReentrantLock();
     private final Session<?> session;

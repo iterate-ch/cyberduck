@@ -78,7 +78,8 @@ import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -97,7 +98,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
-    private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
+    private static final Logger log = LogManager.getLogger(BrowserTableDataSource.class);
 
     private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
     private final AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();

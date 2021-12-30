@@ -21,7 +21,8 @@ import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.SharepointSession;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Groups;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.User;
@@ -30,7 +31,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 
 public class GroupListService extends AbstractListService<GroupItem.Metadata> {
-    private static final Logger log = Logger.getLogger(GroupListService.class);
+    private static final Logger log = LogManager.getLogger(GroupListService.class);
 
     private final SharepointSession session;
 

@@ -27,7 +27,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(S3BrowserBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(S3BrowserBookmarkCollection.class);
 
     private static final long serialVersionUID = 2559948549693535359L;
 

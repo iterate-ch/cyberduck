@@ -76,7 +76,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -93,7 +94,7 @@ import com.google.gson.JsonParser;
 import com.migcomponents.migbase64.Base64;
 
 public class EueSession extends HttpSession<CloseableHttpClient> {
-    private static final Logger log = Logger.getLogger(EueSession.class);
+    private static final Logger log = LogManager.getLogger(EueSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
 

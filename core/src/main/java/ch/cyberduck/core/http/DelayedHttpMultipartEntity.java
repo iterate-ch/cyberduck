@@ -23,7 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.ByteArrayBuffer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -36,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
-    private static final Logger log = Logger.getLogger(DelayedHttpMultipartEntity.class);
+    private static final Logger log = LogManager.getLogger(DelayedHttpMultipartEntity.class);
 
     public static final String DEFAULT_BOUNDARY = "------------------------d8ad73fe428d737a";
 

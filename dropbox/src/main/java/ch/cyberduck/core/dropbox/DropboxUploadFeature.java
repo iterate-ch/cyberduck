@@ -22,7 +22,8 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +34,7 @@ import java.security.NoSuchAlgorithmException;
 import com.dropbox.core.v2.files.FileMetadata;
 
 public class DropboxUploadFeature extends HttpUploadFeature<FileMetadata, MessageDigest> {
-    private static final Logger log = Logger.getLogger(DropboxUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(DropboxUploadFeature.class);
 
     final DropboxSession session;
 

@@ -24,7 +24,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class TripleCryptOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
-    private static final Logger log = Logger.getLogger(TripleCryptOutputStream.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptOutputStream.class);
 
     private final StatusOutputStream<VersionId> proxy;
 

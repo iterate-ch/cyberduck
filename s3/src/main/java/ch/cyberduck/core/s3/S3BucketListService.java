@@ -28,14 +28,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageBucket;
 
 import java.util.EnumSet;
 
 public class S3BucketListService implements RootListService {
-    private static final Logger log = Logger.getLogger(S3BucketListService.class);
+    private static final Logger log = LogManager.getLogger(S3BucketListService.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

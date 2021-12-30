@@ -25,14 +25,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxRootListService implements ListService {
-    private static final Logger log = Logger.getLogger(DropboxRootListService.class);
+    private static final Logger log = LogManager.getLogger(DropboxRootListService.class);
 
     private final DropboxSession session;
 

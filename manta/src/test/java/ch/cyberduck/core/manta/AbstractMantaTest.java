@@ -35,7 +35,8 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 
@@ -46,7 +47,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 public abstract class AbstractMantaTest {
-    private static final Logger log = Logger.getLogger(AbstractMantaTest.class);
+    private static final Logger log = LogManager.getLogger(AbstractMantaTest.class);
 
     protected MantaSession session;
     protected Path testPathPrefix;

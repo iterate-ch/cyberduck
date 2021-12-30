@@ -41,7 +41,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,7 +50,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BoxUploadHelper {
-    private static final Logger log = Logger.getLogger(BoxUploadHelper.class);
+    private static final Logger log = LogManager.getLogger(BoxUploadHelper.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;

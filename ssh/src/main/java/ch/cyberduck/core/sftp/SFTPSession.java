@@ -51,7 +51,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -87,7 +88,7 @@ import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 public class SFTPSession extends Session<SSHClient> {
-    private static final Logger log = Logger.getLogger(SFTPSession.class);
+    private static final Logger log = LogManager.getLogger(SFTPSession.class);
 
     private final PreferencesReader preferences = new HostPreferences(host);
 

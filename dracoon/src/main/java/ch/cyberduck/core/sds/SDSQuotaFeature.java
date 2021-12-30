@@ -25,12 +25,13 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class SDSQuotaFeature implements Quota {
-    private static final Logger log = Logger.getLogger(SDSQuotaFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSQuotaFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

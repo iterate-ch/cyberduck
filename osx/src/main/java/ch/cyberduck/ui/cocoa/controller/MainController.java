@@ -93,7 +93,8 @@ import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -122,7 +123,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
  * Setting the main menu and implements application delegate methods
  */
 public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
-    private static final Logger log = Logger.getLogger(MainController.class);
+    private static final Logger log = LogManager.getLogger(MainController.class);
 
     /**
      * Apple event constants<br> **********************************************************************************************<br>

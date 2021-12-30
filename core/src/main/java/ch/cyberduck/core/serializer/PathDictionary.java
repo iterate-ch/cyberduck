@@ -24,12 +24,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class PathDictionary {
-    private static final Logger log = Logger.getLogger(PathDictionary.class);
+    private static final Logger log = LogManager.getLogger(PathDictionary.class);
 
     private final DeserializerFactory factory;
 

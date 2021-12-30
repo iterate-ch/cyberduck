@@ -38,7 +38,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.client.HttpResponseException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +47,7 @@ import java.security.MessageDigest;
 import java.text.MessageFormat;
 
 public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
-    private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(HttpUploadFeature.class);
 
     private Write<Reply> writer;
 

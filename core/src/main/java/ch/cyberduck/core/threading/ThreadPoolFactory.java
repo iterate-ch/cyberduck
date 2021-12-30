@@ -20,7 +20,8 @@ import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static ch.cyberduck.core.threading.ThreadPool.DEFAULT_THREAD_NAME_PREFIX;
 
 public class ThreadPoolFactory extends Factory<ThreadPool> {
-    private static final Logger log = Logger.getLogger(ThreadPoolFactory.class);
+    private static final Logger log = LogManager.getLogger(ThreadPoolFactory.class);
 
     public ThreadPoolFactory() {
         super("factory.threadpool.class");

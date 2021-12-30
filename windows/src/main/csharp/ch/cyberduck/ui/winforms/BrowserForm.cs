@@ -33,7 +33,7 @@ using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using StructureMap;
 using System;
 using System.Collections;
@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms
     public partial class BrowserForm : BaseForm, IBrowserView
     {
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
-        private static readonly Logger Log = Logger.getLogger(typeof(BrowserForm).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(BrowserForm).FullName);
         private static readonly TypeConverter ShortcutConverter = TypeDescriptor.GetConverter(typeof(Keys));
         private bool _browserStateRestored;
         private BrowserView _currentView;

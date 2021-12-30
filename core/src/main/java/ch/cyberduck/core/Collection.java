@@ -20,7 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,7 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
-    private static final Logger log = Logger.getLogger(Collection.class);
+    private static final Logger log = LogManager.getLogger(Collection.class);
 
     private final ReentrantLock locked = new ReentrantLock();
     private final AtomicBoolean loaded = new AtomicBoolean();

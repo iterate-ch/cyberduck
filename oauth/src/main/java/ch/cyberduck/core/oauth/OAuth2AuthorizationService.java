@@ -38,7 +38,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 
 public class OAuth2AuthorizationService {
-    private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
+    private static final Logger log = LogManager.getLogger(OAuth2AuthorizationService.class);
 
     public static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     public static final String CYBERDUCK_REDIRECT_URI = String.format("%s:oauth", PreferencesFactory.get().getProperty("oauth.handler.scheme"));

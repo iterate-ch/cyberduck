@@ -37,13 +37,14 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BufferWriteFeature implements MultipartWrite<Void> {
-    private static final Logger log = Logger.getLogger(BufferWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(BufferWriteFeature.class);
 
     private final Session<?> session;
 

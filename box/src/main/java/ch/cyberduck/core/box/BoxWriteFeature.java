@@ -40,14 +40,15 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.BoxUploadResponse> {
-    private static final Logger log = Logger.getLogger(BoxWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(BoxWriteFeature.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;

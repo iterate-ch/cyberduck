@@ -21,7 +21,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +31,7 @@ import java.util.Set;
 
 public class SDSPermissionsFeature extends DefaultAclFeature {
 
-    private static final Logger log = Logger.getLogger(SDSPermissionsFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSPermissionsFeature.class);
 
     // Node roles
     public static final Acl.Role MANAGE_ROLE = new Acl.Role("MANAGE_ROLE");

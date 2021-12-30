@@ -19,10 +19,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.ListFilteringFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CachingFindFeature implements Find {
-    private static final Logger log = Logger.getLogger(CachingAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(CachingAttributesFinderFeature.class);
 
     private final Cache<Path> cache;
     private final Find delegate;

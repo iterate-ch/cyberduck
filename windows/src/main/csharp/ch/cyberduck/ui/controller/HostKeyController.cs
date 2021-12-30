@@ -24,13 +24,13 @@ using ch.cyberduck.core.sftp;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.security;
 using net.schmizz.sshj.common;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class HostKeyController : PreferencesHostKeyVerifier
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (HostKeyController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (HostKeyController).FullName);
 
         /// <summary>
         /// Parent browser

@@ -31,14 +31,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class EueDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(EueDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(EueDeleteFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;

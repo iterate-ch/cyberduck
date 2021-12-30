@@ -25,11 +25,12 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 public final class SystemConfigurationReachability implements Reachability {
-    private static final Logger log = Logger.getLogger(SystemConfigurationReachability.class);
+    private static final Logger log = LogManager.getLogger(SystemConfigurationReachability.class);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 

@@ -22,7 +22,8 @@ import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,7 +36,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
-    private static final Logger log = Logger.getLogger(AbstractHostCollection.class);
+    private static final Logger log = LogManager.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
         // Empty

@@ -25,13 +25,14 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
-    private static final Logger log = Logger.getLogger(TransferErrorCallbackControllerFactory.class);
+    private static final Logger log = LogManager.getLogger(TransferErrorCallbackControllerFactory.class);
 
     public TransferErrorCallbackControllerFactory() {
         super("factory.transfererrorcallback.class");

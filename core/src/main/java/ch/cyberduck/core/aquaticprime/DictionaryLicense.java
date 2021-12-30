@@ -21,7 +21,8 @@ import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.crypto.BadPaddingException;
@@ -51,7 +52,7 @@ import com.dd.plist.PropertyListFormatException;
 import com.dd.plist.XMLPropertyListParser;
 
 public abstract class DictionaryLicense extends AbstractLicense {
-    private static final Logger log = Logger.getLogger(DictionaryLicense.class);
+    private static final Logger log = LogManager.getLogger(DictionaryLicense.class);
 
     private final Local file;
     private final NSDictionary dictionary;

@@ -17,12 +17,13 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 
 public class CertificateStoreFactory extends Factory<CertificateStore> {
-    private static final Logger log = Logger.getLogger(CertificateStoreFactory.class);
+    private static final Logger log = LogManager.getLogger(CertificateStoreFactory.class);
 
     private Constructor<CertificateStore> constructor;
 

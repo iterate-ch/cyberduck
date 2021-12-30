@@ -55,7 +55,8 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,7 +67,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public abstract class AbstractDownloadFilter implements TransferPathFilter {
-    private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
+    private static final Logger log = LogManager.getLogger(AbstractDownloadFilter.class);
 
     private final Session<?> session;
     private final SymlinkResolver<Path> symlinkResolver;

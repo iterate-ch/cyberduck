@@ -55,8 +55,10 @@ import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -77,7 +79,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class PreferencesController extends ToolbarWindowController {
-    private static final Logger log = Logger.getLogger(PreferencesController.class);
+    private static final Logger log = LogManager.getLogger(PreferencesController.class);
 
     private final NSNotificationCenter notificationCenter
         = NSNotificationCenter.defaultCenter();
@@ -2400,7 +2402,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.logCheckbox = b;
         this.logCheckbox.setTarget(this.id());
         this.logCheckbox.setAction(Foundation.selector("logCheckboxClicked:"));
-        this.logCheckbox.setState(Level.DEBUG.equals(Logger.getRootLogger().getLevel()) ? NSCell.NSOnState : NSCell.NSOffState);
+        this.logCheckbox.setState(Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ?
+            NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
@@ -2430,7 +2433,7 @@ public class PreferencesController extends ToolbarWindowController {
             public Void call() {
                 try {
                     final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
-                            preferences.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
+                        preferences.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
                     if(!RevealServiceFactory.get().reveal(file)) {
                         log.warn(String.format("Failure reveal log file %s", file));
                     }

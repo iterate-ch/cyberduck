@@ -49,6 +49,14 @@
                     <groupId>org.globus.jglobus</groupId>
                     <artifactId>cog-jglobus</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.perf4j</groupId>
+                    <artifactId>perf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>

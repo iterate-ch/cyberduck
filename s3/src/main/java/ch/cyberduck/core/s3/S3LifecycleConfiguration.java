@@ -29,12 +29,13 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.LifecycleConfig;
 
 public class S3LifecycleConfiguration implements Lifecycle {
-    private static final Logger log = Logger.getLogger(S3LifecycleConfiguration.class);
+    private static final Logger log = LogManager.getLogger(S3LifecycleConfiguration.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

@@ -43,7 +43,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -57,7 +58,7 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 
 public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
-    private static final Logger log = Logger.getLogger(FreenetAuthenticatedUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(FreenetAuthenticatedUrlProvider.class);
 
     @Override
     public DescriptiveUrl toUrl(final Host bookmark) {

@@ -24,7 +24,8 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +34,7 @@ import java.util.Optional;
  * Profile metadata
  */
 public class ProfileDescription {
-    private static final Logger log = Logger.getLogger(ProfileDescription.class);
+    private static final Logger log = LogManager.getLogger(ProfileDescription.class);
 
     private final LazyInitializer<Checksum> checksum;
     private final LazyInitializer<Local> local;

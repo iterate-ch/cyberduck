@@ -31,7 +31,8 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -43,7 +44,7 @@ import com.google.api.services.drive.model.File;
 import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 
 public class DriveAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DriveAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(DriveAttributesFinderFeature.class);
 
     protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
 

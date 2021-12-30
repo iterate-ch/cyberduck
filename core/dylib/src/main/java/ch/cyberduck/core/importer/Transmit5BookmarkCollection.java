@@ -29,10 +29,11 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Transmit5BookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(Transmit5BookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(Transmit5BookmarkCollection.class);
 
     private static final long serialVersionUID = 2422398644582883578L;
 

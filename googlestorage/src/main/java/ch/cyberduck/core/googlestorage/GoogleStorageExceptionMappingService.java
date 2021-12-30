@@ -23,7 +23,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -37,7 +38,7 @@ import com.google.api.client.json.JsonToken;
 import com.google.api.client.json.gson.GsonFactory;
 
 public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMappingService {
-    private static final Logger log = Logger.getLogger(GoogleStorageExceptionMappingService.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException failure) {

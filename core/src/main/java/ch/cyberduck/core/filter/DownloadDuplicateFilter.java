@@ -20,10 +20,11 @@ package ch.cyberduck.core.filter;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DownloadDuplicateFilter extends NullFilter<Path> {
-    private static final Logger log = Logger.getLogger(DownloadDuplicateFilter.class);
+    private static final Logger log = LogManager.getLogger(DownloadDuplicateFilter.class);
 
     @Override
     public boolean accept(final Path file) {

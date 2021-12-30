@@ -19,13 +19,13 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core
 {
     public class DataProtector
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (DataProtector).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (DataProtector).FullName);
 
         public static string Encrypt(string data)
         {

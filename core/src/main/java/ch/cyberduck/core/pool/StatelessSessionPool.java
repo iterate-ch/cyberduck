@@ -26,13 +26,14 @@ import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class StatelessSessionPool implements SessionPool {
-    private static final Logger log = Logger.getLogger(StatelessSessionPool.class);
+    private static final Logger log = LogManager.getLogger(StatelessSessionPool.class);
 
     private final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;

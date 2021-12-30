@@ -31,10 +31,11 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FreenetSession extends DAVSession {
-    private static final Logger log = Logger.getLogger(FreenetSession.class);
+    private static final Logger log = LogManager.getLogger(FreenetSession.class);
 
     public FreenetSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);

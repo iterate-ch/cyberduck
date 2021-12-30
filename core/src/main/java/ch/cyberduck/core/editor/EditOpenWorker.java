@@ -43,14 +43,15 @@ import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public class EditOpenWorker extends Worker<Transfer> {
-    private static final Logger log = Logger.getLogger(EditOpenWorker.class);
+    private static final Logger log = LogManager.getLogger(EditOpenWorker.class);
 
     private final AbstractEditor editor;
     private final Transfer download;

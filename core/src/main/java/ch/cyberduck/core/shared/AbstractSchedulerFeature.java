@@ -25,12 +25,13 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractSchedulerFeature<R, Client> implements Scheduler<Void> {
-    private static final Logger log = Logger.getLogger(AbstractSchedulerFeature.class);
+    private static final Logger log = LogManager.getLogger(AbstractSchedulerFeature.class);
 
     private final long period;
     private final ScheduledThreadPool scheduler = new ScheduledThreadPool();

@@ -41,14 +41,15 @@ import ch.cyberduck.ui.cocoa.controller.LoginController;
 import ch.cyberduck.ui.cocoa.controller.ProgressAlertController;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 
 import java.util.concurrent.CountDownLatch;
 
 public final class PromptLoginCallback extends PromptPasswordCallback implements LoginCallback {
-    private static final Logger log = Logger.getLogger(PromptLoginCallback.class);
+    private static final Logger log = LogManager.getLogger(PromptLoginCallback.class);
 
     private final Preferences preferences
         = PreferencesFactory.get();

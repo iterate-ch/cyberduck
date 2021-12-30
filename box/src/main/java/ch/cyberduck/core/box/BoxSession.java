@@ -47,13 +47,14 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
 
 public class BoxSession extends HttpSession<CloseableHttpClient> {
-    private static final Logger log = Logger.getLogger(BoxSession.class);
+    private static final Logger log = LogManager.getLogger(BoxSession.class);
 
     private final BoxFileidProvider fileid = new BoxFileidProvider(this);
 

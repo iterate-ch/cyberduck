@@ -23,12 +23,13 @@ import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class OpenSSHJumpHostConfigurator implements JumphostConfigurator {
-    private static final Logger log = Logger.getLogger(OpenSSHJumpHostConfigurator.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHJumpHostConfigurator.class);
 
     private final OpenSshConfig configuration;
     private final OpenSSHHostnameConfigurator hostname;

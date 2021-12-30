@@ -26,13 +26,14 @@ import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class VaultRegistryFindFeature implements Find {
-    private static final Logger log = Logger.getLogger(VaultRegistryFindFeature.class);
+    private static final Logger log = LogManager.getLogger(VaultRegistryFindFeature.class);
 
     private final Session<?> session;
     private final Find proxy;

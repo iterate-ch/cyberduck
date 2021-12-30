@@ -33,7 +33,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.sparkle.Sandbox;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ import com.sun.jna.platform.mac.SystemB;
  * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends DefaultPreferences {
-    private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
+    private static final Logger log = LogManager.getLogger(UserDefaultsPreferences.class);
 
     private final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
 

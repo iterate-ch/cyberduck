@@ -31,7 +31,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.text;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
 
@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class TransferController : WindowController<ITransferView>, TranscriptListener, CollectionListener
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (TransferController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (TransferController).FullName);
         private static readonly object SyncRoot = new Object();
         private static volatile TransferController _instance;
         private readonly TransferCollection _collection = TransferCollection.defaultCollection();

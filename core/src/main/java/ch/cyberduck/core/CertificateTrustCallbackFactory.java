@@ -20,13 +20,14 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class CertificateTrustCallbackFactory extends Factory<CertificateTrustCallback> {
-    private static final Logger log = Logger.getLogger(CertificateTrustCallbackFactory.class);
+    private static final Logger log = LogManager.getLogger(CertificateTrustCallbackFactory.class);
 
     private Constructor<CertificateTrustCallback> constructor;
 

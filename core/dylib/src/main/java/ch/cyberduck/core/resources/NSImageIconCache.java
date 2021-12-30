@@ -28,13 +28,14 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
 public class NSImageIconCache implements IconCache<NSImage> {
-    private static final Logger log = Logger.getLogger(NSImageIconCache.class);
+    private static final Logger log = LogManager.getLogger(NSImageIconCache.class);
 
     private final static NSRect NSZeroRect = new NSRect(0, 0);
 

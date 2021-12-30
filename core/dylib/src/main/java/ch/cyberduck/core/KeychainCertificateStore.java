@@ -34,7 +34,8 @@ import ch.cyberduck.core.ssl.DEREncoder;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.ByteArrayInputStream;
@@ -50,7 +51,7 @@ import java.util.List;
 import com.sun.jna.ptr.PointerByReference;
 
 public final class KeychainCertificateStore implements CertificateStore {
-    private static final Logger log = Logger.getLogger(KeychainCertificateStore.class);
+    private static final Logger log = LogManager.getLogger(KeychainCertificateStore.class);
 
     /**
      * @param certificates Chain of certificates

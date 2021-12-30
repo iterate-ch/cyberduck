@@ -35,12 +35,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class EueMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(EueMoveFeature.class);
+    private static final Logger log = LogManager.getLogger(EueMoveFeature.class);
 
     private final EueSession session;
     private final EueResourceIdProvider fileid;

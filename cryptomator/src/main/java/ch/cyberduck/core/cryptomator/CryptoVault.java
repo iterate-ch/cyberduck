@@ -48,7 +48,8 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
@@ -78,7 +79,7 @@ import com.google.gson.JsonParseException;
  * Cryptomator vault implementation
  */
 public class CryptoVault implements Vault {
-    private static final Logger log = Logger.getLogger(CryptoVault.class);
+    private static final Logger log = LogManager.getLogger(CryptoVault.class);
 
     public static final int VAULT_VERSION_DEPRECATED = 6;
     public static final int VAULT_VERSION = PreferencesFactory.get().getInteger("cryptomator.vault.version");

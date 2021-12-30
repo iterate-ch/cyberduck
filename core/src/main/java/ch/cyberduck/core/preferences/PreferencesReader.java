@@ -16,7 +16,8 @@ package ch.cyberduck.core.preferences;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface PreferencesReader {
-    Logger log = Logger.getLogger(PreferencesReader.class);
+    Logger log = LogManager.getLogger(PreferencesReader.class);
 
     /**
      * Give value in user settings or default value if not customized.
