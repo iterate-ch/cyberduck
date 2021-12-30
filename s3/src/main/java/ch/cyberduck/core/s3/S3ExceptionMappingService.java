@@ -51,6 +51,7 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
         else {
             this.append(buffer, e.getResponseStatus());
             this.append(buffer, e.getMessage());
+            this.append(buffer, e.getErrorCode());
         }
         switch(e.getResponseCode()) {
             case HttpStatus.SC_FORBIDDEN:
