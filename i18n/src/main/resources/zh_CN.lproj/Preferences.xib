@@ -515,7 +515,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="123">
                                         <rect key="frame" x="9" y="228" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载时" id="124">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载" id="124">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -590,7 +590,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="120">
                                         <rect key="frame" x="10" y="88" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传时" id="121">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传" id="121">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -658,7 +658,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="使用分段方式下载文件" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="为单个文件使用多个连接分片下载" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -924,7 +924,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="211">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载时" id="212">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载" id="212">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -937,7 +937,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="214">
                                         <rect key="frame" x="9" y="183" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传时" id="215">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传" id="215">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -982,7 +982,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="228">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="保存修改日期" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
+                                        <buttonCell key="cell" type="check" title="保持修改日期" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -990,7 +990,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="230">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="保存修改日期" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
+                                        <buttonCell key="cell" type="check" title="保持修改日期" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1002,7 +1002,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="233">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载时" id="234">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载" id="234">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1015,7 +1015,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="236">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传时" id="237">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传" id="237">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1052,7 +1052,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Pdu-UD-1af">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载时" id="jMp-5G-M0R">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载" id="jMp-5G-M0R">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1065,7 +1065,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oCu-3p-Hmv">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传时" id="OF7-e3-pIZ">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传" id="OF7-e3-pIZ">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1086,7 +1086,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="241">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载时" id="242">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载" id="242">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1099,7 +1099,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="244">
                                         <rect key="frame" x="9" y="195" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传时" id="245">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传" id="245">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1536,7 +1536,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
                                 <rect key="frame" x="10" y="84" width="100" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="自动在指定通道中检查更新" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                                <buttonCell key="cell" type="check" title="自动检查指定频道内的更新" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1595,7 +1595,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="330">
                                 <rect key="frame" x="9" y="104" width="449" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载时" id="331">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="下载" id="331">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1608,7 +1608,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传时" id="334">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="上传" id="334">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1758,7 +1758,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
+                <box fixedFrame="YES" title="默认 ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
@@ -1777,7 +1777,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dmt-yG-0WL">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="Qg3-4s-tpR">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="选择应用于新存储桶和文件的预定义用户及权限集。" id="Qg3-4s-tpR">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1850,7 +1850,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="410">
                                 <rect key="frame" x="9" y="41" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="更改将在您下次开启程序后生效。" id="411">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="更改将在您下次打开本程序时生效。" id="411">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1956,7 +1956,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
+                <box fixedFrame="YES" title="默认 ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wuK-Me-6mi">
@@ -1975,7 +1975,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lB4-Ql-F2I">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="4Yf-WE-fsN">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="选择应用于新存储桶和文件的预定义用户及权限集。" id="4Yf-WE-fsN">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
