@@ -57,12 +57,12 @@ namespace Ch.Cyberduck.Ui.Core
 
         public void Add(Control control, EventHandler clickDelegate, ValidateCommand validateDelegate)
         {
-            _commands.Add(new Command(null, null, new[] {control}, clickDelegate, validateDelegate));
+            _commands.Add(new Command(null, null, new[] { control }, clickDelegate, validateDelegate));
         }
 
         public void Add(Control control, ValidateCommand validateDelegate)
         {
-            _commands.Add(new Command(null, null, new[] {control}, delegate { }, validateDelegate));
+            _commands.Add(new Command(null, null, new[] { control }, delegate { }, validateDelegate));
         }
 
         public void Add(ToolStripItem[] items, Control[] controls, MenuItem[] menuItems, EventHandler clickDelegate,
@@ -82,6 +82,7 @@ namespace Ch.Cyberduck.Ui.Core
             private readonly MenuItem[] _menuItems;
             private readonly ToolStripItem[] _toolStripItems;
             private readonly ValidateCommand _validateCommandDelegate;
+            private bool clicked = false;
 
             public Command(ToolStripItem[] toolStripItems, MenuItem[] menuItems, Control[] controls,
                 EventHandler clickDelegate, ValidateCommand validateDelegate)
@@ -89,8 +90,20 @@ namespace Ch.Cyberduck.Ui.Core
                 _toolStripItems = toolStripItems;
                 _menuItems = menuItems;
                 _controls = controls;
-                _validateCommandDelegate = validateDelegate;
-                _clickCommandDelegate = clickDelegate;
+                _validateCommandDelegate = () => !clicked && validateDelegate();
+                _clickCommandDelegate = (s, e) =>
+                {
+                    clicked = true;
+                    Validate();
+                    try
+                    {
+                        clickDelegate(s, e);
+                    }
+                    finally
+                    {
+                        clicked = false;
+                    }
+                };
 
                 if (toolStripItems != null)
                     foreach (ToolStripItem item in toolStripItems)
