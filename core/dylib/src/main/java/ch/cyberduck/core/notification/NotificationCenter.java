@@ -44,13 +44,13 @@ public class NotificationCenter extends ProxyController implements NotificationS
      * performance.
      */
     private final NSUserNotificationCenter center
-        = NSUserNotificationCenter.defaultUserNotificationCenter();
+            = NSUserNotificationCenter.defaultUserNotificationCenter();
 
     private final Set<NotificationService.Listener> listeners =
-        Collections.synchronizedSet(new HashSet<NotificationService.Listener>());
+            Collections.synchronizedSet(new HashSet<NotificationService.Listener>());
 
     private final NotificationFilterService filter
-        = NotificationFilterService.Factory.get();
+            = NotificationFilterService.Factory.get();
 
     @Override
     public NotificationService setup() {
@@ -73,7 +73,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
-        if (filter.shouldSuppress()) {
+        if(filter.shouldSuppress()) {
             log.debug(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
             return;
         }
@@ -94,7 +94,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description, final String action) {
-        if (filter.shouldSuppress()) {
+        if(filter.shouldSuppress()) {
             log.debug(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
             return;
         }
