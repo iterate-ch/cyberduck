@@ -52,7 +52,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
         assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().withFileId("TRASH"))));
         assertEquals(folder.attributes(), list.get(folder).attributes());
-        new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertFalse(list.isEmpty());
         assertTrue(list.contains(subfolder));
         assertEquals(subfolder.attributes(), list.get(subfolder).attributes());
-        new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(subfolder, new DisabledListProgressListener())));
     }
@@ -121,7 +121,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertFalse(list.isEmpty());
         assertTrue(list.contains(file));
         assertEquals(file.attributes(), list.get(file).attributes());
-        new EueDeleteFeature(session, fileid, false).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
     }
