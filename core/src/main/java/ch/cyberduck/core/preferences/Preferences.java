@@ -831,7 +831,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("googledrive.list.limit", String.valueOf(1000));
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
-        this.setDefault("googledrive.delete.trash", String.valueOf(true));
         // Limit the number of requests to 10 per second which is equal the user quota
         this.setDefault("googledrive.limit.requests.second", String.valueOf(100));
 
@@ -1148,7 +1147,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
         this.setDefault("eue.upload.multipart.concurrency", String.valueOf(10));
         this.setDefault("eue.listing.chunksize", String.valueOf(100));
-        this.setDefault("eue.delete.trash", String.valueOf(true));
         this.setDefault("eue.share.expiration.millis", String.valueOf(31540000000L)); // 1 year
         this.setDefault("eue.share.deletable", String.valueOf(false));
         this.setDefault("eue.share.writable", String.valueOf(false));
