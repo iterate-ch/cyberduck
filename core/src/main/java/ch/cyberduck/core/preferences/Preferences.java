@@ -81,6 +81,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
@@ -226,7 +227,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         if(defaults.exists()) {
             final Properties props = new Properties();
             try (final InputStream in = defaults.getInputStream()) {
-                props.load(in);
+                props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
             }
             catch(IllegalArgumentException | AccessDeniedException | IOException e) {
                 // Ignore failure loading configuration
