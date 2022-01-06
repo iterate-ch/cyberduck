@@ -414,6 +414,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Filename (Short Date Format)Extension
          */
         this.setDefault("browser.duplicate.format", "{0} ({1}){2}");
+        this.setDefault("browser.delete.trash", String.valueOf(true));
 
         /*
           Use octal or decimal file sizes
