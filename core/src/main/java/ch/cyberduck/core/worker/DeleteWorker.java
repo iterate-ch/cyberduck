@@ -32,6 +32,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Trash;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.PathReloadFinder;
 
@@ -58,22 +60,45 @@ public class DeleteWorker extends Worker<List<Path>> {
     private final Cache<Path> cache;
     private final ProgressListener listener;
     private final Filter<Path> filter;
+    /**
+     * Trash instead of delete files if feature is available
+     */
+    private final boolean trash;
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
-        this(prompt, files, cache, new NullFilter<Path>(), listener);
+        this(prompt, files, cache, listener, new NullFilter<>());
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final Filter<Path> filter, final ProgressListener listener) {
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+                        final Filter<Path> filter) {
+        this(prompt, files, cache, listener, filter, PreferencesFactory.get().getBoolean("browser.delete.trash"));
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+                        final Filter<Path> filter, final boolean trash) {
         this.files = files;
         this.prompt = prompt;
         this.cache = cache;
         this.listener = listener;
         this.filter = filter;
+        this.trash = trash;
     }
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
-        final Delete delete = session.getFeature(Delete.class);
+        final Delete delete;
+        if(trash) {
+            if(null == session.getFeature(Trash.class)) {
+                log.warn(String.format("No trash feature available for %s", session));
+                delete = session.getFeature(Delete.class);
+            }
+            else {
+                delete = session.getFeature(Trash.class);
+            }
+        }
+        else {
+            delete = session.getFeature(Delete.class);
+        }
         final ListService list = session.getFeature(ListService.class);
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         for(Path file : files) {

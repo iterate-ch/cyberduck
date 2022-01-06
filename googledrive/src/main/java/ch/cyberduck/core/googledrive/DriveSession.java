@@ -157,6 +157,9 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == Delete.class) {
             return (T) new DriveBatchDeleteFeature(this, fileid);
         }
+        if(type == Trash.class) {
+            return (T) new DriveBatchTrashFeature(this, fileid);
+        }
         if(type == Move.class) {
             return (T) new DriveMoveFeature(this, fileid);
         }

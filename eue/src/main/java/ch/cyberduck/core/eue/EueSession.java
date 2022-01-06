@@ -31,20 +31,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
@@ -330,6 +317,9 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         }
         if(type == Delete.class) {
             return (T) new EueDeleteFeature(this, resourceid);
+        }
+        if(type == Trash.class) {
+            return (T) new EueTrashFeature(this, resourceid);
         }
         if(type == Find.class) {
             return (T) new EueFindFeature(this, resourceid);

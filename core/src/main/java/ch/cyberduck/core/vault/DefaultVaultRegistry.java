@@ -198,6 +198,9 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         if(type == Delete.class) {
             return (T) new VaultRegistryDeleteFeature(session, (Delete) proxy, this);
         }
+        if(type == Trash.class) {
+            return (T) new VaultRegistryTrashFeature(session, (Trash) proxy, this);
+        }
         if(type == Symlink.class) {
             return (T) new VaultRegistrySymlinkFeature(session, (Symlink) proxy, this);
         }
