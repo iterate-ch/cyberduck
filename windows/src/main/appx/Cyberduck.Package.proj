@@ -191,14 +191,8 @@
     <LayoutFile Include="$(OutputPath)\DynamicData.dll">
       <PackagePath>$(PackageLayout)\DynamicData.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Pharmacist.Common.dll">
-      <PackagePath>$(PackageLayout)\Pharmacist.Common.dll</PackagePath>
-    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ReactiveUI.dll">
       <PackagePath>$(PackageLayout)\ReactiveUI.dll</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\ReactiveUI.Events.WPF.dll">
-      <PackagePath>$(PackageLayout)\ReactiveUI.Events.WPF.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ReactiveUI.Fody.Helpers.dll">
       <PackagePath>$(PackageLayout)\ReactiveUI.Fody.Helpers.dll</PackagePath>
