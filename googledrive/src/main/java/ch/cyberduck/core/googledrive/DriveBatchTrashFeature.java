@@ -19,7 +19,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -37,14 +37,15 @@ import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.http.HttpHeaders;
+import com.google.api.services.drive.model.File;
 
-public class DriveBatchDeleteFeature implements Delete {
-    private static final Logger log = LogManager.getLogger(DriveBatchDeleteFeature.class);
+public class DriveBatchTrashFeature implements Trash {
+    private static final Logger log = LogManager.getLogger(DriveBatchTrashFeature.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
 
-    public DriveBatchDeleteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
+    public DriveBatchTrashFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
@@ -53,12 +54,27 @@ public class DriveBatchDeleteFeature implements Delete {
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final BatchRequest batch = session.getClient().batch();
         final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
-        for(Path file : files.keySet()) {
+        for(Path f : files.keySet()) {
             try {
-                this.queue(file, batch, callback, failures);
+                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
+                    session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener()))
+                            .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
+                }
+                else {
+                    if(f.attributes().isDuplicate()) {
+                        log.warn(String.format("Delete file %s already in trash", f));
+                        new DriveBatchDeleteFeature(session, fileid).queue(f, batch, callback, failures);
+                        continue;
+                    }
+                    final File properties = new File();
+                    properties.setTrashed(true);
+                    session.getClient().files().update(fileid.getFileId(f, new DisabledListProgressListener()), properties)
+                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                            .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
+                }
             }
             catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
+                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, f);
             }
         }
         if(!files.isEmpty()) {
@@ -71,18 +87,6 @@ public class DriveBatchDeleteFeature implements Delete {
             for(BackgroundException e : failures) {
                 throw e;
             }
-        }
-    }
-
-    protected void queue(final Path file, final BatchRequest batch, final Callback callback, final List<BackgroundException> failures) throws IOException, BackgroundException {
-        if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
-            session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                    .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
-        }
-        else {
-            session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
         }
     }
 
@@ -99,7 +103,7 @@ public class DriveBatchDeleteFeature implements Delete {
 
         @Override
         public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) {
-            log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
+            log.warn(String.format("Failure trashing %s. %s", file, e.getMessage()));
             failures.add(new DefaultHttpResponseExceptionMappingService().map(
                     new HttpResponseException(e.getCode(), e.getMessage())));
         }

@@ -23,38 +23,52 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
-public class DriveDeleteFeature implements Delete {
+import com.google.api.services.drive.model.File;
+
+public class DriveTrashFeature implements Delete {
+    private static final Logger log = LogManager.getLogger(DriveTrashFeature.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
 
-    public DriveDeleteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
+    public DriveTrashFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files.keySet()) {
-            if(file.getType().contains(Path.Type.placeholder)) {
+        for(Path f : files.keySet()) {
+            if(f.getType().contains(Path.Type.placeholder)) {
                 continue;
             }
-            callback.delete(file);
             try {
-                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
-                    session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener())).execute();
+                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
+                    session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
+                    if(f.attributes().isDuplicate()) {
+                        log.warn(String.format("Delete file %s already in trash", f));
+                        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(f), prompt, callback);
+                        continue;
+                    }
+                    callback.delete(f);
+                    final File properties = new File();
+                    properties.setTrashed(true);
+                    session.getClient().files().update(fileid.getFileId(f, new DisabledListProgressListener()), properties)
                             .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                 }
-                fileid.cache(file, null);
+                fileid.cache(f, null);
             }
             catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
+                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, f);
             }
         }
     }

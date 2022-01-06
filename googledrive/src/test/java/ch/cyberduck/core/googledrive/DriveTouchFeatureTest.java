@@ -44,7 +44,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         final String id = test.attributes().getFileId();
         assertNotNull(id);
         assertEquals(test.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(test).getFileId());
-        new DriveDeleteFeature(session, fileid, true).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         // Trashed
         assertFalse(new DriveFindFeature(session, fileid).find(test));
