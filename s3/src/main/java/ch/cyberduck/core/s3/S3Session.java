@@ -196,8 +196,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
-            final Location.Name location = new S3LocationFeature(this, client.getRegionEndpointCache())
-                    .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+            final Location.Name location = new S3PathStyleFallbackAdapter<>(this, new BackgroundExceptionCallable<Location.Name>() {
+                @Override
+                public Location.Name call() throws BackgroundException {
+                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache())
+                            .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+                }
+            }).call();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Retrieved %s", location));
             }
