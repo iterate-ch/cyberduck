@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+8.2.1
+- [Bugfix] Try all public key algorithms available for a specific key type (SFTP) (#12733)
+- [Bugfix] Add fallback when location query for endpoint URI fails (S3) (#12723)
+- [Bugfix] Failure connecting to bucket with missing virtual host style request support (S3) (#12746)
+- [Bugfix] Fix display scaling issues (Windows) (#12742)
+
 8.2.0
 - [Feature] Support for Box API (Box) (#10235)
 - [Bugfix] Failure opening connection (FTP-SSL, Windows)
