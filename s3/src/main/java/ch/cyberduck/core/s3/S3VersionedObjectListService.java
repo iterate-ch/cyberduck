@@ -92,7 +92,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references, final boolean metadata) {
         super(session);
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session);
+        this.attributes = new S3AttributesFinderFeature(session, false);
         this.concurrency = concurrency;
         this.references = references;
         this.containerService = session.getFeature(PathContainerService.class);
