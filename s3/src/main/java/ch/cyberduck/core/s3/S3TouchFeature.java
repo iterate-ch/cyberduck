@@ -50,7 +50,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         final S3Object metadata = (S3Object) out.getStatus();
-        final PathAttributes attr = new S3AttributesFinderFeature(session).toAttributes(metadata);
+        final PathAttributes attr = new S3AttributesFinderFeature(session, false).toAttributes(metadata);
         attr.setMetadata(status.getMetadata());
         if(null != status.getTimestamp()) {
             attr.setModificationDate(status.getTimestamp());

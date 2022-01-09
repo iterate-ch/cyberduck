@@ -66,7 +66,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             final StatusOutputStream<StorageObject> out = writer.write(folder.withType(type), status, new DisabledConnectionCallback());
             new DefaultStreamCloser().close(out);
             final StorageObject metadata = out.getStatus();
-            return folder.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
+            return folder.withAttributes(new S3AttributesFinderFeature(session, false).toAttributes(metadata));
         }
     }
 
