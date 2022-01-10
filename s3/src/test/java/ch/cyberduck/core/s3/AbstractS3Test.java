@@ -76,7 +76,18 @@ public abstract class AbstractS3Test {
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        ));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.listing.metadata.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                if("s3.versioning.references.enable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
