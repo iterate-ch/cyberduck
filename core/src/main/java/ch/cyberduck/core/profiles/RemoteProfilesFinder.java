@@ -80,7 +80,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                             }
                             final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
                                     // Read latest version
-                            .withVersionId(null)), new TransferStatus(), new DisabledConnectionCallback());
+                            .withVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback());
                         final Local temp = TemporaryFileServiceFactory.get().create(file.getName());
                         new DefaultLocalTouchFeature().touch(temp);
                         final OutputStream out = temp.getOutputStream(false);
