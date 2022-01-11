@@ -7,7 +7,6 @@ using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static System.Runtime.CompilerServices.Unsafe;
 using static System.Runtime.InteropServices.MemoryMarshal;
-using static Windows.Win32.CoreConstants;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_FLAGS;

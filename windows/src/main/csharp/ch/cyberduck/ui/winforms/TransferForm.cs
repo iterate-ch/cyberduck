@@ -30,8 +30,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
 using static Ch.Cyberduck.ImageHelper;
-using static Windows.Win32.Constants;
 using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

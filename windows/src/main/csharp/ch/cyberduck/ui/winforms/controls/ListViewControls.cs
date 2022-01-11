@@ -24,8 +24,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
-using static Windows.Win32.Constants;
 using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {

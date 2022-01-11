@@ -29,7 +29,6 @@ using System.IO;
 using System.Linq;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
-using static Windows.Win32.CoreConstants;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Shell.ASSOCSTR;
 

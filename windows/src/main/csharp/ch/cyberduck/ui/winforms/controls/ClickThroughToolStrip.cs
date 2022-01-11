@@ -17,7 +17,7 @@
 // 
 using System;
 using System.Windows.Forms;
-using static Windows.Win32.Constants;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {

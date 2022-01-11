@@ -18,6 +18,7 @@
 
 using ch.cyberduck.core.local;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.Shell.Common;
 using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core.Local
