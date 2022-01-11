@@ -114,6 +114,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
                         final Path versioned = list.find(new DefaultPathPredicate(new Path(file).withAttributes(attr)));
                         if(null != versioned) {
+                            if(versioned.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
+                                attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                            }
                             attr.setDuplicate(versioned.attributes().isDuplicate());
                             attr.setVersions(versioned.attributes().getVersions());
                         }
@@ -135,8 +138,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     catch(ServiceException e) {
                         final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                         if(failure instanceof NotfoundException) {
-                            // The latest version is a delete marker
-                            attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                             attr.setDuplicate(true);
                         }
                         else {
