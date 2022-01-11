@@ -80,7 +80,7 @@ public abstract class AbstractS3Test {
             @Override
             public String getProperty(final String key) {
                 if("s3.listing.metadata.enable".equals(key)) {
-                    return String.valueOf(true);
+                    return String.valueOf(false);
                 }
                 if("s3.versioning.references.enable".equals(key)) {
                     return String.valueOf(true);
