@@ -82,7 +82,7 @@ public class S3ReadFeature implements Read {
             final Path bucket = containerService.getContainer(file);
             final HttpResponse response = client.performRestGet(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                     containerService.getKey(file), requestParameters, requestHeaders, new int[]{HttpStatus.SC_PARTIAL_CONTENT, HttpStatus.SC_OK});
-            return new HttpMethodReleaseInputStream(response);
+            return new HttpMethodReleaseInputStream(response, status);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Download {0} failed", e, file);
