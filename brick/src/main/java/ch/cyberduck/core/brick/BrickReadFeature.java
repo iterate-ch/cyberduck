@@ -78,7 +78,7 @@ public class BrickReadFeature implements Read {
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
                 case HttpStatus.SC_PARTIAL_CONTENT:
-                    return new HttpMethodReleaseInputStream(response);
+                    return new HttpMethodReleaseInputStream(response, status);
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
                         response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);

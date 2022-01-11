@@ -59,7 +59,7 @@ public class B2ReadFeature implements Read {
                 );
             }
             final B2DownloadFileResponse response = session.getClient().downloadFileById(fileid.getVersionId(file, new DisabledListProgressListener()));
-            return new HttpMethodReleaseInputStream(response.getResponse());
+            return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(B2ApiException e) {
             if(StringUtils.equals("file_state_none", e.getMessage())) {

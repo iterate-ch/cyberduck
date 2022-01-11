@@ -77,7 +77,7 @@ public class SwiftReadFeature implements Read {
                 response = session.getClient().getObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
-            return new HttpMethodReleaseInputStream(response.getResponse());
+            return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Download {0} failed", e, file);

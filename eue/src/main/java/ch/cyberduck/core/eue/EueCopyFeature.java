@@ -113,6 +113,6 @@ public class EueCopyFeature implements Copy {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return false;
+        return true;
     }
 }

@@ -21,10 +21,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +65,8 @@ public class BoxReadFeature implements Read {
                 }
                 request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
             }
-            return session.getClient().execute(request).getEntity().getContent();
+            final CloseableHttpResponse response = session.getClient().execute(request);
+            return new HttpMethodReleaseInputStream(response, status);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);

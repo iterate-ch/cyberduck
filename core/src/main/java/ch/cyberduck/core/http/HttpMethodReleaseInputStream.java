@@ -34,16 +34,26 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
     private final AtomicBoolean close = new AtomicBoolean();
     private final HttpResponse response;
 
+    public HttpMethodReleaseInputStream(final HttpResponse response) throws IOException {
+        this(response, new TransferStatus());
+    }
+
     /**
      * Create a HTTP method release input Stream
      *
      * @param response The HTTP response to read from
+     * @param status   Transfer Status to update content length from response entity
      * @throws IOException          If there is a problem reading from the response
      * @throws NullPointerException If the response has no message entity
      */
-    public HttpMethodReleaseInputStream(final HttpResponse response) throws IOException {
+    public HttpMethodReleaseInputStream(final HttpResponse response, final TransferStatus status) throws IOException {
         super(null == response.getEntity() ? new NullInputStream(0L) : response.getEntity().getContent());
         this.response = response;
+        if(TransferStatus.UNKNOWN_LENGTH == response.getEntity().getContentLength()) {
+            log.warn(String.format("Discard length in transfer status for unknown content length in response %s", response));
+            // Decompressing entity with unknown content length
+            status.setLength(TransferStatus.UNKNOWN_LENGTH);
+        }
     }
 
     /**

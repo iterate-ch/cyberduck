@@ -82,7 +82,7 @@ public class SDSReadFeature implements Read {
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
                 case HttpStatus.SC_PARTIAL_CONTENT:
-                    return new HttpMethodReleaseInputStream(response);
+                    return new HttpMethodReleaseInputStream(response, status);
                 case HttpStatus.SC_NOT_FOUND:
                     nodeid.cache(file, null);
                     // Break through

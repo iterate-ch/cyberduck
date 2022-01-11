@@ -16,6 +16,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.http.HttpHeaders;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -25,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.zip.GZIPOutputStream;
 
 import static org.junit.Assert.*;
 
@@ -88,21 +90,31 @@ public class S3ReadFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testDownloadGzip() throws Exception {
-        final int length = 1457;
-        final byte[] content = RandomUtils.nextBytes(length);
+    public void testReadGzipContentEncoding() throws Exception {
+        final ByteArrayOutputStream compressedStream = new ByteArrayOutputStream();
+        final byte[] rawContent = RandomUtils.nextBytes(1457);
+        final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(compressedStream);
+        gzipOutputStream.write(rawContent);
+        // Make sure to write
+        gzipOutputStream.close();
+        final byte[] compressedContent = compressedStream.toByteArray();
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus().withLength(content.length);
-        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final TransferStatus status = new TransferStatus().withLength(compressedContent.length);
+        status.setMetadata(Collections.singletonMap(HttpHeaders.CONTENT_ENCODING, "gzip"));
+        assertNotEquals(TransferStatus.UNKNOWN_LENGTH, status.getLength());
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(compressedContent), status));
         final OutputStream out = new S3WriteFeature(session).write(file, status, new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(compressedContent), out);
+        assertEquals("gzip", new S3AttributesFinderFeature(session).find(file).getMetadata().get(HttpHeaders.CONTENT_ENCODING));
         final InputStream in = new S3ReadFeature(session).read(file, status, new DisabledConnectionCallback());
         assertNotNull(in);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getLength());
         final BytecountStreamListener count = new BytecountStreamListener();
-        new StreamCopier(status, status).withListener(count).transfer(in, NullOutputStream.NULL_OUTPUT_STREAM);
-        assertEquals(content.length, count.getRecv());
-        assertEquals(content.length, status.getLength());
+        final ByteArrayOutputStream received = new ByteArrayOutputStream();
+        new StreamCopier(status, status).withListener(count).transfer(in, received);
+        assertEquals(rawContent.length, count.getRecv());
+        assertArrayEquals(rawContent, received.toByteArray());
         in.close();
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
