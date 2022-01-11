@@ -31,7 +31,6 @@ SendMessage
 SetWindowLong
 SetWindowPos
 SetWindowText
-SHFILEINFO
 SHGetFileInfo
 SHGFI_FLAGS
 SHOpenFolderAndSelectItems

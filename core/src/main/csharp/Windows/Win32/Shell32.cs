@@ -2,6 +2,7 @@
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.Shell.Common;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace Windows.Win32

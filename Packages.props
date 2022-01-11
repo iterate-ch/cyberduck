@@ -22,7 +22,7 @@
         <PackageReference Update="InlineIL.Fody" Version="1.7.1" PrivateAssets="all" />
         <PackageReference Update="Microsoft.Build.Utilities.Core" Version="16.10.0" />
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-        <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.609-beta" />
+        <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.619-beta" />
         <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="2.0.0" />
         <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
         <PackageReference Update="nunit" Version="2.7.1" />

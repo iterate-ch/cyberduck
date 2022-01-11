@@ -3,7 +3,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
-using static Windows.Win32.CoreConstants;
+using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_ELEMENTS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_ICON_ELEMENTS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_MESSAGES;

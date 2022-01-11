@@ -19,7 +19,7 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core.CredentialManager;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System;
 using System.Net;
 
@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Core
 {
     public class CredentialManagerDefaultFallbackPasswordStore : DefaultHostPasswordStore
     {
-        private static Logger logger = Logger.getLogger(typeof(CredentialManagerDefaultFallbackPasswordStore).FullName);
+        private static Logger logger = LogManager.getLogger(typeof(CredentialManagerDefaultFallbackPasswordStore).FullName);
 
         private readonly HostUrlProvider hostUrlProvider = new HostUrlProvider();
 

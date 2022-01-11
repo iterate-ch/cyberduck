@@ -22,13 +22,12 @@ using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using static Windows.Win32.Security.Credentials.CRED_PERSIST;
 using static Windows.Win32.Security.Credentials.CRED_TYPE;
-using System.Text;
 
 namespace Ch.Cyberduck.Core
 {
-
     public class CredentialManagerPasswordStore : HostPasswordStore
     {
         private static Logger logger = LogManager.getLogger(typeof(CredentialManagerPasswordStore).FullName);
@@ -47,9 +46,9 @@ namespace Ch.Cyberduck.Core
 
         void HostPasswordStore.delete(Host bookmark)
         {
-            if (log.isInfoEnabled())
+            if (logger.isInfoEnabled())
             {
-                log.info(string.Format("Delete password for bookmark {0}", bookmark));
+                logger.info(string.Format("Delete password for bookmark {0}", bookmark));
             }
             var target = ToUri(bookmark);
             WinCredentialManager.RemoveCredentials(target.AbsoluteUri);
@@ -78,9 +77,9 @@ namespace Ch.Cyberduck.Core
 
         string HostPasswordStore.findLoginToken(Host bookmark)
         {
-            if (log.isInfoEnabled())
+            if (logger.isInfoEnabled())
             {
-                log.info(string.Format("Fetching login token from keychain for {0}", bookmark));
+                logger.info(string.Format("Fetching login token from keychain for {0}", bookmark));
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
@@ -93,9 +92,9 @@ namespace Ch.Cyberduck.Core
 
         OAuthTokens HostPasswordStore.findOAuthTokens(Host bookmark)
         {
-            if (log.isInfoEnabled())
+            if (logger.isInfoEnabled())
             {
-                log.info(string.Format("Fetching OAuth tokens from keychain for {0}", bookmark));
+                logger.info(string.Format("Fetching OAuth tokens from keychain for {0}", bookmark));
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
@@ -115,9 +114,9 @@ namespace Ch.Cyberduck.Core
 
         string HostPasswordStore.findPrivateKeyPassphrase(Host bookmark)
         {
-            if (log.isInfoEnabled())
+            if (logger.isInfoEnabled())
             {
-                log.info(string.Format("Fetching private key passphrase from keychain for {0}", bookmark));
+                logger.info(string.Format("Fetching private key passphrase from keychain for {0}", bookmark));
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
@@ -143,12 +142,12 @@ namespace Ch.Cyberduck.Core
         {
             if (string.IsNullOrWhiteSpace(bookmark.getHostname()))
             {
-                log.warn("No hostname given.");
+                logger.warn("No hostname given.");
                 return;
             }
-            if (log.isInfoEnabled())
+            if (logger.isInfoEnabled())
             {
-                log.info(string.Format("Add password for bookmark {0}", bookmark));
+                logger.info(string.Format("Add password for bookmark {0}", bookmark));
             }
             var target = ToUri(bookmark);
             var protocol = bookmark.getProtocol();
@@ -175,12 +174,12 @@ namespace Ch.Cyberduck.Core
             {
                 if (string.IsNullOrWhiteSpace(credential.getUsername()))
                 {
-                    log.warn(string.Format("No username in credentials for bookmark {0}", bookmark.getHostname()));
+                    logger.warn(string.Format("No username in credentials for bookmark {0}", bookmark.getHostname()));
                     return;
                 }
                 if (string.IsNullOrWhiteSpace(credential.getPassword()))
                 {
-                    log.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
+                    logger.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
                     return;
                 }
             }

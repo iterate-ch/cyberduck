@@ -24,7 +24,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using static Windows.Win32.CorePInvoke;
-using static Windows.Win32.Constants;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {

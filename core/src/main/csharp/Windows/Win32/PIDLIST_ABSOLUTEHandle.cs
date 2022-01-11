@@ -4,7 +4,7 @@ using static InlineIL.IL.Emit;
 using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.CorePInvoke;
 
-namespace Windows.Win32.UI.Shell
+namespace Windows.Win32.UI.Shell.Common
 {
     public unsafe ref struct PIDLIST_ABSOLUTEHandle
     {

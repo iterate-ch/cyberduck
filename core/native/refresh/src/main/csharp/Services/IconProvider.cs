@@ -1,12 +1,10 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using ch.cyberduck.core;
-using static Windows.Win32.CoreConstants;
-using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
-using static Windows.Win32.CorePInvoke;
+﻿using ch.cyberduck.core;
+using System;
 using Windows.Win32.Storage.FileSystem;
-using static Windows.Win32.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES;
 using Windows.Win32.UI.Shell;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES;
+using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
