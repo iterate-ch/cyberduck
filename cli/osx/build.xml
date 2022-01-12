@@ -71,7 +71,6 @@
     <target name="package" depends="build">
         <antcall target="codesign">
             <param name="bundle" value="${cli.bundle}"/>
-            <param name="codesign.options" value="--force"/>
         </antcall>
         <antcall target="tar">
             <param name="directory" value="${build}"/>
