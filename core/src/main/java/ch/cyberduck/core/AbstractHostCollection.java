@@ -121,6 +121,12 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         return true;
     }
 
+    /**
+     * Find matching bookmark with fuzzy logic
+     *
+     * @param input Search
+     * @return Matching optional bookmark in collection
+     */
     public Optional<Host> find(final Host input) {
         // Iterate over all bookmarks trying exact match
         return Optional.ofNullable(this.find(new HostComparePredicate(input))
@@ -154,6 +160,11 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
         @Override
         public boolean test(final Host h) {
+            if(StringUtils.isNotBlank(input.getCredentials().getUsername())) {
+                if(!Objects.equals(h.getCredentials().getUsername(), input.getCredentials().getUsername())) {
+                    return false;
+                }
+            }
             return Objects.equals(h.getHostname(), input.getHostname());
         }
     }
@@ -182,7 +193,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
         @Override
         public boolean test(final Host h) {
-            return super.test(h) &&  Objects.equals(h.getProtocol().getIdentifier(), input.getProtocol().getIdentifier());
+            return super.test(h) && Objects.equals(h.getProtocol().getIdentifier(), input.getProtocol().getIdentifier());
         }
     }
 
