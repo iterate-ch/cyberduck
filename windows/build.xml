@@ -146,7 +146,7 @@
             <arg value="-o"/>
             <arg value="pipefail"/>
             <arg value="-c"/>
-            <arg value="openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -sha1 -sign '${www.update}/private-dsa.pem' | openssl enc -base64"/>
+            <arg value="openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -sha1 -sign '${www.update}/private.pem' | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
         <echo message="Calculating ed25519 signature..."/>
