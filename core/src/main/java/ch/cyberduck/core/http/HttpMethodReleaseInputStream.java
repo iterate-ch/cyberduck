@@ -49,10 +49,12 @@ public class HttpMethodReleaseInputStream extends CountingInputStream {
     public HttpMethodReleaseInputStream(final HttpResponse response, final TransferStatus status) throws IOException {
         super(null == response.getEntity() ? new NullInputStream(0L) : response.getEntity().getContent());
         this.response = response;
-        if(TransferStatus.UNKNOWN_LENGTH == response.getEntity().getContentLength()) {
-            log.warn(String.format("Discard length in transfer status for unknown content length in response %s", response));
-            // Decompressing entity with unknown content length
-            status.setLength(TransferStatus.UNKNOWN_LENGTH);
+        if(null != response.getEntity()) {
+            if(TransferStatus.UNKNOWN_LENGTH == response.getEntity().getContentLength()) {
+                log.warn(String.format("Discard length in transfer status for unknown content length in response %s", response));
+                // Decompressing entity with unknown content length
+                status.setLength(TransferStatus.UNKNOWN_LENGTH);
+            }
         }
     }
 
