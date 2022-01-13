@@ -42,8 +42,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.AbstractPath.Type.directory;
-import static ch.cyberduck.core.AbstractPath.Type.placeholder;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -132,15 +130,5 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         assertNotNull(attr.getLink());
         assertEquals(attr.getLink(), new EueShareUrlProvider(session.getHost(), session.userShares()).toUrl(file).find(DescriptiveUrl.Type.signed));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(sourceFolder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testDeleteFileInTrash() throws Exception {
-        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final Path trash = new Path("Gelöschte Dateien", EnumSet.of(directory, placeholder));
-        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(trash);
-        assertTrue(attr.getPermission().isReadable());
-        assertTrue(attr.getPermission().isExecutable());
-        assertFalse(attr.getPermission().isWritable());
     }
 }

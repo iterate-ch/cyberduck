@@ -34,6 +34,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.AbstractPath.Type.directory;
+import static ch.cyberduck.core.AbstractPath.Type.placeholder;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -125,5 +127,14 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
             assertEquals(String.format("Https://mc.gmx.net/restfs-1/fs/@1015156902205593160/resource/%s does not exist. Please contact your web hosting service provider for assistance.", resourceId), e.getDetail());
             throw e;
         }
+    }
+
+    @Test
+    public void testDeleteFileInTrash() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path trash = new Path("Gelöschte Dateien", EnumSet.of(directory, placeholder));
+        trash.withAttributes(new EueAttributesFinderFeature(session, fileid).find(trash));
+        assertFalse(new EueDeleteFeature(session, fileid).isSupported(trash));
+        assertTrue(new EueDeleteFeature(session, fileid).isSupported(new Path(trash, "f", EnumSet.of(Path.Type.file))));
     }
 }
