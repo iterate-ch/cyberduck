@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+8.2.2
+- [Bugfix] Add support reading IdentityAgent from OpenSSH configuration (SFTP)
+- [Bugfix] Unable to enable debug log configuration (Windows)
+
 8.2.1
 - [Bugfix] Try all public key algorithms available for a specific key type (SFTP) (#12733)
 - [Bugfix] Add fallback when location query for endpoint URI fails (S3) (#12723)
