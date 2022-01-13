@@ -33,7 +33,7 @@ public class OpenSSHAgentAuthenticatorTest {
     @Test
     @Ignore
     public void testGetIdentities() {
-        final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator();
+        final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator(null);
         final Collection<Identity> identities = authenticator.getIdentities();
         assertNotNull(authenticator.getProxy());
         assertFalse(identities.isEmpty());
