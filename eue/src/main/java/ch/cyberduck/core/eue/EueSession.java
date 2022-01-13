@@ -327,6 +327,9 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         if(type == AttributesFinder.class) {
             return (T) new EueAttributesFinderFeature(this, resourceid);
         }
+        if(type == Timestamp.class) {
+            return (T) new EueTimestampFeature(this, resourceid);
+        }
         if(type == Upload.class) {
             return (T) new EueThresholdUploadService(this, resourceid, registry);
         }
