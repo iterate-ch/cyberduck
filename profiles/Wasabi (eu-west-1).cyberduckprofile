@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>wasabisys-eu-west-1</string>
         <key>Description</key>
-        <string>Wasabi EU west 1 (Amsterdam)</string>
+        <string>Wasabi EU West 1 (London)</string>
         <key>Default Hostname</key>
         <string>s3.eu-west-1.wasabisys.com</string>
         <key>Hostname Configurable</key>
