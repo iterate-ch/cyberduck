@@ -24,7 +24,7 @@
         <key>Scheme</key>
         <string>https</string>
         <key>Description</key>
-        <string>Alibaba (Chengdu)</string>
+        <string>Alibaba (Beijing)</string>
         <key>Default Hostname</key>
         <string>cn-beijing.oss.aliyuncs.com</string>
         <key>Hostname Configurable</key>
