@@ -308,28 +308,35 @@ public class Terminal {
                 }
             }
             else {
-                try {
-                    // Set remote file attributes of existing file on server
-                    remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(cache, remote))));
+                if(StringUtils.containsAny(remote.getName(), '*')) {
+                    // Try to find parent instead
+                    remote.getParent().withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source,
+                            new AttributesWorker(cache, remote.getParent()))));
                 }
-                catch(TerminalBackgroundException e) {
-                    if(e.getCause() instanceof NotfoundException) {
-                        switch(action) {
-                            case edit:
-                            case download:
-                            case copy:
-                            case synchronize:
-                            case delete:
-                                // We expect file on server to exist
-                                throw e;
-                            default:
-                                // Try to find parent instead
-                                remote.getParent().withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source,
-                                        new AttributesWorker(cache, remote.getParent()))));
-                        }
+                else {
+                    try {
+                        // Set remote file attributes of existing file on server
+                        remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(cache, remote))));
                     }
-                    else {
-                        throw e;
+                    catch(TerminalBackgroundException e) {
+                        if(e.getCause() instanceof NotfoundException) {
+                            switch(action) {
+                                case edit:
+                                case download:
+                                case copy:
+                                case synchronize:
+                                case delete:
+                                    // We expect file on server to exist
+                                    throw e;
+                                default:
+                                    // Try to find parent instead
+                                    remote.getParent().withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source,
+                                            new AttributesWorker(cache, remote.getParent()))));
+                            }
+                        }
+                        else {
+                            throw e;
+                        }
                     }
                 }
             }
