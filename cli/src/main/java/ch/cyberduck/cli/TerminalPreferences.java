@@ -22,14 +22,11 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.AppenderRef;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.nio.charset.StandardCharsets;
@@ -70,12 +67,7 @@ public class TerminalPreferences extends Preferences {
         final Appender appender = new TerminalAppender(PatternLayout.newBuilder().withConfiguration(config).withPattern("[%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build());
         appender.start();
         config.addAppender(appender);
-        final AppenderRef ref = AppenderRef.createAppenderRef("File", null, null);
-        final AppenderRef[] refs = new AppenderRef[]{ref};
-        LoggerConfig loggerConfig = LoggerConfig.createLogger(false, Level.getLevel(level), LogManager.ROOT_LOGGER_NAME,
-            "true", refs, null, config, null);
-        loggerConfig.addAppender(appender, null, null);
-        config.addLogger(LogManager.ROOT_LOGGER_NAME, loggerConfig);
+        config.getRootLogger().addAppender(appender, null, null);
         ctx.updateLoggers();
     }
 
