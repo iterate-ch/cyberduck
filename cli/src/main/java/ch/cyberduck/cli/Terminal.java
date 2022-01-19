@@ -299,10 +299,9 @@ public class Terminal {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Attempting to load vault from %s", vault));
                 }
-                final LoadVaultWorker worker = new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
-                        PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault);
                 try {
-                    this.execute(new TerminalBackgroundAction<>(controller, source, worker));
+                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
+                            PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault)));
                 }
                 catch(TerminalBackgroundException e) {
                     return Exit.failure;
