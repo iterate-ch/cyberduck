@@ -77,8 +77,8 @@ public class TerminalPreferences extends Preferences {
 
         this.setDefault("logging", "fatal");
 
-        this.setDefault("website.home", "http://duck.sh/");
-        this.setDefault("website.help", "http://help.duck.sh/");
+        this.setDefault("website.home", "https://duck.sh/");
+        this.setDefault("website.help", "https://help.duck.sh/");
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 
