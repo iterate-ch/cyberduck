@@ -150,9 +150,10 @@ namespace Ch.Cyberduck.Core
                             if (buttonClicked.ButtonId == (int)IDHELP)
                             {
                                 X509Certificate2UI.DisplayCertificate(serverCert);
+                                return true;
                             }
                         }
-                        return true;
+                        return false;
                     })
                     .Show();
                 if (result.Button == IDCONTINUE)
