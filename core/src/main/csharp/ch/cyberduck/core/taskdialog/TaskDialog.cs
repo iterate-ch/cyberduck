@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
@@ -47,6 +49,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
         private bool footerIconConfigured = false;
         private bool mainIconConfigured = false;
         private bool radioButtonsConfigured = false;
+        private bool hasVerification = false;
 
         private TaskDialog()
         {
@@ -160,6 +163,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 throw new InvalidOperationException();
             footerIconConfigured = true;
 
+            config.dwFlags |= TDF_USE_HICON_FOOTER;
             config.Anonymous2.hFooterIcon = (HICON)icon.Handle;
             return this;
         }
@@ -228,6 +232,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 throw new InvalidOperationException();
             mainIconConfigured = true;
 
+            config.dwFlags |= TDF_USE_HICON_MAIN;
             config.Anonymous1.hMainIcon = (HICON)icon.Handle;
             return this;
         }
@@ -255,8 +260,10 @@ namespace Ch.Cyberduck.Core.TaskDialog
             BOOL verificationChecked = default;
             HRESULT result;
 
-            Span<TASKDIALOG_BUTTON> buttons = stackalloc TASKDIALOG_BUTTON[(int)config.cButtons];
-            Span<TASKDIALOG_BUTTON> radioButtons = stackalloc TASKDIALOG_BUTTON[(int)config.cRadioButtons];
+            using var buttonMemory = MemoryPool<TASKDIALOG_BUTTON>.Shared.Rent((int)(config.cButtons + config.cRadioButtons));
+            var buttons = buttonMemory.Memory.Slice(0, (int)config.cButtons).Span;
+            var radioButtons = buttonMemory.Memory.Slice((int)config.cButtons, (int)config.cRadioButtons).Span;
+
             for (int i = 0; i < this.buttons.Count; i++)
             {
                 buttons[i] = this.buttons[i];
@@ -283,7 +290,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             return new(
                 (MESSAGEBOX_RESULT)button,
                 radioButtonsConfigured ? radioButton : default,
-                config.pszVerificationText.Length > 0 ? verificationChecked : default);
+                hasVerification ? verificationChecked : default);
         }
 
         public TaskDialog ShowProgressbar(bool marquee)

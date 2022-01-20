@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Core
                     var split = commandButtons.Split('|');
                     for (int i = 0; i < split.Length; i++)
                     {
-                        add((MESSAGEBOX_RESULT)i, split[i], false);
+                        add((MESSAGEBOX_RESULT)i | MESSAGEBOX_RESULT.IDASYNC, split[i], false);
                     }
                 })
                 .Callback((s, e) =>
@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Core
                 });
 
             var result = dialog.Show();
-            handler((int)result.Button, result.VerificationChecked.GetValueOrDefault());
+            handler((int)(result.Button & ~MESSAGEBOX_RESULT.IDASYNC), result.VerificationChecked.GetValueOrDefault());
             return result;
         }
 
