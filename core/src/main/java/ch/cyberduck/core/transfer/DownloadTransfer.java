@@ -199,6 +199,10 @@ public class DownloadTransfer extends Transfer {
                 final Local local = download.local;
                 if(local.exists()) {
                     if(local.isDirectory()) {
+                        if(download.remote.isDirectory()) {
+                            // Do not prompt when merging into existing directory
+                            continue;
+                        }
                         if(local.list().isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;

@@ -97,6 +97,9 @@ public final class TerminalOptionsBuilder {
             .desc("Password")
             .hasArg().argName("password or secret key").build());
         options.addOption(Option.builder()
+                .longOpt(Params.anonymous.name())
+                .desc("No login").build());
+        options.addOption(Option.builder()
             .longOpt(Params.profile.name())
             .desc("Use connection profile")
             .hasArg().argName("profile").build());
@@ -206,6 +209,7 @@ public final class TerminalOptionsBuilder {
         quiet,
         assumeyes,
         username,
+        anonymous,
         password,
         identity,
         application,
