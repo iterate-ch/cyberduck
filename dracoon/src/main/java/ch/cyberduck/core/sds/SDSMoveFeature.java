@@ -33,6 +33,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.MoveNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -77,13 +79,25 @@ public class SDSMoveFeature implements Move {
                         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
                     }
                 }
-                new NodesApi(session.getClient()).moveNodes(
-                    new MoveNodesRequest()
-                        .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                        .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
-                        .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
-                    Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
-                    StringUtils.EMPTY, null);
+                if(new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
+                    // Rename only
+                    if(file.isDirectory()) {
+                        new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                    }
+                    else {
+                        new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                    }
+                }
+                else {
+                    // Move to different parent
+                    new NodesApi(session.getClient()).moveNodes(
+                        new MoveNodesRequest()
+                            .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
+                            .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
+                            .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
+                        Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
+                        StringUtils.EMPTY, null);
+                }
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
                 // Copy original file attributes
