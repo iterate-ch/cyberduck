@@ -60,8 +60,7 @@ public class TerminalPreferences extends Preferences {
     }
 
     @Override
-    protected void configureLogging(final String level) {
-        super.configureLogging(level);
+    protected void configureAppenders(final String level) {
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
         final Appender appender = new TerminalAppender(PatternLayout.newBuilder().withConfiguration(config).withPattern("[%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build());

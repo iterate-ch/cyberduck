@@ -18,14 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.bonjour.RendezvousResponder;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.preferences.ApplicationPreferences;
-import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.threading.DispatchThreadPool;
 import ch.cyberduck.ui.browser.BrowserColumn;
@@ -40,19 +37,6 @@ import ch.cyberduck.ui.cocoa.controller.CopyPromptController;
 import ch.cyberduck.ui.cocoa.controller.DownloadPromptController;
 import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
 import ch.cyberduck.ui.cocoa.controller.UploadPromptController;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.RollingFileAppender;
-import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
-import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
-
-import java.nio.charset.StandardCharsets;
 
 public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
 
@@ -121,26 +105,5 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         this.setDefault("factory.rendezvous.class", RendezvousResponder.class.getName());
         this.setDefault("factory.vault.class", CryptoVault.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
-    }
-
-    @Override
-    protected void configureLogging(final String level) {
-        super.configureLogging(level);
-        final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
-            this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
-        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        final Configuration config = ctx.getConfiguration();
-        final Appender appender = RollingFileAppender.newBuilder()
-            .setName(RollingFileAppender.class.getName())
-            .withFileName(file.getAbsolute())
-            .withFilePattern(file.getAbsolute())
-            .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("250MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-            .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("1").build())
-            .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
-            .build();
-        appender.start();
-        config.addAppender(appender);
-        config.getRootLogger().addAppender(appender, null, null);
-        ctx.updateLoggers();
     }
 }

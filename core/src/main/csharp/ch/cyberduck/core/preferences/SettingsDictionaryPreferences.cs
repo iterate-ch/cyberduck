@@ -20,7 +20,6 @@ using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
-using org.apache.logging.log4j;
 using sun.security.mscapi;
 using System;
 using System.Diagnostics;
@@ -34,11 +33,9 @@ using Windows.Storage;
 using StringUtils = org.apache.commons.lang3.StringUtils;
 using ch.cyberduck.core.preferences;
 using java.nio.charset;
+using org.apache.logging.log4j;
 using org.apache.logging.log4j.core;
-using org.apache.logging.log4j.core.appender;
-using org.apache.logging.log4j.core.appender.rolling;
 using org.apache.logging.log4j.core.config;
-using org.apache.logging.log4j.core.layout;
 using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Core.Preferences
@@ -145,31 +142,10 @@ namespace Ch.Cyberduck.Core.Preferences
         protected override void configureLogging(String level)
         {
             base.configureLogging(level);
-            var fileName = Path.Combine(LogDirectoryFinderFactory.get().find().getAbsolute(),
-                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
-            LoggerContext ctx = (LoggerContext)LogManager.getContext(false);
-            Configuration config = ctx.getConfiguration();
-            Appender appender =
-                ((RollingFileAppender.Builder)((RollingFileAppender.Builder)RollingFileAppender.newBuilder()
-                        .setName(typeof(RollingFileAppender).Name))
-                    .withFileName(fileName)
-                    .withFilePattern(fileName)
-                    .withPolicy(Level.DEBUG.toString().Equals(level)
-                        ? SizeBasedTriggeringPolicy.createPolicy("250MB")
-                        : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-                    .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("1").build())
-                    .setLayout(PatternLayout.newBuilder().withConfiguration(config)
-                        .withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build()))
-                .build();
-            appender.start();
-            config.addAppender(appender);
-            config.getRootLogger().addAppender(appender, null, null);
             if (Debugger.IsAttached)
             {
                 Configurator.setRootLevel(Level.DEBUG);
             }
-
-            ctx.updateLoggers();
         }
 
         protected override void setDefaults()
