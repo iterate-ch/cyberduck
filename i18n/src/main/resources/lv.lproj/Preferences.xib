@@ -1118,7 +1118,7 @@
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <size key="minSize" width="488" height="74"/>
-                                                    <size key="maxSize" width="912" height="10000000"/>
+                                                    <size key="maxSize" width="914" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
                                             </subviews>
@@ -1177,7 +1177,7 @@
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <size key="minSize" width="488" height="74"/>
-                                                    <size key="maxSize" width="753" height="10000000"/>
+                                                    <size key="maxSize" width="755" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
                                             </subviews>
@@ -1509,7 +1509,7 @@
                                 </buttonCell>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cdn-DG-bwU">
-                                <rect key="frame" x="166" y="4" width="130" height="32"/>
+                                <rect key="frame" x="161" y="4" width="140" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Parādīt meklētājā" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Pw4-rQ-xRd">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
