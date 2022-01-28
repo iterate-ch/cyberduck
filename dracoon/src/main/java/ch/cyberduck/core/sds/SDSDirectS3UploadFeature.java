@@ -165,13 +165,16 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
             final long size = status.getLength() + status.getOffset();
             long offset = 0;
             long remaining = status.getLength();
-            for(int partNumber = 1; remaining > 0; partNumber++) {
+            for(int partNumber = 1; remaining >= 0; partNumber++) {
                 final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                 final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
                 parts.add(this.submit(pool, file, source, throttle, listener, status,
-                    presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
+                        presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
                 remaining -= length;
                 offset += length;
+                if(0L == remaining) {
+                    break;
+                }
             }
             for(Future<TransferStatus> future : parts) {
                 try {
@@ -281,18 +284,21 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
         {
             long remaining = status.getLength();
             // Determine number of parts
-            for(int partNumber = 1; remaining > 0; partNumber++) {
+            for(int partNumber = 1; remaining >= 0; partNumber++) {
                 final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                 if(partNumber > 1 && length < Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)) {
                     // Separate last part with non default part size
                     presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
-                        new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
-                        createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                            new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
+                            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
                 }
                 else {
                     presignedUrlsRequest.lastPartNumber(partNumber).size(length);
                 }
                 remaining -= length;
+                if(0L == remaining) {
+                    break;
+                }
             }
         }
         presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,

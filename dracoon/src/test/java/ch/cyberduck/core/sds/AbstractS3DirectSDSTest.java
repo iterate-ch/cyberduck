@@ -55,7 +55,7 @@ public class AbstractS3DirectSDSTest {
 
     @Before
     public void setup() throws Exception {
-        session = new SDSSession(new Host(new SDSProtocol(), "s3-duck.dracoon.com", new Credentials(
+        session = new SDSSession(new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.enableMetrics();
