@@ -49,7 +49,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -102,7 +101,7 @@ public class CryptoLocalSingleTransferWorkerTest {
         IOUtils.write(content, out2);
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

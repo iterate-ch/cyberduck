@@ -82,7 +82,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
@@ -105,7 +105,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
@@ -127,7 +127,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(source, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
@@ -147,7 +147,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path folder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session))).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
@@ -185,7 +185,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         new S3TouchFeature(session).touch(clearFile, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session))).mkdir(
@@ -211,7 +211,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(clearFolder));
         assertTrue(new S3FindFeature(session).find(clearFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         // move directory into vault
@@ -234,7 +234,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path clearFolder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session))).mkdir(
@@ -259,7 +259,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final Path encryptedFolder = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session))).mkdir(

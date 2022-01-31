@@ -59,7 +59,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DropboxWriteFeature(session),
                 new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
@@ -75,7 +75,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DropboxWriteFeature(session),
                 new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(

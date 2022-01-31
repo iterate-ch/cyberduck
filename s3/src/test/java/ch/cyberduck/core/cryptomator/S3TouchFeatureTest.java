@@ -59,7 +59,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -75,7 +75,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
@@ -89,7 +89,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new S3WriteFeature(session),
                 new S3AttributesFinderFeature(session)), new S3WriteFeature(session), cryptomator).touch(test, new TransferStatus());

@@ -57,7 +57,7 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         final Path testdirectory2 = new Path(testdirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path testfile2 = new Path(testdirectory2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testdirectory));
@@ -74,7 +74,7 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));

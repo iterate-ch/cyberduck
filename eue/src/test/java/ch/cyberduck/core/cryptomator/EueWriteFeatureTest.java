@@ -71,8 +71,11 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final CryptoVault cryptomator = new CryptoVault(vault, profile.getProperties().get("cryptomator.vault.masterkey.filename"), profile.getProperties().get("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        final CryptoVault cryptomator = new CryptoVault(vault,
+            profile.getProperties().get("cryptomator.vault.masterkey.filename"),
+            profile.getProperties().get("cryptomator.vault.config.filename"),
+            profile.getProperties().get("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final CryptoWriteFeature<EueWriteFeature.Chunk> writer = new CryptoWriteFeature<EueWriteFeature.Chunk>(session, new EueWriteFeature(session, fileid), cryptomator);
