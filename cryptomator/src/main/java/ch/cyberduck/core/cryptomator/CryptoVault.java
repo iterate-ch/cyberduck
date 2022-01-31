@@ -15,20 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV6Provider;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
@@ -69,7 +56,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -163,7 +149,7 @@ public class CryptoVault implements Vault {
         // Create vaultconfig.cryptomator
         final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
         final String conf = JWT.create()
-            .withJWTId(UUID.randomUUID().toString())
+            .withJWTId(new UUIDRandomStringService().random())
             .withKeyId(String.format("masterkeyfile:%s", masterkey.getName()))
             .withClaim("format", VAULT_VERSION)
             .withClaim("cipherCombo", CryptorProvider.Scheme.SIV_CTRMAC.toString())
