@@ -23,7 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class CryptoFilenameV7Provider implements CryptoFilename {
 
-    private static final int NAME_SHORTENING_THRESHOLD = 220; // https://github.com/cryptomator/cryptofs/issues/60#issuecomment-523238303
+    public static final int NAME_SHORTENING_THRESHOLD = 220; // https://github.com/cryptomator/cryptofs/issues/60#issuecomment-523238303
 
     @Override
     public boolean isDeflated(final String filename) {

@@ -39,9 +39,11 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
     private static final Logger log = LogManager.getLogger(DefaultVaultRegistry.class);
 
     public static final String DEFAULT_MASTERKEY_FILE_NAME =
-            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
+        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename");
     public static final String DEFAULT_BACKUPKEY_FILE_NAME = String.format("%s.bkup",
-            PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
+        PreferencesFactory.get().getProperty("cryptomator.vault.masterkey.filename"));
+    public static final String DEFAULT_VAULTCONFIG_FILE_NAME =
+        PreferencesFactory.get().getProperty("cryptomator.vault.config.filename");
 
     private final PasswordStore keychain;
     private final PasswordCallback prompt;

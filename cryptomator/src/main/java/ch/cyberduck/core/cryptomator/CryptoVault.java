@@ -69,11 +69,16 @@ import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.google.common.io.BaseEncoding;
 import com.google.gson.JsonParseException;
+
+import static ch.cyberduck.core.vault.DefaultVaultRegistry.DEFAULT_VAULTCONFIG_FILE_NAME;
 
 /**
  * Cryptomator vault implementation
@@ -95,6 +100,7 @@ public class CryptoVault implements Vault {
      */
     private final Path home;
     private final Path masterkey;
+    private final Path config;
     private final Path vault;
     private int vaultVersion;
 
@@ -109,12 +115,13 @@ public class CryptoVault implements Vault {
     private final byte[] pepper;
 
     public CryptoVault(final Path home) {
-        this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, VAULT_PEPPER);
+        this(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_VAULTCONFIG_FILE_NAME, VAULT_PEPPER);
     }
 
-    public CryptoVault(final Path home, final String masterkey, final byte[] pepper) {
+    public CryptoVault(final Path home, final String masterkey, final String config, final byte[] pepper) {
         this.home = home;
         this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
+        this.config = new Path(home, config, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
@@ -127,7 +134,7 @@ public class CryptoVault implements Vault {
         }
     }
 
-    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             try {
@@ -153,6 +160,15 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", masterkey));
         }
+        // Create vaultconfig.cryptomator
+        final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
+        final String conf = JWT.create()
+            .withJWTId(UUID.randomUUID().toString())
+            .withKeyId(String.format("masterkeyfile:%s", masterkey.getName()))
+            .withClaim("format", VAULT_VERSION)
+            .withClaim("cipherCombo", CryptorProvider.Scheme.SIV_CTRMAC.toString())
+            .withClaim("shorteningThreshold", CryptoFilenameV7Provider.NAME_SHORTENING_THRESHOLD)
+            .sign(algorithm);
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus();
@@ -162,6 +178,7 @@ public class CryptoVault implements Vault {
         }
         final Path vault = directory.mkdir(home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
+        new ContentWriter(session).write(config, conf.getBytes(StandardCharsets.US_ASCII));
         this.open(masterkeyFile, passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
@@ -177,7 +194,7 @@ public class CryptoVault implements Vault {
 
     @Override
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
-        return this.create(session, region, credentials, keychain, VAULT_VERSION);
+        return this.create(session, credentials, keychain, VAULT_VERSION);
     }
 
     @Override
