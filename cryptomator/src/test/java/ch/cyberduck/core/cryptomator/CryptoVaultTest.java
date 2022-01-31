@@ -387,8 +387,7 @@ public class CryptoVaultTest {
                 return super._getFeature(type);
             }
         };
-        final CryptoVault vault = new CryptoVault(
-            home);
+        final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
     }
 
