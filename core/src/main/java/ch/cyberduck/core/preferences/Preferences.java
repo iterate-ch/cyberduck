@@ -70,11 +70,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -91,6 +97,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.zip.Deflater;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -1238,6 +1245,28 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 java.util.logging.Logger.getLogger(loggerConfig.getName()).setLevel(map.get(loggerConfig.getLevel()));
             }
         }
+        this.configureAppenders(level);
+    }
+
+    protected void configureAppenders(final String level) {
+        final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
+        final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
+        final Local active = LocalFactory.get(logfolder, String.format("%s.log", appname));
+        final Local archives = LocalFactory.get(logfolder, String.format("%s-%%i.log.zip", appname));
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender appender = RollingFileAppender.newBuilder()
+            .setName(RollingFileAppender.class.getName())
+            .withFileName(active.getAbsolute())
+            .withFilePattern(archives.getAbsolute())
+            .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
+            .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("5").withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).build())
+            .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+            .build();
+        appender.start();
+        config.addAppender(appender);
+        config.getRootLogger().addAppender(appender, null, null);
+        ctx.updateLoggers();
     }
 
     @Override
