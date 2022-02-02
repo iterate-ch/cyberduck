@@ -146,15 +146,6 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write master key to %s", masterkey));
         }
-        // Create vaultconfig.cryptomator
-        final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
-        final String conf = JWT.create()
-            .withJWTId(new UUIDRandomStringService().random())
-            .withKeyId(String.format("masterkeyfile:%s", masterkey.getName()))
-            .withClaim("format", VAULT_VERSION)
-            .withClaim("cipherCombo", CryptorProvider.Scheme.SIV_CTRMAC.toString())
-            .withClaim("shorteningThreshold", CryptoFilenameV7Provider.NAME_SHORTENING_THRESHOLD)
-            .sign(algorithm);
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
         final TransferStatus status = new TransferStatus();
@@ -164,7 +155,18 @@ public class CryptoVault implements Vault {
         }
         final Path vault = directory.mkdir(home, status);
         new ContentWriter(session).write(masterkey, mkArray.toByteArray());
-        new ContentWriter(session).write(config, conf.getBytes(StandardCharsets.US_ASCII));
+        if(VAULT_VERSION == version) {
+            // Create vaultconfig.cryptomator
+            final Algorithm algorithm = Algorithm.HMAC256(mk.getEncoded());
+            final String conf = JWT.create()
+                    .withJWTId(new UUIDRandomStringService().random())
+                    .withKeyId(String.format("masterkeyfile:%s", masterkey.getName()))
+                    .withClaim("format", version)
+                    .withClaim("cipherCombo", CryptorProvider.Scheme.SIV_CTRMAC.toString())
+                    .withClaim("shorteningThreshold", CryptoFilenameV7Provider.NAME_SHORTENING_THRESHOLD)
+                    .sign(algorithm);
+            new ContentWriter(session).write(config, conf.getBytes(StandardCharsets.US_ASCII));
+        }
         this.open(masterkeyFile, passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);
         final Path firstLevel = secondLevel.getParent();
@@ -518,6 +520,10 @@ public class CryptoVault implements Vault {
 
     public Path getMasterkey() {
         return masterkey;
+    }
+
+    public Path getConfig() {
+        return config;
     }
 
     public FileHeaderCryptor getFileHeaderCryptor() {
