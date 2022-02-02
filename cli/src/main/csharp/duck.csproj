@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <CyberduckReference Include="Core;Core.Native;Protocols;Cli" />
+        <CyberduckReference Include="Core;Core.Native;Protocols;Cli;Cryptomator" />
     </ItemGroup>
 
     <ItemGroup>
