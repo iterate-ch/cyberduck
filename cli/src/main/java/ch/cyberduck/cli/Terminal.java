@@ -30,7 +30,6 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
@@ -115,6 +114,7 @@ public class Terminal {
     private final Preferences preferences;
     private final TerminalController controller;
     private final TerminalPromptReader reader;
+    private final TerminalAlertCallback alert;
     private final Cache<Path> cache;
     private final ProgressListener progress;
     private final TranscriptListener transcript;
@@ -173,6 +173,7 @@ public class Terminal {
         this.reader = input.hasOption(TerminalOptionsBuilder.Params.assumeyes.name())
                 ? new DisabledTerminalPromptReader() : new InteractiveTerminalPromptReader();
         this.controller = new TerminalController(progress, transcript);
+        this.alert = new TerminalAlertCallback();
     }
 
     /**
@@ -374,21 +375,14 @@ public class Terminal {
                             String.format("Unknown transfer type %s", action.name()));
             }
         }
-        catch(ConnectionCanceledException e) {
-            log.warn("Connection canceled", e);
-            return Exit.success;
-        }
         catch(BackgroundException e) {
-            final StringAppender b = new StringAppender();
-            b.append(e.getMessage());
-            b.append(e.getDetail());
-            console.printf("%n%s", b.toString());
+            alert.print(e);
+            return Exit.failure;
         }
         finally {
             this.disconnect(source);
             this.disconnect(destination);
         }
-        return Exit.failure;
     }
 
     protected void configure(final CommandLine input) {
@@ -588,15 +582,20 @@ public class Terminal {
         try {
             final T result = controller.background(action).get();
             if(action.hasFailed()) {
+                alert.print(action.getFailure());
                 throw new TerminalBackgroundException(action.getFailure());
             }
             return result;
         }
         catch(InterruptedException e) {
-            throw new TerminalBackgroundException(e);
+            final TerminalBackgroundException error = new TerminalBackgroundException(e);
+            alert.print(error);
+            throw error;
         }
         catch(ExecutionException e) {
-            throw new TerminalBackgroundException(e.getCause());
+            final TerminalBackgroundException error = new TerminalBackgroundException(e.getCause());
+            alert.print(error);
+            throw error;
         }
     }
 
