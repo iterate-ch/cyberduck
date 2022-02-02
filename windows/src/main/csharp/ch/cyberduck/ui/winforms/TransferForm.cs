@@ -370,7 +370,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 var progressPercentage = progress / (double) maximum;
                 var progressPercentageInt = (int) Math.Round(progressPercentage * 100);
-                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
                 TaskbarManager.Instance.SetProgressValue(progressPercentageInt, 100);
             }
         }
