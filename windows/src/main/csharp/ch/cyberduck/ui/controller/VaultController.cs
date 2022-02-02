@@ -97,6 +97,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String region, String passphrase)
                     : base(region, new VaultCredentials(passphrase), PasswordStoreFactory.get(), VaultFactory.get(folder,
                         new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.config.filename"),
                         Encoding.UTF8.GetBytes(new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.pepper"))))
                 {
                     _controller = controller;
