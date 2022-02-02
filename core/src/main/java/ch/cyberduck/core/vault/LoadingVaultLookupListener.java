@@ -39,12 +39,12 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public Vault load(final Session session, final Path directory, final String masterkey, final byte[] pepper) throws VaultUnlockCancelException {
+    public Vault load(final Session session, final Path directory, final String masterkey, final String config, final byte[] pepper) throws VaultUnlockCancelException {
         synchronized(registry) {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
             }
-            final Vault vault = VaultFactory.get(directory, masterkey, pepper);
+            final Vault vault = VaultFactory.get(directory, masterkey, config, pepper);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }

@@ -33,20 +33,20 @@ public class VaultFactory extends Factory<Vault> {
         super("factory.vault.class");
     }
 
-    public static Vault get(final Path directory, final String masterkey, final byte[] pepper) {
-        return new VaultFactory().create(directory, masterkey, pepper);
+    public static Vault get(final Path directory, final String masterkey, final String config, final byte[] pepper) {
+        return new VaultFactory().create(directory, masterkey, config, pepper);
     }
 
-    private Vault create(final Path directory, final String masterkey, final byte[] pepper) {
+    private Vault create(final Path directory, final String masterkey, final String config, final byte[] pepper) {
         try {
             final Constructor<Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
-                directory.getClass(), masterkey.getClass(), pepper.getClass());
+                    directory.getClass(), masterkey.getClass(), config.getClass(), pepper.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));
                 // Call default constructor for disabled implementations
                 return clazz.newInstance();
             }
-            return constructor.newInstance(directory, masterkey, pepper);
+            return constructor.newInstance(directory, masterkey, config, pepper);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));

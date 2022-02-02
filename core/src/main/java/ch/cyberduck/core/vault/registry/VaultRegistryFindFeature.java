@@ -68,8 +68,9 @@ public class VaultRegistryFindFeature implements Find {
                             log.info(String.format("Found vault %s", directory));
                         }
                         return lookup.load(session, directory,
-                                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
+                                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
                                 .getFeature(session, Find.class, proxy)
                             .find(file, listener);
                     }

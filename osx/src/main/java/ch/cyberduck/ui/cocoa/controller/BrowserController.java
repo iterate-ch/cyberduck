@@ -2399,6 +2399,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
                     new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder,
                             new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                            new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
                             new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
                         @Override
                         public void cleanup(final Path vault) {

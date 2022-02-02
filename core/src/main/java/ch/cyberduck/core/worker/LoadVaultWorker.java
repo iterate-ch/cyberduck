@@ -40,6 +40,7 @@ public class LoadVaultWorker extends Worker<Vault> {
     public Vault run(final Session<?> session) throws BackgroundException {
         return listener.load(session, directory,
                 new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
                 new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
     }
 
