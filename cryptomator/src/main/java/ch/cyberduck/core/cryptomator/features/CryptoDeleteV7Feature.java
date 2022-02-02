@@ -116,6 +116,9 @@ public class CryptoDeleteV7Feature implements Delete {
                         metadata.add(dataRoot);
                     }
                     metadata.add(vault.getMasterkey());
+                    if(find.find(vault.getConfig())) {
+                        metadata.add(vault.getConfig());
+                    }
                 }
                 metadata.add(f);
                 proxy.delete(metadata, prompt, callback);
