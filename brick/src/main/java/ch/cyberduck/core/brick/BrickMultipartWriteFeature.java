@@ -36,7 +36,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.ByteArrayInputStream;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
-    private static final Logger log = Logger.getLogger(BrickMultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickMultipartWriteFeature.class);
 
     private final BrickSession session;
     private final Integer partsize;
@@ -107,7 +108,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                     public TransferStatus call() throws BackgroundException {
                         final List<FileUploadPartEntity> uploadPartEntities;
                         try {
-                            uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+                            uploadPartEntities = new FileActionsApi(new BrickApiClient(session))
                                 .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
                         }
                         catch(ApiException e) {
@@ -153,8 +154,8 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                 }
                 else {
                     try {
-                        new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
-                            .providedMtime(new DateTime(overall.getTimestamp()))
+                        new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
+                            .providedMtime(null != overall.getTimestamp() ? new DateTime(overall.getTimestamp()) : null)
                             .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                             .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                             .ref(ref)

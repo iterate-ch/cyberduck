@@ -26,7 +26,8 @@ import ch.cyberduck.core.webloc.UrlFileWriter;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -37,7 +38,7 @@ import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 public abstract class AbstractDriveListService implements ListService {
-    private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
+    private static final Logger log = LogManager.getLogger(AbstractDriveListService.class);
 
     protected static final String GOOGLE_APPS_PREFIX = "application/vnd.google-apps";
     protected static final String DRIVE_FOLDER = String.format("%s.folder", GOOGLE_APPS_PREFIX);
@@ -107,11 +108,7 @@ public abstract class AbstractDriveListService implements ListService {
                     // Use placeholder type to mark Google Apps document to download as web link file
                     final EnumSet<Path.Type> type = this.toType(f);
                     for(Path parent : this.parents(directory, f)) {
-                        final Path child = new Path(parent, filename, type, properties);
-                        if(f.getExplicitlyTrashed()) {
-                            properties.setDuplicate(true);
-                        }
-                        children.add(child);
+                        children.add(new Path(parent, filename, type, properties));
                     }
                 }
                 listener.chunk(directory, children);

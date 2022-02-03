@@ -27,7 +27,8 @@ import ch.cyberduck.core.exception.SSLNegotiateException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
@@ -37,7 +38,7 @@ import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
 
 public class SSLExceptionMappingService extends AbstractExceptionMappingService<SSLException> {
-    private static final Logger log = Logger.getLogger(SSLExceptionMappingService.class);
+    private static final Logger log = LogManager.getLogger(SSLExceptionMappingService.class);
 
     /**
      * close_notify(0),

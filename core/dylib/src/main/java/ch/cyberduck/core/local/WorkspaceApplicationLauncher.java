@@ -25,14 +25,15 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Local;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
-    private static final Logger log = Logger.getLogger(WorkspaceApplicationLauncher.class);
+    private static final Logger log = LogManager.getLogger(WorkspaceApplicationLauncher.class);
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 

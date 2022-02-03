@@ -19,18 +19,15 @@
 using System.Collections.Generic;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.preferences;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Core;
-using java.lang;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using org.apache.commons.lang3;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class DefaultBookmarkController : BookmarkController<IBookmarkView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(DefaultBookmarkController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(DefaultBookmarkController).FullName);
 
         public DefaultBookmarkController(Host bookmark) : base(bookmark)
         {

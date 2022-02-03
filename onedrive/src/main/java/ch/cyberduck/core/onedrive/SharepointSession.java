@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.Deque;
@@ -31,7 +32,7 @@ import java.util.Deque;
 import static ch.cyberduck.core.onedrive.SharepointListService.*;
 
 public class SharepointSession extends AbstractSharepointSession {
-    private static final Logger log = Logger.getLogger(SharepointSession.class);
+    private static final Logger log = LogManager.getLogger(SharepointSession.class);
 
     public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);

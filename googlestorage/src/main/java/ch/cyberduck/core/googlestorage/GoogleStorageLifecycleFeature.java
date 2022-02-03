@@ -22,8 +22,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ import java.util.List;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageLifecycleFeature implements Lifecycle {
-    private static final Logger log = Logger.getLogger(GoogleStorageLifecycleFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageLifecycleFeature.class);
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
@@ -52,15 +54,21 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                 // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
                 final List<Bucket.Lifecycle.Rule> rules = new ArrayList<>();
                 if(configuration.getTransition() != null) {
-                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition().setIsLive(true).setAge(configuration.getTransition()))
-                        .setAction(new Bucket.Lifecycle.Rule.Action().setType("SetStorageClass").setStorageClass(configuration.getStorageClass())));
+                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition()
+                                    .setAge(configuration.getTransition()))
+                            .setAction(new Bucket.Lifecycle.Rule.Action()
+                                    .setType("SetStorageClass").setStorageClass(
+                                            new HostPreferences(session.getHost()).getProperty("googlestorage.lifecycle.transition.class")
+                                    )));
                 }
                 if(configuration.getExpiration() != null) {
-                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition().setIsLive(true).setAge(configuration.getExpiration()))
-                        .setAction(new Bucket.Lifecycle.Rule.Action().setType("Delete")));
+                    rules.add(new Bucket.Lifecycle.Rule().setCondition(new Bucket.Lifecycle.Rule.Condition()
+                                    .setAge(configuration.getExpiration()))
+                            .setAction(new Bucket.Lifecycle.Rule.Action()
+                                    .setType("Delete")));
                 }
                 session.getClient().buckets().patch(container.getName(), new Bucket().setLifecycle(
-                    config.setRule(rules))).execute();
+                        config.setRule(rules))).execute();
             }
             else {
                 // Empty lifecycle configuration
@@ -84,20 +92,15 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
             if(null != status) {
                 Integer transition = null;
                 Integer expiration = null;
-                String storageClass = null;
                 for(Bucket.Lifecycle.Rule rule : status.getRule()) {
-                    if(!rule.getCondition().getIsLive()) {
-                        continue;
-                    }
                     if("SetStorageClass".equals(rule.getAction().getType())) {
                         transition = rule.getCondition().getAge();
-                        storageClass = rule.getAction().getStorageClass();
                     }
                     if("Delete".equals(rule.getAction().getType())) {
                         expiration = rule.getCondition().getAge();
                     }
                 }
-                return new LifecycleConfiguration(transition, storageClass, expiration);
+                return new LifecycleConfiguration(transition, expiration);
             }
             return LifecycleConfiguration.empty();
         }

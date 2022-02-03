@@ -24,10 +24,11 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.PathDictionary;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WorkdirHomeFeature extends AbstractHomeFeature {
-    private static final Logger log = Logger.getLogger(WorkdirHomeFeature.class);
+    private static final Logger log = LogManager.getLogger(WorkdirHomeFeature.class);
 
     private final Host host;
 

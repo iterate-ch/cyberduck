@@ -58,12 +58,18 @@ public abstract class NSTableView extends NSControl {
     public static final NSUInteger NSTableViewFirstColumnOnlyAutoresizingStyle = new NSUInteger(5);
 
     /**
-     * The regular highlight style of NSTableView. On 10.5, a light blue ([NSColor alternateSelectedControlColor]) or light gray color ([NSColor secondarySelectedControlColor]) is used to highlight selected rows.
+     * The regular highlight style of NSTableView. On 10.5, a light blue ([NSColor alternateSelectedControlColor]) or
+     * light gray color ([NSColor secondarySelectedControlColor]) is used to highlight selected rows.
      */
     public static final NSInteger NSTableViewSelectionHighlightStyleRegular = new NSInteger(0);
 
     /**
-     * The source list style of NSTableView. On 10.5, a light blue gradient is used to highlight selected rows. Note: Cells that have a drawsBackground property should have it set to NO. Otherwise, they will draw over the highlighting that NSTableView does. Setting this style will have the side effect of setting the background color to the "source list" background color. Additionally in NSOutlineView, the following properties are changed to get the standard "source list" look: indentationPerLevel, rowHeight and intercellSpacing. After calling setSelectionHighlightStyle: one can change any of the other properties as required.
+     * The source list style of NSTableView. On 10.5, a light blue gradient is used to highlight selected rows. Note:
+     * Cells that have a drawsBackground property should have it set to NO. Otherwise, they will draw over the
+     * highlighting that NSTableView does. Setting this style will have the side effect of setting the background color
+     * to the "source list" background color. Additionally in NSOutlineView, the following properties are changed to get
+     * the standard "source list" look: indentationPerLevel, rowHeight and intercellSpacing. After calling
+     * setSelectionHighlightStyle: one can change any of the other properties as required.
      */
     public static final NSInteger NSTableViewSelectionHighlightStyleSourceList = new NSInteger(1);
 
@@ -154,8 +160,11 @@ public abstract class NSTableView extends NSControl {
     public abstract boolean allowsColumnReordering();
 
     /**
-     * Controls whether the user can attemp to resize columns by dragging between headers. If flag is YES the user can resize columns; if flag is NO the user can't. The default is YES. Columns can only be resized if a column allows user resizing.  See NSTableColumn setResizingMask: for more details.  You can always change columns programmatically regardless of this setting.<br>
-     * Original signature : <code>void setAllowsColumnResizing(BOOL)</code><br>
+     * Controls whether the user can attemp to resize columns by dragging between headers. If flag is YES the user can
+     * resize columns; if flag is NO the user can't. The default is YES. Columns can only be resized if a column allows
+     * user resizing.  See NSTableColumn setResizingMask: for more details.  You can always change columns
+     * programmatically regardless of this setting.<br> Original signature : <code>void
+     * setAllowsColumnResizing(BOOL)</code><br>
      * <i>native declaration : :115</i>
      */
     public abstract void setAllowsColumnResizing(boolean flag);
@@ -168,8 +177,8 @@ public abstract class NSTableView extends NSControl {
 
     /**
      * <i>native declaration : :120</i><br>
-     * Conversion Error : /// Original signature : <code>void setColumnAutoresizingStyle(null)</code><br>
-     * - (void)setColumnAutoresizingStyle:(null)style; (Argument style cannot be converted)
+     * Conversion Error : /// Original signature : <code>void setColumnAutoresizingStyle(null)</code><br> -
+     * (void)setColumnAutoresizingStyle:(null)style; (Argument style cannot be converted)
      */
     public abstract void setColumnAutoresizingStyle(NSUInteger style);
 
@@ -212,8 +221,11 @@ public abstract class NSTableView extends NSControl {
     public abstract boolean usesAlternatingRowBackgroundColors();
 
     /**
-     * The backgroundColor defaults to [NSColor controlBackgroundColor]. On Mac OS 10.5 and higher, the alpha portion of 'color' is properly used when drawing the backgroundColor. To have a transparent tableView, set the backgroundColor to [NSColor clearColor], and set the enclosing NSScrollView to not draw its background with: [[tableView enclosingScrollView] setDrawsBackground:NO]. NSTableView uses NSCompositeSourceOver when drawing the background color.<br>
-     * Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
+     * The backgroundColor defaults to [NSColor controlBackgroundColor]. On Mac OS 10.5 and higher, the alpha portion of
+     * 'color' is properly used when drawing the backgroundColor. To have a transparent tableView, set the
+     * backgroundColor to [NSColor clearColor], and set the enclosing NSScrollView to not draw its background with:
+     * [[tableView enclosingScrollView] setDrawsBackground:NO]. NSTableView uses NSCompositeSourceOver when drawing the
+     * background color.<br> Original signature : <code>void setBackgroundColor(NSColor*)</code><br>
      * <i>native declaration : :138</i>
      */
     public abstract void setBackgroundColor(NSColor color);
@@ -249,8 +261,8 @@ public abstract class NSTableView extends NSControl {
     public abstract CGFloat rowHeight();
 
     /**
-     * If the delegate implements -tableView:heightOfRow:, this method immediately re-tiles the table view using row heights it provides.<br>
-     * Original signature : <code>void noteHeightOfRowsWithIndexesChanged(NSIndexSet*)</code><br>
+     * If the delegate implements -tableView:heightOfRow:, this method immediately re-tiles the table view using row
+     * heights it provides.<br> Original signature : <code>void noteHeightOfRowsWithIndexesChanged(NSIndexSet*)</code><br>
      * <i>native declaration : :149</i>
      */
     public abstract void noteHeightOfRowsWithIndexesChanged(NSIndexSet indexSet);
@@ -328,12 +340,25 @@ public abstract class NSTableView extends NSControl {
     public abstract void reloadData();
 
     /**
-     * Original signature : <code>- (void)reloadDataForRowIndexes:(NSIndexSet *)rowIndexes columnIndexes:(NSIndexSet *)columnIndexes</code><br>
+     * Original signature : <code>- (void)reloadDataForRowIndexes:(NSIndexSet *)rowIndexes columnIndexes:(NSIndexSet
+     * *)columnIndexes</code><br>
      * <i>native declaration : :167</i>
      */
     public abstract void reloadDataForRowIndexes_columnIndexes(NSIndexSet rowIndexes, NSIndexSet columnIndexes);
 
-    public abstract NSView makeViewWithIdentifier_owner(String identifier, ID owner);
+    /**
+     * Typically, identifier is associated with a cell view that’s contained in a table’s Nib file. When this method is
+     * called, the table view automatically instantiates the cell view with the specified owner, which is usually the
+     * table view’s delegate. (The owner is useful in setting up outlets and target/actions from the view.) Note that a
+     * cell view’s identifier must be the same as its table column’s identifier for bindings to work. If you’re using
+     * bindings, it’s recommended that you use the Automatic identifier setting in Interface Builder.
+     *
+     * @param identifier The view identifier. Must not be nil.
+     * @param owner      The owner of the NIB that may be loaded and instantiated to create a new view with the
+     *                   specified identifier.
+     * @return A view for the row.
+     */
+    public abstract NSTableCellView makeViewWithIdentifier_owner(String identifier, ID owner);
 
     /**
      * Original signature : <code>void noteNumberOfRowsChanged()</code><br>
@@ -378,9 +403,9 @@ public abstract class NSTableView extends NSControl {
     public abstract org.rococoa.Selector doubleAction();
 
     /**
-     * Sorting Support<br>
-     * The array of sort descriptors is archived.  Sort descriptors will persist along with other column information if an autosave name is set.<br>
-     * Original signature : <code>void setSortDescriptors(NSArray*)</code><br>
+     * Sorting Support<br> The array of sort descriptors is archived.  Sort descriptors will persist along with other
+     * column information if an autosave name is set.<br> Original signature : <code>void
+     * setSortDescriptors(NSArray*)</code><br>
      * <i>native declaration : :182</i>
      */
     public abstract void setSortDescriptors(NSArray array);
@@ -392,8 +417,8 @@ public abstract class NSTableView extends NSControl {
     public abstract NSArray sortDescriptors();
 
     /**
-     * Support for little "indicator" images in table header cells.<br>
-     * Original signature : <code>void setIndicatorImage(NSImage*, NSTableColumn*)</code><br>
+     * Support for little "indicator" images in table header cells.<br> Original signature : <code>void
+     * setIndicatorImage(NSImage*, NSTableColumn*)</code><br>
      * <i>native declaration : :187</i>
      */
     public abstract void setIndicatorImage_inTableColumn(NSImage anImage, NSTableColumn tc);
@@ -405,8 +430,8 @@ public abstract class NSTableView extends NSControl {
     public abstract NSImage indicatorImageInTableColumn(NSTableColumn tc);
 
     /**
-     * Support for highlightable column header, for use with row selection.<br>
-     * Original signature : <code>void setHighlightedTableColumn(NSTableColumn*)</code><br>
+     * Support for highlightable column header, for use with row selection.<br> Original signature : <code>void
+     * setHighlightedTableColumn(NSTableColumn*)</code><br>
      * <i>native declaration : :192</i>
      */
     public abstract void setHighlightedTableColumn(NSTableColumn tc);
@@ -455,8 +480,11 @@ public abstract class NSTableView extends NSControl {
      * - (void)setDraggingSourceOperationMask:(null)mask forLocal:(BOOL)isLocal; (Argument mask cannot be converted)
      */
     /**
-     * To be used from validateDrop: if you wish to "re-target" the proposed drop. To specify a drop on the second row, one would specify row=2, and op=NSTableViewDropOn. To specify a drop below the last row, one would specify row=[tv numberOfRows], and op=NSTableViewDropAbove. To specify a drop on the entire tableview, one would specify row=-1 and op=NSTableViewDropOn.<br>
-     * Original signature : <code>void setDropRow(NSInteger, NSTableViewDropOperation)</code><br>
+     * To be used from validateDrop: if you wish to "re-target" the proposed drop. To specify a drop on the second row,
+     * one would specify row=2, and op=NSTableViewDropOn. To specify a drop below the last row, one would specify
+     * row=[tv numberOfRows], and op=NSTableViewDropAbove. To specify a drop on the entire tableview, one would specify
+     * row=-1 and op=NSTableViewDropOn.<br> Original signature : <code>void setDropRow(NSInteger,
+     * NSTableViewDropOperation)</code><br>
      * <i>native declaration : :220</i>
      */
     public abstract void setDropRow_dropOperation(NSInteger row, NSUInteger op);
@@ -470,8 +498,7 @@ public abstract class NSTableView extends NSControl {
     }
 
     /**
-     * Selection<br>
-     * Original signature : <code>void setAllowsMultipleSelection(BOOL)</code><br>
+     * Selection<br> Original signature : <code>void setAllowsMultipleSelection(BOOL)</code><br>
      * <i>native declaration : :226</i>
      */
     public abstract void setAllowsMultipleSelection(boolean flag);
@@ -514,18 +541,27 @@ public abstract class NSTableView extends NSControl {
 
     /**
      * Sets the column selection using the indexes.  Selection is set/extended based on the extend flag. <br>
-     * Compatability Note: This method replaces selectColumn:byExtendingSelection:<br>
-     * If a subclasser implements only the deprecated single-index method (selectColumn:byExtendingSelection:), the single-index method will be invoked for each index.  If a subclasser implements the multi-index method (selectColumnIndexes:byExtendingSelection:), the deprecated single-index version method will not be used.  This allows subclassers already overriding the single-index method to still receive a selection message.  Note: to avoid cycles, subclassers of this method and single-index method should not call each other.<br>
-     * Original signature : <code>void selectColumnIndexes(NSIndexSet*, BOOL)</code><br>
+     * Compatability Note: This method replaces selectColumn:byExtendingSelection:<br> If a subclasser implements only
+     * the deprecated single-index method (selectColumn:byExtendingSelection:), the single-index method will be invoked
+     * for each index.  If a subclasser implements the multi-index method (selectColumnIndexes:byExtendingSelection:),
+     * the deprecated single-index version method will not be used.  This allows subclassers already overriding the
+     * single-index method to still receive a selection message.  Note: to avoid cycles, subclassers of this method and
+     * single-index method should not call each other.<br> Original signature : <code>void
+     * selectColumnIndexes(NSIndexSet*, BOOL)</code><br>
      * <i>native declaration : :241</i>
      */
     public abstract void selectColumnIndexes_byExtendingSelection(NSIndexSet indexes, boolean extend);
 
     /**
-     * Sets the row selection using 'indexes'. Selection is set/extended based on the extend flag. On 10.5 and greater, selectRowIndexes:byExtendingSelection: will allow you to progrmatically select more than one index, regardless of the allowsMultipleSelection and allowsEmptySelection options set on the table.<br>
-     * Compatability Note: This method replaces selectRow:byExtendingSelection:<br>
-     * If a subclasser implements only the deprecated single-index method (selectRow:byExtendingSelection:), the single-index method will be invoked for each index.  If a subclasser implements the multi-index method (selectRowIndexes:byExtendingSelection:), the deprecated single-index version method will not be used.  This allows subclassers already overriding the single-index method to still receive a selection message.  Note: to avoid cycles, subclassers of this method and single-index method should not call each other.<br>
-     * Original signature : <code>void selectRowIndexes(NSIndexSet*, BOOL)</code><br>
+     * Sets the row selection using 'indexes'. Selection is set/extended based on the extend flag. On 10.5 and greater,
+     * selectRowIndexes:byExtendingSelection: will allow you to progrmatically select more than one index, regardless of
+     * the allowsMultipleSelection and allowsEmptySelection options set on the table.<br> Compatability Note: This
+     * method replaces selectRow:byExtendingSelection:<br> If a subclasser implements only the deprecated single-index
+     * method (selectRow:byExtendingSelection:), the single-index method will be invoked for each index.  If a
+     * subclasser implements the multi-index method (selectRowIndexes:byExtendingSelection:), the deprecated
+     * single-index version method will not be used.  This allows subclassers already overriding the single-index method
+     * to still receive a selection message.  Note: to avoid cycles, subclassers of this method and single-index method
+     * should not call each other.<br> Original signature : <code>void selectRowIndexes(NSIndexSet*, BOOL)</code><br>
      * <i>native declaration : :248</i>
      */
     public abstract void selectRowIndexes_byExtendingSelection(NSIndexSet indexes, boolean extend);
@@ -615,8 +651,9 @@ public abstract class NSTableView extends NSControl {
 
     /**
      * <i>native declaration : :289</i><br>
-     * Conversion Error : /// Original signature : <code>void setSelectionHighlightStyle(null)</code><br>
-     * - (void)setSelectionHighlightStyle:(null)selectionHighlightStyle; (Argument selectionHighlightStyle cannot be converted)
+     * Conversion Error : /// Original signature : <code>void setSelectionHighlightStyle(null)</code><br> -
+     * (void)setSelectionHighlightStyle:(null)selectionHighlightStyle; (Argument selectionHighlightStyle cannot be
+     * converted)
      */
     public abstract void setSelectionHighlightStyle(NSInteger selectionHighlightStyle);
     /**
@@ -637,15 +674,15 @@ public abstract class NSTableView extends NSControl {
      */
     /**
      * <i>native declaration : :307</i><br>
-     * Conversion Error : /// Original signature : <code>NSInteger columnAtPoint(null)</code><br>
-     * - (NSInteger)columnAtPoint:(null)point; (Argument point cannot be converted)
+     * Conversion Error : /// Original signature : <code>NSInteger columnAtPoint(null)</code><br> -
+     * (NSInteger)columnAtPoint:(null)point; (Argument point cannot be converted)
      */
     public abstract NSInteger columnAtPoint(NSPoint point);
 
     /**
      * <i>native declaration : :309</i><br>
-     * Conversion Error : /// Original signature : <code>NSInteger rowAtPoint(null)</code><br>
-     * - (NSInteger)rowAtPoint:(null)point; (Argument point cannot be converted)
+     * Conversion Error : /// Original signature : <code>NSInteger rowAtPoint(null)</code><br> -
+     * (NSInteger)rowAtPoint:(null)point; (Argument point cannot be converted)
      */
     public abstract NSInteger rowAtPoint(NSPoint point);
     /**
@@ -653,15 +690,17 @@ public abstract class NSTableView extends NSControl {
      * Conversion Error : NSRect
      */
     /**
-     * Returns the fully prepared cell that the view will normally use for drawing or any processing. The value for the cell will be correctly set, and the delegate method 'willDisplayCell:' will have be called. You can override this method to do any additional setting up of the cell that is required, or call it to retrieve a cell that will have its contents properly set for the particular column and row.<br>
-     * Original signature : <code>NSCell* preparedCellAtColumn(NSInteger, NSInteger)</code><br>
+     * Returns the fully prepared cell that the view will normally use for drawing or any processing. The value for the
+     * cell will be correctly set, and the delegate method 'willDisplayCell:' will have be called. You can override this
+     * method to do any additional setting up of the cell that is required, or call it to retrieve a cell that will have
+     * its contents properly set for the particular column and row.<br> Original signature : <code>NSCell*
+     * preparedCellAtColumn(NSInteger, NSInteger)</code><br>
      * <i>native declaration : :319</i>
      */
     public abstract NSCell preparedCellAtColumn_row(NSInteger column, NSInteger row);
 
     /**
-     * Text delegate methods<br>
-     * Original signature : <code>BOOL textShouldBeginEditing(NSText*)</code><br>
+     * Text delegate methods<br> Original signature : <code>BOOL textShouldBeginEditing(NSText*)</code><br>
      * <i>native declaration : :326</i>
      */
     public abstract boolean textShouldBeginEditing(NSText textObject);
@@ -691,8 +730,7 @@ public abstract class NSTableView extends NSControl {
     public abstract void textDidChange(NSNotification notification);
 
     /**
-     * Persistence methods<br>
-     * Original signature : <code>void setAutosaveName(NSString*)</code><br>
+     * Persistence methods<br> Original signature : <code>void setAutosaveName(NSString*)</code><br>
      * <i>native declaration : :335</i>
      */
     public abstract void setAutosaveName(String name);
@@ -704,8 +742,9 @@ public abstract class NSTableView extends NSControl {
     public abstract String autosaveName();
 
     /**
-     * On Mac OS 10.4 and higher, the NSTableColumn width and location is saved. On Mac OS 10.5 and higher, the NSTableColumn 'isHidden' state is also saved. The 'autosaveName' must be set for 'autosaveTableColumns' to take effect.<br>
-     * Original signature : <code>void setAutosaveTableColumns(BOOL)</code><br>
+     * On Mac OS 10.4 and higher, the NSTableColumn width and location is saved. On Mac OS 10.5 and higher, the
+     * NSTableColumn 'isHidden' state is also saved. The 'autosaveName' must be set for 'autosaveTableColumns' to take
+     * effect.<br> Original signature : <code>void setAutosaveTableColumns(BOOL)</code><br>
      * <i>native declaration : :340</i>
      */
     public abstract void setAutosaveTableColumns(boolean save);
@@ -717,8 +756,7 @@ public abstract class NSTableView extends NSControl {
     public abstract boolean autosaveTableColumns();
 
     /**
-     * For subclassers<br>
-     * Original signature : <code>void editColumn(NSInteger, NSInteger, NSEvent*, BOOL)</code><br>
+     * For subclassers<br> Original signature : <code>void editColumn(NSInteger, NSInteger, NSEvent*, BOOL)</code><br>
      * <i>native declaration : :346</i>
      */
     public abstract void editColumn_row_withEvent_select(NSInteger column, NSInteger row, NSEvent theEvent, boolean select);
@@ -744,8 +782,8 @@ public abstract class NSTableView extends NSControl {
      * Conversion Error : NSRect
      */
     /**
-     * Deprecated in Mac OS 10.3.  Calls setGridStyleMask:, setting grid style to either None, or vertical and horizonal solid grid lines as appropriate.<br>
-     * Original signature : <code>void setDrawsGrid(BOOL)</code><br>
+     * Deprecated in Mac OS 10.3.  Calls setGridStyleMask:, setting grid style to either None, or vertical and horizonal
+     * solid grid lines as appropriate.<br> Original signature : <code>void setDrawsGrid(BOOL)</code><br>
      * <i>from NSDeprecated native declaration : :506</i>
      */
     public abstract void setDrawsGrid(boolean flag);
@@ -758,22 +796,22 @@ public abstract class NSTableView extends NSControl {
     public abstract boolean drawsGrid();
 
     /**
-     * Deprecated in Mac OS 10.3.  You should use selectColumnIndexes:byExtendingSelection: instead.  See that method for more details.<br>
-     * Original signature : <code>void selectColumn(NSInteger, BOOL)</code><br>
+     * Deprecated in Mac OS 10.3.  You should use selectColumnIndexes:byExtendingSelection: instead.  See that method
+     * for more details.<br> Original signature : <code>void selectColumn(NSInteger, BOOL)</code><br>
      * <i>from NSDeprecated native declaration : :511</i>
      */
     public abstract void selectColumn_byExtendingSelection(NSInteger column, boolean extend);
 
     /**
-     * Deprecated in Mac OS 10.3.  You should use selectedColumnIndexes instead.<br>
-     * Original signature : <code>NSEnumerator* selectedColumnEnumerator()</code><br>
+     * Deprecated in Mac OS 10.3.  You should use selectedColumnIndexes instead.<br> Original signature :
+     * <code>NSEnumerator* selectedColumnEnumerator()</code><br>
      * <i>from NSDeprecated native declaration : :515</i>
      */
     public abstract NSEnumerator selectedColumnEnumerator();
 
     /**
-     * Deprecated in Mac OS 10.3.  You should use selectedRowIndexes instead.<br>
-     * Original signature : <code>NSEnumerator* selectedRowEnumerator()</code><br>
+     * Deprecated in Mac OS 10.3.  You should use selectedRowIndexes instead.<br> Original signature :
+     * <code>NSEnumerator* selectedRowEnumerator()</code><br>
      * <i>from NSDeprecated native declaration : :517</i>
      */
     public abstract NSEnumerator selectedRowEnumerator();
@@ -786,8 +824,10 @@ public abstract class NSTableView extends NSControl {
      * - (NSImage*)dragImageForRows:(NSArray*)dragRows event:(NSEvent*)dragEvent dragImageOffset:(null)dragImageOffset; (Argument dragImageOffset cannot be converted)
      */
     /**
-     * Deprecated in Mac OS 10.4.  You should use setColumnAutoresizingStyle: instead.  To preserve compatibility, if flag is YES, This method calls setColumnAutoresizingStyle:NSTableViewUniformColumnAutoresizingStyle.  If flag is NO, this method calls setColumnAutoresizingStyle:NSTableViewLastColumnOnlyAutoresizingStyle.<br>
-     * Original signature : <code>void setAutoresizesAllColumnsToFit(BOOL)</code><br>
+     * Deprecated in Mac OS 10.4.  You should use setColumnAutoresizingStyle: instead.  To preserve compatibility, if
+     * flag is YES, This method calls setColumnAutoresizingStyle:NSTableViewUniformColumnAutoresizingStyle.  If flag is
+     * NO, this method calls setColumnAutoresizingStyle:NSTableViewLastColumnOnlyAutoresizingStyle.<br> Original
+     * signature : <code>void setAutoresizesAllColumnsToFit(BOOL)</code><br>
      * <i>from NSDeprecated native declaration : :523</i>
      */
     public abstract void setAutoresizesAllColumnsToFit(boolean flag);

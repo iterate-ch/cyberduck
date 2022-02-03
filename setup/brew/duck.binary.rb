@@ -5,9 +5,13 @@ class Duck < Formula
   sha256 "${ARCHIVE.SHA256}"
   license "GPL-3.0-only"
 
+  depends_on "openjdk@17"
+
   def install
     # Because compiling would need a JDK and xcodebuild we just use the pre-compiled binary.
     libexec.install Dir["*"]
+    rm_r "#{libexec}/Contents/PlugIns/Runtime.jre"
+    ln_s Formula["openjdk@17"].libexec/"openjdk.jdk", "#{libexec}/Contents/PlugIns/Runtime.jre"
     bin.install_symlink "#{libexec}/Contents/MacOS/duck" => "duck"
   end
 

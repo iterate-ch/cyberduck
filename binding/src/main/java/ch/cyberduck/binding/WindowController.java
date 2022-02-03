@@ -30,7 +30,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -40,7 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class WindowController extends BundleController implements NSWindow.Delegate {
-    private static final Logger log = Logger.getLogger(WindowController.class);
+    private static final Logger log = LogManager.getLogger(WindowController.class);
 
     protected static final String DEFAULT = LocaleFactory.localizedString("Default");
 

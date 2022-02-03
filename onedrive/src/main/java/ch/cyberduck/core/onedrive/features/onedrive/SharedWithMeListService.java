@@ -40,11 +40,4 @@ public class SharedWithMeListService extends AbstractItemListService {
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
         return Files.getSharedWithMe(User.getCurrent(session.getClient()));
     }
-
-    @Override
-    protected Path toPath(final DriveItem.Metadata metadata, final Path directory) {
-        final Path path = super.toPath(metadata, directory);
-        path.getType().add(Path.Type.shared);
-        return super.toPath(metadata, directory);
-    }
 }

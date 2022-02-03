@@ -33,6 +33,6 @@ public class StoregateQuotaFeatureTest extends AbstractStoregateTest {
         assertNotNull(quota.used);
         assertNotEquals(0L, quota.available, 0L);
         assertNotEquals(0L, quota.used, 0L);
-        assertTrue(quota.used < quota.available);
+        assertTrue(quota.available < quota.available + quota.used);
     }
 }

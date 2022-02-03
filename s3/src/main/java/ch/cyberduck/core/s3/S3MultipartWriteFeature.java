@@ -18,7 +18,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
 import org.jets3t.service.model.MultipartPart;
@@ -37,7 +38,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> {
-    private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MultipartWriteFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -54,8 +55,9 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
+            final Path bucket = containerService.getContainer(file);
             multipart = session.getClient().multipartStartUpload(
-                containerService.getContainer(file).getName(), object);
+                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Multipart upload started for %s with ID %s",
                     multipart.getObjectKey(), multipart.getUploadId()));
@@ -128,9 +130,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                         status.setSegment(true);
                         final S3Object part = new S3WriteFeature(session).getDetails(file, status);
                         try {
+                            final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(
-                                containerService.getContainer(file).getName(), part,
-                                new ByteArrayEntity(content, off, len), parameters);
+                                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), part,
+                                    new ByteArrayEntity(content, off, len), parameters);
                         }
                         catch(ServiceException e) {
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
@@ -179,14 +182,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                                 concat.append(part.getEtag());
                             }
                             final String expected = String.format("%s-%d",
-                                ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
-                            final String reference;
-                            if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                                reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
-                            }
-                            else {
-                                reference = complete.getEtag();
-                            }
+                                    ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                            final String reference = StringUtils.remove(complete.getEtag(), "\"");
                             if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
@@ -215,5 +212,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
             sb.append('}');
             return sb.toString();
         }
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 }

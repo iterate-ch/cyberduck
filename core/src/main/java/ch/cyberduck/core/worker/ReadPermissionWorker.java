@@ -29,7 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
-    private static final Logger log = Logger.getLogger(ReadPermissionWorker.class);
+    private static final Logger log = LogManager.getLogger(ReadPermissionWorker.class);
 
     /**
      * Selected files.

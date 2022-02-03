@@ -22,11 +22,13 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3LocationFeature;
@@ -46,15 +48,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
 
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
-                                                      final Map<Path, Distribution> distributions) {
-        super(session, trust, key, distributions);
+    private final S3Session session;
+    private final PathContainerService containerService;
+
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
+        super(session, trust, key);
+        this.session = session;
+        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     /**
@@ -63,14 +68,14 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
      * @return Download and Streaming for AWS.
      */
     @Override
-    public List<Distribution.Method> getMethods(final Path container) {
-        if(!ServiceUtils.isBucketNameValidDNSName(container.getName())) {
+    public List<Distribution.Method> getMethods(final Path file) {
+        if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(file).getName())) {
             // Disable website configuration if bucket name is not DNS compatible
-            return super.getMethods(container);
+            return super.getMethods(file);
         }
         final List<Distribution.Method> methods = new ArrayList<Distribution.Method>();
         if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-            methods.addAll(super.getMethods(container));
+            methods.addAll(super.getMethods(file));
             methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
         }
         else {
@@ -81,16 +86,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     @Override
-    public String getName(final Distribution.Method method) {
-        if(method.equals(Distribution.WEBSITE)) {
-            return method.toString();
-        }
-        return super.getName(method);
-    }
-
-    @Override
-    protected URI getOrigin(final Path container, final Distribution.Method method) {
-        if(method.equals(Distribution.WEBSITE_CDN)) {
+    protected URI getOrigin(final Path container, final Distribution.Method method) throws BackgroundException {
+        if(Distribution.WEBSITE_CDN.equals(method)) {
             return URI.create(String.format("http://%s", this.getWebsiteHostname(container)));
         }
         return super.getOrigin(container, method);
@@ -98,22 +95,22 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
 
     @Override
     public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
-        if(method.equals(Distribution.WEBSITE)) {
+        if(Distribution.WEBSITE.equals(method)) {
             try {
                 final WebsiteConfig configuration = session.getClient().getWebsiteConfig(container.getName());
-                final Distribution distribution = new Distribution(this.getOrigin(container, method),
-                        method, configuration.isWebsiteConfigActive());
+                final Distribution distribution = new Distribution(method, this.getOrigin(container, method),
+                    configuration.isWebsiteConfigActive());
                 distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
                 // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
                 distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
                 return distribution;
             }
             catch(ServiceException e) {
                 // Not found. Website configuration not enabled.
-                final Distribution distribution = new Distribution(this.getOrigin(container, method), method, false);
+                final Distribution distribution = new Distribution(method, this.getOrigin(container, method), false);
                 distribution.setStatus(e.getErrorMessage());
                 distribution.setUrl(URI.create(String.format("%s://%s", method.getScheme(), this.getWebsiteHostname(container))));
                 return distribution;
@@ -126,7 +123,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
 
     @Override
     public void write(final Path container, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
-        if(distribution.getMethod().equals(Distribution.WEBSITE)) {
+        if(Distribution.WEBSITE.equals(distribution.getMethod())) {
             try {
                 if(distribution.isEnabled()) {
                     String suffix = "index.html";
@@ -152,7 +149,9 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
 
     @Override
     protected OriginProtocolPolicy getPolicy(final Distribution.Method method) {
-        if(method.equals(Distribution.WEBSITE_CDN)) {
+        if(method.equals(Distribution.WEBSITE)) {
+            // HTTP Only is the default setting when the origin is an Amazon S3 static website hosting endpoint,
+            // because Amazon S3 doesn’t support HTTPS connections for static website hosting endpoints.
             return OriginProtocolPolicy.HttpOnly;
         }
         return super.getPolicy(method);
@@ -173,31 +172,30 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     }
 
     /**
-     * The website endpoint given the location of the bucket. When you configure a bucket as
-     * a website, the website is available via the region-specific website endpoint.
-     * The website endpoint you use must be in the same region that your bucket resides.
-     * These website endpoints are different than the REST API endpoints (see Request
-     * Endpoints). Amazon S3 supports the following website endpoint.
+     * The website endpoint given the location of the bucket. When you configure a bucket as a website, the website is
+     * available via the region-specific website endpoint. The website endpoint you use must be in the same region that
+     * your bucket resides. These website endpoints are different than the REST API endpoints (see Request Endpoints).
+     * Amazon S3 supports the following website endpoint.
      *
      * @param bucket Bucket name
      * @return Website distribution hostname
      */
-    protected String getWebsiteHostname(final Path bucket) {
+    protected String getWebsiteHostname(final Path bucket) throws BackgroundException {
         // Geographical location
-        final String location = bucket.attributes().getRegion();
+        final Location.Name location = new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(bucket);
         // US Standard
         final String endpoint;
-        if(null == location) {
+        if(Location.unknown == location) {
             endpoint = "s3-website-us-east-1.amazonaws.com";
         }
-        else if("US".equals(location)) {
+        else if("US".equals(location.getIdentifier())) {
             endpoint = "s3-website-us-east-1.amazonaws.com";
         }
-        else if("EU".equals(location)) {
+        else if("EU".equals(location.getIdentifier())) {
             endpoint = "s3-website-eu-west-1.amazonaws.com";
         }
         else {
-            endpoint = String.format("s3-website-%s.amazonaws.com", location);
+            endpoint = String.format("s3-website-%s.amazonaws.com", location.getIdentifier());
         }
         return String.format("%s.%s", bucket.getName(), endpoint);
     }

@@ -22,7 +22,8 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import synapticloop.b2.response.B2ListPartsResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2LargeUploadPartService {
-    private static final Logger log = Logger.getLogger(B2LargeUploadPartService.class);
+    private static final Logger log = LogManager.getLogger(B2LargeUploadPartService.class);
 
     private final PathContainerService containerService
             = new B2PathContainerService();

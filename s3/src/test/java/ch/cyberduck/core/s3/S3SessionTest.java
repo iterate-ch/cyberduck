@@ -5,7 +5,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
@@ -163,7 +162,7 @@ public class S3SessionTest extends AbstractS3Test {
         }
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testCustomHostname() throws Exception {
         final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
             System.getProperties().getProperty("s3.key"), "s"
@@ -183,14 +182,8 @@ public class S3SessionTest extends AbstractS3Test {
             }
         });
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        try {
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        }
-        catch(BackgroundException e) {
-            assertTrue(set.get());
-            throw e;
-        }
-        fail();
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertTrue(set.get());
     }
 
     @Test
@@ -227,30 +220,14 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testBucketVirtualHostStyleAmazon() {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
-            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
-    }
-
-    @Test
-    public void testBucketVirtualHostStyleEucalyptusDefaultHost() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname());
-        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
-            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
-    }
-
-    @Test
-    public void testBucketVirtualHostStyleEucalyptusCustomDeployment() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
-        final Host host = new Host(profile, "ec.cyberduck.io");
-        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
-            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
+    public void testBucketVirtualHostStyleAmazon() throws Exception {
+        final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        final S3Session session = new S3Session(host);
+        assertFalse(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
+                .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginFailureException.class)
@@ -302,15 +279,6 @@ public class S3SessionTest extends AbstractS3Test {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
             "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
-        final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
-    }
-
-    @Test(expected = InteroperabilityException.class)
-    public void testConnectCn_North_1MissingToken() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.cn-north-1.amazonaws.com.cn");
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());

@@ -54,6 +54,10 @@ public abstract class AbstractChecksumCompute implements ChecksumCompute {
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
         }
+        return this.digest(in, md);
+    }
+
+    protected byte[] digest(final InputStream in, final MessageDigest md) throws ChecksumException {
         try {
             byte[] buffer = new byte[16384];
             int bytesRead;

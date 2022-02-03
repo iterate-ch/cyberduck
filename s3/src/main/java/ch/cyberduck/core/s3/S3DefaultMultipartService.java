@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.MultipartUploadChunk;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.MultipartPart;
@@ -45,7 +46,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
      */
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
-    private static final Logger log = Logger.getLogger(S3DefaultMultipartService.class);
+    private static final Logger log = LogManager.getLogger(S3DefaultMultipartService.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -68,12 +69,12 @@ public class S3DefaultMultipartService implements S3MultipartService {
         String nextKeyMarker = null;
         boolean isTruncated;
         do {
-            final String prefix = containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file);
+            final Path bucket = containerService.getContainer(file);
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                    containerService.getContainer(file).getName(), prefix,
-                    String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file),
+                        String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
             }
             catch(S3ServiceException e) {
                 final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, file);

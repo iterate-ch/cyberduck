@@ -20,6 +20,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.ui.winforms.controls
 {
@@ -60,7 +61,7 @@ namespace Ch.Cyberduck.ui.winforms.controls
 
             EnabledChanged += SearchTextBox_EnabledChanged;
 
-            xPictureBox.Image = ResourcesBundle.search_inactive;
+            xPictureBox.Image = Images.TryGet(_ => _.SearchInactive);
             xPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             xPictureBox.Click += xPictureBox_Click;
             xPictureBox.Visible = true;
@@ -183,11 +184,11 @@ namespace Ch.Cyberduck.ui.winforms.controls
                     TextChanged(this, e);
                 }
                 //xPictureBox.Visible = false;
-                xPictureBox.Image = ResourcesBundle.search_inactive;
+                xPictureBox.Image = Images.TryGet(_ => _.SearchInactive);
             }
             else
             {
-                xPictureBox.Image = ResourcesBundle.search_active;
+                xPictureBox.Image = Images.TryGet(_ => _.SearchActive);
                 //xPictureBox.Visible = true;
                 if (_currentText != textBox.Text)
                 {

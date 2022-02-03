@@ -20,7 +20,8 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.security.ProviderCredentials;
 
 import com.amazonaws.SdkClientException;
@@ -31,7 +32,7 @@ import com.amazonaws.auth.AWSSessionCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 
 public class AWSCredentialsConfigurator implements CredentialsConfigurator {
-    private static final Logger log = Logger.getLogger(AWSCredentialsConfigurator.class);
+    private static final Logger log = LogManager.getLogger(AWSCredentialsConfigurator.class);
 
     private final AWSCredentialsProvider[] providers;
 

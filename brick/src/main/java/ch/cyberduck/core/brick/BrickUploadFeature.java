@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -28,18 +29,20 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
-import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.security.MessageDigest;
@@ -51,7 +54,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-    private static final Logger log = Logger.getLogger(BrickUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
      * The maximum allowed parts in a multipart upload.
@@ -59,17 +62,16 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final BrickSession session;
-
-    private final BrickWriteFeature writer;
+    private final Write<Void> writer;
     private final Long partsize;
     private final Integer concurrency;
 
-    public BrickUploadFeature(final BrickSession session, final BrickWriteFeature writer) {
+    public BrickUploadFeature(final BrickSession session, final Write<Void> writer) {
         this(session, writer, PreferencesFactory.get().getLong("brick.upload.multipart.size"),
             PreferencesFactory.get().getInteger("brick.upload.multipart.concurrency"));
     }
 
-    public BrickUploadFeature(final BrickSession session, final BrickWriteFeature writer, final Long partsize, final Integer concurrency) {
+    public BrickUploadFeature(final BrickSession session, final Write<Void> writer, final Long partsize, final Integer concurrency) {
         super(writer);
         this.session = session;
         this.writer = writer;
@@ -91,7 +93,13 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
             String ref = null;
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 final FileUploadPartEntity uploadPartEntity = this.continueUpload(file, ref, partNumber);
-                final long length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
+                final long length;
+                if(uploadPartEntity.isParallelParts()) {
+                    length = Math.min(Math.max(size / (MAXIMUM_UPLOAD_PARTS - 1), partsize), remaining);
+                }
+                else {
+                    length = remaining;
+                }
                 parts.add(this.submit(pool, file, local, throttle, listener, status,
                     uploadPartEntity.getUploadUri(), partNumber, offset, length, callback));
                 remaining -= length;
@@ -133,7 +141,7 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     protected FileUploadPartEntity continueUpload(final Path file, final String ref, final int partNumber) throws BackgroundException {
         final List<FileUploadPartEntity> uploadPartEntities;
         try {
-            uploadPartEntities = new FileActionsApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            uploadPartEntities = new FileActionsApi(new BrickApiClient(session))
                 .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
         }
         catch(ApiException e) {
@@ -148,10 +156,10 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
 
     protected FileEntity completeUpload(final Path file, final String ref, final TransferStatus status, final List<TransferStatus> checksums) throws BackgroundException {
         try {
-            return new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).postFilesPath(new FilesPathBody()
+            return new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
-                .providedMtime(new DateTime(status.getTimestamp()))
+                .providedMtime(null != status.getTimestamp() ? new DateTime(status.getTimestamp()) : null)
                 .ref(ref)
                 .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
         }
@@ -167,7 +175,8 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<TransferStatus>() {
+        final BytecountStreamListener counter = new BytecountStreamListener(listener);
+        return pool.execute(new SegmentRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<TransferStatus>() {
             @Override
             public TransferStatus call() throws BackgroundException {
                 overall.validate();
@@ -186,6 +195,6 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                 }
                 return status;
             }
-        }, overall));
+        }, overall, counter));
     }
 }

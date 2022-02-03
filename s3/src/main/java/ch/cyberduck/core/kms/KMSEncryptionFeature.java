@@ -34,7 +34,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ import com.amazonaws.services.kms.model.AliasListEntry;
 import com.amazonaws.services.kms.model.KeyListEntry;
 
 public class KMSEncryptionFeature extends S3EncryptionFeature {
-    private static final Logger log = Logger.getLogger(KMSEncryptionFeature.class);
+    private static final Logger log = LogManager.getLogger(KMSEncryptionFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;

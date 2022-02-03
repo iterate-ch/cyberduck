@@ -18,6 +18,7 @@ package ch.cyberduck.core.nextcloud;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Write;
@@ -33,6 +34,9 @@ public class NextcloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Home.class) {
+            return (T) new NextcloudHomeFeature(host);
+        }
         if(type == Lock.class) {
             // https://github.com/nextcloud/server/issues/1308
             return null;

@@ -32,17 +32,17 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(GoogleStorageAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageAttributesFinderFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -142,9 +142,14 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         if(object.getSize() != null) {
             attributes.setSize(object.getSize().longValue());
         }
-        final DateTime lastmodified = object.getTimeCreated();
-        if(lastmodified != null) {
-            attributes.setModificationDate(lastmodified.getValue());
+        if(object.getTimeCreated() != null) {
+            attributes.setCreationDate(object.getTimeCreated().getValue());
+        }
+        if(object.getUpdated() != null) {
+            attributes.setModificationDate(object.getUpdated().getValue());
+        }
+        if(object.getCustomTime() != null) {
+            attributes.setModificationDate(object.getCustomTime().getValue());
         }
         attributes.setStorageClass(object.getStorageClass());
         if(StringUtils.isNotBlank(object.getEtag())) {

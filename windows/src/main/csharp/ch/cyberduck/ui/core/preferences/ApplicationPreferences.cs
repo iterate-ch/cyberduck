@@ -33,7 +33,7 @@ using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Application = System.Windows.Forms.Application;
@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 {
     public class ApplicationPreferences : SettingsDictionaryPreferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(ApplicationPreferences).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
 
         protected override void setDefaults()
         {

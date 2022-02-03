@@ -30,7 +30,8 @@ import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -48,7 +49,7 @@ import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
-    private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHHostKeyVerifier.class);
 
     /**
      * It is a thread safe implementation, therefore, you need only to instantiate one

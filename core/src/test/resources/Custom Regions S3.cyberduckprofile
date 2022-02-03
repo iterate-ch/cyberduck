@@ -23,7 +23,7 @@
         <key>Protocol</key>
         <string>test</string>
         <key>Vendor</key>
-        <string>eucalyptus</string>
+        <string>vendor-custom-regions</string>
         <key>Description</key>
         <string>Eucalyptus Walrus S3</string>
         <key>Default Hostname</key>

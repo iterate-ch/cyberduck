@@ -20,7 +20,6 @@ using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
-using org.apache.log4j;
 using sun.security.mscapi;
 using System;
 using System.Diagnostics;
@@ -33,12 +32,17 @@ using System.Windows.Forms;
 using Windows.Storage;
 using StringUtils = org.apache.commons.lang3.StringUtils;
 using ch.cyberduck.core.preferences;
+using java.nio.charset;
+using org.apache.logging.log4j;
+using org.apache.logging.log4j.core;
+using org.apache.logging.log4j.core.config;
+using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
     public class SettingsDictionaryPreferences : AppConfigPreferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SettingsDictionaryPreferences).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(SettingsDictionaryPreferences).FullName);
 
         public SettingsDictionaryPreferences() : base(new DefaultLocales())
         {
@@ -138,19 +142,9 @@ namespace Ch.Cyberduck.Core.Preferences
         protected override void configureLogging(String level)
         {
             base.configureLogging(level);
-
-            Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(LogDirectoryFinderFactory.get().find().getAbsolute(),
-                getProperty("application.name").ToLower().Replace(" ", "") + ".log");
-            RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
-                fileName, true);
-            appender.setEncoding("UTF-8");
-            appender.setMaxFileSize(Level.DEBUG.ToString().Equals(level) ? "250MB" : "10MB");
-            appender.setMaxBackupIndex(0);
-            root.addAppender(appender);
             if (Debugger.IsAttached)
             {
-                root.setLevel(Level.DEBUG);
+                Configurator.setRootLevel(Level.DEBUG);
             }
         }
 

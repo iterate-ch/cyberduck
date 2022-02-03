@@ -72,12 +72,12 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public long toCiphertextSize(final long cleartextFileSize) {
+    public long toCiphertextSize(final long cleartextFileOffset, final long cleartextFileSize) {
         return cleartextFileSize;
     }
 
     @Override
-    public long toCleartextSize(final long ciphertextFileSize) {
+    public long toCleartextSize(final long cleartextFileOffset, final long ciphertextFileSize) {
         return ciphertextFileSize;
     }
 

@@ -34,7 +34,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 
@@ -48,7 +49,7 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(TripleCryptReadFeature.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptReadFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

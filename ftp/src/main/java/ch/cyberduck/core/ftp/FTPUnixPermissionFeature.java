@@ -23,12 +23,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class FTPUnixPermissionFeature extends DefaultUnixPermissionFeature implements UnixPermission {
-    private static final Logger log = Logger.getLogger(FTPUnixPermissionFeature.class);
+    private static final Logger log = LogManager.getLogger(FTPUnixPermissionFeature.class);
 
     private final FTPSession session;
 

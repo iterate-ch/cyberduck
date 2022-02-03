@@ -20,13 +20,15 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.Quota;
 
 import java.util.EnumSet;
 
 public abstract class AbstractDriveListService extends AbstractListService<Drive.Metadata> {
-    private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
+    private static final Logger log = LogManager.getLogger(AbstractDriveListService.class);
 
     public AbstractDriveListService(final GraphFileIdProvider fileid) {
         super(fileid);
@@ -36,7 +38,13 @@ public abstract class AbstractDriveListService extends AbstractListService<Drive
     protected Path toPath(final Drive.Metadata metadata, final Path directory) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setFileId(metadata.getId());
-        attributes.setSize(metadata.getQuota().getTotal());
+        final Quota quota = metadata.getQuota();
+        if (quota != null) {
+            final Long used = quota.getUsed();
+            if (used != null) {
+                attributes.setSize(used);
+            }
+        }
         String name = metadata.getName();
         if(StringUtils.isBlank(metadata.getName())) {
             name = metadata.getId();

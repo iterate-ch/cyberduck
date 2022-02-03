@@ -54,7 +54,7 @@ import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.crashreporter.AppCenterCrashReporter;
 import ch.cyberduck.core.crashreporter.CrashReporter;
-import ch.cyberduck.core.ctera.CTERAProtocol;
+import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
@@ -70,6 +70,8 @@ import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
+import ch.cyberduck.core.profiles.ProfilesUpdater;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -93,7 +95,8 @@ import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -122,7 +125,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
  * Setting the main menu and implements application delegate methods
  */
 public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
-    private static final Logger log = Logger.getLogger(MainController.class);
+    private static final Logger log = LogManager.getLogger(MainController.class);
 
     /**
      * Apple event constants<br> **********************************************************************************************<br>
@@ -147,6 +150,9 @@ public class MainController extends BundleController implements NSApplication.De
 
     private final PeriodicUpdateChecker updater
         = PeriodicUpdateCheckerFactory.get(this);
+
+    private final ProfilesUpdater profiles
+        = new PeriodicProfilesUpdater(this);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     /**
@@ -317,6 +323,7 @@ public class MainController extends BundleController implements NSApplication.De
         columns.put(String.format("browser.column.%s", BrowserColumn.permission.name()), BrowserColumn.permission.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.region.name()), BrowserColumn.region.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.version.name()), BrowserColumn.version.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.checksum.name()), BrowserColumn.checksum.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.storageclass.name()), BrowserColumn.storageclass.toString());
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
@@ -636,12 +643,13 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
-                    final Protocol profile = ProfileReaderFactory.get().read(f);
+                    final Profile profile = ProfileReaderFactory.get().read(f);
                     if(profile.isEnabled()) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Register profile %s", profile));
                         }
-                        ProtocolFactory.get().register(profile);
+                        final ProtocolFactory protocols = ProtocolFactory.get();
+                        protocols.register(profile);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         newDocument().addBookmark(host);
                         // Register in application support
@@ -1047,6 +1055,10 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.register();
             }
         }
+        if(preferences.getBoolean("profiles.discovery.updater.enable")) {
+            // Synchronize and register timer
+            profiles.register();
+        }
         // Register OAuth handler
         final String handler = preferences.getProperty("oauth.handler.scheme");
         if(log.isInfoEnabled()) {
@@ -1212,6 +1224,7 @@ public class MainController extends BundleController implements NSApplication.De
         NotificationServiceFactory.get().unregister();
         // Disable update
         updater.unregister();
+        profiles.unregister();
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);
         preferences.save();
@@ -1274,7 +1287,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     oauth.notify(state, code);
                 }
-                else if(StringUtils.startsWith(url, CTERAProtocol.CTERA_REDIRECT_URI)) {
+                else if(StringUtils.startsWith(url, CteraProtocol.CTERA_REDIRECT_URI)) {
                     final String action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String code = StringUtils.EMPTY;
@@ -1298,10 +1311,12 @@ public class MainController extends BundleController implements NSApplication.De
                         else {
                             for(BrowserController browser : MainController.getBrowsers()) {
                                 if(browser.isMounted()) {
-                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                        new HostUrlProvider().get(h))) {
+                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(new HostUrlProvider().get(h))) {
                                         // Handle browser window already connected to the same host. #4215
                                         browser.window().makeKeyAndOrderFront(null);
+                                        if(Path.Type.directory == detector.detect(h.getDefaultPath())) {
+                                            browser.setWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)));
+                                        }
                                         return;
                                     }
                                 }

@@ -27,15 +27,13 @@ public class LifecycleConfiguration {
 
     private Integer transition;
     private Integer expiration;
-    private String storageClass;
 
     public LifecycleConfiguration() {
         //
     }
 
-    public LifecycleConfiguration(final Integer transition, final String storageClass, final Integer expiration) {
+    public LifecycleConfiguration(final Integer transition, final Integer expiration) {
         this.transition = transition;
-        this.storageClass = storageClass;
         this.expiration = expiration;
     }
 
@@ -45,10 +43,6 @@ public class LifecycleConfiguration {
 
     public Integer getExpiration() {
         return expiration;
-    }
-
-    public String getStorageClass() {
-        return storageClass;
     }
 
     @Override

@@ -5,7 +5,8 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
  * @author Mario Ivankovits <mario@ops.co.at>
  */
 public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements Configurable {
-    private static final Logger log = Logger.getLogger(CompositeFileEntryParser.class);
+    private static final Logger log = LogManager.getLogger(CompositeFileEntryParser.class);
 
     private final List<? extends FTPFileEntryParser> parsers;
     private FTPFileEntryParser current;

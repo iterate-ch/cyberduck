@@ -27,7 +27,8 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
@@ -39,7 +40,7 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 public class GraphAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -51,7 +52,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
+        if (!session.isAccessible(file)) {
             return PathAttributes.EMPTY;
         }
         final DriveItem item = session.getItem(file);

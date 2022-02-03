@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -31,7 +32,8 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonObject;
@@ -44,7 +46,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GraphWriteFeature implements Write<Void> {
-    private static final Logger log = Logger.getLogger(GraphWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphWriteFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -57,6 +59,9 @@ public class GraphWriteFeature implements Write<Void> {
     @Override
     public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
+                throw new UnsupportedException("Content-Range with unknown file size is not supported");
+            }
             final DriveItem folder = session.getItem(file.getParent());
             final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
             final UploadSession upload = Files.createUploadSession(oneDriveFile);
@@ -113,13 +118,7 @@ public class GraphWriteFeature implements Write<Void> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             final HttpRange range = HttpRange.byLength(offset, content.length);
-            final String header;
-            if(overall.getLength() == -1L) {
-                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
-            }
-            else {
-                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
-            }
+            final String header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
             try {
                 new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override

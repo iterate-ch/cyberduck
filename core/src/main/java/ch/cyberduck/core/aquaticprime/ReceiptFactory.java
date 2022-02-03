@@ -25,13 +25,14 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class ReceiptFactory extends LicenseFactory {
-    private static final Logger log = Logger.getLogger(ReceiptFactory.class);
+    private static final Logger log = LogManager.getLogger(ReceiptFactory.class);
 
     /**
      * Application has determined that its receipt is invalid. Exit with a status of 173
@@ -89,6 +90,8 @@ public class ReceiptFactory extends LicenseFactory {
     }
 
     private static class ReceiptFilter implements Filter<Local> {
+        private final Pattern pattern = Pattern.compile("receipt");
+
         @Override
         public boolean accept(final Local file) {
             return "receipt".equals(file.getName());
@@ -96,7 +99,7 @@ public class ReceiptFactory extends LicenseFactory {
 
         @Override
         public Pattern toPattern() {
-            return Pattern.compile("receipt");
+            return pattern;
         }
     }
 }

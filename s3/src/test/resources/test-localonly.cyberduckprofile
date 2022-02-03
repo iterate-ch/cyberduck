@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>localonly</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Description</key>
+        <string>S3 (HTTPS)</string>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Help</key>
+        <string>No profile with this checksum ever found on server and no vendor match</string>
+    </dict>
+</plist>

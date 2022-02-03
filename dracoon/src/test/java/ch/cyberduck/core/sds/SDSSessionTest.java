@@ -21,10 +21,12 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -65,6 +67,16 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+        assertNotNull(session.shareClassificationsPolicies());
+    }
+
+    @Test
+    public void testClassificationConfiguration() throws Exception {
+        final ClassificationPoliciesConfig policies = session.shareClassificationsPolicies();
+        assertNotNull(policies);
+        assertNotNull(policies.getShareClassificationPolicies());
+        assertNotNull(policies.getShareClassificationPolicies().getClassificationRequiresSharePassword());
+        assertEquals(0, policies.getShareClassificationPolicies().getClassificationRequiresSharePassword().getValue().intValue());
     }
 
     @Test
@@ -99,7 +111,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     public void testLoginRadius() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (Radius).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (Radius).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
             "rsa.user1", "1234"
         ));
@@ -123,7 +135,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     public void testLoginOAuthExpiredRefreshToken() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
@@ -238,5 +250,11 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertEquals(2, keyPairs.size());
         assertEquals(UserKeyPair.Version.RSA4096.getValue(), session.keyPair().getPublicKeyContainer().getVersion());
         assertEquals(UserKeyPair.Version.RSA2048.getValue(), session.keyPairDeprecated().getPublicKeyContainer().getVersion());
+    }
+
+    @Test
+    public void testUploadFeature() throws Exception {
+        final Upload feature = session.getFeature(Upload.class);
+        assertSame(feature.getClass(), SDSDirectS3UploadFeature.class);
     }
 }

@@ -22,13 +22,15 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartCompleted;
@@ -44,7 +46,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class S3MultipartCopyFeature extends S3CopyFeature {
-    private static final Logger log = Logger.getLogger(S3MultipartCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MultipartCopyFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -69,9 +71,9 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
     }
 
     @Override
-    protected String copy(final Path source, final S3Object destination, final TransferStatus status) throws BackgroundException {
+    protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {
         try {
-            final List<MultipartPart> completed = new ArrayList<MultipartPart>();
+            final List<MultipartPart> completed = new ArrayList<>();
             // ID for the initiated multipart upload.
             final MultipartUpload multipart = session.getClient().multipartStartUpload(
                 destination.getBucketName(), destination);
@@ -82,7 +84,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             final long size = status.getLength();
             long remaining = size;
             long offset = 0;
-            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+            final List<Future<MultipartPart>> parts = new ArrayList<>();
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 // Last part can be less than 5 MB. Adjust part size.
                 final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
@@ -93,7 +95,9 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             }
             for(Future<MultipartPart> future : parts) {
                 try {
-                    completed.add(future.get());
+                    final MultipartPart part = future.get();
+                    completed.add(part);
+                    listener.sent(part.getSize());
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed with interrupt failure");
@@ -136,9 +140,10 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             public MultipartPart call() throws BackgroundException {
                 try {
                     final HttpRange range = HttpRange.byLength(offset, length);
+                    final Path bucket = containerService.getContainer(source);
                     final MultipartPart part = session.getClient().multipartUploadPartCopy(multipart, partNumber,
-                        containerService.getContainer(source).getName(), containerService.getKey(source),
-                        null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(source),
+                            null, null, null, null, range.getStart(), range.getEnd(), source.attributes().getVersionId());
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Received response %s for part number %d", part, partNumber));
                     }

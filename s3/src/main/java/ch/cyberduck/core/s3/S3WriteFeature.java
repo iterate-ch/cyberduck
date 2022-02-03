@@ -37,7 +37,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
@@ -49,7 +50,7 @@ import java.util.List;
 import java.util.Map;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
-    private static final Logger log = Logger.getLogger(S3WriteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -67,8 +68,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final RequestEntityRestStorageService client = session.getClient();
+                    final Path bucket = containerService.getContainer(file);
                     client.putObjectWithRequestEntityImpl(
-                        containerService.getContainer(file).getName(), object, entity, status.getParameters());
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity, status.getParameters());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }
@@ -109,10 +111,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             }
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
-            if(!S3Object.STORAGE_CLASS_STANDARD.equals(status.getStorageClass())) {
-                // The default setting is STANDARD.
-                object.setStorageClass(status.getStorageClass());
-            }
+            object.setStorageClass(status.getStorageClass());
         }
         final Encryption.Algorithm encryption = status.getEncryption();
         object.setServerSideEncryptionAlgorithm(encryption.algorithm);
@@ -124,10 +123,17 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(!Acl.EMPTY.equals(status.getAcl())) {
             if(status.getAcl().isCanned()) {
-                object.setAcl(new S3AccessControlListFeature(session).toAcl(file, status.getAcl()));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set canned ACL %s for %s", status.getAcl(), file));
+                }
+                object.setAcl(new S3AccessControlListFeature(session).toAcl(status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }
+        }
+        if(status.getTimestamp() != null) {
+            // Interoperable with rsync
+            object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
         }
         return object;
     }
@@ -154,6 +160,11 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public boolean temporary() {
         return false;
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 
     @Override

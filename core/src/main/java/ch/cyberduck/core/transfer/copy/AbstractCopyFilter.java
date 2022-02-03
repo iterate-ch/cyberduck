@@ -47,13 +47,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
 public abstract class AbstractCopyFilter implements TransferPathFilter {
-    private static final Logger log = Logger.getLogger(AbstractCopyFilter.class);
+    private static final Logger log = LogManager.getLogger(AbstractCopyFilter.class);
 
     protected final Session<?> sourceSession;
     protected final Session<?> targetSession;
@@ -66,7 +67,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     private final UploadFilterOptions options;
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
-        this(source, destination, files, new UploadFilterOptions());
+        this(source, destination, files, new UploadFilterOptions(destination.getHost()));
     }
 
     public AbstractCopyFilter(final Session<?> source, final Session<?> destination,

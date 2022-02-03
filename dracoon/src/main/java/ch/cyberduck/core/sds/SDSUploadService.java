@@ -38,7 +38,8 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -55,7 +56,7 @@ import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class SDSUploadService {
-    private static final Logger log = Logger.getLogger(SDSUploadService.class);
+    private static final Logger log = LogManager.getLogger(SDSUploadService.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -73,7 +74,7 @@ public class SDSUploadService {
     public CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
-                .size(-1 == status.getLength() ? null : status.getLength())
+                .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName())
                 .directS3Upload(null);
@@ -81,7 +82,7 @@ public class SDSUploadService {
                 final SoftwareVersionData version = session.softwareVersion();
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
-                    if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
+                    if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
                         body.timestampModification(new DateTime(status.getTimestamp()));
                     }
                 }

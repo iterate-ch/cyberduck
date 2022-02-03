@@ -27,7 +27,8 @@ import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.pool.SessionPool;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
  * An editor listing for file system notifications on a particular folder
  */
 public class FSEventWatchEditor extends AbstractEditor {
-    private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
+    private static final Logger log = LogManager.getLogger(FSEventWatchEditor.class);
 
     private final FileWatcher monitor
         = new FileWatcher(new FSEventWatchService());

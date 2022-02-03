@@ -17,7 +17,7 @@
 // 
 
 using ch.cyberduck.core;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Core
 {
     public class PasswordStoreFacade : DefaultHostPasswordStore
     {
-        private readonly Logger logger = Logger.getLogger(typeof(PasswordStoreFacade).AssemblyQualifiedName);
+        private readonly Logger logger = LogManager.getLogger(typeof(PasswordStoreFacade).AssemblyQualifiedName);
         private readonly CredentialManagerPasswordStore credentialManagerPasswordStore = new CredentialManagerPasswordStore();
         private readonly DataProtectorPasswordStore dataProtectorPasswordStore = new DataProtectorPasswordStore();
 

@@ -33,10 +33,12 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ETagResponseHandler;
 
 public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
-    private static final Logger log = Logger.getLogger(DAVWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(DAVWriteFeature.class);
 
     private final DAVSession session;
 
@@ -73,20 +75,18 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
-            final HttpRange range = HttpRange.withStatus(status);
-            if(-1L == range.getEnd()) {
+            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                 throw new UnsupportedException("Content-Range with unknown file size is not supported");
             }
-            else {
-                // Content-Range entity-header is sent with a partial entity-body to specify where
-                // in the full entity-body the partial body should be applied.
-                final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
+            final HttpRange range = HttpRange.withStatus(status);
+            // Content-Range entity-header is sent with a partial entity-body to specify where
+            // in the full entity-body the partial body should be applied.
+            final String header = String.format("bytes %d-%d/%d", range.getStart(), range.getEnd(),
                     status.getOffset() + status.getLength());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add range header %s for file %s", header, file));
-                }
-                headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add range header %s for file %s", header, file));
             }
+            headers.add(new BasicHeader(HttpHeaders.CONTENT_RANGE, header));
         }
         if(expect) {
             if(status.getLength() > 0L) {
@@ -100,8 +100,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         return headers;
     }
 
-    private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
-        throws BackgroundException {
+    private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status) throws BackgroundException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
             /**
@@ -110,8 +109,21 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             @Override
             public String call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    return session.getClient().put(new DAVPathEncoder().encode(file), entity,
-                        headers, new ETagResponseHandler());
+                    try {
+                        return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                    }
+                    catch(SardineException e) {
+                        if(null != status.getLockId()) {
+                            switch(e.getStatusCode()) {
+                                case HttpStatus.SC_PRECONDITION_FAILED:
+                                    // Handle 412 Precondition Failed with expired token
+                                    log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
+                                    headers.removeIf(header -> HttpHeaders.IF.equals(header.getName()));
+                                    return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                            }
+                        }
+                        throw e;
+                    }
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Upload {0} failed", e, file);

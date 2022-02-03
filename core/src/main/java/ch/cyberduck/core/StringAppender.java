@@ -48,7 +48,7 @@ public final class StringAppender {
     }
 
     public StringAppender append(final String message) {
-        if(StringUtils.isBlank(message)) {
+        if(StringUtils.isBlank(StringUtils.trim(message))) {
             return this;
         }
         if(buffer.length() > 0) {

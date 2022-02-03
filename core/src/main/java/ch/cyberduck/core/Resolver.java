@@ -24,7 +24,8 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -37,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public final class Resolver {
-    private static final Logger log = Logger.getLogger(Resolver.class);
+    private static final Logger log = LogManager.getLogger(Resolver.class);
 
     private final ThreadFactory threadFactory
         = new NamedThreadFactory("resolver");

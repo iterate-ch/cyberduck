@@ -20,13 +20,14 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class DownloadGlobFilter extends DownloadDuplicateFilter {
-    private static final Logger log = Logger.getLogger(DownloadGlobFilter.class);
+    private static final Logger log = LogManager.getLogger(DownloadGlobFilter.class);
 
     private final Pattern pattern;
 

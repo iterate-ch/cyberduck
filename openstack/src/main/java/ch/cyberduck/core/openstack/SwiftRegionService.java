@@ -25,12 +25,13 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftRegionService {
-    private static final Logger log = Logger.getLogger(SwiftRegionService.class);
+    private static final Logger log = LogManager.getLogger(SwiftRegionService.class);
 
     private final SwiftSession session;
 

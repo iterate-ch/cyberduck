@@ -19,6 +19,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
@@ -29,18 +30,21 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -54,7 +58,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
-    private static final Logger log = Logger.getLogger(MoveWorker.class);
+    private static final Logger log = LogManager.getLogger(MoveWorker.class);
 
     private final Map<Path, Path> files;
     private final SessionPool target;
@@ -146,11 +150,15 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     }
 
     protected TransferStatus status(final Session<?> session, final Map.Entry<Path, Path> r) throws BackgroundException {
-        return new TransferStatus()
-            .withLockId(this.getLockId(r.getKey()))
-            .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
-            .withLength(r.getKey().attributes().getSize());
+        final TransferStatus status = new TransferStatus()
+                .withLockId(this.getLockId(r.getKey()))
+                .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                .withLength(r.getKey().attributes().getSize());
+        if(status.isExists()) {
+            status.withRemote(new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
+        }
+        return status;
     }
 
     protected String getLockId(final Path file) {

@@ -55,7 +55,7 @@ public class LoginRequest {
     @JsonCreator
     public static AuthTypeEnum fromValue(String text) {
       for (AuthTypeEnum b : AuthTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

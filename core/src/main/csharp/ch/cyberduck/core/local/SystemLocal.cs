@@ -22,14 +22,14 @@ using System.Text;
 using ch.cyberduck.core;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
     public class SystemLocal : ch.cyberduck.core.Local
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SystemLocal).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
 
         public SystemLocal(string parent, string name)
             : base(parent, MakeValidFilename(name))

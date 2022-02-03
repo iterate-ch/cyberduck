@@ -25,7 +25,8 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.serializer.Deserializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PlistDeserializer implements Deserializer<NSDictionary> {
-    private static final Logger log = Logger.getLogger(PlistDeserializer.class);
+    private static final Logger log = LogManager.getLogger(PlistDeserializer.class);
 
     final NSDictionary dict;
 

@@ -30,14 +30,15 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public abstract class LicenseFactory extends Factory<License> {
-    private static final Logger log = Logger.getLogger(LicenseFactory.class);
+    private static final Logger log = LogManager.getLogger(LicenseFactory.class);
 
     private static final Preferences preferences
         = PreferencesFactory.get();
@@ -190,6 +191,8 @@ public abstract class LicenseFactory extends Factory<License> {
     };
 
     protected static final class LicenseFilter implements Filter<Local> {
+        private final Pattern pattern = Pattern.compile(".*\\.cyberducklicense");
+
         @Override
         public boolean accept(final Local file) {
             return "cyberducklicense".equalsIgnoreCase(Path.getExtension(file.getName()));
@@ -197,7 +200,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public Pattern toPattern() {
-            return Pattern.compile(".*\\.cyberducklicense");
+            return pattern;
         }
     }
 }

@@ -19,9 +19,10 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
+import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -43,17 +44,17 @@ public class CryptoCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(vault.contains(copy)) {
             // Write header to be reused in writer
             final FileHeader header = vault.getFileHeaderCryptor().create();
             status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
-            status.setNonces(new RandomNonceGenerator());
+            status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
         }
         if(vault.contains(source) && vault.contains(copy)) {
             return vault.decrypt(session, proxy.withTarget(target).copy(
                 vault.contains(source) ? vault.encrypt(session, source) : source,
-                vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback));
+                vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback, listener));
         }
         else {
             // Copy files from or into vault requires to pass through encryption features
@@ -61,7 +62,7 @@ public class CryptoCopyFeature implements Copy {
                 vault.contains(source) ? vault.encrypt(session, source) : source,
                 vault.contains(copy) ? vault.encrypt(session, copy) : copy,
                 status,
-                callback);
+                callback, listener);
             if(vault.contains(copy)) {
                 return vault.decrypt(session, target);
             }

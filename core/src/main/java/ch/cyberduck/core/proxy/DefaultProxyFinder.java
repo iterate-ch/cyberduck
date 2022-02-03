@@ -34,9 +34,6 @@ public class DefaultProxyFinder implements ProxyFinder {
 
     @Override
     public Proxy find(final String target) {
-        if(!preferences.getBoolean("connection.proxy.enable")) {
-            return Proxy.DIRECT;
-        }
         for(java.net.Proxy proxy : selector.select(URI.create(target))) {
             switch(proxy.type()) {
                 case DIRECT: {

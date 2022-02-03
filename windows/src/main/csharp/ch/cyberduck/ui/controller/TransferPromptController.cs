@@ -28,7 +28,7 @@ using ch.cyberduck.core.pool;
 using ch.cyberduck.core.shared;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Ch.Cyberduck.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public abstract class TransferPromptController : WindowController<ITransferPromptView>, TransferPrompt,
                                                        ProgressListener, TranscriptListener
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (TransferPromptController));
+        private static readonly Logger Log = LogManager.getLogger(typeof (TransferPromptController));
         private static readonly string UnknownString = LocaleFactory.localizedString("Unknown");
         protected readonly SessionPool Source;
         protected readonly SessionPool Destination;

@@ -19,13 +19,14 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
 public class BookmarkCollection extends MonitorFolderHostCollection {
-    private static final Logger log = Logger.getLogger(BookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(BookmarkCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

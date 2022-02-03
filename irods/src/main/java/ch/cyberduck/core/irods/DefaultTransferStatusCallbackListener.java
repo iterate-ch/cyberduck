@@ -22,12 +22,13 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.irods.jargon.core.transfer.TransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
 public class DefaultTransferStatusCallbackListener implements TransferStatusCallbackListener {
-    private static final Logger log = Logger.getLogger(DefaultTransferStatusCallbackListener.class);
+    private static final Logger log = LogManager.getLogger(DefaultTransferStatusCallbackListener.class);
 
     private final TransferStatus status;
     private final BytecountStreamListener listener;

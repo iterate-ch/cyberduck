@@ -22,12 +22,13 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.date.CalendarService;
 import ch.cyberduck.core.date.Instant;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.TimeZone;
 
 public class TimestampComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(TimestampComparisonService.class);
+    private static final Logger log = LogManager.getLogger(TimestampComparisonService.class);
 
     private final CalendarService calendarService;
 

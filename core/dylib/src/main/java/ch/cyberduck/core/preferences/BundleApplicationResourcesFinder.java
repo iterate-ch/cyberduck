@@ -25,10 +25,11 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.FinderLocal;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BundleApplicationResourcesFinder implements ApplicationResourcesFinder {
-    private static final Logger log = Logger.getLogger(BundleApplicationResourcesFinder.class);
+    private static final Logger log = LogManager.getLogger(BundleApplicationResourcesFinder.class);
 
     private NSBundle cached;
 

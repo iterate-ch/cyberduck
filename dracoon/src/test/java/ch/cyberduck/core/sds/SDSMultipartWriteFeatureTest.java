@@ -20,6 +20,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.unicode.NFDNormalizer;
@@ -89,7 +91,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setMime("text/plain");
-            status.setTimestamp(System.currentTimeMillis());
+            status.setTimestamp(1632127025217L);
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -97,7 +99,10 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
-        assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
+        final PathAttributes attr = new SDSAttributesFinderFeature(session, nodeid).find(test);
+        assertEquals(test.attributes().getVersionId(), attr.getVersionId());
+        assertEquals(1632127025217L, attr.getModificationDate());
+        assertEquals(1632127025217L, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -116,6 +121,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
             assertNotEquals(test.attributes().getVersionId(), out.getStatus());
             new SDSReadFeature(session, nodeid).read(test, new TransferStatus(), new DisabledConnectionCallback()).close();
         }
+        assertNotEquals(attr.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(test));
         // Read with previous version must fail
         try {
             test.attributes().withVersionId(previousVersion);

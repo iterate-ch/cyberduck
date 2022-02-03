@@ -19,6 +19,7 @@
         <key>Properties</key>
         <array>
             <string>s3service.disable-dns-buckets=true</string>
+            <string>s3.storage.class.options=STANDARD OTHER</string>
         </array>
     </dict>
 </plist>

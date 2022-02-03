@@ -68,6 +68,7 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                 // Add placeholder object
                 status.setMime(MIMETYPE);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
+                type.add(Path.Type.placeholder);
                 final StatusOutputStream<VersionId> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
                     new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);

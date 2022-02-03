@@ -53,7 +53,7 @@ public final class TerminalTransferFactory {
                     transfer = new DownloadTransfer(host, items);
                 }
                 if(input.hasOption(TerminalOptionsBuilder.Params.nochecksum.name())) {
-                    final DownloadFilterOptions options = new DownloadFilterOptions();
+                    final DownloadFilterOptions options = new DownloadFilterOptions(host);
                     options.checksum = Boolean.parseBoolean(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
                     ((DownloadTransfer) transfer).withOptions(options);
                 }
@@ -61,7 +61,7 @@ public final class TerminalTransferFactory {
             case upload:
                 transfer = new UploadTransfer(host, items);
                 if(input.hasOption(TerminalOptionsBuilder.Params.nochecksum.name())) {
-                    final UploadFilterOptions options = new UploadFilterOptions();
+                    final UploadFilterOptions options = new UploadFilterOptions(host);
                     options.checksum = Boolean.parseBoolean(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
                     ((UploadTransfer) transfer).withOptions(options);
                 }

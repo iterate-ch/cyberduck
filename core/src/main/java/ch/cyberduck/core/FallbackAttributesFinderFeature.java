@@ -22,10 +22,11 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FallbackAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(FallbackAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(FallbackAttributesFinderFeature.class);
 
     private final AttributesFinder standard;
     private final AttributesFinder fallback;

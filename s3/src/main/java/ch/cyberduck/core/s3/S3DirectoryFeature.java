@@ -53,7 +53,8 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(folder, StringUtils.isBlank(status.getRegion()) ? new S3LocationFeature(session).getDefault().getIdentifier() : status.getRegion());
+            service.create(folder, StringUtils.isBlank(status.getRegion()) ?
+                new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault().getIdentifier() : status.getRegion());
             return folder;
         }
         else {
@@ -65,15 +66,17 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             final StatusOutputStream<StorageObject> out = writer.write(folder.withType(type), status, new DisabledConnectionCallback());
             new DefaultStreamCloser().close(out);
             final StorageObject metadata = out.getStatus();
-            return folder.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
+            return folder.withAttributes(new S3AttributesFinderFeature(session, false).toAttributes(metadata));
         }
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(name)) {
-                return ServiceUtils.isBucketNameValidDNSName(name);
+        if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            if(workdir.isRoot()) {
+                if(StringUtils.isNotBlank(name)) {
+                    return ServiceUtils.isBucketNameValidDNSName(name);
+                }
             }
         }
         return true;

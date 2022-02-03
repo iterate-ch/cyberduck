@@ -29,13 +29,12 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.text.RandomStringGenerator;
+import org.apache.commons.lang3.RandomUtils;
 import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         // Write some data to add a new version
         final S3WriteFeature feature = new S3WriteFeature(session);
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(10).getBytes(StandardCharsets.UTF_8);
+        final byte[] content = RandomUtils.nextBytes(10);
         final TransferStatus status = new TransferStatus().withMime("text/plain");
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));

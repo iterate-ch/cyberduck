@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -38,15 +38,6 @@ public class S3StorageClassFeature implements Redundancy {
 
     private final S3Session session;
     private final PathContainerService containerService;
-
-    public static final Set<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
-        S3Object.STORAGE_CLASS_STANDARD,
-        "INTELLIGENT_TIERING",
-        S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, // This storage class (IA, for infrequent access) is optimized for long-lived and less frequently accessed data
-        "ONEZONE_IA",
-        S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-        S3Object.STORAGE_CLASS_GLACIER,
-        "DEEP_ARCHIVE"));
 
     public S3StorageClassFeature(final S3Session session) {
         this.session = session;
@@ -60,7 +51,7 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public Set<String> getClasses() {
-        return STORAGE_CLASS_LIST;
+        return new LinkedHashSet<>(new HostPreferences(session.getHost()).getList("s3.storage.class.options"));
     }
 
     @Override
@@ -74,7 +65,7 @@ public class S3StorageClassFeature implements Redundancy {
         }
         // HEAD request provides storage class information of the object.
         // S3 returns this header for all objects except for Standard storage class objects.
-        final String redundancy = new S3AttributesFinderFeature(session).find(file).getStorageClass();
+        final String redundancy = new S3AttributesFinderFeature(session, false).find(file).getStorageClass();
         if(StringUtils.isBlank(redundancy)) {
             return S3Object.STORAGE_CLASS_STANDARD;
         }
@@ -93,7 +84,7 @@ public class S3StorageClassFeature implements Redundancy {
                 final TransferStatus status = new TransferStatus();
                 status.setLength(file.attributes().getSize());
                 status.setStorageClass(redundancy);
-                copy.copy(file, file, status, new DisabledConnectionCallback());
+                copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
             }
             catch(NotfoundException e) {
                 if(file.isPlaceholder()) {

@@ -31,14 +31,15 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
 public class TouchWorker extends Worker<Path> {
-    private static final Logger log = Logger.getLogger(TouchWorker.class);
+    private static final Logger log = LogManager.getLogger(TouchWorker.class);
 
     private final Path file;
 

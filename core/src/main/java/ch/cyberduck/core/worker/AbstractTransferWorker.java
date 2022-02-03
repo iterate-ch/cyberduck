@@ -33,7 +33,6 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
@@ -53,7 +52,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -62,7 +62,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 
 public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
-    private static final Logger log = Logger.getLogger(AbstractTransferWorker.class);
+    private static final Logger log = LogManager.getLogger(AbstractTransferWorker.class);
 
     private final SleepPreventer sleep = SleepPreventerFactory.get();
     private final NotificationService notification;
@@ -210,7 +210,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             transfer.reset();
 
             // Normalize Paths before preparing
-            progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"), transfer.getName(), action.getTitle()));
             transfer.normalize();
 
             // Calculate information about the files in advance to give progress information
@@ -256,12 +255,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new TransferCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
-            return this.submit(new RetryTransferCallable(transfer.getSource(),
-                preferences.getInteger("transfer.connection.retry"), preferences.getInteger("transfer.connection.retry.delay")) {
-
+            return this.submit(new RetryTransferCallable(transfer.getSource()) {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     parent.validate();
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
+                            file.getName(), action.getTitle()));
                     final Session<?> source = borrow(Connection.source);
                     final Session<?> destination = borrow(Connection.destination);
                     try {
@@ -279,8 +278,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 log.info(String.format("Accepted file %s in transfer %s", file, this));
                             }
                             // Transfer
-                            progress.message(MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
-                                file.getName(), action.getTitle()));
                             // Determine transfer status
                             final TransferStatus status = filter.prepare(file, local, parent, progress);
                             table.put(new TransferItem(file, local), status);
@@ -325,7 +322,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             return null;
                         }
                         else {
-                            throw new ConnectionCanceledException(e);
+                            throw new TransferCanceledException(e);
                         }
                     }
                     finally {
@@ -368,9 +365,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 if(segment.isComplete()) {
                     continue;
                 }
-                this.submit(new RetryTransferCallable(transfer.getSource(),
-                    preferences.getInteger("transfer.connection.retry"), preferences.getInteger("transfer.connection.retry.delay")) {
-
+                this.submit(new RetryTransferCallable(transfer.getSource()) {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         status.validate();
@@ -462,7 +457,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
                             else {
-                                throw new ConnectionCanceledException(e);
+                                throw new TransferCanceledException(e);
                             }
                         }
                         finally {

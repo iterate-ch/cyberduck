@@ -17,14 +17,15 @@ package ch.cyberduck.core.random;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 public class DefaultSecureRandomProvider implements SecureRandomProvider {
-    private static final Logger log = Logger.getLogger(DefaultSecureRandomProvider.class);
+    private static final Logger log = LogManager.getLogger(DefaultSecureRandomProvider.class);
 
     private static final Object lock = new Object();
 

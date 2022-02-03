@@ -45,14 +45,15 @@ import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public abstract class AbstractEditor implements Editor {
-    private static final Logger log = Logger.getLogger(AbstractEditor.class);
+    private static final Logger log = LogManager.getLogger(AbstractEditor.class);
 
     /**
      * File has changed but not uploaded yet

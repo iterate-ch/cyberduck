@@ -38,7 +38,7 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
         super(controller, session, progress);
     }
 
-    public RegistryBackgroundAction(final Controller controller,
+    public RegistryBackgroundAction(final BackgroundActionListener controller,
                                     final SessionPool session,
                                     final ProgressListener progress,
                                     final AlertCallback alert,

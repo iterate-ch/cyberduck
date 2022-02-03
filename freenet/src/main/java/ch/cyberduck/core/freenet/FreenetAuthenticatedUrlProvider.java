@@ -21,15 +21,15 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -43,7 +43,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.AbstractResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -57,7 +58,7 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 
 public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
-    private static final Logger log = Logger.getLogger(FreenetAuthenticatedUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(FreenetAuthenticatedUrlProvider.class);
 
     @Override
     public DescriptiveUrl toUrl(final Host bookmark) {
@@ -72,8 +73,9 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                     CertificateStoreFactory.get());
                 final CloseableHttpClient client = new HttpConnectionPoolBuilder(
                     target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()
-                )
-                    .build(Proxy.DIRECT, new DisabledTranscriptListener(), new DisabledLoginCallback()).build();
+                ).build(ProxyFactory.get().find(new ProxyHostUrlProvider().get(target)), new DisabledTranscriptListener(), new DisabledLoginCallback())
+                    .setUserAgent(new FreenetUserAgentProvider().get())
+                    .build();
                 final String username = bookmark.getCredentials().getUsername();
                 final String password;
                 if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
@@ -85,7 +87,9 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
                 response = new PasswordTokenRequest(new ApacheHttpTransport(client),
                     new GsonFactory(), new GenericUrl("https://oauth.freenet.de/oauth/token"), username, password)
                     .setClientAuthentication(new BasicAuthentication("desktop_client", "6LIGIHuOSkznLomu5xw0EPPBJOXb2jLp"))
-                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new FreenetUserAgentProvider()))
+                    .set("world", new HostPreferences(bookmark).getProperty("world"))
+                    .set("webLogin", Boolean.TRUE)
                     .execute();
                 final FreenetTemporaryLoginResponse login = this.getLoginSession(client, response.getAccessToken());
                 return new DescriptiveUrl(URI.create(login.urls.login), DescriptiveUrl.Type.authenticated);

@@ -56,6 +56,7 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Pairing.class) {
             return (T) new BrickPairingFeature();

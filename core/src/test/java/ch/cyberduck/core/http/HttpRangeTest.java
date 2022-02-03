@@ -15,11 +15,21 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class HttpRangeTest {
+
+    @Test
+    public void testByLength0() {
+        final HttpRange range = HttpRange.byLength(0L, 0L);
+        assertEquals(0L, range.getStart(), 0L);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, range.getEnd(), 0L);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, range.getLength(), 0L);
+    }
 
     @Test
     public void testByLength1() {

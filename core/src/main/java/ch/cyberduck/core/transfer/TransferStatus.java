@@ -31,7 +31,8 @@ import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.random.NonceGenerator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
@@ -44,17 +45,19 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class TransferStatus implements StreamCancelation, StreamProgress {
-    private static final Logger log = Logger.getLogger(TransferStatus.class);
+    private static final Logger log = LogManager.getLogger(TransferStatus.class);
 
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    public static final long UNKNOWN_LENGTH = -1L;
+
     /**
      * Change target filename
      */
     private Rename rename
-        = new Rename();
+            = new Rename();
 
     /**
      * Temporary filename only used for transfer. Rename when file transfer is complete
@@ -694,6 +697,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
         sb.append(", region=").append(region);
+        sb.append(", part=").append(part);
         sb.append('}');
         return sb.toString();
     }

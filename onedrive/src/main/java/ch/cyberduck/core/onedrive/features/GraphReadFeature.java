@@ -31,7 +31,8 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
@@ -41,7 +42,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 public class GraphReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(GraphReadFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphReadFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -68,7 +69,7 @@ public class GraphReadFeature implements Read {
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
-                    if(-1 == range.getEnd()) {
+                    if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                         header = String.format("%d-", range.getStart());
                     }
                     else {

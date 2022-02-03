@@ -23,7 +23,8 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Serializable {
-    private static final Logger log = Logger.getLogger(Acl.class);
+    private static final Logger log = LogManager.getLogger(Acl.class);
 
     public static final Acl EMPTY = new Acl();
     /**
@@ -284,7 +285,7 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
             if(this == o) {
                 return true;
             }
-            if(!(o instanceof User)) {
+            if(o == null || getClass() != o.getClass()) {
                 return false;
             }
             final User user = (User) o;
@@ -428,6 +429,26 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
         @Override
         public String getPlaceholder() {
             return LocaleFactory.localizedString("Domain Name", "S3");
+        }
+    }
+
+    public static class Owner extends CanonicalUser {
+        public Owner(final String identifier) {
+            super(identifier);
+        }
+
+        public Owner(final String identifier, final String displayName) {
+            super(identifier, displayName, false);
+        }
+
+        @Override
+        public String getPlaceholder() {
+            return LocaleFactory.localizedString("Owner");
+        }
+
+        @Override
+        public String getDisplayName() {
+            return LocaleFactory.localizedString("Owner");
         }
     }
 

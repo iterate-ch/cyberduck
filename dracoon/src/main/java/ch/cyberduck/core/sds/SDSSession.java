@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -63,7 +64,8 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -95,7 +97,7 @@ import com.migcomponents.migbase64.Base64;
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
-    private static final Logger log = Logger.getLogger(SDSSession.class);
+    private static final Logger log = LogManager.getLogger(SDSSession.class);
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
@@ -191,6 +193,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+            case password:
                 authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
                     public void process(final HttpRequest request, final HttpContext context) {
@@ -277,6 +280,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+            case password:
                 if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
                     if(matcher.matches()) {
                         if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
@@ -287,7 +291,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel,
+                        SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
+                                ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode));
                 break;
             case radius:
                 final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -321,6 +327,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
                 case oauth:
                     credentials.setUsername(account.getLogin());
+                    credentials.setSaved(true);
             }
             userAccount.set(new UserAccountWrapper(account));
             requiredKeyPairVersion = this.getRequiredKeyPairVersion();
@@ -478,7 +485,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating user info. %s", e.getMessage()));
+                log.warn(String.format("Failure updating user info. %s", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -510,7 +517,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     log.debug(String.format("User does not have a keypair for version %s", UserKeyPair.Version.RSA2048.getValue()));
                 }
                 else {
-                    log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
+                    log.warn(String.format("Failure updating user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
                     throw new SDSExceptionMappingService(nodeid).map(e);
                 }
             }
@@ -542,7 +549,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure %s updating software version", e.getMessage()));
+                log.warn(String.format("Failure %s updating software version", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -556,7 +563,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading system defaults", e.getMessage()));
+                log.warn(String.format("Failure %s reading system defaults", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -570,7 +577,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -581,13 +588,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(classificationPolicies.get() == null) {
             final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
             if(matcher.matches()) {
-                if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.30))) >= 0) {
+                if(new Version(matcher.group(1)).compareTo(new Version("4.30")) >= 0) {
                     try {
                         classificationPolicies.set(new ConfigApi(client).requestClassificationPoliciesConfigInfo(StringUtils.EMPTY));
                     }
                     catch(ApiException e) {
                         // Precondition: Right "Config Read" required.
-                        log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                        log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
                         throw new SDSExceptionMappingService(nodeid).map(e);
                     }
                 }
@@ -621,7 +628,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     if(this.generalSettingsInfo().isUseS3Storage()) {
                         final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
                         if(matcher.matches()) {
-                            if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
+                            if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
                                 return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
                             }
                         }

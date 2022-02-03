@@ -31,6 +31,7 @@ import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -42,7 +43,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -55,7 +57,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;
 
 public class DriveSession extends HttpSession<Drive> {
-    private static final Logger log = Logger.getLogger(DriveSession.class);
+    private static final Logger log = LogManager.getLogger(DriveSession.class);
 
     private ApacheHttpTransport transport;
     private OAuth2RequestInterceptor authorizationService;
@@ -101,7 +103,8 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        final Credentials credentials = host.getCredentials();
         final About about;
         try {
             about = client.about().get().setFields("user").execute();
@@ -112,8 +115,8 @@ public class DriveSession extends HttpSession<Drive> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Authenticated as user %s", about.getUser()));
         }
-        final Credentials credentials = host.getCredentials();
         credentials.setUsername(about.getUser().getEmailAddress());
+        credentials.setSaved(true);
     }
 
     @Override
@@ -153,6 +156,9 @@ public class DriveSession extends HttpSession<Drive> {
         }
         if(type == Delete.class) {
             return (T) new DriveBatchDeleteFeature(this, fileid);
+        }
+        if(type == Trash.class) {
+            return (T) new DriveBatchTrashFeature(this, fileid);
         }
         if(type == Move.class) {
             return (T) new DriveMoveFeature(this, fileid);

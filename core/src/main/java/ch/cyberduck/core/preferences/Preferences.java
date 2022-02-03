@@ -67,25 +67,37 @@ import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
 import ch.cyberduck.ui.quicklook.ApplicationLauncherQuicklook;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.xml.DOMConfigurator;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.RollingFileAppender;
+import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
+import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.zip.Deflater;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -94,7 +106,7 @@ import com.google.common.collect.ImmutableMap;
  * Singleton class.
  */
 public abstract class Preferences implements Locales, PreferencesReader {
-    private static final Logger log = Logger.getLogger(Preferences.class);
+    private static final Logger log = LogManager.getLogger(Preferences.class);
 
     protected static final String LIST_SEPERATOR = StringUtils.SPACE;
 
@@ -222,7 +234,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         if(defaults.exists()) {
             final Properties props = new Properties();
             try (final InputStream in = defaults.getInputStream()) {
-                props.load(in);
+                props.load(new InputStreamReader(in, StandardCharsets.UTF_8));
             }
             catch(IllegalArgumentException | AccessDeniedException | IOException e) {
                 // Ignore failure loading configuration
@@ -314,6 +326,8 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Lowercase folder name to use when looking for profiles in user support directory
          */
         this.setDefault("profiles.folder.name", "Profiles");
+        this.setDefault("profiles.discovery.updater.enable", String.valueOf(false));
+        this.setDefault("profiles.discovery.updater.url", "s3://djynunjb246r8.cloudfront.net");
 
         /*
           Maximum number of directory listings to cache using a most recently used implementation
@@ -407,6 +421,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Filename (Short Date Format)Extension
          */
         this.setDefault("browser.duplicate.format", "{0} ({1}){2}");
+        this.setDefault("browser.delete.trash", String.valueOf(true));
 
         /*
           Use octal or decimal file sizes
@@ -693,6 +708,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Default redundancy level
          */
         this.setDefault("s3.storage.class", "STANDARD");
+        this.setDefault("s3.storage.class.options", "STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER DEEP_ARCHIVE");
         //this.setDefault("s3.encryption.algorithm", "AES256");
         this.setDefault("s3.encryption.algorithm", StringUtils.EMPTY);
 
@@ -703,6 +719,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
         this.setDefault("s3.listing.concurrency", String.valueOf(25));
+        /*
+         * Read metadata of every file in list service to display modification date stored in metadata
+         */
+        this.setDefault("s3.listing.metadata.enable", String.valueOf(false));
 
         this.setDefault("s3.upload.multipart", String.valueOf(true));
         this.setDefault("s3.upload.multipart.concurrency", String.valueOf(10));
@@ -738,6 +758,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
          */
         this.setDefault("s3.glacier.restore.tier", "Standard");
         this.setDefault("s3.glacier.restore.expiration.days", String.valueOf(2));
+        this.setDefault("s3.lifecycle.transition.class", "GLACIER");
 
         /*
           A prefix to apply to log file names
@@ -747,8 +768,11 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("cloudfront.logging.prefix", "logs/");
 
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
+        this.setDefault("googlestorage.listing.concurrency", String.valueOf(25));
         this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "STANDARD");
+        this.setDefault("googlestorage.storage.class.options", "STANDARD MULTI_REGIONAL REGIONAL NEARLINE COLDLINE ARCHIVE");
+        this.setDefault("googlestorage.lifecycle.transition.class", "ARCHIVE");
         this.setDefault("googlestorage.acl.default", "private");
         this.setDefault("googlestorage.location", "us");
         /*
@@ -814,7 +838,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("googledrive.list.limit", String.valueOf(1000));
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
-        this.setDefault("googledrive.delete.trash", String.valueOf(true));
         // Limit the number of requests to 10 per second which is equal the user quota
         this.setDefault("googledrive.limit.requests.second", String.valueOf(100));
 
@@ -857,6 +880,8 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("storegate.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
         this.setDefault("storegate.lock.ttl", String.valueOf(24 * 3600000)); // 24 hours
         this.setDefault("storegate.login.hint", StringUtils.EMPTY); // login_hint parameter
+
+        this.setDefault("ctera.attach.devicetype", "DriveConnect"); // Mobile
 
         this.setDefault("oauth.browser.open.warn", String.valueOf(false));
 
@@ -945,16 +970,16 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Retry to connect after a I/O failure automatically
          */
         this.setDefault("connection.retry", String.valueOf(1));
-        // Specific setting for transfer worker
-        this.setDefault("transfer.connection.retry", String.valueOf(1));
         this.setDefault("connection.retry.max", String.valueOf(20));
         /*
           In seconds
          */
         this.setDefault("connection.retry.delay", String.valueOf(0));
-        // Specific setting for transfer worker
-        this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
         this.setDefault("connection.retry.backoff.enable", String.valueOf(false));
+
+        // Specific setting for transfer worker
+        this.setDefault("transfer.connection.retry", String.valueOf(1));
+        this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
 
         this.setDefault("connection.hostname.default", StringUtils.EMPTY);
         /*
@@ -1115,17 +1140,50 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("terminal.bundle.identifier", "com.apple.Terminal");
         this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL -l\"");
 
-        this.setDefault("network.interface.blacklist", StringUtils.EMPTY);
-
         this.setDefault("threading.pool.size.max", String.valueOf(20));
         this.setDefault("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         this.setDefault("cryptomator.enable", String.valueOf(true));
-        this.setDefault("cryptomator.vault.version", String.valueOf(7));
+        this.setDefault("cryptomator.vault.version", String.valueOf(8));
         this.setDefault("cryptomator.vault.autodetect", String.valueOf(true));
         this.setDefault("cryptomator.vault.masterkey.filename", "masterkey.cryptomator");
+        this.setDefault("cryptomator.vault.config.filename", "vault.cryptomator");
         this.setDefault("cryptomator.vault.pepper", "");
         this.setDefault("cryptomator.cache.size", String.valueOf(1000));
+
+        this.setDefault("eue.upload.multipart.size", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("eue.upload.multipart.threshold", String.valueOf(4L * 1024L * 1024L)); // 4MB
+        this.setDefault("eue.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("eue.listing.chunksize", String.valueOf(100));
+        this.setDefault("eue.share.expiration.millis", String.valueOf(31540000000L)); // 1 year
+        this.setDefault("eue.share.deletable", String.valueOf(false));
+        this.setDefault("eue.share.writable", String.valueOf(false));
+        this.setDefault("eue.share.readable", String.valueOf(true));
+        this.setDefault("eue.share.notification.enable", String.valueOf(false));
+        this.setDefault("eue.limit.hint.second", String.valueOf(2));
+        this.setDefault("eue.limit.requests.second", String.valueOf(10));
+        this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
+
+        // Must be at least 20MB
+        this.setDefault("box.upload.multipart.threshold", String.valueOf(20 * 1024 * 1024));
+        this.setDefault("box.upload.multipart.concurrency", String.valueOf(10));
+        this.setDefault("box.listing.chunksize", String.valueOf(100));
+
+        this.setDefault("preferences.general.enable", String.valueOf(true));
+        this.setDefault("preferences.browser.enable", String.valueOf(true));
+        this.setDefault("preferences.queue.enable", String.valueOf(true));
+        this.setDefault("preferences.s3.enable", String.valueOf(true));
+        this.setDefault("preferences.googlestorage.enable", String.valueOf(true));
+        this.setDefault("preferences.sftp.enable", String.valueOf(true));
+        this.setDefault("preferences.ftp.enable", String.valueOf(true));
+        this.setDefault("preferences.profiles.enable", String.valueOf(true));
+        this.setDefault("preferences.editor.enable", String.valueOf(true));
+        this.setDefault("preferences.connection.enable", String.valueOf(true));
+        this.setDefault("preferences.bandwidth.enable", String.valueOf(true));
+        this.setDefault("preferences.language.enable", String.valueOf(true));
+        this.setDefault("preferences.update.enable", String.valueOf(true));
+        this.setDefault("preferences.cryptomator.enable", String.valueOf(true));
+
     }
 
     /**
@@ -1156,13 +1214,18 @@ public abstract class Preferences implements Locales, PreferencesReader {
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);
         }
-        LogManager.resetConfiguration();
-        final Logger root = Logger.getRootLogger();
+        final LoggerContext context = Configurator.initialize(new DefaultConfiguration());
         if(null != configuration) {
-            DOMConfigurator.configure(configuration);
+            try {
+                context.initialize();
+                Configurator.initialize(null, new ConfigurationSource(configuration.openStream()));
+            }
+            catch(IOException e) {
+                log.error(String.format("Unable to load log4j configuration from %s", configuration.toExternalForm()));
+            }
         }
         // Allow to override default logging level
-        root.setLevel(Level.toLevel(level, Level.ERROR));
+        Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
         // Map logging level to pass through bridge
         final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
             .put(Level.ALL, java.util.logging.Level.ALL)
@@ -1174,14 +1237,36 @@ public abstract class Preferences implements Locales, PreferencesReader {
             .put(Level.TRACE, java.util.logging.Level.FINEST)
             .put(Level.WARN, java.util.logging.Level.WARNING)
             .build();
-        java.util.logging.Logger.getLogger("").setLevel(map.get(root.getLevel()));
-        final Enumeration loggers = LogManager.getCurrentLoggers();
-        while(loggers.hasMoreElements()) {
-            final Logger logger = (Logger) loggers.nextElement();
-            if(logger.getLevel() != null) {
-                java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
+        java.util.logging.Logger.getLogger("").setLevel(map.get(LogManager.getRootLogger().getLevel()));
+        final LoggerContext logContext = (LoggerContext) LogManager.getContext(false);
+        final Collection<LoggerConfig> loggerConfigs = logContext.getConfiguration().getLoggers().values();
+        for(LoggerConfig loggerConfig : loggerConfigs) {
+            if(loggerConfig.getLevel() != null) {
+                java.util.logging.Logger.getLogger(loggerConfig.getName()).setLevel(map.get(loggerConfig.getLevel()));
             }
         }
+        this.configureAppenders(level);
+    }
+
+    protected void configureAppenders(final String level) {
+        final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
+        final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
+        final Local active = LocalFactory.get(logfolder, String.format("%s.log", appname));
+        final Local archives = LocalFactory.get(logfolder, String.format("%s-%%i.log.zip", appname));
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender appender = RollingFileAppender.newBuilder()
+            .setName(RollingFileAppender.class.getName())
+            .withFileName(active.getAbsolute())
+            .withFilePattern(archives.getAbsolute())
+            .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
+            .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("5").withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).build())
+            .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+            .build();
+        appender.start();
+        config.addAppender(appender);
+        config.getRootLogger().addAppender(appender, null, null);
+        ctx.updateLoggers();
     }
 
     @Override

@@ -37,7 +37,7 @@ public class BrickThresholdUploadFeature implements Upload<Void> {
     @Override
     public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > 0) {
-            return new BrickUploadFeature(session, new BrickWriteFeature(session)).withWriter(writer).upload(file, local, throttle, listener, status, callback);
+            return new BrickUploadFeature(session, writer).upload(file, local, throttle, listener, status, callback);
         }
         else {
             new BrickTouchFeature(session).touch(file, status);

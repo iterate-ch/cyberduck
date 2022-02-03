@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -22,13 +23,40 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.FileIdProvider;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
-import ch.cyberduck.core.onedrive.features.*;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
+import ch.cyberduck.core.onedrive.features.GraphPromptUrlProvider;
+import ch.cyberduck.core.onedrive.features.GraphQuotaFeature;
+import ch.cyberduck.core.onedrive.features.GraphReadFeature;
+import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.shared.BufferWriteFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -38,7 +66,8 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.RequestExecutor;
@@ -55,7 +84,7 @@ import java.util.Set;
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     private final static String API_VERSION = "v1.0";
 
-    private static final Logger log = Logger.getLogger(GraphSession.class);
+    private static final Logger log = LogManager.getLogger(GraphSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
 
@@ -65,10 +94,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return user;
     }
 
-    protected final GraphFileIdProvider fileid = new GraphFileIdProvider(this);
+    protected final GraphFileIdProvider fileid;
 
     protected GraphSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+        this.fileid = _getFeature(GraphFileIdProvider.class);
     }
 
     public abstract String getFileId(final DriveItem.Metadata metadata);
@@ -146,14 +176,16 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
         try {
             user = Users.get(User.getCurrent(client), User.Select.CreationType, User.Select.UserPrincipalName);
             final String account = user.getUserPrincipalName();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
-            host.getCredentials().setUsername(account);
+            final Credentials credentials = host.getCredentials();
+            credentials.setUsername(account);
+            credentials.setSaved(true);
         }
         catch(OneDriveAPIException e) {
             log.warn(String.format("Failure reading current user properties probably missing user.read scope. %s.", e.getMessage()));
@@ -182,6 +214,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(type == FileIdProvider.class) {
             return (T) fileid;
         }
+        if(type == GraphFileIdProvider.class) { // only ever used in constructor.
+            // Required for Site-session to override FileId provider.
+            return (T) new GraphFileIdProvider(this);
+        }
         if(type == AttributesFinder.class) {
             return (T) new GraphAttributesFinderFeature(this, fileid);
         }
@@ -195,7 +231,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphWriteFeature(this, fileid);
         }
         if(type == MultipartWrite.class) {
-            return (T) new GraphBufferWriteFeature(this, fileid);
+            return (T) new BufferWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) new GraphDeleteFeature(this, fileid);

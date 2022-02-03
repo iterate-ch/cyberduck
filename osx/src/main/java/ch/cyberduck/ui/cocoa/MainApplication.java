@@ -22,8 +22,9 @@ import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.box.BoxProtocol;
 import ch.cyberduck.core.brick.BrickProtocol;
-import ch.cyberduck.core.ctera.CTERAProtocol;
+import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
@@ -41,6 +42,7 @@ import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.onedrive.SharepointProtocol;
 import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
+import ch.cyberduck.core.owncloud.OwncloudProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -79,34 +81,35 @@ public final class MainApplication {
 
             final ProtocolFactory protocols = ProtocolFactory.get();
             protocols.register(
-                new FTPProtocol(),
-                new FTPTLSProtocol(),
-                new SFTPProtocol(),
-                new DAVProtocol(),
-                new DAVSSLProtocol(),
-                new SwiftProtocol(),
-                new S3Protocol(),
-                new GoogleStorageProtocol(),
-                new AzureProtocol(),
-                new IRODSProtocol(),
-                new SpectraProtocol(),
-                new B2Protocol(),
-                new DropboxProtocol(),
-                new DriveProtocol(),
-                new HubicProtocol(),
-                new OneDriveProtocol(),
-                new SharepointProtocol(),
-                new SharepointSiteProtocol(),
-                new LocalProtocol(),
-                new MantaProtocol(),
-                new SDSProtocol(),
-                new StoregateProtocol(),
-                new BrickProtocol(),
-                new NextcloudProtocol(),
-                new CTERAProtocol()
+                    new FTPProtocol(),
+                    new FTPTLSProtocol(),
+                    new SFTPProtocol(),
+                    new DAVProtocol(),
+                    new DAVSSLProtocol(),
+                    new SwiftProtocol(),
+                    new S3Protocol(),
+                    new GoogleStorageProtocol(),
+                    new AzureProtocol(),
+                    new IRODSProtocol(),
+                    new SpectraProtocol(),
+                    new B2Protocol(),
+                    new DropboxProtocol(),
+                    new DriveProtocol(),
+                    new HubicProtocol(),
+                    new OneDriveProtocol(),
+                    new SharepointProtocol(),
+                    new SharepointSiteProtocol(),
+                    new LocalProtocol(),
+                    new MantaProtocol(),
+                    new SDSProtocol(),
+                    new StoregateProtocol(),
+                    new BrickProtocol(),
+                    new NextcloudProtocol(),
+                    new OwncloudProtocol(),
+                    new CteraProtocol(),
+                    new BoxProtocol()
             );
-            protocols.loadDefaultProfiles();
-
+            protocols.load();
             final MainController c = new MainController();
             // Must implement NSApplicationDelegate protocol
             app.setDelegate(c.id());

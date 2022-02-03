@@ -30,13 +30,14 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
 
 public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements HttpRequestInterceptor {
-    private static final Logger log = Logger.getLogger(SDSErrorResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(SDSErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
@@ -54,22 +55,22 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
-                if(executionCount <= MAX_RETRIES) {
+        if(executionCount <= MAX_RETRIES) {
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_UNAUTHORIZED:
                     final ApiException failure;
                     try {
                         if(null != response.getEntity()) {
                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                             failure = new ApiException(response.getStatusLine().getStatusCode(), Collections.emptyMap(),
-                                EntityUtils.toString(response.getEntity()));
+                                    EntityUtils.toString(response.getEntity()));
                             if(new SDSExceptionMappingService(nodeid).map(failure) instanceof ExpiredTokenException) {
                                 // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
                                 try {
                                     token = new AuthApi(session.getClient()).login(new LoginRequest()
-                                        .authType(LoginRequest.AuthTypeEnum.fromValue(session.getHost().getProtocol().getAuthorization()))
-                                        .login(user)
-                                        .password(password)).getToken();
+                                            .authType(LoginRequest.AuthTypeEnum.fromValue(session.getHost().getProtocol().getAuthorization()))
+                                            .login(user)
+                                            .password(password)).getToken();
                                     return true;
                                 }
                                 catch(ApiException e) {
@@ -82,7 +83,7 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
                     }
-                }
+            }
         }
         return false;
     }

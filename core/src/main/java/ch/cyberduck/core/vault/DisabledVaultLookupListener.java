@@ -19,13 +19,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class DisabledVaultLookupListener implements VaultLookupListener {
-    private static final Logger log = Logger.getLogger(DisabledVaultLookupListener.class);
+    private static final Logger log = LogManager.getLogger(DisabledVaultLookupListener.class);
 
     @Override
-    public Vault load(final Session session, final Path directory, final String masterkey, final byte[] pepper) {
+    public Vault load(final Session session, final Path directory, final String masterkey, final String config, final byte[] pepper) {
         log.warn(String.format("Ignore vault %s", directory));
         return Vault.DISABLED;
     }

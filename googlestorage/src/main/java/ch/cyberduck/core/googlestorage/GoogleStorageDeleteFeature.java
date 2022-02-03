@@ -20,12 +20,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,7 +35,7 @@ import java.util.Map;
 import com.google.api.services.storage.Storage;
 
 public class GoogleStorageDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(GoogleStorageDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageDeleteFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -45,19 +47,16 @@ public class GoogleStorageDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        try {
-            for(Path file : files.keySet()) {
+        for(Path file : files.keySet()) {
+            try {
                 callback.delete(file);
                 if(containerService.isContainer(file)) {
                     session.getClient().buckets().delete(file.getName()).execute();
                 }
-                else if(file.isPlaceholder()) {
-                    log.warn(String.format("Do not attempt to delete placeholder %s", file));
-                }
-                else {
+                if(file.isFile() || file.isPlaceholder()) {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
                     final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                        containerService.getContainer(file)
+                            containerService.getContainer(file)
                     ) : VersioningConfiguration.empty();
                     if(versioning.isEnabled()) {
                         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
@@ -68,9 +67,16 @@ public class GoogleStorageDeleteFeature implements Delete {
                     request.execute();
                 }
             }
-        }
-        catch(IOException e) {
-            throw new GoogleStorageExceptionMappingService().map(e);
+            catch(IOException e) {
+                final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Cannot delete {0}", e, file);
+                if(file.isPlaceholder()) {
+                    if(failure instanceof NotfoundException) {
+                        // No placeholder file may exist but we just have a common prefix
+                        continue;
+                    }
+                }
+                throw failure;
+            }
         }
     }
 

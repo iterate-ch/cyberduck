@@ -26,7 +26,8 @@ import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -38,7 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FTPMlsdListResponseReader implements FTPDataResponseReader {
-    private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
+    private static final Logger log = LogManager.getLogger(FTPMlsdListResponseReader.class);
 
     public FTPMlsdListResponseReader() {
         //

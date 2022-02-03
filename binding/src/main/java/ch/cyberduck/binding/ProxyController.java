@@ -18,11 +18,12 @@ package ch.cyberduck.binding;
 import ch.cyberduck.core.AbstractController;
 import ch.cyberduck.core.threading.MainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 
 public class ProxyController extends AbstractController {
-    private static final Logger log = Logger.getLogger(ProxyController.class);
+    private static final Logger log = LogManager.getLogger(ProxyController.class);
 
     private final Proxy proxy = new Proxy(this);
 

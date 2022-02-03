@@ -19,6 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -81,8 +82,9 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                     return Comparison.equal;
                 }
                 final PathAttributes attributes = attribute.find(file);
+                final LocalAttributes l = local.attributes();
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
-                switch(size.compare(attributes, local.attributes())) {
+                switch(size.compare(attributes, l)) {
                     case remote:
                         return Comparison.remote;
                     case local:
@@ -91,9 +93,9 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                 if(Checksum.NONE != attributes.getChecksum()) {
                     // MD5/ETag Checksum is supported
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                    local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                        .compute(local.getInputStream(), new TransferStatus()));
-                    switch(checksum.compare(attributes, local.attributes())) {
+                    l.setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
+                            .compute(local.getInputStream(), new TransferStatus()));
+                    switch(checksum.compare(attributes, l)) {
                         case equal:
                             // Decision is available
                             return Comparison.equal;
@@ -101,10 +103,10 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                 }
                 // Continue to decide with timestamp when both files exist and are not zero bytes
                 // Default comparison is using timestamp of file.
-                final Comparison compare = timestamp.compare(attributes, local.attributes());
+                final Comparison compare = timestamp.compare(attributes, l);
                 switch(compare) {
                     case unknown:
-                        switch(size.compare(attributes, local.attributes())) {
+                        switch(size.compare(attributes, l)) {
                             case local:
                             case notequal:
                                 return Comparison.local;

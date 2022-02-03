@@ -35,5 +35,7 @@
         <string>Password</string>
         <key>Context</key>
         <string>/v3/auth/tokens</string>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/ovh</string>
     </dict>
 </plist>

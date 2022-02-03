@@ -32,7 +32,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -48,7 +49,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class SwiftSegmentService {
-    private static final Logger log = Logger.getLogger(SwiftSegmentService.class);
+    private static final Logger log = LogManager.getLogger(SwiftSegmentService.class);
 
     private final SwiftSession session;
 

@@ -28,12 +28,13 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 
 public class SessionPoolFactory {
-    private static final Logger log = Logger.getLogger(SessionPoolFactory.class);
+    private static final Logger log = LogManager.getLogger(SessionPoolFactory.class);
 
     private SessionPoolFactory() {
         //

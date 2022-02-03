@@ -23,16 +23,18 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
-    private static final Logger log = Logger.getLogger(Host.class);
+    private static final Logger log = LogManager.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN
@@ -521,7 +523,17 @@ public class Host implements Serializable, Comparable<Host> {
      * @return Value for property key
      */
     public String getProperty(final String key) {
+        final Map<String, String> overrides = this.getCustom();
+        if(overrides.containsKey(key)) {
+            return overrides.get(key);
+        }
         return protocol.getProperties().get(key);
+    }
+
+    public void setProperty(final String key, final String value) {
+        final Map<String, String> overrides = new HashMap<>(this.getCustom());
+        overrides.put(key, value);
+        this.setCustom(overrides);
     }
 
     public String getRegion() {
@@ -533,6 +545,11 @@ public class Host implements Serializable, Comparable<Host> {
 
     public void setRegion(final String region) {
         this.region = region;
+    }
+
+    public Host withRegion(final String region) {
+        this.setRegion(region);
+        return this;
     }
 
     /**
@@ -655,7 +672,7 @@ public class Host implements Serializable, Comparable<Host> {
         else if(credentials.compareTo(o.credentials) > 0) {
             return 1;
         }
-        return 0;
+        return StringUtils.compare(defaultpath, o.defaultpath);
     }
 
     @Override

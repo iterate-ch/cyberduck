@@ -28,12 +28,13 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 
 public class DriveFileIdProvider implements FileIdProvider {
-    private static final Logger log = Logger.getLogger(DriveFileIdProvider.class);
+    private static final Logger log = LogManager.getLogger(DriveFileIdProvider.class);
 
     private final DriveSession session;
     private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
@@ -48,9 +49,9 @@ public class DriveFileIdProvider implements FileIdProvider {
             return file.attributes().getFileId();
         }
         if(file.isRoot()
-            || file.equals(DriveHomeFinderService.MYDRIVE_FOLDER)
-            || file.equals(DriveHomeFinderService.SHARED_FOLDER_NAME)
-            || file.equals(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
+                || new SimplePathPredicate(file).test(DriveHomeFinderService.MYDRIVE_FOLDER)
+                || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_FOLDER_NAME)
+                || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
         if(cache.contains(new SimplePathPredicate(file))) {
@@ -62,7 +63,7 @@ public class DriveFileIdProvider implements FileIdProvider {
         }
         if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
             final Path found = new DriveTeamDrivesListService(session, this).list(file.getParent(), listener).find(
-                new SimplePathPredicate(file)
+                    new SimplePathPredicate(file)
             );
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
@@ -102,21 +103,6 @@ public class DriveFileIdProvider implements FileIdProvider {
     @Override
     public void clear() {
         cache.clear();
-    }
-
-    public static final class IgnoreTrashedPathPredicate extends SimplePathPredicate {
-        public IgnoreTrashedPathPredicate(final Path file) {
-            super(file);
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            if(test.attributes().isDuplicate()) {
-                // Ignore trashed files
-                return false;
-            }
-            return super.test(test);
-        }
     }
 
     private static final class IgnoreTrashedComparator implements Comparator<Path> {

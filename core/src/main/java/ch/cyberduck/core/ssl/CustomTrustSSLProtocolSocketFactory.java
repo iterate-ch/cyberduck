@@ -23,7 +23,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
-    private static final Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
+    private static final Logger log = LogManager.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
     private final SSLSocketFactory factory;
     /**
@@ -77,7 +78,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this.key = key;
         try {
             // Default provider
-            context = SSLContext.getInstance("TLS");
+            context = SSLContext.getInstance("TLSv1.3");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
@@ -160,12 +161,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     @Override
     public Socket createSocket() throws IOException {
-        return this.handshake(new SocketGetter() {
-            @Override
-            public Socket create() throws IOException {
-                return factory.createSocket();
-            }
-        });
+        return this.handshake(factory::createSocket);
     }
 
     @Override

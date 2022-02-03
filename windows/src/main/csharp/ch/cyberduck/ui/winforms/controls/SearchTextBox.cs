@@ -24,6 +24,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls.Design;
 using ch.cyberduck.core;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -69,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
             InitializeComponent();
 
-            searchImage.Image = ResourcesBundle.search_inactive;
+            searchImage.Image = Images.SearchInactive;
 
             //Load properties
             BackColor = InactiveBackColor;
@@ -412,8 +413,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void OnTextChanged(EventArgs e)
         {
             searchImage.Image = TextEntered
-                                    ? ResourcesBundle.search_active
-                                    : ResourcesBundle.search_inactive;
+                                    ? Images.SearchActive
+                                    : Images.SearchInactive;
 
             //Start search timer
             _timer.Stop();

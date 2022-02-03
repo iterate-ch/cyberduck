@@ -29,7 +29,8 @@ import ch.cyberduck.core.transfer.TransferItem;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.file.FileSystems;
 import java.nio.file.InvalidPathException;
@@ -40,7 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GlobTransferItemFinder implements TransferItemFinder {
-    private static final Logger log = Logger.getLogger(GlobTransferItemFinder.class);
+    private static final Logger log = LogManager.getLogger(GlobTransferItemFinder.class);
 
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) throws AccessDeniedException {

@@ -48,7 +48,8 @@ import ch.cyberduck.core.transfer.download.TrashFilter;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DownloadTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(DownloadTransfer.class);
+    private static final Logger log = LogManager.getLogger(DownloadTransfer.class);
 
     private final Filter<Path> filter;
     private final Comparator<Path> comparator;
@@ -67,7 +68,7 @@ public class DownloadTransfer extends Transfer {
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private DownloadFilterOptions options = new DownloadFilterOptions();
+    private DownloadFilterOptions options = new DownloadFilterOptions(host);
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
@@ -198,6 +199,10 @@ public class DownloadTransfer extends Transfer {
                 final Local local = download.local;
                 if(local.exists()) {
                     if(local.isDirectory()) {
+                        if(download.remote.isDirectory()) {
+                            // Do not prompt when merging into existing directory
+                            continue;
+                        }
                         if(local.list().isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;

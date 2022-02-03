@@ -25,14 +25,15 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class DonationKeyFactory extends LicenseFactory {
-    private static final Logger log = Logger.getLogger(DonationKeyFactory.class);
+    private static final Logger log = LogManager.getLogger(DonationKeyFactory.class);
 
     @Override
     protected License create() {
@@ -51,6 +52,7 @@ public class DonationKeyFactory extends LicenseFactory {
             if(log.isInfoEnabled()) {
                 log.info("No donation key found");
             }
+            final Pattern pattern = Pattern.compile(".*\\.cyberduckreceipt");
             // No key found. Look for receipt in sandboxed application container
             for(Local file : SupportDirectoryFinderFactory.get().find().list().filter(new Filter<Local>() {
                 @Override
@@ -60,7 +62,7 @@ public class DonationKeyFactory extends LicenseFactory {
 
                 @Override
                 public Pattern toPattern() {
-                    return Pattern.compile(".*\\.cyberduckreceipt");
+                    return pattern;
                 }
             })) {
                 final ReceiptVerifier verifier = new ReceiptVerifier(file);

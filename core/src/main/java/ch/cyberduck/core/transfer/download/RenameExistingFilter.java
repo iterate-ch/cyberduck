@@ -30,15 +30,16 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class RenameExistingFilter extends AbstractDownloadFilter {
-    private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
+    private static final Logger log = LogManager.getLogger(RenameExistingFilter.class);
 
     public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
+        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public RenameExistingFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

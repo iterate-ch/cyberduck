@@ -30,7 +30,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.MultipleDeleteResult;
@@ -43,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 public class S3MultipleDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(S3MultipleDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MultipleDeleteFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -70,26 +71,26 @@ public class S3MultipleDeleteFeature implements Delete {
                 continue;
             }
             callback.delete(file);
+            final Path bucket = containerService.getContainer(file);
             if(file.getType().contains(Path.Type.upload)) {
                 // In-progress multipart upload
                 try {
                     multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file)));
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
                 }
                 catch(NotfoundException ignored) {
                     log.warn(String.format("Ignore failure deleting multipart upload %s", file));
                 }
             }
             else {
-                final Path container = containerService.getContainer(file);
                 final List<ObjectKeyAndVersion> keys = new ArrayList<>();
                 // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
                 keys.add(new ObjectKeyAndVersion(containerService.getKey(file), file.attributes().getVersionId()));
-                if(map.containsKey(container)) {
-                    map.get(container).addAll(keys);
+                if(map.containsKey(bucket)) {
+                    map.get(bucket).addAll(keys);
                 }
                 else {
-                    map.put(container, keys);
+                    map.put(bucket, keys);
                 }
             }
         }
@@ -114,23 +115,23 @@ public class S3MultipleDeleteFeature implements Delete {
     }
 
     /**
-     * @param container Bucket
-     * @param keys      Key and version ID for versioned object or null
-     * @param prompt    Password input
+     * @param bucket Bucket
+     * @param keys   Key and version ID for versioned object or null
+     * @param prompt Password input
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Authentication canceled for MFA delete
      */
-    public void delete(final Path container, final List<ObjectKeyAndVersion> keys, final PasswordCallback prompt)
-        throws BackgroundException {
+    public void delete(final Path bucket, final List<ObjectKeyAndVersion> keys, final PasswordCallback prompt)
+            throws BackgroundException {
         try {
             if(versioningService != null
-                && versioningService.getConfiguration(container).isMultifactor()) {
+                    && versioningService.getConfiguration(bucket).isMultifactor()) {
                 final Credentials factor = versioningService.getToken(StringUtils.EMPTY, prompt);
-                final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(container.getName(),
-                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                    factor.getUsername(),
-                    factor.getPassword(),
-                    // Only include errors in response
-                    true);
+                final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(bucket.getName(),
+                        keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                        factor.getUsername(),
+                        factor.getPassword(),
+                        // Only include errors in response
+                        true);
                 if(result.hasErrors()) {
                     for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
                         if(StringUtils.equals("ObjectNotFound", error.getErrorCode())) {
@@ -141,7 +142,7 @@ public class S3MultipleDeleteFeature implements Delete {
                         failure.setErrorCode(error.getErrorCode());
                         failure.setErrorMessage(error.getMessage());
                         throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
-                            new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
+                                new Path(bucket, error.getKey(), EnumSet.of(Path.Type.file)));
                     }
                 }
             }
@@ -149,10 +150,10 @@ public class S3MultipleDeleteFeature implements Delete {
                 // Request contains a list of up to 1000 keys that you want to delete
                 for(List<ObjectKeyAndVersion> partition : new Partition<>(keys,
                     new HostPreferences(session.getHost()).getInteger("s3.delete.multiple.partition"))) {
-                    final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(container.getName(),
-                        partition.toArray(new ObjectKeyAndVersion[partition.size()]),
-                        // Only include errors in response
-                        true);
+                    final MultipleDeleteResult result = session.getClient().deleteMultipleObjects(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                            partition.toArray(new ObjectKeyAndVersion[partition.size()]),
+                            // Only include errors in response
+                            true);
                     if(result.hasErrors()) {
                         for(MultipleDeleteResult.ErrorResult error : result.getErrorResults()) {
                             if(StringUtils.equals("ObjectNotFound", error.getErrorCode())) {
@@ -163,14 +164,14 @@ public class S3MultipleDeleteFeature implements Delete {
                             failure.setErrorCode(error.getErrorCode());
                             failure.setErrorMessage(error.getMessage());
                             throw new S3ExceptionMappingService().map("Cannot delete {0}", failure,
-                                new Path(container, error.getKey(), EnumSet.of(Path.Type.file)));
+                                    new Path(bucket, error.getKey(), EnumSet.of(Path.Type.file)));
                         }
                     }
                 }
             }
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, container);
+            throw new S3ExceptionMappingService().map("Cannot delete {0}", e, bucket);
         }
     }
 }

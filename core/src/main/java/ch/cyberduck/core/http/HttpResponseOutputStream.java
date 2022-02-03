@@ -22,13 +22,14 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StatusOutputStream;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public abstract class HttpResponseOutputStream<T> extends StatusOutputStream<T> {
-    private static final Logger log = Logger.getLogger(HttpResponseOutputStream.class);
+    private static final Logger log = LogManager.getLogger(HttpResponseOutputStream.class);
 
     public HttpResponseOutputStream(final OutputStream proxy) {
         super(proxy);

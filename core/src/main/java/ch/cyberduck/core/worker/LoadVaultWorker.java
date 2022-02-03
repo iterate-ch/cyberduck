@@ -20,9 +20,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.vault.VaultLookupListener;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class LoadVaultWorker extends Worker<Vault> {
@@ -37,7 +38,10 @@ public class LoadVaultWorker extends Worker<Vault> {
 
     @Override
     public Vault run(final Session<?> session) throws BackgroundException {
-        return listener.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
+        return listener.load(session, directory,
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
     }
 
     @Override

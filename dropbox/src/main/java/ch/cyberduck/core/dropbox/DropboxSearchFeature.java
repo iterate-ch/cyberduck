@@ -24,7 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -39,7 +40,7 @@ import com.dropbox.core.v2.files.SearchOptions;
 import com.dropbox.core.v2.files.SearchV2Result;
 
 public class DropboxSearchFeature implements Search {
-    private static final Logger log = Logger.getLogger(DropboxSearchFeature.class);
+    private static final Logger log = LogManager.getLogger(DropboxSearchFeature.class);
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;

@@ -21,7 +21,10 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -30,8 +33,12 @@ import java.util.Optional;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.json.JsonParser;
+import com.google.api.client.json.JsonToken;
+import com.google.api.client.json.gson.GsonFactory;
 
 public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMappingService {
+    private static final Logger log = LogManager.getLogger(GoogleStorageExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final IOException failure) {
@@ -61,5 +68,47 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
                 .HttpResponseException(response.getStatusCode(), buffer.toString()));
         }
         return super.map(failure);
+    }
+
+    /**
+     * Parse failure message from error response
+     *
+     * @param response Error response with JSON body
+     * @return Error message parsed from error key
+     */
+    public String parse(final HttpResponse response) {
+        if(response.getEntity() != null) {
+            try (JsonParser parser = new GsonFactory().createJsonParser(response.getEntity().getContent())) {
+                JsonToken currentToken = parser.getCurrentToken();
+                // token is null at start, so get next token
+                if(currentToken == null) {
+                    currentToken = parser.nextToken();
+                }
+                // check for empty content
+                if(currentToken != null) {
+                    // make sure there is an "error" key
+                    parser.skipToKey("error");
+                    // in some cases (i.e. oauth), "error" can be a string, in most cases it's a
+                    // GoogleJsonError object
+                    if(parser.getCurrentToken() == JsonToken.VALUE_STRING) {
+                        return parser.getText();
+                    }
+                    else if(parser.getCurrentToken() == JsonToken.START_OBJECT) {
+                        final StringBuilder details = new StringBuilder();
+                        final GoogleJsonError error = parser.parseAndClose(GoogleJsonError.class);
+                        for(GoogleJsonError.ErrorInfo info : error.getErrors()) {
+                            details.append(info.getMessage());
+                        }
+                        return details.toString();
+                    }
+                }
+                parser.close();
+            }
+            catch(IOException exception) {
+                // it would be bad to throw an exception while throwing an exception
+                log.warn(String.format("Ignore failure %s parsing error reply from %s", exception, response));
+            }
+        }
+        return response.getStatusLine().getReasonPhrase();
     }
 }

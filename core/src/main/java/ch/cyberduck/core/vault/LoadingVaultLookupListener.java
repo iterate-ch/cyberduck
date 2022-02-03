@@ -22,10 +22,11 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LoadingVaultLookupListener implements VaultLookupListener {
-    private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
+    private static final Logger log = LogManager.getLogger(LoadingVaultLookupListener.class);
 
     private final VaultRegistry registry;
     private final PasswordStore keychain;
@@ -38,12 +39,12 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     }
 
     @Override
-    public Vault load(final Session session, final Path directory, final String masterkey, final byte[] pepper) throws VaultUnlockCancelException {
+    public Vault load(final Session session, final Path directory, final String masterkey, final String config, final byte[] pepper) throws VaultUnlockCancelException {
         synchronized(registry) {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
             }
-            final Vault vault = VaultFactory.get(directory, masterkey, pepper);
+            final Vault vault = VaultFactory.get(directory, masterkey, config, pepper);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }

@@ -36,7 +36,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -48,7 +49,7 @@ import ch.iterate.openstack.swift.model.Region;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(SwiftAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftAttributesFinderFeature.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();

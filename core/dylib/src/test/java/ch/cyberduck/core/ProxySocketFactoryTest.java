@@ -137,6 +137,7 @@ public class ProxySocketFactoryTest {
     }
 
     @Test
+    @Ignore
     public void testSpecificNetworkInterfaceForIP6Address() throws Exception {
         final InetAddress loopback = InetAddress.getByName("::1%en0");
         assertNotNull(loopback);
@@ -157,6 +158,7 @@ public class ProxySocketFactoryTest {
     }
 
     @Test(expected = ConnectException.class)
+    @Ignore
     public void testFixDefaultNetworkInterface() throws Exception {
         final ProxySocketFactory factory = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"));
         assertEquals(

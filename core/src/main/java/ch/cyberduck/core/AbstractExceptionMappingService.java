@@ -28,7 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.NoHttpResponseException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.InterruptedIOException;
@@ -38,7 +39,7 @@ import java.text.MessageFormat;
 import java.util.concurrent.TimeoutException;
 
 public abstract class AbstractExceptionMappingService<T extends Throwable> implements ExceptionMappingService<T> {
-    private static final Logger log = Logger.getLogger(AbstractExceptionMappingService.class);
+    private static final Logger log = LogManager.getLogger(AbstractExceptionMappingService.class);
 
     public BackgroundException map(final String message, final T failure) {
         final BackgroundException exception = this.map(failure);

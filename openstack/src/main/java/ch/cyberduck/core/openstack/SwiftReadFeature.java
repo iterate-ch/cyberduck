@@ -30,7 +30,8 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,7 @@ import ch.iterate.openstack.swift.Response;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftReadFeature.class);
 
     private final PathContainerService containerService
         = new DefaultPathContainerService();
@@ -61,7 +62,7 @@ public class SwiftReadFeature implements Read {
             final Response response;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     response = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             range.getStart());
@@ -76,7 +77,7 @@ public class SwiftReadFeature implements Read {
                 response = session.getClient().getObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
-            return new HttpMethodReleaseInputStream(response.getResponse());
+            return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Download {0} failed", e, file);

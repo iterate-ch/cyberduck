@@ -26,37 +26,49 @@ import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 
 public class DistributionPurgeWorker extends Worker<Boolean> {
+    private static final Logger log = LogManager.getLogger(DistributionPurgeWorker.class);
 
     /**
      * Selected files.
      */
     private final List<Path> files;
-
     private final LoginCallback prompt;
+    private final Distribution.Method[] methods;
 
-    private final Distribution.Method method;
-
-    public DistributionPurgeWorker(final List<Path> files, final LoginCallback prompt, final Distribution.Method method) {
+    public DistributionPurgeWorker(final List<Path> files, final LoginCallback prompt, final Distribution.Method... methods) {
         this.files = files;
         this.prompt = prompt;
-        this.method = method;
+        this.methods = methods;
     }
 
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
-        final Purge feature = cdn.getFeature(Purge.class, method);
-        final PathContainerService container = session.getFeature(PathContainerService.class);
-        for(Path file : this.getContainers(container, files)) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
+        if(null == cdn) {
+            log.warn(String.format("Missing CDN support in %s", session));
+            return false;
+        }
+        for(Distribution.Method method : methods) {
+            final Purge feature = cdn.getFeature(Purge.class, method);
+            if(null == feature) {
+                log.warn(String.format("Missing purge support in %s", cdn));
+                continue;
             }
-            feature.invalidate(file, method, files, prompt);
+            final PathContainerService container = session.getFeature(PathContainerService.class);
+            for(Path file : this.getContainers(container, files)) {
+                if(this.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
+                feature.invalidate(file, method, files, prompt);
+            }
         }
         return true;
     }

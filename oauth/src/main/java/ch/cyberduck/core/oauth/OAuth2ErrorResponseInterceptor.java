@@ -27,10 +27,11 @@ import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
-    private static final Logger log = Logger.getLogger(OAuth2ErrorResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
@@ -59,7 +60,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                             log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
                             // Reset OAuth Tokens
                             bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
-                            service.setTokens(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
+                            service.setTokens(service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode));
                         }
                         // Try again
                         return true;

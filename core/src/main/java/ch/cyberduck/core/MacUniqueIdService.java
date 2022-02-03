@@ -18,7 +18,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -27,7 +28,7 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 public class MacUniqueIdService implements UniqueIdService {
-    private static final Logger log = Logger.getLogger(MacUniqueIdService.class.getName());
+    private static final Logger log = LogManager.getLogger(MacUniqueIdService.class.getName());
 
     @Override
     public String getUUID() throws LocalAccessDeniedException {

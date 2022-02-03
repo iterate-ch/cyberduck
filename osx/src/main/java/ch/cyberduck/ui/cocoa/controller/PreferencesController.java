@@ -36,30 +36,35 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.googlestorage.GoogleStorageAccessControlListFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
-import ch.cyberduck.core.googlestorage.GoogleStorageStorageClassFeature;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
+import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.s3.S3StorageClassFeature;
+import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Arrays;
@@ -68,17 +73,25 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class PreferencesController extends ToolbarWindowController {
-    private static final Logger log = Logger.getLogger(PreferencesController.class);
+    private static final Logger log = LogManager.getLogger(PreferencesController.class);
 
     private final NSNotificationCenter notificationCenter
         = NSNotificationCenter.defaultCenter();
 
     private final Preferences preferences
         = PreferencesFactory.get();
+
+    private final ProfilesPreferencesController profilesPanelController;
+
+    public PreferencesController() {
+        profilesPanelController = new ProfilesPreferencesController();
+    }
 
     @Override
     protected String getBundleName() {
@@ -174,22 +187,48 @@ public class PreferencesController extends ToolbarWindowController {
     @Override
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
-        views.put(new Label(PreferencesToolbarItem.general.name(), PreferencesToolbarItem.general.label()), panelGeneral);
-        views.put(new Label(PreferencesToolbarItem.browser.name(), PreferencesToolbarItem.browser.label()), panelBrowser);
-        views.put(new Label(PreferencesToolbarItem.queue.name(), PreferencesToolbarItem.queue.label()), panelTransfer);
-        views.put(new Label(PreferencesToolbarItem.pencil.name(), PreferencesToolbarItem.pencil.label()), panelEditor);
-        views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
-        views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
-        views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
-        views.put(new Label(PreferencesToolbarItem.googlestorage.name(), PreferencesToolbarItem.googlestorage.label()), panelGoogleStorage);
-        views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
-        views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
-        views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
-        if(null != preferences.getDefault("SUExpectsDSASignature")) {
-            views.put(new Label(PreferencesToolbarItem.update.name(), PreferencesToolbarItem.update.label()), panelUpdate);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.general), panelGeneral);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.browser), panelBrowser);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.queue), panelTransfer);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.editor), panelEditor);
+        if(preferences.getBoolean(String.format("preferences.%s.enable", PreferencesToolbarItem.profiles.name()))) {
+            profilesPanelController.loadBundle();
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.profiles), profilesPanelController.getPanel());
         }
-        views.put(new Label(PreferencesToolbarItem.language.name(), PreferencesToolbarItem.language.label()), panelLanguage);
+        if(null != ProtocolFactory.get().forName(Protocol.Type.ftp.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.ftp), panelFTP);
+        }
+        if(null != ProtocolFactory.get().forName(Protocol.Type.sftp.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.sftp), panelSFTP);
+        }
+        if(null != ProtocolFactory.get().forName(Protocol.Type.s3.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.s3), panelS3);
+        }
+        if(null != ProtocolFactory.get().forName(Protocol.Type.googlestorage.name())) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.googlestorage), panelGoogleStorage);
+        }
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.bandwidth), panelBandwidth);
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.connection), panelAdvanced);
+        if(preferences.getBoolean("cryptomator.enable")) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.cryptomator), panelCryptomator);
+        }
+        if(null != preferences.getProperty("SUExpectsDSASignature")) {
+            this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.update), panelUpdate);
+        }
+        this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.language), panelLanguage);
         return views;
+    }
+
+    protected void addPanel(final Map<Label, NSView> views, final Label label, final NSView panel) {
+        if(preferences.getBoolean(String.format("preferences.%s.enable", label.identifier))) {
+            views.put(label, panel);
+        }
+    }
+
+    protected static class PreferencesLabel extends Label {
+        public PreferencesLabel(final PreferencesToolbarItem item) {
+            super(item.name(), item.label());
+        }
     }
 
     protected enum PreferencesToolbarItem {
@@ -201,7 +240,7 @@ public class PreferencesController extends ToolbarWindowController {
                 return LocaleFactory.localizedString("Transfers", "Preferences");
             }
         },
-        pencil {
+        editor {
             @Override
             public String label() {
                 return LocaleFactory.localizedString("Editor", "Preferences");
@@ -235,7 +274,8 @@ public class PreferencesController extends ToolbarWindowController {
         connection,
         cryptomator,
         update,
-        language;
+        language,
+        profiles;
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");
@@ -258,9 +298,7 @@ public class PreferencesController extends ToolbarWindowController {
                 this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
                 this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
                 break;
-            case browser:
-                break;
-            case pencil:
+            case editor:
                 this.updateEditorCombobox();
                 break;
             case ftp:
@@ -285,6 +323,7 @@ public class PreferencesController extends ToolbarWindowController {
         if(window.respondsToSelector(Foundation.selector("setToolbarStyle:"))) {
             window.setToolbarStyle(NSWindow.NSWindowToolbarStyle.NSWindowToolbarStylePreference);
         }
+        window.setContentMinSize(new NSSize(600d, 200d));
         super.setWindow(window);
     }
 
@@ -1885,7 +1924,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.dracoon, Protocol.Type.brick)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.box, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
@@ -2146,7 +2185,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        for(String s : S3StorageClassFeature.STORAGE_CLASS_LIST) {
+        for(String s : preferences.getList("s3.storage.class.options")) {
             this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopup.lastItem().setRepresentedObject(s);
         }
@@ -2197,6 +2236,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopup = b;
         this.cannedAclPopup.setAutoenablesItems(false);
         this.cannedAclPopup.removeAllItems();
+        this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.cannedAclPopup.lastItem().setRepresentedObject("none");
         for(Acl acl : S3AccessControlListFeature.CANNED_LIST) {
             this.cannedAclPopup.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
             this.cannedAclPopup.lastItem().setRepresentedObject(acl.getCannedString());
@@ -2242,7 +2283,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopupGoogleStorage = b;
         this.defaultStorageClassPopupGoogleStorage.setAutoenablesItems(false);
         this.defaultStorageClassPopupGoogleStorage.removeAllItems();
-        for(String s : GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST) {
+        for(String s : preferences.getList("googlestorage.storage.class.options")) {
             this.defaultStorageClassPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopupGoogleStorage.lastItem().setRepresentedObject(s);
         }
@@ -2264,6 +2305,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.cannedAclPopupGoogleStorage = b;
         this.cannedAclPopupGoogleStorage.setAutoenablesItems(false);
         this.cannedAclPopupGoogleStorage.removeAllItems();
+        this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString("None"));
+        this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject("none");
         for(Acl acl : GoogleStorageAccessControlListFeature.CANNED_LIST) {
             this.cannedAclPopupGoogleStorage.addItemWithTitle(LocaleFactory.localizedString(acl.getCannedString(), "S3"));
             this.cannedAclPopupGoogleStorage.lastItem().setRepresentedObject(acl.getCannedString());
@@ -2348,6 +2391,64 @@ public class PreferencesController extends ToolbarWindowController {
             "end tell";
         NSAppleScript open = NSAppleScript.createWithSource(script);
         open.executeAndReturnError(null);
+    }
+
+    @Outlet
+    private NSButton logCheckbox;
+    @Outlet
+    private NSButton logShowButton;
+
+    public void setLogCheckbox(final NSButton b) {
+        this.logCheckbox = b;
+        this.logCheckbox.setTarget(this.id());
+        this.logCheckbox.setAction(Foundation.selector("logCheckboxClicked:"));
+        this.logCheckbox.setState(Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ?
+            NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void logCheckboxClicked(final NSButton sender) {
+        switch(sender.state()) {
+            case NSCell.NSOnState:
+                preferences.setLogging(Level.DEBUG.toString());
+                break;
+            default:
+                preferences.setLogging(Level.ERROR.toString());
+                break;
+        }
+    }
+
+    public void setLogShowButton(final NSButton b) {
+        this.logShowButton = b;
+        this.logShowButton.setTitle(LocaleFactory.localizedString("Show in Finder", "Localizable"));
+        this.logShowButton.setTarget(this.id());
+        this.logShowButton.setAction(Foundation.selector("logShowButtonClicked:"));
+    }
+
+    @Action
+    public void logShowButtonClicked(final NSButton sender) {
+        sender.setEnabled(false);
+        Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+            @Override
+            public Void call() {
+                try {
+                    final Local file = LocalFactory.get(LogDirectoryFinderFactory.get().find().getAbsolute(), String.format("%s.log", StringUtils.replaceChars(StringUtils.lowerCase(
+                        preferences.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY)));
+                    if(!RevealServiceFactory.get().reveal(file)) {
+                        log.warn(String.format("Failure reveal log file %s", file));
+                    }
+                }
+                finally {
+                    invoke(new DefaultMainAction() {
+                        @Override
+                        public void run() {
+                            sender.setEnabled(true);
+                        }
+                    });
+                }
+                return null;
+            }
+        });
     }
 
     @Outlet

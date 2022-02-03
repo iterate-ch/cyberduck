@@ -22,11 +22,12 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.ui.InputValidator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 
 public abstract class SheetController extends WindowController implements SheetCallback, InputValidator {
-    private static final Logger log = Logger.getLogger(SheetController.class);
+    private static final Logger log = LogManager.getLogger(SheetController.class);
 
     private final NSApplication application = NSApplication.sharedApplication();
 

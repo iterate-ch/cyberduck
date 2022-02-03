@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -34,6 +33,9 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class BrickDeleteFeatureTest extends AbstractBrickTest {
@@ -51,4 +53,21 @@ public class BrickDeleteFeatureTest extends AbstractBrickTest {
         final String lock = new BrickLockFeature(session).lock(test);
         new BrickDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testDeleteRecursively() throws Exception {
+        final Path room = new BrickDirectoryFeature(session).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path folder = new BrickDirectoryFeature(session).mkdir(new Path(room,
+            new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new BrickFindFeature(session).find(folder));
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new BrickTouchFeature(session).touch(file, new TransferStatus());
+        assertTrue(new BrickFindFeature(session).find(file));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new BrickFindFeature(session).find(folder));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new BrickFindFeature(session).find(room));
+    }
+
 }

@@ -45,6 +45,8 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     public void testGetFileidRoot() throws Exception {
         assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
             .getFileId(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
+            .getFileId(new Path("/My Drive", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
     }
 
     @Test

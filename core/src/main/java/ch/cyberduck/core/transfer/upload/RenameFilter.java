@@ -27,13 +27,14 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RenameFilter extends AbstractUploadFilter {
-    private static final Logger log = Logger.getLogger(RenameFilter.class);
+    private static final Logger log = LogManager.getLogger(RenameFilter.class);
 
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
+        this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,

@@ -27,7 +27,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -36,7 +37,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 public class HostDictionary {
-    private static final Logger log = Logger.getLogger(HostDictionary.class);
+    private static final Logger log = LogManager.getLogger(HostDictionary.class);
 
     private final DeserializerFactory factory;
     private final ProtocolFactory protocols;

@@ -30,7 +30,8 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -50,7 +51,7 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
-    private static final Logger log = Logger.getLogger(DAVClient.class);
+    private static final Logger log = LogManager.getLogger(DAVClient.class);
 
     private final String uri;
 
@@ -98,29 +99,6 @@ public class DAVClient extends SardineImpl {
             }
         }
         return resources;
-    }
-
-    @Override
-    public ContentLengthStatusInputStream get(final String url, final List<Header> headers) throws IOException {
-        HttpGet get = new HttpGet(url);
-        for(Header header : headers) {
-            get.addHeader(header);
-        }
-        // Must use #execute without handler, otherwise the entity is consumed
-        // already after the handler exits.
-        HttpResponse response = this.execute(get);
-        VoidResponseHandler handler = new VoidResponseHandler();
-        try {
-            handler.handleResponse(response);
-            // Will abort the read when closed before EOF.
-            return new ContentLengthStatusInputStream(new HttpMethodReleaseInputStream(response),
-                response.getEntity().getContentLength(),
-                response.getStatusLine().getStatusCode());
-        }
-        catch(IOException ex) {
-            get.abort();
-            throw ex;
-        }
     }
 
     public HttpClientContext context() {

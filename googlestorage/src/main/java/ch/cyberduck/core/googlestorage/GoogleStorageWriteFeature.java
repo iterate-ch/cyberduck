@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.date.RFC3339DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -49,7 +50,9 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TimeZone;
 
 import com.google.gson.stream.JsonReader;
 
@@ -103,8 +106,12 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     final StringBuilder metadata = new StringBuilder();
                     metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
                     metadata.append(",\"metadata\": {");
-                    for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
+                    for(Iterator<Map.Entry<String, String>> iter = status.getMetadata().entrySet().iterator(); iter.hasNext(); ) {
+                        final Map.Entry<String, String> item = iter.next();
                         metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
+                        if(iter.hasNext()) {
+                            metadata.append(",");
+                        }
                     }
                     metadata.append("}");
                     if(StringUtils.isNotBlank(status.getMime())) {
@@ -112,6 +119,10 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     }
                     if(StringUtils.isNotBlank(status.getStorageClass())) {
                         metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
+                    }
+                    if(null != status.getTimestamp()) {
+                        metadata.append(String.format(", \"customTime\": \"%s\"",
+                            new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
                     }
                     metadata.append("}");
                     request.setEntity(new StringEntity(metadata.toString(),
@@ -129,7 +140,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                 break;
                             default:
                                 throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                    new HttpResponseException(response.getStatusLine().getStatusCode(),
+                                        new GoogleStorageExceptionMappingService().parse(response)));
                         }
                     }
                     finally {
@@ -145,7 +157,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                             switch(putResponse.getStatusLine().getStatusCode()) {
                                 case HttpStatus.SC_OK:
                                 case HttpStatus.SC_CREATED:
-                                    try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
+                                    try (JsonReader reader = new JsonReader(new InputStreamReader(
+                                        putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
                                         reader.beginObject();
                                         while(reader.hasNext()) {
                                             final String name = reader.nextName();
@@ -161,7 +174,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                     break;
                                 default:
                                     throw new DefaultHttpResponseExceptionMappingService().map(
-                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                        new HttpResponseException(putResponse.getStatusLine().getStatusCode(),
+                                            new GoogleStorageExceptionMappingService().parse(putResponse)));
                             }
                         }
                         finally {
@@ -170,7 +184,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     }
                     else {
                         throw new DefaultHttpResponseExceptionMappingService().map(
-                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            new HttpResponseException(response.getStatusLine().getStatusCode(),
+                                new GoogleStorageExceptionMappingService().parse(response)));
                     }
                     return new VersionId(null);
                 }
@@ -195,6 +210,11 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
     @Override
     public boolean temporary() {
         return false;
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 
     @Override

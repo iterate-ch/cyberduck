@@ -18,44 +18,34 @@
 
 using ch.cyberduck.core.i18n;
 using java.util;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Resources;
 using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
     public class DefaultLocales : Locales
     {
+        private static ResourceManager resources;
+
+        static DefaultLocales()
+        {
+            resources = new ResourceManager("i18n", typeof(DefaultLocales).Assembly);
+        }
+
         public List applicationLocales()
         {
-            Assembly asm = Utils.Me();
-            string[] names = asm.GetManifestResourceNames();
-            // the dots apparently come from the relative path in the msbuild file
-            Regex regex = new Regex("Core.*\\.([^\\..]+).lproj\\.Localizable\\.strings");
-            List<string> distinctNames = new List<string>();
-            foreach (var name in names)
-            {
-                Match match = regex.Match(name);
-                if (match.Groups.Count > 1)
-                {
-                    distinctNames.Add(match.Groups[1].Value);
-                }
-            }
+            var list = new List<string>(resources.GetString("Locales").Split(' '));
             if (!HasEastAsianFontSupport())
             {
-                distinctNames.Remove("ja");
-                distinctNames.Remove("ko");
-                distinctNames.Remove("ka");
-                distinctNames.Remove("zh_CN");
-                distinctNames.Remove("zh_TW");
+                list.Remove("ja");
+                list.Remove("ko");
+                list.Remove("ka");
+                list.Remove("zh_CN");
+                list.Remove("zh_TW");
             }
-            return Utils.ConvertToJavaList(distinctNames);
+            return Utils.ConvertToJavaList(list);
         }
 
         public List systemLocales()
@@ -70,7 +60,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
         private bool HasEastAsianFontSupport()
         {
-           return true;
+            return true;
         }
     }
 }

@@ -51,6 +51,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
@@ -62,6 +63,7 @@ import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -84,7 +86,6 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.core.vault.VaultFactory;
@@ -129,7 +130,8 @@ import ch.cyberduck.ui.quicklook.QuickLookFactory;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -141,6 +143,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
@@ -157,7 +160,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class BrowserController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
-    private static final Logger log = Logger.getLogger(BrowserController.class);
+    private static final Logger log = LogManager.getLogger(BrowserController.class);
 
     private static NSPoint cascade = new NSPoint(0, 0);
 
@@ -191,8 +194,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         = PreferencesFactory.get();
 
     private final Navigation navigation = new Navigation();
-    private final TranscriptListener transcript =
-        Factory.Platform.osversion.matches("10\\.(8|9|10|11).*") ? new DisabledTranscriptListener() : new UnifiedSystemLogTranscriptListener();
+    private final TranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
 
     /**
      * Connection pool
@@ -725,32 +727,26 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void setDonateButton(NSButton button) {
-        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
-            button.setAction(Foundation.selector("donateMenuClicked:"));
-            button.sizeToFit();
-            NSView view = NSView.create();
-            view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
-            view.addSubview(button);
-            accessoryView = NSTitlebarAccessoryViewController.create();
-            accessoryView.setView(view);
-            if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
-                accessoryView.setAutomaticallyAdjustsSize(true);
-            }
-            accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
+        button.setTitle(LocaleFactory.localizedString("Get a registration key!", "License"));
+        button.setAction(Foundation.selector("donateMenuClicked:"));
+        button.sizeToFit();
+        NSView view = NSView.create();
+        view.setFrameSize(new NSSize(button.frame().size.width.doubleValue() + 10d, button.frame().size.height.doubleValue()));
+        view.addSubview(button);
+        accessoryView = NSTitlebarAccessoryViewController.create();
+        accessoryView.setView(view);
+        if(accessoryView.respondsToSelector(Foundation.selector("setAutomaticallyAdjustsSize:"))) {
+            accessoryView.setAutomaticallyAdjustsSize(true);
         }
+        accessoryView.setLayoutAttribute(NSTitlebarAccessoryViewController.NSLayoutAttributeRight);
     }
 
     private void addDonateWindowTitle() {
-        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            window.addTitlebarAccessoryViewController(accessoryView);
-        }
+        window.addTitlebarAccessoryViewController(accessoryView);
     }
 
     public void removeDonateWindowTitle() {
-        if(!Factory.Platform.osversion.matches("10\\.(7|8|9).*")) {
-            accessoryView.removeFromParentViewController();
-        }
+        accessoryView.removeFromParentViewController();
     }
 
     public BrowserTab getSelectedTabView() {
@@ -1263,7 +1259,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth((20));
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             browserListView.addTableColumn(c);
         }
         {
@@ -1478,6 +1474,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             table.addTableColumn(c);
         }
         {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.checksum.name());
+            c.headerCell().setStringValue(BrowserColumn.checksum.toString());
+            c.setMinWidth(50);
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
+                BrowserColumn.checksum.name())));
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            c.setHidden(!preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.checksum.name())));
+            table.addTableColumn(c);
+        }
+        {
             NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.storageclass.name());
             c.headerCell().setStringValue(BrowserColumn.storageclass.toString());
             c.setMinWidth(50);
@@ -1552,7 +1560,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMaxWidth(40);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             bookmarkTable.addTableColumn(c);
         }
         bookmarkTable.setDelegate((bookmarkTableDelegate = new AbstractTableDelegate<Host, BookmarkColumn>(
@@ -2268,10 +2276,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == selected || !selected.isDirectory()) {
             selected = workdir;
         }
-        BrowserController c = MainController.newDocument(true);
-        final Host host = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
-        host.setDefaultPath(selected.getAbsolute());
-        c.mount(host);
+        final BrowserController c = MainController.newDocument(true);
+        final Host duplicate = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
+        // Make sure a new UUID is assigned for duplicate
+        duplicate.setUuid(null);
+        duplicate.setDefaultPath(selected.getAbsolute());
+        c.mount(duplicate);
     }
 
     /**
@@ -2387,7 +2397,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void callback(final Path folder, final String region, final VaultCredentials passphrase) {
                 background(new WorkerBackgroundAction<>(BrowserController.this, pool,
-                    new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER)) {
+                    new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder,
+                            new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                            new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.config.filename"),
+                            new HostPreferences(pool.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))) {
                         @Override
                         public void cleanup(final Path vault) {
                             reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));
@@ -2997,6 +3010,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
                 copy.append(",").append(next.attributes().getVersionId());
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.checksum.name()))) {
+                copy.append(",");
+                if(Checksum.NONE != next.attributes().getChecksum()) {
+                    copy.append(",").append(next.attributes().getChecksum().hash);
+                }
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name()))) {
                 copy.append(",").append(next.attributes().getStorageClass());

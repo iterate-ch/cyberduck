@@ -48,7 +48,8 @@ import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -73,7 +74,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class PresignedMultipartOutputStream extends OutputStream {
-    private static final Logger log = Logger.getLogger(PresignedMultipartOutputStream.class);
+    private static final Logger log = LogManager.getLogger(PresignedMultipartOutputStream.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -229,8 +230,8 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                 }
                             }
                             catch(ApiException e) {
-                                done.countDown();
                                 failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
+                                done.countDown();
                             }
                         }
                     }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);

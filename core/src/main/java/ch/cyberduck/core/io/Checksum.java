@@ -19,10 +19,11 @@ package ch.cyberduck.core.io;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class Checksum {
-    private static final Logger log = Logger.getLogger(Checksum.class);
+    private static final Logger log = LogManager.getLogger(Checksum.class);
 
     public final HashAlgorithm algorithm;
     public final String hash;

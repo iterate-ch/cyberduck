@@ -47,14 +47,18 @@ public final class OAuthTokens {
     }
 
     public boolean isExpired() {
-        return System.currentTimeMillis() >= expiryInMilliseconds;
+        if(expiryInMilliseconds > 0 ) {
+            return System.currentTimeMillis() >= expiryInMilliseconds;
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Tokens{");
+        final StringBuilder sb = new StringBuilder("OAuthTokens{");
         sb.append("accessToken='").append(accessToken).append('\'');
-        sb.append(", refreshToken='").append(refreshToken).append('\'');
+        sb.append(", refreshToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(refreshToken)))).append('\'');
+        sb.append(", expiryInMilliseconds=").append(expiryInMilliseconds);
         sb.append('}');
         return sb.toString();
     }

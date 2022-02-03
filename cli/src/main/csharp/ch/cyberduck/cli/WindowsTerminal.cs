@@ -17,7 +17,6 @@
 // 
 
 using ch.cyberduck.cli;
-using ch.cyberduck.core.preferences;
 using org.apache.commons.cli;
 using Console = System.Console;
 
@@ -32,6 +31,14 @@ namespace Ch.Cyberduck.Cli
 
         private static void Main(string[] args)
         {
+            // HACK Cyberduck.Cryptomator.dll includes cryptolib v2, which uses java ServiceLoader.
+            // Without this hack the ServiceLoader is incapable of finding org.cryptomator.cryptolib.api.v1.CryptorProviderImpl,
+            // which results in non-working state of ch.cyberduck.core.cryptomator.CryptoVault.
+            // This is a transient dependency coming from Cyberduck.Cryptomator through Cyberduck.Cli,
+            // which isn't used in duck. Thus crazy stuff happens, and we have to force-load Cyberduck.Cryptomator here.
+            // ref https://github.com/iterate-ch/cyberduck/issues/12812
+            _ = typeof(org.cryptomator.cryptolib.api.CryptorProvider);
+
             // set UTF-8 encoding, tested in mintty (cygwin, babun) and cmd.exe
             java.lang.System.setProperty("file.encoding", "UTF-8");
             Console.OutputEncoding = System.Text.Encoding.UTF8;

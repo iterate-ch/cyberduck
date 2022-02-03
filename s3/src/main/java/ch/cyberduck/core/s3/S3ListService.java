@@ -20,7 +20,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -28,38 +27,44 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.util.EnumSet;
 
 public class S3ListService implements ListService {
-    private static final Logger log = Logger.getLogger(S3ListService.class);
+    private static final Logger log = LogManager.getLogger(S3ListService.class);
 
     private final S3Session session;
-    private final PathContainerService containerService;
 
     public S3ListService(final S3Session session) {
         this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            // List all buckets
-            try {
-                return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+            final String bucket = RequestEntityRestStorageService.findBucketInHostname(session.getHost());
+            if(StringUtils.isEmpty(bucket)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("No bucket name in host %s", session.getHost().getHostname()));
+                }
+                // List all buckets
+                try {
+                    return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+                }
+                catch(InteroperabilityException e) {
+                    // Bucket set in hostname that leads to parser failure for XML reply
+                    log.warn(String.format("Ignore failure %s listing buckets.", e));
+                }
             }
-            catch(InteroperabilityException e) {
-                // Bucket set in hostname that leads to parser failure for XML reply
-                log.warn(String.format("Ignore failure %s listing buckets.", e));
-            }
+            // If bucket is specified in hostname, try to connect to this particular bucket only.
         }
         AttributedList<Path> objects;
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-            containerService.getContainer(directory)
-        ) : VersioningConfiguration.empty();
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class)
+                .getConfiguration(directory) : VersioningConfiguration.empty();
         if(versioning.isEnabled()) {
             try {
                 objects = new S3VersionedObjectListService(session).list(directory, listener);

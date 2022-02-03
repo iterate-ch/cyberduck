@@ -74,6 +74,10 @@ public final class TerminalOptionsBuilder {
             .longOpt(TerminalAction.edit.name())
             .desc("Edit file in external editor")
             .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.purge.name())
+            .desc("Invalidate file in CDN")
+            .hasArg().argName("url").build());
         actionGroup.addOption(Option.builder("V")
             .longOpt(TerminalAction.version.name())
             .desc("Show version number and quit.").build());
@@ -92,6 +96,9 @@ public final class TerminalOptionsBuilder {
             .longOpt(Params.password.name())
             .desc("Password")
             .hasArg().argName("password or secret key").build());
+        options.addOption(Option.builder()
+                .longOpt(Params.anonymous.name())
+                .desc("No login").build());
         options.addOption(Option.builder()
             .longOpt(Params.profile.name())
             .desc("Use connection profile")
@@ -202,6 +209,7 @@ public final class TerminalOptionsBuilder {
         quiet,
         assumeyes,
         username,
+        anonymous,
         password,
         identity,
         application,

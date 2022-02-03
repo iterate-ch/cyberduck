@@ -17,10 +17,12 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.jets3t.service.acl.Permission;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class AclTest {
 
@@ -30,13 +32,31 @@ public class AclTest {
                 new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
                 new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))));
         assertNotEquals(
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))));
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))));
         assertNotEquals(
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
-                new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1"))),
+            new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
         assertNotEquals(
                 new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-1")), new Acl.UserAndRole(new Acl.CanonicalUser("i-2"), new Acl.Role("r-1"))),
                 new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("i-1"), new Acl.Role("r-2"))));
+    }
+
+    @Test
+    public void testCanned() {
+        assertSame(Acl.EMPTY, Acl.toAcl(""));
+        assertSame(Acl.EMPTY, Acl.toAcl("none"));
+        assertSame(Acl.CANNED_PRIVATE, Acl.toAcl("private"));
+    }
+
+    @Test
+    public void testOwner() {
+        final Acl acl = new Acl(new Acl.Owner("a", "d"), new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
+        acl.addAll(new Acl.CanonicalUser("a", "d", false), new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()));
+        final List<Acl.UserAndRole> list = acl.asList();
+        assertFalse(list.isEmpty());
+        assertEquals(2, list.size());
+        assertTrue(list.contains(new Acl.UserAndRole(new Acl.Owner("a", "d"), new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()))));
+        assertTrue(list.contains(new Acl.UserAndRole(new Acl.CanonicalUser("a", "d", false), new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()))));
     }
 }

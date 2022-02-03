@@ -17,7 +17,7 @@ public class ResolverTest {
 
     @Test
     public void testResolve() throws Exception {
-        assertEquals("54.228.253.92", new Resolver().resolve("cyberduck.io", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("52.31.8.231", new Resolver().resolve("cyberduck.io", new DisabledCancelCallback()).getHostAddress());
     }
 
     @Test

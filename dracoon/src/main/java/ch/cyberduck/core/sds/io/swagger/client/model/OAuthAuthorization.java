@@ -56,7 +56,7 @@ public class OAuthAuthorization {
     @JsonCreator
     public static UserAgentCategoryEnum fromValue(String text) {
       for (UserAgentCategoryEnum b : UserAgentCategoryEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

@@ -23,14 +23,15 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public final class HostParser {
-    private static final Logger log = Logger.getLogger(HostParser.class);
+    private static final Logger log = LogManager.getLogger(HostParser.class);
 
     private static final Preferences preferences = PreferencesFactory.get();
 
@@ -79,7 +80,7 @@ public final class HostParser {
     }
 
     private static <T> T decorate(final T t, final Consumer<T> decorator) {
-        if (decorator != null) {
+        if(decorator != null) {
             decorator.accept(t);
         }
         return t;
@@ -309,7 +310,7 @@ public final class HostParser {
                         char t = buffer.charAt(i);
                         if(t == ' ') {
                             throw decorate(new HostParserException(
-                                String.format("Space character in user info part of URL at %d", reader.position)),
+                                    String.format("Space character in user info part of URL at %d", reader.position)),
                                 decorator);
                         }
                         if(t == ':' && passwordBuilder == null) {
@@ -344,12 +345,7 @@ public final class HostParser {
         host.getCredentials().setPassword(null);
         if(atSignFlag) {
             if(userBuilder.length() > 0) {
-                if(host.getProtocol().isUsernameConfigurable()) {
-                    host.getCredentials().setUsername(userBuilder.toString());
-                }
-                else {
-                    log.warn("Username specified on protocol which does not support user credentials. Username will be ignored.");
-                }
+                host.getCredentials().setUsername(userBuilder.toString());
             }
             userBuilder.setLength(0);
             if(passwordBuilder != null) {

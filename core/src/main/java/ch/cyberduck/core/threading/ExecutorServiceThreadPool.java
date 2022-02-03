@@ -15,7 +15,8 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
@@ -23,7 +24,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public abstract class ExecutorServiceThreadPool implements ThreadPool {
-    private static final Logger log = Logger.getLogger(ExecutorServiceThreadPool.class);
+    private static final Logger log = LogManager.getLogger(ExecutorServiceThreadPool.class);
 
     private final AbstractExecutorService pool;
 
@@ -38,20 +39,20 @@ public abstract class ExecutorServiceThreadPool implements ThreadPool {
                 log.info(String.format("Shutdown pool %s gracefully", pool));
             }
             pool.shutdown();
-            try {
-                while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
-                    log.warn(String.format("Await termination for pool %s", pool));
-                }
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Failure awaiting pool termination. %s", e.getMessage()));
-            }
         }
         else {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Shutdown pool %s now", pool));
             }
             pool.shutdownNow();
+        }
+        try {
+            while(!pool.awaitTermination(1L, TimeUnit.SECONDS)) {
+                log.warn(String.format("Await termination for pool %s", pool));
+            }
+        }
+        catch(InterruptedException e) {
+            log.error(String.format("Failure awaiting pool termination. %s", e.getMessage()));
         }
     }
 

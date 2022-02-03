@@ -19,12 +19,13 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
+import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fusesource.jansi.Ansi;
@@ -38,6 +39,7 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
 
     private final boolean verbose;
     private final ProgressListener listener;
+    private final Filter<Path> filter;
 
     public TerminalListProgressListener() {
         this(false);
@@ -47,12 +49,13 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
      * @param verbose Long format
      */
     public TerminalListProgressListener(final boolean verbose) {
-        this(verbose, new DisabledProgressListener());
+        this(verbose, new TerminalProgressListener(), new TerminalFilter());
     }
 
-    public TerminalListProgressListener(final boolean verbose, final ProgressListener listener) {
+    public TerminalListProgressListener(final boolean verbose, final ProgressListener listener, final Filter<Path> filter) {
         this.verbose = verbose;
         this.listener = listener;
+        this.filter = filter;
     }
 
     @Override
@@ -81,12 +84,17 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
             }
         }
         else {
-            console.printf("%n%s%s%s", Ansi.ansi().bold(), file.getName(), Ansi.ansi().reset());
+            if(filter.accept(file)) {
+                console.printf("%n%s%s%s", Ansi.ansi().bold(), file.getName(), Ansi.ansi().reset());
+            }
         }
     }
 
     @Override
     public void message(final String message) {
         listener.message(message);
+    }
+
+    private static final class TerminalFilter extends DownloadDuplicateFilter {
     }
 }

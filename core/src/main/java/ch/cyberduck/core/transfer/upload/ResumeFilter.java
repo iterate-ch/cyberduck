@@ -31,15 +31,16 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ResumeFilter extends AbstractUploadFilter {
-    private static final Logger log = Logger.getLogger(ResumeFilter.class);
+    private static final Logger log = LogManager.getLogger(ResumeFilter.class);
 
     private final Upload<?> upload;
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
+        this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,

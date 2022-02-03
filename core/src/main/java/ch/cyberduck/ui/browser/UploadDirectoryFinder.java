@@ -26,10 +26,11 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class UploadDirectoryFinder implements DirectoryFinder {
-    private static final Logger log = Logger.getLogger(UploadDirectoryFinder.class);
+    private static final Logger log = LogManager.getLogger(UploadDirectoryFinder.class);
 
     private final AbstractHostCollection collection = BookmarkCollection.defaultCollection();
 

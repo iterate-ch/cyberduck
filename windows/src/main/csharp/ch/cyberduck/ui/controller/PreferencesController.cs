@@ -35,8 +35,10 @@ using Ch.Cyberduck.Core.Date;
 using ch.cyberduck.core.googlestorage;
 using java.util;
 using java.util.regex;
-using org.apache.log4j;
+using org.apache.logging.log4j;
+using org.apache.logging.log4j.core;
 using StructureMap;
+using Logger = org.apache.logging.log4j.Logger;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -44,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly string ForFiles = LocaleFactory.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = LocaleFactory.localizedString("for Folders", "Preferences");
-        private static readonly Logger Log = Logger.getLogger(typeof(PreferencesController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(PreferencesController).FullName);
 
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);
@@ -138,6 +140,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UseSystemProxyChangedEvent += View_UseSystemProxyChangedEvent;
             View.ChangeSystemProxyEvent += View_ChangeSystemProxyEvent;
 
+            View.DebugLogChangedEvent += View_DebugLogChangedEvent;
+            View.ShowDebugLogEvent += View_ShowDebugLogEvent;
+
             View.CryptomatorAutoDetectVaultChangedEvent += View_CryptomatorAutoDetectVaultChangedEvent;
 
             #region S3
@@ -170,6 +175,22 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
 
             #endregion
+        }
+
+        private void View_ShowDebugLogEvent()
+        {
+            Local file = LocalFactory.get(
+                SupportDirectoryFinderFactory.get().find(),
+                $"{PreferencesFactory.get().getProperty("application.name").Replace(" ", "")}.log");
+            if (!RevealServiceFactory.get().reveal(file))
+            {
+                Log.warn($"Failure reveal log file {file}");
+            }
+        }
+
+        private void View_DebugLogChangedEvent()
+        {
+            PreferencesFactory.get().setLogging(View.DebugLog ? Level.DEBUG.toString() : Level.ERROR.toString());
         }
 
         private void View_SegmentedDownloadsChangedEvent()
@@ -821,7 +842,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ConfirmDisconnectChangedEvent()
         {
-            PreferencesFactory.get().setProperty("browser.confirmDisconnect", View.ConfirmDisconnect);
+            PreferencesFactory.get().setProperty("browser.disconnect.confirm", View.ConfirmDisconnect);
         }
 
         private void View_UseKeychainChangedEvent()
@@ -898,7 +919,7 @@ namespace Ch.Cyberduck.Ui.Controller
             BookmarkCollection.defaultCollection().addListener(this);
             View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
             SelectDefaultBookmark(PreferencesFactory.get().getProperty("browser.open.bookmark.default"));
-            View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.confirmDisconnect");
+            View.ConfirmDisconnect = PreferencesFactory.get().getBoolean("browser.disconnect.confirm");
             View.UseKeychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
             PopulateDefaultProtocols();
             View.DefaultProtocol =
@@ -1008,6 +1029,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
             View.ConnectionTimeout = PreferencesFactory.get().getInteger("connection.timeout.seconds");
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
+            View.DebugLog = Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ? true : false;
 
             #endregion
 
@@ -1099,6 +1121,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             var canned = Utils.ConvertFromJavaList<Acl>(S3AccessControlListFeature.CANNED_LIST);
             IList<KeyValuePair<string, string>> acls = new List<KeyValuePair<string, string>>();
+            acls.Add(new KeyValuePair<string, string>(String.Empty, LocaleFactory.localizedString("None")));
             foreach (var acl in canned)
             {
                 acls.Add(new KeyValuePair<string, string>(acl.getCannedString(),
@@ -1110,6 +1133,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             var canned = Utils.ConvertFromJavaList<Acl>(GoogleStorageAccessControlListFeature.CANNED_LIST);
             IList<KeyValuePair<string, string>> acls = new List<KeyValuePair<string, string>>();
+            acls.Add(new KeyValuePair<string, string>(String.Empty, LocaleFactory.localizedString("None")));
             foreach (var acl in canned)
             {
                 acls.Add(new KeyValuePair<string, string>(acl.getCannedString(),
@@ -1208,7 +1232,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultS3StorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            Iterator iter = S3StorageClassFeature.STORAGE_CLASS_LIST.iterator();
+            Iterator iter = PreferencesFactory.get().getList("s3.storage.class.options").iterator();
             while (iter.hasNext())
             {
                 string s = (string) iter.next();
@@ -1220,7 +1244,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultGoogleStorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            Iterator iter = GoogleStorageStorageClassFeature.STORAGE_CLASS_LIST.iterator();
+            Iterator iter = PreferencesFactory.get().getList("googlestorage.storage.class.options").iterator();
             while (iter.hasNext())
             {
                 string s = (string) iter.next();
@@ -1308,7 +1332,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     protocol.disk()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.dracoon, Protocol.Type.brick)))
+                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.box, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))
                 .toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),

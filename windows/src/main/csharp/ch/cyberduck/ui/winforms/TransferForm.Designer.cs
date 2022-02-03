@@ -393,7 +393,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // resumeToolStripButton
             // 
             this.resumeToolStripButton.AutoToolTip = false;
-            this.resumeToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.resume;
+            this.resumeToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Resume;
             this.resumeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.resumeToolStripButton.Name = "resumeToolStripButton";
             this.resumeToolStripButton.Size = new System.Drawing.Size(103, 68);
@@ -403,7 +403,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // reloadToolStripButton
             // 
             this.reloadToolStripButton.AutoToolTip = false;
-            this.reloadToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.reload;
+            this.reloadToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Reload;
             this.reloadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.reloadToolStripButton.Name = "reloadToolStripButton";
             this.reloadToolStripButton.Size = new System.Drawing.Size(91, 68);
@@ -413,7 +413,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // stopToolStripButton
             // 
             this.stopToolStripButton.AutoToolTip = false;
-            this.stopToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.stop;
+            this.stopToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Stop;
             this.stopToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stopToolStripButton.Name = "stopToolStripButton";
             this.stopToolStripButton.Size = new System.Drawing.Size(67, 68);
@@ -423,7 +423,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // removeToolStripButton
             // 
             this.removeToolStripButton.AutoToolTip = false;
-            this.removeToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.clean;
+            this.removeToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Clean;
             this.removeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.removeToolStripButton.Name = "removeToolStripButton";
             this.removeToolStripButton.Size = new System.Drawing.Size(105, 68);
@@ -433,7 +433,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // cleanUptoolStripButton
             // 
             this.cleanUptoolStripButton.AutoToolTip = false;
-            this.cleanUptoolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.cleanall;
+            this.cleanUptoolStripButton.Image = global::Ch.Cyberduck.ImageHelper.CleanAll;
             this.cleanUptoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cleanUptoolStripButton.Name = "cleanUptoolStripButton";
             this.cleanUptoolStripButton.Size = new System.Drawing.Size(116, 68);
@@ -444,7 +444,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.showToolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.showToolStripButton.AutoToolTip = false;
-            this.showToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.reveal;
+            this.showToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Reveal;
             this.showToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.showToolStripButton.Name = "showToolStripButton";
             this.showToolStripButton.Size = new System.Drawing.Size(77, 68);
@@ -455,7 +455,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.openToolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.openToolStripButton.AutoToolTip = false;
-            this.openToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.open;
+            this.openToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Open;
             this.openToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripButton.Name = "openToolStripButton";
             this.openToolStripButton.Size = new System.Drawing.Size(78, 68);
@@ -465,7 +465,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // logToolStripButton
             // 
             this.logToolStripButton.AutoToolTip = false;
-            this.logToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.log;
+            this.logToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Log;
             this.logToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.logToolStripButton.Name = "logToolStripButton";
             this.logToolStripButton.Size = new System.Drawing.Size(58, 68);
@@ -475,7 +475,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // trashToolStripButton
             // 
             this.trashToolStripButton.AutoToolTip = false;
-            this.trashToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.trash;
+            this.trashToolStripButton.Image = global::Ch.Cyberduck.ImageHelper.Trash;
             this.trashToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.trashToolStripButton.Name = "trashToolStripButton";
             this.trashToolStripButton.Size = new System.Drawing.Size(74, 68);

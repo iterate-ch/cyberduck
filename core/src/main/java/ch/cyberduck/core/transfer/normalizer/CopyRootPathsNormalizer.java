@@ -19,14 +19,15 @@ package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.Path;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class CopyRootPathsNormalizer implements RootPathsNormalizer<Map<Path, Path>> {
-    private static final Logger log = Logger.getLogger(CopyRootPathsNormalizer.class);
+    private static final Logger log = LogManager.getLogger(CopyRootPathsNormalizer.class);
 
     /**
      * Prunes the map of selected files. Files which are a child of an already included directory

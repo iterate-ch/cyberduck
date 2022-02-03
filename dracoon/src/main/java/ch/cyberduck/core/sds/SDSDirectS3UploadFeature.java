@@ -56,7 +56,8 @@ import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
@@ -84,7 +85,7 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SDSDirectS3UploadFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSDirectS3UploadFeature.class);
 
     /**
      * The maximum allowed parts in a multipart upload.
@@ -117,8 +118,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                 .directS3Upload(true)
-                .timestampModification(status.getTimestamp() == null ? null : new DateTime(status.getTimestamp()))
-                .size(-1 == status.getLength() ? null : status.getLength())
+                .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
+                .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
@@ -164,13 +165,16 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
             final long size = status.getLength() + status.getOffset();
             long offset = 0;
             long remaining = status.getLength();
-            for(int partNumber = 1; remaining > 0; partNumber++) {
+            for(int partNumber = 1; remaining >= 0; partNumber++) {
                 final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                 final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
                 parts.add(this.submit(pool, file, source, throttle, listener, status,
-                    presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
+                        presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
                 remaining -= length;
                 offset += length;
+                if(0L == remaining) {
+                    break;
+                }
             }
             for(Future<TransferStatus> future : parts) {
                 try {
@@ -242,8 +246,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                         }
                     }
                     catch(ApiException e) {
-                        done.countDown();
                         failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
+                        done.countDown();
                     }
                 }
             }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
@@ -280,18 +284,21 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
         {
             long remaining = status.getLength();
             // Determine number of parts
-            for(int partNumber = 1; remaining > 0; partNumber++) {
+            for(int partNumber = 1; remaining >= 0; partNumber++) {
                 final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                 if(partNumber > 1 && length < Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)) {
                     // Separate last part with non default part size
                     presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
-                        new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
-                        createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                            new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
+                            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
                 }
                 else {
                     presignedUrlsRequest.lastPartNumber(partNumber).size(length);
                 }
                 remaining -= length;
+                if(0L == remaining) {
+                    break;
+                }
             }
         }
         presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
@@ -317,7 +324,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Void, MessageDig
                 status.setUrl(url);
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 status.setFilekey(overall.getFilekey());
                 SDSDirectS3UploadFeature.super.upload(
                     file, local, throttle, listener, status, overall, status, callback);

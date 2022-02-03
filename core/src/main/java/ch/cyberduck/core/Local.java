@@ -33,7 +33,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +61,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Local extends AbstractPath implements Referenceable, Serializable {
-    private static final Logger log = Logger.getLogger(Local.class);
+    private static final Logger log = LogManager.getLogger(Local.class);
 
     /**
      * Absolute path in local file system

@@ -25,7 +25,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,7 +34,7 @@ import java.util.Map;
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2DeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(B2DeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(B2DeleteFeature.class);
 
     private final PathContainerService containerService
         = new B2PathContainerService();

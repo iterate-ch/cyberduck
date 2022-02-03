@@ -24,7 +24,8 @@ import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public class SharepointListService extends AbstractSharepointListService {
-    static final Logger log = Logger.getLogger(SharepointListService.class);
+    static final Logger log = LogManager.getLogger(SharepointListService.class);
 
     public static final String DEFAULT_SITE = "Default";
     public static final String DRIVES_CONTAINER = "Drives";

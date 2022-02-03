@@ -20,16 +20,15 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
@@ -37,11 +36,11 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfigurationPreloader;
 import ch.cyberduck.core.cloudfront.WebsiteCloudFrontDistributionConfiguration;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ResolveFailedException;
@@ -53,6 +52,8 @@ import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -67,18 +68,21 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class S3Session extends HttpSession<RequestEntityRestStorageService> {
-    private static final Logger log = Logger.getLogger(S3Session.class);
+    private static final Logger log = LogManager.getLogger(S3Session.class);
 
     private final PreferencesReader preferences
         = new HostPreferences(host);
@@ -86,7 +90,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final Versioning versioning
         = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;
 
-    private Map<Path, Distribution> distributions = Collections.emptyMap();
+    private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
         = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
@@ -184,7 +188,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             else {
                 client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
+                        new AWSCredentials(credentials.getUsername(), credentials.getPassword()));
             }
         }
         if(host.getCredentials().isPassed()) {
@@ -192,10 +196,23 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
-            this.getFeature(ListService.class).list(new DefaultHomeFinderService(this).find(), new CancellingListProgressListener());
+            final Location.Name location = new S3PathStyleFallbackAdapter<>(this, new BackgroundExceptionCallable<Location.Name>() {
+                @Override
+                public Location.Name call() throws BackgroundException {
+                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache())
+                            .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+                }
+            }).call();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %s", location));
+            }
         }
-        catch(ListCanceledException e) {
-            // Success
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Failure %s querying region", e));
+            final Path home = new DefaultHomeFinderService(this).find();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %s", home));
+            }
         }
     }
 
@@ -323,10 +340,23 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3StorageClassFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new WebsiteCloudFrontDistributionConfiguration(this, trust, key, distributions);
+            return (T) new WebsiteCloudFrontDistributionConfiguration(this, trust, key) {
+                @Override
+                public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+                    final Distribution distribution = super.read(container, method, prompt);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Cache distribution %s", distribution));
+                    }
+                    // Replace previously cached value
+                    final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());
+                    cached.add(distribution);
+                    distributions.put(container, cached);
+                    return distribution;
+                }
+            };
         }
         if(type == UrlProvider.class) {
-            return (T) new S3UrlProvider(this);
+            return (T) new S3UrlProvider(this, distributions);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new S3PublicUrlProvider(this);
@@ -368,19 +398,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3SearchFeature(this);
         }
         if(type == Scheduler.class) {
-            return (T) new DelegatingSchedulerFeature(
-                new CloudFrontDistributionConfigurationPreloader(this) {
-                    @Override
-                    public Map<Path, Distribution> operate(final PasswordCallback callback, final Path container) throws BackgroundException {
-                        return distributions = super.operate(callback, container);
-                    }
-                }
-            );
+            return (T) new DelegatingSchedulerFeature(new CloudFrontDistributionConfigurationPreloader(this));
         }
         if(type == Restore.class) {
             return (T) new Glacier(this, trust, key);
         }
+        if(type == Timestamp.class) {
+            return (T) new S3TimestampFeature(this);
+        }
+        if(type == PathContainerService.class) {
+            return (T) new S3PathContainerService(host);
+        }
         return super._getFeature(type);
     }
-
 }

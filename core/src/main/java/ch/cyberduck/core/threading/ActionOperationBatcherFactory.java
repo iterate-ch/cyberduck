@@ -21,13 +21,14 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Factory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
-    private static final Logger log = Logger.getLogger(ActionOperationBatcherFactory.class);
+    private static final Logger log = LogManager.getLogger(ActionOperationBatcherFactory.class);
 
     public ActionOperationBatcherFactory() {
         super("factory.autorelease.class");

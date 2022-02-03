@@ -37,7 +37,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +51,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Transfer implements Serializable {
-    private static final Logger log = Logger.getLogger(Transfer.class);
+    private static final Logger log = LogManager.getLogger(Transfer.class);
 
     /**
      * Files and folders initially selected to be part of this transfer

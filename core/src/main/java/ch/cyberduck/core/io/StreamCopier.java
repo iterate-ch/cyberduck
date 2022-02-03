@@ -22,14 +22,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public final class StreamCopier {
-    private static final Logger log = Logger.getLogger(StreamCopier.class);
+    private static final Logger log = LogManager.getLogger(StreamCopier.class);
 
     private final StreamCancelation cancel;
     private final StreamProgress progress;
@@ -139,13 +140,15 @@ public final class StreamCopier {
 
     public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {
         try {
-            long skipped = in.skip(offset);
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skipping %d bytes", skipped));
-            }
-            if(skipped < offset) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
-                    skipped, offset));
+            if(offset > 0) {
+                long skipped = in.skip(offset);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skipping %d bytes", skipped));
+                }
+                if(skipped < offset) {
+                    throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                            skipped, offset));
+                }
             }
             return in;
         }

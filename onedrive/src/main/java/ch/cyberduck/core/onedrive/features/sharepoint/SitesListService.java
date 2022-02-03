@@ -10,7 +10,9 @@ import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.Sites;
+import org.nuxeo.onedrive.client.types.SharePointIds;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.net.URI;
@@ -20,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class SitesListService extends AbstractListService<Site.Metadata> {
@@ -33,9 +36,9 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
     @Override
     protected Iterator<Site.Metadata> getIterator(final Path directory) throws BackgroundException {
         if(!session.isSingleSite() && directory.getParent().isRoot()) {
-            return Sites.getSites(session.getClient(), "*");
+            return Sites.getSites(session.getClient(), "*", Site.Select.SharepointIDs);
         }
-        return Sites.getSites(session.getSite(directory.getParent()));
+        return Sites.getSites(session.getSite(directory.getParent()), Site.Select.SharepointIDs);
     }
 
     @Override
@@ -45,7 +48,53 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     @Override
     protected boolean filter(final Site.Metadata metadata) {
-        return null != metadata.getRoot();
+        if(metadata.getRoot() == null) {
+            return false;
+        }
+
+        final SharePointIds ids = metadata.getSharepointIds();
+        if(ids != null) {
+            if(isInvalid(ids.getSiteId())) {
+                return false;
+            }
+            if(isInvalid(ids.getWebId())) {
+                return false;
+            }
+        }
+        else {
+            // fallback for not retrieving sharepoint ids.
+            final String[] split = StringUtils.split(metadata.getId(), ',');
+            if(split.length != 3) {
+                // Sharepoint IDs _must_ be tenant-url,siteId,webId
+                return false;
+            }
+            if(isInvalid(split[1])) {
+                return false;
+            }
+            if(isInvalid(split[2])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isInvalid(final String input) {
+        if(input == null || input.length() == 0) {
+            // fast fallback, empty strings
+            return false;
+        }
+        try {
+            final UUID uuid = UUID.fromString(input);
+            if(SharepointID.Invalid.uuid.equals(uuid)) {
+                return true;
+            }
+            return false;
+        }
+        catch(IllegalArgumentException illegalArgumentException) {
+            // invalid UUID, possibly bad.
+            return true;
+        }
     }
 
     @Override
@@ -94,6 +143,20 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
                 list.set(i, rename);
             }
+        }
+    }
+
+    enum SharepointID {
+        Invalid(0, 0);
+
+        private final UUID uuid;
+
+        SharepointID(long mostSigBits, long leastSigBits) {
+            uuid = new UUID(mostSigBits, leastSigBits);
+        }
+
+        UUID getUuid() {
+            return this.uuid;
         }
     }
 }

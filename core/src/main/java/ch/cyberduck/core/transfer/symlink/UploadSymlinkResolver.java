@@ -24,12 +24,13 @@ import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class UploadSymlinkResolver extends AbstractSymlinkResolver<Local> {
-    private static final Logger log = Logger.getLogger(UploadSymlinkResolver.class);
+    private static final Logger log = LogManager.getLogger(UploadSymlinkResolver.class);
 
     private final Symlink feature;
 

@@ -58,6 +58,10 @@ public class PathAttributesDictionary {
         if(modifiedObj != null) {
             attributes.setModificationDate(Long.parseLong(modifiedObj));
         }
+        final String createdObj = dict.stringForKey("Created");
+        if(createdObj != null) {
+            attributes.setCreationDate(Long.parseLong(createdObj));
+        }
         final String revisionObj = dict.stringForKey("Revision");
         if(revisionObj != null) {
             attributes.setRevision(Long.parseLong(revisionObj));
@@ -72,7 +76,7 @@ public class PathAttributesDictionary {
         }
         final String etagObj = dict.stringForKey("ETag");
         if(etagObj != null) {
-            attributes.setETag(dict.stringForKey("ETag"));
+            attributes.setETag(etagObj);
         }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
@@ -82,9 +86,15 @@ public class PathAttributesDictionary {
         if(aclObj != null) {
             attributes.setAcl(new AclDictionary().deserialize(aclObj));
         }
-        final Object linkObj = dict.stringForKey("Link");
-        if(linkObj != null) {
-            attributes.setLink(new DescriptiveUrl(URI.create(dict.stringForKey("Link")), DescriptiveUrl.Type.http));
+        if(dict.mapForKey("Link") != null) {
+            final Map<String, String> link = dict.mapForKey("Link");
+            attributes.setLink(new DescriptiveUrl(URI.create(link.get("Url")), DescriptiveUrl.Type.valueOf(link.get("Type"))));
+        }
+        else {
+            final String linkObj = dict.stringForKey("Link");
+            if(linkObj != null) {
+                attributes.setLink(new DescriptiveUrl(URI.create(linkObj), DescriptiveUrl.Type.http));
+            }
         }
         if(dict.mapForKey("Checksum") != null) {
             final Map<String, String> checksum = dict.mapForKey("Checksum");

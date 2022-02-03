@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>8.0.0-SNAPSHOT</version>
+    <version>8.2.3-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -29,7 +29,6 @@
         <!-- Protocols -->
         <module>jersey</module>
         <module>oauth</module>
-        <module>udt</module>
         <module>irods</module>
         <module>spectra</module>
         <module>s3</module>
@@ -49,8 +48,12 @@
         <module>storegate</module>
         <module>brick</module>
         <module>nextcloud</module>
+        <module>owncloud</module>
         <module>manta</module>
+        <module>box</module>
         <module>ctera</module>
+        <module>eue</module>
+        <module>freenet</module>
         <module>protocols</module>
         <module>protocols/dll</module>
         <!-- Test -->
@@ -63,12 +66,10 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
-        <module>gmxcloud</module>
-        <module>freenet</module>
     </modules>
 
     <scm>
-        <connection>scm:git:ssh://git@g.iterate.ch:7999/iterate/cyberduck.git</connection>
+        <connection>scm:git:git@github.com:iterate-ch/cyberduck.git</connection>
         <tag>HEAD</tag>
     </scm>
 
@@ -76,13 +77,17 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <argLine />
-        <jna-version>5.7.0</jna-version>
-        <jersey-version>2.34</jersey-version>
-        <jackson-version>2.12.4</jackson-version>
-        <slf4j-version>1.7.32</slf4j-version>
-        <bouncycastle-version>1.69</bouncycastle-version>
+        <jna-version>5.10.0</jna-version>
+        <jersey-version>2.35</jersey-version>
+        <jackson-version>2.13.1</jackson-version>
+        <slf4j-version>1.7.35</slf4j-version>
+        <log4j-version>2.17.1</log4j-version>
+        <bouncycastle-version>1.70</bouncycastle-version>
         <httpclient-version>4.5.13</httpclient-version>
-        <google-http-client.version>1.39.2</google-http-client.version>
+        <google-http-client.version>1.41.2</google-http-client.version>
+
+        <ikvm-version>8.0.312.b07-2</ikvm-version>
+        <java-native-dll>8u312b07</java-native-dll>
     </properties>
 
     <dependencyManagement>
@@ -111,12 +116,12 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.28</version>
+                <version>0.9.32</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
-                <version>4.4.14</version>
+                <version>4.4.15</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -156,7 +161,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
-                <version>2.11.0</version>
+                <version>2.11.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -186,21 +191,26 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.8.7</version>
+                <version>2.8.9</version>
             </dependency>
             <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${log4j-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j-version}</version>
             </dependency>
             <dependency>
@@ -271,17 +281,17 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.10.10</version>
+                <version>2.10.13</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>1.6.2</version>
+                <version>1.6.4</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>2.1.10</version>
+                <version>2.1.12</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -311,12 +321,12 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.31.5</version>
+                <version>1.33.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.api-client</groupId>
                 <artifactId>google-api-client</artifactId>
-                <version>1.32.1</version>
+                <version>1.33.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
@@ -341,7 +351,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.750</version>
+                <version>1.12.135</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -353,7 +363,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>30.1.1-jre</version>
+                <version>31.0.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.joyent.util</groupId>
@@ -384,7 +394,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.1</version>
+                    <version>3.9.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -395,7 +405,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.2.2</version>
                     <configuration>
                         <archive>
                             <index>true</index>
@@ -418,7 +428,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -459,19 +469,29 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.3.1</version>
                     <configuration>
                         <source>8</source>
                         <doclint>none</doclint>
                         <encoding>UTF-8</encoding>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>aggregate</goal>
+                            </goals>
+                            <phase>site</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
                     <configuration>
-                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
-                        <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
+                        <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+                            -Djava.library.path=${project.build.directory}
+                        </argLine>
+                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -489,8 +509,10 @@
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
-                        <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
-                        <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
+                        <argLine>@{argLine} --add-opens=java.base/java.lang=ALL-UNNAMED
+                            -Djava.library.path=${project.build.directory}
+                        </argLine>
+                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -566,7 +588,7 @@
                 <plugin>
                     <groupId>org.commonjava.maven.plugins</groupId>
                     <artifactId>directory-maven-plugin</artifactId>
-                    <version>0.3.1</version>
+                    <version>1.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
@@ -574,35 +596,72 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.1</version>
+                    <version>3.10.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.doxia</groupId>
                             <artifactId>doxia-module-markdown</artifactId>
-                            <version>1.10</version>
+                            <version>1.11.1</version>
                         </dependency>
                     </dependencies>
+                    <configuration>
+                        <skipDeploy>true</skipDeploy>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>2.4.21</version>
+                    <version>2.4.25</version>
                 </plugin>
                 <plugin>
                     <groupId>io.swagger.codegen.v3</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>3.0.27</version>
+                    <version>3.0.32</version>
+                    <configuration>
+                        <configOptions>
+                            <sourceFolder>src/main/java</sourceFolder>
+                            <library>jersey2</library>
+                            <dateLibrary>joda</dateLibrary>
+                            <java8>true</java8>
+                            <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                        </configOptions>
+                        <generateApiTests>false</generateApiTests>
+                        <generateModelTests>false</generateModelTests>
+                        <generateApiDocumentation>false</generateApiDocumentation>
+                        <generateSupportingFiles>false</generateSupportingFiles>
+                        <generateModelDocumentation>false</generateModelDocumentation>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.8.0</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -639,13 +698,64 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.12</version>
+                <configuration>
+                    <!-- Place every module in the correct subfolder -->
+                    <path>${project.distributionManagement.site.url}</path>
+                    <message>Documentation for ${project.name} ${project.version}</message>
+                    <server>github</server>
+                    <repositoryName>cyberduck</repositoryName>
+                    <repositoryOwner>iterate-ch</repositoryOwner>
+                    <path>docs</path>
+                    <dryRun>true</dryRun>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.1</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
     <dependencies>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
         </dependency>
     </dependencies>
 
@@ -659,6 +769,11 @@
             <id>maven.cyberduck.io-snapshot</id>
             <url>s3://repo.maven.cyberduck.io/snapshots/</url>
         </snapshotRepository>
+        <site>
+            <id>github-pages-site</id>
+            <name>Deployment through GitHub's site deployment plugin</name>
+            <url>docs</url>
+        </site>
     </distributionManagement>
 
     <repositories>
@@ -688,90 +803,6 @@
 
     <profiles>
         <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>Windows</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>execution-root</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>linux</id>
-            <activation>
-                <os>
-                    <family>Linux</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>highest-basedir</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>Mac</family>
-                </os>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.commonjava.maven.plugins</groupId>
-                        <artifactId>directory-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>directories</id>
-                                <goals>
-                                    <goal>highest-basedir</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <property>main.basedir</property>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>release-sign-artifacts</id>
             <activation>
                 <property>
@@ -797,6 +828,52 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>project-root-jenkins</id>
+            <!-- activate profile for Jenkins builds -->
+            <activation>
+                <property>
+                    <name>env.JENKINS_HOME</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.commonjava.maven.plugins</groupId>
+                        <artifactId>directory-maven-plugin</artifactId>
+                        <version>1.0</version>
+                        <executions>
+                            <execution>
+                                <id>directories</id>
+                                <goals>
+                                    <goal>directory-of</goal>
+                                </goals>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <property>main.basedir</property>
+                                    <project>
+                                        <groupId>ch.cyberduck</groupId>
+                                        <artifactId>parent</artifactId>
+                                    </project>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>project-root-local</id>
+            <!-- activate profile for non-Jenkins builds -->
+            <activation>
+                <property>
+                    <name>!env.JENKINS_HOME</name>
+                </property>
+            </activation>
+            <properties>
+                <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
+            </properties>
         </profile>
     </profiles>
 </project>

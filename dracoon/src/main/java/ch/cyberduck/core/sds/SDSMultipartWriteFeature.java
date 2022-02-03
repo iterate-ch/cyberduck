@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -27,14 +28,16 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
-    private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSMultipartWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -50,7 +53,13 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final CreateFileUploadResponse uploadResponse = upload.start(file, status);
         final String uploadUrl = uploadResponse.getUploadUrl();
+        if(StringUtils.isBlank(uploadUrl)) {
+            throw new InteroperabilityException("Missing upload URL in server response");
+        }
         final String uploadToken = uploadResponse.getToken();
+        if(StringUtils.isBlank(uploadToken)) {
+            throw new InteroperabilityException("Missing upload token in server response");
+        }
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, file, status, uploadUrl);
         return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize"))) {
             private final AtomicBoolean close = new AtomicBoolean();

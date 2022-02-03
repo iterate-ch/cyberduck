@@ -11,13 +11,14 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 
 import java.text.MessageFormat;
 
 public class ApplescriptTerminalService implements TerminalService {
-    private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);
+    private static final Logger log = LogManager.getLogger(ApplescriptTerminalService.class);
 
     private final ApplicationFinder finder
         = ApplicationFinderFactory.get();

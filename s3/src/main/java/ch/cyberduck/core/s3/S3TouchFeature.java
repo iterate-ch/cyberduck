@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
@@ -48,13 +50,21 @@ public class S3TouchFeature implements Touch<StorageObject> {
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
         final S3Object metadata = (S3Object) out.getStatus();
-        return file.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
+        final PathAttributes attr = new S3AttributesFinderFeature(session, false).toAttributes(metadata);
+        attr.setMetadata(status.getMetadata());
+        if(null != status.getTimestamp()) {
+            attr.setModificationDate(status.getTimestamp());
+        }
+        return file.withAttributes(attr);
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
-        // Creating files is only possible inside a bucket.
-        return !workdir.isRoot();
+        if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            // Creating files is only possible inside a bucket.
+            return !workdir.isRoot();
+        }
+        return true;
     }
 
     @Override

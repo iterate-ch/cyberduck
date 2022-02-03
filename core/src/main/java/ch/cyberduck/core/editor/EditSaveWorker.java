@@ -42,13 +42,14 @@ import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public class EditSaveWorker extends Worker<Transfer> {
-    private static final Logger log = Logger.getLogger(EditSaveWorker.class);
+    private static final Logger log = LogManager.getLogger(EditSaveWorker.class);
 
     private final AbstractEditor editor;
     private final Transfer upload;
@@ -71,9 +72,9 @@ public class EditSaveWorker extends Worker<Transfer> {
 
             @Override
             public AbstractUploadFilter filter(final Session<?> session, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, destination, action, listener).withOptions(new UploadFilterOptions()
-                        .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
-                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
+                return super.filter(session, destination, action, listener).withOptions(new UploadFilterOptions(host)
+                    .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
+                    .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
             }
         };
         this.listener = listener;

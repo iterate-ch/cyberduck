@@ -40,7 +40,8 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.shared.AbstractSchedulerFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,7 +63,7 @@ import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import static java.util.stream.Collectors.groupingBy;
 
 public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>, SDSApiClient> {
-    private static final Logger log = Logger.getLogger(SDSMissingFileKeysSchedulerFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSMissingFileKeysSchedulerFeature.class);
 
     public SDSMissingFileKeysSchedulerFeature() {
         this(PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));

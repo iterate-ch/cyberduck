@@ -48,9 +48,9 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -72,7 +72,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.impl.client.WinHttpClients;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -82,10 +83,9 @@ import java.util.Arrays;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
-import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class DAVSession extends HttpSession<DAVClient> {
-    private static final Logger log = Logger.getLogger(DAVSession.class);
+    private static final Logger log = LogManager.getLogger(DAVSession.class);
 
     private final RedirectCallback redirect;
     private final PreferencesReader preferences
@@ -184,41 +184,25 @@ public class DAVSession extends HttpSession<DAVClient> {
             return;
         }
         try {
-            final Path home = new DefaultHomeFinderService(this).find();
+            final Path home = new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host)).find();
+            final HttpHead head = new HttpHead(new DAVPathEncoder().encode(home));
             try {
-                client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
-                    @Override
-                    public Void handleResponse(final HttpResponse response) throws IOException {
-                        if(Arrays.stream(response.getAllHeaders()).anyMatch(header ->
-                            HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"))) {
-                            if(log.isDebugEnabled()) {
-                                log.debug("Microsoft-IIS backend detected");
-                            }
-                            list = new MicrosoftIISDAVListService(DAVSession.this, new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this));
-                            timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
-                            attributes = new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this);
-                            if(preferences.getBoolean("webdav.microsoftiis.header.translate")) {
-                                read = new MicrosoftIISDAVReadFeature(DAVSession.this);
-                                find = new MicrosoftIISDAVFindFeature(DAVSession.this);
-                            }
-                        }
-                        this.validateResponse(response);
-                        return null;
-                    }
-                });
+                client.execute(head, new MicrosoftIISFeaturesResponseHandler());
             }
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
+                    case HttpStatus.SC_NOT_FOUND:
+                        log.warn(String.format("Ignore failure %s", e));
+                        break;
                     case HttpStatus.SC_NOT_IMPLEMENTED:
                     case HttpStatus.SC_FORBIDDEN:
-                    case HttpStatus.SC_NOT_FOUND:
                     case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
                     case HttpStatus.SC_METHOD_NOT_ALLOWED:
                         log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
-                            host, e.getResponsePhrase()));
+                                host, e.getResponsePhrase()));
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
-                        this.getFeature(ListService.class).list(home, new DisabledListProgressListener() {
+                        list.list(home, new DisabledListProgressListener() {
                             @Override
                             public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
                                 try {
@@ -236,7 +220,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                                 host, e.getResponsePhrase()));
                             cancel.verify();
                             client.disablePreemptiveAuthentication();
-                            client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
+                            client.execute(head, new MicrosoftIISFeaturesResponseHandler());
                         }
                         else {
                             throw new DAVExceptionMappingService().map(e);
@@ -364,4 +348,24 @@ public class DAVSession extends HttpSession<DAVClient> {
         return super._getFeature(type);
     }
 
+    private final class MicrosoftIISFeaturesResponseHandler extends ValidatingResponseHandler<Void> {
+        @Override
+        public Void handleResponse(final HttpResponse response) throws IOException {
+            if(Arrays.stream(response.getAllHeaders()).anyMatch(header ->
+                    HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"))) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Microsoft-IIS backend detected");
+                }
+                list = new MicrosoftIISDAVListService(DAVSession.this, new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this));
+                timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
+                attributes = new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this);
+                if(preferences.getBoolean("webdav.microsoftiis.header.translate")) {
+                    read = new MicrosoftIISDAVReadFeature(DAVSession.this);
+                    find = new MicrosoftIISDAVFindFeature(DAVSession.this);
+                }
+            }
+            this.validateResponse(response);
+            return null;
+        }
+    }
 }

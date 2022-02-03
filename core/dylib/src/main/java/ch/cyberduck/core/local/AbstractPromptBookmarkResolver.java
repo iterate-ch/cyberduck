@@ -31,7 +31,8 @@ import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFin
 import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
@@ -41,7 +42,7 @@ import java.text.MessageFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
-    private static final Logger log = Logger.getLogger(AbstractPromptBookmarkResolver.class);
+    private static final Logger log = LogManager.getLogger(AbstractPromptBookmarkResolver.class);
 
     private final int create;
     private final int resolve;
@@ -62,6 +63,9 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     @Override
     public String create(final Local file) throws AccessDeniedException {
+        if(this.skip(file)) {
+            return null;
+        }
         final ObjCObjectByReference error = new ObjCObjectByReference();
         // Create new security scoped bookmark
         final NSURL url = NSURL.fileURLWithPath(file.getAbsolute());
@@ -69,7 +73,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
             log.trace(String.format("Resolved file %s to url %s", file, url));
         }
         final NSData data = url.bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-            create, null, null, error);
+                create, null, null, error);
         if(null == data) {
             log.warn(String.format("Failure getting bookmark data for file %s", file));
             final NSError f = error.getValueAs(NSError.class);
@@ -87,17 +91,8 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     @Override
     public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
-        if(null != TEMPORARY) {
-            if(file.isChild(TEMPORARY)) {
-                // Skip prompt for file in temporary folder where access is not sandboxed
-                return null;
-            }
-        }
-        if(null != GROUP_CONTAINER) {
-            if(file.isChild(GROUP_CONTAINER)) {
-                // Skip prompt for file in application group folder where access is not sandboxed
-                return null;
-            }
+        if(this.skip(file)) {
+            return null;
         }
         final NSData bookmark;
         if(null == file.getBookmark()) {
@@ -134,6 +129,25 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
             throw new LocalAccessDeniedException(String.format("%s", f.localizedDescription()));
         }
         return resolved;
+    }
+
+    /**
+     * Determine if creating security scoped bookmarks for file should be skipped
+     */
+    private boolean skip(final Local file) {
+        if(null != TEMPORARY) {
+            if(file.isChild(TEMPORARY)) {
+                // Skip prompt for file in temporary folder where access is not sandboxed
+                return true;
+            }
+        }
+        if(null != GROUP_CONTAINER) {
+            if(file.isChild(GROUP_CONTAINER)) {
+                // Skip prompt for file in application group folder where access is not sandboxed
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

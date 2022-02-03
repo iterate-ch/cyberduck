@@ -18,10 +18,11 @@ package ch.cyberduck.core.notification;
  * feedback@cyberduck.io
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class DisabledNotificationService implements NotificationService {
-    private static final Logger log = Logger.getLogger(DisabledNotificationService.class);
+    private static final Logger log = LogManager.getLogger(DisabledNotificationService.class);
 
     @Override
     public NotificationService setup() {

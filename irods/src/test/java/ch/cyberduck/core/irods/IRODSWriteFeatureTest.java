@@ -41,7 +41,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -227,7 +226,7 @@ public class IRODSWriteFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(100).getBytes();
+        final byte[] content = RandomUtils.nextBytes(100);
         {
             final TransferStatus status = new TransferStatus();
             status.setAppend(false);
@@ -252,7 +251,7 @@ public class IRODSWriteFeatureTest {
             assertArrayEquals(content, buffer);
         }
         {
-            final byte[] newcontent = new RandomStringGenerator.Builder().build().generate(10).getBytes();
+            final byte[] newcontent = RandomUtils.nextBytes(10);
 
             final TransferStatus status = new TransferStatus();
             status.setAppend(false);
@@ -299,7 +298,7 @@ public class IRODSWriteFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = new RandomStringGenerator.Builder().build().generate((int) (Math.random() * 100)).getBytes();
+        final byte[] content = RandomUtils.nextBytes(100);
 
         final TransferStatus status = new TransferStatus();
         status.setAppend(true);
@@ -324,7 +323,7 @@ public class IRODSWriteFeatureTest {
 
         // Append
 
-        final byte[] content_append = new RandomStringGenerator.Builder().build().generate((int) (Math.random() * 100)).getBytes();
+        final byte[] content_append = RandomUtils.nextBytes(100);
 
         final TransferStatus status_append = new TransferStatus();
         status_append.setAppend(true);

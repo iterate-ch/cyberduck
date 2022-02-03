@@ -20,13 +20,14 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.SingleThreadController;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class PeriodicUpdateCheckerFactory extends Factory<PeriodicUpdateChecker> {
-    private static final Logger log = Logger.getLogger(PeriodicUpdateCheckerFactory.class);
+    private static final Logger log = LogManager.getLogger(PeriodicUpdateCheckerFactory.class);
 
     public PeriodicUpdateCheckerFactory() {
         super("factory.updater.class");

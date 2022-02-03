@@ -27,7 +27,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +37,7 @@ import com.google.api.client.http.HttpHeaders;
 import com.google.api.services.storage.Storage;
 
 public class GoogleStorageReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(GoogleStorageReadFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageReadFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -65,7 +66,7 @@ public class GoogleStorageReadFeature implements Read {
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {

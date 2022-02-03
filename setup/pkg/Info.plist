@@ -29,7 +29,7 @@
 			<key>StartOnMainThread</key>
 			<true/>
 			<key>VMOptions</key>
-			<string>-client -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -XX:+UseG1GC -XX:+UseStringDeduplication</string>
+            <string>$JVM_RUNTIME_ARGS</string>
 			<key>WorkingDirectory</key>
 			<string>$APP_PACKAGE/Contents/Resources</string>
 		</dict>

@@ -29,16 +29,17 @@ import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CompareFilter extends AbstractDownloadFilter {
-    private static final Logger log = Logger.getLogger(CompareFilter.class);
+    private static final Logger log = LogManager.getLogger(CompareFilter.class);
 
     private final ProgressListener listener;
     private final DefaultComparePathFilter comparisonService;
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final ProgressListener listener) {
-        this(symlinkResolver, session, new DownloadFilterOptions(), listener);
+        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()), listener);
     }
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

@@ -4,15 +4,17 @@
 <dict>
 	<key>Protocol</key>
 	<string>davs</string>
-	<key>Vendor</key>
-	<string>box</string>
-	<key>Description</key>
-	<string>Box (WebDAV)</string>
-	<key>Default Hostname</key>
-	<string>dav.box.com</string>
+    <key>Vendor</key>
+    <string>box</string>
+    <key>Description</key>
+    <string>Box (WebDAV)</string>
+    <key>Default Hostname</key>
+    <string>dav.box.com</string>
     <key>Port Configurable</key>
     <false/>
-	<key>Username Placeholder</key>
-	<string>Email</string>
+    <key>Username Placeholder</key>
+    <string>Email</string>
+    <key>Help</key>
+    <string>https://trac.cyberduck.io/wiki/help/en/howto/box.com</string>
 </dict>
 </plist>

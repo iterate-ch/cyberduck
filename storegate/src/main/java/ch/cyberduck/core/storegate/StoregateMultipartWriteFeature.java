@@ -38,7 +38,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetadata> {
-    private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(StoregateMultipartWriteFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -124,7 +125,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                             if(0L != overall.getLength() && 0 != content.length) {
                                 final HttpRange range = HttpRange.byLength(offset, content.length);
                                 final String header;
-                                if(overall.getLength() == -1L) {
+                                if(overall.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                                     header = String.format("%d-%d/*", range.getStart(), range.getEnd());
                                 }
                                 else {

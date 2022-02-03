@@ -30,7 +30,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
@@ -39,7 +40,7 @@ import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptKeyPair {
-    private static final Logger log = Logger.getLogger(TripleCryptKeyPair.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptKeyPair.class);
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 

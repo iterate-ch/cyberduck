@@ -26,10 +26,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DefaultAttributesFinderFeature extends ListFilteringFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DefaultAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(DefaultAttributesFinderFeature.class);
 
     public DefaultAttributesFinderFeature(final Session<?> session) {
         super(session);

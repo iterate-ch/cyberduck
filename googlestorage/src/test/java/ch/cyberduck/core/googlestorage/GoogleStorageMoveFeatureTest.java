@@ -38,7 +38,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("cyberduck", "set")));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
@@ -55,7 +55,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testMoveWithDelimiter() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus());
@@ -76,7 +76,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testMoveWithServerSideEncryptionBucketPolicy() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final GoogleStorageTouchFeature touch = new GoogleStorageTouchFeature(session);
         final TransferStatus status = new TransferStatus();

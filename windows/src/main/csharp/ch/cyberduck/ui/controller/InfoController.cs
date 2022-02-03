@@ -39,15 +39,15 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.core.io;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
 using java.text;
 using java.util;
 using org.apache.commons.lang3;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using org.jets3t.service.model;
 using StructureMap;
+using static Ch.Cyberduck.ImageHelper;
 using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class InfoController : WindowController<IInfoView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(InfoController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(InfoController).FullName);
 
         private static readonly string _multipleFilesString = "(" + LocaleFactory.localizedString("Multiple files") + ")";
 
@@ -192,7 +192,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             View.ToolbarS3Label = session.getHost().getProtocol().getName();
-            View.ToolbarS3Image = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
+            View.ToolbarS3Image = IconProvider.GetIcon(session.getHost().getProtocol(), 32);
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof(AclPermission)) != null;
             if (anonymous)
@@ -208,7 +208,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
-                View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
+                View.ToolbarDistributionImage = Images.S3.Size(32);
             }
             else
             {
@@ -216,11 +216,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.ToolbarDistributionEnabled = distribution;
                 if (distribution)
                 {
-                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
+                    View.ToolbarDistributionImage = IconProvider.GetIcon(session.getHost().getProtocol(), 32);
                 }
                 else
                 {
-                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
+                    View.ToolbarDistributionImage = Images.S3.Size(32);
                 }
             }
             if (anonymous)
@@ -961,11 +961,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (count > 1)
                 {
-                    View.FileIcon = IconCache.IconForName("multiple");
+                    View.FileIcon = Images.Multiple;
                 }
                 else
                 {
-                    View.FileIcon = IconCache.IconForPath(_files[0], IconCache.IconSize.Large);
+                    View.FileIcon = IconProvider.GetPath(_files[0], 32);
                 }
             }
 
@@ -1212,7 +1212,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 Path file = SelectedPath;
                 if (Checksum.NONE == file.attributes().getChecksum())
                 {
-                    View.Checksum = LocaleFactory.localizedString("Unknown");
+                    View.Checksum = Utils.IsBlank(file.attributes().getETag())
+                                            ? LocaleFactory.localizedString("Unknown")
+                                            : file.attributes().getETag();
                 }
                 else
                 {
@@ -1669,7 +1671,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         new LifecycleConfiguration(
                             infoController.View.LifecycleTransitionCheckbox
                                 ? Integer.valueOf(infoController.View.LifecycleTransition)
-                                : null, S3Object.STORAGE_CLASS_GLACIER,
+                                : null,
                             infoController.View.LifecycleDeleteCheckbox
                                 ? Integer.valueOf(infoController.View.LifecycleDelete)
                                 : null)))
@@ -1759,12 +1761,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _infoController.DetachDistributionHandlers();
                         Path container = _infoController.containerService.getContainer(_infoController.SelectedPath);
-                        DistributionConfiguration cdn =
-                            (DistributionConfiguration)
-                            _controller.Session.getFeature(typeof(DistributionConfiguration));
                         view.DistributionTitle =
                             String.Format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-                                cdn.getName(view.DistributionDeliveryMethod));
+                                distribution.getName());
                         //Path file = _infoController.SelectedPath;
                         view.Distribution = distribution.isEnabled();
                         view.DistributionStatus = distribution.getStatus();
@@ -1801,10 +1800,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             view.DistributionLoggingPopup = LocaleFactory.localizedString("None");
                         }
-                        DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
-                        if (!origin.equals(DescriptiveUrl.EMPTY))
+                        if (distribution.getOrigin() != null)
                         {
-                            view.DistributionOrigin = origin.getUrl();
+                            view.DistributionOrigin = distribution.getOrigin().toString();
                         }
                         // Concatenate URLs
                         if (_infoController.NumberOfFiles > 1)
@@ -1815,10 +1813,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         else
                         {
-                            DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cdn);
-                            if (!url.equals(DescriptiveUrl.EMPTY))
+                            if (distribution.getUrl() != null)
                             {
-                                view.DistributionUrl = url.getUrl();
+                                view.DistributionUrl = distribution.getUrl().toString();
                                 view.DistributionUrlEnabled = true;
                                 view.DistributionUrlTooltip = LocaleFactory.localizedString("CDN URL");
                             }
@@ -1838,7 +1835,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         else
                         {
                             view.DistributionCname = string.Join(" ", cnames);
-                            DescriptiveUrl url = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
+                            DescriptiveUrl url = new DistributionUrlProvider(distribution).toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.cname);
                             if (!url.equals(DescriptiveUrl.EMPTY))
                             {
                                 // We only support one CNAME URL to be displayed
@@ -1850,21 +1847,18 @@ namespace Ch.Cyberduck.Ui.Controller
                         KeyValuePair<string, string> noneEntry =
                             new KeyValuePair<string, string>(LocaleFactory.localizedString("None"), String.Empty);
 
-                        if (cdn.getFeature(typeof(Index), view.DistributionDeliveryMethod) != null)
+                        List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
                         {
-                            List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
+                            noneEntry
+                        };
+                        foreach (Path next in Utils.ConvertFromJavaList<Path>(distribution.getRootDocuments()))
+                        {
+                            if (next.isFile())
                             {
-                                noneEntry
-                            };
-                            foreach (Path next in Utils.ConvertFromJavaList<Path>(distribution.getRootDocuments()))
-                            {
-                                if (next.isFile())
-                                {
-                                    defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
-                                }
+                                defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
                             }
-                            view.PopulateDefaultRoot(defaultRoots);
                         }
+                        view.PopulateDefaultRoot(defaultRoots);
                         String defaultRoot = distribution.getIndexDocument();
                         if (Utils.IsNotBlank(defaultRoot))
                         {

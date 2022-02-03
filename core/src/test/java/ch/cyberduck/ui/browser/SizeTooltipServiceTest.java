@@ -18,12 +18,14 @@ package ch.cyberduck.ui.browser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class SizeTooltipServiceTest {
 
     @Test

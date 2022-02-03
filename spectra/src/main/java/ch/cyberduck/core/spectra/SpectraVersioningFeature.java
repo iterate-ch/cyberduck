@@ -25,7 +25,8 @@ import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -41,7 +42,7 @@ import com.spectralogic.ds3client.models.VersioningLevel;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraVersioningFeature implements Versioning {
-    private static final Logger log = Logger.getLogger(SpectraVersioningFeature.class);
+    private static final Logger log = LogManager.getLogger(SpectraVersioningFeature.class);
 
     public static final String KEY_REVERTABLE
         = "revertable";

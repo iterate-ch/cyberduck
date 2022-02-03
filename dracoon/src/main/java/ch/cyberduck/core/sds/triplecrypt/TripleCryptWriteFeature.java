@@ -27,7 +27,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -37,7 +38,7 @@ import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class TripleCryptWriteFeature implements Write<Node> {
-    private static final Logger log = Logger.getLogger(TripleCryptWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

@@ -58,7 +58,7 @@ public class S3ProtocolTest {
     @Test
     public void testCompareMultipleRegions() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        assertEquals(0, new ProfilePlistReader(factory).read(
+        assertNotEquals(0, new ProfilePlistReader(factory).read(
             new Local("../profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
             new Local("../profiles/Verizon Cloud Storage (IAD3A).cyberduckprofile"))));
     }

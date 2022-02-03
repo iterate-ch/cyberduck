@@ -24,14 +24,17 @@ import ch.cyberduck.core.http.ExtendedHttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
 
 import java.io.IOException;
 
 public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
-    private static final Logger log = Logger.getLogger(S3HttpRequestRetryHandler.class);
+    private static final Logger log = LogManager.getLogger(S3HttpRequestRetryHandler.class);
+
+    private static final int MAX_RETRIES = 1;
 
     private final JetS3tRequestAuthorizer authorizer;
 
@@ -42,18 +45,20 @@ public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
 
     @Override
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
-        if(super.retryRequest(exception, executionCount, context)) {
-            final Object attribute = context.getAttribute(HttpCoreContext.HTTP_REQUEST);
-            if(attribute instanceof HttpUriRequest) {
-                final HttpUriRequest method = (HttpUriRequest) attribute;
-                log.warn(String.format("Retrying request %s", method));
-                try {
-                    // Build the authorization string for the method.
-                    authorizer.authorizeHttpRequest(method, context, null);
-                    return true;
-                }
-                catch(ServiceException e) {
-                    log.warn("Unable to generate updated authorization string for retried request", e);
+        if(executionCount <= MAX_RETRIES) {
+            if(super.retryRequest(exception, executionCount, context)) {
+                final Object attribute = context.getAttribute(HttpCoreContext.HTTP_REQUEST);
+                if(attribute instanceof HttpUriRequest) {
+                    final HttpUriRequest method = (HttpUriRequest) attribute;
+                    log.warn(String.format("Retrying request %s", method));
+                    try {
+                        // Build the authorization string for the method.
+                        authorizer.authorizeHttpRequest(method, context, null);
+                        return true;
+                    }
+                    catch(ServiceException e) {
+                        log.warn("Unable to generate updated authorization string for retried request", e);
+                    }
                 }
             }
         }

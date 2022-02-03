@@ -20,7 +20,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractTemporaryFileService implements TemporaryFileService {
-    private static final Logger log = Logger.getLogger(AbstractTemporaryFileService.class);
+    private static final Logger log = LogManager.getLogger(AbstractTemporaryFileService.class);
 
     /**
      * Set of filenames to be deleted on VM exit through a shutdown hook.

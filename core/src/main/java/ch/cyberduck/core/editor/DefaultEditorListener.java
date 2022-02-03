@@ -25,10 +25,11 @@ import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DefaultEditorListener implements FileWatcherListener {
-    private static final Logger log = Logger.getLogger(DefaultEditorListener.class);
+    private static final Logger log = LogManager.getLogger(DefaultEditorListener.class);
 
     private final Controller controller;
     private final SessionPool session;

@@ -100,7 +100,7 @@ public interface Write<Reply> {
         }
 
         public Append withStatus(final TransferStatus status) {
-            return this.withSize(-1L == status.getRemote().getSize() ? 0L : status.getRemote().getSize()).withChecksum(status.getRemote().getChecksum());
+            return this.withSize(TransferStatus.UNKNOWN_LENGTH == status.getRemote().getSize() ? 0L : status.getRemote().getSize()).withChecksum(status.getRemote().getChecksum());
         }
 
         @Override

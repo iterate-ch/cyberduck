@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.2.3-SNAPSHOT</version>
     </parent>
     <artifactId>brick</artifactId>
     <packaging>jar</packaging>
@@ -44,6 +44,10 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
         </dependency>
     </dependencies>
 
@@ -78,18 +82,6 @@
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.brick.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.brick.io.swagger.client.api</apiPackage>
-                                    <configOptions>
-                                        <sourceFolder>src/main/java</sourceFolder>
-                                        <library>jersey2</library>
-                                        <dateLibrary>joda</dateLibrary>
-                                        <java8>true</java8>
-                                    </configOptions>
-                                    <environmentVariables>
-                                        <generateApiTests>false</generateApiTests>
-                                        <generateModelTests>false</generateModelTests>
-                                        <generateApiDocumentation>false</generateApiDocumentation>
-                                        <generateSupportingFiles>false</generateSupportingFiles>
-                                    </environmentVariables>
                                 </configuration>
                             </execution>
                         </executions>

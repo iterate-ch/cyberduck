@@ -7,7 +7,7 @@
         <key>Vendor</key>
         <string>memset-keystone</string>
         <key>Default Hostname</key>
-       	<string>auth.storage.memset.com</string>
+        <string>auth.storage.memset.com</string>
         <key>Context</key>
         <string>/v2.0/tokens</string>
         <key>Description</key>
@@ -16,5 +16,7 @@
         <string>admin</string>
         <key>Password Placeholder</key>
         <string>Memstore API Key</string>
+        <key>Help</key>
+        <string>https://trac.cyberduck.io/wiki/help/en/howto/memset</string>
     </dict>
 </plist>

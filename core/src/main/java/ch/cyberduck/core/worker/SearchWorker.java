@@ -27,7 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
@@ -36,7 +37,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 public class SearchWorker extends Worker<AttributedList<Path>> {
-    private static final Logger log = Logger.getLogger(SearchWorker.class);
+    private static final Logger log = LogManager.getLogger(SearchWorker.class);
 
     private final Path directory;
     private final Filter<Path> filter;

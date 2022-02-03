@@ -31,7 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -46,7 +47,7 @@ import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.HeadersResponseHandler;
 
 public class DAVAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DAVAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(DAVAttributesFinderFeature.class);
 
     private final DAVSession session;
 

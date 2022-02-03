@@ -20,5 +20,15 @@ package ch.cyberduck.core.local;
 
 public interface ApplicationBadgeLabeler {
 
+    /**
+     * Set badge on application icon
+     *
+     * @param label Overlay text
+     */
     void badge(String label);
+
+    /**
+     * Remove any badge
+     */
+    void clear();
 }

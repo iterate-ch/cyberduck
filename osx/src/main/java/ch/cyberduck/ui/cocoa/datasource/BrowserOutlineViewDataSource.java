@@ -32,7 +32,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -40,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BrowserOutlineViewDataSource extends BrowserTableDataSource implements NSOutlineView.DataSource {
-    private static final Logger log = Logger.getLogger(BrowserOutlineViewDataSource.class);
+    private static final Logger log = LogManager.getLogger(BrowserOutlineViewDataSource.class);
 
     public BrowserOutlineViewDataSource(final BrowserController controller, final Cache<Path> cache) {
         super(controller, cache);

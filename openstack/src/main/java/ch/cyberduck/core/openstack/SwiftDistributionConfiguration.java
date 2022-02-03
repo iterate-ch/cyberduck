@@ -20,31 +20,26 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.exception.NotFoundException;
@@ -52,20 +47,18 @@ import ch.iterate.openstack.swift.model.CDNContainer;
 import ch.iterate.openstack.swift.model.ContainerMetadata;
 
 public class SwiftDistributionConfiguration implements DistributionConfiguration, Index, DistributionLogging {
-    private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
+    private static final Logger log = LogManager.getLogger(SwiftDistributionConfiguration.class);
 
     private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;
-    private final Map<Path, Distribution> distributions;
     private final SwiftRegionService regionService;
 
-    public SwiftDistributionConfiguration(final SwiftSession session, final Map<Path, Distribution> distributions) {
-        this(session, distributions, new SwiftRegionService(session));
+    public SwiftDistributionConfiguration(final SwiftSession session) {
+        this(session, new SwiftRegionService(session));
     }
 
-    public SwiftDistributionConfiguration(final SwiftSession session, final Map<Path, Distribution> distributions, final SwiftRegionService regionService) {
+    public SwiftDistributionConfiguration(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
-        this.distributions = distributions;
         this.regionService = regionService;
     }
 
@@ -113,8 +106,8 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(regionService.lookup(container),
                     container.getName());
-                final Distribution distribution = new Distribution(regionService.lookup(container).getStorageUrl(container.getName()),
-                    method, info.isEnabled());
+                final Distribution distribution = new Distribution(method, this.getName(), regionService.lookup(container).getStorageUrl(container.getName()),
+                    info.isEnabled());
                 distribution.setId(info.getName());
                 distribution.setStatus(info.isEnabled() ? LocaleFactory.localizedString("CDN Enabled", "Mosso") : LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 if(StringUtils.isNotBlank(info.getCdnURL())) {
@@ -144,7 +137,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No CDN configuration for %s", container));
                 }
-                final Distribution distribution = new Distribution(regionService.lookup(container).getStorageUrl(container.getName()), method, false);
+                final Distribution distribution = new Distribution(method, regionService.lookup(container).getStorageUrl(container.getName()), false);
                 distribution.setStatus(LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 return distribution;
             }
@@ -173,27 +166,6 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final Path container = containerService.getContainer(file);
-        // Filter including region
-        final Optional<Path> byRegion = distributions.keySet().stream().filter(new DefaultPathPredicate(container)).findFirst();
-        if(byRegion.isPresent()) {
-            return new DistributionUrlProvider(distributions.get(byRegion.get())).toUrl(file);
-        }
-        // Filter by matching container name
-        final Optional<Path> byName = distributions.keySet().stream().filter(new SimplePathPredicate(container)).findFirst();
-        if(byName.isPresent()) {
-            return new DistributionUrlProvider(distributions.get(byName.get())).toUrl(file);
-        }
-        return DescriptiveUrlBag.empty();
-    }
-
-    @Override
-    public String getHostname() {
-        return session.getHost().getProtocol().getDefaultHostname();
-    }
-
-    @Override
     public List<Distribution.Method> getMethods(final Path container) {
         return Collections.singletonList(Distribution.DOWNLOAD);
     }
@@ -201,10 +173,5 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     @Override
     public String getName() {
         return LocaleFactory.localizedString("Akamai", "Mosso");
-    }
-
-    @Override
-    public String getName(final Distribution.Method method) {
-        return this.getName();
     }
 }

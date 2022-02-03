@@ -43,7 +43,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +54,7 @@ import java.text.MessageFormat;
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class DriveReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(DriveReadFeature.class);
+    private static final Logger log = LogManager.getLogger(DriveReadFeature.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -107,7 +108,7 @@ public class DriveReadFeature implements Read {
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
             final String header;
-            if(-1 == range.getEnd()) {
+            if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                 header = String.format("bytes=%d-", range.getStart());
             }
             else {
