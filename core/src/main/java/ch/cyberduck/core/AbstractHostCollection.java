@@ -67,21 +67,29 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         });
     }
 
+    public Map<String, List<Host>> groups() {
+        return this.groups(HostFilter.NONE);
+    }
+
+    public Map<String, List<Host>> groups(final HostFilter filter) {
+        return this.groups(Host::getLabels, filter);
+    }
+
     /**
      * A bookmark may be member of multiple groups
      *
      * @return Map of bookmarks grouped by labels
      */
-    public Map<String, List<Host>> groups(final HostFilter filter) {
+    public Map<String, List<Host>> groups(final HostGroups groups, final HostFilter filter) {
         final Map<String, List<Host>> labels = new HashMap<>();
         for(Host host : this.stream().filter(filter::accept).collect(Collectors.toList())) {
-            if(host.getLabels().isEmpty()) {
+            if(groups.groups(host).isEmpty()) {
                 final List<Host> list = labels.getOrDefault(StringUtils.EMPTY, new ArrayList<>());
                 list.add(host);
                 labels.put(StringUtils.EMPTY, list);
             }
             else {
-                for(String label : host.getLabels()) {
+                for(String label : groups.groups(host)) {
                     final List<Host> list = labels.getOrDefault(label, new ArrayList<>());
                     list.add(host);
                     labels.put(label, list);
