@@ -21,8 +21,8 @@ import ch.cyberduck.binding.foundation.NSObject;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
-public abstract class MSAppCenter extends NSObject {
-    private static final _Class CLASS = Rococoa.createClass("MSAppCenter", _Class.class);
+public abstract class MSACAppCenter extends NSObject {
+    private static final _Class CLASS = Rococoa.createClass("MSACAppCenter", _Class.class);
 
     public interface _Class extends ObjCClass {
         void start_withServices(String identifier, NSArray services);

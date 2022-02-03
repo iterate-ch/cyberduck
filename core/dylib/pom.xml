@@ -62,13 +62,13 @@
                                             <groupId>com.microsoft.appcenter</groupId>
                                             <artifactId>AppCenter</artifactId>
                                             <type>zip</type>
-                                            <version>4.2.0</version>
+                                            <version>4.4.1</version>
                                         </artifactItem>
                                         <artifactItem>
                                             <groupId>com.microsoft.appcenter</groupId>
                                             <artifactId>AppCenterCrashes</artifactId>
                                             <type>zip</type>
-                                            <version>4.2.0</version>
+                                            <version>4.4.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>

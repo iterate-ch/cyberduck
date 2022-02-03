@@ -26,8 +26,8 @@ public class AppCenterCrashReporter implements CrashReporter {
     }
 
     public void check(final String identifier) {
-        MSAppCenter.start_withServices(identifier, NSArray.arrayWithObject(
-            Rococoa.createClass("MSCrashes", ObjCClass.class)
+        MSACAppCenter.start_withServices(identifier, NSArray.arrayWithObject(
+                Rococoa.createClass("MSACCrashes", ObjCClass.class)
         ));
     }
 }
