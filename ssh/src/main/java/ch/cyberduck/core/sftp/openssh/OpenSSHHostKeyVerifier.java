@@ -133,8 +133,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         else {
             try {
                 // Add the host key to the in-memory database
+                final KeyType type = KeyType.fromKey(key);
+                switch(type) {
+                    case UNKNOWN:
+                        log.warn(String.format("Unknown key type %s", key));
+                        return;
+                }
                 final OpenSSHKnownHosts.HostEntry entry
-                    = new OpenSSHKnownHosts.HostEntry(null, format(host), KeyType.fromKey(key), key);
+                        = new OpenSSHKnownHosts.HostEntry(null, format(host), type, key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {
