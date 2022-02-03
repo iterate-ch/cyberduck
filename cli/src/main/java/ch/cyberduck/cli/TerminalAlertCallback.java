@@ -30,16 +30,20 @@ public class TerminalAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
+        this.print(failure);
+        // Never repeat
+        return false;
+    }
+
+    protected void print(final BackgroundException failure) {
         switch(new DefaultFailureDiagnostics().determine(failure)) {
             case cancel:
-                return false;
+                break;
             default:
                 final StringAppender appender = new StringAppender();
                 appender.append(failure.getMessage());
                 appender.append(failure.getDetail());
                 console.printf("%n%s%n", appender.toString());
         }
-        // Never repeat
-        return false;
     }
 }
