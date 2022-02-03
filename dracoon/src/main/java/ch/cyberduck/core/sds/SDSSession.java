@@ -193,6 +193,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+            case password:
                 authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
                     public void process(final HttpRequest request, final HttpContext context) {
@@ -279,6 +280,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+            case password:
                 if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
                     if(matcher.matches()) {
                         if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
@@ -289,7 +291,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel,
+                        SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
+                                ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode));
                 break;
             case radius:
                 final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),

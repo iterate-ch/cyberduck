@@ -97,7 +97,8 @@ public class SDSProtocol extends AbstractProtocol {
         sql,
         radius,
         active_directory,
-        oauth
+        oauth,
+        password
     }
 
     @Override

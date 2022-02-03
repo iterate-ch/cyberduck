@@ -29,9 +29,21 @@
         <key>Certificate Configurable</key>
         <false/>
         <key>Authorization</key>
-        <string>sql</string>
-        <key>Deprecated</key>
-        <true/>
+        <string>password</string>
+        <key>OAuth Authorization Url</key>
+        <string>/oauth/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>/oauth/token</string>
+        <key>OAuth Redirect Url</key>
+        <string>/oauth/callback</string>
+        <key>OAuth Client ID</key>
+        <string>dracoon_desktop</string>
+        <key>OAuth Client Secret</key>
+        <string>DEmTMv59zUlqvRv6zHbVCKYylEy8Ds9Y</string>
+        <key>Scopes</key>
+        <array>
+            <string>all</string>
+        </array>
         <key>Disk</key>
         <string>
 TU0AKgAAORqAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS
