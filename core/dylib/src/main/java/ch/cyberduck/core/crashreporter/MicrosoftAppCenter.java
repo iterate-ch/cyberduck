@@ -1,7 +1,7 @@
 package ch.cyberduck.core.crashreporter;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,20 +15,17 @@ package ch.cyberduck.core.crashreporter;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSArray;
-import ch.cyberduck.binding.foundation.NSObject;
-
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
-public abstract class MSACAppCenter extends NSObject {
-    private static final _Class CLASS = Rococoa.createClass("MSACAppCenter", _Class.class);
+public abstract class MicrosoftAppCenter implements CrashReporter {
+    private static final _Class CLASS = Rococoa.createClass("MicrosoftAppCenter", _Class.class);
 
     public interface _Class extends ObjCClass {
-        void start_withServices(String identifier, NSArray services);
+        void register(String identifier);
     }
 
-    public static void start_withServices(final String identifier, final NSArray services) {
-        CLASS.start_withServices(identifier, services);
+    public static void register(final String identifier) {
+        CLASS.register(identifier);
     }
 }

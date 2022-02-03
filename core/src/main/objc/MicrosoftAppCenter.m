@@ -1,7 +1,5 @@
-package ch.cyberduck.core.crashreporter;
-
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,6 +13,16 @@ package ch.cyberduck.core.crashreporter;
  * GNU General Public License for more details.
  */
 
-public interface CrashReporter {
-    void check(String property);
+#import "MicrosoftAppCenter.h"
+
+#import <AppCenter/AppCenter.h>
+#import <AppCenterCrashes/AppCenterCrashes.h>
+
+@implementation MicrosoftAppCenter
+
++ (void)register:(NSString *) appSecret
+{
+    [MSACAppCenter start:appSecret withServices:[NSArray arrayWithObject:[MSACCrashes class]]];
 }
+
+@end
