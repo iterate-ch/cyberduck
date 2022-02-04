@@ -17,6 +17,7 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -75,7 +76,10 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                     try {
                         log.warn(String.format("Run pairing flow for %s", session));
                         // Blocks until pairing is complete or canceled
-                        final Credentials credentials = session.pair(session.getHost(), prompt, prompt, new BackgroundActionRegistryCancelCallback(cancel));
+                        final Credentials credentials = session.pair(session.getHost(), prompt, prompt, new BackgroundActionRegistryCancelCallback(cancel),
+                                LocaleFactory.localizedString("You've been logged out", "Brick"),
+                                LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick")
+                        );
                         store.save(session.getHost());
                         apiKey = credentials.getPassword();
                         return true;
