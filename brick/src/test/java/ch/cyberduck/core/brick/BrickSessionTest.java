@@ -55,11 +55,12 @@ public class BrickSessionTest extends AbstractBrickTest {
             }
         };
         final BrickSession session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        session.pair(host, new DisabledConnectionCallback(), new DisabledLoginCallback(), new DisabledCancelCallback(), new BrowserLauncher() {
-            @Override
-            public boolean open(final String url) {
-                return true;
-            }
-        });
+        session.pair(host, new DisabledConnectionCallback(), new DisabledLoginCallback(), new DisabledCancelCallback(),
+                "t", "m", new BrowserLauncher() {
+                    @Override
+                    public boolean open(final String url) {
+                        return true;
+                    }
+                });
     }
 }

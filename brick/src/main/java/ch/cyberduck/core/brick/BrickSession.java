@@ -15,7 +15,20 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -52,7 +65,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 
 public class BrickSession extends HttpSession<CloseableHttpClient> {
@@ -91,7 +103,9 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         }
         else {
             // No prompt on explicit connect
-            this.pair(host, new DisabledConnectionCallback(), prompt, cancel).setSaved(true);
+            this.pair(host, new DisabledConnectionCallback(), prompt, cancel,
+                    LocaleFactory.localizedString("Connect an account", "Brick"),
+                    LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick")).setSaved(true);
             retryHandler.setApiKey(credentials.getPassword());
         }
     }
@@ -106,11 +120,14 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         }
     }
 
-    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        return this.pair(bookmark, alert, prompt, cancel, BrowserLauncherFactory.get());
+    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel,
+                            final String title, final String message) throws BackgroundException {
+        return this.pair(bookmark, alert, prompt, cancel, title, message, BrowserLauncherFactory.get());
     }
 
-    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel, final BrowserLauncher browser) throws BackgroundException {
+    public Credentials pair(final Host bookmark, final ConnectionCallback alert, final LoginCallback prompt, final CancelCallback cancel,
+                            final String title, final String message,
+                            final BrowserLauncher browser) throws BackgroundException {
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt pairing with token %s", token));
@@ -158,10 +175,9 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
         scheduler.repeat(lock);
         // Await reply
         try {
-            lock.warn(bookmark, LocaleFactory.localizedString("You've been logged out", "Brick"),
-                    MessageFormat.format(LocaleFactory.localizedString("The desktop application session for {0} has expired or been revoked. Please login to grant access to your account again.", "Brick"),
-                            BookmarkNameProvider.toString(host)),
-                    LocaleFactory.localizedString("Login via Web Browser", "Brick"), LocaleFactory.localizedString("Cancel"), null);
+            lock.warn(bookmark, title, message,
+                    LocaleFactory.localizedString("Login", "Login"),
+                    LocaleFactory.localizedString("Cancel"), null);
         }
         finally {
             // Not canceled
