@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+8.2.3
+- [Bugfix] When creating new vault save vault.cryptomator to make vaults readable by Cryptomator apps (Cryptomator)
+- [Bugfix] Unable to download files using glob pattern (CLI) (#12797)
+- [Bugfix] Failure unlocking vault (CLI, Cryptomator, Windows) (#12812)
+
 8.2.2
 - [Bugfix] Add support reading IdentityAgent from OpenSSH configuration (SFTP)
 - [Bugfix] Unable to enable debug log configuration (Windows)
