@@ -71,6 +71,23 @@ public class SDSSessionTest extends AbstractSDSTest {
     }
 
     @Test
+    public void testLoginOAuthPasswordFlow() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session))
+                .list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
+    }
+
+    @Test
     public void testClassificationConfiguration() throws Exception {
         final ClassificationPoliciesConfig policies = session.shareClassificationsPolicies();
         assertNotNull(policies);
