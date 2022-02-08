@@ -114,7 +114,8 @@ public class OAuth2AuthorizationService {
         this.scopes = scopes;
     }
 
-    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final FlowType type) throws BackgroundException {
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel,
+                                 final FlowType type) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         final OAuthTokens saved = credentials.getOauth();
         if(saved.validate()) {
@@ -161,7 +162,8 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
+    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel,
+                                            final Credentials credentials) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -265,7 +267,7 @@ public class OAuth2AuthorizationService {
             )
                 .setClientAuthentication(new BasicAuthentication(clientid, clientsecret))
                 .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                .setScopes(scopes);
+                .setScopes(scopes.isEmpty() ? null : scopes);
             for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
                 request.set(values.getKey(), values.getValue());
             }

@@ -40,10 +40,6 @@
         <string>dracoon_desktop</string>
         <key>OAuth Client Secret</key>
         <string>DEmTMv59zUlqvRv6zHbVCKYylEy8Ds9Y</string>
-        <key>Scopes</key>
-        <array>
-            <string>all</string>
-        </array>
         <key>Disk</key>
         <string>
 TU0AKgAAORqAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS
