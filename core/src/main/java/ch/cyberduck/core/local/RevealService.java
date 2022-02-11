@@ -21,10 +21,16 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 
 public interface RevealService {
+
+    default boolean reveal(Local file) {
+        return this.reveal(file, true);
+    }
+
     /**
      * Reveal file in file browser
      *
-     * @param file File or folder
+     * @param file   File or folder
+     * @param select Select file in browser. Pass false to open folder in browser
      */
-    boolean reveal(Local file);
+    boolean reveal(Local file, boolean select);
 }
