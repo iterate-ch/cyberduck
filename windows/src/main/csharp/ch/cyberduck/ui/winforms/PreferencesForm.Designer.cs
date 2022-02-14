@@ -2039,7 +2039,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.duplicateDownloadCombobox.FormattingEnabled = true;
             this.duplicateDownloadCombobox.Location = new System.Drawing.Point(158, 89);
             this.duplicateDownloadCombobox.Name = "duplicateDownloadCombobox";
-            this.duplicateDownloadCombobox.Size = new System.Drawing.Size(1, 23);
+            this.duplicateDownloadCombobox.Size = new System.Drawing.Size(286, 23);
             this.duplicateDownloadCombobox.TabIndex = 4;
             this.duplicateDownloadCombobox.SelectionChangeCommitted += new System.EventHandler(this.duplicateDownloadCombobox_SelectionChangeCommitted);
             // 
