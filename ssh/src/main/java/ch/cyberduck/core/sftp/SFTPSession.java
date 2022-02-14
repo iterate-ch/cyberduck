@@ -286,11 +286,10 @@ public class SFTPSession extends Session<SSHClient> {
                 switch(Factory.Platform.getDefault()) {
                     case windows:
                         defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
-                        break;
+                        // Break through
                     default:
                         defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(
-                                new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname())
-                        )));
+                                new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname()))));
                         break;
                 }
             }
