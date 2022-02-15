@@ -301,7 +301,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Delete.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3MultipleDeleteFeature(this);
+                return (T) new S3ThresholdDeleteFeature(this);
             }
             return (T) new S3DefaultDeleteFeature(this);
         }
