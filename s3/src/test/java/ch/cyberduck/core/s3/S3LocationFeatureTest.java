@@ -140,9 +140,14 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     public void testNonEmptyProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Wasabi (us-central-1).cyberduckprofile"));
+                new Local("../profiles/Wasabi (us-central-1).cyberduckprofile"));
         final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()));
         assertFalse(new S3LocationFeature(session).getLocations().isEmpty());
         assertTrue(new S3LocationFeature(session).getLocations().contains(new Location.Name("us-central-1")));
+    }
+
+    @Test
+    public void testVirutalhost() {
+        assertTrue(new S3LocationFeature(virtualhost).getLocations().isEmpty());
     }
 }
