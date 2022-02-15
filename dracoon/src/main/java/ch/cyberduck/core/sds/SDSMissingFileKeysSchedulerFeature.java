@@ -62,7 +62,7 @@ import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>, SDSApiClient> {
+public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>> {
     private static final Logger log = LogManager.getLogger(SDSMissingFileKeysSchedulerFeature.class);
 
     public SDSMissingFileKeysSchedulerFeature() {
@@ -74,7 +74,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     }
 
     @Override
-    public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> client, final PasswordCallback callback, final Path file) throws BackgroundException {
+    public List<UserFileKeySetRequest> operate(final Session<?> client, final PasswordCallback callback, final Path file) throws BackgroundException {
         final SDSSession session = (SDSSession) client;
         final SDSNodeIdProvider nodeid = (SDSNodeIdProvider) session._getFeature(VersionIdProvider.class);
         try {

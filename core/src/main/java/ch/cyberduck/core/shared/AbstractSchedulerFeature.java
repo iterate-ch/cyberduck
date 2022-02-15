@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractSchedulerFeature<R, Client> implements Scheduler<Void> {
+public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
     private static final Logger log = LogManager.getLogger(AbstractSchedulerFeature.class);
 
     private final long period;
@@ -44,7 +44,7 @@ public abstract class AbstractSchedulerFeature<R, Client> implements Scheduler<V
     public Void repeat(final SessionPool pool, final PasswordCallback callback) {
         scheduler.repeat(() -> {
             try {
-                final Session<Client> session = pool.borrow(BackgroundActionState.running);
+                final Session<?> session = pool.borrow(BackgroundActionState.running);
                 try {
                     this.operate(session, callback, null);
                 }
@@ -67,7 +67,7 @@ public abstract class AbstractSchedulerFeature<R, Client> implements Scheduler<V
         return null;
     }
 
-    protected abstract R operate(Session<Client> session, PasswordCallback callback, Path file) throws BackgroundException;
+    protected abstract R operate(Session<?> session, PasswordCallback callback, Path file) throws BackgroundException;
 
     @Override
     public void shutdown() {
