@@ -92,7 +92,7 @@ public class S3CopyFeature implements Copy {
             // Copying object applying the metadata of the original
             final Path bucket = containerService.getContainer(source);
             final Map<String, Object> stringObjectMap = session.getClient().copyVersionedObject(source.attributes().getVersionId(),
-                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                    bucket.isRoot() ? RequestEntityRestStorageService.findBucketInHostname(session.getHost()) : bucket.getName(),
                     containerService.getKey(source),
                     destination.getBucketName(), destination, false);
             listener.sent(status.getLength());

@@ -298,4 +298,13 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertNotEquals(-1L, attributes.getModificationDate());
         new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test(expected = NotfoundException.class)
+    public void testDetermineRegionVirtualHostStyle() throws Exception {
+        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost);
+        final TransferStatus status = new TransferStatus();
+        final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        // No region is cached and must be determined although HEAD request will not allow S3 to return correct region to use in AWS4 signature
+        f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
+    }
 }

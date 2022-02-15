@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -58,6 +59,28 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveVirtualHost() throws Exception {
+        final Path test = new S3TouchFeature(virtualhost).touch(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new S3MoveFeature(virtualhost).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new S3FindFeature(virtualhost).find(test));
+        assertTrue(new S3FindFeature(virtualhost).find(renamed));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMovePlaceholderVirtualHost() throws Exception {
+        final Path test = new S3DirectoryFeature(virtualhost, new S3WriteFeature(virtualhost)).mkdir(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new S3MoveFeature(virtualhost).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new DefaultFindFeature(virtualhost).find(test));
+        assertTrue(new S3FindFeature(virtualhost).find(renamed));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

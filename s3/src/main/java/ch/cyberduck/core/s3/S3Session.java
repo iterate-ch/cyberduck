@@ -204,7 +204,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 }
             }).call();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved %s", location));
+                log.debug(String.format("Retrieved region %s", location));
+            }
+            if(!Location.unknown.equals(location)) {
+                client.getConfiguration().setProperty("storage-service.default-region", location.getIdentifier());
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {

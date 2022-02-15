@@ -108,7 +108,7 @@ public abstract class AbstractS3Test {
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, "test-eu-west-3-cyberduck.s3.amazonaws.com", new Credentials(
                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        )).withRegion("eu-west-3");
+        ));
         virtualhost = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
