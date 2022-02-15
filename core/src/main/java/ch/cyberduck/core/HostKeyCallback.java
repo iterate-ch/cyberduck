@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
