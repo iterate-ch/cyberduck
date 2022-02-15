@@ -60,11 +60,25 @@ public class S3LocationFeature implements Location {
     @Override
     public Set<Name> getLocations() {
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-            return Collections.singleton(new S3Region(session.getHost().getRegion()));
+            final S3Region region = new S3Region(session.getHost().getRegion());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return single region %s set in bookmark", region));
+            }
+            return Collections.singleton(region);
+        }
+        if(StringUtils.isNotEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return empty set for hostname %s", session.getHost()));
+            }
+            // Connected to single bucket
+            return Collections.emptySet();
         }
         if(!S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(new S3Protocol().getRegions().equals(session.getHost().getProtocol().getRegions())) {
                 // Return empty set for unknown provider
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Return empty set for unknown provider %s", session.getHost()));
+                }
                 return Collections.emptySet();
             }
         }
