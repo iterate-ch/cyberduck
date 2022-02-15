@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #  Copyright (c) 2012 David Kocher. All rights reserved.
 #  http://cyberduck.ch/
 #
@@ -14,13 +16,11 @@
 #  Bug fixes, suggestions and comments should be sent to:
 #  dkocher@cyberduck.ch
 
-#!/bin/bash
-
 tiff="/usr/bin/tiffutil"
 
 usage() {
     echo "Converts *.png and *@2x.png to .tiff"
-	echo "	  Usage: combine.sh [--source <png>] --run"
+	  echo "	  Usage: combine.sh [--source <png>] --run"
 }
 
 run() {

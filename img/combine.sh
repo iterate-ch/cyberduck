@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #  Copyright (c) 2012 David Kocher. All rights reserved.
 #  http://cyberduck.ch/
 #
@@ -13,8 +15,6 @@
 #
 #  Bug fixes, suggestions and comments should be sent to:
 #  dkocher@cyberduck.ch
-
-#!/bin/bash
 
 tiff="/usr/bin/tiffutil"
 
