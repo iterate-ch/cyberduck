@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #  Copyright (c) 2003 David Kocher. All rights reserved.
 #  http://cyberduck.ch/
 #
@@ -13,8 +15,6 @@
 #
 #  Bug fixes, suggestions and comments should be sent to:
 #  dkocher@cyberduck.ch
-
-#!/bin/bash
 
 workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
