@@ -61,6 +61,18 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testMoveVirtualHost() throws Exception {
+        final Path test = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertNull(new S3TouchFeature(virtualhost).touch(test, new TransferStatus()).attributes().getVersionId());
+        assertTrue(new S3FindFeature(virtualhost).find(test));
+        final Path renamed = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new S3MoveFeature(virtualhost).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new S3FindFeature(virtualhost).find(test));
+        assertTrue(new S3FindFeature(virtualhost).find(renamed));
+        new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveVersioned() throws Exception {
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
