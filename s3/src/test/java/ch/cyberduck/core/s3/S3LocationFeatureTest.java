@@ -147,7 +147,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testVirutalhost() {
+    public void testVirtualhost() {
         assertTrue(new S3LocationFeature(virtualhost).getLocations().isEmpty());
     }
 }
