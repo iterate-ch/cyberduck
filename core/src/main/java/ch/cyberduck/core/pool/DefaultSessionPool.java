@@ -195,21 +195,14 @@ public class DefaultSessionPool implements SessionPool {
             log.info(String.format("Release session %s to pool", session));
         }
         try {
-            if(failure != null && diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                log.warn(String.format("Invalidate session %s in pool after failure %s", session, failure));
                 try {
-                    session.interrupt();
+                    // Activation of this method decrements the active count and attempts to destroy the instance
+                    pool.invalidateObject(session.removeListener(transcript));
                 }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e));
-                }
-                finally {
-                    try {
-                        // Activation of this method decrements the active count and attempts to destroy the instance
-                        pool.invalidateObject(session.removeListener(transcript));
-                    }
-                    catch(Exception e) {
-                        log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
-                    }
+                catch(Exception e) {
+                    log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
                 }
             }
             else {

@@ -68,10 +68,8 @@ public class StatelessSessionPool implements SessionPool {
     public void release(final Session<?> conn, final BackgroundException failure) {
         lock.lock();
         try {
-            if(null == failure) {
-                return;
-            }
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                log.warn(String.format("Close session %s after failure %s", session, failure));
                 try {
                     connect.close(conn);
                 }
