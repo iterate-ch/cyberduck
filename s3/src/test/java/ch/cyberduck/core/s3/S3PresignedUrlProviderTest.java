@@ -53,8 +53,6 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final String url = new S3PresignedUrlProvider(session).create(System.getProperties().getProperty("s3.secret"),
             "test-eu-central-1-cyberduck", "eu-central-1", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
-        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        assertEquals(404, connection.getResponseCode());
 
     }
 
@@ -65,8 +63,6 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
         final String url = new S3PresignedUrlProvider(session).create(System.getProperties().getProperty("s3.secret"),
             "test-eu-central-1-cyberduck", "eu-central-1", "@f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
-        final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        assertEquals(404, connection.getResponseCode());
     }
 
     @Test
