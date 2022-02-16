@@ -189,7 +189,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         // not the MD5 of the object data.
         attributes.setChecksum(Checksum.parse(object.getETag()));
         if(object instanceof S3Object) {
-            attributes.setVersionId(((S3Object) object).getVersionId());
+            final String versionId = ((S3Object) object).getVersionId();
+            // Handle "null" for objects in buckets with no versioning enabled
+            attributes.setVersionId("null".equals(versionId) ? null : versionId);
         }
         if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
             attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
