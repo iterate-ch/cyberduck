@@ -43,7 +43,7 @@ public class ChangedHostKeyAlertController extends AlertController {
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         alert.setMessageText(MessageFormat.format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname));
         alert.setInformativeText(MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                fingerprint, KeyType.fromKey(key).name()));
+                fingerprint, KeyType.fromKey(key).toString()));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Allow"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Deny"));
         alert.setShowsSuppressionButton(true);
