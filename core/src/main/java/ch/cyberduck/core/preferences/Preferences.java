@@ -745,6 +745,8 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("s3.download.udt.threshold", String.valueOf(Long.MAX_VALUE));
         this.setDefault("s3.upload.udt.threshold", String.valueOf(Long.MAX_VALUE));
 
+        this.setDefault("s3.timestamp.enable", String.valueOf(true));
+
         this.setDefault("s3.accelerate.enable", String.valueOf(true));
         this.setDefault("s3.accelerate.prompt", String.valueOf(false));
 

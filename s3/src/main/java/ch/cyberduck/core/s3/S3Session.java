@@ -407,7 +407,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new Glacier(this, trust, key);
         }
         if(type == Timestamp.class) {
-            return (T) new S3TimestampFeature(this);
+            if(preferences.getBoolean("s3.timestamp.enable")) {
+                return (T) new S3TimestampFeature(this);
+            }
+            return null;
         }
         if(type == PathContainerService.class) {
             return (T) new S3PathContainerService(host);
