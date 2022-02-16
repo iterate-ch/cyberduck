@@ -489,14 +489,16 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void aboutMenuClicked(final ID sender) {
         final NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                preferences.getProperty("application.name"),
-                preferences.getProperty("application.version"),
-                preferences.getProperty("application.revision")),
-            NSArray.arrayWithObjects(
-                "ApplicationName",
-                "ApplicationVersion",
-                "Version")
+                NSArray.arrayWithObjects(
+                        preferences.getProperty("application.name"),
+                        preferences.getProperty("application.version"),
+                        preferences.getProperty("application.revision"),
+                        preferences.getProperty("application.copyright")),
+                NSArray.arrayWithObjects(
+                        "ApplicationName",
+                        "ApplicationVersion",
+                        "Version",
+                        "Copyright")
         );
         NSApplication.sharedApplication().orderFrontStandardAboutPanelWithOptions(dict);
     }
