@@ -23,6 +23,9 @@ import ch.cyberduck.core.sftp.auth.AgentAuthenticator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.RandomAccessFile;
+import java.io.EOFException;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,16 +35,58 @@ import com.jcraft.jsch.agentproxy.AgentProxy;
 import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
+import com.jcraft.jsch.agentproxy.USocketFactory;
 import com.jcraft.jsch.agentproxy.usocket.JNAUSocketFactory;
+
+// Implements a wrapper around RandomAccessFile for use with jsch's
+// SSH connector to support Windows' OpenSSH fork.
+class RandomAccessFileSocketFactory implements USocketFactory
+{
+    class WindowsSocket extends Socket
+    {
+        private RandomAccessFile raf;
+        WindowsSocket(String path) throws IOException
+        {
+            raf = new RandomAccessFile("\\\\.\\pipe\\openssh-ssh-agent", "rw");
+        }
+
+        public int readFull(byte[] buf, int s, int len) throws IOException
+        {
+            try {
+                raf.readFully(buf, s, len);
+            } catch (EOFException e) {
+                return -1;
+            }
+            return len;
+        }
+        public void write(byte[] buf, int s, int len) throws IOException
+        {
+            raf.write(buf, s, len);
+        }
+        public void close() throws IOException
+        {
+            raf.close();
+        }
+    }
+
+    public Socket open(String path) throws IOException
+    {
+        return new WindowsSocket(path);
+    }
+}
 
 public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
     private static final Logger log = LogManager.getLogger(OpenSSHAgentAuthenticator.class);
 
     private AgentProxy proxy;
 
-    public OpenSSHAgentAuthenticator(final String socket) {
+    public OpenSSHAgentAuthenticator(final String socket, final boolean windows) {
         try {
-            proxy = new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory(), socket));
+            if (windows) {
+                proxy = new AgentProxy(new SSHAgentConnector(new RandomAccessFileSocketFactory(), "\\\\.\\pipe\\openssh-ssh-agent"));
+            } else {
+                proxy = new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory(), socket));
+            }
         }
         catch(AgentProxyException e) {
             log.warn(String.format("Agent proxy %s failed with %s", this, e));
