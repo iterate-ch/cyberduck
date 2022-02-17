@@ -155,7 +155,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
 
                         @Override
                         public void progress(final Integer seconds) {
-                            log.warn(String.format("Pause for %d because of traffic hint", seconds));
+                            log.warn(String.format("Pause for %d seconds because of traffic hint", seconds));
                         }
                     }, new HostPreferences(host).getInteger("eue.limit.hint.second"));
                     pause.await();
