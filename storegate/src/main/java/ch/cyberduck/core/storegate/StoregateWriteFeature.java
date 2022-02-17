@@ -154,9 +154,8 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
     protected String start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final StoregateApiClient client = session.getClient();
-            final HttpEntityEnclosingRequestBase request;
-            request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
-            FileMetadata meta = new FileMetadata();
+            final HttpEntityEnclosingRequestBase request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
+            final FileMetadata meta = new FileMetadata();
             meta.setId(StringUtils.EMPTY);
             if(status.isHidden()) {
                 meta.setAttributes(2); // Hidden
