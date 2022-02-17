@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 #  Copyright (c) 2003 David Kocher. All rights reserved.
 #  http://cyberduck.ch/
