@@ -221,7 +221,6 @@ public abstract class Session<C> implements TranscriptListener {
     protected void disconnect() {
         state = State.closed;
         listeners.clear();
-        client = null;
     }
 
     /**

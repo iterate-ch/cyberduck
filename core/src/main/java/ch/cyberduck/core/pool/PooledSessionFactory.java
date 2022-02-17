@@ -88,7 +88,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Destroy session %s", session));
         }
-        session.close();
+        connect.close(session);
     }
 
     @Override

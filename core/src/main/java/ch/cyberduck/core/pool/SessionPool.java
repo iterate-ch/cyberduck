@@ -37,7 +37,7 @@ public interface SessionPool {
      * @return Open connection
      * @throws BackgroundException Failure if opening connection fails
      */
-    <C> Session<C> borrow(BackgroundActionState callback) throws BackgroundException;
+    Session<?> borrow(BackgroundActionState callback) throws BackgroundException;
 
     /**
      * Release session to pool for reuse

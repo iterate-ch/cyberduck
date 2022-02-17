@@ -66,23 +66,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        lock.lock();
-        try {
-            if(null == failure) {
-                return;
-            }
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                try {
-                    connect.close(conn);
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Ignore failure %s closing connection", e.getMessage()));
-                }
-            }
-        }
-        finally {
-            lock.unlock();
-        }
+        log.warn(String.format("Keep connection %s alive with failure %s", conn, failure));
     }
 
     @Override
