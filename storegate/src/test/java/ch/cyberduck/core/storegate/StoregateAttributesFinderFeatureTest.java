@@ -16,6 +16,8 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -49,11 +51,11 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
     public void testFind() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(room.attributes().getPermission().isExecutable());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-            new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(test);
         assertNotEquals(0L, attr.getModificationDate());
         assertEquals(Checksum.NONE, attr.getChecksum());
@@ -62,6 +64,9 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertFalse(attr.getPermission().isExecutable());
         assertTrue(attr.getPermission().isReadable());
         assertTrue(attr.getPermission().isWritable());
+        final Path list = new StoregateListService(session, nodeid).list(room, new DisabledListProgressListener())
+                .find(new DefaultPathPredicate(test));
+        assertEquals(attr, list.attributes());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -69,8 +74,8 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
     public void testChangedNodeId() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getFileId();
         assertNotNull(latestnodeid);
