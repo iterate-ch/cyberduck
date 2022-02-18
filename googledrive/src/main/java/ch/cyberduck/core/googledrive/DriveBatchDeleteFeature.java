@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -29,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -51,25 +53,29 @@ public class DriveBatchDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final BatchRequest batch = session.getClient().batch();
-        final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
-        for(Path file : files.keySet()) {
-            try {
-                this.queue(file, batch, callback, failures);
+        // Must split otherwise 413 Request Entity Too Large is returned
+        for(List<Path> partition : new Partition<>(new ArrayList<>(files.keySet()),
+                new HostPreferences(session.getHost()).getInteger("googledrive.delete.multiple.partition"))) {
+            final BatchRequest batch = session.getClient().batch();
+            final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
+            for(Path file : partition) {
+                try {
+                    this.queue(file, batch, callback, failures);
+                }
+                catch(IOException e) {
+                    throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
+                }
             }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
-            }
-        }
-        if(!files.isEmpty()) {
-            try {
-                batch.execute();
-            }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map(e);
-            }
-            for(BackgroundException e : failures) {
-                throw e;
+            if(!partition.isEmpty()) {
+                try {
+                    batch.execute();
+                }
+                catch(IOException e) {
+                    throw new DriveExceptionMappingService(fileid).map(e);
+                }
+                for(BackgroundException e : failures) {
+                    throw e;
+                }
             }
         }
     }
