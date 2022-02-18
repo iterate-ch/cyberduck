@@ -143,7 +143,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxDirectoryFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new DropboxDeleteFeature(this);
+            return (T) new DropboxThresholdDeleteFeature(this);
         }
         if(type == Move.class) {
             return (T) new DropboxMoveFeature(this);
