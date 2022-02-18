@@ -160,6 +160,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
+                // Tag must not be null or empty with this version
                 fileKey.setTag(null);
                 final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
                         TripleCryptConverter.toCryptoPlainFileKey(fileKey),
