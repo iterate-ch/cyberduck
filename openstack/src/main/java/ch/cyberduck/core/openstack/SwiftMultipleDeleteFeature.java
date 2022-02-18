@@ -59,65 +59,60 @@ public class SwiftMultipleDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        if(files.size() == 1) {
-            new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
+        final Map<Path, List<String>> containers = new HashMap<>();
+        for(Path file : files.keySet()) {
+            if(containerService.isContainer(file)) {
+                continue;
+            }
+            callback.delete(file);
+            final Path container = containerService.getContainer(file);
+            if(containers.containsKey(container)) {
+                containers.get(container).add(containerService.getKey(file));
+            }
+            else {
+                final List<String> keys = new ArrayList<>();
+                keys.add(containerService.getKey(file));
+                // Collect a list of existing segments. Must do this before deleting the manifest file.
+                for(Path segment : segmentService.list(file)) {
+                    keys.add(containerService.getKey(segment));
+                }
+                containers.put(container, keys);
+            }
         }
-        else {
-            final Map<Path, List<String>> containers = new HashMap<>();
-            for(Path file : files.keySet()) {
-                if(containerService.isContainer(file)) {
-                    continue;
+        try {
+            for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
+                final Region region = regionService.lookup(container.getKey());
+                final List<String> keys = container.getValue();
+                for(List<String> partition : new Partition<>(keys, new HostPreferences(session.getHost()).getInteger("openstack.delete.multiple.partition"))) {
+                    session.getClient().deleteObjects(region, container.getKey().getName(), partition);
                 }
+            }
+        }
+        catch(GenericException e) {
+            if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
+                return;
+            }
+            else {
+                throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.keySet().iterator().next());
+            }
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.keySet().iterator().next());
+        }
+        for(Path file : files.keySet()) {
+            if(containerService.isContainer(file)) {
                 callback.delete(file);
-                final Path container = containerService.getContainer(file);
-                if(containers.containsKey(container)) {
-                    containers.get(container).add(containerService.getKey(file));
+                // Finally delete bucket itself
+                try {
+                    session.getClient().deleteContainer(regionService.lookup(file),
+                            containerService.getContainer(file).getName());
                 }
-                else {
-                    final List<String> keys = new ArrayList<>();
-                    keys.add(containerService.getKey(file));
-                    // Collect a list of existing segments. Must do this before deleting the manifest file.
-                    for(Path segment : segmentService.list(file)) {
-                        keys.add(containerService.getKey(segment));
-                    }
-                    containers.put(container, keys);
+                catch(GenericException e) {
+                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
-            }
-            try {
-                for(Map.Entry<Path, List<String>> container : containers.entrySet()) {
-                    final Region region = regionService.lookup(container.getKey());
-                    final List<String> keys = container.getValue();
-                    for(List<String> partition : new Partition<>(keys, new HostPreferences(session.getHost()).getInteger("openstack.delete.multiple.partition"))) {
-                        session.getClient().deleteObjects(region, container.getKey().getName(), partition);
-                    }
-                }
-            }
-            catch(GenericException e) {
-                if(new SwiftExceptionMappingService().map(e) instanceof InteroperabilityException) {
-                    new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
-                    return;
-                }
-                else {
-                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.keySet().iterator().next());
-                }
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.keySet().iterator().next());
-            }
-            for(Path file : files.keySet()) {
-                if(containerService.isContainer(file)) {
-                    callback.delete(file);
-                    // Finally delete bucket itself
-                    try {
-                        session.getClient().deleteContainer(regionService.lookup(file),
-                                containerService.getContainer(file).getName());
-                    }
-                    catch(GenericException e) {
-                        throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
-                    catch(IOException e) {
-                        throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
-                    }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
             }
         }
