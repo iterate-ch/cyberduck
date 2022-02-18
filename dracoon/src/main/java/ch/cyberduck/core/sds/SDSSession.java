@@ -636,12 +636,27 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Failure readig software version. %s", e.getMessage()));
+                    log.warn(String.format("Failure reading software version. %s", e.getMessage()));
                 }
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
+            if(preferences.getBoolean("sds.upload.s3.enable")) {
+                try {
+                    if(this.generalSettingsInfo().isUseS3Storage()) {
+                        final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+                        if(matcher.matches()) {
+                            if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
+                                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
+                            }
+                        }
+                    }
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure reading software version. %s", e.getMessage()));
+                }
+            }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == Directory.class) {
