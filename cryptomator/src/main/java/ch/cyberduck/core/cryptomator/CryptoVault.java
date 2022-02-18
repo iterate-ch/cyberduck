@@ -607,8 +607,13 @@ public class CryptoVault implements Vault {
             }
             if(type == Delete.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                    new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
-                    new CryptoDeleteV7Feature(session, (Delete) delegate, this));
+                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
+                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));
+            }
+            if(type == Trash.class) {
+                return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
+                        new CryptoDeleteV6Feature(session, (Delete) delegate, this) :
+                        new CryptoDeleteV7Feature(session, (Delete) delegate, this));
             }
             if(type == Symlink.class) {
                 return (T) new CryptoSymlinkFeature(session, (Symlink) delegate, this);
