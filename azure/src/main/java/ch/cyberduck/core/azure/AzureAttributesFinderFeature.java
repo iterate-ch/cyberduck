@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.Checksum;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
     private final AzureSession session;
     private final OperationContext context;
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+            = new DirectoryDelimiterPathContainerService();
 
     public static final String KEY_BLOB_TYPE = "blob_type";
 
@@ -94,6 +95,12 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
             }
         }
         catch(StorageException e) {
+            switch(e.getHttpStatusCode()) {
+                case HttpStatus.SC_NOT_FOUND:
+                    if(file.isPlaceholder()) {
+                        return PathAttributes.EMPTY;
+                    }
+            }
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         catch(URISyntaxException e) {

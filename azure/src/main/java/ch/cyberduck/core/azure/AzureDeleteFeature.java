@@ -27,6 +27,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpStatus;
+
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,13 @@ public class AzureDeleteFeature implements Delete {
                             DeleteSnapshotsOption.INCLUDE_SNAPSHOTS, AccessCondition.generateEmptyCondition(), options, context);
                 }
                 catch(StorageException e) {
+                    switch(e.getHttpStatusCode()) {
+                        case HttpStatus.SC_NOT_FOUND:
+                            if(file.isPlaceholder()) {
+                                // Ignore failure with no placeholder object found
+                                return;
+                            }
+                    }
                     throw new AzureExceptionMappingService().map("Cannot delete {0}", e, file);
                 }
                 catch(URISyntaxException e) {
