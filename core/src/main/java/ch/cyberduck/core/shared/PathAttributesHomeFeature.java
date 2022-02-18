@@ -15,9 +15,11 @@ package ch.cyberduck.core.shared;/*
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Home;
 
@@ -29,11 +31,13 @@ import java.util.EnumSet;
 public class PathAttributesHomeFeature implements Home {
     private static final Logger log = LogManager.getLogger(PathAttributesHomeFeature.class);
 
+    private final Session<?> session;
     private final Home proxy;
     private final AttributesFinder attributes;
     private final PathContainerService container;
 
-    public PathAttributesHomeFeature(final Home proxy, final AttributesFinder attributes, final PathContainerService container) {
+    public PathAttributesHomeFeature(final Session<?> session, final Home proxy, final AttributesFinder attributes, final PathContainerService container) {
+        this.session = session;
         this.proxy = proxy;
         this.attributes = attributes;
         this.container = container;
@@ -45,6 +49,16 @@ public class PathAttributesHomeFeature implements Home {
         try {
             // Set correct type from protocol and current attributes from server
             return home.withAttributes(attributes.find(home)).withType(container.isContainer(home) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : home.getType());
+        }
+        catch(NotfoundException e) {
+            switch(session.getHost().getProtocol().getType()) {
+                case ftp:
+                    log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+                    // Ignore 550 Directory Not Found for FTP
+                    return home;
+                default:
+                    throw e;
+            }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
             log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
