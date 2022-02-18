@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
@@ -41,7 +40,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.sds.SDSAttributesFinderFeature.KEY_ENCRYPTED;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -251,17 +249,18 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testEncrypted() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume), new PathAttributes().withCustom(KEY_ENCRYPTED, String.valueOf(true)));
+        final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-            new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
+                new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
                 .mailBody(null)
                 .maxDownloads(null), new DisabledPasswordCallback() {
                 @Override
@@ -272,29 +271,30 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testEncryptedMissingPassword() throws Exception {
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume), new PathAttributes().withCustom(KEY_ENCRYPTED, String.valueOf(true)));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                new CreateDownloadShareRequest()
-                    .expiration(new ObjectExpiration().enableExpiration(false))
-                    .notifyCreator(false)
-                    .sendMail(false)
-                    .sendSms(false)
-                    .password(null)
-                    .mailRecipients(null)
+                    new CreateDownloadShareRequest()
+                            .expiration(new ObjectExpiration().enableExpiration(false))
+                            .notifyCreator(false)
+                            .sendMail(false)
+                            .sendSms(false)
+                            .password(null)
+                            .mailRecipients(null)
                     .mailSubject(null)
                     .mailBody(null)
                     .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
-            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 
@@ -325,18 +325,19 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
 
     @Test
     public void testUploadAccountEncrypted() throws Exception {
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume), new PathAttributes().withCustom(KEY_ENCRYPTED, String.valueOf(true)));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(folder,
-            new CreateUploadShareRequest()
-                .name(new AlphanumericRandomStringService().random())
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
+                new CreateUploadShareRequest()
+                        .name(new AlphanumericRandomStringService().random())
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
                 .mailSubject(null)
                 .mailBody(null)
                 .maxSize(null)
@@ -346,7 +347,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-uploads/"));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
