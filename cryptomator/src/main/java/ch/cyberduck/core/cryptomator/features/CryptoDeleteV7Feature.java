@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +39,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-public class CryptoDeleteV7Feature implements Delete {
+public class CryptoDeleteV7Feature implements Delete, Trash {
     private static final Logger log = LogManager.getLogger(CryptoDeleteV7Feature.class);
 
     private final Session<?> session;
