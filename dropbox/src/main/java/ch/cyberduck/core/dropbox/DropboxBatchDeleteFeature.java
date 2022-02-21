@@ -1,7 +1,7 @@
 package ch.cyberduck.core.dropbox;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,6 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -44,11 +43,9 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class DropboxBatchDeleteFeature implements Delete {
 
     private final DropboxSession session;
-    private final PathContainerService containerService;
 
     public DropboxBatchDeleteFeature(final DropboxSession session) {
         this.session = session;
-        this.containerService = new DropboxPathContainerService(session);
     }
 
     @Override
@@ -61,7 +58,6 @@ public class DropboxBatchDeleteFeature implements Delete {
             final DbxUserFilesRequests requests = new DbxUserFilesRequests(session.getClient());
             final DeleteBatchLaunch job = requests.deleteBatch(files.keySet().stream().map(f -> new DeleteArg(f.getAbsolute())).collect(Collectors.toList()));
             final CountDownLatch signal = new CountDownLatch(1);
-            final long start = System.currentTimeMillis();
             final AtomicReference<BackgroundException> failure = new AtomicReference<>();
             scheduler.repeat(() -> {
                 try {
@@ -103,7 +99,6 @@ public class DropboxBatchDeleteFeature implements Delete {
             scheduler.shutdown();
         }
     }
-
 
     @Override
     public boolean isRecursive() {
