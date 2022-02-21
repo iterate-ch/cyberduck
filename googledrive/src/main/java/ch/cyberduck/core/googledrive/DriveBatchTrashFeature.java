@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -29,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -52,40 +54,44 @@ public class DriveBatchTrashFeature implements Trash {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final BatchRequest batch = session.getClient().batch();
-        final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
-        for(Path f : files.keySet()) {
-            try {
-                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
-                    session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener()))
-                            .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
-                }
-                else {
-                    if(f.attributes().isDuplicate()) {
-                        log.warn(String.format("Delete file %s already in trash", f));
-                        new DriveBatchDeleteFeature(session, fileid).queue(f, batch, callback, failures);
-                        continue;
+        // Must split otherwise 413 Request Entity Too Large is returned
+        for(List<Path> partition : new Partition<>(new ArrayList<>(files.keySet()),
+                new HostPreferences(session.getHost()).getInteger("googledrive.delete.multiple.partition"))) {
+            final BatchRequest batch = session.getClient().batch();
+            final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
+            for(Path f : partition) {
+                try {
+                    if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
+                        session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener()))
+                                .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
                     }
-                    final File properties = new File();
-                    properties.setTrashed(true);
-                    session.getClient().files().update(fileid.getFileId(f, new DisabledListProgressListener()), properties)
-                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                            .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
+                    else {
+                        if(f.attributes().isDuplicate()) {
+                            log.warn(String.format("Delete file %s already in trash", f));
+                            new DriveBatchDeleteFeature(session, fileid).queue(f, batch, callback, failures);
+                            continue;
+                        }
+                        final File properties = new File();
+                        properties.setTrashed(true);
+                        session.getClient().files().update(fileid.getFileId(f, new DisabledListProgressListener()), properties)
+                                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                                .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
+                    }
+                }
+                catch(IOException e) {
+                    throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, f);
                 }
             }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, f);
-            }
-        }
-        if(!files.isEmpty()) {
-            try {
-                batch.execute();
-            }
-            catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map(e);
-            }
-            for(BackgroundException e : failures) {
-                throw e;
+            if(!partition.isEmpty()) {
+                try {
+                    batch.execute();
+                }
+                catch(IOException e) {
+                    throw new DriveExceptionMappingService(fileid).map(e);
+                }
+                for(BackgroundException e : failures) {
+                    throw e;
+                }
             }
         }
     }
