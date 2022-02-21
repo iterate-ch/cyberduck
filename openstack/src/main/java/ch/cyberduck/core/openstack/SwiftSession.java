@@ -147,7 +147,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftDirectoryFeature(this, regionService, new SwiftWriteFeature(this, regionService));
         }
         if(type == Delete.class) {
-            return (T) new SwiftMultipleDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
+            return (T) new SwiftThresholdDeleteFeature(this, new SwiftSegmentService(this, regionService), regionService);
         }
         if(type == Headers.class) {
             return (T) new SwiftMetadataFeature(this, regionService);
