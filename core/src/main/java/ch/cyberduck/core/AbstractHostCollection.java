@@ -62,7 +62,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
             @Override
             public int compare(final Host o1, final Host o2) {
                 return new DefaultLexicographicOrderComparator().compare(BookmarkNameProvider.toString(o1),
-                        BookmarkNameProvider.toString(o2));
+                    BookmarkNameProvider.toString(o2));
             }
         });
     }
@@ -138,8 +138,9 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public Optional<Host> find(final Host input) {
         // Iterate over all bookmarks trying exact match
         return Optional.ofNullable(this.find(new HostComparePredicate(input))
+            .orElse(this.find(new DefaultPathPredicate(input))
                 .orElse(this.find(new ProfilePredicate(input))
-                        .orElse(this.find(new ProtocolIdentifierPredicate(input)).orElse(null))));
+                    .orElse(this.find(new ProtocolIdentifierPredicate(input)).orElse(null)))));
     }
 
     public Optional<Host> find(final Predicate<Host> predicate) {
@@ -174,6 +175,22 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
                 }
             }
             return Objects.equals(h.getHostname(), input.getHostname());
+        }
+    }
+
+    public static final class DefaultPathPredicate extends HostnamePredicate {
+        private final Host input;
+
+        private DefaultPathPredicate(final Host input) {
+            super(input);
+            this.input = input;
+        }
+
+        @Override
+        public boolean test(final Host h) {
+            return super.test(h) &&
+                StringUtils.isNotBlank(input.getDefaultPath()) &&
+                StringUtils.startsWith(input.getDefaultPath(), h.getDefaultPath());
         }
     }
 

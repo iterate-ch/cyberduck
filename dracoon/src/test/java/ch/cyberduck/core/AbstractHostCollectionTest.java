@@ -23,7 +23,8 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class AbstractHostCollectionTest {
 
@@ -32,9 +33,9 @@ public class AbstractHostCollectionTest {
         final AbstractHostCollection c = new AbstractHostCollection() {
         };
         final Profile profileOAuth = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         final Host bookmarkActiveDirectory = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-                this.getClass().getResourceAsStream("/DRACOON (Active Directory).cyberduckprofile")));
+            this.getClass().getResourceAsStream("/DRACOON (Active Directory).cyberduckprofile")));
         final Host bookmarkOAuth = new Host(profileOAuth);
         c.add(bookmarkActiveDirectory);
         final Optional<Host> matched = c.find(bookmarkOAuth);
@@ -47,13 +48,39 @@ public class AbstractHostCollectionTest {
         final AbstractHostCollection c = new AbstractHostCollection() {
         };
         final Profile profileOAuth = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         final Host bookmarkActiveDirectory = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-                this.getClass().getResourceAsStream("/DRACOON (Active Directory).cyberduckprofile")));
+            this.getClass().getResourceAsStream("/DRACOON (Active Directory).cyberduckprofile")));
         final Host bookmarkOAuth = new Host(profileOAuth);
         c.add(bookmarkOAuth);
         final Optional<Host> matched = c.find(bookmarkActiveDirectory);
         assertTrue(matched.isPresent());
         assertSame(bookmarkOAuth, matched.get());
+    }
+
+    @Test
+    public void testFindDefaultPath() throws Exception {
+        final AbstractHostCollection c = new AbstractHostCollection() {
+        };
+        final Profile profileOAuth = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+        {
+            final Host bookmarkOAuth = new Host(profileOAuth);
+            bookmarkOAuth.setDefaultPath("/myotherroom");
+            c.add(bookmarkOAuth);
+            final Host parsed = new HostParser(new ProtocolFactory(Collections.singleton(profileOAuth))).get("dracoon://dracoon.team/myroom/more/path");
+            final Optional<Host> matched = c.find(parsed);
+            assertTrue(matched.isPresent());
+            assertSame(bookmarkOAuth, matched.get());
+        }
+        {
+            final Host bookmarkOAuth = new Host(profileOAuth);
+            bookmarkOAuth.setDefaultPath("/myroom");
+            c.add(bookmarkOAuth);
+            final Host parsed = new HostParser(new ProtocolFactory(Collections.singleton(profileOAuth))).get("dracoon://dracoon.team/myroom/more/path");
+            final Optional<Host> matched = c.find(parsed);
+            assertTrue(matched.isPresent());
+            assertSame(bookmarkOAuth, matched.get());
+        }
     }
 }
