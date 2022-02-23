@@ -47,7 +47,7 @@ class RandomAccessFileSocketFactory implements USocketFactory
         private RandomAccessFile raf;
         WindowsSocket(String path) throws IOException
         {
-            raf = new RandomAccessFile("\\\\.\\pipe\\openssh-ssh-agent", "rw");
+            raf = new RandomAccessFile(path, "rw");
         }
 
         public int readFull(byte[] buf, int s, int len) throws IOException
