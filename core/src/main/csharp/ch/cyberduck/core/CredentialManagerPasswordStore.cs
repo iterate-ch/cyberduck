@@ -21,27 +21,51 @@ using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.logging.log4j;
 using System;
-using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using static Windows.Win32.Security.Credentials.CRED_PERSIST;
 using static Windows.Win32.Security.Credentials.CRED_TYPE;
 
 namespace Ch.Cyberduck.Core
 {
-    public class CredentialManagerPasswordStore : HostPasswordStore
+    public class CredentialManagerPasswordStore : DefaultHostPasswordStore, HostPasswordStore
     {
         private static Logger logger = LogManager.getLogger(typeof(CredentialManagerPasswordStore).FullName);
 
         private readonly HostUrlProvider hostUrlProvider = new HostUrlProvider();
 
-        void PasswordStore.addPassword(string serviceName, string accountName, string password)
+        public override void addPassword(string serviceName, string user, string password)
         {
-            throw new NotImplementedException();
+            var hostUrl = $"{serviceName} - {user}";
+            if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
+            {
+                logger.error($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+            }
         }
 
-        void PasswordStore.addPassword(Scheme scheme, int port, string hostname, string user, string password)
+        public override void addPassword(Scheme scheme, int port, string hostName, string user, string password)
         {
-            throw new NotImplementedException();
+            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
+            if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
+            {
+                logger.error($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+            }
+        }
+
+        public override string getPassword(string serviceName, string user) => WinCredentialManager.GetCredentials($"{serviceName} - {user}").Password;
+
+        public override string getPassword(Scheme scheme, int port, string hostName, string user)
+        {
+            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
+            return WinCredentialManager.GetCredentials(hostUrl).Password;
+        }
+
+        public override void deletePassword(string serviceName, string user) => WinCredentialManager.RemoveCredentials($"{serviceName} - {user}");
+
+        public override void deletePassword(Scheme scheme, int port, string hostName, string user)
+        {
+            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
+            WinCredentialManager.RemoveCredentials(hostUrl);
         }
 
         void HostPasswordStore.delete(Host bookmark)
@@ -51,28 +75,21 @@ namespace Ch.Cyberduck.Core
                 logger.info(string.Format("Delete password for bookmark {0}", bookmark));
             }
             var target = ToUri(bookmark);
-            WinCredentialManager.RemoveCredentials(target.AbsoluteUri);
-        }
-
-        void PasswordStore.deletePassword(string serviceName, string user)
-        {
-            throw new NotImplementedException();
-        }
-
-        void PasswordStore.deletePassword(Scheme scheme, int port, string hostname, string user)
-        {
-            throw new NotImplementedException();
+            if (!WinCredentialManager.RemoveCredentials(target.AbsoluteUri))
+            {
+                base.delete(bookmark);
+            }
         }
 
         string HostPasswordStore.findLoginPassword(Host bookmark)
         {
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred is null)
+            if (!string.IsNullOrWhiteSpace(cred.Password))
             {
-                return default;
+                return cred.Password;
             }
-            return cred.Password;
+            return base.findLoginPassword(bookmark);
         }
 
         string HostPasswordStore.findLoginToken(Host bookmark)
@@ -83,11 +100,11 @@ namespace Ch.Cyberduck.Core
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred is null)
+            if (cred.Attributes?.TryGetValue("Token", out var token) ?? false && !string.IsNullOrWhiteSpace(token))
             {
-                return default;
+                return token;
             }
-            return cred.Attributes.TryGetValue("Token", out var token) ? token : default;
+            return base.findLoginToken(bookmark);
         }
 
         OAuthTokens HostPasswordStore.findOAuthTokens(Host bookmark)
@@ -98,18 +115,18 @@ namespace Ch.Cyberduck.Core
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred is null)
+            if (cred.Attributes.TryGetValue("OAuth Access Token", out var accessToken) &&
+                cred.Attributes.TryGetValue("OAuth Refresh Token", out var refreshToken))
             {
-                return OAuthTokens.EMPTY;
+                long expiry = default;
+                if (cred.Attributes.TryGetValue("OAuth Expiry", out var expiryValue))
+                {
+                    long.TryParse(expiryValue, out expiry);
+                }
+                return new(accessToken, refreshToken, new(expiry));
             }
-            cred.Attributes.TryGetValue("OAuth Access Token", out var accessToken);
-            cred.Attributes.TryGetValue("OAuth Refresh Token", out var refreshToken);
-            long expiry = default;
-            if (cred.Attributes.TryGetValue("OAuth Expiry", out var expiryValue))
-            {
-                long.TryParse(expiryValue, out expiry);
-            }
-            return new(accessToken, refreshToken, new(expiry));
+
+            return base.findOAuthTokens(bookmark);
         }
 
         string HostPasswordStore.findPrivateKeyPassphrase(Host bookmark)
@@ -120,22 +137,12 @@ namespace Ch.Cyberduck.Core
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred is null)
+            if (cred.Attributes.TryGetValue("Private Key Passphrase", out var passphrase)
+                && !string.IsNullOrWhiteSpace(passphrase))
             {
-                return default;
+                return passphrase;
             }
-            cred.Attributes.TryGetValue("Private Key Passphrase", out var passphrase);
-            return passphrase;
-        }
-
-        string PasswordStore.getPassword(string serviceName, string accountName)
-        {
-            throw new NotImplementedException();
-        }
-
-        string PasswordStore.getPassword(Scheme scheme, int port, string hostname, string user)
-        {
-            throw new NotImplementedException();
+            return base.findPrivateKeyPassphrase(bookmark);
         }
 
         void HostPasswordStore.save(Host bookmark)
@@ -152,23 +159,27 @@ namespace Ch.Cyberduck.Core
             var target = ToUri(bookmark);
             var protocol = bookmark.getProtocol();
             var credential = bookmark.getCredentials();
-            var additionalInfo = new Dictionary<string, string>();
+
+            var winCred = new WindowsCredentialManagerCredential(
+                credential.getUsername(), credential.getPassword(),
+                CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE);
+
             if (protocol.isTokenConfigurable())
             {
-                additionalInfo["Token"] = credential.getToken();
+                winCred.Attributes["Token"] = credential.getToken();
             }
             if (protocol.isOAuthConfigurable())
             {
-                additionalInfo["OAuth Access Token"] = credential.getOauth().getAccessToken();
-                additionalInfo["OAuth Refresh Token"] = credential.getOauth().getRefreshToken();
+                winCred.Attributes["OAuth Access Token"] = credential.getOauth().getAccessToken();
+                winCred.Attributes["OAuth Refresh Token"] = credential.getOauth().getRefreshToken();
                 if (credential.getOauth().getExpiryInMilliseconds() != null)
                 {
-                    additionalInfo["OAuth Expiry"] = credential.getOauth().getExpiryInMilliseconds().longValue().ToString();
+                    winCred.Attributes["OAuth Expiry"] = credential.getOauth().getExpiryInMilliseconds().longValue().ToString();
                 }
             }
             if (protocol.isPrivateKeyConfigurable())
             {
-                additionalInfo["Private Key Passphrase"] = credential.getIdentityPassphrase();
+                winCred.Attributes["Private Key Passphrase"] = credential.getIdentityPassphrase();
             }
             if (credential.isPasswordAuthentication())
             {
@@ -183,11 +194,10 @@ namespace Ch.Cyberduck.Core
                     return;
                 }
             }
-            var winCred = new WindowsCredentialManagerCredential(
-                credential.getUsername(), credential.getPassword(),
-                CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE,
-                additionalInfo);
-            WinCredentialManager.SaveCredentials(target.AbsoluteUri, winCred);
+            if (!WinCredentialManager.SaveCredentials(target.AbsoluteUri, winCred))
+            {
+                base.save(bookmark);
+            }
         }
 
         private static Uri ToUri(Host bookmark)

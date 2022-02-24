@@ -20,6 +20,7 @@ using org.apache.logging.log4j;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
@@ -53,7 +54,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// </summary>
         /// <param name="target">Name of the application/Url where the credential is used for</param>
         /// <returns>empty credentials if target not found, else stored credentials</returns>
-        public unsafe static WindowsCredentialManagerCredential GetCredentials(string target)
+        public static unsafe WindowsCredentialManagerCredential GetCredentials(string target)
         {
             using CredHandle handle = new();
             if (!CredRead(target, CRED_TYPE_GENERIC, 0, out handle.Handle))
@@ -67,37 +68,52 @@ namespace Ch.Cyberduck.Core.CredentialManager
             var flags = cred.Flags;
             var persist = cred.Persist;
             var username = cred.UserName.ToString();
-            var password = Encoding.Default.GetString(cred.CredentialBlob, (int)cred.CredentialBlobSize);
+            string password = default;
+            if (cred.CredentialBlobSize > 0)
+            {
+                password = Encoding.Default.GetString(cred.CredentialBlob, (int)cred.CredentialBlobSize);
+            }
             var attributes = new Dictionary<string, string>();
 
+            var result = new WindowsCredentialManagerCredential(username, password, type, flags, persist);
             if (cred.AttributeCount > 0)
             {
                 uint count = cred.AttributeCount;
-                for (var i = 0; i < count; i++)
+
+                Dictionary<string, List<(int, UnmanagedMemoryStream)>> groups = new();
+                for (int i = 0; i < count; i++)
                 {
-                    var attribute = cred.Attributes[i];
+                    ref var attribute = ref cred.Attributes[i];
                     var keyword = attribute.Keyword.ToString();
-                    var blob = Encoding.Default.GetString(
-                        attribute.Value, unchecked((int)attribute.ValueSize));
-                    attributes.Add(keyword, blob);
-                }
-                var keyGroups = attributes.Keys.Select(x => (key: x, separator: x.IndexOf(':'))).Where(x => x.separator != -1).ToLookup(
-                    x => x.key.Substring(0, x.separator),
-                    x => x.key.Substring(x.separator + 1));
-                foreach (var item in keyGroups)
-                {
-                    var key = item.Key;
-                    var builder = new StringBuilder();
-                    foreach (var page in item.OrderBy(x => int.Parse(x)).ToDictionary(x => attributes[key + ":" + x]))
+                    var separator = keyword.IndexOf(':');
+                    int index = 0;
+                    if (separator != -1)
                     {
-                        attributes.Remove(page.Key);
-                        builder.Append(page.Value);
+                        index = int.Parse(keyword.Substring(separator + 1));
+                        keyword = keyword.Substring(0, separator);
                     }
-                    attributes[key] = builder.ToString();
+                    if (!groups.TryGetValue(keyword, out var list))
+                    {
+                        groups[keyword] = list = new();
+                    }
+                    list.Add((index, new(attribute.Value, (int)attribute.ValueSize)));
+                }
+
+                foreach (var group in groups)
+                {
+                    using MemoryStream buffer = new();
                     // auto concatenate paged-objects to full string
+                    foreach (var item in group.Value.OrderBy(x => x.Item1))
+                    {
+                        using (item.Item2)
+                        {
+                            item.Item2.CopyTo(buffer);
+                        }
+                    }
+                    result.Attributes[group.Key] = Encoding.Default.GetString(buffer.GetBuffer(), 0, (int)buffer.Length);
                 }
             }
-            return new WindowsCredentialManagerCredential(username, password, type, flags, persist, attributes);
+            return result;
         }
 
         public static bool RemoveCredentials(string target)
@@ -113,9 +129,9 @@ namespace Ch.Cyberduck.Core.CredentialManager
         public static bool SaveCredentials(string target, NetworkCredential credential) => SaveCredentials(target, new WindowsCredentialManagerCredential(
             credential.UserName,
             credential.Password,
-            CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE, new Dictionary<string, string>()));
+            CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE));
 
-        public unsafe static bool SaveCredentials(string target, WindowsCredentialManagerCredential credential)
+        public static unsafe bool SaveCredentials(string target, WindowsCredentialManagerCredential credential)
         {
             var cred = new CREDENTIALW
             {
@@ -133,22 +149,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                 cred.CredentialBlob = (byte*)AsPointer(ref GetReference(passwordBytes.AsSpan()));
             }
 
-            var pages = credential.Attributes.Values.Aggregate(0, (a, v) =>
-            {
-                if (string.IsNullOrWhiteSpace(v))
-                {
-                    return a;
-                }
-
-                var length = v.Length;
-                var full = length / 256;
-                if (length - (256 * full) > 0)
-                {
-                    full += 1;
-                }
-                return a + full;
-            });
-            using var attributes = MemoryPool<CREDENTIAL_ATTRIBUTEW>.Shared.Rent(pages);
+            using var attributes = MemoryPool<CREDENTIAL_ATTRIBUTEW>.Shared.Rent(64); // cannot be larger than this.
             var index = 0;
             foreach (var item in credential.Attributes)
             {
@@ -156,37 +157,30 @@ namespace Ch.Cyberduck.Core.CredentialManager
                 {
                     continue;
                 }
-                if (item.Value.Length > 256)
-                {
-                    var innerIndex = 0;
-                    for (int i = 0; i < item.Value.Length; i += 256)
-                    {
-                        var key = item.Key + ":" + innerIndex;
-                        var bytes = Encoding.Default.GetBytes(item.Value.Substring(i, Math.Min(256, item.Value.Length - i)));
-                        attributes.Memory.Span[index + innerIndex] = new CREDENTIAL_ATTRIBUTEW()
-                        {
-                            Keyword = key,
-                            ValueSize = (uint)bytes.Length,
-                            Value = (byte*)AsPointer(ref GetReference(bytes.AsSpan())),
-                        };
 
-                        innerIndex += 1;
-                    }
-                    index += innerIndex;
-                }
-                else
+                var chars = item.Value.ToCharArray();
+                var bytes = Encoding.Default.GetBytes(chars);
+                string formatString = bytes.Length switch
                 {
-                    var bytes = Encoding.Default.GetBytes(item.Value);
+                    > 256 => "{0}:{1}",
+                    _ => "{0}"
+                };
+
+                for (int i = 0, innerIndex = 0; i < bytes.Length; i += 256, innerIndex++)
+                {
+                    ref byte ptr = ref bytes[i];
+                    var length = Math.Min(256, bytes.Length - i);
+                    var key = string.Format(formatString, item.Key, innerIndex);
                     attributes.Memory.Span[index] = new CREDENTIAL_ATTRIBUTEW()
                     {
-                        Keyword = item.Key,
-                        ValueSize = (uint)bytes.Length,
-                        Value = (byte*)AsPointer(ref GetReference(bytes.AsSpan())),
+                        Keyword = key,
+                        ValueSize = (uint)length,
+                        Value = (byte*)AsPointer(ref ptr)
                     };
                     index += 1;
                 }
             }
-            cred.AttributeCount = (uint)pages;
+            cred.AttributeCount = (uint)index;
             cred.Attributes = (CREDENTIAL_ATTRIBUTEW*)AsPointer(ref GetReference(attributes.Memory.Span));
 
             if (!CredWrite(&cred, 0))
@@ -198,23 +192,13 @@ namespace Ch.Cyberduck.Core.CredentialManager
         }
     }
 
-    public record WindowsCredentialManagerCredential
+    public record struct WindowsCredentialManagerCredential(
+        string UserName,
+        string Password,
+        CRED_TYPE Type,
+        CRED_FLAGS Flags,
+        CRED_PERSIST Persist)
     {
-        public string UserName { get; }
-        public string Password { get; }
-        public CRED_TYPE Type { get; }
-        public CRED_FLAGS Flags { get; }
-        public CRED_PERSIST Persist { get; }
-        public IDictionary<string, string> Attributes { get; }
-
-        public WindowsCredentialManagerCredential(string userName, string password, CRED_TYPE type, CRED_FLAGS flags, CRED_PERSIST persist, IDictionary<string, string> attributes)
-        {
-            UserName = userName;
-            Password = password;
-            Type = type;
-            Flags = flags;
-            Persist = persist;
-            Attributes = attributes;
-        }
+        public Dictionary<string, string> Attributes { get; } = new();
     }
 }
