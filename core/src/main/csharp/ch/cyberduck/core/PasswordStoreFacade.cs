@@ -26,7 +26,6 @@ namespace Ch.Cyberduck.Core
 {
     public class PasswordStoreFacade : HostPasswordStore
     {
-        private readonly CredentialManagerDefaultFallbackPasswordStore credentialManagerFallbackPasswordStore = new CredentialManagerDefaultFallbackPasswordStore();
         private readonly CredentialManagerPasswordStore credentialManagerPasswordStore = new CredentialManagerPasswordStore();
         private readonly DataProtectorPasswordStore dataProtectorPasswordStore = new DataProtectorPasswordStore();
         private readonly Logger logger = LogManager.getLogger(typeof(PasswordStoreFacade).AssemblyQualifiedName);
@@ -101,9 +100,6 @@ namespace Ch.Cyberduck.Core
             (value, result) = action(credentialManagerPasswordStore);
             if (result)
                 return value;
-            (value, result) = action(credentialManagerFallbackPasswordStore);
-            if (result)
-                return value;
             (value, result) = action(dataProtectorPasswordStore);
             if (result)
                 return value;
@@ -136,8 +132,6 @@ namespace Ch.Cyberduck.Core
         private bool RunWithFallback(Func<PasswordStore, bool> action)
         {
             if (action(credentialManagerPasswordStore))
-                return true;
-            if (action(credentialManagerFallbackPasswordStore))
                 return true;
             if (action(dataProtectorPasswordStore))
                 return true;
