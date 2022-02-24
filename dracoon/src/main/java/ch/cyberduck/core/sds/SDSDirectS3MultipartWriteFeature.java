@@ -101,12 +101,12 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
-                    .directS3Upload(true)
-                    .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
-                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
-                    .name(file.getName());
+                .directS3Upload(true)
+                .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
+                .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
+                .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
-                    .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
+                .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("upload started for %s with response %s", file, createFileUploadResponse));
             }
@@ -156,15 +156,14 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     throw canceled.get();
                 }
                 partNumber++;
-                completed.put(1, new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Checksum>() {
+                completed.put(partNumber, new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Checksum>() {
                     @Override
                     public Checksum call() throws BackgroundException {
                         try {
                             final PresignedUrlList presignedUrlList = new NodesApi(session.getClient()).generatePresignedUrlsFiles(
-                                    new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size((long) len),
-                                    createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                                new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size((long) len),
+                                createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                             for(PresignedUrl url : presignedUrlList.getUrls()) {
-                                presignedUrlList.getUrls();
                                 final HttpPut request = new HttpPut(url.getUrl());
                                 request.setEntity(new ByteArrayEntity(b, off, len));
                                 request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
@@ -187,7 +186,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                                         default:
                                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                             throw new DefaultHttpResponseExceptionMappingService().map(
-                                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                                new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                                     }
                                 }
                                 finally {
@@ -225,19 +224,19 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     return;
                 }
                 final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                        .keepShareLinks(overall.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
-                        .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
+                    .keepShareLinks(overall.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
+                    .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                     final FileKey fileKey = reader.readValue(overall.getFilekey().array());
                     final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                            TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                            TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                        TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                        TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                     );
                     completeS3FileUploadRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
                 completed.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
-                        new S3FileUploadPart().partEtag(value.hash).partNumber(key)));
+                    new S3FileUploadPart().partEtag(value.hash).partNumber(key)));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Complete file upload with %s for %s", completeS3FileUploadRequest, file));
                 }
@@ -252,7 +251,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     public void run() {
                         try {
                             uploadStatus.set(new NodesApi(session.getClient())
-                                    .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null));
+                                .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null));
                             switch(uploadStatus.get().getStatus()) {
                                 case "finishing":
                                     // Expected
