@@ -28,7 +28,7 @@ using static Windows.Win32.Security.Credentials.CRED_TYPE;
 
 namespace Ch.Cyberduck.Core
 {
-    public class CredentialManagerPasswordStore : DefaultHostPasswordStore, HostPasswordStore
+    public class CredentialManagerPasswordStore : DefaultHostPasswordStore
     {
         private static Logger logger = LogManager.getLogger(typeof(CredentialManagerPasswordStore).FullName);
 
@@ -52,23 +52,7 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public override string getPassword(string serviceName, string user) => WinCredentialManager.GetCredentials($"{serviceName} - {user}").Password;
-
-        public override string getPassword(Scheme scheme, int port, string hostName, string user)
-        {
-            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
-            return WinCredentialManager.GetCredentials(hostUrl).Password;
-        }
-
-        public override void deletePassword(string serviceName, string user) => WinCredentialManager.RemoveCredentials($"{serviceName} - {user}");
-
-        public override void deletePassword(Scheme scheme, int port, string hostName, string user)
-        {
-            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
-            WinCredentialManager.RemoveCredentials(hostUrl);
-        }
-
-        void HostPasswordStore.delete(Host bookmark)
+        public override void delete(Host bookmark)
         {
             if (logger.isInfoEnabled())
             {
@@ -81,7 +65,15 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        string HostPasswordStore.findLoginPassword(Host bookmark)
+        public override void deletePassword(string serviceName, string user) => WinCredentialManager.RemoveCredentials($"{serviceName} - {user}");
+
+        public override void deletePassword(Scheme scheme, int port, string hostName, string user)
+        {
+            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
+            WinCredentialManager.RemoveCredentials(hostUrl);
+        }
+
+        public override string findLoginPassword(Host bookmark)
         {
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
@@ -92,7 +84,7 @@ namespace Ch.Cyberduck.Core
             return base.findLoginPassword(bookmark);
         }
 
-        string HostPasswordStore.findLoginToken(Host bookmark)
+        public override string findLoginToken(Host bookmark)
         {
             if (logger.isInfoEnabled())
             {
@@ -107,7 +99,7 @@ namespace Ch.Cyberduck.Core
             return base.findLoginToken(bookmark);
         }
 
-        OAuthTokens HostPasswordStore.findOAuthTokens(Host bookmark)
+        public override OAuthTokens findOAuthTokens(Host bookmark)
         {
             if (logger.isInfoEnabled())
             {
@@ -129,7 +121,7 @@ namespace Ch.Cyberduck.Core
             return base.findOAuthTokens(bookmark);
         }
 
-        string HostPasswordStore.findPrivateKeyPassphrase(Host bookmark)
+        public override string findPrivateKeyPassphrase(Host bookmark)
         {
             if (logger.isInfoEnabled())
             {
@@ -145,7 +137,15 @@ namespace Ch.Cyberduck.Core
             return base.findPrivateKeyPassphrase(bookmark);
         }
 
-        void HostPasswordStore.save(Host bookmark)
+        public override string getPassword(string serviceName, string user) => WinCredentialManager.GetCredentials($"{serviceName} - {user}").Password;
+
+        public override string getPassword(Scheme scheme, int port, string hostName, string user)
+        {
+            var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
+            return WinCredentialManager.GetCredentials(hostUrl).Password;
+        }
+
+        public override void save(Host bookmark)
         {
             if (string.IsNullOrWhiteSpace(bookmark.getHostname()))
             {
