@@ -22,10 +22,12 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateRoomRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,7 +44,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     private final SDSNodeIdProvider nodeid;
 
     private final PathContainerService containerService
-        = new SDSPathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDirectoryFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -53,31 +55,49 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                final CreateRoomRequest roomRequest = new CreateRoomRequest();
-                roomRequest.setParentId(null);
-                final UserAccountWrapper user = session.userAccount();
-                roomRequest.addAdminIdsItem(user.getId());
-                roomRequest.setAdminGroupIds(null);
-                if(!folder.getParent().isRoot()) {
-                    roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent(), new DisabledListProgressListener())));
-                }
-                roomRequest.setName(folder.getName());
-                final Node r = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
-                nodeid.cache(folder, r.getId().toString());
-                return folder.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(r));
+                return this.createRoom(folder, new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.encrypt"));
             }
             else {
-                final CreateFolderRequest folderRequest = new CreateFolderRequest();
-                folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent(), new DisabledListProgressListener())));
-                folderRequest.setName(folder.getName());
-                final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
-                nodeid.cache(folder, String.valueOf(node.getId()));
-                return folder.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+                return this.createFolder(folder);
             }
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Cannot create folder {0}", e, folder);
+        }
+    }
+
+    private Path createFolder(final Path folder) throws BackgroundException, ApiException {
+        final CreateFolderRequest folderRequest = new CreateFolderRequest();
+        folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent(), new DisabledListProgressListener())));
+        folderRequest.setName(folder.getName());
+        final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
+        nodeid.cache(folder, String.valueOf(node.getId()));
+        return folder.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+    }
+
+    protected Path createRoom(final Path room, final boolean encrypt) throws BackgroundException, ApiException {
+        final CreateRoomRequest roomRequest = new CreateRoomRequest();
+        roomRequest.setParentId(null);
+        final UserAccountWrapper user = session.userAccount();
+        roomRequest.addAdminIdsItem(user.getId());
+        roomRequest.setAdminGroupIds(null);
+        if(!room.getParent().isRoot()) {
+            roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(room.getParent(), new DisabledListProgressListener())));
+        }
+        roomRequest.setName(room.getName());
+        final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
+        nodeid.cache(room, node.getId().toString());
+        if(encrypt) {
+            final EncryptRoomRequest options = new EncryptRoomRequest();
+            options.setIsEncrypted(true);
+            return room.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(
+                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room,
+                                    new DisabledListProgressListener())), StringUtils.EMPTY, null)));
+        }
+        else {
+            return room.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
+                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
         }
     }
 

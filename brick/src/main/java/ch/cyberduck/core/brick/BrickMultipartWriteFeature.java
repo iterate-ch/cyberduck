@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
@@ -85,9 +86,11 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<IOException> canceled = new AtomicReference<>();
+        private final List<TransferStatus> checksums = new ArrayList<>();
+
         private String ref = null;
         private int partNumber;
-        private final List<TransferStatus> checksums = new ArrayList<>();
 
         public MultipartOutputStream(final Path file, final TransferStatus status) {
             this.file = file;
@@ -102,6 +105,9 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
+                if(null != canceled.get()) {
+                    throw canceled.get();
+                }
                 partNumber++;
                 checksums.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<TransferStatus>() {
                     @Override
@@ -109,7 +115,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                         final List<FileUploadPartEntity> uploadPartEntities;
                         try {
                             uploadPartEntities = new FileActionsApi(new BrickApiClient(session))
-                                .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
+                                    .beginUpload(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)), new BeginUploadPathBody().ref(ref).part(partNumber));
                         }
                         catch(ApiException e) {
                             throw new BrickExceptionMappingService().map("Upload {0} failed", e, file);
@@ -125,6 +131,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                                 IOUtils.write(content, proxy);
                             }
                             catch(IOException e) {
+                                canceled.set(e);
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                             finally {
@@ -149,20 +156,24 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
+                if(null != canceled.get()) {
+                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
+                    return;
+                }
                 if(null == ref) {
                     new BrickTouchFeature(session).touch(file, new TransferStatus());
                 }
                 else {
                     try {
                         new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
-                            .providedMtime(null != overall.getTimestamp() ? new DateTime(overall.getTimestamp()) : null)
-                            .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
-                            .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
-                            .ref(ref)
+                                .providedMtime(null != overall.getTimestamp() ? new DateTime(overall.getTimestamp()) : null)
+                                .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
+                                .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
+                                .ref(ref)
                             .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
                     }
                     catch(ApiException e) {
-                        throw new IOException(e.getMessage(), new BrickExceptionMappingService().map(e));
+                        throw new IOException(e.getMessage(), new BrickExceptionMappingService().map("Upload {0} failed", e, file));
                     }
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Completed multipart upload for %s", file));

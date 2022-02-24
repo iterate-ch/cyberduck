@@ -51,10 +51,9 @@ public class SDSTouchFeature implements Touch<Node> {
             if(SDSNodeIdProvider.isEncrypted(file)) {
                 status.setFilekey(nodeid.getFileKey());
             }
-            final StatusOutputStream<Node> writer = this.writer.write(file, status.complete(), new DisabledConnectionCallback());
-            writer.close();
-            final Node node = writer.getStatus();
-            return file.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+            final StatusOutputStream<Node> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
+            out.close();
+            return file.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(out.getStatus()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);

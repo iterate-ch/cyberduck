@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
@@ -94,6 +95,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<IOException> canceled = new AtomicReference<>();
         private int segmentNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
@@ -109,12 +111,15 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
+                if(null != canceled.get()) {
+                    throw canceled.get();
+                }
                 completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().withLength(len);
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file, status)
-                            .compute(new ByteArrayInputStream(content, off, len), status)
+                                .compute(new ByteArrayInputStream(content, off, len), status)
                         );
                         // Segment name with left padded segment number
                         final Path segment = segmentService.getSegment(file, ++segmentNumber);
@@ -129,9 +134,11 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                                 status.getChecksum().algorithm == HashAlgorithm.md5 ? status.getChecksum().hash : null);
                         }
                         catch(GenericException e) {
+                            canceled.set(e);
                             throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         catch(IOException e) {
+                            canceled.set(e);
                             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         if(log.isDebugEnabled()) {
@@ -156,6 +163,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
             try {
                 if(close.get()) {
                     log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
+                if(null != canceled.get()) {
+                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
                 if(completed.isEmpty()) {

@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> {
     private static final Logger log = LogManager.getLogger(S3MultipartWriteFeature.class);
@@ -91,12 +92,14 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
          * Completed parts
          */
         private final List<MultipartPart> completed
-            = new ArrayList<>();
+                = new ArrayList<>();
 
         private final MultipartUpload multipart;
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<ServiceException> canceled = new AtomicReference<>();
+
         private int partNumber;
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
@@ -136,6 +139,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
                                     new ByteArrayEntity(content, off, len), parameters);
                         }
                         catch(ServiceException e) {
+                            canceled.set(e);
                             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                         }
                         if(log.isDebugEnabled()) {
@@ -158,6 +162,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<MultipartUpload> 
             try {
                 if(close.get()) {
                     log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
+                if(null != canceled.get()) {
+                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
                 if(completed.isEmpty()) {

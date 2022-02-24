@@ -170,9 +170,10 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                             offset += content.length;
                                             break;
                                         default:
-                                            throw new EueExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(),
+                                            final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(),
                                                     response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                                    EntityUtils.toString(response.getEntity())));
+                                                    EntityUtils.toString(response.getEntity()));
+                                            throw new EueExceptionMappingService().map("Upload {0} failed", failure, file);
                                     }
                                 }
                                 catch(BackgroundException e) {
@@ -204,6 +205,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     return;
                 }
                 if(null != canceled.get()) {
+                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
                 if(result.get() == null) {
@@ -223,6 +225,10 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
             }
         }
 
+        public EueWriteFeature.Chunk getResult() {
+            return result.get();
+        }
+
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
@@ -232,10 +238,6 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
             sb.append(", offset=").append(offset);
             sb.append('}');
             return sb.toString();
-        }
-
-        public EueWriteFeature.Chunk getResult() {
-            return result.get();
         }
     }
 }

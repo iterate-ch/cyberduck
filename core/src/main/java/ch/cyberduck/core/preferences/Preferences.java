@@ -863,13 +863,14 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("sds.version.lts", "4.12");
         this.setDefault("sds.listing.chunksize", String.valueOf(500));
-        this.setDefault("sds.upload.multipart.chunksize", String.valueOf(2 * 1024L * 1024L));
+        this.setDefault("sds.upload.multipart.chunksize", String.valueOf(5 * 1024L * 1024L));
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
         this.setDefault("sds.encryption.missingkeys.delete.deprecated", String.valueOf(false));
         this.setDefault("sds.encryption.keys.ttl", String.valueOf(600000)); // 10 minutes
         this.setDefault("sds.useracount.ttl", String.valueOf(3600000)); // 1 hour
+        this.setDefault("sds.create.dataroom.encrypt", String.valueOf(false));
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));
         this.setDefault("sds.upload.s3.enable", String.valueOf(true));

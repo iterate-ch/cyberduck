@@ -146,8 +146,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                                         offset += content.length;
                                         break;
                                     default:
-                                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                            EntityUtils.toString(response.getEntity())));
+                                        final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                                EntityUtils.toString(response.getEntity()));
+                                        throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed", failure, file);
                                 }
                             }
                             catch(BackgroundException e) {
@@ -179,6 +180,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                     return;
                 }
                 if(null != canceled.get()) {
+                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
                 if(overall.getLength() <= 0) {
@@ -191,14 +193,15 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                             case HttpStatus.SC_OK:
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata metadata = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
-                                    FileMetadata.class);
+                                        FileMetadata.class);
                                 result.set(metadata);
                                 fileid.cache(file, metadata.getId());
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
-                                throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                    EntityUtils.toString(response.getEntity())));
+                                final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                        EntityUtils.toString(response.getEntity()));
+                                throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed", failure, file);
                         }
                     }
                     catch(BackgroundException e) {

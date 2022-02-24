@@ -26,6 +26,7 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
+public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSDirectS3WriteFeature.class);
 
     private final SDSSession session;
@@ -52,10 +53,10 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.write(file, status, new DelayedHttpEntityCallable<Void>() {
+    public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return this.write(file, status, new DelayedHttpEntityCallable<Node>() {
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Node call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(status.getUrl());
                     request.setEntity(entity);
