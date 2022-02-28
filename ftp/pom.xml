@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.apache.ftpserver</groupId>
             <artifactId>ftpserver</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.3</version>
             <type>pom</type>
             <exclusions>
                 <exclusion>
