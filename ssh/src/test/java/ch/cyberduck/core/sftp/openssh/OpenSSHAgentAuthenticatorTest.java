@@ -18,11 +18,12 @@ package ch.cyberduck.core.sftp.openssh;
  * feedback@cyberduck.ch
  */
 
-import org.junit.Ignore;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.Collection;
 
+import com.jcraft.jsch.agentproxy.AgentProxyException;
 import com.jcraft.jsch.agentproxy.Identity;
 
 import static org.junit.Assert.assertFalse;
@@ -30,10 +31,9 @@ import static org.junit.Assert.assertNotNull;
 
 public class OpenSSHAgentAuthenticatorTest {
 
-    @Test
-    @Ignore
-    public void testGetIdentities() {
-        final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator(null, false);
+    @Test(expected = AgentProxyException.class)
+    public void testGetIdentities() throws Exception {
+        final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator(StringUtils.EMPTY);
         final Collection<Identity> identities = authenticator.getIdentities();
         assertNotNull(authenticator.getProxy());
         assertFalse(identities.isEmpty());
