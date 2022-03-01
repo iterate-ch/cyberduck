@@ -56,7 +56,6 @@ import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
@@ -76,7 +75,6 @@ import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -2488,7 +2486,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     protected void edit(final Application application, final Path file) {
         this.background(new WorkerBackgroundAction<>(this, pool, editor.open(pool.getHost(), file,
-                application, new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
+                application,
                 new DefaultEditorListener(this, pool, editor, file, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {

@@ -2298,7 +2298,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public void edit(Application application, Path file)
         {
             background(new WorkerBackgroundAction(this, Session,
-                _editor.open(Session.getHost(), file, application, new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
+                _editor.open(Session.getHost(), file, application,
                     new DefaultEditorListener(this, Session, _editor, new ReloadEditorListener(this, file)))));
         }
 

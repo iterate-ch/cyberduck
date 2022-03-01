@@ -18,20 +18,85 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Proxy;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.rococoa.Foundation;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * Using FSEvents API
+ * Using FSEvents API and WorkspaceDidTerminateApplicationNotification
  */
 public class FSEventWatchEditor extends DefaultWatchEditor {
     private static final Logger log = LogManager.getLogger(FSEventWatchEditor.class);
 
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
+
+    /**
+     * Registered callbacks
+     */
+    private final Map<Application, Set<ApplicationQuitCallback>> registered = new HashMap<>();
+
+    private final Proxy terminate = new Proxy() {
+        public void terminated(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received notification %s from workspace", notification.userInfo()));
+            }
+            if(notification.userInfo().objectForKey("NSApplicationBundleIdentifier") == null) {
+                log.warn("Missing NSApplicationBundleIdentifier in notification dictionary");
+                return;
+            }
+            final Application application = new Application(notification.userInfo().objectForKey(
+                    "NSApplicationBundleIdentifier").toString());
+            // Do cleanup if application matches
+            for(ApplicationQuitCallback callback : registered.getOrDefault(application, Collections.emptySet())) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Run quit callback %s for application %s", callback, application));
+                }
+                callback.callback();
+            }
+        }
+    };
+
     public FSEventWatchEditor(final ProgressListener listener) {
         super(new FileWatcher(new FSEventWatchService()), listener);
+        workspace.notificationCenter().addObserver(terminate.id(),
+                Foundation.selector("terminated:"),
+                NSWorkspace.WorkspaceDidTerminateApplicationNotification,
+                null);
+    }
+
+    @Override
+    protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register application %s for terminate callback %s", application, quit));
+        }
+        final Set<ApplicationQuitCallback> callbacks = registered.getOrDefault(application, new HashSet<>());
+        callbacks.add(quit);
+        registered.putIfAbsent(application, callbacks);
+        super.watch(application, temporary, listener, quit);
+    }
+
+    @Override
+    public void close() {
+        log.warn(String.format("Remove observer %s", terminate));
+        workspace.notificationCenter().removeObserver(terminate.id());
+        super.close();
     }
 }

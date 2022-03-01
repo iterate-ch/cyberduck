@@ -65,7 +65,6 @@ import ch.cyberduck.core.storegate.StoregateProtocol;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -543,7 +542,7 @@ public class Terminal {
         }
         final Editor editor = factory.create(controller);
         final CountDownLatch lock = new CountDownLatch(1);
-        final Worker<Transfer> worker = editor.open(session.getHost(), remote, application, lock::countDown, new DisabledTransferErrorCallback(),
+        final Worker<Transfer> worker = editor.open(session.getHost(), remote, application,
                 new DefaultEditorListener(controller, session, editor, remote, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {

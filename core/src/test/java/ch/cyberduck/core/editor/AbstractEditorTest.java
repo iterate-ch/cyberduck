@@ -32,10 +32,8 @@ import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
-import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
@@ -88,16 +86,16 @@ public class AbstractEditorTest {
             }
 
             @Override
-            protected void edit(final Application editor, final Path file, final Local local, final ApplicationQuitCallback quit, final FileWatcherListener listener) {
+            protected void edit(final Application editor, final Path file, final Local temporary, final FileWatcherListener listener) {
                 e.set(true);
             }
 
             @Override
-            protected void watch(final Local local, final FileWatcherListener listener) {
+            protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) {
                 //
             }
         };
-        editor.open(host, file, new Application("com.editor"), new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DisabledFileWatcherListener()).run(session);
+        editor.open(host, file, new Application("com.editor"), new DisabledFileWatcherListener()).run(session);
         assertTrue(t.get());
         assertTrue(e.get());
         assertTrue(temporary.exists());
@@ -114,7 +112,7 @@ public class AbstractEditorTest {
         }
 
         @Override
-        protected void watch(final Local local, final FileWatcherListener listener) {
+        protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) {
             //
         }
 

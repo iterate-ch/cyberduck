@@ -108,11 +108,7 @@ public abstract class AbstractEditor implements Editor {
      * @param application Editor
      */
     @Override
-    public Worker<Transfer> open(final Host host, final Path file,
-                                 final Application application,
-                                 final ApplicationQuitCallback quit,
-                                 final TransferErrorCallback error,
-                                 final FileWatcherListener listener) {
+    public Worker<Transfer> open(final Host host, final Path file, final Application application, final FileWatcherListener listener) {
         final Path remote;
         if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
             remote = file.getSymlinkTarget();
@@ -122,15 +118,7 @@ public abstract class AbstractEditor implements Editor {
         }
         final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), remote);
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, remote,
-                temporary, error,
-                new ApplicationQuitCallback() {
-                    @Override
-                    public void callback() {
-                        quit.callback();
-                        close();
-                        delete(temporary);
-                    }
-                }, this.listener, listener, notification) {
+                temporary, this.listener, listener, notification) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -154,33 +142,37 @@ public abstract class AbstractEditor implements Editor {
      *
      * @param application Editor
      * @param file        Remote file
-     * @param local       Temporary file
-     * @param quit        Callback
+     * @param temporary   Temporary file
      */
-    protected void edit(final Application application,
-                        final Path file, final Local local,
-                        final ApplicationQuitCallback quit,
-                        final FileWatcherListener listener) throws IOException {
+    protected void edit(final Application application, final Path file, final Local temporary, final FileWatcherListener listener) throws IOException {
+        final ApplicationQuitCallback quit = new ApplicationQuitCallback() {
+            @Override
+            public void callback() {
+                close();
+                delete(temporary);
+            }
+        };
         if(!finder.isInstalled(application)) {
-            log.warn(String.format("No editor application configured for %s", local));
-            if(launcher.open(local)) {
-                this.watch(local, listener);
+            log.warn(String.format("No editor application configured for %s", temporary));
+            if(launcher.open(temporary)) {
+                this.watch(application, temporary, listener, quit);
             }
             else {
                 throw new IOException(String.format("Failed to open default application for %s",
-                        local.getName()));
+                        temporary.getName()));
             }
         }
-        else if(launcher.open(local, application, quit)) {
-            this.watch(local, listener);
+        else if(launcher.open(temporary, application)) {
+            this.watch(application, temporary, listener, quit);
         }
         else {
             throw new IOException(String.format("Failed to open application %s for %s",
-                    application.getName(), local.getName()));
+                    application.getName(), temporary.getName()));
         }
     }
 
-    protected abstract void watch(Local local, FileWatcherListener listener) throws IOException;
+    protected abstract void watch(Application application, Local temporary,
+                                  FileWatcherListener listener, ApplicationQuitCallback quit) throws IOException;
 
     /**
      * Upload changes to server if checksum of local file has changed since last edit.

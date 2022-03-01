@@ -21,6 +21,8 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 
@@ -50,8 +52,8 @@ public class DefaultWatchEditor extends AbstractEditor {
     }
 
     @Override
-    protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(local.getParent(), new FileWatcher.DefaultFileFilter(local), listener));
+    protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
+        Uninterruptibles.awaitUninterruptibly(monitor.register(temporary.getParent(), new FileWatcher.DefaultFileFilter(temporary), listener));
     }
 
     @Override

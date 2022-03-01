@@ -30,14 +30,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
@@ -59,8 +58,6 @@ public class EditOpenWorker extends Worker<Transfer> {
     private final Transfer download;
     private final Path file;
     private final Local local;
-    private final TransferErrorCallback callback;
-    private final ApplicationQuitCallback quit;
     private final NotificationService notification;
     private final ProgressListener listener;
     private final FileWatcherListener watcher;
@@ -69,8 +66,6 @@ public class EditOpenWorker extends Worker<Transfer> {
     public EditOpenWorker(final Host bookmark, final AbstractEditor editor,
                           final Application application,
                           final Path file, final Local local,
-                          final TransferErrorCallback callback,
-                          final ApplicationQuitCallback quit,
                           final ProgressListener listener,
                           final FileWatcherListener watcher,
                           final NotificationService notification) {
@@ -78,8 +73,6 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.file = file;
         this.editor = editor;
         this.local = local;
-        this.callback = callback;
-        this.quit = quit;
         this.notification = notification;
         final DownloadFilterOptions options = new DownloadFilterOptions(bookmark);
         options.quarantine = false;
@@ -105,14 +98,14 @@ public class EditOpenWorker extends Worker<Transfer> {
         final TransferOptions options = new TransferOptions();
         final SingleTransferWorker worker
                 = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
-                new DisabledTransferPrompt(), callback,
+                new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
                 listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
         }
         try {
-            editor.edit(application, file, local, quit, watcher);
+            editor.edit(application, file, local, watcher);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
