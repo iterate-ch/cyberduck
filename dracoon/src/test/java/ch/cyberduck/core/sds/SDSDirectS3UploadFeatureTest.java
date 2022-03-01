@@ -24,6 +24,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -69,6 +70,13 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
+        try {
+            feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                    new DisabledStreamListener(), status, new DisabledLoginCallback());
+            fail();
+        }
+        catch(ConflictException e) {
+        }
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
