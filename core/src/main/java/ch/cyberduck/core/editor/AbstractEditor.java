@@ -64,7 +64,7 @@ public abstract class AbstractEditor implements Editor {
      */
     private Checksum checksum;
 
-    private final ProgressListener listener;
+    private final ProgressListener progress;
     private final ApplicationLauncher launcher;
     private final ApplicationFinder finder;
     private final NotificationService notification = NotificationServiceFactory.get();
@@ -78,7 +78,7 @@ public abstract class AbstractEditor implements Editor {
                           final ProgressListener listener) {
         this.launcher = launcher;
         this.finder = finder;
-        this.listener = listener;
+        this.progress = listener;
     }
 
     public boolean isModified() {
@@ -118,7 +118,7 @@ public abstract class AbstractEditor implements Editor {
         }
         final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), remote);
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, remote,
-                temporary, this.listener, listener, notification) {
+                temporary, progress, listener, notification) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
@@ -183,7 +183,7 @@ public abstract class AbstractEditor implements Editor {
         // If checksum still the same no need for save
         final Checksum current;
         try {
-            listener.message(MessageFormat.format(
+            progress.message(MessageFormat.format(
                     LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), temporary.getName()));
             current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
         }
@@ -202,7 +202,7 @@ public abstract class AbstractEditor implements Editor {
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new EditSaveWorker(host, this, file, temporary, error, listener, notification);
+            final Worker<Transfer> worker = new EditSaveWorker(host, this, file, temporary, error, progress, notification);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Upload changes for %s", temporary));
             }
