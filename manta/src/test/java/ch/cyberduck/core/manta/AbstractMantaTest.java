@@ -26,8 +26,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -65,7 +65,7 @@ public abstract class AbstractMantaTest {
         }
         else {
             final String key = System.getProperty("manta.key");
-            file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
+            file = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
             LocalTouchFactory.get().touch(file);
             IOUtils.write(key, file.getOutputStream(false), Charset.defaultCharset());
             hostname = profile.getDefaultHostname();
