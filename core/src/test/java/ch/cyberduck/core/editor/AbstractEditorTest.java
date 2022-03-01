@@ -18,27 +18,25 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestLoginConnectionService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
+import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -48,31 +46,16 @@ import java.nio.charset.Charset;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AbstractEditorTest {
 
     @Test
-    public void testEquals() {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
-        assertEquals(
-            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
-        );
-        assertNotEquals(
-            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/g", EnumSet.of(Path.Type.file)))
-        );
-        assertNotEquals(
-            new DisabledEditor(new Application("a"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
-            new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file)))
-        );
-    }
-
-    @Test
     public void testOpen() throws Exception {
         final AtomicBoolean t = new AtomicBoolean();
-        final NullSession session = new NullTransferSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullTransferSession(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -96,16 +79,16 @@ public class AbstractEditorTest {
         };
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
+        final Local temporary = new DefaultTemporaryFileService().create(host.getUuid(), file);
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session,
-            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(new DisabledProgressListener()) {
             @Override
             public void close() {
                 //
             }
 
             @Override
-            protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) {
+            protected void edit(final Application editor, final Path file, final Local local, final ApplicationQuitCallback quit, final FileWatcherListener listener) {
                 e.set(true);
             }
 
@@ -114,16 +97,20 @@ public class AbstractEditorTest {
                 //
             }
         };
-        editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DisabledFileWatcherListener()).run(session);
+        editor.open(host, file, new Application("com.editor"), new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DisabledFileWatcherListener()).run(session);
         assertTrue(t.get());
-        assertNotNull(editor.getLocal());
         assertTrue(e.get());
-        assertTrue(editor.getLocal().exists());
+        assertTrue(temporary.exists());
     }
 
-    private class DisabledEditor extends AbstractEditor {
-        public DisabledEditor(final Application application, final SessionPool session, final Path file) {
-            super(application, session, file, new DisabledProgressListener());
+    private static class DisabledEditor extends AbstractEditor {
+
+        public DisabledEditor(final Host host, final ProgressListener listener) {
+            super(listener);
+        }
+
+        public DisabledEditor(final Host host, final ApplicationLauncher launcher, final ApplicationFinder finder, final ProgressListener listener) {
+            super(launcher, finder, listener);
         }
 
         @Override

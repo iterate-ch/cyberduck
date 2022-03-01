@@ -18,51 +18,20 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
-import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FileWatcher;
-import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-
-import com.google.common.util.concurrent.Uninterruptibles;
-
 /**
- * An editor listing for file system notifications on a particular folder
+ * Using FSEvents API
  */
-public class FSEventWatchEditor extends AbstractEditor {
+public class FSEventWatchEditor extends DefaultWatchEditor {
     private static final Logger log = LogManager.getLogger(FSEventWatchEditor.class);
 
-    private final FileWatcher monitor
-        = new FileWatcher(new FSEventWatchService());
-
-    /**
-     * With custom editor for file type.
-     *
-     * @param application Editor application
-     * @param file        Remote file
-     */
-    public FSEventWatchEditor(final Application application, final SessionPool session,
-                              final Path file, final ProgressListener listener) {
-        super(application, session, file, listener);
-    }
-
-    public void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(local.getParent(), new FileWatcher.DefaultFileFilter(local), listener));
-    }
-
-    @Override
-    public void close() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Close monitor %s", monitor));
-        }
-        monitor.close();
+    public FSEventWatchEditor(final ProgressListener listener) {
+        super(new FileWatcher(new FSEventWatchService()), listener);
     }
 }

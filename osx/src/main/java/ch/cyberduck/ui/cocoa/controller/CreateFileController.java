@@ -43,7 +43,7 @@ public class CreateFileController extends FileController {
         alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "File"));
-        if(EditorFactory.instance().getDefaultEditor() != Application.notfound) {
+        if(EditorFactory.getDefaultEditor() != Application.notfound) {
             alert.addButtonWithTitle(LocaleFactory.localizedString("Edit", "File"));
         }
         alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));

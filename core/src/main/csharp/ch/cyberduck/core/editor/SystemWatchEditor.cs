@@ -32,10 +32,7 @@ namespace Ch.Cyberduck.Core.Editor
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemWatchEditor).FullName);
         private FileSystemWatcher _watcher;
 
-        public SystemWatchEditor(Application application, SessionPool session, Path file, ProgressListener listener)
-            : base(application, session, file, listener)
-        {
-        }
+        public SystemWatchEditor(ProgressListener listener) : base(listener) {}
 
         protected override void watch(ch.cyberduck.core.Local file, FileWatcherListener listener)
         {

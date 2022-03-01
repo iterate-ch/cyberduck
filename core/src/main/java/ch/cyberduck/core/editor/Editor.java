@@ -18,6 +18,10 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.transfer.Transfer;
@@ -28,18 +32,23 @@ public interface Editor {
 
     /**
      * Move edited file to trash
+     *
+     * @param temporary Local file
      */
-    void delete();
+    void delete(final Local temporary);
 
+    /**
+     * Close monitors
+     */
     void close();
 
     /**
      * Download file and open in editor
      */
-    Worker<Transfer> open(ApplicationQuitCallback callback, TransferErrorCallback error, FileWatcherListener listener);
+    Worker<Transfer> open(Host host, Path file, final Application application, ApplicationQuitCallback callback, TransferErrorCallback error, FileWatcherListener listener);
 
     /**
      * Upload saved changes
      */
-    Worker<Transfer> save(TransferErrorCallback error);
+    Worker<Transfer> save(Host host, Path file, Local temporary, TransferErrorCallback error);
 }

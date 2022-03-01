@@ -19,15 +19,10 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
-import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationFinder;
-import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,26 +31,22 @@ import java.io.IOException;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
+/**
+ * An editor listing for file system notifications on a particular folder
+ */
 public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = LogManager.getLogger(DefaultWatchEditor.class);
 
-    private final FileWatcher monitor
-        = new FileWatcher(new NIOEventWatchService());
+    private final FileWatcher monitor;
 
-    public DefaultWatchEditor(final Application application,
-                              final SessionPool session,
-                              final Path file,
-                              final ProgressListener listener) {
-        super(application, session, file, listener);
+    public DefaultWatchEditor(final ProgressListener listener) {
+        this(new FileWatcher(new NIOEventWatchService()), listener);
     }
 
-    public DefaultWatchEditor(final Application application,
-                              final SessionPool session,
-                              final Path file,
-                              final ApplicationLauncher launcher,
-                              final ApplicationFinder finder,
+    public DefaultWatchEditor(final FileWatcher monitor,
                               final ProgressListener listener) {
-        super(application, session, file, launcher, finder, listener);
+        super(listener);
+        this.monitor = monitor;
     }
 
     @Override

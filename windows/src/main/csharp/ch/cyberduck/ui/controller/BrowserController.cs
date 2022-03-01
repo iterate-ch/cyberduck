@@ -80,6 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
+        private readonly Editor _editor = EditorFactory.instance().create(this);
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
@@ -594,7 +595,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (p.isFile())
                 {
-                    return Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors(p.getName()),
+                    return Utils.ConvertFromJavaList<Application>(EditorFactory.getEditors(p.getName()),
                         null);
                 }
             }
@@ -2278,29 +2279,27 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                Editor editor;
                 if (Utils.IsBlank(exe))
                 {
-                    editor = EditorFactory.instance().create(this, Session, selected);
+                    edit(file);
                 }
                 else
                 {
-                    editor = EditorFactory.instance().create(this, Session, new Application(exe, null), selected);
+                    edit(new Application(exe, null), selected);
                 }
-                edit(editor, selected);
             }
         }
 
         public void edit(Path file)
         {
-            edit(EditorFactory.instance().create(this, Session, file), file);
+            edit(EditorFactory.getEditor(file.getName()), file);
         }
 
-        public void edit(Editor editor, Path file)
+        public void edit(Application application, Path file)
         {
             background(new WorkerBackgroundAction(this, Session,
-                editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
-                    new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
+                _editor.open(Session.getHost(), file, application, new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
+                    new DefaultEditorListener(this, Session, _editor, new ReloadEditorListener(this, file)))));
         }
 
         private class ReloadEditorListener : DefaultEditorListener.Listener
@@ -2336,7 +2335,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsEditable(selected))
                 {
-                    Application app = EditorFactory.instance().getEditor(selected.getName());
+                    Application app = EditorFactory.getEditor(selected.getName());
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {

@@ -96,4 +96,17 @@ public class DefaultTemporaryFileServiceTest {
         assertEquals(String.format("%s/%s%s/2/%s", temp, "UID", testPathDirectory, testPathFile).replace('/', File.separatorChar), localFile);
         assertNotEquals(String.format("%s/%s%s/2/%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
+
+    @Test
+    public void testTemporaryPath() {
+        final Path file = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
+        file.attributes().setDuplicate(true);
+        file.attributes().setVersionId("1");
+        final Local local = new DefaultTemporaryFileService().create(file);
+        assertEquals("t.txt", file.getName());
+        assertEquals("t.txt", local.getName());
+        assertEquals("1", local.getParent().getName());
+        assertEquals("f2", local.getParent().getParent().getName());
+        assertEquals("f1", local.getParent().getParent().getParent().getName());
+    }
 }

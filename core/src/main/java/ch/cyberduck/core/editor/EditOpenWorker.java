@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.notification.NotificationService;
@@ -55,18 +57,27 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     private final AbstractEditor editor;
     private final Transfer download;
+    private final Path file;
+    private final Local local;
     private final TransferErrorCallback callback;
     private final ApplicationQuitCallback quit;
     private final NotificationService notification;
     private final ProgressListener listener;
     private final FileWatcherListener watcher;
+    private final Application application;
 
     public EditOpenWorker(final Host bookmark, final AbstractEditor editor,
+                          final Application application,
+                          final Path file, final Local local,
                           final TransferErrorCallback callback,
                           final ApplicationQuitCallback quit,
                           final ProgressListener listener,
-                          final FileWatcherListener watcher, final NotificationService notification) {
+                          final FileWatcherListener watcher,
+                          final NotificationService notification) {
+        this.application = application;
+        this.file = file;
         this.editor = editor;
+        this.local = local;
         this.callback = callback;
         this.quit = quit;
         this.notification = notification;
@@ -74,7 +85,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         options.quarantine = false;
         options.wherefrom = false;
         options.open = false;
-        this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new DownloadDuplicateFilter()) {
+        this.download = new DownloadTransfer(bookmark, file, local, new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt, final ListProgressListener listener) {
@@ -87,22 +98,21 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     @Override
     public Transfer run(final Session<?> session) throws BackgroundException {
-        final Path file = editor.getRemote();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run edit action for editor %s", file));
         }
         // Delete any existing file which might be used by a watch editor already
         final TransferOptions options = new TransferOptions();
         final SingleTransferWorker worker
-            = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
-            new DisabledTransferPrompt(), callback,
-            listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
+                = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
+                new DisabledTransferPrompt(), callback,
+                listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
         }
         try {
-            editor.edit(quit, watcher);
+            editor.edit(application, file, local, quit, watcher);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -112,8 +122,7 @@ public class EditOpenWorker extends Worker<Transfer> {
 
     @Override
     public String getActivity() {
-        return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-            editor.getRemote().getName());
+        return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"), file.getName());
     }
 
     @Override

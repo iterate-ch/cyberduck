@@ -535,16 +535,16 @@ public class Terminal {
             }
         }
         else {
-            application = factory.getEditor(remote.getName());
+            application = EditorFactory.getEditor(remote.getName());
         }
         if(!finder.isInstalled(application)) {
             throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                     String.format("No application found to edit %s", remote.getName()));
         }
-        final Editor editor = factory.create(controller, session, application, remote);
+        final Editor editor = factory.create(controller);
         final CountDownLatch lock = new CountDownLatch(1);
-        final Worker<Transfer> worker = editor.open(lock::countDown, new DisabledTransferErrorCallback(),
-                new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
+        final Worker<Transfer> worker = editor.open(session.getHost(), remote, application, lock::countDown, new DisabledTransferErrorCallback(),
+                new DefaultEditorListener(controller, session, editor, remote, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
                         //

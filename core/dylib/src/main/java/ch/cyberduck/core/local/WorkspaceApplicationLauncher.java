@@ -46,7 +46,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
             NSWorkspace.WorkspaceDidTerminateApplicationNotification,
             null);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Register application %s for callback %s", application, callback));
+            log.info(String.format("Register application %s for terminate callback %s", application, callback));
         }
         registered.put(application, callback);
     }

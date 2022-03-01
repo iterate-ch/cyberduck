@@ -18,6 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -38,7 +39,6 @@ import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
-import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -50,7 +50,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Objects;
 
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = LogManager.getLogger(AbstractEditor.class);
@@ -61,69 +60,25 @@ public abstract class AbstractEditor implements Editor {
     private boolean modified;
 
     /**
-     * The edited path
-     */
-    private final Path remote;
-
-    private final Local local;
-
-    /**
-     * The editor application
-     */
-    private final Application application;
-
-    /**
      * Store checksum of downloaded file to detect modifications
      */
     private Checksum checksum;
 
-    /**
-     * Session for transfers
-     */
-    private final SessionPool session;
     private final ProgressListener listener;
-    private final ApplicationLauncher applicationLauncher;
-    private final ApplicationFinder applicationFinder;
+    private final ApplicationLauncher launcher;
+    private final ApplicationFinder finder;
     private final NotificationService notification = NotificationServiceFactory.get();
 
-    public AbstractEditor(final Application application,
-                          final SessionPool session,
-                          final Path file,
-                          final ProgressListener listener) {
-        this(application, session, file, ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(),
-            listener);
+    public AbstractEditor(final ProgressListener listener) {
+        this(ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(), listener);
     }
 
-    public AbstractEditor(final Application application,
-                          final SessionPool session,
-                          final Path file,
-                          final ApplicationLauncher launcher,
+    public AbstractEditor(final ApplicationLauncher launcher,
                           final ApplicationFinder finder,
                           final ProgressListener listener) {
-        this.applicationLauncher = launcher;
-        this.applicationFinder = finder;
-        this.application = application;
-        if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
-            this.remote = file.getSymlinkTarget();
-        }
-        else {
-            this.remote = file;
-        }
-        this.local = TemporaryFileServiceFactory.get().create(session.getHost().getUuid(), remote);
-        this.session = session;
+        this.launcher = launcher;
+        this.finder = finder;
         this.listener = listener;
-    }
-
-    public Path getRemote() {
-        return remote;
-    }
-
-    public Local getLocal() {
-        return local;
-    }
-
-    public Application getApplication() {
-        return application;
     }
 
     public boolean isModified() {
@@ -135,46 +90,61 @@ public abstract class AbstractEditor implements Editor {
     }
 
     @Override
-    public void delete() {
+    public void delete(final Local temporary) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete edited file %s", local));
+            log.debug(String.format("Delete edited file %s", temporary));
         }
         try {
-            LocalTrashFactory.get().trash(local);
+            LocalTrashFactory.get().trash(temporary);
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure trashing edited file %s %s", local, e.getMessage()));
+            log.warn(String.format("Failure trashing edited file %s %s", temporary, e.getMessage()));
         }
     }
 
     /**
-     * Open the file in the parent directory
+     * @param host        Bookmark
+     * @param file        Remote file Open the file in the parent directory
+     * @param application Editor
      */
     @Override
-    public Worker<Transfer> open(final ApplicationQuitCallback quit, final TransferErrorCallback error, final FileWatcherListener listener) {
-        final Worker<Transfer> worker = new EditOpenWorker(session.getHost(), this, error,
-            new ApplicationQuitCallback() {
-                @Override
-                public void callback() {
-                    quit.callback();
-                    close();
-                    delete();
-                }
-            }, this.listener, listener, notification) {
+    public Worker<Transfer> open(final Host host, final Path file,
+                                 final Application application,
+                                 final ApplicationQuitCallback quit,
+                                 final TransferErrorCallback error,
+                                 final FileWatcherListener listener) {
+        final Path remote;
+        if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
+            remote = file.getSymlinkTarget();
+        }
+        else {
+            remote = file;
+        }
+        final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), remote);
+        final Worker<Transfer> worker = new EditOpenWorker(host, this, application, remote,
+                temporary, error,
+                new ApplicationQuitCallback() {
+                    @Override
+                    public void callback() {
+                        quit.callback();
+                        close();
+                        delete(temporary);
+                    }
+                }, this.listener, listener, notification) {
             @Override
             public void cleanup(final Transfer download) {
                 // Save checksum before edit
                 try {
-                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
+                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Error computing checksum for %s. %s", local, e));
+                    log.warn(String.format("Error computing checksum for %s. %s", temporary, e));
                 }
 
             }
         };
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Download file for edit %s", local));
+            log.debug(String.format("Download file for edit %s", temporary));
         }
         return worker;
     }
@@ -182,25 +152,31 @@ public abstract class AbstractEditor implements Editor {
     /**
      * Watch for changes in external editor
      *
-     * @param quit Callback
+     * @param application Editor
+     * @param file        Remote file
+     * @param local       Temporary file
+     * @param quit        Callback
      */
-    protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
-        if(!applicationFinder.isInstalled(application)) {
+    protected void edit(final Application application,
+                        final Path file, final Local local,
+                        final ApplicationQuitCallback quit,
+                        final FileWatcherListener listener) throws IOException {
+        if(!finder.isInstalled(application)) {
             log.warn(String.format("No editor application configured for %s", local));
-            if(applicationLauncher.open(local)) {
+            if(launcher.open(local)) {
                 this.watch(local, listener);
             }
             else {
                 throw new IOException(String.format("Failed to open default application for %s",
-                    local.getName()));
+                        local.getName()));
             }
         }
-        else if(applicationLauncher.open(local, application, quit)) {
+        else if(launcher.open(local, application, quit)) {
             this.watch(local, listener);
         }
         else {
             throw new IOException(String.format("Failed to open application %s for %s",
-                application.getName(), local.getName()));
+                    application.getName(), local.getName()));
         }
     }
 
@@ -210,32 +186,33 @@ public abstract class AbstractEditor implements Editor {
      * Upload changes to server if checksum of local file has changed since last edit.
      */
     @Override
-    public Worker<Transfer> save(final TransferErrorCallback error) {
+    public Worker<Transfer> save(final Host host, final Path file, final Local temporary,
+                                 final TransferErrorCallback error) {
         // If checksum still the same no need for save
         final Checksum current;
         try {
             listener.message(MessageFormat.format(
-                LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), local.getName()));
-            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), new TransferStatus());
+                    LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), temporary.getName()));
+            current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
         }
         catch(BackgroundException e) {
-            log.warn(String.format("Error computing checksum for %s. %s", local, e));
+            log.warn(String.format("Error computing checksum for %s. %s", temporary, e));
             return Worker.empty();
         }
         if(current.equals(checksum)) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("File %s not modified with checksum %s", local, current));
+                log.info(String.format("File %s not modified with checksum %s", temporary, current));
             }
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Save new checksum %s for file %s", current, local));
+                log.info(String.format("Save new checksum %s for file %s", current, temporary));
             }
             // Store current checksum
             checksum = current;
-            final Worker<Transfer> worker = new EditSaveWorker(session.getHost(), this, error, listener, notification);
+            final Worker<Transfer> worker = new EditSaveWorker(host, this, file, temporary, error, listener, notification);
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Upload changes for %s", local));
+                log.debug(String.format("Upload changes for %s", temporary));
             }
             return worker;
         }
@@ -243,46 +220,10 @@ public abstract class AbstractEditor implements Editor {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        try {
-            this.close();
-            this.delete();
-        }
-        finally {
-            super.finalize();
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        AbstractEditor that = (AbstractEditor) o;
-        if(!Objects.equals(application, that.application)) {
-            return false;
-        }
-        if(!Objects.equals(local, that.local)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = local != null ? local.hashCode() : 0;
-        result = 31 * result + (application != null ? application.hashCode() : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("AbstractEditor{");
-        sb.append("application=").append(application);
-        sb.append(", local=").append(local);
+        sb.append("modified=").append(modified);
+        sb.append(", checksum=").append(checksum);
         sb.append('}');
         return sb.toString();
     }
