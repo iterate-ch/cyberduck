@@ -148,7 +148,6 @@ public abstract class AbstractEditor implements Editor {
         final ApplicationQuitCallback quit = new ApplicationQuitCallback() {
             @Override
             public void callback() {
-                close();
                 delete(temporary);
             }
         };

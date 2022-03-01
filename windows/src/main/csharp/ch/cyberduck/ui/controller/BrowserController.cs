@@ -318,6 +318,12 @@ namespace Ch.Cyberduck.Ui.Controller
             SetNavigation(false);
         }
 
+        protected override void Invalidate()
+        {
+            _editor.close();
+            base.Invalidate();
+        }
+
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);

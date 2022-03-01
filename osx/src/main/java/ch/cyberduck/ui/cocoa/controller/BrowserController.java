@@ -3524,6 +3524,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public void invalidate() {
+        editor.close();
         quicklook.close();
 
         bookmarkTable.setDelegate(null);
