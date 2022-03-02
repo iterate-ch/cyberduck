@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Core
         {
             if (!WinCredentialManager.RemoveCredentials($"{serviceName} - {user}"))
             {
-                throw new NotfoundException($"Cannot delete {serviceName} - {user}");
+                throw new LocalAccessDeniedException($"Cannot delete {serviceName} - {user}");
             }
         }
 
@@ -79,7 +79,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
             if (!WinCredentialManager.RemoveCredentials(hostUrl))
             {
-                throw new NotfoundException($"Cannot delete {hostUrl}");
+                throw new LocalAccessDeniedException($"Cannot delete {hostUrl}");
             }
         }
 
