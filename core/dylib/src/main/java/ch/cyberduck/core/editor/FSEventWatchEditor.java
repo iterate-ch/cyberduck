@@ -21,7 +21,9 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.Application;
@@ -74,8 +76,8 @@ public class FSEventWatchEditor extends DefaultWatchEditor {
         }
     };
 
-    public FSEventWatchEditor(final ProgressListener listener) {
-        super(new FileWatcher(new FSEventWatchService()), listener);
+    public FSEventWatchEditor(final Host host, final Path file, final ProgressListener listener) {
+        super(host, file, listener, new FileWatcher(new FSEventWatchService()));
         workspace.notificationCenter().addObserver(terminate.id(),
                 Foundation.selector("terminated:"),
                 NSWorkspace.WorkspaceDidTerminateApplicationNotification,

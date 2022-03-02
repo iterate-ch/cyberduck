@@ -18,7 +18,9 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.Application;
@@ -41,13 +43,12 @@ public class DefaultWatchEditor extends AbstractEditor {
 
     private final FileWatcher monitor;
 
-    public DefaultWatchEditor(final ProgressListener listener) {
-        this(new FileWatcher(new NIOEventWatchService()), listener);
+    public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener) {
+        this(host, file, listener, new FileWatcher(new NIOEventWatchService()));
     }
 
-    public DefaultWatchEditor(final FileWatcher monitor,
-                              final ProgressListener listener) {
-        super(listener);
+    public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener, final FileWatcher monitor) {
+        super(host, file, listener);
         this.monitor = monitor;
     }
 

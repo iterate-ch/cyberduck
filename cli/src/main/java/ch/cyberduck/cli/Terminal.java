@@ -540,10 +540,10 @@ public class Terminal {
             throw new BackgroundException(LocaleFactory.localizedString("Unknown"),
                     String.format("No application found to edit %s", remote.getName()));
         }
-        final Editor editor = factory.create(controller);
+        final Editor editor = factory.create(session.getHost(), remote, controller);
         final CountDownLatch lock = new CountDownLatch(1);
-        final Worker<Transfer> worker = editor.open(session.getHost(), remote, application,
-                new DefaultEditorListener(controller, session, editor, remote, new DefaultEditorListener.Listener() {
+        final Worker<Transfer> worker = editor.open(application,
+                new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
                         //

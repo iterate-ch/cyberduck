@@ -19,8 +19,10 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -38,21 +40,21 @@ public class DefaultWatchEditorTest {
 
     @Test(expected = NoSuchFileException.class)
     public void testNotfound() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(new DisabledListProgressListener());
+        final DefaultWatchEditor editor = new DefaultWatchEditor(new Host(new TestProtocol()), new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         editor.watch(new Application("com.app"), new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()), new DisabledFileWatcherListener(),
                 new DisabledApplicationQuitCallback());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplicationNoFile() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(new DisabledListProgressListener());
+        final DefaultWatchEditor editor = new DefaultWatchEditor(new Host(new TestProtocol()), new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         final Path file = new Path("/remote", EnumSet.of(Path.Type.file));
         editor.edit(EditorFactory.getEditor(file.getName()), file, new DefaultTemporaryFileService().create("remote"), new DisabledFileWatcherListener());
     }
 
     @Test(expected = IOException.class)
     public void testEditNullApplication() throws Exception {
-        final DefaultWatchEditor editor = new DefaultWatchEditor(new DisabledListProgressListener());
+        final DefaultWatchEditor editor = new DefaultWatchEditor(new Host(new TestProtocol()), new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         final Local local = new DefaultTemporaryFileService().create("remote");
         new DefaultLocalTouchFeature().touch(local);
         final Path file = new Path("/remote.txt", EnumSet.of(Path.Type.file));

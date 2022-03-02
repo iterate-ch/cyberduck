@@ -199,7 +199,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private SessionPool pool = SessionPool.DISCONNECTED;
 
-    private final Editor editor = EditorFactory.instance().create(this);
+    private final Map<Path, Editor> editors = new HashMap<>();
 
     private Path workdir;
     /**
@@ -2485,9 +2485,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     protected void edit(final Application application, final Path file) {
-        this.background(new WorkerBackgroundAction<>(this, pool, editor.open(pool.getHost(), file,
+        final Editor editor = editors.getOrDefault(file, EditorFactory.instance().create(pool.getHost(), file, this));
+        this.background(new WorkerBackgroundAction<>(this, pool, editor.open(
                 application,
-                new DefaultEditorListener(this, pool, editor, file, new DefaultEditorListener.Listener() {
+                new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
                         reload(workdir, new PathReloadFinder().find(Collections.singletonList(file)), Collections.singletonList(file), true);
@@ -3524,7 +3525,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public void invalidate() {
-        editor.close();
+        for(Editor editor : editors.values()) {
+            editor.close();
+        }
         quicklook.close();
 
         bookmarkTable.setDelegate(null);

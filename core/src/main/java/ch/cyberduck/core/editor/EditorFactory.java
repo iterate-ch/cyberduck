@@ -20,6 +20,8 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -72,10 +74,12 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     }
 
     /**
+     * @param host     Bookmark
+     * @param file     Remote file to download
      * @param listener Controller
      * @return New editor instance for the given file type.
      */
-    public abstract Editor create(ProgressListener listener);
+    public abstract Editor create(final Host host, Path file, ProgressListener listener);
 
     /**
      * Determine the default editor set

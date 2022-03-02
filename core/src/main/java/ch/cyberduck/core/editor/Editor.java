@@ -18,9 +18,7 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.transfer.Transfer;
@@ -44,10 +42,10 @@ public interface Editor {
     /**
      * Download file and open in editor
      */
-    Worker<Transfer> open(Host host, Path file, Application application, FileWatcherListener listener);
+    Worker<Transfer> open(Application application, FileWatcherListener listener);
 
     /**
      * Upload saved changes
      */
-    Worker<Transfer> save(Host host, Path file, Local temporary, TransferErrorCallback error);
+    Worker<Transfer> save(TransferErrorCallback error);
 }

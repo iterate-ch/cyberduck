@@ -24,12 +24,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationFinder;
-import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
@@ -79,7 +76,7 @@ public class AbstractEditorTest {
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
         final Local temporary = new DefaultTemporaryFileService().create(host.getUuid(), file);
         file.attributes().setSize("content".getBytes().length);
-        final AbstractEditor editor = new AbstractEditor(new DisabledProgressListener()) {
+        final AbstractEditor editor = new AbstractEditor(host, file, new DisabledProgressListener()) {
             @Override
             public void close() {
                 //
@@ -95,30 +92,9 @@ public class AbstractEditorTest {
                 //
             }
         };
-        editor.open(host, file, new Application("com.editor"), new DisabledFileWatcherListener()).run(session);
+        editor.open(new Application("com.editor"), new DisabledFileWatcherListener()).run(session);
         assertTrue(t.get());
         assertTrue(e.get());
         assertTrue(temporary.exists());
-    }
-
-    private static class DisabledEditor extends AbstractEditor {
-
-        public DisabledEditor(final Host host, final ProgressListener listener) {
-            super(listener);
-        }
-
-        public DisabledEditor(final Host host, final ApplicationLauncher launcher, final ApplicationFinder finder, final ProgressListener listener) {
-            super(launcher, finder, listener);
-        }
-
-        @Override
-        protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) {
-            //
-        }
-
-        @Override
-        public void close() {
-            //
-        }
     }
 }

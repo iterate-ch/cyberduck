@@ -19,7 +19,6 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -35,15 +34,13 @@ public class DefaultEditorListener implements FileWatcherListener {
     private final Controller controller;
     private final SessionPool session;
     private final Editor editor;
-    private final Path file;
     private final Listener listener;
 
     public DefaultEditorListener(final Controller controller, final SessionPool session,
-                                 final Editor editor, final Path file, final Listener listener) {
+                                 final Editor editor, final Listener listener) {
         this.controller = controller;
         this.session = session;
         this.editor = editor;
-        this.file = file;
         this.listener = listener;
     }
 
@@ -53,7 +50,7 @@ public class DefaultEditorListener implements FileWatcherListener {
             log.info(String.format("File %s written", temporary));
         }
         controller.background(new WorkerBackgroundAction<Transfer>(controller, session,
-                                      editor.save(session.getHost(), file, temporary, new DisabledTransferErrorCallback())) {
+                                      editor.save(new DisabledTransferErrorCallback())) {
                                   @Override
                                   public void cleanup() {
                                       super.cleanup();
@@ -77,7 +74,7 @@ public class DefaultEditorListener implements FileWatcherListener {
             log.info(String.format("File %s created", temporary));
         }
         controller.background(new WorkerBackgroundAction<Transfer>(controller, session,
-                                      editor.save(session.getHost(), file, temporary, new DisabledTransferErrorCallback())) {
+                                      editor.save(new DisabledTransferErrorCallback())) {
                                   @Override
                                   public void cleanup() {
                                       super.cleanup();

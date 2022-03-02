@@ -53,11 +53,18 @@ import java.text.MessageFormat;
 
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = LogManager.getLogger(AbstractEditor.class);
+    private final Host host;
 
     /**
      * File has changed but not uploaded yet
      */
     private boolean modified;
+
+    /**
+     * The edited path
+     */
+    private final Path file;
+    private final Local temporary;
 
     /**
      * Store checksum of downloaded file to detect modifications
@@ -69,13 +76,21 @@ public abstract class AbstractEditor implements Editor {
     private final ApplicationFinder finder;
     private final NotificationService notification = NotificationServiceFactory.get();
 
-    public AbstractEditor(final ProgressListener listener) {
-        this(ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(), listener);
+    public AbstractEditor(final Host host, final Path file, final ProgressListener listener) {
+        this(host, file, ApplicationLauncherFactory.get(), ApplicationFinderFactory.get(), listener);
     }
 
-    public AbstractEditor(final ApplicationLauncher launcher,
+    public AbstractEditor(final Host host, final Path file, final ApplicationLauncher launcher,
                           final ApplicationFinder finder,
                           final ProgressListener listener) {
+        this.host = host;
+        if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
+            this.file = file.getSymlinkTarget();
+        }
+        else {
+            this.file = file;
+        }
+        this.temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), this.file);
         this.launcher = launcher;
         this.finder = finder;
         this.progress = listener;
@@ -103,21 +118,12 @@ public abstract class AbstractEditor implements Editor {
     }
 
     /**
-     * @param host        Bookmark
-     * @param file        Remote file Open the file in the parent directory
      * @param application Editor
      */
     @Override
-    public Worker<Transfer> open(final Host host, final Path file, final Application application, final FileWatcherListener listener) {
-        final Path remote;
-        if(file.isSymbolicLink() && PreferencesFactory.get().getBoolean("editor.upload.symboliclink.resolve")) {
-            remote = file.getSymlinkTarget();
-        }
-        else {
-            remote = file;
-        }
-        final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), remote);
-        final Worker<Transfer> worker = new EditOpenWorker(host, this, application, remote,
+    public Worker<Transfer> open(final Application application, final FileWatcherListener listener) {
+        final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), file);
+        final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
                 temporary, progress, listener, notification) {
             @Override
             public void cleanup(final Transfer download) {
@@ -148,6 +154,7 @@ public abstract class AbstractEditor implements Editor {
         final ApplicationQuitCallback quit = new ApplicationQuitCallback() {
             @Override
             public void callback() {
+                close();
                 delete(temporary);
             }
         };
@@ -177,8 +184,7 @@ public abstract class AbstractEditor implements Editor {
      * Upload changes to server if checksum of local file has changed since last edit.
      */
     @Override
-    public Worker<Transfer> save(final Host host, final Path file, final Local temporary,
-                                 final TransferErrorCallback error) {
+    public Worker<Transfer> save(final TransferErrorCallback error) {
         // If checksum still the same no need for save
         final Checksum current;
         try {

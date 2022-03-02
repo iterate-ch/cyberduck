@@ -48,9 +48,9 @@ namespace Ch.Cyberduck.Core.Editor
             return Utils.ConvertToJavaList(_registeredEditors);
         }
 
-        public override ch.cyberduck.core.editor.Editor create(ProgressListener listener)
+        public override ch.cyberduck.core.editor.Editor create(Host host, Path file, ProgressListener listener)
         {
-            return new SystemWatchEditor(listener);
+            return new SystemWatchEditor(host, file, listener);
         }
 
         protected override object create()
