@@ -17,6 +17,7 @@
 //
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.logging.log4j;
@@ -39,7 +40,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = $"{serviceName} - {user}";
             if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
             {
-                logger.error($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+                throw new LocalAccessDeniedException($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
             }
         }
 
@@ -48,7 +49,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
             if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
             {
-                logger.error($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+                throw new LocalAccessDeniedException($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
             }
         }
 
@@ -65,12 +66,21 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public override void deletePassword(string serviceName, string user) => WinCredentialManager.RemoveCredentials($"{serviceName} - {user}");
+        public override void deletePassword(string serviceName, string user)
+        {
+            if (!WinCredentialManager.RemoveCredentials($"{serviceName} - {user}"))
+            {
+                throw new NotfoundException($"Cannot delete {serviceName} - {user}");
+            }
+        }
 
         public override void deletePassword(Scheme scheme, int port, string hostName, string user)
         {
             var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
-            WinCredentialManager.RemoveCredentials(hostUrl);
+            if (!WinCredentialManager.RemoveCredentials(hostUrl))
+            {
+                throw new NotfoundException($"Cannot delete {hostUrl}");
+            }
         }
 
         public override string findLoginPassword(Host bookmark)
