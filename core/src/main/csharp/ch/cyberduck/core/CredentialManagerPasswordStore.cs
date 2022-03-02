@@ -174,6 +174,11 @@ namespace Ch.Cyberduck.Core
                 credential.getUsername(), credential.getPassword(),
                 CRED_TYPE_GENERIC, 0, CRED_PERSIST_ENTERPRISE);
 
+            if (credential.isPasswordAuthentication() &&
+                string.IsNullOrWhiteSpace(credential.getPassword()))
+            {
+                logger.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
+            }
             if (protocol.isTokenConfigurable())
             {
                 winCred.Attributes["Token"] = credential.getToken();
@@ -191,19 +196,7 @@ namespace Ch.Cyberduck.Core
             {
                 winCred.Attributes["Private Key Passphrase"] = credential.getIdentityPassphrase();
             }
-            if (credential.isPasswordAuthentication())
-            {
-                if (string.IsNullOrWhiteSpace(credential.getUsername()))
-                {
-                    logger.warn(string.Format("No username in credentials for bookmark {0}", bookmark.getHostname()));
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(credential.getPassword()))
-                {
-                    logger.warn(string.Format("No password in credentials for bookmark {0}", bookmark.getHostname()));
-                    return;
-                }
-            }
+
             if (!WinCredentialManager.SaveCredentials(target.AbsoluteUri, winCred))
             {
                 base.save(bookmark);
