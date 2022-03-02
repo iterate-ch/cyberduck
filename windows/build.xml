@@ -49,9 +49,11 @@
     <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="src/main/csharp/Cyberduck.csproj">
             <target name="Restore" />
+            <property name="Platform" value="x64" />
         </msbuild>
         <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
             <target name="Restore" />
+            <property name="Platform" value="x64" />
         </msbuild>
         <msbuild buildfile="src/main/wix/WindowsVersionCustomAction/WindowsVersionCustomAction.vcxproj">
             <target name="Restore" />
