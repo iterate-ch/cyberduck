@@ -118,10 +118,11 @@ public abstract class AbstractEditor implements Editor {
     }
 
     /**
-     * @param application Editor
+     * @param application Editor application
+     * @param callback    Quit callback notified when editor application is closed
      */
     @Override
-    public Worker<Transfer> open(final Application application, final FileWatcherListener listener) {
+    public Worker<Transfer> open(final Application application, final ApplicationQuitCallback callback, final FileWatcherListener listener) {
         final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), file);
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
                 temporary, progress, listener, notification) {

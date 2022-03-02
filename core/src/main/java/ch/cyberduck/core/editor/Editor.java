@@ -20,6 +20,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
@@ -42,7 +43,7 @@ public interface Editor {
     /**
      * Download file and open in editor
      */
-    Worker<Transfer> open(Application application, FileWatcherListener listener);
+    Worker<Transfer> open(Application application, ApplicationQuitCallback callback, FileWatcherListener listener);
 
     /**
      * Upload saved changes

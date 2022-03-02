@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
+import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -92,7 +93,7 @@ public class AbstractEditorTest {
                 //
             }
         };
-        editor.open(new Application("com.editor"), new DisabledFileWatcherListener()).run(session);
+        editor.open(new Application("com.editor"), new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener()).run(session);
         assertTrue(t.get());
         assertTrue(e.get());
         assertTrue(temporary.exists());

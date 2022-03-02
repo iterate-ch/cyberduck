@@ -2313,7 +2313,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 editor = EditorFactory.instance().create(Session.getHost(), file, this);
             }
             background(new WorkerBackgroundAction(this, Session,
-                editor.open(application,
+                editor.open(application, new DisabledApplicationQuitCallback(),
                     new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
         }
 

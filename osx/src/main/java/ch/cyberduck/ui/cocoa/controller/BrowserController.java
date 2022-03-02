@@ -56,6 +56,7 @@ import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
@@ -2487,8 +2488,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     protected void edit(final Application application, final Path file) {
         final Editor editor = editors.getOrDefault(file, EditorFactory.instance().create(pool.getHost(), file, this));
         this.background(new WorkerBackgroundAction<>(this, pool, editor.open(
-                application,
-                new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
+                application, new DisabledApplicationQuitCallback(), new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
                         reload(workdir, new PathReloadFinder().find(Collections.singletonList(file)), Collections.singletonList(file), true);

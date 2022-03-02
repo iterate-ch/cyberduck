@@ -543,7 +543,7 @@ public class Terminal {
         final Editor editor = factory.create(session.getHost(), remote, controller);
         final CountDownLatch lock = new CountDownLatch(1);
         final Worker<Transfer> worker = editor.open(application,
-                new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
+                lock::countDown, new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
                         //
