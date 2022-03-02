@@ -708,7 +708,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Default redundancy level
          */
         this.setDefault("s3.storage.class", "STANDARD");
-        this.setDefault("s3.storage.class.options", "STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER DEEP_ARCHIVE");
+        this.setDefault("s3.storage.class.options", "STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER GLACIER_IR DEEP_ARCHIVE");
         //this.setDefault("s3.encryption.algorithm", "AES256");
         this.setDefault("s3.encryption.algorithm", StringUtils.EMPTY);
 
