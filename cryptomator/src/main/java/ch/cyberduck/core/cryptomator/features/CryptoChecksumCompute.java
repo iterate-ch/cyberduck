@@ -24,7 +24,9 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.NonceGenerator;
@@ -72,10 +74,11 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
             // Make nonces reusable in case we need to compute a checksum
             status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
         }
-        return this.compute(this.normalize(in, status), status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
+        return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
     }
 
-    protected Checksum compute(final InputStream in, final long offset, final long length, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final StreamCancelation cancel,
+                               final long offset, final long length, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Calculate checksum with header %s", header));
         }
@@ -86,15 +89,14 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);
             try {
-                final Future<TransferStatus> execute = pool.execute(new Callable<TransferStatus>() {
+                final Future<Void> execute = pool.execute(new Callable<Void>() {
                     @Override
-                    public TransferStatus call() throws Exception {
+                    public Void call() throws Exception {
                         if(offset == 0) {
                             source.write(header.array());
                         }
-                        final TransferStatus status = new TransferStatus();
-                        new StreamCopier(status, status).transfer(in, out);
-                        return status;
+                        new StreamCopier(cancel, StreamProgress.noop).transfer(in, out);
+                        return null;
                     }
                 });
                 try {
