@@ -76,7 +76,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
     public void testDownloadVersioned() throws Exception {
         final Path home = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local localFile = new DefaultTemporaryFileService().create(test);
+        final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));

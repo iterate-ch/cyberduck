@@ -64,7 +64,7 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
     public void testDownload() throws Exception {
         final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local localFile = new DefaultTemporaryFileService().create(test);
+        final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));

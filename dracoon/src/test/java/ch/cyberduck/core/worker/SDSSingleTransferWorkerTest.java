@@ -92,7 +92,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local localFile = new DefaultTemporaryFileService().create(test);
+        final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
