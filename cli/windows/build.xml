@@ -41,6 +41,8 @@
     <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="../src/main/csharp/duck.csproj">
             <target name="Restore" />
+
+            <property name="Platform" value="x64" />
         </msbuild>
         <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
             <target name="Restore" />
@@ -58,6 +60,7 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 

@@ -209,6 +209,15 @@
         <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
+      <Component Id="System.Buffers">
+        <File Source="$(var.cyberduck.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Memory">
+        <File Source="$(var.cyberduck.TargetDir)/System.Memory.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Numerics.Vectors">
+        <File Source="$(var.cyberduck.TargetDir)/System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
         <File Source="$(var.cyberduck.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
       </Component>

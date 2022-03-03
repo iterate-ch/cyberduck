@@ -77,6 +77,7 @@
 
             <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Platform" value="x64" />
         </msbuild>
     </target>
 
