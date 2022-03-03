@@ -125,6 +125,19 @@
         <Component Id="msvcr120">
             <File Source="$(var.CLI.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
         </Component>
+        
+      <Component Id="System.Buffers">
+        <File Source="$(var.CLI.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Memory">
+        <File Source="$(var.CLI.TargetDir)/System.Memory.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Numerics.Vectors">
+        <File Source="$(var.CLI.TargetDir)/System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Runtime.CompilerServices.Unsafe">
+        <File Source="$(var.CLI.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="profiles" Directory="PROFILES">
