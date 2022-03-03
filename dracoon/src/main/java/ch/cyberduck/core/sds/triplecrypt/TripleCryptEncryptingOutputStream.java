@@ -42,12 +42,12 @@ import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class TripleCryptOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
-    private static final Logger log = LogManager.getLogger(TripleCryptOutputStream.class);
+public class TripleCryptEncryptingOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
+    private static final Logger log = LogManager.getLogger(TripleCryptEncryptingOutputStream.class);
 
     private final StatusOutputStream<VersionId> proxy;
 
-    public TripleCryptOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
+    public TripleCryptEncryptingOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
         super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, key),
                 SDSSession.DEFAULT_CHUNKSIZE));
         this.proxy = proxy;

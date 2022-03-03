@@ -70,16 +70,16 @@ public class TripleCryptReadFeature implements Read {
             try {
                 final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword());
-                return new TripleCryptInputStream(proxy.read(file, status, callback),
-                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
+                return new TripleCryptDecryptingInputStream(proxy.read(file, status, callback),
+                        Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
             }
             catch(InvalidFileKeyException e) {
                 log.warn(String.format("Failure %s  decrypting file key for %s. Invalidate cache", e, file));
                 session.resetUserKeyPairs();
                 final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword());
-                return new TripleCryptInputStream(proxy.read(file, status, callback),
-                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
+                return new TripleCryptDecryptingInputStream(proxy.read(file, status, callback),
+                        Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
             }
         }
         catch(ApiException e) {
