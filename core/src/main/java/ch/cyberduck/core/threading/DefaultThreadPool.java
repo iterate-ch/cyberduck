@@ -74,18 +74,19 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        super(createExecutor(prefix, size, priority, new LinkedBlockingQueue<>(), handler));
+        super(createExecutor(prefix, size, priority, new LinkedBlockingQueue<>(size), handler));
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         super(createExecutor(prefix, size, priority, queue, handler));
     }
 
-    public static ThreadPoolExecutor createExecutor(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
+    public static ThreadPoolExecutor createExecutor(final String prefix, final int size, final Priority priority,
+                                                    final BlockingQueue<Runnable> queue,
+                                                    final Thread.UncaughtExceptionHandler handler) {
         return new ThreadPoolExecutor(size, size,
-            PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
-            queue,
-            new NamedThreadFactory(prefix, priority, handler)) {
+                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
+                queue, new NamedThreadFactory(prefix, priority, handler), new ThreadPoolExecutor.CallerRunsPolicy()) {
             @Override
             protected void afterExecute(final Runnable r, final Throwable t) {
                 if(t != null) {
