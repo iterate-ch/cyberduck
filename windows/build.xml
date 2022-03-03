@@ -72,14 +72,17 @@
             <property name="Configuration" value="${msbuild.configuration}" />
             <property name="Platform" value="x64" />
         </msbuild>
+        <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
+            <target name="Build" />
+
+            <property name="BuildProjectReferences" value="false" />
+            <property name="Configuration" value="${msbuild.configuration}" />
+        </msbuild>
     </target>
 
     <target name="test" depends="init-msbuild, version" unless="${skip}">
         <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
-            <target name="Build,Test" />
-            
-            <property name="BuildProjectReferences" value="false" />
-            <property name="Configuration" value="${msbuild.configuration}" />
+            <target name="Test" />
         </msbuild>
     </target>
 
