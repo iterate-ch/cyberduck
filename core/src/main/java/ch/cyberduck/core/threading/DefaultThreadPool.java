@@ -102,7 +102,7 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
         };
     }
 
-    private static final class CustomCallerPolicy extends ThreadPoolExecutor.AbortPolicy {
+    public static final class CustomCallerPolicy extends ThreadPoolExecutor.AbortPolicy {
         private static final Logger log = LogManager.getLogger(CustomCallerPolicy.class);
 
         @Override
