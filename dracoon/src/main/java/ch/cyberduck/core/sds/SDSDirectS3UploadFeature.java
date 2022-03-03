@@ -320,6 +320,12 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response for part number %d", partNumber));
                 }
+                if(SDSNodeIdProvider.isEncrypted(file)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Delete temporary file %s", file));
+                    }
+                    local.delete();
+                }
                 return status;
             }
         }, overall));
