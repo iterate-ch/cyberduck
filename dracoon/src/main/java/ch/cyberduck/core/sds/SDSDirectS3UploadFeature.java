@@ -15,24 +15,24 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.Buffer;
 import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.FileBuffer;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -48,7 +48,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadPart;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadStatus;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptOutputStream;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
@@ -63,7 +62,6 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,6 +96,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
 
     private final Long partsize;
     private final Integer concurrency;
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> writer) {
         this(session, nodeid, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
@@ -131,51 +130,45 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             final Map<Integer, TransferStatus> etags = new HashMap<>();
             final List<PresignedUrl> presignedUrls = this.retrievePresignedUrls(createFileUploadResponse, status);
             final List<Future<TransferStatus>> parts = new ArrayList<>();
-            final Local source;
-            final Buffer buffer;
+            final InputStream in;
+            final String random = new UUIDRandomStringService().random();
             if(SDSNodeIdProvider.isEncrypted(file)) {
-                source = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
-                buffer = new FileBuffer(source);
-                final BufferOutputStream temporary = new BufferOutputStream(buffer);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Pre-compute file key tag for upload to S3 for %s", file));
-                }
-                // Pre-compute file key tag for upload to S3 with multiple parts
-                final InputStream in = local.getInputStream();
-                final OutputStream out;
-                try {
-                    final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                    final FileKey fileKey = reader.readValue(status.getFilekey().array());
-                    out = new TripleCryptOutputStream<>(session, new StatusOutputStream<TransferStatus>(temporary) {
-                        @Override
-                        public TransferStatus getStatus() {
-                            return status;
-                        }
-                    }, Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
-                }
-                catch(CryptoSystemException e) {
-                    throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
-                }
-                new StreamCopier(status, new TransferStatus()).transfer(in, out);
+                in = new SDSTripleCryptEncryptorFeature(session, nodeid).encrypt(file, local.getInputStream(), status);
             }
             else {
-                source = local;
-                buffer = Buffer.NULL;
+                in = local.getInputStream();
             }
-            // Full size of file
-            final long size = status.getLength() + status.getOffset();
-            long offset = 0;
-            long remaining = status.getLength();
-            for(int partNumber = 1; remaining >= 0; partNumber++) {
-                final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
-                parts.add(this.submit(pool, file, source, throttle, listener, status,
-                        presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
-                remaining -= length;
-                offset += length;
-                if(0L == remaining) {
-                    break;
+            try {
+                // Full size of file
+                final long size = status.getLength() + status.getOffset();
+                long offset = 0;
+                long remaining = status.getLength();
+                for(int partNumber = 1; remaining >= 0; partNumber++) {
+                    final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
+                    final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
+                    if(SDSNodeIdProvider.isEncrypted(file)) {
+                        final Local temporary = temp.create(String.format("%s-%d", random, partNumber));
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Encrypted contents for part %d to %s", partNumber, temporary));
+                        }
+                        new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
+                                .transfer(in, new BufferOutputStream(new FileBuffer(temporary)));
+                        parts.add(this.submit(pool, file, temporary, throttle, listener, status,
+                                presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
+                    }
+                    else {
+                        parts.add(this.submit(pool, file, local, throttle, listener, status,
+                                presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
+                    }
+                    remaining -= length;
+                    offset += length;
+                    if(0L == remaining) {
+                        break;
+                    }
                 }
+            }
+            finally {
+                in.close();
             }
             for(Future<TransferStatus> future : parts) {
                 try {
@@ -194,10 +187,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     }
                     throw new BackgroundException(e.getCause());
                 }
-            }
-            if(SDSNodeIdProvider.isEncrypted(file)) {
-                // Delete temporary file
-                buffer.close();
             }
             final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
                     .keepShareLinks(status.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
