@@ -70,59 +70,76 @@ public class TripleCryptEncryptingInputStream extends ProxyInputStream {
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
         try {
+            int read = 0;
             if(buffer.hasRemaining()) {
                 // Buffer still has encrypted content available
-                final int read = Math.min(len, buffer.remaining());
+                read = Math.min(len, buffer.remaining());
                 System.arraycopy(buffer.array(), buffer.position(), b, off, read);
                 buffer.position(buffer.position() + read);
-                return read;
             }
-            if(eof) {
-                // Remaining bytes have been consumed
+            else if(eof) {
+                // Buffer is consumed and EOF flag set
                 return IOUtils.EOF;
             }
-            // Fill buffer
-            buffer = ByteBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE);
-            final byte[] plain = new byte[buffer.capacity()];
-            final int read = IOUtils.read(proxy, plain, 0, IOUtils.DEFAULT_BUFFER_SIZE);
-            if(read > 0) {
-                int position = off;
-                for(int chunkOffset = off; chunkOffset < read; chunkOffset += SDSSession.DEFAULT_CHUNKSIZE) {
-                    int chunkLen = Math.min(SDSSession.DEFAULT_CHUNKSIZE, read - chunkOffset);
-                    final byte[] bytes = Arrays.copyOfRange(plain, chunkOffset, chunkOffset + chunkLen);
-                    final PlainDataContainer data = TripleCryptKeyPair.createPlainDataContainer(bytes, bytes.length);
-                    final EncryptedDataContainer encrypted = cipher.processBytes(data);
-                    final byte[] encBuf = encrypted.getContent();
-                    System.arraycopy(encBuf, 0, buffer.array(), position, encBuf.length);
-                    position += encBuf.length;
-                }
-                buffer.limit(position - off);
+            if(buffer.hasRemaining()) {
+                return read;
             }
-            else {
-                // EOF in proxy stream, finalize cipher and put remaining bytes into buffer
-                eof = true;
-                final EncryptedDataContainer encrypted = cipher.doFinal();
-                buffer = ByteBuffer.wrap(encrypted.getContent());
-                final String tag = CryptoUtils.byteArrayToString(encrypted.getTag());
-                final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                final FileKey fileKey = reader.readValue(status.getFilekey().array());
-                if(null == fileKey.getTag()) {
-                    // Only override if not already set pre-computed in bulk feature
-                    fileKey.setTag(tag);
-                    final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    writer.writeValue(out, fileKey);
-                    status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-                }
-                else {
-                    log.warn(String.format("Skip setting tag in file key already found in %s", status));
-                }
+            if(!eof) {
+                this.fillBuffer(len);
             }
-            // Buffer filled - force a new read call
-            return 0;
+            return read;
         }
         catch(CryptoException e) {
             throw new IOException(e);
         }
+    }
+
+    private void fillBuffer(final int len) throws IOException, CryptoException {
+        // Read ahead to the next chunk end
+        final int allocate = (len / IOUtils.DEFAULT_BUFFER_SIZE) * IOUtils.DEFAULT_BUFFER_SIZE + IOUtils.DEFAULT_BUFFER_SIZE;
+        buffer = ByteBuffer.allocate(allocate);
+        final byte[] plain = new byte[allocate];
+        final int read = IOUtils.read(proxy, plain, 0, allocate);
+        if(read > 0) {
+            int position = 0;
+            for(int chunkOffset = 0; chunkOffset < read; chunkOffset += SDSSession.DEFAULT_CHUNKSIZE) {
+                int chunkLen = Math.min(SDSSession.DEFAULT_CHUNKSIZE, read - chunkOffset);
+                final byte[] bytes = Arrays.copyOfRange(plain, chunkOffset, chunkOffset + chunkLen);
+                final PlainDataContainer data = TripleCryptKeyPair.createPlainDataContainer(bytes, bytes.length);
+                final EncryptedDataContainer encrypted = cipher.processBytes(data);
+                final byte[] encBuf = encrypted.getContent();
+                System.arraycopy(encBuf, 0, buffer.array(), position, encBuf.length);
+                position += encBuf.length;
+            }
+            buffer.limit(position);
+        }
+        if(read < allocate) {
+            // EOF in proxy stream, finalize cipher and put remaining bytes into buffer
+            eof = true;
+            final EncryptedDataContainer encContainer = cipher.doFinal();
+            final byte[] content = encContainer.getContent();
+            buffer = this.combine(buffer, ByteBuffer.wrap(content));
+            final String tag = CryptoUtils.byteArrayToString(encContainer.getTag());
+            final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+            final FileKey fileKey = reader.readValue(status.getFilekey().array());
+            if(null == fileKey.getTag()) {
+                // Only override if not already set pre-computed in bulk feature
+                fileKey.setTag(tag);
+                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                writer.writeValue(out, fileKey);
+                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+            }
+            else {
+                log.warn(String.format("Skip setting tag in file key already found in %s", status));
+            }
+        }
+    }
+
+    private ByteBuffer combine(final ByteBuffer b1, final ByteBuffer b2) {
+        final int pos = b1.position();
+        final ByteBuffer allocate = ByteBuffer.allocate(b1.limit() + b2.limit()).put(b1).put(b2);
+        allocate.position(pos);
+        return allocate;
     }
 }
