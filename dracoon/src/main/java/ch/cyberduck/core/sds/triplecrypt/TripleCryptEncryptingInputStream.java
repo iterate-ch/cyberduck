@@ -90,7 +90,7 @@ public class TripleCryptEncryptingInputStream extends ProxyInputStream {
                 for(int chunkOffset = off; chunkOffset < read; chunkOffset += SDSSession.DEFAULT_CHUNKSIZE) {
                     int chunkLen = Math.min(SDSSession.DEFAULT_CHUNKSIZE, read - chunkOffset);
                     final byte[] bytes = Arrays.copyOfRange(plain, chunkOffset, chunkOffset + chunkLen);
-                    final PlainDataContainer data = createPlainDataContainer(bytes, bytes.length);
+                    final PlainDataContainer data = TripleCryptKeyPair.createPlainDataContainer(bytes, bytes.length);
                     final EncryptedDataContainer encrypted = cipher.processBytes(data);
                     final byte[] encBuf = encrypted.getContent();
                     System.arraycopy(encBuf, 0, buffer.array(), position, encBuf.length);
@@ -104,7 +104,8 @@ public class TripleCryptEncryptingInputStream extends ProxyInputStream {
                 final EncryptedDataContainer encrypted = cipher.doFinal();
                 buffer = ByteBuffer.wrap(encrypted.getContent());
                 final String tag = CryptoUtils.byteArrayToString(encrypted.getTag());
-                final FileKey fileKey = this.getFileKey();
+                final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+                final FileKey fileKey = reader.readValue(status.getFilekey().array());
                 if(null == fileKey.getTag()) {
                     // Only override if not already set pre-computed in bulk feature
                     fileKey.setTag(tag);
@@ -123,16 +124,5 @@ public class TripleCryptEncryptingInputStream extends ProxyInputStream {
         catch(CryptoException e) {
             throw new IOException(e);
         }
-    }
-
-    protected FileKey getFileKey() throws IOException {
-        final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-        return reader.readValue(status.getFilekey().array());
-    }
-
-    private static PlainDataContainer createPlainDataContainer(final byte[] bytes, final int len) {
-        final byte[] b = new byte[len];
-        System.arraycopy(bytes, 0, b, 0, len);
-        return new PlainDataContainer(b);
     }
 }

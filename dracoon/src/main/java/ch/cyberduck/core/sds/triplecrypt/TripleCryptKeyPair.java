@@ -37,6 +37,7 @@ import java.util.EnumSet;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
+import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptKeyPair {
@@ -57,8 +58,8 @@ public class TripleCryptKeyPair {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
-                new LoginOptions()
-                    .icon(bookmark.getProtocol().disk())
+                    new LoginOptions()
+                            .icon(bookmark.getProtocol().disk())
             );
             if(credentials.getPassword() == null) {
                 throw new LoginCanceledException();
@@ -77,7 +78,7 @@ public class TripleCryptKeyPair {
                 }
                 try {
                     keychain.addPassword(this.getServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
-                        this.getAccountName(bookmark), credentials.getPassword());
+                            this.getAccountName(bookmark), credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
                     log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
@@ -93,5 +94,11 @@ public class TripleCryptKeyPair {
 
     private String getAccountName(final Host bookmark) {
         return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl();
+    }
+
+    public static PlainDataContainer createPlainDataContainer(final byte[] bytes, final int len) {
+        final byte[] b = new byte[len];
+        System.arraycopy(bytes, 0, b, 0, len);
+        return new PlainDataContainer(b);
     }
 }

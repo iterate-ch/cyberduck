@@ -49,7 +49,7 @@ public class TripleCryptOutputStream<VersionId> extends HttpResponseOutputStream
 
     public TripleCryptOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
         super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, key),
-            SDSSession.DEFAULT_CHUNKSIZE));
+                SDSSession.DEFAULT_CHUNKSIZE));
         this.proxy = proxy;
     }
 
@@ -92,7 +92,7 @@ public class TripleCryptOutputStream<VersionId> extends HttpResponseOutputStream
                 for(int chunkOffset = off; chunkOffset < len; chunkOffset += SDSSession.DEFAULT_CHUNKSIZE) {
                     int chunkLen = Math.min(SDSSession.DEFAULT_CHUNKSIZE, len - chunkOffset);
                     final byte[] bytes = Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen);
-                    final PlainDataContainer data = createPlainDataContainer(bytes, bytes.length);
+                    final PlainDataContainer data = TripleCryptKeyPair.createPlainDataContainer(bytes, bytes.length);
                     final EncryptedDataContainer encrypted = cipher.processBytes(data);
                     super.write(encrypted.getContent());
                 }
@@ -128,12 +128,6 @@ public class TripleCryptOutputStream<VersionId> extends HttpResponseOutputStream
             finally {
                 super.close();
             }
-        }
-
-        private static PlainDataContainer createPlainDataContainer(final byte[] bytes, final int len) {
-            final byte[] b = new byte[len];
-            System.arraycopy(bytes, 0, b, 0, len);
-            return new PlainDataContainer(b);
         }
     }
 }
