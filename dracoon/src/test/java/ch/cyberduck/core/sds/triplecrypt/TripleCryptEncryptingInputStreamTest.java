@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.CryptoUtils;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.api.client.testing.http.apache.MockHttpClient;
 
@@ -61,9 +62,41 @@ public class TripleCryptEncryptingInputStreamTest {
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         IOUtils.copy(encryptInputStream, os, 42);
         final ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
-        final TripleCryptInputStream cryptInputStream = new TripleCryptInputStream(is,
-            Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(encryptInputStream.getFileKey())),
-            CryptoUtils.stringToByteArray(encryptInputStream.getFileKey().getTag()));
+        final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+        final FileKey fileKey = reader.readValue(status.getFilekey().array());
+        final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
+                Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
+                CryptoUtils.stringToByteArray(fileKey.getTag()));
+        final byte[] compare = new byte[content.length];
+        IOUtils.read(cryptInputStream, compare);
+        Assert.assertArrayEquals(content, compare);
+    }
+
+    @Test
+    public void testEncryptDecryptZeroBytes() throws Exception {
+        final byte[] content = RandomUtils.nextBytes(0);
+        final ByteArrayInputStream plain = new ByteArrayInputStream(content);
+        final PlainFileKey key = Crypto.generateFileKey(PlainFileKey.Version.AES256GCM);
+        final SDSSession session = new SDSSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            @Override
+            public SDSApiClient getClient() {
+                return new SDSApiClient(new MockHttpClient());
+            }
+        };
+        final TransferStatus status = new TransferStatus();
+        final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writer.writeValue(out, TripleCryptConverter.toSwaggerFileKey(key));
+        status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+        final TripleCryptEncryptingInputStream encryptInputStream = new TripleCryptEncryptingInputStream(session, plain, Crypto.createFileEncryptionCipher(key), status);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        IOUtils.copy(encryptInputStream, os, 42);
+        final ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+        final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+        final FileKey fileKey = reader.readValue(status.getFilekey().array());
+        final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
+                Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
+                CryptoUtils.stringToByteArray(fileKey.getTag()));
         final byte[] compare = new byte[content.length];
         IOUtils.read(cryptInputStream, compare);
         Assert.assertArrayEquals(content, compare);
