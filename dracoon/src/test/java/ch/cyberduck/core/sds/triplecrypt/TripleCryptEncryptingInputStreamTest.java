@@ -17,6 +17,9 @@ package ch.cyberduck.core.sds.triplecrypt;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.sds.SDSApiClient;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
@@ -26,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -40,11 +42,14 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.api.client.testing.http.apache.MockHttpClient;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class TripleCryptEncryptingInputStreamTest {
 
     @Test
-    public void testEncryptDecrypt() throws Exception {
-        final byte[] content = RandomUtils.nextBytes(10000);
+    public void testEncryptDecryptWithContentSizeMultipleOfEncryptingBufferSize() throws Exception {
+        final byte[] content = RandomUtils.nextBytes(1024 * 1024);
         final ByteArrayInputStream plain = new ByteArrayInputStream(content);
         final PlainFileKey key = Crypto.generateFileKey(PlainFileKey.Version.AES256GCM);
         final SDSSession session = new SDSSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
@@ -60,16 +65,52 @@ public class TripleCryptEncryptingInputStreamTest {
         status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
         final TripleCryptEncryptingInputStream encryptInputStream = new TripleCryptEncryptingInputStream(session, plain, Crypto.createFileEncryptionCipher(key), status);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        IOUtils.copy(encryptInputStream, os, 42);
+        new StreamCopier(StreamCancelation.noop, StreamProgress.noop).withLimit((long) content.length).withChunksize(32768).transfer(encryptInputStream, os);
+        encryptInputStream.close();
+        out.close();
         final ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
         final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
         final FileKey fileKey = reader.readValue(status.getFilekey().array());
+        assertNotNull(fileKey.getTag());
         final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
                 Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
                 CryptoUtils.stringToByteArray(fileKey.getTag()));
         final byte[] compare = new byte[content.length];
         IOUtils.read(cryptInputStream, compare);
-        Assert.assertArrayEquals(content, compare);
+        assertArrayEquals(content, compare);
+    }
+
+    @Test
+    public void testEncryptDecrypt() throws Exception {
+        final byte[] content = RandomUtils.nextBytes(1024 * 1024 + 1);
+        final ByteArrayInputStream plain = new ByteArrayInputStream(content);
+        final PlainFileKey key = Crypto.generateFileKey(PlainFileKey.Version.AES256GCM);
+        final SDSSession session = new SDSSession(new Host(new TestProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            @Override
+            public SDSApiClient getClient() {
+                return new SDSApiClient(new MockHttpClient());
+            }
+        };
+        final TransferStatus status = new TransferStatus();
+        final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writer.writeValue(out, TripleCryptConverter.toSwaggerFileKey(key));
+        status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+        final TripleCryptEncryptingInputStream encryptInputStream = new TripleCryptEncryptingInputStream(session, plain, Crypto.createFileEncryptionCipher(key), status);
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        new StreamCopier(StreamCancelation.noop, StreamProgress.noop).withLimit((long) content.length).withChunksize(32768).transfer(encryptInputStream, os);
+        encryptInputStream.close();
+        out.close();
+        final ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+        final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+        final FileKey fileKey = reader.readValue(status.getFilekey().array());
+        assertNotNull(fileKey.getTag());
+        final TripleCryptDecryptingInputStream cryptInputStream = new TripleCryptDecryptingInputStream(is,
+                Crypto.createFileDecryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)),
+                CryptoUtils.stringToByteArray(fileKey.getTag()));
+        final byte[] compare = new byte[content.length];
+        IOUtils.read(cryptInputStream, compare);
+        assertArrayEquals(content, compare);
     }
 
     @Test
@@ -91,6 +132,8 @@ public class TripleCryptEncryptingInputStreamTest {
         final TripleCryptEncryptingInputStream encryptInputStream = new TripleCryptEncryptingInputStream(session, plain, Crypto.createFileEncryptionCipher(key), status);
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         IOUtils.copy(encryptInputStream, os, 42);
+        encryptInputStream.close();
+        out.close();
         final ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
         final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
         final FileKey fileKey = reader.readValue(status.getFilekey().array());
@@ -99,6 +142,6 @@ public class TripleCryptEncryptingInputStreamTest {
                 CryptoUtils.stringToByteArray(fileKey.getTag()));
         final byte[] compare = new byte[content.length];
         IOUtils.read(cryptInputStream, compare);
-        Assert.assertArrayEquals(content, compare);
+        assertArrayEquals(content, compare);
     }
 }
