@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 public class AlertCallbackFactory extends Factory<AlertCallback> {
     private static final Logger log = LogManager.getLogger(AlertCallbackFactory.class);
 
-    private Constructor<AlertCallback> constructor;
+    private Constructor<? extends AlertCallback> constructor;
 
     protected AlertCallbackFactory() {
         super("factory.alertcallback.class");

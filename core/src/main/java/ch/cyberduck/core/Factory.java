@@ -26,13 +26,13 @@ import java.lang.reflect.InvocationTargetException;
 
 public abstract class Factory<T> {
 
-    protected final Class<T> clazz;
+    protected final Class<? extends T> clazz;
 
     public Factory() {
         this.clazz = null;
     }
 
-    public Factory(final Class<T> clazz) {
+    public Factory(final Class<? extends T> clazz) {
         this.clazz = clazz;
     }
 
@@ -45,7 +45,7 @@ public abstract class Factory<T> {
             if(null == c) {
                 throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
             }
-            this.clazz = (Class<T>) Class.forName(c);
+            this.clazz = (Class<? extends T>) Class.forName(c);
         }
         catch(ClassNotFoundException e) {
             throw new FactoryException(e.getMessage(), e);

@@ -39,7 +39,7 @@ public class VaultFactory extends Factory<Vault> {
 
     private Vault create(final Path directory, final String masterkey, final String config, final byte[] pepper) {
         try {
-            final Constructor<Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
+            final Constructor<? extends Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
                     directory.getClass(), masterkey.getClass(), config.getClass(), pepper.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));

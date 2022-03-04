@@ -48,7 +48,7 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority,
                                 final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         try {
-            final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
+            final Constructor<? extends ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
                     prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));

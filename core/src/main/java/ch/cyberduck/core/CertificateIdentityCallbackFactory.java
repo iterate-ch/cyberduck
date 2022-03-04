@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 public class CertificateIdentityCallbackFactory extends Factory<CertificateIdentityCallback> {
     private static final Logger log = LogManager.getLogger(CertificateIdentityCallbackFactory.class);
 
-    private Constructor<CertificateIdentityCallback> constructor;
+    private Constructor<? extends CertificateIdentityCallback> constructor;
 
     protected CertificateIdentityCallbackFactory() {
         super("factory.certificateidentitycallback.class");

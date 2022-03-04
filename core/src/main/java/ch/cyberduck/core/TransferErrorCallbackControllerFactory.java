@@ -40,7 +40,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
 
     public TransferErrorCallback create(final Controller c) {
         try {
-            final Constructor<TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
+            final Constructor<? extends TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations

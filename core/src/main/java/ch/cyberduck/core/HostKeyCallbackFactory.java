@@ -29,7 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = LogManager.getLogger(HostKeyCallbackFactory.class);
 
-    private Constructor<HostKeyCallback> constructor;
+    private Constructor<? extends HostKeyCallback> constructor;
 
     protected HostKeyCallbackFactory() {
         super("factory.hostkeycallback.class");

@@ -37,7 +37,7 @@ public class DeserializerFactory<T, S extends Deserializer> extends Factory<S> {
 
     public Deserializer<T> create(final T dict) {
         try {
-            final Constructor<S> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, dict.getClass());
+            final Constructor<? extends S> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, dict.getClass());
             return constructor.newInstance(dict);
         }
         catch(InstantiationException | IllegalAccessException | InvocationTargetException e) {

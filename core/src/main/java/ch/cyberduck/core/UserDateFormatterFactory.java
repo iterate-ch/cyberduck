@@ -30,7 +30,7 @@ import java.util.TimeZone;
 public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
     private static final Logger log = LogManager.getLogger(UserDateFormatterFactory.class);
 
-    private Constructor<AbstractUserDateFormatter> constructor;
+    private Constructor<? extends AbstractUserDateFormatter> constructor;
 
     protected UserDateFormatterFactory() {
         super("factory.dateformatter.class");

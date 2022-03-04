@@ -36,7 +36,7 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
 
     public ActionOperationBatcher create(final Integer batchsize) {
         try {
-            final Constructor<ActionOperationBatcher> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
+            final Constructor<? extends ActionOperationBatcher> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", batchsize.getClass()));
                 // Call default constructor for disabled implementations

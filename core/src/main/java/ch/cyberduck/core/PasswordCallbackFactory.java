@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 public class PasswordCallbackFactory extends Factory<PasswordCallback> {
     private static final Logger log = LogManager.getLogger(PasswordCallbackFactory.class);
 
-    private Constructor<PasswordCallback> constructor;
+    private Constructor<? extends PasswordCallback> constructor;
 
     protected PasswordCallbackFactory() {
         super("factory.passwordcallback.class");
