@@ -1,12 +1,10 @@
-package ch.cyberduck.core.sds.triplecrypt;
-
-/*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+package ch.cyberduck.core.sds;/*
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,43 +13,40 @@ package ch.cyberduck.core.sds.triplecrypt;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.sds.SDSNodeIdProvider;
-import ch.cyberduck.core.sds.SDSSession;
+import ch.cyberduck.core.features.Encryptor;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptEncryptingInputStream;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoSystemException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class TripleCryptWriteFeature implements Write<Node> {
-    private static final Logger log = LogManager.getLogger(TripleCryptWriteFeature.class);
+public class SDSTripleCryptEncryptorFeature implements Encryptor {
+    private static final Logger log = LogManager.getLogger(SDSTripleCryptEncryptorFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private final Write<Node> proxy;
 
-    public TripleCryptWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> proxy) {
+    public SDSTripleCryptEncryptorFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
-        this.proxy = proxy;
     }
 
     @Override
-    public StatusOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream encrypt(final Path file, final InputStream proxy, final TransferStatus status) throws BackgroundException {
         try {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
             if(log.isDebugEnabled()) {
@@ -61,30 +56,14 @@ public class TripleCryptWriteFeature implements Write<Node> {
                 status.setFilekey(nodeid.getFileKey());
             }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-            return new TripleCryptEncryptingOutputStream<>(session, proxy.write(file, status, callback),
-                    Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
-            );
-        }
-        catch(CryptoSystemException | UnknownVersionException e) {
-            throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
+            return new TripleCryptEncryptingInputStream(session, proxy,
+                    Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
         }
-    }
-
-    @Override
-    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return proxy.append(file, status);
-    }
-
-    @Override
-    public boolean temporary() {
-        return proxy.temporary();
-    }
-
-    @Override
-    public boolean random() {
-        return proxy.random();
+        catch(CryptoSystemException | UnknownVersionException e) {
+            throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
+        }
     }
 }
