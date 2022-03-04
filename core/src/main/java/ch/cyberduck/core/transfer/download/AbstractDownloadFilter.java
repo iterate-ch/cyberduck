@@ -113,6 +113,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prepare %s", file));
+        }
         final TransferStatus status = new TransferStatus();
         if(parent.isExists()) {
             if(local.exists()) {
