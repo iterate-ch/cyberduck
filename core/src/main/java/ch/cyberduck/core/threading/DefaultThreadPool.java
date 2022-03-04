@@ -78,7 +78,12 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        super(createExecutor(prefix, size, priority, new LinkedBlockingQueue<>(size), new CustomCallerPolicy(), handler));
+        this(prefix, size, priority, new LinkedBlockingQueue<>(size), new CustomCallerPolicy(), handler);
+    }
+
+    public DefaultThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue,
+                             final Thread.UncaughtExceptionHandler handler) {
+        this(prefix, size, priority, queue, new CustomCallerPolicy(), handler);
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue,

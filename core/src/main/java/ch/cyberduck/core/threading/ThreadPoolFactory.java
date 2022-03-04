@@ -37,6 +37,10 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
         super("factory.threadpool.class");
     }
 
+    public ThreadPoolFactory(final Class<? extends ThreadPool> clazz) {
+        super(clazz);
+    }
+
     /**
      * @param prefix   Thread name
      * @param size     Maximum pool size
