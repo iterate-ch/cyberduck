@@ -1,6 +1,20 @@
 root = true
 
+# Don't use tabs for indentation.
 [*]
-insert_final_newline = true
 indent_style = space
+# (Please don't specify an indent_size here; that has too many unintended consequences.)
+
+# Code files
+[*.{cs,csx,vb,vbx}]
 indent_size = 4
+insert_final_newline = true
+charset = utf-8-bom
+
+# XML project files
+[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj,wixproj}]
+indent_size = 2
+
+# XML config files
+[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct,wxs}]
+indent_size = 2
