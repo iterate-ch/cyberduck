@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.Build.Traversal">
+
+  <ItemGroup Condition=" '$(Exe)'=='True' ">
+    <ProjectReference Include="..\src\main\csharp\duck.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Installer)'=='True' ">
+    <ProjectReference Include="..\src\main\wix\Bundle\duck.bundle.wixproj" />
+    <ProjectReference Include="..\src\main\wix\Bootstrapper\duck.bootstrapper.wixproj" />
+  </ItemGroup>
+
+</Project>

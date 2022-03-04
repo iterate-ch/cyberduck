@@ -41,9 +41,6 @@
         <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
             <target name="Restore" />
         </msbuild>
-        <!--<msbuild buildfile="src/test/csharp/Cyberduck.Core.Test.csproj">
-            <target name="Restore" />
-        </msbuild>-->
     </target>
 
     <target name="build" depends="init-msbuild, version">
@@ -51,10 +48,10 @@
         <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
             <target name="Build"/>
 
-            <property name="Version" value="${version}.${revision}" />
-            <property name="Copyright" value="${copyright}" />
+            <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Platform" value="x64" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 </project>

@@ -47,37 +47,20 @@
     </target>
 
     <target name="restore" depends="init-msbuild, version">
-        <msbuild buildfile="src/main/csharp/Cyberduck.csproj">
-            <target name="Restore" />
-            <property name="Platform" value="x64" />
-        </msbuild>
-        <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
-            <target name="Restore" />
-            <property name="Platform" value="x64" />
-        </msbuild>
-        <msbuild buildfile="src/main/wix/WindowsVersionCustomAction/WindowsVersionCustomAction.vcxproj">
-            <target name="Restore" />
-        </msbuild>
-        <msbuild buildfile="src/main/appx/Cyberduck.Package.proj">
+        <msbuild buildfile="build.proj">
             <target name="Restore" />
         </msbuild>
     </target>
 
     <target name="build" depends="init-msbuild, version">
-        <msbuild buildfile="src/main/csharp/Cyberduck.csproj">
+        <msbuild buildfile="build.proj">
             <target name="Build" />
 
-            <property name="Version" value="${version}.${revision}" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Platform" value="x64" />
-        </msbuild>
-        <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
-            <target name="Build" />
-
+            <property name="BuildModule" value="Project" />
             <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="Platform" value="x64" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 
@@ -99,45 +82,16 @@
         </condition>
         <property name="msbuild.sign" value="" />
 
-        <msbuild buildfile="src/main/wix/WindowsVersionCustomAction/WindowsVersionCustomAction.vcxproj">
+        <msbuild buildfile="build.proj">
             <target name="Build" />
 
-            <property name="Version" value="${normalized.version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Platform" value="Win32" />
-            <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="SignOutput" value="${msbuild.sign}" />
-        </msbuild>
-        <msbuild buildfile="src/main/wix/Bundle/Cyberduck.Bundle.wixproj">
-            <target name="Build" />
-
+            <property name="BuildModule" value="Installer" />
             <property name="BuildProjectReferences" value="false" />
-            <property name="Version" value="${normalized.version}.${revision}" />
+            <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
             <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Configuration" value="${msbuild.configuration}" />
             <property name="SignOutput" value="${msbuild.sign}" />
-        </msbuild>
-
-        <msbuild buildfile="src/main/wix/Bootstrapper/Cyberduck.Bootstrapper.wixproj">
-            <target name="Build"/>
-
-            <property name="BuildProjectReferences" value="false" />
             <property name="Version" value="${normalized.version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="SignOutput" value="${msbuild.sign}" />
-        </msbuild>
-        
-        <msbuild buildfile="src/main/appx/Cyberduck.Package.proj">
-            <target name="Build" />
-
-            <property name="Version" value="${normalized.version}.0" />
-            <property name="Copyright" value="${copyright}" />
-            <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
     </target>
 
