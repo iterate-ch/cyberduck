@@ -37,6 +37,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
@@ -44,6 +45,7 @@ import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSAttributesFinderFeature;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
+import ch.cyberduck.core.sds.SDSFindFeature;
 import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSSession;
@@ -265,7 +267,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(conn));
         local.delete();
@@ -274,5 +276,28 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
         assertTrue(failed.get());
         assertEquals(98305L, new SDSAttributesFinderFeature(conn, fileid).find(test).getSize());
         new SDSDeleteFeature(conn, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testTransferExistingFolder() throws Exception {
+        final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
+        final Local folder = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        new DefaultLocalDirectoryFeature().mkdir(folder);
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Transfer t = new UploadTransfer(session.getHost(), room, folder);
+        final BytecountStreamListener counter = new BytecountStreamListener();
+        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+
+        }.run(session));
+        assertTrue(t.isComplete());
+        assertTrue(new SDSFindFeature(session, fileid).find(room));
+        new SDSDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
