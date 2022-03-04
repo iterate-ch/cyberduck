@@ -49,7 +49,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
     }
 
     @Override
-    public boolean open(final Local file, final Application application, final ApplicationQuitCallback callback) {
+    public boolean open(final Local file, final Application application) {
         try {
             final Process process = runtime.exec(String.format("%s %s", application.getIdentifier(), file.getAbsolute()));
             pool.execute(new Callable<Boolean>() {
@@ -57,7 +57,6 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
                 public Boolean call() {
                     try {
                         process.waitFor();
-                        callback.callback();
                         return true;
                     }
                     catch(InterruptedException e) {

@@ -38,6 +38,8 @@ import java.util.Objects;
 
 public abstract class EditMenuDelegate extends AbstractMenuDelegate {
 
+    private final EditorFactory editors = EditorFactory.instance();
+
     /**
      * Last selected extension
      */
@@ -53,10 +55,10 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         final Path file = this.getEditable();
         final int count;
         if(null == file) {
-            count = EditorFactory.instance().getEditors().size();
+            count = editors.getEditors().size();
         }
         else {
-            count = EditorFactory.instance().getEditors(file.getName()).size();
+            count = EditorFactory.getEditors(file.getName()).size();
         }
         if(0 == count) {
             return new NSInteger(1);
@@ -89,27 +91,27 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final Path selected = this.getEditable();
-        final List<Application> editors;
+        final List<Application> applications;
         if(null == selected) {
-            editors = EditorFactory.instance().getEditors();
+            applications = editors.getEditors();
         }
         else {
-            editors = EditorFactory.instance().getEditors(selected.getName());
+            applications = EditorFactory.getEditors(selected.getName());
         }
-        if(editors.size() == 0) {
+        if(applications.size() == 0) {
             item.setTitle(LocaleFactory.localizedString("No external editor available"));
             return false;
         }
-        final Application application = editors.get(index.intValue());
+        final Application application = applications.get(index.intValue());
         item.setRepresentedObject(application.getIdentifier());
-        final String editor = editors.get(index.intValue()).getName();
+        final String editor = applications.get(index.intValue()).getName();
         if(StringUtils.isBlank(editor)) {
             item.setTitle(LocaleFactory.localizedString("Unknown"));
         }
         else {
             item.setTitle(editor);
         }
-        if(null != selected && application.getIdentifier().equalsIgnoreCase(EditorFactory.instance().getEditor(selected.getName()).getIdentifier())) {
+        if(null != selected && application.getIdentifier().equalsIgnoreCase(EditorFactory.getEditor(selected.getName()).getIdentifier())) {
             this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {

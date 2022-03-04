@@ -36,7 +36,8 @@ public class DefaultEditorListener implements FileWatcherListener {
     private final Editor editor;
     private final Listener listener;
 
-    public DefaultEditorListener(final Controller controller, final SessionPool session, final Editor editor, final Listener listener) {
+    public DefaultEditorListener(final Controller controller, final SessionPool session,
+                                 final Editor editor, final Listener listener) {
         this.controller = controller;
         this.session = session;
         this.editor = editor;
@@ -44,11 +45,12 @@ public class DefaultEditorListener implements FileWatcherListener {
     }
 
     @Override
-    public void fileWritten(final Local file) {
+    public void fileWritten(final Local temporary) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("File %s written", file));
+            log.info(String.format("File %s written", temporary));
         }
-        controller.background(new WorkerBackgroundAction<Transfer>(controller, session, editor.save(new DisabledTransferErrorCallback())) {
+        controller.background(new WorkerBackgroundAction<Transfer>(controller, session,
+                                      editor.save(new DisabledTransferErrorCallback())) {
                                   @Override
                                   public void cleanup() {
                                       super.cleanup();
@@ -59,19 +61,20 @@ public class DefaultEditorListener implements FileWatcherListener {
     }
 
     @Override
-    public void fileDeleted(final Local file) {
+    public void fileDeleted(final Local temporary) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("File %s deleted", file));
+            log.info(String.format("File %s deleted", temporary));
         }
         editor.close();
     }
 
     @Override
-    public void fileCreated(final Local file) {
+    public void fileCreated(final Local temporary) {
         if(log.isInfoEnabled()) {
-            log.info(String.format("File %s created", file));
+            log.info(String.format("File %s created", temporary));
         }
-        controller.background(new WorkerBackgroundAction<Transfer>(controller, session, editor.save(new DisabledTransferErrorCallback())) {
+        controller.background(new WorkerBackgroundAction<Transfer>(controller, session,
+                                      editor.save(new DisabledTransferErrorCallback())) {
                                   @Override
                                   public void cleanup() {
                                       super.cleanup();

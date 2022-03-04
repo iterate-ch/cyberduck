@@ -138,7 +138,7 @@ public final class FileWatcher {
         return lock;
     }
 
-    protected Local normalize(final Local parent, final String name) {
+    private static Local normalize(final Local parent, final String name) {
         if(StringUtils.startsWith(name, String.valueOf(parent.getDelimiter()))) {
             return LocalFactory.get(name);
         }
@@ -151,13 +151,13 @@ public final class FileWatcher {
             log.info(String.format("Process file system event %s for %s", kind.name(), event.context()));
         }
         if(ENTRY_MODIFY == kind) {
-            l.fileWritten(this.normalize(folder, event.context().toString()));
+            l.fileWritten(normalize(folder, event.context().toString()));
         }
         else if(ENTRY_DELETE == kind) {
-            l.fileDeleted(this.normalize(folder, event.context().toString()));
+            l.fileDeleted(normalize(folder, event.context().toString()));
         }
         else if(ENTRY_CREATE == kind) {
-            l.fileCreated(this.normalize(folder, event.context().toString()));
+            l.fileCreated(normalize(folder, event.context().toString()));
         }
         else {
             log.debug(String.format("Ignored file system event %s for %s", kind.name(), event.context()));

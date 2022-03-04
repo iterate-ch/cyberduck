@@ -1368,7 +1368,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             List<KeyValueIconTriple<Application, string>> editors = new List<KeyValueIconTriple<Application, string>>();
 
-            Application defaultEditor = EditorFactory.instance().getDefaultEditor();
+            Application defaultEditor = EditorFactory.getDefaultEditor();
             String defaultEditorLocation = null;
             if (defaultEditor != null && Utils.IsNotBlank(defaultEditor.getIdentifier()))
             {

@@ -355,9 +355,9 @@ public class PreferencesController extends ToolbarWindowController {
             editorCombobox.lastItem().setEnabled(enabled);
             if(enabled) {
                 editorCombobox.lastItem().setImage(
-                    IconCacheFactory.<NSImage>get().applicationIcon(editor, 16));
+                        IconCacheFactory.<NSImage>get().applicationIcon(editor, 16));
             }
-            if(editor.equals(EditorFactory.instance().getDefaultEditor())) {
+            if(editor.equals(EditorFactory.getDefaultEditor())) {
                 editorCombobox.selectItem(editorCombobox.lastItem());
             }
         }

@@ -180,13 +180,12 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(edit.action())) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
-                final EditorFactory factory = EditorFactory.instance();
                 for(Path s : controller.getSelectedPaths()) {
                     if(!controller.isEditable(s)) {
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == factory.getEditor(s.getName())) {
+                    if(null == EditorFactory.getEditor(s.getName())) {
                         return false;
                     }
                 }
