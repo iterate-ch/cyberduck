@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -76,16 +78,12 @@ public class DefaultThreadPoolTest {
 
     @Test
     public void testFifoOrderSingleThread() throws Exception {
-        final DefaultThreadPool p = new DefaultThreadPool(1);
-        final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
+        final DefaultThreadPool p = new DefaultThreadPool("t", 1, ThreadPool.Priority.norm,
+                new LinkedBlockingQueue<>(), new ThreadPoolExecutor.AbortPolicy(), new LoggingUncaughtExceptionHandler());
+        final List<Future<Integer>> wait = new ArrayList<>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {
-            wait.add(p.execute(new Callable<Integer>() {
-                @Override
-                public Integer call() {
-                    return counter.incrementAndGet();
-                }
-            }));
+            wait.add(p.execute(counter::incrementAndGet));
         }
         int i = 1;
         for(Future f : wait) {
@@ -98,15 +96,10 @@ public class DefaultThreadPoolTest {
     @Test
     public void testShutdownGracefully() {
         final DefaultThreadPool p = new DefaultThreadPool(Integer.MAX_VALUE);
-        final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
+        final List<Future<Integer>> wait = new ArrayList<>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {
-            wait.add(p.execute(new Callable<Integer>() {
-                @Override
-                public Integer call() {
-                    return counter.incrementAndGet();
-                }
-            }));
+            wait.add(p.execute(counter::incrementAndGet));
         }
         p.shutdown(true);
         assertEquals(1000, counter.get());

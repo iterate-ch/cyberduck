@@ -27,6 +27,6 @@ public class DispatchThreadPool extends ExecutorServiceThreadPool implements Thr
 
     public DispatchThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         super(PreferencesFactory.get().getInteger("threading.pool.size.max") == size ? new DispatchExecutorService() :
-            DefaultThreadPool.createExecutor(prefix, size, priority, queue, handler));
+                DefaultThreadPool.createExecutor(prefix, size, priority, queue, new DefaultThreadPool.CustomCallerPolicy(), handler));
     }
 }

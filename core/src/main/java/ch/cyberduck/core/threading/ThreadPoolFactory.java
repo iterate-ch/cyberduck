@@ -38,15 +38,18 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     /**
+     * @param prefix   Thread name
      * @param size     Maximum pool size
      * @param priority Thread priority
+     * @param queue    Queue with pending tasks
      * @param handler  Uncaught thread exception handler
+     * @return Thread pool
      */
     protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority,
                                 final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         try {
             final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
-                prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
+                    prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
                 // Call default constructor for disabled implementations
@@ -100,7 +103,7 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        return get(prefix, size, priority, new LinkedBlockingQueue<>(), handler);
+        return get(prefix, size, priority, new LinkedBlockingQueue<>(size), handler);
     }
 
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
