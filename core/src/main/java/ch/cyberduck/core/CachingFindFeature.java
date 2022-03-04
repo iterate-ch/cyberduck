@@ -45,6 +45,9 @@ public class CachingFindFeature implements Find {
                     }
                     return true;
                 }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cached directory listing does not contain %s", file));
+                }
                 return false;
             }
         }
