@@ -15,11 +15,11 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <BasePath>$(MSBuildThisFileDirectory)</BasePath>
-        <ModulePath>$(BasePath)</ModulePath>
-    </PropertyGroup>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />
 
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(BasePath)../))" />
+  <PropertyGroup>
+    <Platforms>x64</Platforms>
+    <Platform Condition=" '$(Platform)'=='' ">x64</Platform>
+  </PropertyGroup>
 
 </Project>

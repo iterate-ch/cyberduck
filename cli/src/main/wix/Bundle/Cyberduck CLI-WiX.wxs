@@ -23,13 +23,13 @@
                          System="yes"
                          Value="[INSTALLFOLDER]" />
           </Component>
-         <Directory Id="PROFILES" Name="profiles"/>
+          <Directory Id="PROFILES" Name="profiles"/>
         </Directory>
       </Directory>
     </Directory>
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-    <Component Id="InstallLocationRegistrySearch">
+      <Component Id="InstallLocationRegistrySearch">
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
@@ -110,22 +110,22 @@
       <Component Id="ikvm.management" Guid="898A68A4-7883-4EBF-94A4-BE3D127D6D38">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-        <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
-            <File Source="$(var.CLI.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="ikvm.misc" Guid="1F57FEE7-5278-44C8-9C30-CBDAC2019304">
-            <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
-            <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
-            <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="msvcr120">
-            <File Source="$(var.CLI.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        
+      <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
+        <File Source="$(var.CLI.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.misc" Guid="1F57FEE7-5278-44C8-9C30-CBDAC2019304">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
+        <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
+        <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="msvcr120">
+        <File Source="$(var.CLI.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+
       <Component Id="System.Buffers">
         <File Source="$(var.CLI.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
       </Component>
