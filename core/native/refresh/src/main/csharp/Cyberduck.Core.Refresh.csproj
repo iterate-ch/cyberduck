@@ -15,36 +15,35 @@
 
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <TargetFramework>net47</TargetFramework>
-        <LangVersion>9</LangVersion>
-        <UseWPF>true</UseWPF>
-        <UseWindowsForms>true</UseWindowsForms>
-        <RootNamespace>Ch.Cyberduck.Core.Refresh</RootNamespace>
-        <Platforms>x86;x64</Platforms>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net47</TargetFramework>
+    <LangVersion>9</LangVersion>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <RootNamespace>Ch.Cyberduck.Core.Refresh</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <CyberduckReference Include="Core;Core.Native" />
-    </ItemGroup>
+  <ItemGroup>
+    <CyberduckReference Include="Core;Core.Native" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
-        <PackageReference Include="ReactiveUI.Fody" />
-        <PackageReference Include="ReactiveUI.WPF" />
-        <PackageReference Include="StructureMap" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
+    <PackageReference Include="ReactiveUI.Fody" />
+    <PackageReference Include="ReactiveUI.WPF" />
+    <PackageReference Include="StructureMap" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="@(IKVMReferences)" />
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="@(IKVMReferences)" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ImageResource Include="$(CyberduckDir)img\*.png" />
-        <ImageResource Include="$(CyberduckDir)img\*.tiff" />
-        <ImageResource Include="$(CyberduckDir)img\*.ico" />
-        <ImageResource Include="$(CyberduckDir)img\*.gif" />
-        <ImageResource Include="$(CyberduckDir)cyberduck-application.ico" />
-        <ImageResource Include="$(CyberduckDir)cyberduck-document.ico" />
-    </ItemGroup>
+  <ItemGroup>
+    <ImageResource Include="$(CyberduckDir)img\*.png" />
+    <ImageResource Include="$(CyberduckDir)img\*.tiff" />
+    <ImageResource Include="$(CyberduckDir)img\*.ico" />
+    <ImageResource Include="$(CyberduckDir)img\*.gif" />
+    <ImageResource Include="$(CyberduckDir)cyberduck-application.ico" />
+    <ImageResource Include="$(CyberduckDir)cyberduck-document.ico" />
+  </ItemGroup>
 </Project>
