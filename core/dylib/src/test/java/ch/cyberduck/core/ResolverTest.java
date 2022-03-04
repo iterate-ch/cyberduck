@@ -71,12 +71,6 @@ public class ResolverTest {
 
     @Test
     public void testResolvePublicDNSIPv6ForHybrid() throws Exception {
-        try {
-            System.setProperty("java.net.preferIPv6Addresses", Boolean.TRUE.toString());
-            assertEquals("2600:3c02::f03c:91ff:fe89:e8b1", new Resolver().resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback()).getHostAddress());
-        }
-        finally {
-            System.setProperty("java.net.preferIPv6Addresses", Boolean.FALSE.toString());
-        }
+        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true).resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback()).getHostAddress());
     }
 }
