@@ -110,6 +110,10 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
         return get(prefix, size, priority, new LinkedBlockingQueue<>(size), handler);
     }
 
+    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue) {
+        return get(prefix, size, priority, queue, new LoggingUncaughtExceptionHandler());
+    }
+
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         return new ThreadPoolFactory().create(prefix, size, priority, queue, handler);
     }

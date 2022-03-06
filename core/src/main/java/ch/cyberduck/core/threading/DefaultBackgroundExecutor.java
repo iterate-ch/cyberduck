@@ -16,6 +16,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,11 +42,15 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     }
 
     public DefaultBackgroundExecutor(final Thread.UncaughtExceptionHandler handler) {
-        this(ThreadPool.DEFAULT_THREAD_NAME_PREFIX, Integer.MAX_VALUE, handler);
+        this(ThreadPool.DEFAULT_THREAD_NAME_PREFIX, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
     }
 
     public DefaultBackgroundExecutor(final String prefix) {
-        this(prefix, Integer.MAX_VALUE, new LoggingUncaughtExceptionHandler());
+        this(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), new LoggingUncaughtExceptionHandler());
+    }
+
+    public DefaultBackgroundExecutor(final String prefix, final int size) {
+        this(prefix, size, new LoggingUncaughtExceptionHandler());
     }
 
     public DefaultBackgroundExecutor(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
