@@ -22,6 +22,7 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -51,8 +52,14 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
                     throw new UnsupportedException();
                 }
             }
-            new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
-                Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+            if(file.isDirectory()) {
+                new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().timestampModification(new DateTime(status.getTimestamp())),
+                        Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+            }
+            else {
+                new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
+                        Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+            }
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Failure to write attributes of {0}", e, file);
