@@ -217,7 +217,7 @@ public class Terminal {
         }
         finally {
             // Clear temporary files
-            TemporaryFileServiceFactory.get().shutdown();
+            TemporaryFileServiceFactory.getDefault().shutdown();
         }
     }
 

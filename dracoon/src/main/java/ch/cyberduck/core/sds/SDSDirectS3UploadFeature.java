@@ -260,6 +260,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             throw new DefaultIOExceptionMappingService().map(e);
         }
         finally {
+            temp.shutdown();
             // Cancel future tasks
             pool.shutdown(false);
         }

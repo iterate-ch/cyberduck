@@ -35,7 +35,7 @@ public abstract class AbstractTemporaryFileService implements TemporaryFileServi
     /**
      * Set of filenames to be deleted on VM exit through a shutdown hook.
      */
-    private static final Set<Local> files = new CopyOnWriteArraySet<>();
+    private final Set<Local> files = new CopyOnWriteArraySet<>();
 
     /**
      * Delete on exit

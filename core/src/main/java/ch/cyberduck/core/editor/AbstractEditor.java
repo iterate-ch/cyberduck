@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -35,7 +36,7 @@ import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.local.LocalTrashFactory;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
@@ -53,7 +54,10 @@ import java.text.MessageFormat;
 
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = LogManager.getLogger(AbstractEditor.class);
+
     private final Host host;
+
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
 
     /**
      * File has changed but not uploaded yet
@@ -90,7 +94,7 @@ public abstract class AbstractEditor implements Editor {
         else {
             this.file = file;
         }
-        this.temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), this.file);
+        this.temporary = temp.create(host.getUuid(), this.file);
         this.launcher = launcher;
         this.finder = finder;
         this.progress = listener;
@@ -105,15 +109,15 @@ public abstract class AbstractEditor implements Editor {
     }
 
     @Override
-    public void delete(final Local temporary) {
+    public void delete() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Delete edited file %s", temporary));
         }
         try {
-            LocalTrashFactory.get().trash(temporary);
+            temporary.delete();
         }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure trashing edited file %s %s", temporary, e.getMessage()));
+        catch(AccessDeniedException | NotfoundException e) {
+            log.warn(String.format("Failure trashing edited file %s. %s", temporary, e.getMessage()));
         }
     }
 
@@ -123,7 +127,7 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public Worker<Transfer> open(final Application application, final ApplicationQuitCallback callback, final FileWatcherListener listener) {
-        final Local temporary = TemporaryFileServiceFactory.get().create(host.getUuid(), file);
+        final Local temporary = temp.create(host.getUuid(), file);
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
                 temporary, progress, listener, notification) {
             @Override
@@ -156,7 +160,7 @@ public abstract class AbstractEditor implements Editor {
             @Override
             public void callback() {
                 close();
-                delete(temporary);
+                delete();
             }
         };
         if(!finder.isInstalled(application)) {
