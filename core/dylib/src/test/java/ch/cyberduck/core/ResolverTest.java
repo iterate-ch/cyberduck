@@ -68,4 +68,9 @@ public class ResolverTest {
     public void testResolvePublicDNSIPv6Only() throws Exception {
         assertEquals("2001:470:a085:999:0:0:0:21", new Resolver().resolve("ftp6.netbsd.org", new DisabledCancelCallback()).getHostAddress());
     }
+
+    @Test
+    public void testResolvePublicDNSIPv6ForHybrid() throws Exception {
+        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true).resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback()).getHostAddress());
+    }
 }
