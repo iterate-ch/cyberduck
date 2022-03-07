@@ -18,8 +18,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck Bootstrapper.wxs" />
-    <Compile Include="$(CyberduckDir)NetFx47.wxs">
-      <Link>NetFx47.wxs</Link>
+    <Compile Include="$(CyberduckDir)NetFx472.wxs">
+      <Link>NetFx472.wxs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />

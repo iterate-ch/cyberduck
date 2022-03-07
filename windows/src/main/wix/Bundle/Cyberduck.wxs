@@ -6,12 +6,6 @@
     <MajorUpgrade AllowDowngrades="yes" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-    <Condition Message="Windows 7 SP1, Windows Server 2008 R2 or later is required to run this application.">
-      <![CDATA[VersionNT >= 601 AND (VersionNT <> 601 OR (ServicePackLevel >= 1 OR MsiNTProductType <> 1))]]>
-    </Condition>
-    <Condition Message="Installation on Windows 8 is not supported.">
-      <![CDATA[VersionNT <> 602 OR MsiNTProductType <> 1]]>
-    </Condition>
     <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
       <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
     </Condition>
@@ -220,6 +214,9 @@
       </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
         <File Source="$(var.cyberduck.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Threading.Tasks.Extensions">
+        <File Source="$(var.cyberduck.TargetDir)/System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
       <!-- NuGet Dependencies -->
