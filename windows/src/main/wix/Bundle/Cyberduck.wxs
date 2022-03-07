@@ -221,6 +221,9 @@
       <Component Id="System.Runtime.CompilerServices.Unsafe">
         <File Source="$(var.cyberduck.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="System.Threading.Tasks.Extensions">
+        <File Source="$(var.cyberduck.TargetDir)/System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
 
       <!-- NuGet Dependencies -->
       <!-- DotNetProjects.Extended.Wpf.Toolkit -->
