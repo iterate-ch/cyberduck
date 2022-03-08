@@ -62,10 +62,15 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
         return null;
     }
 
+    /**
+     * @param files Files to upload
+     * @return Map of rooms with Triple Crypt enabled
+     */
     private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) {
         final Map<Path, Boolean> rooms = new HashMap<>();
+        final DefaultPathContainerService containerService = new DefaultPathContainerService();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            final Path container = new DefaultPathContainerService().getContainer(entry.getKey().remote);
+            final Path container = containerService.getContainer(entry.getKey().remote);
             if(rooms.containsKey(container)) {
                 continue;
             }
