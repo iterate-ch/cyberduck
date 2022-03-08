@@ -51,6 +51,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     private ApacheHttpTransport transport;
     private OAuth2RequestInterceptor authorizationService;
 
+    private final Versioning versioning
+            = new GoogleStorageVersioningFeature(this);
+
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -59,7 +62,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     protected Storage connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         this.transport = new ApacheHttpTransport(configuration.build());
@@ -147,7 +150,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
             return (T) new GoogleStorageSearchFeature(this);
         }
         if(type == Versioning.class) {
-            return (T) new GoogleStorageVersioningFeature(this);
+            return (T) versioning;
         }
         if(type == Location.class) {
             return (T) new GoogleStorageLocationFeature(this);
