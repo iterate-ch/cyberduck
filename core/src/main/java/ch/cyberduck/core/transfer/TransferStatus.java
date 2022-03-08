@@ -63,7 +63,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Temporary filename only used for transfer. Rename when file transfer is complete
      */
     private final Displayname displayname
-        = new Displayname();
+            = new Displayname();
 
     /**
      * Target file or directory already exists
@@ -96,7 +96,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Offset to read from input stream. Must be less or equals size.
      */
     private final AtomicLong offset
-        = new AtomicLong(0);
+            = new AtomicLong(0);
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
@@ -106,13 +106,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * The transfer has been canceled by the user.
      */
     private final AtomicBoolean canceled
-        = new AtomicBoolean();
+            = new AtomicBoolean();
 
     private final AtomicBoolean complete
-        = new AtomicBoolean();
+            = new AtomicBoolean();
 
     private final CountDownLatch done
-        = new CountDownLatch(1);
+            = new CountDownLatch(1);
 
     private Checksum checksum = Checksum.NONE;
 
@@ -125,6 +125,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
     private PathAttributes remote = PathAttributes.EMPTY;
+
+    /**
+     * Remote attributes after upload completed to be set in write feature
+     */
+    private PathAttributes response = PathAttributes.EMPTY;
 
     /**
      * Target UNIX permissions to set when transfer is complete
@@ -149,13 +154,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Long timestamp;
 
     private Map<String, String> parameters
-        = Collections.emptyMap();
+            = Collections.emptyMap();
 
     private Map<String, String> metadata
-        = Collections.emptyMap();
+            = Collections.emptyMap();
 
     private List<TransferStatus> segments
-        = Collections.emptyList();
+            = Collections.emptyList();
 
     /**
      * Part number
@@ -211,6 +216,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.checksum = copy.checksum;
         this.mime = copy.mime;
         this.remote = copy.remote;
+        this.response = copy.response;
         this.permission = copy.permission;
         this.acl = copy.acl;
         this.encryption = copy.encryption;
@@ -477,6 +483,22 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus withRemote(final PathAttributes attributes) {
         this.setRemote(attributes);
+        return this;
+    }
+
+    /**
+     * @return Attributes on server after upload
+     */
+    public PathAttributes getResponse() {
+        return response;
+    }
+
+    public void setResponse(PathAttributes attributes) {
+        this.response = attributes;
+    }
+
+    public TransferStatus withResponse(final PathAttributes attributes) {
+        this.setResponse(attributes);
         return this;
     }
 
