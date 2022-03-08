@@ -35,7 +35,7 @@ import java.nio.file.Paths;
 public class FileBuffer implements Buffer {
     private static final Logger log = LogManager.getLogger(FileBuffer.class);
 
-    private static final TemporaryFileService temp = TemporaryFileServiceFactory.getDefault();
+    private static final TemporaryFileService temp = TemporaryFileServiceFactory.get();
 
     private final Local temporary;
 

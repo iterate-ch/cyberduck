@@ -286,7 +286,7 @@ public class Profile implements Protocol {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = TemporaryFileServiceFactory.getDefault().create(new AlphanumericRandomStringService().random());
+        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         try {
             new DefaultLocalTouchFeature().touch(file);
             try (final OutputStream out = file.getOutputStream(false)) {

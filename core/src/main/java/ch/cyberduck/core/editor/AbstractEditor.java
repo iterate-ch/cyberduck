@@ -57,7 +57,7 @@ public abstract class AbstractEditor implements Editor {
 
     private final Host host;
 
-    private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
 
     /**
      * File has changed but not uploaded yet

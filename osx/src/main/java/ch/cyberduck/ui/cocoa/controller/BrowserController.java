@@ -591,7 +591,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(file, TemporaryFileServiceFactory.getDefault().create(pool.getHost().getUuid(), file)));
+            downloads.add(new TransferItem(file, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);

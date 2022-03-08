@@ -1217,7 +1217,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.invalidate();
         OAuth2TokenListenerRegistry.get().shutdown();
         // Clear temporary files
-        TemporaryFileServiceFactory.getDefault().shutdown();
+        TemporaryFileServiceFactory.get().shutdown();
         //Terminating rendezvous discovery
         RendezvousFactory.instance().quit();
         // Remove notifications from center

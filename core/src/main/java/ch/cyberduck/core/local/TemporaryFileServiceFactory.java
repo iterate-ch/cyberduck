@@ -27,11 +27,11 @@ public class TemporaryFileServiceFactory extends Factory<TemporaryFileService> {
     /**
      * @return Shared singleton
      */
-    public static TemporaryFileService getDefault() {
+    public static TemporaryFileService get() {
         return DEFAULT;
     }
 
-    public static TemporaryFileService get() {
+    public static TemporaryFileService instance() {
         return new TemporaryFileServiceFactory().create();
     }
 

@@ -96,7 +96,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
 
     private final Long partsize;
     private final Integer concurrency;
-    private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
 
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> writer) {
         this(session, nodeid, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
