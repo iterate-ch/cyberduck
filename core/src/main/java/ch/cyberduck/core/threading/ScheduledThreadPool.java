@@ -38,11 +38,11 @@ public class ScheduledThreadPool {
         pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
     }
 
-    public ScheduledFuture repeat(final Runnable runnable, final Long period, final TimeUnit unit) {
+    public ScheduledFuture<?> repeat(final Runnable runnable, final Long period, final TimeUnit unit) {
         return pool.scheduleAtFixedRate(runnable, 0L, period, unit);
     }
 
-    public ScheduledFuture schedule(final Runnable runnable, final Long delay, final TimeUnit unit) {
+    public ScheduledFuture<?> schedule(final Runnable runnable, final Long delay, final TimeUnit unit) {
         return pool.schedule(runnable, delay, unit);
     }
 
