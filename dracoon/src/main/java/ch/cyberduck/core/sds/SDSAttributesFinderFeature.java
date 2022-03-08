@@ -153,7 +153,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final Node node) throws BackgroundException {
+    public PathAttributes toAttributes(final Node node) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
@@ -222,14 +222,19 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         return type;
     }
 
-    protected Permission toPermission(final Node node) throws BackgroundException {
+    protected Permission toPermission(final Node node) {
         final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
         if(node.isIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
-            if(null != session.keyPair()) {
-                permission.setUser(permission.getUser().or(Permission.Action.read));
+            try {
+                if(null != session.keyPair()) {
+                    permission.setUser(permission.getUser().or(Permission.Action.read));
+                }
+                else {
+                    log.warn(String.format("Missing read permission for node %s with missing key pair", node));
+                }
             }
-            else {
-                log.warn(String.format("Missing read permission for node %s with missing key pair", node));
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure %s retrieving key pair", e));
             }
         }
         else {
