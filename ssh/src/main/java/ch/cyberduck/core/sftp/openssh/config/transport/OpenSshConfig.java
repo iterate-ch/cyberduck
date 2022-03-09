@@ -230,7 +230,7 @@ public class OpenSshConfig {
             else if("IdentityAgent".equalsIgnoreCase(keyword)) {
                 for(final Host c : current) {
                     if(c.identityAgent == null) {
-                        c.identityAgent = dequote(argValue);
+                        c.identityAgent = LocalFactory.get(dequote(argValue));
                     }
                 }
             }
@@ -316,7 +316,7 @@ public class OpenSshConfig {
         String proxyJump;
         int port;
         Local identityFile;
-        String identityAgent;
+        Local identityAgent;
         String user;
         String preferredAuthentications;
         Boolean identitiesOnly;
@@ -381,7 +381,7 @@ public class OpenSshConfig {
         /**
          * @return Specifies the UNIX-domain socket used to communicate with the authentication agent.
          */
-        public String getIdentityAgent() {
+        public Local getIdentityAgent() {
             return identityAgent;
         }
 
