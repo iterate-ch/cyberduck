@@ -1,7 +1,7 @@
-package ch.cyberduck.core.http;
+package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,17 +15,12 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 
-import java.io.OutputStream;
-
-public class VoidHttpResponseOutputStream extends HttpResponseOutputStream<Void> {
-    public VoidHttpResponseOutputStream(final OutputStream proxy) {
-        super(proxy);
-    }
+public class VoidAttributesAdapter implements AttributesAdapter<Void> {
 
     @Override
-    public Void getStatus() throws BackgroundException {
-        return null;
+    public PathAttributes toAttributes(final Void model) {
+        return PathAttributes.EMPTY;
     }
 }

@@ -21,6 +21,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,18 +40,24 @@ import java.util.concurrent.ThreadFactory;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
-public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> implements HttpWriteFeature<T> {
+public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> implements HttpWriteFeature<R> {
     private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
+
+    private final AttributesAdapter<R> attributes;
+
+    public AbstractHttpWriteFeature(final AttributesAdapter<R> attributes) {
+        this.attributes = attributes;
+    }
 
     private abstract class FutureHttpResponse implements Runnable {
         Exception exception;
-        T response;
+        R response;
 
         public Exception getException() {
             return exception;
         }
 
-        public T getResponse() {
+        public R getResponse() {
             return response;
         }
     }
@@ -60,8 +67,8 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
      * @return Outputstream to write entity into.
      */
     @Override
-    public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
-                                             final DelayedHttpEntityCallable<T> command) throws BackgroundException {
+    public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
+                                             final DelayedHttpEntityCallable<R> command) throws BackgroundException {
         return this.write(file, status, command, new DelayedHttpEntity() {
             @Override
             public long getContentLength() {
@@ -70,8 +77,8 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
         });
     }
 
-    public HttpResponseOutputStream<T> write(final Path file, final TransferStatus status,
-                                             final DelayedHttpEntityCallable<T> command, final DelayedHttpEntity entity) throws BackgroundException {
+    public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
+                                             final DelayedHttpEntityCallable<R> command, final DelayedHttpEntity entity) throws BackgroundException {
         // Signal on enter streaming
         final CountDownLatch entry = entity.getEntry();
         final CountDownLatch exit = new CountDownLatch(1);
@@ -112,7 +119,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
             throw new DefaultExceptionMappingService().map(target.getException());
         }
         final OutputStream stream = entity.getStream();
-        return new HttpResponseOutputStream<T>(stream) {
+        return new HttpResponseOutputStream<R>(stream, attributes, status) {
             @Override
             public void flush() throws IOException {
                 stream.flush();
@@ -124,7 +131,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
              * @return Response from server for upload
              */
             @Override
-            public T getStatus() throws BackgroundException {
+            public R getStatus() throws BackgroundException {
                 status.validate();
                 // Block the calling thread until after the full response from the server
                 // has been consumed.
@@ -141,5 +148,5 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
     }
 
     @Override
-    public abstract HttpResponseOutputStream<T> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
+    public abstract HttpResponseOutputStream<R> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
 }
