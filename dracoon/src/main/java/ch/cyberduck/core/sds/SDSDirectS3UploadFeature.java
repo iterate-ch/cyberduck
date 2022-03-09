@@ -214,6 +214,9 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 @Override
                 public void run() {
                     try {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Query upload status for %s", createFileUploadResponse));
+                        }
                         final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
                                 .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
                         switch(uploadStatus.getStatus()) {
@@ -231,6 +234,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                             case "done":
                                 // Set node id in transfer status
                                 nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
+                                // Mark parent status as complete
+                                status.withResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
                                 done.countDown();
                                 break;
                         }
@@ -246,8 +251,6 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             if(null != failure.get()) {
                 throw failure.get();
             }
-            // Mark parent status as complete
-            status.setComplete();
             return null;
         }
         catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException | UnknownVersionException e) {

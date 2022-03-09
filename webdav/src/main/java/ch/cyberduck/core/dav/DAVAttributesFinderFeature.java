@@ -23,6 +23,7 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.io.Checksum;
@@ -46,13 +47,13 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.HeadersResponseHandler;
 
-public class DAVAttributesFinderFeature implements AttributesFinder {
+public class DAVAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DavResource> {
     private static final Logger log = LogManager.getLogger(DAVAttributesFinderFeature.class);
 
     private final DAVSession session;
 
     private final RFC1123DateFormatter rfc1123
-        = new RFC1123DateFormatter();
+            = new RFC1123DateFormatter();
 
     public DAVAttributesFinderFeature(DAVSession session) {
         this.session = session;
@@ -122,14 +123,15 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
 
     protected List<DavResource> list(final Path file) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
-            Stream.of(
-                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                collect(Collectors.toSet())
+                Stream.of(
+                                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                        collect(Collectors.toSet())
         );
     }
 
-    protected PathAttributes toAttributes(final DavResource resource) {
+    @Override
+    public PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = new PathAttributes();
         final Map<QName, String> properties = resource.getCustomPropsNS();
         if(null != properties && properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE)) {

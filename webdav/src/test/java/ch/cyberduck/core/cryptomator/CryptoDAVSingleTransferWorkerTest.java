@@ -165,8 +165,8 @@ public class CryptoDAVSingleTransferWorkerTest extends AbstractDAVTest {
         final TransferStatus status = new TransferStatus();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
-        final StatusOutputStream<String> out = new CryptoWriteFeature<String>(session, new DAVWriteFeature(session), cryptomator).write(
-            file1, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = new CryptoWriteFeature<>(session, new DAVWriteFeature(session), cryptomator).write(
+                file1, status, new DisabledConnectionCallback());
         IOUtils.write(content, out);
         out.close();
         final Local localFile1 = new Local(localDirectory1, file1.getName());

@@ -18,6 +18,7 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Vault;
@@ -28,13 +29,13 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-public class BoxThresholdUploadService implements Upload<BoxUploadHelper.BoxUploadResponse> {
+public class BoxThresholdUploadService implements Upload<File> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
     private final VaultRegistry registry;
 
-    private Write<BoxUploadHelper.BoxUploadResponse> writer;
+    private Write<File> writer;
 
     public BoxThresholdUploadService(final BoxSession session, final BoxFileidProvider fileid, final VaultRegistry registry) {
         this.session = session;
@@ -44,8 +45,8 @@ public class BoxThresholdUploadService implements Upload<BoxUploadHelper.BoxUplo
     }
 
     @Override
-    public BoxUploadHelper.BoxUploadResponse upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                                                    final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public File upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(this.threshold(status.getLength())) {
             if(Vault.DISABLED == registry.find(session, file)) {
                 return new BoxLargeUploadService(session, fileid, writer).upload(file, local, throttle, listener, status, callback);
@@ -61,7 +62,7 @@ public class BoxThresholdUploadService implements Upload<BoxUploadHelper.BoxUplo
     }
 
     @Override
-    public Upload<BoxUploadHelper.BoxUploadResponse> withWriter(final Write<BoxUploadHelper.BoxUploadResponse> writer) {
+    public Upload<File> withWriter(final Write<File> writer) {
         this.writer = writer;
         return this;
     }

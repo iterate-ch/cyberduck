@@ -142,9 +142,11 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             });
             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
-                .getCompletedUploadResponse(uploadUri, totalSize.get(), cdash64);
-            status.setComplete();
-            return new EueWriteFeature.Chunk(totalSize.get(), cdash64);
+                    .getCompletedUploadResponse(uploadUri, totalSize.get(), cdash64);
+            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(totalSize.get(), cdash64);
+            // Mark parent status as complete
+            status.withResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
+            return object;
         }
         catch(NoSuchAlgorithmException e) {
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);

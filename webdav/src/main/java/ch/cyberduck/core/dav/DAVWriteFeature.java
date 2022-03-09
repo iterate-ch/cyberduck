@@ -19,6 +19,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Lock;
@@ -47,7 +48,7 @@ import java.util.List;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ETagResponseHandler;
 
-public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
+public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements Write<Void> {
     private static final Logger log = LogManager.getLogger(DAVWriteFeature.class);
 
     private final DAVSession session;
@@ -62,18 +63,19 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     }
 
     public DAVWriteFeature(final DAVSession session, final boolean expect) {
+        super(new VoidAttributesAdapter());
         this.session = session;
         this.expect = expect;
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final List<Header> headers = this.getHeaders(file, status);
         return this.write(file, headers, status);
     }
 
     protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
-        final List<Header> headers = new ArrayList<Header>();
+        final List<Header> headers = new ArrayList<>();
         if(status.isAppend()) {
             if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                 throw new UnsupportedException("Content-Range with unknown file size is not supported");
@@ -100,17 +102,18 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
         return headers;
     }
 
-    private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status) throws BackgroundException {
+    private HttpResponseOutputStream<Void> write(final Path file, final List<Header> headers, final TransferStatus status) throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
             /**
              * @return The ETag returned by the server for the uploaded object
              */
             @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     try {
-                        return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                        session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                        return null;
                     }
                     catch(SardineException e) {
                         if(null != status.getLockId()) {
@@ -119,7 +122,10 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
                                     // Handle 412 Precondition Failed with expired token
                                     log.warn(String.format("Retry failure %s with lock id %s removed", e, status.getLockId()));
                                     headers.removeIf(header -> HttpHeaders.IF.equals(header.getName()));
-                                    return session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                                    session.getClient().put(new DAVPathEncoder().encode(file), entity, headers, new ETagResponseHandler());
+                                    // No remote attributes from server returned after upload
+                                    return null;
+
                             }
                         }
                         throw e;

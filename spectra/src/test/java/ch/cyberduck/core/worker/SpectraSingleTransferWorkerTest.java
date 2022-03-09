@@ -35,6 +35,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.s3.S3AttributesAdapter;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.spectra.SpectraAttributesFinderFeature;
 import ch.cyberduck.core.spectra.SpectraBulkService;
@@ -117,7 +118,7 @@ public class SpectraSingleTransferWorkerTest {
                                 throw new SocketTimeoutException();
                             }
                         }
-                    }) {
+                    }, new S3AttributesAdapter(), status) {
                         @Override
                         public StorageObject getStatus() throws BackgroundException {
                             return proxy.getStatus();
@@ -139,7 +140,7 @@ public class SpectraSingleTransferWorkerTest {
                     return (T) write;
                 }
                 if(type == Upload.class) {
-                    return (T) new SpectraUploadFeature(write, new SpectraBulkService(this));
+                    return (T) new SpectraUploadFeature(this, write, new SpectraBulkService(this));
                 }
                 return super._getFeature(type);
             }

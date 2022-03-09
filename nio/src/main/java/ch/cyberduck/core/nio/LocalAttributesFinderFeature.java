@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 
-public class LocalAttributesFinderFeature implements AttributesFinder {
+public class LocalAttributesFinderFeature implements AttributesFinder, AttributesAdapter<BasicFileAttributes> {
 
     private final LocalSession session;
 
@@ -41,43 +42,44 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            return this.convert(session.toPath(file));
+            final Class<? extends BasicFileAttributes> provider = session.isPosixFilesystem() ? PosixFileAttributes.class : DosFileAttributes.class;
+            final java.nio.file.Path impl = session.toPath(file);
+            final PathAttributes attr = this.toAttributes(Files.readAttributes(impl, provider, LinkOption.NOFOLLOW_LINKS));
+            if(!session.isPosixFilesystem()) {
+                Permission.Action actions = Permission.Action.none;
+                if(Files.isReadable(impl)) {
+                    actions = actions.or(Permission.Action.read);
+                }
+                if(Files.isWritable(impl)) {
+                    actions = actions.or(Permission.Action.write);
+                }
+                if(Files.isExecutable(impl)) {
+                    actions = actions.or(Permission.Action.execute);
+                }
+                attr.setPermission(new Permission(
+                        actions, Permission.Action.none, Permission.Action.none
+                ));
+            }
+            return attr;
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
-    protected PathAttributes convert(final java.nio.file.Path file) throws IOException {
-        final boolean isPosix = session.isPosixFilesystem();
+    @Override
+    public PathAttributes toAttributes(final BasicFileAttributes f) {
         final PathAttributes attributes = new PathAttributes();
-        final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
-        final BasicFileAttributes a = Files.readAttributes(file, provider, LinkOption.NOFOLLOW_LINKS);
-        if(a.isRegularFile()) {
-            attributes.setSize(a.size());
+        if(f.isRegularFile()) {
+            attributes.setSize(f.size());
         }
-        attributes.setModificationDate(a.lastModifiedTime().toMillis());
-        attributes.setCreationDate(a.creationTime().toMillis());
-        attributes.setAccessedDate(a.lastAccessTime().toMillis());
-        if(isPosix) {
-            attributes.setOwner(((PosixFileAttributes) a).owner().getName());
-            attributes.setGroup(((PosixFileAttributes) a).group().getName());
-            attributes.setPermission(new Permission(PosixFilePermissions.toString(((PosixFileAttributes) a).permissions())));
-        }
-        else {
-            Permission.Action actions = Permission.Action.none;
-            if(Files.isReadable(file)) {
-                actions = actions.or(Permission.Action.read);
-            }
-            if(Files.isWritable(file)) {
-                actions = actions.or(Permission.Action.write);
-            }
-            if(Files.isExecutable(file)) {
-                actions = actions.or(Permission.Action.execute);
-            }
-            attributes.setPermission(new Permission(
-                actions, Permission.Action.none, Permission.Action.none
-            ));
+        attributes.setModificationDate(f.lastModifiedTime().toMillis());
+        attributes.setCreationDate(f.creationTime().toMillis());
+        attributes.setAccessedDate(f.lastAccessTime().toMillis());
+        if(session.isPosixFilesystem()) {
+            attributes.setOwner(((PosixFileAttributes) f).owner().getName());
+            attributes.setGroup(((PosixFileAttributes) f).group().getName());
+            attributes.setPermission(new Permission(PosixFilePermissions.toString(((PosixFileAttributes) f).permissions())));
         }
         return attributes;
     }

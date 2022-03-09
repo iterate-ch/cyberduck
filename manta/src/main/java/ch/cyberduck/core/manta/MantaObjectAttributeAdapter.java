@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
@@ -34,7 +35,7 @@ import java.util.EnumSet;
 
 import com.joyent.manta.client.MantaObject;
 
-public final class MantaObjectAttributeAdapter {
+public final class MantaObjectAttributeAdapter implements AttributesAdapter<MantaObject> {
     private static final Logger log = LogManager.getLogger(MantaObjectAttributeAdapter.class);
 
     private final MantaSession session;
@@ -45,12 +46,13 @@ public final class MantaObjectAttributeAdapter {
         this.session = session;
     }
 
-    public PathAttributes convert(final MantaObject object) {
+    @Override
+    public PathAttributes toAttributes(final MantaObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setPermission(new Permission(
-            session.isUserWritable(object) ? Permission.Action.all : Permission.Action.read,
-            Permission.Action.none,
-            session.isWorldReadable(object) ? Permission.Action.read : Permission.Action.none));
+                session.isUserWritable(object) ? Permission.Action.all : Permission.Action.read,
+                Permission.Action.none,
+                session.isWorldReadable(object) ? Permission.Action.read : Permission.Action.none));
         if(object.getLastModifiedTime() != null) {
             attributes.setModificationDate(object.getLastModifiedTime().getTime());
         }

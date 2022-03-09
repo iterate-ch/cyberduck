@@ -24,29 +24,34 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.B2FinishLargeFileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_LARGE_FILE_SHA1;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2AttributesFinderFeature implements AttributesFinder {
+public class B2AttributesFinderFeature implements AttributesFinder, AttributesAdapter<BaseB2Response> {
+    private static final Logger log = LogManager.getLogger(B2AttributesFinderFeature.class);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -107,6 +112,21 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    @Override
+    public PathAttributes toAttributes(final BaseB2Response response) {
+        if(response instanceof B2FileResponse) {
+            return this.toAttributes((B2FileResponse) response);
+        }
+        if(response instanceof B2BucketResponse) {
+            return this.toAttributes((B2BucketResponse) response);
+        }
+        if(response instanceof B2FinishLargeFileResponse) {
+            return this.toAttributes((B2FinishLargeFileResponse) response);
+        }
+        log.error(String.format("Unknown type %s", response));
+        return PathAttributes.EMPTY;
+    }
+
     protected PathAttributes toAttributes(final B2FileResponse response) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(response.getContentLength());
@@ -117,11 +137,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
             attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
         }
         if(!response.getFileInfo().isEmpty()) {
-            final Map<String, String> metadata = new HashMap<>();
-            for(Map.Entry<String, String> entry : response.getFileInfo().entrySet()) {
-                metadata.put(entry.getKey(), entry.getValue());
-            }
-            attributes.setMetadata(metadata);
+            attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         }
         attributes.setVersionId(response.getFileId());
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
@@ -130,5 +146,28 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-}
+    protected PathAttributes toAttributes(final B2BucketResponse response) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setVersionId(response.getBucketId());
+        return attributes;
+    }
 
+    protected PathAttributes toAttributes(final B2FinishLargeFileResponse response) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setSize(response.getContentLength());
+        if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
+            attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
+        }
+        else {
+            attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
+        }
+        if(!response.getFileInfo().isEmpty()) {
+            attributes.setMetadata(new HashMap<>(response.getFileInfo()));
+        }
+        attributes.setVersionId(response.getFileId());
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
+            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+        }
+        return attributes;
+    }
+}

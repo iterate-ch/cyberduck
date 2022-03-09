@@ -61,7 +61,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        test.withAttributes(new S3AttributesFinderFeature(session).toAttributes(out.getStatus()));
+        test.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(test).getModificationDate());
         assertEquals(1630305150672L, new S3ObjectListService(session, true).list(container,
@@ -158,7 +158,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertNotNull(file.attributes().getVersionId());
+        assertNotNull(status.getResponse().getVersionId());
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

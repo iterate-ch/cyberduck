@@ -69,7 +69,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     public static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
 
     private final PathContainerService containerService
-        = new B2PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -81,7 +81,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer) {
         this(session, fileid, writer, new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.size"),
-            new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
+                new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
     }
 
     public B2LargeUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer, final Long partSize, final Integer concurrency) {
@@ -124,7 +124,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
                     fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
-                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                            containerService.getKey(file), status.getMime(), fileinfo).getFileId();
                 }
                 else {
                     fileId = uploads.iterator().next().getFileId();
@@ -133,7 +133,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             else {
                 fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
-                    containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
             }
             // Full size of file
             final long size = status.getLength() + status.getOffset();
@@ -202,7 +202,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             fileid.cache(file, response.getFileId());
             // Mark parent status as complete
-            status.setComplete();
+            status.withResponse(new B2AttributesFinderFeature(session, fileid).toAttributes(response)).setComplete();
             return response;
         }
         catch(B2ApiException e) {
@@ -230,8 +230,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             public B2UploadPartResponse call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .withLength(length)
-                    .withOffset(offset);
+                        .withLength(length)
+                        .withOffset(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
                 requestParameters.put("fileId", fileId);
                 status.setParameters(requestParameters);

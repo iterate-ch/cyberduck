@@ -53,9 +53,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
-
-import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
@@ -73,8 +70,8 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final CryptoWriteFeature feature = new CryptoWriteFeature<List<StorageObject>>(session, new SwiftLargeUploadWriteFeature(session, regionService,
-            new SwiftSegmentService(session, ".segments-test/")), cryptomator);
+        final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new SwiftLargeUploadWriteFeature(session, regionService,
+                new SwiftSegmentService(session, ".segments-test/")), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));

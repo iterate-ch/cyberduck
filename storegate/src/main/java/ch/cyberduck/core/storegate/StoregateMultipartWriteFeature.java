@@ -76,7 +76,8 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
         return new HttpResponseOutputStream<FileMetadata>(new MemorySegementingOutputStream(proxy,
-            new HostPreferences(session.getHost()).getInteger("storegate.upload.multipart.chunksize"))) {
+                new HostPreferences(session.getHost()).getInteger("storegate.upload.multipart.chunksize")),
+                new StoregateAttributesFinderFeature(session, fileid), status) {
             @Override
             public FileMetadata getStatus() {
                 return proxy.getResult();

@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -33,7 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class FTPWriteFeature extends AppendWriteFeature<Integer> {
+public class FTPWriteFeature extends AppendWriteFeature<Void> {
     private static final Logger log = LogManager.getLogger(FTPWriteFeature.class);
 
     private final FTPSession session;
@@ -43,7 +44,7 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
     }
 
     @Override
-    public StatusOutputStream<Integer> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(!session.getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
@@ -75,10 +76,9 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
         }
     }
 
-    public final class ReadReplyOutputStream extends StatusOutputStream<Integer> {
+    public final class ReadReplyOutputStream extends VoidStatusOutputStream {
         private final AtomicBoolean close;
         private final TransferStatus status;
-        private Integer reply;
 
         public ReadReplyOutputStream(final OutputStream proxy, final TransferStatus status) {
             super(proxy);
@@ -96,8 +96,7 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
                 super.close();
                 if(session.isConnected()) {
                     // Read 226 status after closing stream
-                    reply = session.getClient().getReply();
-                    if(!FTPReply.isPositiveCompletion(reply)) {
+                    if(!FTPReply.isPositiveCompletion(session.getClient().getReply())) {
                         final String text = session.getClient().getReplyString();
                         if(status.isSegment()) {
                             // Ignore 451 and 426 response because stream was prematurely closed
@@ -116,11 +115,6 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
             finally {
                 close.set(true);
             }
-        }
-
-        @Override
-        public Integer getStatus() {
-            return reply;
         }
     }
 }

@@ -51,7 +51,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.FileHeader;
-import org.jets3t.service.model.MultipartUpload;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -81,12 +81,12 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
-        final Write<MultipartUpload> writer = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session), cryptomator);
+        final Write<StorageObject> writer = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
-        final StatusOutputStream<MultipartUpload> out = writer.write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final PathAttributes updated = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, true), cryptomator).find(new Path(test).withAttributes(PathAttributes.EMPTY));

@@ -42,7 +42,6 @@ import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
 public class DefaultUploadFeatureTest extends AbstractFTPTest {
@@ -58,19 +57,17 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2);
-            final Integer reply = new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
-            assertEquals(new Integer(226), reply);
+            final Void reply = new DefaultUploadFeature<>(new FTPWriteFeature(session)).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
-            final Integer reply = new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
-            assertEquals(new Integer(226), reply);
+            final Void reply = new DefaultUploadFeature<Void>(new FTPWriteFeature(session)).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);

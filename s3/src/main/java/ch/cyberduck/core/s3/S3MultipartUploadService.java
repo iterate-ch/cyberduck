@@ -199,15 +199,18 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     final String reference = StringUtils.remove(complete.getEtag(), "\"");
                     if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                         throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                            MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                expected, reference));
+                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                        expected, reference));
                     }
                 }
             }
-            // Mark parent status as complete
-            status.setComplete();
             final StorageObject object = new StorageObject(containerService.getKey(file));
             object.setETag(complete.getEtag());
+            if(status.getTimestamp() != null) {
+                object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+            }
+            // Mark parent status as complete
+            status.withResponse(new S3AttributesAdapter().toAttributes(object)).setComplete();
             return object;
         }
         catch(ServiceException e) {

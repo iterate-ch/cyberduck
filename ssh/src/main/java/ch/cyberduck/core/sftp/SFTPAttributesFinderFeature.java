@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -32,7 +33,7 @@ import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-public class SFTPAttributesFinderFeature implements AttributesFinder {
+public class SFTPAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileAttributes> {
 
     private final SFTPSession session;
 
@@ -77,6 +78,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    @Override
     public PathAttributes toAttributes(final FileAttributes stat) {
         final PathAttributes attributes = new PathAttributes();
         switch(stat.getType()) {

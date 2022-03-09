@@ -61,7 +61,7 @@ public class TripleCryptWriteFeature implements Write<Node> {
                 status.setFilekey(nodeid.getFileKey());
             }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-            return new TripleCryptEncryptingOutputStream<>(session, proxy.write(file, status, callback),
+            return new TripleCryptEncryptingOutputStream(session, nodeid, proxy.write(file, status, callback),
                     Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
         }

@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AttributesAdapter;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
@@ -153,7 +154,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(newVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(newVersion))).getVersionId());
         assertEquals(newVersion, f.find(file.withAttributes(PathAttributes.EMPTY)).getVersionId());
         assertNotEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(newVersion))).getVersionId());
-        assertEquals(new S3AttributesFinderFeature(session).toAttributes(out.getStatus()).getVersionId(), f.find(file).getVersionId());
+        assertEquals(new S3AttributesAdapter().toAttributes(out.getStatus()).getVersionId(), f.find(file).getVersionId());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

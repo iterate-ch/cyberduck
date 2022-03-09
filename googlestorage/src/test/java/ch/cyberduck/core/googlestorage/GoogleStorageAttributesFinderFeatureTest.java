@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -38,6 +37,8 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+
+import com.google.api.services.storage.model.StorageObject;
 
 import static org.junit.Assert.*;
 
@@ -71,12 +72,12 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new GoogleStorageAttributesFinderFeature(session).find(test).getVersions().isEmpty());
         final Path update = new Path(container, test.getName(), test.getType(),
-            new PathAttributes().withVersionId(out.getStatus().id));
+                new PathAttributes().withVersionId(out.getStatus().getId()));
         final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session, true).find(update);
         final AttributedList<Path> versions = attributes.getVersions();
         assertFalse(versions.isEmpty());

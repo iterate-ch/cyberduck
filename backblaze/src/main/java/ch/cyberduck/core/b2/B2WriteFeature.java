@@ -63,6 +63,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
         = new ThreadLocal<>();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
+        super(new B2AttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }
@@ -117,15 +118,15 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 }
             }
 
-            protected BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
+            private BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
                 final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
                 if(null != status.getTimestamp()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
                 }
                 final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
-                    containerService.getKey(file),
-                    entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                    status.getMime(), fileinfo);
+                        containerService.getKey(file),
+                        entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
+                        status.getMime(), fileinfo);
                 fileid.cache(file, response.getFileId());
                 return response;
             }

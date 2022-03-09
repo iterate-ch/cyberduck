@@ -18,48 +18,20 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftTouchFeature implements Touch<StorageObject> {
-
-    private final SwiftSession session;
-    private final SwiftRegionService regionService;
-
-    private Write<StorageObject> writer;
+public class SwiftTouchFeature extends DefaultTouchFeature<StorageObject> {
 
     public SwiftTouchFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this.session = session;
-        this.regionService = regionService;
-        this.writer = new SwiftWriteFeature(session, regionService);
-    }
-
-    @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setLength(0L);
-        final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
-        new DefaultStreamCloser().close(out);
-        final StorageObject metadata = out.getStatus();
-        return file.withAttributes(new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
+        super(new SwiftWriteFeature(session, regionService));
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
         // Creating files is only possible inside a container.
         return !workdir.isRoot();
-    }
-
-    @Override
-    public Touch<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
     }
 }

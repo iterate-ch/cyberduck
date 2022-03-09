@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -52,17 +53,18 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
+public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
     private static final Logger log = LogManager.getLogger(BrickWriteFeature.class);
 
     private final BrickSession session;
 
     public BrickWriteFeature(final BrickSession session) {
+        super(new BrickAttributesFinderFeature(session));
         this.session = session;
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<FileEntity> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
         FileUploadPartEntity uploadPartEntity = null;
         if(StringUtils.isBlank(status.getUrl())) {
@@ -72,9 +74,9 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
         else {
             uploadUri = status.getUrl();
         }
-        final HttpResponseOutputStream<Void> stream = this.write(file, status, new DelayedHttpEntityCallable<Void>() {
+        final HttpResponseOutputStream<FileEntity> stream = this.write(file, status, new DelayedHttpEntityCallable<FileEntity>() {
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public FileEntity call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(uploadUri);
                     request.setEntity(entity);
@@ -128,11 +130,12 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
         });
         if(StringUtils.isBlank(status.getUrl())) {
             final String ref = uploadPartEntity.getRef();
-            return new HttpResponseOutputStream<Void>(new ProxyOutputStream(stream)) {
+            return new HttpResponseOutputStream<FileEntity>(new ProxyOutputStream(stream),
+                    new BrickAttributesFinderFeature(session), status) {
                 private final AtomicBoolean close = new AtomicBoolean();
 
                 @Override
-                public Void getStatus() throws BackgroundException {
+                public FileEntity getStatus() throws BackgroundException {
                     return stream.getStatus();
                 }
 

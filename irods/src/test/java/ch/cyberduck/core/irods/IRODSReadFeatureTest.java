@@ -41,6 +41,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.irods.jargon.core.pub.domain.ObjStat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -134,10 +135,10 @@ public class IRODSReadFeatureTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DefaultUploadFeature<Integer>(new IRODSWriteFeature(session)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().withLength(content.length),
-            new DisabledConnectionCallback());
+        new DefaultUploadFeature<ObjStat>(new IRODSWriteFeature(session)).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().withLength(content.length),
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);

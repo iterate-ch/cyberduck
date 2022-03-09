@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
@@ -34,7 +35,7 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
-public class DropboxAttributesFinderFeature implements AttributesFinder {
+public class DropboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Metadata> {
     private static final Logger log = LogManager.getLogger(DropboxAttributesFinderFeature.class);
 
     private final DropboxSession session;
@@ -65,7 +66,8 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final Metadata metadata) {
+    @Override
+    public PathAttributes toAttributes(final Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         if(metadata instanceof FileMetadata) {
             final FileMetadata file = (FileMetadata) metadata;

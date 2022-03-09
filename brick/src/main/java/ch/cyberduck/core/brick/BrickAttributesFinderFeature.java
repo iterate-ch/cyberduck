@@ -21,12 +21,13 @@ import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BrickAttributesFinderFeature implements AttributesFinder {
+public class BrickAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileEntity> {
 
     private final BrickSession session;
 
@@ -58,7 +59,8 @@ public class BrickAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final FileEntity entity) {
+    @Override
+    public PathAttributes toAttributes(final FileEntity entity) {
         final PathAttributes attr = new PathAttributes();
         attr.setChecksum(Checksum.parse(entity.getMd5()));
         attr.setRegion(entity.getRegion());

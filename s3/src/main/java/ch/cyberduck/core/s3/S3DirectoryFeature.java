@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -63,10 +62,9 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             status.setMime(MIMETYPE);
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            final StatusOutputStream<StorageObject> out = writer.write(folder.withType(type), status, new DisabledConnectionCallback());
-            new DefaultStreamCloser().close(out);
-            final StorageObject metadata = out.getStatus();
-            return folder.withAttributes(new S3AttributesFinderFeature(session, false).toAttributes(metadata));
+            ;
+            new DefaultStreamCloser().close(writer.write(folder.withType(type), status, new DisabledConnectionCallback()));
+            return folder.withAttributes(status.getResponse());
         }
     }
 

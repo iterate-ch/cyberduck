@@ -24,7 +24,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.FilesUploadSessionsBody;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSessionIdCommitBody;
-import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.io.Checksum;
@@ -164,31 +163,6 @@ public class BoxUploadHelper {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-        }
-    }
-
-    static class BoxUploadResponse {
-        private final Files files;
-
-        public BoxUploadResponse(final Files files) {
-            this.files = files;
-        }
-
-        public Files getFiles() {
-            return files;
-        }
-    }
-
-    static class BoxPartUploadResponse extends BoxUploadResponse {
-        private final UploadedPart part;
-
-        public BoxPartUploadResponse(final UploadedPart part) {
-            super(new Files());
-            this.part = part;
-        }
-
-        public UploadedPart getPart() {
-            return part;
         }
     }
 }

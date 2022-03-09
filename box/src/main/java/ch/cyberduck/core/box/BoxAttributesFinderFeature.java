@@ -24,6 +24,7 @@ import ch.cyberduck.core.box.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Folder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -33,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class BoxAttributesFinderFeature implements AttributesFinder {
+public class BoxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
 
     public static final List<String> DEFAULT_FIELDS = Arrays.asList(
             "id", "etag", "name", "size", "content_modified_at", "content_created_at", "file_version", "file_id", "sha1");
@@ -61,7 +62,8 @@ public class BoxAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final File f) {
+    @Override
+    public PathAttributes toAttributes(final File f) {
         final PathAttributes attrs = new PathAttributes();
         if(null != f.getContentModifiedAt()) {
             attrs.setModificationDate(f.getContentModifiedAt().getMillis());

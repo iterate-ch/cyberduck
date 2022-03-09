@@ -21,7 +21,9 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -40,6 +42,9 @@ public class NextcloudSession extends DAVSession {
         if(type == Lock.class) {
             // https://github.com/nextcloud/server/issues/1308
             return null;
+        }
+        if(type == Upload.class) {
+            return (T) new HttpUploadFeature(new NextcloudWriteFeature(this));
         }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);

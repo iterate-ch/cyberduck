@@ -125,10 +125,10 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        final BaseB2Response reply = new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().withLength(content.length),
-            new DisabledConnectionCallback());
+        final BaseB2Response reply = new B2SingleUploadService(session, fileid, new B2WriteFeature(session, fileid)).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().withLength(content.length),
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -157,10 +157,10 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().withLength(content.length),
-            new DisabledConnectionCallback());
+        new B2SingleUploadService(session, fileid, new B2WriteFeature(session, fileid)).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().withLength(content.length),
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);

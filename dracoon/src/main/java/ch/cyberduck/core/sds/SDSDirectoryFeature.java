@@ -72,7 +72,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         folderRequest.setName(folder.getName());
         final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
         nodeid.cache(folder, String.valueOf(node.getId()));
-        return folder.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+        return folder.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
     }
 
     protected Path createRoom(final Path room, final boolean encrypt) throws BackgroundException, ApiException {
@@ -91,13 +91,13 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
             final EncryptRoomRequest options = new EncryptRoomRequest();
             options.setIsEncrypted(true);
             return room.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(
+                    new SDSAttributesAdapter(session).toAttributes(
                             new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room,
                                     new DisabledListProgressListener())), StringUtils.EMPTY, null)));
         }
         else {
             return room.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
-                    new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+                    new SDSAttributesAdapter(session).toAttributes(node));
         }
     }
 

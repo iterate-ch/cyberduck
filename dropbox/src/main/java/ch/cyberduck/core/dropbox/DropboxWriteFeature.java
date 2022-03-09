@@ -31,18 +31,19 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
-import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.UploadSessionAppendV2Uploader;
 import com.dropbox.core.v2.files.UploadSessionCursor;
 import com.dropbox.core.v2.files.UploadSessionFinishUploader;
 import com.dropbox.core.v2.files.UploadSessionStartUploader;
 import com.dropbox.core.v2.files.WriteMode;
 
-public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
+public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
     private static final Logger log = LogManager.getLogger(DropboxWriteFeature.class);
 
     private final DropboxSession session;
@@ -54,6 +55,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> 
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
+        super(new DropboxAttributesFinderFeature(session));
         this.session = session;
         this.chunksize = chunksize;
         this.containerService = new DropboxPathContainerService(session);
@@ -65,7 +67,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> 
     }
 
     @Override
-    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Metadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient(file));
             final UploadSessionStartUploader start = files.uploadSessionStart();
@@ -92,21 +94,21 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> 
         return true;
     }
 
-    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<FileMetadata> {
+    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<Metadata> {
 
         private final Path file;
         private final TransferStatus status;
         private final DbxUserFilesRequests client;
         private final String sessionId;
 
-        private FileMetadata fileMetadata;
+        private AtomicReference<Metadata> response;
         private Long offset = 0L;
         private Long written = 0L;
         private UploadSessionAppendV2Uploader uploader;
 
         public SegmentingUploadProxyOutputStream(final Path file, final TransferStatus status, final DbxUserFilesRequests client,
                                                  final UploadSessionAppendV2Uploader uploader, final String sessionId) {
-            super(uploader.getOutputStream());
+            super(uploader.getOutputStream(), new DropboxAttributesFinderFeature(session), status);
             this.file = file;
             this.status = status;
             this.client = client;
@@ -149,8 +151,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> 
         }
 
         @Override
-        public FileMetadata getStatus() {
-            return fileMetadata;
+        public Metadata getStatus() {
+            return response.get();
         }
 
         @Override
@@ -164,7 +166,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<FileMetadata> 
                                 .build()
                 );
                 finish.getOutputStream().close();
-                fileMetadata = finish.finish();
+                response.set(finish.finish());
             }
             catch(IllegalStateException e) {
                 // Already closed

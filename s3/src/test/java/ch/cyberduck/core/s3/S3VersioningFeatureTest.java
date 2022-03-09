@@ -25,14 +25,14 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.model.MultipartUpload;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -50,7 +50,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     @Test
     public void testGetConfigurationDisabled() throws Exception {
         final VersioningConfiguration configuration
-            = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+                = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertFalse(configuration.isEnabled());
         assertFalse(configuration.isMultifactor());
@@ -59,7 +59,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     @Test
     public void testGetConfigurationEnabled() throws Exception {
         final VersioningConfiguration configuration
-            = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+                = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertTrue(configuration.isEnabled());
     }
@@ -71,14 +71,14 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final Versioning feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testForbidden() throws Exception {
         session.getHost().getCredentials().setPassword(StringUtils.EMPTY);
         assertEquals(VersioningConfiguration.empty(),
-            new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
+                new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session);
-        final StatusOutputStream<MultipartUpload> out = writer.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final PathAttributes updated = new S3AttributesFinderFeature(session, true).find(new Path(test).withAttributes(PathAttributes.EMPTY));

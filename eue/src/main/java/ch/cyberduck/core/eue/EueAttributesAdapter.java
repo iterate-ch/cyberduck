@@ -1,7 +1,5 @@
-package ch.cyberduck.core.box;
-
-/*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+package ch.cyberduck.core.eue;/*
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,15 +13,16 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.box.io.swagger.client.model.File;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.AttributesAdapter;
 
-import java.security.MessageDigest;
+public class EueAttributesAdapter implements AttributesAdapter<EueWriteFeature.Chunk> {
 
-public class BoxSmallUploadService extends HttpUploadFeature<File, MessageDigest> {
-
-    public BoxSmallUploadService(final BoxSession session, final BoxFileidProvider fileid, final Write<File> writer) {
-        super(writer);
+    @Override
+    public PathAttributes toAttributes(final EueWriteFeature.Chunk model) {
+        final PathAttributes attr = new PathAttributes();
+        attr.setSize(model.getLength());
+        attr.setChecksum(model.getChecksum());
+        return attr;
     }
 }

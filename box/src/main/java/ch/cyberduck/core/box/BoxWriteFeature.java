@@ -18,10 +18,12 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.FilescontentAttributes;
 import ch.cyberduck.core.box.io.swagger.client.model.FilescontentAttributesParent;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -47,7 +49,7 @@ import org.joda.time.DateTime;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.BoxUploadResponse> {
+public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxWriteFeature.class);
 
     private final BoxSession session;
@@ -55,6 +57,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.Bo
     private final BoxApiClient client;
 
     public BoxWriteFeature(final BoxSession session, final BoxFileidProvider fileid) {
+        super(new BoxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
         this.client = new BoxApiClient(session.getClient());
@@ -62,10 +65,10 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.Bo
     }
 
     @Override
-    public HttpResponseOutputStream<BoxUploadHelper.BoxUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse> command = new DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse>() {
+    public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>() {
             @Override
-            public BoxUploadHelper.BoxUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+            public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPost request;
                     if(status.isExists()) {
@@ -114,7 +117,10 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.Bo
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Received response %s for upload of %s", files, file));
                     }
-                    return new BoxUploadHelper.BoxUploadResponse(files);
+                    if(files.getEntries().stream().findFirst().isPresent()) {
+                        return files.getEntries().stream().findFirst().get();
+                    }
+                    throw new NotfoundException(file.getAbsolute());
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map(e);

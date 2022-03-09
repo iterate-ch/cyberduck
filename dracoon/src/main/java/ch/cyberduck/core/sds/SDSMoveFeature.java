@@ -69,7 +69,7 @@ public class SDSMoveFeature implements Move {
                     new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
-                return renamed.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+                return renamed.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
             }
             else {
                 if(status.isExists()) {

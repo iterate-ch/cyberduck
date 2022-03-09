@@ -16,6 +16,7 @@ package ch.cyberduck.core.brick;/*
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -23,11 +24,11 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class BrickThresholdUploadFeature implements Upload<Void> {
+public class BrickThresholdUploadFeature implements Upload<FileEntity> {
 
     private final BrickSession session;
 
-    private Write<Void> writer;
+    private Write<FileEntity> writer;
 
     public BrickThresholdUploadFeature(final BrickSession session) {
         this.session = session;
@@ -35,7 +36,7 @@ public class BrickThresholdUploadFeature implements Upload<Void> {
     }
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public FileEntity upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.getLength() > 0) {
             return new BrickUploadFeature(session, writer).upload(file, local, throttle, listener, status, callback);
         }
@@ -51,7 +52,7 @@ public class BrickThresholdUploadFeature implements Upload<Void> {
     }
 
     @Override
-    public Upload<Void> withWriter(final Write<Void> writer) {
+    public Upload<FileEntity> withWriter(final Write<FileEntity> writer) {
         this.writer = writer;
         return this;
     }

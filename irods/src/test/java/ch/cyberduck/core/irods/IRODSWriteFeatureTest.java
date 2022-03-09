@@ -41,6 +41,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.irods.jargon.core.pub.domain.ObjStat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -234,9 +235,8 @@ public class IRODSWriteFeatureTest {
 
             assertEquals(0L, new IRODSWriteFeature(session).append(test, status).size, 0L);
 
-            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<ObjStat> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
-            assertNotNull(out.getStatus());
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             assertTrue(session.getFeature(Find.class).find(test));
@@ -260,9 +260,8 @@ public class IRODSWriteFeatureTest {
             assertTrue(new IRODSWriteFeature(session).append(test, status).append);
             assertEquals(content.length, new IRODSWriteFeature(session).append(test, status).size, 0L);
 
-            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<ObjStat> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
-            assertNotNull(out.getStatus());
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));

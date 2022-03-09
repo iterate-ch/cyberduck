@@ -91,8 +91,8 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(test.attributes().getVersionId(), new S3AttributesFinderFeature(session).find(test).getVersionId());
-        assertEquals(test.attributes().getVersionId(), new DefaultAttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(writeStatus.getResponse().getVersionId(), new S3AttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(writeStatus.getResponse().getVersionId(), new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
@@ -100,7 +100,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         byte[] compare = new byte[content.length];

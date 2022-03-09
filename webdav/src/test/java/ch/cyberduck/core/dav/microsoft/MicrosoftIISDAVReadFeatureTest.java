@@ -31,7 +31,6 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
-import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -75,10 +74,10 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
-        new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().withLength(content.length),
-            new DisabledConnectionCallback());
+        new DAVUploadFeature(session).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().withLength(content.length),
+                new DisabledConnectionCallback());
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
         assertEquals(content.length, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         final TransferStatus status = new TransferStatus();

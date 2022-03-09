@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -65,7 +64,7 @@ public class MantaListService implements ListService {
         while(objectsIter.hasNext()) {
             MantaObject o = objectsIter.next();
             final Path file = new Path(directory, PathNormalizer.name(o.getPath()),
-                EnumSet.of(o.isDirectory() ? Path.Type.directory : Path.Type.file), adapter.convert(o)
+                    EnumSet.of(o.isDirectory() ? Path.Type.directory : Path.Type.file), adapter.toAttributes(o)
             );
             children.add(file);
             listener.chunk(directory, children);

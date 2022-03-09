@@ -51,12 +51,14 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         status.setMime("text/plain");
+        status.setTimestamp(System.currentTimeMillis());
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -85,12 +87,14 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         status.setLength(random.length);
         status.setMime("text/plain");
+        status.setTimestamp(System.currentTimeMillis());
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -130,6 +134,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -148,10 +153,12 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        status.setTimestamp(System.currentTimeMillis());
         final BytecountStreamListener count = new BytecountStreamListener();
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, null);
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -169,6 +176,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(content, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        status.setTimestamp(System.currentTimeMillis());
         final AtomicBoolean interrupt = new AtomicBoolean();
         final BytecountStreamListener count = new BytecountStreamListener();
         try {
@@ -207,6 +215,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                 new DisabledConnectionCallback());
         assertEquals(12L * 1024L * 1024L, count.getSent());
         assertTrue(append.isComplete());
+        assertNotNull(append.getResponse());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];

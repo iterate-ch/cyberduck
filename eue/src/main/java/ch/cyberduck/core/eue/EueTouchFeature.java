@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> {
 
     public EueTouchFeature(final EueSession session, final EueResourceIdProvider fileid) {
-        super(new EueWriteFeature(session, fileid), new EueAttributesFinderFeature(session, fileid));
+        super(new EueWriteFeature(session, fileid));
     }
 
     @Override

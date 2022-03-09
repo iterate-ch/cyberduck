@@ -15,39 +15,16 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BoxTouchFeature implements Touch<BoxUploadHelper.BoxUploadResponse> {
-
-    private final BoxSession session;
-    private final BoxFileidProvider fileid;
-
-    private Write<BoxUploadHelper.BoxUploadResponse> writer;
+public class BoxTouchFeature extends DefaultTouchFeature<File> {
 
     public BoxTouchFeature(final BoxSession session, final BoxFileidProvider fileid) {
-        this.session = session;
-        this.fileid = fileid;
-        this.writer = new BoxWriteFeature(session, fileid);
-    }
-
-    @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        final StatusOutputStream<BoxUploadHelper.BoxUploadResponse> out = writer.write(file, status, new DisabledConnectionCallback());
-        new DefaultStreamCloser().close(out);
-        if(out.getStatus().getFiles().getEntries().stream().findFirst().isPresent()) {
-            return new Path(file).withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(out.getStatus().getFiles().getEntries().stream().findFirst().get()));
-        }
-        throw new NotfoundException(file.getAbsolute());
+        super(new BoxWriteFeature(session, fileid));
     }
 
     @Override
@@ -77,11 +54,5 @@ public class BoxTouchFeature implements Touch<BoxUploadHelper.BoxUploadResponse>
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Touch<BoxUploadHelper.BoxUploadResponse> withWriter(final Write<BoxUploadHelper.BoxUploadResponse> writer) {
-        this.writer = writer;
-        return this;
     }
 }

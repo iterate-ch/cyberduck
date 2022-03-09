@@ -21,6 +21,7 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FileActionsApi;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.BeginUploadPathBody;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
+public class BrickMultipartWriteFeature implements MultipartWrite<FileEntity> {
     private static final Logger log = LogManager.getLogger(BrickMultipartWriteFeature.class);
 
     private final BrickSession session;
@@ -66,12 +67,13 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<FileEntity> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final MultipartOutputStream proxy = new MultipartOutputStream(file, status);
-        return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy, partsize)) {
+        return new HttpResponseOutputStream<FileEntity>(new MemorySegementingOutputStream(proxy, partsize),
+                new BrickAttributesFinderFeature(session), status) {
             @Override
-            public Void getStatus() {
-                return null;
+            public FileEntity getStatus() {
+                return proxy.getResponse();
             }
         };
     }
@@ -86,6 +88,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<FileEntity> response = new AtomicReference<>();
         private final AtomicReference<IOException> canceled = new AtomicReference<>();
         private final List<TransferStatus> checksums = new ArrayList<>();
 
@@ -125,7 +128,7 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                             status.setChecksum(writer.checksum(file, status).compute(new ByteArrayInputStream(b, off, len), status));
                             status.setUrl(uploadPartEntity.getUploadUri());
                             status.setSegment(true);
-                            final HttpResponseOutputStream<Void> proxy = writer.write(file, status, new DisabledConnectionCallback());
+                            final HttpResponseOutputStream<FileEntity> proxy = writer.write(file, status, new DisabledConnectionCallback());
                             final byte[] content = Arrays.copyOfRange(b, off, len);
                             try {
                                 IOUtils.write(content, proxy);
@@ -165,12 +168,12 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
                 }
                 else {
                     try {
-                        new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
+                        response.set(new FilesApi(new BrickApiClient(session)).postFilesPath(new FilesPathBody()
                                 .providedMtime(null != overall.getTimestamp() ? new DateTime(overall.getTimestamp()) : null)
                                 .etagsEtag(checksums.stream().map(s -> s.getChecksum().hash).collect(Collectors.toList()))
                                 .etagsPart(checksums.stream().map(TransferStatus::getPart).collect(Collectors.toList()))
                                 .ref(ref)
-                            .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
+                                .action("end"), StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER))));
                     }
                     catch(ApiException e) {
                         throw new IOException(e.getMessage(), new BrickExceptionMappingService().map("Upload {0} failed", e, file));
@@ -186,6 +189,10 @@ public class BrickMultipartWriteFeature implements MultipartWrite<Void> {
             finally {
                 close.set(true);
             }
+        }
+
+        public FileEntity getResponse() {
+            return response.get();
         }
 
         @Override

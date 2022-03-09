@@ -108,7 +108,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertTrue(listBeforeDelete.contains(version1));
         assertFalse(listBeforeDelete.find(new DefaultPathPredicate(version1)).attributes().isDuplicate());
         assertTrue(listBeforeDelete.contains(version2));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final AttributedList<Path> listAfterDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterDelete.contains(version1));
         assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isDuplicate());

@@ -50,13 +50,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
+import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.B2GetUploadUrlResponse;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
-public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFileResponse> {
+public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response> {
     private static final Logger log = LogManager.getLogger(B2LargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
@@ -71,13 +73,14 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
     }
 
     @Override
-    public StatusOutputStream<B2StartLargeFileResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
+    public StatusOutputStream<BaseB2Response> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
-        return new HttpResponseOutputStream<B2StartLargeFileResponse>(new MemorySegementingOutputStream(proxy,
-                new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum"))) {
+        return new HttpResponseOutputStream<BaseB2Response>(new MemorySegementingOutputStream(proxy,
+                new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")),
+                new B2AttributesFinderFeature(session, fileid), status) {
             @Override
-            public B2StartLargeFileResponse getStatus() {
-                return proxy.getResponse();
+            public BaseB2Response getStatus() {
+                return proxy.getFinishLargeFileResponse();
             }
         };
     }
@@ -98,7 +101,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<IOException> canceled = new AtomicReference<>();
-        private final AtomicReference<B2StartLargeFileResponse> response = new AtomicReference<>();
+        private final AtomicReference<B2StartLargeFileResponse> startLargeFileResponse = new AtomicReference<>();
+        private final AtomicReference<B2FinishLargeFileResponse> finishLargeFileResponse = new AtomicReference<>();
 
         private int partNumber;
 
@@ -138,15 +142,15 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
                         if(null != overall.getTimestamp()) {
                             fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
                         }
-                        response.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                        startLargeFileResponse.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                                 containerService.getKey(file), overall.getMime(), fileinfo));
                         if(log.isDebugEnabled()) {
-                            log.debug(String.format("Multipart upload started for %s with ID %s", file, response.get().getFileId()));
+                            log.debug(String.format("Multipart upload started for %s with ID %s", file, startLargeFileResponse.get().getFileId()));
                         }
                     }
                     final int segment = ++partNumber;
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Write segment %d for upload %s", segment, response.get().getFileId()));
+                        log.debug(String.format("Write segment %d for %s", segment, file));
                     }
                     completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
@@ -156,7 +160,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
                             final Checksum checksum = ChecksumComputeFactory.get(HashAlgorithm.sha1)
                                     .compute(new ByteArrayInputStream(content, off, len), status);
                             try {
-                                return session.getClient().uploadLargeFilePart(response.get().getFileId(), segment, entity, checksum.hash);
+                                return session.getClient().uploadLargeFilePart(startLargeFileResponse.get().getFileId(), segment, entity, checksum.hash);
                             }
                             catch(B2ApiException e) {
                                 canceled.set(new IOException(new B2ExceptionMappingService(fileid).map("Upload {0} failed", e, file)));
@@ -190,13 +194,13 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
                     return;
                 }
                 if(completed.isEmpty()) {
-                    if(null == response.get()) {
+                    if(null == startLargeFileResponse.get()) {
                         // No single file upload and zero parts
-                        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+                        new B2TouchFeature(session, fileid).touch(file, overall);
                     }
                     else {
                         // Cancel upload
-                        session.getClient().cancelLargeFileUpload(response.get().getFileId());
+                        session.getClient().cancelLargeFileUpload(startLargeFileResponse.get().getFileId());
                     }
                 }
                 else {
@@ -210,11 +214,12 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
                     for(B2UploadPartResponse part : completed) {
                         checksums.add(part.getContentSha1());
                     }
-                    session.getClient().finishLargeFileUpload(response.get().getFileId(), checksums.toArray(new String[checksums.size()]));
+                    final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(startLargeFileResponse.get().getFileId(), checksums.toArray(new String[checksums.size()]));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
-                    fileid.cache(file, response.get().getFileId());
+                    fileid.cache(file, response.getFileId());
+                    finishLargeFileResponse.set(response);
                 }
             }
             catch(BackgroundException e) {
@@ -228,8 +233,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<B2StartLargeFil
             }
         }
 
-        public B2StartLargeFileResponse getResponse() {
-            return response.get();
+        public BaseB2Response getFinishLargeFileResponse() {
+            return finishLargeFileResponse.get();
         }
     }
 }

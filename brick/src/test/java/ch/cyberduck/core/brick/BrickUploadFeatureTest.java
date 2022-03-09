@@ -59,6 +59,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
             count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new BrickFindFeature(session).find(test));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
@@ -87,6 +88,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
             count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new BrickFindFeature(session).find(test));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
@@ -113,6 +115,7 @@ public class BrickUploadFeatureTest extends AbstractBrickTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         assertTrue(new BrickFindFeature(session).find(test));
         assertEquals(content.length, new BrickAttributesFinderFeature(session).find(test).getSize());
         final byte[] compare = new byte[length];

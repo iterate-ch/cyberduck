@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
@@ -39,7 +40,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-public class GraphAttributesFinderFeature implements AttributesFinder {
+public class GraphAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DriveItem.Metadata> {
     private static final Logger log = LogManager.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
@@ -76,6 +77,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    @Override
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());

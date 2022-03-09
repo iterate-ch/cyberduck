@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
@@ -46,7 +47,7 @@ import com.microsoft.azure.storage.blob.BlobRequestOptions;
 import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
-public class AzureAttributesFinderFeature implements AttributesFinder {
+public class AzureAttributesFinderFeature implements AttributesFinder, AttributesAdapter<CloudBlob> {
 
     private final AzureSession session;
     private final OperationContext context;
@@ -80,18 +81,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
                         .getBlobReferenceFromServer(containerService.getKey(file));
                 final BlobRequestOptions options = new BlobRequestOptions();
                 blob.downloadAttributes(AccessCondition.generateEmptyCondition(), options, context);
-                final BlobProperties properties = blob.getProperties();
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setSize(properties.getLength());
-                attributes.setModificationDate(properties.getLastModified().getTime());
-                if(StringUtils.isNotBlank(properties.getContentMD5())) {
-                    attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
-                }
-                attributes.setETag(properties.getEtag());
-                final Map<String, String> custom = new HashMap<>();
-                custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
-                attributes.setCustom(custom);
-                return attributes;
+                return this.toAttributes(blob);
             }
         }
         catch(StorageException e) {
@@ -106,5 +96,21 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public PathAttributes toAttributes(final CloudBlob blob) {
+        final PathAttributes attributes = new PathAttributes();
+        final BlobProperties properties = blob.getProperties();
+        attributes.setSize(properties.getLength());
+        attributes.setModificationDate(properties.getLastModified().getTime());
+        if(StringUtils.isNotBlank(properties.getContentMD5())) {
+            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
+        }
+        attributes.setETag(properties.getEtag());
+        final Map<String, String> custom = new HashMap<>();
+        custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
+        attributes.setCustom(custom);
+        return attributes;
     }
 }

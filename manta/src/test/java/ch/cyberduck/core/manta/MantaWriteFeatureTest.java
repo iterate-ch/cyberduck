@@ -21,7 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -49,7 +49,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
@@ -75,7 +75,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final int alloc = 1024;
         final byte[] buffer = new byte[alloc];

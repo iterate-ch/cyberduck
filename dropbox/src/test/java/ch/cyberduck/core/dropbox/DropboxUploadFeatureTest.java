@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 
 import static org.junit.Assert.*;
 
@@ -57,14 +58,14 @@ public class DropboxUploadFeatureTest extends AbstractDropboxTest {
         status.setLength(content.length);
         status.setMime("text/plain");
         final BytecountStreamListener count = new BytecountStreamListener();
-        final FileMetadata metadata = feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final Metadata metadata = feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 count, status, new DisabledLoginCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertTrue(new DropboxFindFeature(session).find(test));
         final PathAttributes attributes = new DropboxAttributesFinderFeature(session).find(test);
         assertEquals(content.length, attributes.getSize());
-        assertEquals(metadata.getContentHash(), attributes.getChecksum().hash);
+        assertEquals(((FileMetadata) metadata).getContentHash(), attributes.getChecksum().hash);
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }

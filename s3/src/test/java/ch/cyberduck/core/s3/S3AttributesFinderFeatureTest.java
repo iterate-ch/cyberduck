@@ -164,7 +164,8 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final PathAttributes attributes = new S3AttributesFinderFeature(session, true).find(test);
+        assertNotEquals(test.attributes().getVersionId(), status.getResponse().getVersionId());
+        final PathAttributes attributes = new S3AttributesFinderFeature(session, true).find(test.withAttributes(new PathAttributes(test.attributes()).withVersionId(status.getResponse().getVersionId())));
         final AttributedList<Path> versions = attributes.getVersions();
         assertFalse(versions.isEmpty());
         assertEquals(new Path(test).withAttributes(new PathAttributes(test.attributes()).withVersionId(versionId)), versions.get(0));

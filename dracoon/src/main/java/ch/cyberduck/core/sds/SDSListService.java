@@ -66,7 +66,7 @@ public class SDSListService implements ListService {
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             int offset = 0;
-            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
+            final SDSAttributesAdapter feature = new SDSAttributesAdapter(session);
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).requestNodes(null, 0,
@@ -78,7 +78,7 @@ public class SDSListService implements ListService {
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
                         try {
-                            final AttributedList<Path> versions = feature.findDeleted(file, chunksize);
+                            final AttributedList<Path> versions = new SDSAttributesFinderFeature(session, nodeid).findDeleted(file, chunksize);
                             children.addAll(versions);
                             attributes.setVersions(versions);
                         }
