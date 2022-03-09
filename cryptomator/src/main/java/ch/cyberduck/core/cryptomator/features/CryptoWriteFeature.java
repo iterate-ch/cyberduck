@@ -49,17 +49,23 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 // If not previously set in bulk feature
                 status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
             }
-            final StatusOutputStream<Reply> out = proxy.write(vault.encrypt(session, file),
+            final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),
                     new TransferStatus(status)
                             .withLength(vault.toCiphertextSize(status.getOffset(), status.getLength()))
                             // Assume single chunk upload
                             .withOffset(0L == status.getOffset() ? 0L : vault.toCiphertextSize(0L, status.getOffset()))
                             .withMime(null), callback);
             if(status.getOffset() == 0L) {
-                out.write(status.getHeader().array());
+                cleartext.write(status.getHeader().array());
             }
-            return new CryptoOutputStream<>(out, vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
-                    status.getNonces(), vault.numberOfChunks(status.getOffset()));
+            return new StatusOutputStream<Reply>(new CryptoOutputStream(cleartext,
+                    vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
+                    status.getNonces(), vault.numberOfChunks(status.getOffset()))) {
+                @Override
+                public Reply getStatus() throws BackgroundException {
+                    return cleartext.getStatus();
+                }
+            };
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

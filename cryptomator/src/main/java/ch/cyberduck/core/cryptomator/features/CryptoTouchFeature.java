@@ -35,7 +35,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
     public CryptoTouchFeature(final Session<?> session, final Touch<Reply> proxy, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = proxy.withWriter(new CryptoWriteFeature<Reply>(session, writer, cryptomator));
+        this.proxy = proxy.withWriter(new CryptoWriteFeature<>(session, writer, cryptomator));
         this.vault = cryptomator;
     }
 
