@@ -224,6 +224,9 @@
       <Component Id="System.Threading.Tasks.Extensions">
         <File Source="$(var.cyberduck.TargetDir)/System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="System.ValueTuple">
+        <File Source="$(var.cyberduck.TargetDir)/System.ValueTuple.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
 
       <!-- NuGet Dependencies -->
       <!-- DotNetProjects.Extended.Wpf.Toolkit -->
