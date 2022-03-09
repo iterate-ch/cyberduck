@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
@@ -30,10 +29,8 @@ public interface Editor {
 
     /**
      * Move edited file to trash
-     *
-     * @param temporary Local file
      */
-    void delete(final Local temporary);
+    void delete();
 
     /**
      * Close monitors
