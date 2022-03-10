@@ -48,6 +48,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class CryptoChecksumCompute extends AbstractChecksumCompute {
     private static final Logger log = LogManager.getLogger(CryptoChecksumCompute.class);
 
@@ -103,10 +105,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
                 }
                 finally {
                     try {
-                        execute.get();
-                    }
-                    catch(InterruptedException e) {
-                        throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+                        Uninterruptibles.getUninterruptibly(execute);
                     }
                     catch(ExecutionException e) {
                         if(e.getCause() instanceof BackgroundException) {

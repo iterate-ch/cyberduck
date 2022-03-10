@@ -27,7 +27,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -55,6 +54,7 @@ import java.util.concurrent.Future;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = LogManager.getLogger(SwiftLargeObjectUploadFeature.class);
@@ -145,14 +145,9 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
         }
         try {
-            for(Future<StorageObject> futureSegment : segments) {
-                completed.add(futureSegment.get());
+            for(Future<StorageObject> f : segments) {
+                completed.add(Uninterruptibles.getUninterruptibly(f));
             }
-        }
-        catch(InterruptedException e) {
-            log.error("Part upload failed with interrupt failure");
-            status.setCanceled();
-            throw new ConnectionCanceledException(e);
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));

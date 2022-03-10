@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -51,6 +50,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
@@ -171,13 +171,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             try {
                 for(Future<B2UploadPartResponse> f : parts) {
-                    completed.add(f.get());
+                    completed.add(Uninterruptibles.getUninterruptibly(f));
                 }
-            }
-            catch(InterruptedException e) {
-                log.error("Part upload failed with interrupt failure");
-                status.setCanceled();
-                throw new ConnectionCanceledException(e);
             }
             catch(ExecutionException e) {
                 log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));

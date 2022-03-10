@@ -24,7 +24,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -49,6 +48,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest> {
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
@@ -94,14 +95,9 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             }
             // Checksums for uploaded segments
             final List<File> chunks = new ArrayList<>();
-            for(Future<File> uploadResponseFuture : parts) {
+            for(Future<File> f : parts) {
                 try {
-                    chunks.add(uploadResponseFuture.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed with interrupt failure");
-                    status.setCanceled();
-                    throw new ConnectionCanceledException(e);
+                    chunks.add(Uninterruptibles.getUninterruptibly(f));
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));

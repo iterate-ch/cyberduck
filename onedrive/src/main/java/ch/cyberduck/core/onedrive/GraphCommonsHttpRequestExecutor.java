@@ -115,10 +115,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             public Response getResponse() throws IOException {
                 final CloseableHttpResponse response;
                 try {
-                    response = future.get();
-                }
-                catch(InterruptedException e) {
-                    throw new IOException(e);
+                    response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
                     throw new IOException(e.getCause());

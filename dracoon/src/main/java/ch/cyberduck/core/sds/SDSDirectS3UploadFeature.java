@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -170,15 +169,10 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             finally {
                 in.close();
             }
-            for(Future<TransferStatus> future : parts) {
+            for(Future<TransferStatus> f : parts) {
                 try {
-                    final TransferStatus part = future.get();
+                    final TransferStatus part = Uninterruptibles.getUninterruptibly(f);
                     etags.put(part.getPart(), part);
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed with interrupt failure");
-                    status.setCanceled();
-                    throw new ConnectionCanceledException(e);
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));

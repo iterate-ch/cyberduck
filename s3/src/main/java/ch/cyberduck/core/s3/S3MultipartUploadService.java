@@ -26,7 +26,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -61,6 +60,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = LogManager.getLogger(S3MultipartUploadService.class);
@@ -159,14 +160,9 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     offset += length;
                 }
             }
-            for(Future<MultipartPart> future : parts) {
+            for(Future<MultipartPart> f : parts) {
                 try {
-                    completed.add(future.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed with interrupt failure");
-                    status.setCanceled();
-                    throw new ConnectionCanceledException(e);
+                    completed.add(Uninterruptibles.getUninterruptibly(f));
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
