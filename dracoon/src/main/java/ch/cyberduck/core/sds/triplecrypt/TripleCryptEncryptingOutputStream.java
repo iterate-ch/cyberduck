@@ -19,8 +19,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.sds.SDSAttributesAdapter;
+import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -42,14 +45,15 @@ import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class TripleCryptEncryptingOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
+public class TripleCryptEncryptingOutputStream extends HttpResponseOutputStream<Node> {
     private static final Logger log = LogManager.getLogger(TripleCryptEncryptingOutputStream.class);
 
-    private final StatusOutputStream<VersionId> proxy;
+    private final StatusOutputStream<Node> proxy;
 
-    public TripleCryptEncryptingOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
-        super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, key),
-                SDSSession.DEFAULT_CHUNKSIZE));
+    public TripleCryptEncryptingOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid, final StatusOutputStream<Node> proxy,
+                                             final FileEncryptionCipher cipher, final TransferStatus status) {
+        super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, status),
+                SDSSession.DEFAULT_CHUNKSIZE), new SDSAttributesAdapter(session), status);
         this.proxy = proxy;
     }
 
@@ -59,7 +63,7 @@ public class TripleCryptEncryptingOutputStream<VersionId> extends HttpResponseOu
     }
 
     @Override
-    public VersionId getStatus() throws BackgroundException {
+    public Node getStatus() throws BackgroundException {
         return proxy.getStatus();
     }
 

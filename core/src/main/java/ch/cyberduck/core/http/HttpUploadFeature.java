@@ -63,7 +63,11 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.upload(file, local, throttle, listener, status, status, status, callback);
+        final Reply response = this.upload(file, local, throttle, listener, status, status, status, callback);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Received response %s", response));
+        }
+        return response;
     }
 
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
@@ -90,10 +94,10 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         final InputStream in = this.decorate(local.getInputStream(), digest);
         final StatusOutputStream<Reply> out = writer.write(file, status, callback);
         new StreamCopier(cancel, progress)
-            .withOffset(status.getOffset())
-            .withLimit(status.getLength())
-            .withListener(listener)
-            .transfer(in, new ThrottledOutputStream(out, throttle));
+                .withOffset(status.getOffset())
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(in, new ThrottledOutputStream(out, throttle));
         return out.getStatus();
     }
 
@@ -106,8 +110,9 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     }
 
     protected void post(final Path file, final Digest digest, final Reply response) throws BackgroundException {
+        // No-op with no checksum verification by default
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Received response %s", response));
+            log.debug(String.format("Missing checksum verification for %s", file));
         }
     }
 
@@ -129,8 +134,8 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             // Compare our locally-calculated hash with the ETag returned by S3.
             if(!checksum.equals(expected)) {
                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                        expected, checksum.hash));
+                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                expected, checksum.hash));
             }
         }
     }

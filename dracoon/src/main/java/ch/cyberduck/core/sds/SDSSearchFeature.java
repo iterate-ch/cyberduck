@@ -61,9 +61,8 @@ public class SDSSearchFeature implements Search {
                     Long.valueOf(nodeid.getVersionId(workdir, listener)),
                     null, null, offset, chunksize, StringUtils.EMPTY
                 );
-                final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
                 for(Node node : nodes.getItems()) {
-                    final PathAttributes attributes = feature.toAttributes(node);
+                    final PathAttributes attributes = new SDSAttributesAdapter(session).toAttributes(node);
                     final EnumSet<Path.Type> type;
                     switch(node.getType()) {
                         case ROOM:

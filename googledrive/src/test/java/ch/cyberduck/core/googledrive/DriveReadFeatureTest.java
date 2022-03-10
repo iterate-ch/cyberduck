@@ -43,6 +43,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import com.google.api.services.drive.model.File;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -70,10 +72,10 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         IOUtils.write(content, out);
         out.close();
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        new DriveUploadFeature(new DriveWriteFeature(session, fileid)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            new TransferStatus().withLength(content.length),
-            new DisabledConnectionCallback());
+        new DriveUploadFeature(session, fileid).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                new TransferStatus().withLength(content.length),
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -135,7 +137,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
-        final HttpResponseOutputStream<String> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new DriveReadFeature(session, fileid).read(test, status, new DisabledConnectionCallback()));

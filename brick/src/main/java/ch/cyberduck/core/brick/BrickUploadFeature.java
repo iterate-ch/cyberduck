@@ -53,7 +53,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
+public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDigest> {
     private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
 
     /**
@@ -62,16 +62,16 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     private final BrickSession session;
-    private final Write<Void> writer;
+    private final Write<FileEntity> writer;
     private final Long partsize;
     private final Integer concurrency;
 
-    public BrickUploadFeature(final BrickSession session, final Write<Void> writer) {
+    public BrickUploadFeature(final BrickSession session, final Write<FileEntity> writer) {
         this(session, writer, PreferencesFactory.get().getLong("brick.upload.multipart.size"),
-            PreferencesFactory.get().getInteger("brick.upload.multipart.concurrency"));
+                PreferencesFactory.get().getInteger("brick.upload.multipart.concurrency"));
     }
 
-    public BrickUploadFeature(final BrickSession session, final Write<Void> writer, final Long partsize, final Integer concurrency) {
+    public BrickUploadFeature(final BrickSession session, final Write<FileEntity> writer, final Long partsize, final Integer concurrency) {
         super(writer);
         this.session = session;
         this.writer = writer;
@@ -80,8 +80,8 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
     }
 
     @Override
-    public Void upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                       final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public FileEntity upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                             final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         try {
             // Full size of file
@@ -123,10 +123,10 @@ public class BrickUploadFeature extends HttpUploadFeature<Void, MessageDigest> {
                     throw new BackgroundException(e.getCause());
                 }
             }
-            this.completeUpload(file, ref, status, checksums);
+            final FileEntity entity = this.completeUpload(file, ref, status, checksums);
             // Mark parent status as complete
-            status.setComplete();
-            return null;
+            status.withResponse(new BrickAttributesFinderFeature(session).toAttributes(entity)).setComplete();
+            return entity;
         }
         finally {
             // Cancel future tasks

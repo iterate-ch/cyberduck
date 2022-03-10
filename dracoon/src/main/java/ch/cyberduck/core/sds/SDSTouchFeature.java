@@ -15,49 +15,35 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-
-public class SDSTouchFeature implements Touch<Node> {
+public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     private static final Logger log = LogManager.getLogger(SDSTouchFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-    private Write<Node> writer;
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        super(new SDSDelegatingWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid)));
         this.session = session;
         this.nodeid = nodeid;
-        this.writer = new SDSDelegatingWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            if(SDSNodeIdProvider.isEncrypted(file)) {
-                status.setFilekey(nodeid.getFileKey());
-            }
-            final StatusOutputStream<Node> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
-            out.close();
-            return file.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(out.getStatus()));
+        if(SDSNodeIdProvider.isEncrypted(file)) {
+            status.setFilekey(nodeid.getFileKey());
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
-        }
+        return super.touch(file, status);
     }
 
     @Override
@@ -77,8 +63,8 @@ public class SDSTouchFeature implements Touch<Node> {
         }
         final SDSPermissionsFeature permissions = new SDSPermissionsFeature(session, nodeid);
         return permissions.containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE)
-            // For existing files the delete role is also required to overwrite
-            && permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE);
+                // For existing files the delete role is also required to overwrite
+                && permissions.containsRole(workdir, SDSPermissionsFeature.DELETE_ROLE);
     }
 
     /**
@@ -103,11 +89,5 @@ public class SDSTouchFeature implements Touch<Node> {
             }
         }
         return true;
-    }
-
-    @Override
-    public Touch<Node> withWriter(final Write<Node> writer) {
-        this.writer = writer;
-        return this;
     }
 }

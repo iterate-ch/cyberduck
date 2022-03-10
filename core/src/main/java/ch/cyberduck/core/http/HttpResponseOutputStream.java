@@ -20,7 +20,9 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,27 +30,28 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class HttpResponseOutputStream<T> extends StatusOutputStream<T> {
-    private static final Logger log = LogManager.getLogger(HttpResponseOutputStream.class);
+public abstract class HttpResponseOutputStream<Reply> extends StatusOutputStream<Reply> {
+    private static final Logger log = LogManager.getLogger(StatusOutputStream.class);
 
-    public HttpResponseOutputStream(final OutputStream proxy) {
+    private final AttributesAdapter<Reply> attributes;
+    private final TransferStatus status;
+
+    public HttpResponseOutputStream(final OutputStream proxy, final AttributesAdapter<Reply> attributes, final TransferStatus status) {
         super(proxy);
+        this.attributes = attributes;
+        this.status = status;
     }
-
-    /**
-     * Return the response after closing the stream. Must close the stream first to prevent deadlock.
-     *
-     * @return A specific response header
-     */
-    public abstract T getStatus() throws BackgroundException;
 
     @Override
     public void close() throws IOException {
         super.close();
         try {
-            final T response = this.getStatus();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Closed stream %s with response value %s", this, response));
+            final Reply response = this.getStatus();
+            if(response != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Closed stream %s with response value %s", this, response));
+                }
+                status.withResponse(attributes.toAttributes(response)).setComplete();
             }
         }
         catch(BackgroundException e) {

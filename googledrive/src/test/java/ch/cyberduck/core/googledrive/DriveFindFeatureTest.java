@@ -53,7 +53,7 @@ public class DriveFindFeatureTest extends AbstractDriveTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String id = file.attributes().getFileId();
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(file));
         assertFalse(new DriveFindFeature(session, fileid).find(file));
         // When searching with version "2", find trashed file

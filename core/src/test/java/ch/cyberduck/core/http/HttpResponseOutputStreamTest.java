@@ -15,8 +15,10 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.Test;
@@ -30,7 +32,7 @@ public class HttpResponseOutputStreamTest {
     @Test(expected = IOException.class)
     public void testClose() throws Exception {
         try {
-            new HttpResponseOutputStream<Void>(NullOutputStream.NULL_OUTPUT_STREAM) {
+            new HttpResponseOutputStream<Void>(NullOutputStream.NULL_OUTPUT_STREAM, new VoidAttributesAdapter(), new TransferStatus()) {
                 @Override
                 public Void getStatus() throws BackgroundException {
                     throw new InteroperabilityException("d");

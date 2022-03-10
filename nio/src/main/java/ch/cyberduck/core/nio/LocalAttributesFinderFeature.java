@@ -41,14 +41,14 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            return this.convert(session.toPath(file));
+            return this.toAttributes(session.toPath(file));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
-    protected PathAttributes convert(final java.nio.file.Path file) throws IOException {
+    public PathAttributes toAttributes(final java.nio.file.Path file) throws IOException {
         final boolean isPosix = session.isPosixFilesystem();
         final PathAttributes attributes = new PathAttributes();
         final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
@@ -76,7 +76,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
                 actions = actions.or(Permission.Action.execute);
             }
             attributes.setPermission(new Permission(
-                actions, Permission.Action.none, Permission.Action.none
+                    actions, Permission.Action.none, Permission.Action.none
             ));
         }
         return attributes;

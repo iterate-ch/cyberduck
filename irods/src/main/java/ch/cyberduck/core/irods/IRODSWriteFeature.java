@@ -29,12 +29,11 @@ import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.exception.JargonRuntimeException;
 import org.irods.jargon.core.packinstr.DataObjInp;
 import org.irods.jargon.core.pub.IRODSFileSystemAO;
+import org.irods.jargon.core.pub.domain.ObjStat;
 import org.irods.jargon.core.pub.io.IRODSFileOutputStream;
 import org.irods.jargon.core.pub.io.PackingIrodsOutputStream;
 
-import java.io.OutputStream;
-
-public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
+public class IRODSWriteFeature extends AppendWriteFeature<ObjStat> {
 
     private final IRODSSession session;
 
@@ -43,13 +42,19 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     }
 
     @Override
-    public FileDescriptorOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<ObjStat> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             try {
                 final IRODSFileSystemAO fs = session.getClient();
                 final IRODSFileOutputStream out = fs.getIRODSFileFactory().instanceIRODSFileOutputStream(
                         file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
-                return new FileDescriptorOutputStream(new PackingIrodsOutputStream(out), out.getFileDescriptor());
+                return new StatusOutputStream<ObjStat>(new PackingIrodsOutputStream(out)) {
+                    @Override
+                    public ObjStat getStatus() {
+                        // No remote attributes from server returned after upload
+                        return null;
+                    }
+                };
             }
             catch(JargonRuntimeException e) {
                 if(e.getCause() instanceof JargonException) {
@@ -66,19 +71,5 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
     @Override
     public boolean temporary() {
         return false;
-    }
-
-    private final class FileDescriptorOutputStream extends StatusOutputStream<Integer> {
-        private final Integer handle;
-
-        public FileDescriptorOutputStream(final OutputStream proxy, final Integer handle) {
-            super(proxy);
-            this.handle = handle;
-        }
-
-        @Override
-        public Integer getStatus() {
-            return handle;
-        }
     }
 }

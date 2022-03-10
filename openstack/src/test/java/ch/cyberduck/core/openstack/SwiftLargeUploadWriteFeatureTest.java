@@ -33,10 +33,8 @@ import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -54,8 +52,8 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(-1L);
-            final OutputStream out = new SwiftLargeUploadWriteFeature(session, regionService,
-                new SwiftSegmentService(session, ".segments-test/")).write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = new SwiftLargeUploadWriteFeature(session, regionService,
+                    new SwiftSegmentService(session, ".segments-test/")).write(file, status, new DisabledConnectionCallback());
             final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
@@ -72,8 +70,8 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(-1L);
-            final OutputStream out = new SwiftLargeUploadWriteFeature(session, regionService,
-                new SwiftSegmentService(session, ".segments-test/")).write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<StorageObject> out = new SwiftLargeUploadWriteFeature(session, regionService,
+                    new SwiftSegmentService(session, ".segments-test/")).write(file, status, new DisabledConnectionCallback());
             final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             final TransferStatus progress = new TransferStatus();
@@ -94,13 +92,13 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
     public void testWriteZeroLength() throws Exception {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeUploadWriteFeature feature = new SwiftLargeUploadWriteFeature(session, regionService,
-            new SwiftSegmentService(session, ".segments-test/"));
+                new SwiftSegmentService(session, ".segments-test/"));
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<List<StorageObject>> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();

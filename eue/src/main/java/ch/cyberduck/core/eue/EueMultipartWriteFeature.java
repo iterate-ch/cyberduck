@@ -93,7 +93,8 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
             throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e);
         }
         return new HttpResponseOutputStream<EueWriteFeature.Chunk>(new MemorySegementingOutputStream(proxy,
-                new HostPreferences(session.getHost()).getInteger("eue.upload.multipart.size"))) {
+                new HostPreferences(session.getHost()).getInteger("eue.upload.multipart.size")),
+                new EueAttributesAdapter(), status) {
             @Override
             public EueWriteFeature.Chunk getStatus() {
                 return proxy.getResult();

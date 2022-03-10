@@ -56,10 +56,10 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         new DefaultLocalTouchFeature().touch(local);
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DAVUploadFeature(session).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         catch(AccessDeniedException e) {
             assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -81,17 +81,17 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2);
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DAVUploadFeature(session).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DAVUploadFeature(session).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

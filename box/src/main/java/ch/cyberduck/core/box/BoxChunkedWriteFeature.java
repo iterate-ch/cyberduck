@@ -17,6 +17,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -38,23 +39,24 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxUploadHelper.BoxUploadResponse> {
+public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<File> {
     private static final Logger log = LogManager.getLogger(BoxChunkedWriteFeature.class);
 
     private final BoxSession session;
     private final BoxApiClient client;
 
-    public BoxChunkedWriteFeature(final BoxSession session) {
+    public BoxChunkedWriteFeature(final BoxSession session, final BoxFileidProvider fileid) {
+        super(new BoxAttributesFinderFeature(session, fileid));
         this.session = session;
         this.client = new BoxApiClient(session.getClient());
         this.client.setBasePath("https://upload.box.com/api/2.0");
     }
 
     @Override
-    public HttpResponseOutputStream<BoxUploadHelper.BoxUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse> command = new DelayedHttpEntityCallable<BoxUploadHelper.BoxUploadResponse>() {
+    public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>() {
             @Override
-            public BoxUploadHelper.BoxUploadResponse call(final AbstractHttpEntity entity) throws BackgroundException {
+            public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpRange range = HttpRange.withStatus(new TransferStatus()
                             .withLength(status.getLength())
@@ -79,7 +81,7 @@ public class BoxChunkedWriteFeature extends AbstractHttpWriteFeature<BoxUploadHe
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Received response %s for upload of %s", uploadedPart, file));
                     }
-                    return new BoxUploadHelper.BoxPartUploadResponse(uploadedPart);
+                    return new File().size(status.getLength()).sha1(uploadedPart.getPart().getSha1());
                 }
                 catch(HttpResponseException e) {
                     throw new DefaultHttpResponseExceptionMappingService().map(e);

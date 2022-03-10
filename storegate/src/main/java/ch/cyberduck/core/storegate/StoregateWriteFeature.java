@@ -63,6 +63,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
     private final StoregateIdProvider fileid;
 
     public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
+        super(new StoregateAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }
@@ -119,12 +120,12 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                             case HttpStatus.SC_OK:
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
-                                    FileMetadata.class);
+                                        FileMetadata.class);
                                 fileid.cache(file, result.getId());
                                 return result;
                             default:
                                 throw new StoregateExceptionMappingService(fileid).map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                    EntityUtils.toString(putResponse.getEntity())));
+                                        EntityUtils.toString(putResponse.getEntity())));
                         }
                     }
                     catch(BackgroundException e) {
@@ -175,7 +176,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                 meta.setModified(new DateTime(status.getTimestamp()));
             }
             request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
-                ContentType.create("application/json", StandardCharsets.UTF_8.name())));
+                    ContentType.create("application/json", StandardCharsets.UTF_8.name())));
             request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
             final CloseableHttpResponse response = client.getClient().execute(request);
             try {
@@ -184,7 +185,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                         break;
                     default:
                         throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                            EntityUtils.toString(response.getEntity())));
+                                EntityUtils.toString(response.getEntity())));
                 }
             }
             finally {
@@ -194,7 +195,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                 return response.getFirstHeader(HttpHeaders.LOCATION).getValue();
             }
             throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                EntityUtils.toString(response.getEntity())));
+                    EntityUtils.toString(response.getEntity())));
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);

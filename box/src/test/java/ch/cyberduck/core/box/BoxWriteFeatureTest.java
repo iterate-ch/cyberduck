@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -62,7 +63,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         status.setRemote(file.attributes());
         status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
         status.setChecksum(feature.checksum(file, status).compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<BoxUploadHelper.BoxUploadResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         final BytecountStreamListener count = new BytecountStreamListener();

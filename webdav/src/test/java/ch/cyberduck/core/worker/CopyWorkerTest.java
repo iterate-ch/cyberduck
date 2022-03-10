@@ -22,13 +22,11 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.dav.AbstractDAVTest;
-import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVWriteFeature;
+import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -49,8 +47,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<>(new DAVWriteFeature(session),
-                new DAVAttributesFinderFeature(session)).touch(source, new TransferStatus());
+        new DAVTouchFeature(session).touch(source, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -63,8 +60,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
     public void testCopyFileToDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<>(new DAVWriteFeature(session),
-                new DAVAttributesFinderFeature(session)).touch(sourceFile, new TransferStatus());
+        new DAVTouchFeature(session).touch(sourceFile, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -82,8 +78,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
     public void testCopyDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path sourceFile = new DefaultTouchFeature<>(new DAVWriteFeature(session),
-                new DAVAttributesFinderFeature(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path sourceFile = new DAVTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(folder));
         assertTrue(new DAVFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

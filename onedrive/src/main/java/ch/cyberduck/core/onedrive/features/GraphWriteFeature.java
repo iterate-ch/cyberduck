@@ -23,8 +23,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -57,23 +58,18 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                 throw new UnsupportedException("Content-Range with unknown file size is not supported");
             }
             final DriveItem folder = session.getItem(file.getParent());
-            final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
-            final UploadSession upload = Files.createUploadSession(oneDriveFile);
+            final DriveItem item = new DriveItem(folder, URIEncoder.encode(file.getName()));
+            final UploadSession upload = Files.createUploadSession(item);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
-                * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
-            return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy, partsize)) {
-                @Override
-                public Void getStatus() {
-                    return null;
-                }
-            };
+                    * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
+            return new VoidStatusOutputStream(new MemorySegementingOutputStream(proxy, partsize));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e, file);
@@ -161,7 +157,7 @@ public class GraphWriteFeature implements Write<Void> {
                     log.warn(String.format("Abort upload session %s with no completed parts", upload));
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
+                    new GraphTouchFeature(session, fileid).touch(file, overall);
                 }
             }
             catch(BackgroundException e) {

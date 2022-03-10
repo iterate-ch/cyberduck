@@ -42,6 +42,7 @@ import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.AbstractSDSTest;
+import ch.cyberduck.core.sds.SDSAttributesAdapter;
 import ch.cyberduck.core.sds.SDSAttributesFinderFeature;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
@@ -169,7 +170,7 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
                                             throw new SocketTimeoutException();
                                         }
                                     }
-                                }) {
+                                }, new SDSAttributesAdapter(session), status) {
                                     @Override
                                     public Node getStatus() throws BackgroundException {
                                         return proxy.getStatus();
@@ -223,30 +224,30 @@ public class SDSSingleTransferWorkerTest extends AbstractSDSTest {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new DefaultUploadFeature(
-                        new SDSMultipartWriteFeature(this, fileid) {
-                            @Override
-                            public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                                final HttpResponseOutputStream<Node> proxy = super.write(file, status, callback);
-                                if(failed.get()) {
-                                    // Second attempt successful
-                                    return proxy;
-                                }
-                                return new HttpResponseOutputStream<Node>(new CountingOutputStream(proxy) {
-                                    @Override
-                                    public void close() throws IOException {
-                                        if(!failed.get()) {
-                                            failed.set(true);
-                                            throw new SocketTimeoutException();
+                    return (T) new DefaultUploadFeature<>(
+                            new SDSMultipartWriteFeature(this, fileid) {
+                                @Override
+                                public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                    final HttpResponseOutputStream<Node> proxy = super.write(file, status, callback);
+                                    if(failed.get()) {
+                                        // Second attempt successful
+                                        return proxy;
+                                    }
+                                    return new HttpResponseOutputStream<Node>(new CountingOutputStream(proxy) {
+                                        @Override
+                                        public void close() throws IOException {
+                                            if(!failed.get()) {
+                                                failed.set(true);
+                                                throw new SocketTimeoutException();
+                                            }
+                                            super.close();
                                         }
-                                        super.close();
-                                    }
-                                }) {
-                                    @Override
-                                    public Node getStatus() throws BackgroundException {
-                                        return proxy.getStatus();
-                                    }
-                                };
+                                    }, new SDSAttributesAdapter(session), status) {
+                                        @Override
+                                        public Node getStatus() throws BackgroundException {
+                                            return proxy.getStatus();
+                                        }
+                                    };
                             }
                         }
                     );

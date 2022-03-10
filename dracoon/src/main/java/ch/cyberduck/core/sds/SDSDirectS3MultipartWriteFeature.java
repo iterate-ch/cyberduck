@@ -92,6 +92,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     }
 
     public SDSDirectS3MultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Integer partsize) {
+        super(new SDSAttributesAdapter(session));
         this.session = session;
         this.nodeid = nodeid;
         this.partsize = partsize;
@@ -101,17 +102,18 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
-                .directS3Upload(true)
-                .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
-                .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
-                .name(file.getName());
+                    .directS3Upload(true)
+                    .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
+                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
+                    .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
-                .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
+                    .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("upload started for %s with response %s", file, createFileUploadResponse));
             }
             final MultipartOutputStream proxy = new MultipartOutputStream(createFileUploadResponse, file, status);
-            return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, partsize)) {
+            return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, partsize),
+                    new SDSAttributesAdapter(session), status) {
                 @Override
                 public Node getStatus() {
                     return proxy.getResult();
@@ -246,6 +248,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                 final CountDownLatch done = new CountDownLatch(1);
                 final AtomicReference<BackgroundException> failure = new AtomicReference<>();
                 final AtomicReference<S3FileUploadStatus> uploadStatus = new AtomicReference<>();
+                // todo
                 final ScheduledFuture f = polling.repeat(new Runnable() {
                     @Override
                     public void run() {

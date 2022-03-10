@@ -49,6 +49,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
     private final SDSSession session;
 
     public SDSDirectS3WriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        super(new SDSAttributesAdapter(session));
         this.session = session;
     }
 

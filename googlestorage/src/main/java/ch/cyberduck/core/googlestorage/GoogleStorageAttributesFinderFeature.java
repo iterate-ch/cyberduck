@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
@@ -41,7 +42,7 @@ import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
-public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
+public class GoogleStorageAttributesFinderFeature implements AttributesFinder, AttributesAdapter<StorageObject> {
     private static final Logger log = LogManager.getLogger(GoogleStorageAttributesFinderFeature.class);
 
     private final PathContainerService containerService;
@@ -69,20 +70,20 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         try {
             if(containerService.isContainer(file)) {
                 return this.toAttributes(session.getClient().buckets().get(
-                    containerService.getContainer(file).getName()).execute());
+                        containerService.getContainer(file).getName()).execute());
             }
             else {
                 final Storage.Objects.Get request = session.getClient().objects().get(
-                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
                 final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                    containerService.getContainer(file)
+                        containerService.getContainer(file)
                 ) : VersioningConfiguration.empty();
                 if(versioning.isEnabled()) {
                     if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                         request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                     }
                 }
-                final PathAttributes attributes = this.toAttributes(request.execute(), versioning);
+                final PathAttributes attributes = this.toAttributes(request.execute());
                 if(versioning.isEnabled()) {
                     if(references) {
                         // Add references to previous versions
@@ -98,7 +99,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
                         try {
                             // Duplicate if not latest version
                             final String latest = this.toAttributes(session.getClient().objects().get(
-                                containerService.getContainer(file).getName(), containerService.getKey(file)).execute(), versioning).getVersionId();
+                                    containerService.getContainer(file).getName(), containerService.getKey(file)).execute()).getVersionId();
                             if(null != latest) {
                                 attributes.setDuplicate(!latest.equals(attributes.getVersionId()));
                             }
@@ -137,7 +138,8 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    protected PathAttributes toAttributes(final StorageObject object, final VersioningConfiguration versioning) {
+    @Override
+    public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         if(object.getSize() != null) {
             attributes.setSize(object.getSize().longValue());
@@ -155,15 +157,13 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         if(StringUtils.isNotBlank(object.getEtag())) {
             attributes.setETag(object.getEtag());
         }
-        if(versioning.isEnabled()) {
-            // The content generation of this object. Used for object versioning.
-            attributes.setVersionId(String.valueOf(object.getGeneration()));
-            // Noncurrent versions of objects have a timeDeleted property.
-            attributes.setDuplicate(object.getTimeDeleted() != null);
-        }
+        // The content generation of this object. Used for object versioning.
+        attributes.setVersionId(String.valueOf(object.getGeneration()));
+        // Noncurrent versions of objects have a timeDeleted property.
+        attributes.setDuplicate(object.getTimeDeleted() != null);
         if(object.getKmsKeyName() != null) {
             attributes.setEncryption(new Encryption.Algorithm("AES256",
-                object.getKmsKeyName()) {
+                    object.getKmsKeyName()) {
                 @Override
                 public String getDescription() {
                     return String.format("SSE-KMS (%s)", key);

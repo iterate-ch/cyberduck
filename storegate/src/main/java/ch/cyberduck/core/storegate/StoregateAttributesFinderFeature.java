@@ -21,13 +21,14 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 
-public class StoregateAttributesFinderFeature implements AttributesFinder {
+public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileMetadata> {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -92,7 +93,8 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         return attrs;
     }
 
-    protected PathAttributes toAttributes(final FileMetadata f) {
+    @Override
+    public PathAttributes toAttributes(final FileMetadata f) {
         final PathAttributes attrs = new PathAttributes();
         if(0 != f.getModified().getMillis()) {
             attrs.setModificationDate(f.getModified().getMillis());

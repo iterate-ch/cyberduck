@@ -27,7 +27,6 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -84,7 +83,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
-            final CryptoOutputStream<Void> out = new CryptoOutputStream<>(new VoidStatusOutputStream(source), cryptomator.getFileContentCryptor(),
+            final CryptoOutputStream out = new CryptoOutputStream(source, cryptomator.getFileContentCryptor(),
                     cryptomator.getFileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
@@ -30,7 +31,7 @@ import org.irods.jargon.core.pub.IRODSFileSystemAO;
 import org.irods.jargon.core.pub.domain.ObjStat;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
-public class IRODSAttributesFinderFeature implements AttributesFinder {
+public class IRODSAttributesFinderFeature implements AttributesFinder, AttributesAdapter<ObjStat> {
 
     private final IRODSSession session;
 
@@ -46,18 +47,23 @@ public class IRODSAttributesFinderFeature implements AttributesFinder {
             if(!f.exists()) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            final PathAttributes attributes = new PathAttributes();
             final ObjStat stats = fs.getObjStat(f.getAbsolutePath());
-            attributes.setModificationDate(stats.getModifiedAt().getTime());
-            attributes.setCreationDate(stats.getCreatedAt().getTime());
-            attributes.setSize(stats.getObjSize());
-            attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(stats.getChecksum()))));
-            attributes.setOwner(stats.getOwnerName());
-            attributes.setGroup(stats.getOwnerZone());
-            return attributes;
+            return this.toAttributes(stats);
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    @Override
+    public PathAttributes toAttributes(final ObjStat stats) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setModificationDate(stats.getModifiedAt().getTime());
+        attributes.setCreationDate(stats.getCreatedAt().getTime());
+        attributes.setSize(stats.getObjSize());
+        attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(stats.getChecksum()))));
+        attributes.setOwner(stats.getOwnerName());
+        attributes.setGroup(stats.getOwnerZone());
+        return attributes;
     }
 }

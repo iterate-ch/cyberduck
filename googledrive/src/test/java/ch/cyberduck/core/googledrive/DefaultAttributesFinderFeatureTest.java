@@ -40,6 +40,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import com.google.api.services.drive.model.File;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -76,14 +78,14 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         final byte[] content = RandomUtils.nextBytes(12);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
-        final HttpResponseOutputStream<String> out = new DriveWriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
         IOUtils.copy(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals(initialFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).withFileId(initialFileid))).getFileId());
-        final String newFileid = out.getStatus();
+        final String newFileid = out.getStatus().getId();
         assertEquals(newFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).withFileId(newFileid))).getFileId());
         assertNotEquals(initialFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).withFileId(newFileid))).getFileId());
-        assertEquals(out.getStatus(), f.find(file).getFileId());
+        assertEquals(out.getStatus().getId(), f.find(file).getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

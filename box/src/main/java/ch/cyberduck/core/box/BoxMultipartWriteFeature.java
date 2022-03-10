@@ -19,6 +19,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public class BoxMultipartWriteFeature implements Write<Files> {
+public class BoxMultipartWriteFeature implements Write<File> {
     private static final Logger log = LogManager.getLogger(BoxMultipartWriteFeature.class);
 
     private final BoxSession session;
@@ -61,16 +62,16 @@ public class BoxMultipartWriteFeature implements Write<Files> {
     }
 
     @Override
-    public HttpResponseOutputStream<Files> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final UploadSession uploadSession = new BoxUploadHelper(session, fileid).createUploadSession(status, file);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained session %s for file %s", uploadSession, file));
         }
         final BoxOutputStream proxy = new BoxOutputStream(file, uploadSession, status);
-        return new HttpResponseOutputStream<Files>(new MemorySegementingOutputStream(proxy,
-                uploadSession.getPartSize().intValue())) {
+        return new HttpResponseOutputStream<File>(new MemorySegementingOutputStream(proxy,
+                uploadSession.getPartSize().intValue()), new BoxAttributesFinderFeature(session, fileid), status) {
             @Override
-            public Files getStatus() {
+            public File getStatus() {
                 return proxy.getResult();
             }
         };
@@ -83,7 +84,7 @@ public class BoxMultipartWriteFeature implements Write<Files> {
         private final List<UploadedPart> checksums = new ArrayList<>();
         private final AtomicBoolean close = new AtomicBoolean();
         private final BytecountStreamListener byteCounter = new BytecountStreamListener();
-        private final AtomicReference<Files> result = new AtomicReference<>();
+        private final AtomicReference<File> result = new AtomicReference<>();
 
         public BoxOutputStream(final Path file, final UploadSession uploadSession, final TransferStatus status) {
             this.file = file;
@@ -141,7 +142,9 @@ public class BoxMultipartWriteFeature implements Write<Files> {
                 super.close();
                 final Files files = new BoxUploadHelper(session, fileid).commitUploadSession(file,
                         uploadSession.getId(), overall, checksums.stream().map(UploadedPart::getPart).collect(Collectors.toList()));
-                result.set(files);
+                if(files.getEntries().stream().findFirst().isPresent()) {
+                    result.set(files.getEntries().stream().findFirst().get());
+                }
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
@@ -151,7 +154,7 @@ public class BoxMultipartWriteFeature implements Write<Files> {
             }
         }
 
-        public Files getResult() {
+        public File getResult() {
             return result.get();
         }
     }

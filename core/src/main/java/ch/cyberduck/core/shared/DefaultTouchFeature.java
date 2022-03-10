@@ -22,7 +22,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -36,12 +35,10 @@ import java.io.IOException;
 public class DefaultTouchFeature<T> implements Touch<T> {
     private static final Logger log = LogManager.getLogger(DefaultTouchFeature.class);
 
-    private final AttributesFinder attributes;
-    private Write<T> write;
+    protected Write<T> write;
 
-    public DefaultTouchFeature(final Write<T> writer, final AttributesFinder attributes) {
+    public DefaultTouchFeature(final Write<T> writer) {
         this.write = writer;
-        this.attributes = attributes;
     }
 
     @Override
@@ -50,13 +47,17 @@ public class DefaultTouchFeature<T> implements Touch<T> {
             final StatusOutputStream<T> writer = write.write(file, status, new DisabledConnectionCallback());
             writer.close();
             final T reply = writer.getStatus();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Received reply %s for creating file %s", reply, file));
+            if(reply != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Received reply %s for creating file %s", reply, file));
+                }
+                return new Path(file).withAttributes(status.getResponse());
             }
-            return new Path(file.getParent(), file.getName(), file.getType(), attributes.find(file));
+            log.warn(String.format("Missing status from writer %s", writer));
+            return file;
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 

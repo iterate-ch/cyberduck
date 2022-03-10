@@ -20,14 +20,16 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import java.io.IOException;
 
+import com.joyent.manta.client.MantaObject;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 
-public class MantaAttributesFinderFeature implements AttributesFinder {
+public class MantaAttributesFinderFeature implements AttributesFinder, AttributesAdapter<MantaObject> {
 
     private final MantaSession session;
 
@@ -42,7 +44,7 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
         }
         try {
             return new MantaObjectAttributeAdapter(session)
-                .convert(session.getClient().head(file.getAbsolute()));
+                    .toAttributes(session.getClient().head(file.getAbsolute()));
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -53,5 +55,10 @@ public class MantaAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    @Override
+    public PathAttributes toAttributes(final MantaObject model) {
+        return new MantaObjectAttributeAdapter(session).toAttributes(model);
     }
 }

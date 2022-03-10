@@ -15,13 +15,14 @@ package ch.cyberduck.core.box;/*
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class BoxThresholdWriteFeature implements Write<BoxUploadHelper.BoxUploadResponse> {
+public class BoxThresholdWriteFeature implements Write<File> {
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -32,9 +33,9 @@ public class BoxThresholdWriteFeature implements Write<BoxUploadHelper.BoxUpload
     }
 
     @Override
-    public StatusOutputStream<BoxUploadHelper.BoxUploadResponse> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(status.isSegment()) {
-            return new BoxChunkedWriteFeature(session).write(file, status, callback);
+            return new BoxChunkedWriteFeature(session, fileid).write(file, status, callback);
         }
         return new BoxWriteFeature(session, fileid).write(file, status, callback);
     }
@@ -42,7 +43,7 @@ public class BoxThresholdWriteFeature implements Write<BoxUploadHelper.BoxUpload
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         if(status.isSegment()) {
-            return new BoxChunkedWriteFeature(session).checksum(file, status);
+            return new BoxChunkedWriteFeature(session, fileid).checksum(file, status);
         }
         return new BoxWriteFeature(session, fileid).checksum(file, status);
     }

@@ -126,7 +126,7 @@ public class GoogleStorageObjectListService implements ListService {
                         final EnumSet<Path.Type> types = object.getName().endsWith(String.valueOf(Path.DELIMITER))
                                 ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                         final Path file;
-                        final PathAttributes attr = attributes.toAttributes(object, versioning);
+                        final PathAttributes attr = attributes.toAttributes(object);
                         attr.setRevision(++revision);
                         // Copy bucket location
                         attr.setRegion(bucket.attributes().getRegion());

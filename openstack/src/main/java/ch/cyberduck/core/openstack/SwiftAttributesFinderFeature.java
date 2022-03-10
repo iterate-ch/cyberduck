@@ -29,6 +29,7 @@ import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -48,7 +49,7 @@ import ch.iterate.openstack.swift.model.ObjectMetadata;
 import ch.iterate.openstack.swift.model.Region;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftAttributesFinderFeature implements AttributesFinder {
+public class SwiftAttributesFinderFeature implements AttributesFinder, AttributesAdapter<StorageObject> {
     private static final Logger log = LogManager.getLogger(SwiftAttributesFinderFeature.class);
 
     private final SwiftSession session;
@@ -130,7 +131,8 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final StorageObject object) {
+    @Override
+    public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         if(StringUtils.isNotBlank(object.getMd5sum())) {
             // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
@@ -156,7 +158,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    protected PathAttributes toAttributes(final ObjectMetadata metadata) {
+    public PathAttributes toAttributes(final ObjectMetadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();

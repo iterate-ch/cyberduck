@@ -32,9 +32,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -42,13 +40,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.StorageObject;
 
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
@@ -93,7 +86,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             PathAttributes attr;
             final Path bucket = containerService.getContainer(file);
             try {
-                attr = this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                attr = new S3AttributesAdapter().toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
@@ -129,7 +122,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     // Determine if latest version
                     try {
                         // Duplicate if not latest version
-                        final String latest = this.toAttributes(session.getClient().getObjectDetails(
+                        final String latest = new S3AttributesAdapter().toAttributes(session.getClient().getObjectDetails(
                                 bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
                         if(null != latest) {
                             attr.setDuplicate(!latest.equals(attr.getVersionId()));
@@ -166,64 +159,5 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             }
             throw e;
         }
-    }
-
-    public PathAttributes toAttributes(final StorageObject object) {
-        final PathAttributes attributes = new PathAttributes();
-        attributes.setSize(object.getContentLength());
-        final Date lastmodified = object.getLastModifiedDate();
-        if(lastmodified != null) {
-            attributes.setModificationDate(lastmodified.getTime());
-        }
-        if(StringUtils.isNotBlank(object.getStorageClass())) {
-            attributes.setStorageClass(object.getStorageClass());
-        }
-        else if(object.containsMetadata("storage-class")) {
-            attributes.setStorageClass(object.getMetadata("storage-class").toString());
-        }
-        if(StringUtils.isNotBlank(object.getETag())) {
-            attributes.setETag(object.getETag());
-        }
-        // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
-        // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
-        // not the MD5 of the object data.
-        attributes.setChecksum(Checksum.parse(object.getETag()));
-        if(object instanceof S3Object) {
-            final String versionId = ((S3Object) object).getVersionId();
-            // Handle "null" for objects in buckets with no versioning enabled
-            attributes.setVersionId("null".equals(versionId) ? null : versionId);
-        }
-        if(object.containsMetadata("server-side-encryption-aws-kms-key-id")) {
-            attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(),
-                    object.getMetadata("server-side-encryption-aws-kms-key-id").toString()) {
-                @Override
-                public String getDescription() {
-                    return String.format("SSE-KMS (%s)", key);
-                }
-            });
-        }
-        else {
-            if(null != object.getServerSideEncryptionAlgorithm()) {
-                // AES256
-                attributes.setEncryption(new Encryption.Algorithm(object.getServerSideEncryptionAlgorithm(), null) {
-                    @Override
-                    public String getDescription() {
-                        return "SSE-S3 (AES-256)";
-                    }
-                });
-            }
-        }
-        if(!object.getModifiableMetadata().isEmpty()) {
-            final HashMap<String, String> metadata = new HashMap<>();
-            final Map<String, Object> source = object.getModifiableMetadata();
-            for(Map.Entry<String, Object> entry : source.entrySet()) {
-                metadata.put(entry.getKey(), entry.getValue().toString());
-            }
-            attributes.setMetadata(metadata);
-            if(object.containsMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
-                attributes.setModificationDate(Long.parseLong(object.getUserMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()));
-            }
-        }
-        return attributes;
     }
 }

@@ -164,8 +164,6 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         finally {
             pool.shutdown(false);
         }
-        // Mark parent status as complete
-        status.setComplete();
         if(log.isInfoEnabled()) {
             log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
         }
@@ -179,13 +177,15 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             final StorageObject stored = new StorageObject(containerService.getKey(file));
             final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
-                containerService.getContainer(file)),
-                containerService.getContainer(file).getName(),
-                status.getMime(),
-                containerService.getKey(file), manifest, Collections.emptyMap());
+                            containerService.getContainer(file)),
+                    containerService.getContainer(file).getName(),
+                    status.getMime(),
+                    containerService.getKey(file), manifest, Collections.emptyMap());
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
+            // Mark parent status as complete
+            status.withResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored)).setComplete();
             return stored;
         }
         catch(GenericException e) {

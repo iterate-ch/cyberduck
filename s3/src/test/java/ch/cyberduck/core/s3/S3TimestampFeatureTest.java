@@ -37,9 +37,10 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
     @Test
     public void testFindTimesteamp() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final TransferStatus status = new TransferStatus();
         final Path test = new S3TouchFeature(session).touch(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withTimestamp(1530305150672L));
-        assertEquals(1530305150672L, test.attributes().getModificationDate());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withTimestamp(1530305150672L));
+        assertEquals(1530305150672L, status.getResponse().getModificationDate());
         assertEquals(1530305150672L, new S3AttributesFinderFeature(session).find(test).getModificationDate());
         final S3TimestampFeature feature = new S3TimestampFeature(session);
         feature.setTimestamp(test, 1630305150672L);
@@ -48,7 +49,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
         final Path found = new S3ObjectListService(session, true).list(bucket, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
         assertEquals(1630305150672L, found.attributes().getModificationDate());
         final Path moved = new S3MoveFeature(session).move(test, new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
         assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());

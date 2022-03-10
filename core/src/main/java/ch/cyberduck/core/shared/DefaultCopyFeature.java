@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -54,10 +53,7 @@ public class DefaultCopyFeature implements Copy {
         }
         out = write.write(target, status, callback);
         new StreamCopier(status, status).withListener(listener).transfer(in, out);
-        final Object reply = out.getStatus();
-        return target.withAttributes(new PathAttributes(target.attributes())
-            .withVersionId(null)
-            .withFileId(null));
+        return target.withAttributes(status.getResponse());
     }
 
     @Override

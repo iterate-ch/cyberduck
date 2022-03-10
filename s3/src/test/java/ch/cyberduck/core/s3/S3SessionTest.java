@@ -198,7 +198,7 @@ public class S3SessionTest extends AbstractS3Test {
         assertNotNull(aws.getFeature(Redundancy.class));
         assertNotNull(aws.getFeature(Logging.class));
         assertNotNull(aws.getFeature(DistributionConfiguration.class));
-        assertEquals(S3MultipleDeleteFeature.class, aws.getFeature(Delete.class).getClass());
+        assertEquals(S3ThresholdDeleteFeature.class, aws.getFeature(Delete.class).getClass());
         final S3Session o = new S3Session(new Host(new S3Protocol(), "o"));
         assertNotNull(o.getFeature(Copy.class));
         assertNotNull(o.getFeature(AclPermission.class));

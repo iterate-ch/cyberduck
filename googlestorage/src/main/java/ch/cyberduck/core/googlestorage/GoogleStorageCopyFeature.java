@@ -18,10 +18,8 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -63,10 +61,7 @@ public class GoogleStorageCopyFeature implements Copy {
             while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {
                 log.warn(String.format("Pending rewrite for object %s", storageObject));
             }
-            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                containerService.getContainer(target)
-            ) : VersioningConfiguration.empty();
-            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource(), versioning));
+            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);

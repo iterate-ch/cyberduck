@@ -85,15 +85,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private static final Logger log = LogManager.getLogger(S3Session.class);
 
     private final PreferencesReader preferences
-        = new HostPreferences(host);
+            = new HostPreferences(host);
 
     private final Versioning versioning
-        = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;
+            = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;
 
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
-        = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+            = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
         super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -152,7 +152,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         // Only for AWS
         if(S3Session.isAwsHostname(host.getHostname())) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
+                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
         }
         return new RequestEntityRestStorageService(this, configuration);
     }
@@ -163,7 +163,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             try {
                 final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
                 client.setProviderCredentials(new AWSSessionCredentials(temporary.getUsername(), temporary.getPassword(),
-                    temporary.getToken()));
+                        temporary.getToken()));
             }
             catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
                 log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
@@ -176,15 +176,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 credentials = new STSCredentialsConfigurator(
-                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
             }
             else {
                 credentials = host.getCredentials();
             }
             if(StringUtils.isNotBlank(credentials.getToken())) {
                 client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                    new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
-                        credentials.getToken()));
+                        new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                                credentials.getToken()));
             }
             else {
                 client.setProviderCredentials(credentials.isAnonymousLogin() ? null :

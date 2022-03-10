@@ -44,8 +44,8 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
     @Test
     public void testGetClasses() {
         assertArrayEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "INTELLIGENT_TIERING",
-            S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "ONEZONE_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER, "DEEP_ARCHIVE").toArray(),
-            new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses().toArray());
+                        S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "ONEZONE_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER, "GLACIER_IR", "DEEP_ARCHIVE").toArray(),
+                new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses().toArray());
     }
 
     @Test(expected = NotfoundException.class)

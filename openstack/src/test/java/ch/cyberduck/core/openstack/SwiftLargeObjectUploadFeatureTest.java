@@ -80,12 +80,13 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
         final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-            1 * 1024L * 1024L, 1).upload(test, local,
-            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
-            new DisabledLoginCallback());
+                1 * 1024L * 1024L, 1).upload(test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+                new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
-        assertTrue(append.isComplete());
+        assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -145,6 +146,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
+        assertNotNull(append.getResponse());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
@@ -190,6 +192,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());
+        assertNotNull(status.getResponse());
         // Verify not canceled
         status.validate();
         assertEquals(content.length, count.getSent());

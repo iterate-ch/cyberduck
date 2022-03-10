@@ -125,7 +125,7 @@ public class CryptoVault implements Vault {
         if(credentials.isSaved()) {
             try {
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
             catch(LocalAccessDeniedException e) {
                 log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
@@ -199,11 +199,11 @@ public class CryptoVault implements Vault {
         }
         final Host bookmark = session.getHost();
         String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-            new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
         if(null == passphrase) {
             // Legacy
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+                    new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
         }
         final MasterkeyFile mkFile;
         try {
@@ -213,8 +213,8 @@ public class CryptoVault implements Vault {
             throw new VaultException(String.format("Failure reading vault master key file %s", masterkey.getName()), e);
         }
         this.unlock(session, mkFile, passphrase, bookmark, prompt,
-            MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
-            keychain);
+                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
+                keychain);
         return this;
     }
 
@@ -223,13 +223,13 @@ public class CryptoVault implements Vault {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
-                bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
-                message,
-                new LoginOptions()
-                    .user(false)
-                    .anonymous(false)
-                    .icon("cryptomator.tiff")
-                    .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
+                    bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
+                    message,
+                    new LoginOptions()
+                            .user(false)
+                            .anonymous(false)
+                            .icon("cryptomator.tiff")
+                            .passwordPlaceholder(LocaleFactory.localizedString("Passphrase", "Cryptomator")));
             if(null == credentials.getPassword()) {
                 throw new LoginCanceledException();
             }
@@ -245,12 +245,12 @@ public class CryptoVault implements Vault {
                 }
                 // Save password with hostname and path to masterkey.cryptomator in keychain
                 keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                    new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+                        new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
         }
         catch(CryptoAuthenticationException e) {
             this.unlock(session, mkFile, null, bookmark, prompt, String.format("%s %s.", e.getDetail(),
-                MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())), keychain);
+                    MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName())), keychain);
         }
     }
 
@@ -310,7 +310,7 @@ public class CryptoVault implements Vault {
         final StringWriter writer = new StringWriter();
         mkFile.write(writer);
         return new MasterkeyFileAccess(pepper, FastSecureRandomProvider.get().provide()).load(
-            new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
+                new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8)), passphrase);
     }
 
     public synchronized boolean isUnlocked() {
@@ -417,8 +417,8 @@ public class CryptoVault implements Vault {
             final String ciphertext = m.group(1);
             try {
                 final String cleartextFilename = fileNameCryptor.decryptFilename(
-                    vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
-                    ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
+                        vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
+                        ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(this.isDirectory(inflated)) {
                     final Permission permission = attributes.getPermission();
@@ -451,12 +451,12 @@ public class CryptoVault implements Vault {
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(
-                    "Failure to decrypt due to an unauthentic ciphertext", e);
+                        "Failure to decrypt due to an unauthentic ciphertext", e);
             }
         }
         else {
             throw new CryptoFilenameMismatchException(
-                String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
+                    String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
         }
     }
 
@@ -548,7 +548,7 @@ public class CryptoVault implements Vault {
 
     public int numberOfChunks(final long cleartextFileSize) {
         return (int) (cleartextFileSize / cryptor.fileContentCryptor().cleartextChunkSize() +
-            ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
+                ((cleartextFileSize % cryptor.fileContentCryptor().cleartextChunkSize() > 0) ? 1 : 0));
     }
 
     @Override
@@ -560,14 +560,14 @@ public class CryptoVault implements Vault {
             }
             if(type == Touch.class) {
                 // Use default touch feature because touch with remote implementation will not add encrypted file header
-                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class), session._getFeature(AttributesFinder.class)), session._getFeature(Write.class), this);
+                return (T) new CryptoTouchFeature(session, new DefaultTouchFeature(session._getFeature(Write.class)), session._getFeature(Write.class), this);
             }
             if(type == Directory.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                    new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class),
-                        session._getFeature(Find.class), this) :
-                    new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class),
-                        session._getFeature(Find.class), this));
+                        new CryptoDirectoryV6Feature(session, (Directory) delegate, session._getFeature(Write.class),
+                                session._getFeature(Find.class), this) :
+                        new CryptoDirectoryV7Feature(session, (Directory) delegate, session._getFeature(Write.class),
+                                session._getFeature(Find.class), this));
             }
             if(type == Upload.class) {
                 return (T) new CryptoUploadFeature(session, (Upload) delegate, session._getFeature(Write.class), this);
@@ -586,8 +586,8 @@ public class CryptoVault implements Vault {
             }
             if(type == Move.class) {
                 return (T) (vaultVersion == VAULT_VERSION_DEPRECATED ?
-                    new CryptoMoveV6Feature(session, (Move) delegate, this) :
-                    new CryptoMoveV7Feature(session, (Move) delegate, this));
+                        new CryptoMoveV6Feature(session, (Move) delegate, this) :
+                        new CryptoMoveV7Feature(session, (Move) delegate, this));
 
             }
             if(type == AttributesFinder.class) {

@@ -61,7 +61,8 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
             throw new InteroperabilityException("Missing upload token in server response");
         }
         final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, file, status, uploadUrl);
-        return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize"))) {
+        return new HttpResponseOutputStream<Node>(new MemorySegementingOutputStream(proxy, new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize")),
+                new SDSAttributesAdapter(session), status) {
             private final AtomicBoolean close = new AtomicBoolean();
             private final AtomicReference<Node> node = new AtomicReference<>();
 

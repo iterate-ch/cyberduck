@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -45,6 +44,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import com.google.api.services.storage.model.StorageObject;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -66,10 +67,10 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        test.attributes().setVersionId(out.getStatus().id);
+        test.attributes().setVersionId(out.getStatus().getId());
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
@@ -176,7 +177,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final String initialVersion = file.attributes().getVersionId();
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(file, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         assertEquals(0L, new GoogleStorageAttributesFinderFeature(session).find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(initialVersion))).getSize());
         // Read previous version
@@ -187,7 +188,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         new StreamCopier(status, status).transfer(in, buffer);
         assertEquals(0, buffer.size());
         in.close();
-        file.attributes().setVersionId(out.getStatus().id);
+        file.attributes().setVersionId(out.getStatus().getId());
         assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

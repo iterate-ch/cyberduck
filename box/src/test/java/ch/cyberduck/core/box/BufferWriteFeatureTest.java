@@ -21,7 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.BufferWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -51,7 +51,7 @@ public class BufferWriteFeatureTest extends AbtractBoxTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final BytecountStreamListener count = new BytecountStreamListener();
         new StreamCopier(status, status).withListener(count).transfer(in, out);
@@ -76,7 +76,7 @@ public class BufferWriteFeatureTest extends AbtractBoxTest {
             final byte[] content = RandomUtils.nextBytes(42512);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
-            final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             new StreamCopier(status, status).transfer(in, out);
             assertNull(out.getStatus());
@@ -91,7 +91,7 @@ public class BufferWriteFeatureTest extends AbtractBoxTest {
             final byte[] content = RandomUtils.nextBytes(33221);
             final TransferStatus status = new TransferStatus().exists(true);
             status.setLength(content.length);
-            final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
             final ByteArrayInputStream in = new ByteArrayInputStream(content);
             new StreamCopier(status, status).transfer(in, out);
             assertNull(out.getStatus());
@@ -113,7 +113,7 @@ public class BufferWriteFeatureTest extends AbtractBoxTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         new StreamCopier(status, status).transfer(in, out);
         assertNull(out.getStatus());
@@ -134,7 +134,7 @@ public class BufferWriteFeatureTest extends AbtractBoxTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         new StreamCopier(status, status).transfer(in, out);
         assertNull(out.getStatus());

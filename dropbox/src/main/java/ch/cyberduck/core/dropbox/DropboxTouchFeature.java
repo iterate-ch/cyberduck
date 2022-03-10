@@ -20,12 +20,12 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 
-public class DropboxTouchFeature extends DefaultTouchFeature<FileMetadata> {
+public class DropboxTouchFeature extends DefaultTouchFeature<Metadata> {
 
     public DropboxTouchFeature(final DropboxSession session) {
-        super(new DropboxWriteFeature(session), new DropboxAttributesFinderFeature(session));
+        super(new DropboxWriteFeature(session));
     }
 
     /**

@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import synapticloop.b2.response.B2StartLargeFileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static org.junit.Assert.*;
 
@@ -101,7 +101,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<B2StartLargeFileResponse> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();

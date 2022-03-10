@@ -28,10 +28,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
@@ -92,7 +92,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                         // Second attempt successful
                         return proxy;
                     }
-                    return new StatusOutputStream<Void>(new CountingOutputStream(proxy) {
+                    return new VoidStatusOutputStream(new CountingOutputStream(proxy) {
                         @Override
                         protected void afterWrite(final int n) throws IOException {
                             super.afterWrite(n);
@@ -124,7 +124,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 return new Credentials("test", "test");
             }
         }, new DisabledCancelCallback());
@@ -136,7 +136,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();

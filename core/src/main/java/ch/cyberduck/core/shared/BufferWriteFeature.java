@@ -26,11 +26,11 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BufferInputStream;
 import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -53,9 +53,9 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final FileBuffer buffer = new FileBuffer();
-        return new HttpResponseOutputStream<Void>(new BufferOutputStream(buffer) {
+        return new VoidStatusOutputStream(new BufferOutputStream(buffer) {
             private final AtomicBoolean close = new AtomicBoolean();
 
             @Override
@@ -110,12 +110,7 @@ public class BufferWriteFeature implements MultipartWrite<Void> {
                     close.set(true);
                 }
             }
-        }) {
-            @Override
-            public Void getStatus() {
-                return null;
-            }
-        };
+        });
     }
 
     @Override

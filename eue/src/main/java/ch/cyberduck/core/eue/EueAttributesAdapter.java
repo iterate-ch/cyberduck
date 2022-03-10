@@ -1,7 +1,5 @@
-package ch.cyberduck.core.http;
-
-/*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+package ch.cyberduck.core.eue;/*
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,17 +13,16 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.AttributesAdapter;
 
-import java.io.OutputStream;
-
-public class VoidHttpResponseOutputStream extends HttpResponseOutputStream<Void> {
-    public VoidHttpResponseOutputStream(final OutputStream proxy) {
-        super(proxy);
-    }
+public class EueAttributesAdapter implements AttributesAdapter<EueWriteFeature.Chunk> {
 
     @Override
-    public Void getStatus() throws BackgroundException {
-        return null;
+    public PathAttributes toAttributes(final EueWriteFeature.Chunk model) {
+        final PathAttributes attr = new PathAttributes();
+        attr.setSize(model.getLength());
+        attr.setChecksum(model.getChecksum());
+        return attr;
     }
 }

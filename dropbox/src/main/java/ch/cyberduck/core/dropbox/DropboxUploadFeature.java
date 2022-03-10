@@ -32,8 +32,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 
-public class DropboxUploadFeature extends HttpUploadFeature<FileMetadata, MessageDigest> {
+public class DropboxUploadFeature extends HttpUploadFeature<Metadata, MessageDigest> {
     private static final Logger log = LogManager.getLogger(DropboxUploadFeature.class);
 
     final DropboxSession session;
@@ -69,7 +70,7 @@ public class DropboxUploadFeature extends HttpUploadFeature<FileMetadata, Messag
     }
 
     @Override
-    protected void post(final Path file, final MessageDigest digest, final FileMetadata response) throws BackgroundException {
-        this.verify(file, digest, Checksum.parse(response.getContentHash()));
+    protected void post(final Path file, final MessageDigest digest, final Metadata response) throws BackgroundException {
+        this.verify(file, digest, Checksum.parse(((FileMetadata) response).getContentHash()));
     }
 }

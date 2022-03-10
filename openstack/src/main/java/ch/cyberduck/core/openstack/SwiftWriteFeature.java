@@ -57,6 +57,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        super(new SwiftAttributesFinderFeature(session, regionService));
         this.session = session;
         this.regionService = regionService;
     }

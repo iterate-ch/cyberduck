@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.shared.ListFilteringFeature;
@@ -43,7 +44,7 @@ import com.google.api.services.drive.model.File;
 
 import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 
-public class DriveAttributesFinderFeature implements AttributesFinder {
+public class DriveAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
     private static final Logger log = LogManager.getLogger(DriveAttributesFinderFeature.class);
 
     protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
@@ -86,7 +87,8 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
 
     }
 
-    protected PathAttributes toAttributes(final File f) throws IOException {
+    @Override
+    public PathAttributes toAttributes(final File f) {
         if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
             final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
             try {
@@ -119,14 +121,13 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
         if(StringUtils.isNotBlank(f.getWebViewLink())) {
             attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
-                DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+                    DescriptiveUrl.Type.http,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
             if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
-                    .getBytes(Charset.defaultCharset()).length);
+                        .getBytes(Charset.defaultCharset()).length);
             }
         }
         return attributes;
     }
-
 }

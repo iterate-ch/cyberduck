@@ -51,7 +51,8 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
         return session.getClient().list(new DAVPathEncoder().encode(file), 0, true);
     }
 
-    protected PathAttributes toAttributes(final DavResource resource) {
+    @Override
+    public PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = super.toAttributes(resource);
         final Map<QName, String> properties = resource.getCustomPropsNS();
         if(null != properties && properties.containsKey(MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE)) {

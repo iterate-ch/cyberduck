@@ -56,6 +56,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private final S3Session session;
 
     public S3WriteFeature(final S3Session session) {
+        super(new S3AttributesAdapter());
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
     }
@@ -74,10 +75,12 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }
-                    file.attributes().setVersionId(object.getVersionId());
                 }
                 catch(ServiceException e) {
                     throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
+                }
+                if(status.getTimestamp() != null) {
+                    object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
                 }
                 return object;
             }
@@ -134,6 +137,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         if(status.getTimestamp() != null) {
             // Interoperable with rsync
             object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+        }
+        if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+            object.setContentLength(status.getLength());
         }
         return object;
     }
