@@ -875,6 +875,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));
         this.setDefault("sds.upload.s3.enable", String.valueOf(true));
         this.setDefault("sds.versioning.references.enable", String.valueOf(false));
+        this.setDefault("sds.upload.s3.status.delay", String.valueOf(5)); // In millis
         this.setDefault("sds.upload.s3.status.period", String.valueOf(100)); // In millis
         this.setDefault("sds.oauth.migrate.enable", String.valueOf(true));
 

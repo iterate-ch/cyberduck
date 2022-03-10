@@ -245,7 +245,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         done.countDown();
                     }
                 }
-            }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+                                                     }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
+                    new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
             Uninterruptibles.awaitUninterruptibly(done);
             polling.shutdown();
             if(null != failure.get()) {

@@ -39,7 +39,11 @@ public class ScheduledThreadPool {
     }
 
     public ScheduledFuture<?> repeat(final Runnable runnable, final Long period, final TimeUnit unit) {
-        return pool.scheduleAtFixedRate(runnable, 0L, period, unit);
+        return this.repeat(runnable, 0L, period, unit);
+    }
+
+    public ScheduledFuture repeat(final Runnable runnable, final long delay, final Long period, final TimeUnit unit) {
+        return pool.scheduleAtFixedRate(runnable, delay, period, unit);
     }
 
     public ScheduledFuture<?> schedule(final Runnable runnable, final Long delay, final TimeUnit unit) {
