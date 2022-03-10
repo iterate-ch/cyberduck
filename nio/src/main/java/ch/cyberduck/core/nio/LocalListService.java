@@ -28,7 +28,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.DosFileAttributes;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -48,29 +47,29 @@ public class LocalListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<ch.cyberduck.core.Path> paths = new AttributedList<>();
-        try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(session.toPath(directory))) {
+        try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(session.toPath(directory))) {
             final Class<? extends BasicFileAttributes> provider = session.isPosixFilesystem() ? PosixFileAttributes.class : DosFileAttributes.class;
-            for(java.nio.file.Path path : directoryStream) {
-                if(null == path.getFileName()) {
+            for(java.nio.file.Path n : stream) {
+                if(null == n.getFileName()) {
                     continue;
                 }
                 try {
-                    final PathAttributes attributes = feature.toAttributes(Files.readAttributes(path, provider, LinkOption.NOFOLLOW_LINKS));
+                    final PathAttributes attributes = feature.toAttributes(n);
                     final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                    if(Files.isDirectory(path)) {
+                    if(Files.isDirectory(n)) {
                         type.add(Path.Type.directory);
                     }
                     else {
                         type.add(Path.Type.file);
                     }
-                    final Path file = new Path(directory, path.getFileName().toString(), type, attributes);
-                    if(this.post(path, file)) {
+                    final Path file = new Path(directory, n.getFileName().toString(), type, attributes);
+                    if(this.post(n, file)) {
                         paths.add(file);
                         listener.chunk(directory, paths);
                     }
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure reading attributes for %s", path));
+                    log.warn(String.format("Failure reading attributes for %s", n));
                 }
             }
         }
