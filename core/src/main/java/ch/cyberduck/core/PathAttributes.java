@@ -376,12 +376,22 @@ public class PathAttributes extends Attributes implements Serializable {
         this.checksum = checksum;
     }
 
+    public PathAttributes withChecksum(final Checksum checksum) {
+        this.setChecksum(checksum);
+        return this;
+    }
+
     public String getETag() {
         return etag;
     }
 
     public void setETag(final String etag) {
         this.etag = etag;
+    }
+
+    public PathAttributes withETag(final String etag) {
+        this.setETag(etag);
+        return this;
     }
 
     /**
