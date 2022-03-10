@@ -36,10 +36,10 @@
         <key>Password Placeholder</key>
         <string>Secret Key</string>
         <key>Region</key>
-        <string>eu2 (DE-Nuremberg)</string>
+        <string>default</string>
         <key>Regions</key>
         <array>
-            <string>eu2 (DE-Nuremberg)</string>
+            <string>default</string>
         </array>
     </dict>
 </plist>
