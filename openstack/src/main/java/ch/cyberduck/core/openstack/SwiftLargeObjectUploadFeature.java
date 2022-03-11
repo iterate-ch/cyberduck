@@ -176,6 +176,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
             final StorageObject stored = new StorageObject(containerService.getKey(file));
+            stored.setSize(status.getLength());
             final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
                             containerService.getContainer(file)),
                     containerService.getContainer(file).getName(),
