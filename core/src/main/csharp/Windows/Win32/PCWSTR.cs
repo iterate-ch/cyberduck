@@ -2,10 +2,13 @@
 using static System.Runtime.CompilerServices.Unsafe;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
-namespace Windows.Win32.Foundation
+namespace Windows.Win32
 {
-    public partial struct PCWSTR
+    namespace Foundation
     {
-        public unsafe static implicit operator PCWSTR(in string value) => (char*)AsPointer(ref GetReference(value.AsSpan()));
+        public unsafe partial struct PCWSTR
+        {
+            public static unsafe implicit operator PCWSTR(in string value) => (char*)AsPointer(ref GetReference(value.AsSpan()));
+        }
     }
 }
