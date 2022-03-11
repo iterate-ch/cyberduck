@@ -17,14 +17,11 @@ package ch.cyberduck.core.googlestorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -62,13 +59,11 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 return folder.withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
             }
             else {
-                // Add placeholder object
-                status.setMime(MIMETYPE);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                new DefaultStreamCloser().close(writer.write(new Path(folder.getParent(), folder.getName(), type,
-                        new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback()));
-                return folder.withType(type).withAttributes(status.getResponse());
+                // Add placeholder object
+                return new GoogleStorageDirectoryFeature(session).withWriter(writer).mkdir(folder.withType(type),
+                        status.withMime(MIMETYPE));
             }
         }
         catch(IOException e) {
