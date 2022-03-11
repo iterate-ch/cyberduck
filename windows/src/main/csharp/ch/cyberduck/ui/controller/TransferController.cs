@@ -34,12 +34,13 @@ using java.text;
 using org.apache.logging.log4j;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class TransferController : WindowController<ITransferView>, TranscriptListener, CollectionListener
     {
-        private static readonly Logger Log = LogManager.getLogger(typeof (TransferController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(TransferController).FullName);
         private static readonly object SyncRoot = new Object();
         private static volatile TransferController _instance;
         private readonly TransferCollection _collection = TransferCollection.defaultCollection();
@@ -150,12 +151,12 @@ namespace Ch.Cyberduck.Ui.Controller
                         _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
                             LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"),
                             null, String.Format("{0}", LocaleFactory.localizedString("Exit")), true);
-                    if (result.Button == Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDYES)
+                    if (result.Button == IDOK)
                     {
                         // Quit
                         for (int i = 0; i < _instance.getRegistry().size(); i++)
                         {
-                            ((BackgroundAction) _instance.getRegistry().get(i)).cancel();
+                            ((BackgroundAction)_instance.getRegistry().get(i)).cancel();
                         }
                         return true;
                     }
@@ -213,7 +214,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     for (int i = 0; i < transfer.getRoots().size(); i++)
                     {
-                        TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                        TransferItem item = (TransferItem)transfer.getRoots().get(i);
                         try
                         {
                             LocalTrashFactory.get().trash(item.local);
@@ -240,13 +241,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateShowEvent()
         {
-            return ValidateToolbarItem(delegate(Transfer transfer)
+            return ValidateToolbarItem(delegate (Transfer transfer)
             {
                 if (transfer.getLocal() != null)
                 {
                     for (int i = 0; i < transfer.getRoots().size(); i++)
                     {
-                        TransferItem t = (TransferItem) transfer.getRoots().get(i);
+                        TransferItem t = (TransferItem)transfer.getRoots().get(i);
                         if (t.local.exists())
                         {
                             return true;
@@ -259,7 +260,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateOpenEvent()
         {
-            return ValidateToolbarItem(delegate(Transfer transfer)
+            return ValidateToolbarItem(delegate (Transfer transfer)
             {
                 if (transfer.getLocal() != null)
                 {
@@ -271,7 +272,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         for (int i = 0; i < transfer.getRoots().size(); i++)
                         {
-                            TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                            TransferItem item = (TransferItem)transfer.getRoots().get(i);
                             if (item.local.exists())
                             {
                                 return true;
@@ -313,7 +314,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateResumeEvent()
         {
-            return ValidateToolbarItem(delegate(Transfer transfer)
+            return ValidateToolbarItem(delegate (Transfer transfer)
             {
                 if (transfer.isRunning())
                 {
@@ -330,7 +331,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 LocaleFactory.localizedString("Unlimited Bandwidth", "Preferences")));
             foreach (String option in
                 _preferences.getProperty("queue.bandwidth.options")
-                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<int, string>(Convert.ToInt32(option.Trim()),
                     (SizeFormatterFactory.get(true).format(Convert.ToInt32(option.Trim())) + "/s")));
@@ -342,7 +343,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<int, string>> list = new List<KeyValuePair<int, string>>();
             foreach (String option in
                 _preferences.getProperty("queue.connections.options")
-                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
+                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 int connections = Convert.ToInt32(option.Trim());
                 if (TransferConnectionLimiter.AUTO == connections)
@@ -352,7 +353,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    list.Add(new KeyValuePair<int, string>(connections, 
+                    list.Add(new KeyValuePair<int, string>(connections,
                         MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), connections)));
                 }
             }
@@ -381,7 +382,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (registry.get(i) is TransferBackgroundAction)
                         {
-                            TransferBackgroundAction t = (TransferBackgroundAction) registry.get(i);
+                            TransferBackgroundAction t = (TransferBackgroundAction)registry.get(i);
                             if (t.getTransfer().Equals(transfer))
                             {
                                 TransferSpeedometer meter = t.getMeter();
@@ -482,7 +483,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 for (int i = 0; i < transfer.getRoots().size(); i++)
                 {
-                    TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                    TransferItem item = (TransferItem)transfer.getRoots().get(i);
                     RevealServiceFactory.get().reveal(item.local);
                 }
             }
@@ -497,7 +498,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 for (int i = 0; i < transfer.getRoots().size(); i++)
                 {
-                    TransferItem item = (TransferItem) transfer.getRoots().get(i);
+                    TransferItem item = (TransferItem)transfer.getRoots().get(i);
                     Local l = item.local;
                     if (ApplicationLauncherFactory.get().open(l))
                     {
@@ -558,7 +559,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (registry.get(i) is TransferBackgroundAction)
                         {
-                            TransferBackgroundAction t = (TransferBackgroundAction) registry.get(i);
+                            TransferBackgroundAction t = (TransferBackgroundAction)registry.get(i);
                             if (t.getTransfer().Equals(transfer))
                             {
                                 t.cancel();
@@ -632,7 +633,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         LocaleFactory.localizedString("Remove completed transfers from list."), null,
                         LocaleFactory.localizedString("Clean Up"), true,
                         LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
-                        delegate(int option, bool verificationChecked)
+                        delegate (int option, bool verificationChecked)
                         {
                             if (verificationChecked)
                             {
@@ -673,7 +674,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                ((TransferController) Controller).View.AddTranscriptEntry(_request, _msg);
+                ((TransferController)Controller).View.AddTranscriptEntry(_request, _msg);
             }
         }
 
@@ -698,7 +699,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     null == transfer.getSource() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, transfer.getSource(), listener),
                     null == transfer.getDestination() ? SessionPool.DISCONNECTED : SessionPoolFactory.create(controller, transfer.getDestination(), listener),
                     controller.GetController(transfer),
-                    controller.GetController(transfer), 
+                    controller.GetController(transfer),
                     transfer, options)
             {
                 _transfer = transfer;
