@@ -85,8 +85,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
                 new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
-        assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertTrue(append.isComplete());
+        assertNotNull(append.getResponse());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
