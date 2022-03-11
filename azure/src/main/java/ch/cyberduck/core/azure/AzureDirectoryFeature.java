@@ -19,14 +19,12 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -44,7 +42,7 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 public class AzureDirectoryFeature implements Directory<Void> {
 
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
+            = new DirectoryDelimiterPathContainerService();
 
     private final AzureSession session;
     private final OperationContext context;
@@ -68,11 +66,10 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 return folder.withAttributes(new AzureAttributesFinderFeature(session, context).find(folder));
             }
             else {
-                status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                new DefaultStreamCloser().close(writer.write(folder.withType(type), status, new DisabledConnectionCallback()));
-                return folder.withAttributes(new AzureAttributesFinderFeature(session, context).find(folder));
+                return new AzureTouchFeature(session, context).withWriter(writer).touch(folder.withType(type),
+                        status.withChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
             }
         }
         catch(URISyntaxException e) {
