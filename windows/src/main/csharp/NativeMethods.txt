@@ -1,9 +1,9 @@
-﻿CLSCTX_INPROC_SERVER
+﻿CLSCTX
 CLSID_DragDropHelper
 CoCreateInstance
 CreateStreamOnHGlobal
 DeleteObject
-DragDropHelper
+CLSID_DragDropHelper
 DROPDESCRIPTION
 DROPIMAGETYPE
 DVASPECT
