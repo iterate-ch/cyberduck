@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(BuildInstaller)'=='True' ">
-    <ProjectReference Include="src\main\wix\WindowsVersionCustomAction\WindowsVersionCustomAction.vcxproj" />
+    <ProjectReference Include="src\main\wix\WindowsVersionCustomAction\WindowsVersionCustomAction.vcxproj" SetPlatform="Platform=Win32" />
     <ProjectReference Include="src\main\wix\Bundle\Cyberduck.Bundle.wixproj" />
     <ProjectReference Include="src\main\wix\Bootstrapper\Cyberduck.Bootstrapper.wixproj" />
     <ProjectReference Include="src\main\appx\Cyberduck.Package.proj" />
