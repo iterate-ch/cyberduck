@@ -23,9 +23,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.EnumSet;
-
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 
 @Category(IntegrationTest.class)
 public class DriveTeamDrivesListServiceTest extends AbstractDriveTest {
@@ -34,6 +32,6 @@ public class DriveTeamDrivesListServiceTest extends AbstractDriveTest {
     public void list() throws Exception {
         final AttributedList<Path> list = new DriveTeamDrivesListService(session, new DriveFileIdProvider(session)).list(
             DriveHomeFinderService.SHARED_DRIVES_NAME, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
+        assertNotSame(AttributedList.emptyList(), list);
     }
 }
