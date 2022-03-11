@@ -65,9 +65,10 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(folder, new TransferStatus());
-        final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)
-        ), new DAVWriteFeature(session), cryptomator).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path template = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new DAVWriteFeature(session)),
+                new DAVWriteFeature(session), cryptomator).touch(template, new TransferStatus())
+                .withAttributes(new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(template));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new DAVMoveFeature(session));
         // rename file
