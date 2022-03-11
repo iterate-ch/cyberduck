@@ -29,6 +29,7 @@ import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
+import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -62,6 +63,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path test = cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session))).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();
         assertTrue(test.getType().contains(Path.Type.placeholder));
+        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(versionId, attributes.getVersionId());
