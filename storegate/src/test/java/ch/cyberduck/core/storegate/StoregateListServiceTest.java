@@ -15,10 +15,12 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -50,9 +52,11 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
     @Test
     public void testList() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
-        final AttributedList<Path> list = new StoregateListService(session, nodeid).list(
-            new Path("/My files", EnumSet.of(directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus());
+        final AttributedList<Path> list = new StoregateListService(session, nodeid).list(room, new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
+        assertTrue(list.contains(file));
     }
 }
