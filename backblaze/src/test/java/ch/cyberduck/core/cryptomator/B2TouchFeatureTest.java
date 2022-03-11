@@ -47,8 +47,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import synapticloop.b2.response.BaseB2Response;
-
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
@@ -64,8 +62,8 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(
-            new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(
+                new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         assertEquals(test.attributes(), new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test));
@@ -82,7 +80,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new CryptoTouchFeature<BaseB2Response>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -96,7 +94,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path test = new CryptoTouchFeature<BaseB2Response>(session, new DefaultTouchFeature<BaseB2Response>(new B2WriteFeature(session, fileid)
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new B2WriteFeature(session, fileid)
         ), new B2WriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());

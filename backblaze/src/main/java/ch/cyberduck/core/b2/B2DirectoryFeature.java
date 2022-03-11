@@ -17,15 +17,12 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -38,13 +35,12 @@ import java.util.EnumSet;
 import synapticloop.b2.BucketType;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
-import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
 public class B2DirectoryFeature implements Directory<BaseB2Response> {
 
     private final PathContainerService containerService
-        = new B2PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -75,15 +71,11 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
             }
             else {
-                status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
-                status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
-                final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
-                new DefaultStreamCloser().close(out);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
-                final B2FileResponse response = (B2FileResponse) out.getStatus();
-                fileid.cache(folder, response.getFileId());
-                return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
+                return new B2TouchFeature(session, fileid).touch(folder.withType(type), status
+                        .withMime(MimeTypeService.DEFAULT_CONTENT_TYPE)
+                        .withChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
             }
         }
         catch(B2ApiException e) {

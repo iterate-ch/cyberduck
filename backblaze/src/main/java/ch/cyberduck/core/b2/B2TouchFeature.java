@@ -26,19 +26,13 @@ import synapticloop.b2.response.BaseB2Response;
 
 public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
 
-    private final B2VersionIdProvider fileid;
-
     public B2TouchFeature(final B2Session session, final B2VersionIdProvider fileid) {
         super(new B2WriteFeature(session, fileid));
-        this.fileid = fileid;
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status));
-        final Path result = super.touch(file, status);
-        fileid.cache(file, status.getResponse().getFileId());
-        return result;
+        return super.touch(file, status.withChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override
