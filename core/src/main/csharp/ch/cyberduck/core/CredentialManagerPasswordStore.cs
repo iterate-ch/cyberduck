@@ -22,6 +22,7 @@ using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.logging.log4j;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using static Windows.Win32.Security.Credentials.CRED_PERSIST;
@@ -102,7 +103,9 @@ namespace Ch.Cyberduck.Core
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred.Attributes?.TryGetValue("Token", out var token) ?? false && !string.IsNullOrWhiteSpace(token))
+            if (cred.Attributes is Dictionary<string, string> attrs
+                && attrs.TryGetValue("Token", out var token)
+                && !string.IsNullOrWhiteSpace(token))
             {
                 return token;
             }
@@ -117,11 +120,12 @@ namespace Ch.Cyberduck.Core
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred.Attributes.TryGetValue("OAuth Access Token", out var accessToken) &&
-                cred.Attributes.TryGetValue("OAuth Refresh Token", out var refreshToken))
+            if (cred.Attributes is Dictionary<string, string> attrs
+                && attrs.TryGetValue("OAuth Access Token", out var accessToken)
+                && attrs.TryGetValue("OAuth Refresh Token", out var refreshToken))
             {
                 long expiry = default;
-                if (cred.Attributes.TryGetValue("OAuth Expiry", out var expiryValue))
+                if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
                 {
                     long.TryParse(expiryValue, out expiry);
                 }
@@ -139,7 +143,8 @@ namespace Ch.Cyberduck.Core
             }
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
-            if (cred.Attributes.TryGetValue("Private Key Passphrase", out var passphrase)
+            if (cred.Attributes is Dictionary<string, string> attrs
+                && attrs.TryGetValue("Private Key Passphrase", out var passphrase)
                 && !string.IsNullOrWhiteSpace(passphrase))
             {
                 return passphrase;
