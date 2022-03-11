@@ -101,7 +101,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
         private final DbxUserFilesRequests client;
         private final String sessionId;
 
-        private AtomicReference<Metadata> response;
+        private final AtomicReference<Metadata> response = new AtomicReference<>();
         private Long offset = 0L;
         private Long written = 0L;
         private UploadSessionAppendV2Uploader uploader;
