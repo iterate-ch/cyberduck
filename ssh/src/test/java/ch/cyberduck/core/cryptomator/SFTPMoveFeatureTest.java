@@ -132,9 +132,10 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new SFTPDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
+        final Path template = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path file = new CryptoTouchFeature<>(session, new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SFTPWriteFeature(session)
         ), new SFTPWriteFeature(session), cryptomator), new SFTPWriteFeature(session), cryptomator).touch(
-                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                template, new TransferStatus()).withAttributes(new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(template));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new SFTPMoveFeature(session));
         // rename file
