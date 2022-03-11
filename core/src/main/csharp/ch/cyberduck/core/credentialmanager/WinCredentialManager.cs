@@ -23,8 +23,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using Windows.Win32.Foundation;
 using Windows.Win32.Security.Credentials;
 using static System.Runtime.CompilerServices.Unsafe;
 using static System.Runtime.InteropServices.MemoryMarshal;
@@ -71,7 +73,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
             string password = default;
             if (cred.CredentialBlobSize > 0)
             {
-                password = Encoding.Default.GetString(cred.CredentialBlob, (int)cred.CredentialBlobSize);
+                password = new string((sbyte*)cred.CredentialBlob, 0, (int)cred.CredentialBlobSize, Encoding.Unicode);
             }
             var attributes = new Dictionary<string, string>();
 
@@ -80,7 +82,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
             {
                 uint count = cred.AttributeCount;
 
-                Dictionary<string, List<(int, UnmanagedMemoryStream)>> groups = new();
+                Dictionary<string, List<(int, nint, int)>> groups = new();
                 for (int i = 0; i < count; i++)
                 {
                     ref var attribute = ref cred.Attributes[i];
@@ -96,21 +98,23 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     {
                         groups[keyword] = list = new();
                     }
-                    list.Add((index, new(attribute.Value, (int)attribute.ValueSize)));
+                    list.Add((index, (nint)attribute.Value, (int)attribute.ValueSize));
                 }
 
                 foreach (var group in groups)
                 {
-                    using MemoryStream buffer = new();
+                    using var memory = MemoryPool<byte>.Shared.Rent(group.Value.Count * 256);
+                    Span<byte> buffer = default;
+
                     // auto concatenate paged-objects to full string
                     foreach (var item in group.Value.OrderBy(x => x.Item1))
                     {
-                        using (item.Item2)
-                        {
-                            item.Item2.CopyTo(buffer);
-                        }
+                        var source = buffer.Length;
+                        buffer = memory.Memory.Span.Slice(0, buffer.Length + item.Item3);
+                        Span<byte> blob = new((void*)item.Item2, item.Item3);
+                        blob.CopyTo(buffer.Slice(source));
                     }
-                    result.Attributes[group.Key] = Encoding.Default.GetString(buffer.GetBuffer(), 0, (int)buffer.Length);
+                    result.Attributes[group.Key] = new((sbyte*)AsPointer(ref GetReference(buffer)), 0, buffer.Length, Encoding.Unicode);
                 }
             }
             return result;
@@ -144,9 +148,9 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
             if (!string.IsNullOrWhiteSpace(credential.Password))
             {
-                var passwordBytes = Encoding.Default.GetBytes(credential.Password);
-                cred.CredentialBlobSize = (uint)passwordBytes.Length;
-                cred.CredentialBlob = (byte*)AsPointer(ref GetReference(passwordBytes.AsSpan()));
+                PCWSTR wstr = credential.Password;
+                cred.CredentialBlobSize = (uint)(credential.Password.Length * 2);
+                cred.CredentialBlob = (byte*)wstr.Value;
             }
 
             using var attributes = MemoryPool<CREDENTIAL_ATTRIBUTEW>.Shared.Rent(64); // cannot be larger than this.
@@ -158,24 +162,23 @@ namespace Ch.Cyberduck.Core.CredentialManager
                     continue;
                 }
 
-                var chars = item.Value.ToCharArray();
-                var bytes = Encoding.Default.GetBytes(chars);
-                string formatString = bytes.Length switch
+                PCWSTR wstr = item.Value;
+                var byteLen = item.Value.Length * 2;
+                string formatString = byteLen switch
                 {
                     > 256 => "{0}:{1}",
                     _ => "{0}"
                 };
 
-                for (int i = 0, innerIndex = 0; i < bytes.Length; i += 256, innerIndex++)
+                for (int i = 0, innerIndex = 0; i < byteLen; i += 256, innerIndex++)
                 {
-                    ref byte ptr = ref bytes[i];
-                    var length = Math.Min(256, bytes.Length - i);
+                    var length = Math.Min(256, byteLen - i);
                     var key = string.Format(formatString, item.Key, innerIndex);
                     attributes.Memory.Span[index] = new CREDENTIAL_ATTRIBUTEW()
                     {
                         Keyword = key,
                         ValueSize = (uint)length,
-                        Value = (byte*)AsPointer(ref ptr)
+                        Value = ((byte*)wstr.Value) + i
                     };
                     index += 1;
                 }
