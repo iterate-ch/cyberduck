@@ -516,7 +516,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
                                 Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
                             true);
-                    if (result.Button == IDYES)
+                    if (result.Button == IDOK)
                     {
                         background(new SearchAction(this));
                     }
@@ -1408,7 +1408,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TaskDialogResult result = QuestionBox(LocaleFactory.localizedString("Delete Bookmark"),
                 LocaleFactory.localizedString("Do you want to delete the selected bookmark?"), alertText.ToString(),
                 String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (result.Button == IDYES)
+            if (result.Button == IDOK)
             {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }
@@ -2882,7 +2882,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     break;
                             }
                         });
-                    return result.Button != Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDCANCEL;
+                    return result.Button != IDCANCEL;
                 }
             }
             UnmountImpl(disconnected);
@@ -3116,7 +3116,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
                 content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (r.Button == Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDYES)
+            if (r.Button == IDOK)
             {
                 DeletePathsImpl(normalized);
             }
@@ -3177,7 +3177,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Overwrite"), alertText.ToString(),
                     content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Overwrite")), true);
-                return r.Button == Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT.IDYES;
+                return r.Button == IDOK;
             }
             else
             {
