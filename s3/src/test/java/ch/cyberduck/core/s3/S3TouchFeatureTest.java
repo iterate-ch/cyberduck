@@ -104,7 +104,9 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String version1 = new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
+        assertNotNull(version1);
         final String version2 = new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
+        assertNotNull(version2);
         assertTrue(new S3FindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),

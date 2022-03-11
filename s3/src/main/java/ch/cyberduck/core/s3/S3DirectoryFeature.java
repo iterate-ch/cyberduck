@@ -17,13 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -53,18 +51,17 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
             service.create(folder, StringUtils.isBlank(status.getRegion()) ?
-                new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault().getIdentifier() : status.getRegion());
+                    new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault().getIdentifier() : status.getRegion());
             return folder;
         }
         else {
-            status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
-            // Add placeholder object
-            status.setMime(MIMETYPE);
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            ;
-            new DefaultStreamCloser().close(writer.write(folder.withType(type), status, new DisabledConnectionCallback()));
-            return folder.withAttributes(status.getResponse());
+            return new S3TouchFeature(session).withWriter(writer).touch(folder
+                    .withType(type), status
+                    // Add placeholder object
+                    .withMime(MIMETYPE)
+                    .withChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
         }
     }
 
