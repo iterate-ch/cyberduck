@@ -212,9 +212,10 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                 if(result.get() == null) {
                     try {
                         final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
-                        new EueMultipartUploadCompleter(session)
+                        final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                                 .getCompletedUploadResponse(uploadUri, offset, cdash64);
-                        result.set(new EueWriteFeature.Chunk(overall.getLength(), cdash64));
+                        result.set(new EueWriteFeature.Chunk(
+                                EueResourceIdProvider.getResourceIdFromResourceUri(uploadUri), overall.getLength(), cdash64));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e);

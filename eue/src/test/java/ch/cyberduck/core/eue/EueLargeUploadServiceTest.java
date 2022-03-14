@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,7 +59,7 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];

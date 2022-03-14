@@ -17,6 +17,7 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -119,8 +120,8 @@ public class EueListServiceTest extends AbstractEueSessionTest {
                 .touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertTrue(list.contains(file));
-        assertEquals(file.attributes(), list.get(file).attributes());
+        assertNotNull(list.find(new DefaultPathPredicate(file)));
+        assertEquals(file.attributes().getFileId(), list.get(file).attributes().getFileId());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(file, new DisabledListProgressListener())));

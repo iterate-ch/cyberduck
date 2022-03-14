@@ -21,6 +21,7 @@ public class EueAttributesAdapter implements AttributesAdapter<EueWriteFeature.C
     @Override
     public PathAttributes toAttributes(final EueWriteFeature.Chunk model) {
         final PathAttributes attr = new PathAttributes();
+        attr.setFileId(model.getResourceId());
         attr.setSize(model.getLength());
         attr.setChecksum(model.getChecksum());
         return attr;

@@ -116,7 +116,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
                             }
                             try {
                                 if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                                    return new Chunk(status.getPart(), status.getLength(), status.getChecksum());
+                                    return new Chunk(resourceId, status.getPart(), status.getLength(), status.getChecksum());
                                 }
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 throw new EueExceptionMappingService().map(response);
@@ -170,23 +170,30 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
     }
 
     public static final class Chunk {
+        private final String resourceId;
         private final Integer partnumber;
         private final Long length;
         private final String cdash64;
         private final Checksum checksum;
 
-        public Chunk(final Long length, final String cdash64) {
+        public Chunk(final String resourceId, final Long length, final String cdash64) {
+            this.resourceId = resourceId;
             this.partnumber = -1;
             this.length = length;
             this.cdash64 = cdash64;
             this.checksum = Checksum.NONE;
         }
 
-        public Chunk(final Integer partnumber, final Long length, final Checksum checksum) {
+        public Chunk(final String resourceId, final Integer partnumber, final Long length, final Checksum checksum) {
+            this.resourceId = resourceId;
             this.partnumber = partnumber;
             this.length = length;
             this.cdash64 = StringUtils.EMPTY;
             this.checksum = checksum;
+        }
+
+        public String getResourceId() {
+            return resourceId;
         }
 
         public Integer getPartnumber() {
