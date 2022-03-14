@@ -11,7 +11,6 @@ using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace Windows.Win32
 {
-    using System.Com;
     using static CLSCTX;
     using static DVASPECT;
     using static PInvoke;

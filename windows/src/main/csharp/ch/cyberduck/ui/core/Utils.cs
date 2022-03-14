@@ -20,7 +20,6 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
-using System;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -30,8 +29,8 @@ namespace Ch.Cyberduck.Ui.Core
 {
     public class Utils
     {
-        const MESSAGEBOX_RESULT BUTTON_ID = (MESSAGEBOX_RESULT)0b1000_0000;
-        const MESSAGEBOX_RESULT BUTTON_MASK = (MESSAGEBOX_RESULT)0b0111_1111;
+        private const MESSAGEBOX_RESULT BUTTON_ID = (MESSAGEBOX_RESULT)0b1000_0000;
+        private const MESSAGEBOX_RESULT BUTTON_MASK = (MESSAGEBOX_RESULT)0b0111_1111;
 
         public static TaskDialogResult CommandBox(IWin32Window owner, string title, string mainInstruction,
             string content, string expandedInfo, string help, string verificationText, string commandButtons,
@@ -69,14 +68,13 @@ namespace Ch.Cyberduck.Ui.Core
                 });
 
             var result = dialog.Show();
-            if ((result.Button & BUTTON_ID ) > 0)
+            if ((result.Button & BUTTON_ID) > 0)
             {
-                handler((int)(result.Button & BUTTON_MASK), result.VerificationChecked.GetValueOrDefault());
+                result = new(result.Button & BUTTON_MASK,
+                    result.RadioButton,
+                    result.VerificationChecked);
             }
-            else
-            {
-                handler((int)result.Button, result.VerificationChecked.GetValueOrDefault());
-            }
+            handler((int)result.Button, result.VerificationChecked.GetValueOrDefault());
             return result;
         }
 
