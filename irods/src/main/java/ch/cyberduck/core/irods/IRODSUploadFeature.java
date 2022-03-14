@@ -76,7 +76,6 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                 options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
             }
             block.setTransferOptions(options);
-            final TransferStatus copy = new TransferStatus(status);
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory().getDataTransferOperations(fs.getIRODSAccount());
             transfer.putOperation(new File(local.getAbsolute()), f, new DefaultTransferStatusCallbackListener(
                 status, listener, block
@@ -95,7 +94,7 @@ public class IRODSUploadFeature implements Upload<Checksum> {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }
                     else {
-                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), copy);
+                        final Checksum expected = ChecksumComputeFactory.get(fingerprint.algorithm).compute(local.getInputStream(), new TransferStatus(status));
                         if(!expected.equals(fingerprint)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                 MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
