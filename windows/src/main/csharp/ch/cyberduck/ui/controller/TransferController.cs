@@ -34,7 +34,6 @@ using java.text;
 using org.apache.logging.log4j;
 using StructureMap;
 using static Ch.Cyberduck.ImageHelper;
-using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -151,7 +150,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _instance.QuestionBox(LocaleFactory.localizedString("Transfer in progress"),
                             LocaleFactory.localizedString("There are files currently being transferred. Quit anyway?"),
                             null, String.Format("{0}", LocaleFactory.localizedString("Exit")), true);
-                    if (result.Button == IDOK)
+                    if (result.Button == 0)
                     {
                         // Quit
                         for (int i = 0; i < _instance.getRegistry().size(); i++)
