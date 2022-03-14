@@ -225,15 +225,18 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                 if(null != canceled.get()) {
                     return;
                 }
+                if(completed.isEmpty()) {
+                    this.write(new byte[0]);
+                }
                 final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                    .keepShareLinks(overall.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
-                    .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
+                        .keepShareLinks(overall.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
+                        .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                     final FileKey fileKey = reader.readValue(overall.getFilekey().array());
                     final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                        TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                        TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                            TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                            TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                     );
                     completeS3FileUploadRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
