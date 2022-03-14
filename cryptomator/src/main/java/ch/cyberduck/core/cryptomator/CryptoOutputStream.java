@@ -30,13 +30,10 @@ import java.util.Arrays;
 
 public class CryptoOutputStream extends ProxyOutputStream {
 
-    private final OutputStream proxy;
-
     public CryptoOutputStream(final OutputStream proxy, final FileContentCryptor cryptor, final FileHeader header,
                               final NonceGenerator nonces, final long chunkIndexOffset) {
         super(new MemorySegementingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces, chunkIndexOffset),
                 cryptor.cleartextChunkSize()));
-        this.proxy = proxy;
     }
 
     @Override
