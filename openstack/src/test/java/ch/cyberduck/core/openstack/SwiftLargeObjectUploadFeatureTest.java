@@ -6,6 +6,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -86,7 +87,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertTrue(append.isComplete());
-        assertNotNull(append.getResponse());
+        assertNotSame(PathAttributes.EMPTY, append.getResponse());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -146,7 +147,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
-        assertNotNull(append.getResponse());
+        assertNotSame(PathAttributes.EMPTY, append.getResponse());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
@@ -182,17 +183,18 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             regionService,
             new SwiftObjectListService(session, regionService),
             new SwiftSegmentService(session, ".segments-test/"),
-            new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final BytecountStreamListener count = new BytecountStreamListener();
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
-            status, new DisabledConnectionCallback());
+                status, new DisabledConnectionCallback());
         assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
         assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        ;
         // Verify not canceled
         status.validate();
         assertEquals(content.length, count.getSent());

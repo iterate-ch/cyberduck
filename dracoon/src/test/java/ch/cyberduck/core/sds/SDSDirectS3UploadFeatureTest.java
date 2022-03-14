@@ -113,7 +113,8 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        ;
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -138,7 +139,8 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        ;
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -166,7 +168,8 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        ;
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -204,7 +207,8 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        ;
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
@@ -242,7 +246,8 @@ public class SDSDirectS3UploadFeatureTest extends AbstractS3DirectSDSTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(status.isComplete());
-        assertNotNull(status.getResponse());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        ;
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(test);
         assertEquals(random.length, attributes.getSize());
