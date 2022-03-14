@@ -179,37 +179,33 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                     return;
                 }
                 if(completed.isEmpty()) {
-                    log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
-                    session.getClient().multipartAbortUpload(multipart);
-                    new S3TouchFeature(session).touch(file, new TransferStatus());
+                    this.write(new byte[0]);
+                }
+                final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Completed multipart upload for %s with checksum %s",
+                            complete.getObjectKey(), complete.getEtag()));
+                }
+                if(file.getType().contains(Path.Type.encrypted)) {
+                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                 }
                 else {
-                    final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                                complete.getObjectKey(), complete.getEtag()));
-                    }
-                    if(file.getType().contains(Path.Type.encrypted)) {
-                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
-                    }
-                    else {
-                        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                            final StringBuilder concat = new StringBuilder();
-                            for(MultipartPart part : completed) {
-                                concat.append(part.getEtag());
-                            }
-                            final String expected = String.format("%s-%d",
-                                    ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
-                            final String reference = StringUtils.remove(complete.getEtag(), "\"");
-                            if(!StringUtils.equalsIgnoreCase(expected, reference)) {
-                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                                expected, reference));
-                            }
+                    if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                        final StringBuilder concat = new StringBuilder();
+                        for(MultipartPart part : completed) {
+                            concat.append(part.getEtag());
+                        }
+                        final String expected = String.format("%s-%d",
+                                ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                        final String reference = StringUtils.remove(complete.getEtag(), "\"");
+                        if(!StringUtils.equalsIgnoreCase(expected, reference)) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                            expected, reference));
                         }
                     }
-                    response.set(complete);
                 }
+                response.set(complete);
             }
             catch(BackgroundException e) {
                 throw new IOException(e);

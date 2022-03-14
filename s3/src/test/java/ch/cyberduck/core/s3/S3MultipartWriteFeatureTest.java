@@ -5,6 +5,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -90,7 +91,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
         out.close();
-        assertNotNull(file.attributes().getVersionId());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
