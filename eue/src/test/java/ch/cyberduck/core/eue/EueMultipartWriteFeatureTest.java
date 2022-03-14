@@ -59,6 +59,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
         assertEquals(checksum, out.getStatus().getChecksum());
+        assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -84,6 +85,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
         assertEquals(checksum, out.getStatus().getChecksum());
+        assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -107,6 +109,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNotNull(out.getStatus());
+            assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
             assertNotNull(out.getStatus().getCdash64());
             // Different due to chunking
             assertNotEquals(checksum.hash, out.getStatus().getCdash64());
@@ -129,6 +132,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
             assertNotNull(out.getStatus().getCdash64());
             // Different due to chunking
             assertNotEquals(checksum.hash, out.getStatus().getCdash64());
+            assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
             assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
