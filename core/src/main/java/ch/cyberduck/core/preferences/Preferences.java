@@ -451,9 +451,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
           Default transfer connection handling
          */
         this.setDefault("queue.transfer.type.enabled", String.format("%s %s %s",
-            Host.TransferType.browser.name(),
-            Host.TransferType.newconnection.name(),
-            Host.TransferType.concurrent.name()
+                Host.TransferType.browser.name(),
+                Host.TransferType.newconnection.name(),
+                Host.TransferType.concurrent.name()
         ));
         this.setDefault("queue.transfer.type", Host.TransferType.concurrent.name());
         this.setDefault("queue.transfer.operationbatcher.size", String.valueOf(100));
@@ -500,9 +500,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("queue.upload.skip.enable", String.valueOf(true));
         this.setDefault("queue.upload.skip.regex.default",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
         this.setDefault("queue.upload.skip.regex",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS|\\.git|\\.gitignore|\\.gitattributes|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags");
 
         this.setDefault("queue.upload.priority.regex", "");
 
@@ -528,9 +528,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("queue.download.skip.enable", String.valueOf(true));
         this.setDefault("queue.download.skip.regex.default",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
         this.setDefault("queue.download.skip.regex",
-            ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
+                ".*~\\..*|\\.DS_Store|\\.svn|CVS|RCS|SCCS|\\.git|\\.bzr|\\.bzrignore|\\.bzrtags|\\.hg|\\.hgignore|\\.hgtags|_darcs|\\.file-segments");
 
         this.setDefault("queue.download.priority.regex", "");
 
@@ -593,7 +593,16 @@ public abstract class Preferences implements Locales, PreferencesReader {
          */
         this.setDefault("queue.connections.limit", String.valueOf(TransferConnectionLimiter.AUTO));
         this.setDefault("queue.connections.limit.default", String.valueOf(5));
-        this.setDefault("queue.connections.limit.ftp", String.valueOf(1));
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.ftp.name()), String.valueOf(1));
+        /*
+         * Limit for uploads with multipart feature
+         */
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.s3.name()), String.valueOf(2));
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.swift.name()), String.valueOf(2));
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.b2.name()), String.valueOf(2));
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.eue.name()), String.valueOf(2));
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.box.name()), String.valueOf(2));
+        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.dracoon.name()), String.valueOf(2));
 
         {
             final StringBuilder options = new StringBuilder();
@@ -1233,15 +1242,15 @@ public abstract class Preferences implements Locales, PreferencesReader {
         Configurator.setRootLevel(Level.toLevel(level, Level.ERROR));
         // Map logging level to pass through bridge
         final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
-            .put(Level.ALL, java.util.logging.Level.ALL)
-            .put(Level.DEBUG, java.util.logging.Level.FINE)
-            .put(Level.ERROR, java.util.logging.Level.SEVERE)
-            .put(Level.FATAL, java.util.logging.Level.SEVERE)
-            .put(Level.INFO, java.util.logging.Level.INFO)
-            .put(Level.OFF, java.util.logging.Level.OFF)
-            .put(Level.TRACE, java.util.logging.Level.FINEST)
-            .put(Level.WARN, java.util.logging.Level.WARNING)
-            .build();
+                .put(Level.ALL, java.util.logging.Level.ALL)
+                .put(Level.DEBUG, java.util.logging.Level.FINE)
+                .put(Level.ERROR, java.util.logging.Level.SEVERE)
+                .put(Level.FATAL, java.util.logging.Level.SEVERE)
+                .put(Level.INFO, java.util.logging.Level.INFO)
+                .put(Level.OFF, java.util.logging.Level.OFF)
+                .put(Level.TRACE, java.util.logging.Level.FINEST)
+                .put(Level.WARN, java.util.logging.Level.WARNING)
+                .build();
         java.util.logging.Logger.getLogger("").setLevel(map.get(LogManager.getRootLogger().getLevel()));
         final LoggerContext logContext = (LoggerContext) LogManager.getContext(false);
         final Collection<LoggerConfig> loggerConfigs = logContext.getConfiguration().getLoggers().values();
@@ -1261,13 +1270,13 @@ public abstract class Preferences implements Locales, PreferencesReader {
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
         final Appender appender = RollingFileAppender.newBuilder()
-            .setName(RollingFileAppender.class.getName())
-            .withFileName(active.getAbsolute())
-            .withFilePattern(archives.getAbsolute())
-            .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-            .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("5").withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).build())
-            .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
-            .build();
+                .setName(RollingFileAppender.class.getName())
+                .withFileName(active.getAbsolute())
+                .withFilePattern(archives.getAbsolute())
+                .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
+                .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("5").withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).build())
+                .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
+                .build();
         appender.start();
         config.addAppender(appender);
         config.getRootLogger().addAppender(appender, null, null);
