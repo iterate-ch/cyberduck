@@ -110,25 +110,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private final PreferencesReader preferences = new HostPreferences(host);
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<SystemDefaults> systemDefaults
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<ClassificationPoliciesConfig> classificationPolicies
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private UserKeyPair.Version requiredKeyPairVersion;
 
@@ -148,7 +148,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         @Override
         public boolean test(final Protocol protocol) {
             return StringUtils.equals(identifier, protocol.getIdentifier())
-                && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization());
+                    && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization());
         }
     }
 
@@ -170,13 +170,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
                             // Run password flow to attempt to migrate to OAuth
                             final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
-                                new GsonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                                oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
-                                host.getCredentials().getUsername(), host.getCredentials().getPassword()
+                                    new GsonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                                    oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
+                                    host.getCredentials().getUsername(), host.getCredentials().getPassword()
                             )
-                                .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
-                                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                                .execute();
+                                    .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
+                                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                                    .execute();
                             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
                             credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
                             credentials.setSaved(true);
@@ -202,7 +202,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                             if(null != wrapper.getTarget()) {
                                 if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
                                     request.addHeader(HttpHeaders.AUTHORIZATION,
-                                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
+                                            String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                                 }
                             }
                         }
@@ -220,10 +220,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         }
                     }
                 }
-                    .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
-                        Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                            host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
-                    );
+                        .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                                Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+                        );
 
                 try {
                     authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
@@ -249,13 +249,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
-            null, host.getHostname(), host.getProtocol().getContext()));
+                null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-            .register(new InputStreamProvider())
-            .register(MultiPartFeature.class)
-            .register(new JSON())
-            .register(JacksonFeature.class)
-            .connectorProvider(new HttpComponentsProvider(apache))));
+                .register(new InputStreamProvider())
+                .register(MultiPartFeature.class)
+                .register(new JSON())
+                .register(JacksonFeature.class)
+                .connectorProvider(new HttpComponentsProvider(apache))));
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
@@ -270,8 +270,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(matcher.matches()) {
             if(new Version(matcher.group(1)).compareTo(new Version(preferences.getProperty("sds.version.lts"))) < 0) {
                 throw new InteroperabilityException(
-                    LocaleFactory.localizedString("DRACOON environment needs to be updated", "SDS"),
-                    LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
+                        LocaleFactory.localizedString("DRACOON environment needs to be updated", "SDS"),
+                        LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
             }
         }
         final Credentials credentials = host.getCredentials();
@@ -297,25 +297,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 break;
             case radius:
                 final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                    new LoginOptions()
-                        .icon(host.getProtocol().disk())
-                        .user(false)
-                        .keychain(false)
+                        LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                        new LoginOptions()
+                                .icon(host.getProtocol().disk())
+                                .user(false)
+                                .keychain(false)
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
-                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                    .login(login)
-                    .password(additional.getPassword())
+                        .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
+                        .login(login)
+                        .password(additional.getPassword())
                 ));
                 break;
             default:
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
-                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                    .login(login)
-                    .password(password)
+                        .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
+                        .login(login)
+                        .password(password)
                 ));
                 break;
         }
@@ -466,15 +466,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         catch(PartialLoginFailureException e) {
             final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(),
-                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
-                new LoginOptions()
-                    .icon(host.getProtocol().disk())
-                    .user(false)
-                    .keychain(false)
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
+                    new LoginOptions()
+                            .icon(host.getProtocol().disk())
+                            .user(false)
+                            .keychain(false)
             );
             return this.login(controller, new LoginRequest()
-                .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                .password(additional.getPassword())
+                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
+                    .password(additional.getPassword())
             );
         }
     }
@@ -607,6 +607,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return requiredKeyPairVersion;
     }
 
+    protected boolean isS3DirectUploadSupported() {
+        if(preferences.getBoolean("sds.upload.s3.enable")) {
+            try {
+                if(this.generalSettingsInfo().isUseS3Storage()) {
+                    final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+                    if(matcher.matches()) {
+                        if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure reading software version. %s", e.getMessage()));
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void logout() {
         client.getHttpClient().close();
@@ -623,38 +642,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(preferences.getBoolean("sds.upload.s3.enable")) {
-                try {
-                    if(this.generalSettingsInfo().isUseS3Storage()) {
-                        final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
-                        if(matcher.matches()) {
-                            if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
-                                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
-                            }
-                        }
-                    }
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure reading software version. %s", e.getMessage()));
-                }
+            if(this.isS3DirectUploadSupported()) {
+                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
-            if(preferences.getBoolean("sds.upload.s3.enable")) {
-                try {
-                    if(this.generalSettingsInfo().isUseS3Storage()) {
-                        final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
-                        if(matcher.matches()) {
-                            if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
-                                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
-                            }
-                        }
-                    }
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure reading software version. %s", e.getMessage()));
-                }
+            if(this.isS3DirectUploadSupported()) {
+                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
             }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
