@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
@@ -44,6 +46,7 @@ import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -61,6 +64,7 @@ import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import static ch.cyberduck.core.sds.SDSAttributesFinderFeature.KEY_ENCRYPTED;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -69,8 +73,13 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     @Test
     public void testMissingKeys() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
-        final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final EncryptRoomRequest encrypt = new EncryptRoomRequest();
+        encrypt.setIsEncrypted(true);
+        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room,
+                new DisabledListProgressListener())), StringUtils.EMPTY, null);
+        room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -89,15 +98,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
                 return new VaultCredentials("eth[oh8uv4Eesij");
             }
         }, test);
-        assertFalse(processed.isEmpty());
-        boolean found = false;
-        for(UserFileKeySetRequest p : processed) {
-            if(p.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))) {
-                found = true;
-                break;
-            }
-        }
-        assertTrue(found);
+        assertTrue(processed.stream().filter(userFileKeySetRequest -> userFileKeySetRequest.getFileId().equals(Long.parseLong(test.attributes().getVersionId()))).findAny().isPresent());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
