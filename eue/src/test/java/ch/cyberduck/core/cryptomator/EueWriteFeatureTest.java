@@ -87,6 +87,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        assertEquals(content.length, status.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator).append(test, status
             .withRemote(new CryptoAttributesFeature(session, new EueAttributesFinderFeature(session, fileid), cryptomator).find(test))).size, 0L);

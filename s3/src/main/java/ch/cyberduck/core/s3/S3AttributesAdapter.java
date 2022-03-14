@@ -31,9 +31,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
     @Override
     public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
-        if(object.getContentLength() != 0) {
-            attributes.setSize(object.getContentLength());
-        }
+        attributes.setSize(object.getContentLength());
         final Date lastmodified = object.getLastModifiedDate();
         if(lastmodified != null) {
             attributes.setModificationDate(lastmodified.getTime());

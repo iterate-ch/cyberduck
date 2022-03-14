@@ -90,6 +90,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test))).size, 0L);

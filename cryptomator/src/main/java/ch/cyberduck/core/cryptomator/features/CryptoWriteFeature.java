@@ -20,6 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
@@ -29,9 +30,13 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 
 public class CryptoWriteFeature<Reply> implements Write<Reply> {
+    private static final Logger log = LogManager.getLogger(CryptoWriteFeature.class);
 
     private final Session<?> session;
     private final Write<Reply> proxy;
@@ -54,7 +59,12 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                     new TransferStatus(status) {
                         @Override
                         public void setResponse(final PathAttributes attributes) {
-                            status.setResponse(attributes);
+                            try {
+                                status.setResponse(attributes.withSize(vault.toCleartextSize(0L, attributes.getSize())));
+                            }
+                            catch(CryptoInvalidFilesizeException e) {
+                                log.warn(String.format("Failure %s translating file size from response %s", e, attributes));
+                            }
                         }
                     }
                             .withLength(vault.toCiphertextSize(status.getOffset(), status.getLength()))

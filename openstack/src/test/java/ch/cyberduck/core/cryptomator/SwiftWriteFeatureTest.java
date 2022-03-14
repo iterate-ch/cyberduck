@@ -87,6 +87,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        assertEquals(content.length, status.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new SwiftListService(session, regionService), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(new PathAttributes().withSize(content.length))).size, 0L);

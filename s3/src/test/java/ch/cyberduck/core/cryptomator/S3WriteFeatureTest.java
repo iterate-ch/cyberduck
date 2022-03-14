@@ -82,6 +82,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        assertEquals(content.length, status.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test);
         assertEquals(content.length, attributes.getSize());
