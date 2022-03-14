@@ -147,6 +147,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(session, nodeid).find(test));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
+        status.setExists(true);
         status.setLength(content.length);
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
