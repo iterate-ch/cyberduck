@@ -54,6 +54,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        status.setExists(true);
         final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
