@@ -25,8 +25,8 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
+import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
-import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSTouchFeature;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -64,7 +64,7 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setExists(true);
         status.setLength(content.length);
-        final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
+        final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
