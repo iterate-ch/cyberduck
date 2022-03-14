@@ -30,6 +30,9 @@ namespace Ch.Cyberduck.Ui.Core
 {
     public class Utils
     {
+        const MESSAGEBOX_RESULT BUTTON_ID = (MESSAGEBOX_RESULT)0b1000_0000;
+        const MESSAGEBOX_RESULT BUTTON_MASK = (MESSAGEBOX_RESULT)0b0111_1111;
+
         public static TaskDialogResult CommandBox(IWin32Window owner, string title, string mainInstruction,
             string content, string expandedInfo, string help, string verificationText, string commandButtons,
             bool showCancelButton, TaskDialogIcon mainIcon, TaskDialogIcon footerIcon, DialogResponseHandler handler)
@@ -51,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Core
                     var split = commandButtons.Split('|');
                     for (int i = 0; i < split.Length; i++)
                     {
-                        add((MESSAGEBOX_RESULT)i | MESSAGEBOX_RESULT.IDASYNC, split[i], false);
+                        add((MESSAGEBOX_RESULT)i | BUTTON_ID, split[i], false);
                     }
                 })
                 .Callback((s, e) =>
@@ -66,7 +69,14 @@ namespace Ch.Cyberduck.Ui.Core
                 });
 
             var result = dialog.Show();
-            handler((int)(result.Button & ~MESSAGEBOX_RESULT.IDASYNC), result.VerificationChecked.GetValueOrDefault());
+            if ((result.Button & BUTTON_ID ) > 0)
+            {
+                handler((int)(result.Button & BUTTON_MASK), result.VerificationChecked.GetValueOrDefault());
+            }
+            else
+            {
+                handler((int)result.Button, result.VerificationChecked.GetValueOrDefault());
+            }
             return result;
         }
 
