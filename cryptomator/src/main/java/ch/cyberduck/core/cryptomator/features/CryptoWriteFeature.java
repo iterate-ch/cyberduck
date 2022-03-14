@@ -18,6 +18,7 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -50,7 +51,12 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
                 status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
             }
             final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),
-                    new TransferStatus(status)
+                    new TransferStatus(status) {
+                        @Override
+                        public void setResponse(final PathAttributes attributes) {
+                            status.setResponse(attributes);
+                        }
+                    }
                             .withLength(vault.toCiphertextSize(status.getOffset(), status.getLength()))
                             // Assume single chunk upload
                             .withOffset(0L == status.getOffset() ? 0L : vault.toCiphertextSize(0L, status.getOffset()))
