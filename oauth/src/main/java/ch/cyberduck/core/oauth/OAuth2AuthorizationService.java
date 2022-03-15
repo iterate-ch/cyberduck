@@ -182,7 +182,7 @@ public class OAuth2AuthorizationService {
                 new ClientParametersAuthentication(clientid, clientsecret),
                 clientid,
                 authorizationServerUrl)
-                .setScopes(scopes.isEmpty() ? null : scopes)
+                .setScopes(scopes)
                 .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                 .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
