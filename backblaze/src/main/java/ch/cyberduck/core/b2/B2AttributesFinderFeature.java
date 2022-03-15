@@ -66,6 +66,14 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            // Pending large file upload
+            final Write.Append append = new B2WriteFeature(session, fileid).append(file, new TransferStatus());
+            if(append.append) {
+                return new PathAttributes().withSize(append.size);
+            }
+            return PathAttributes.EMPTY;
+        }
         if(containerService.isContainer(file)) {
             try {
                 final B2BucketResponse info = session.getClient().listBucket(file.getName());
@@ -97,14 +105,6 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             return this.toAttributes(session.getClient().getFileInfo(id));
         }
         catch(B2ApiException e) {
-            if(StringUtils.equals("file_state_none", e.getMessage())) {
-                // Pending large file upload
-                final Write.Append append = new B2WriteFeature(session, fileid).append(file, new TransferStatus());
-                if(append.append) {
-                    return new PathAttributes().withSize(append.size);
-                }
-                return PathAttributes.EMPTY;
-            }
             throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {

@@ -26,7 +26,6 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
 import java.io.IOException;
@@ -62,10 +61,6 @@ public class B2ReadFeature implements Read {
             return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(B2ApiException e) {
-            if(StringUtils.equals("file_state_none", e.getMessage())) {
-                // Pending large file upload
-                return new NullInputStream(0L);
-            }
             switch(e.getStatus()) {
                 case HttpStatus.SC_NOT_FOUND:
                     fileid.cache(file, null);

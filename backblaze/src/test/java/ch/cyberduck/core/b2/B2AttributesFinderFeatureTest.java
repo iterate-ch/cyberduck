@@ -82,7 +82,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     @Test
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.upload));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             fileid.getVersionId(bucket, new DisabledListProgressListener()),
