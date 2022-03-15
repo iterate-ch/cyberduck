@@ -35,6 +35,7 @@ import ch.cyberduck.core.eue.EueResourceIdProvider;
 import ch.cyberduck.core.eue.EueWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -72,9 +73,9 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault,
-            profile.getProperties().get("cryptomator.vault.masterkey.filename"),
-            profile.getProperties().get("cryptomator.vault.config.filename"),
-            profile.getProperties().get("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
