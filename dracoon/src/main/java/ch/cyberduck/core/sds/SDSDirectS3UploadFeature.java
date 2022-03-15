@@ -244,8 +244,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
                         done.countDown();
                     }
-                }
-                                                     }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
+                }}, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
                     new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
             Uninterruptibles.awaitUninterruptibly(done);
             polling.shutdown();
