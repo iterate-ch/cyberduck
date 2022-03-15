@@ -68,8 +68,6 @@
     <PackageReference Include="StructureMap" />
     <PackageReference Include="System.Memory" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
-    <PackageReference Include="WindowsAPICodePack-Core" />
-    <PackageReference Include="WindowsAPICodePack-Shell" />
   </ItemGroup>
 
   <ItemGroup>
