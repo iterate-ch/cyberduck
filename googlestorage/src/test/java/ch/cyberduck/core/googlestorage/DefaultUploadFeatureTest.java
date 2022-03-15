@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -48,8 +49,7 @@ public class DefaultUploadFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testUpload() throws Exception {
-        final DefaultUploadFeature<StorageObject> m = new DefaultUploadFeature<>(new GoogleStorageWriteFeature(session)
-        );
+        final DefaultUploadFeature<StorageObject> m = new DefaultUploadFeature<>(new GoogleStorageWriteFeature(session));
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -62,9 +62,9 @@ public class DefaultUploadFeatureTest extends AbstractGoogleStorageTest {
         final StorageObject versionId = m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
-        final PathAttributes attributes = new GoogleStorageListService(session).list(container,
-                new DisabledListProgressListener()).get(test).attributes();
+        final PathAttributes attributes = new GoogleStorageListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes();
         assertEquals(random.length, attributes.getSize());
+        assertEquals(String.valueOf(versionId.getGeneration()), attributes.getVersionId());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
     }
