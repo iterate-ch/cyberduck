@@ -81,7 +81,7 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final String versionId = String.valueOf(out.getStatus().getId());
+        final String versionId = String.valueOf(out.getStatus().getGeneration());
         assertNotNull(versionId);
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {

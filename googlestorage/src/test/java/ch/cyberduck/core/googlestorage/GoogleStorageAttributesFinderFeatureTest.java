@@ -77,7 +77,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         out.close();
         assertTrue(new GoogleStorageAttributesFinderFeature(session).find(test).getVersions().isEmpty());
         final Path update = new Path(container, test.getName(), test.getType(),
-                new PathAttributes().withVersionId(out.getStatus().getId()));
+                new PathAttributes().withVersionId(String.valueOf(out.getStatus().getGeneration())));
         final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session, true).find(update);
         final AttributedList<Path> versions = attributes.getVersions();
         assertFalse(versions.isEmpty());

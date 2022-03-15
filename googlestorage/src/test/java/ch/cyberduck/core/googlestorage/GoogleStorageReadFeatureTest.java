@@ -70,7 +70,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        test.attributes().setVersionId(out.getStatus().getId());
+        test.attributes().setVersionId(String.valueOf(out.getStatus().getGeneration()));
         status.setAppend(true);
         status.setOffset(100L);
         status.setLength(-1L);
@@ -188,7 +188,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         new StreamCopier(status, status).transfer(in, buffer);
         assertEquals(0, buffer.size());
         in.close();
-        file.attributes().setVersionId(out.getStatus().getId());
+        file.attributes().setVersionId(String.valueOf(out.getStatus().getGeneration()));
         assertEquals(length, new GoogleStorageAttributesFinderFeature(session).find(file).getSize());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
