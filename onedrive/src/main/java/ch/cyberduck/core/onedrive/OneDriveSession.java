@@ -52,7 +52,7 @@ public class OneDriveSession extends GraphSession {
             final ItemReference remoteParent = remoteMetadata.getParentReference();
             if(parent == null) {
                 return String.join(String.valueOf(Path.DELIMITER),
-                    remoteParent.getDriveId(), remoteParent.getId());
+                        remoteParent.getDriveId(), remoteParent.getId());
             }
             else {
                 // this is fix for OneDrive Business shared folders.
@@ -63,12 +63,12 @@ public class OneDriveSession extends GraphSession {
                 // and if it is non-existent use the remotemetadata
                 // as fallback for regular OneDrive Consumer shared items.
                 String remoteItemId = remoteParent.getId();
-                if (StringUtils.isBlank(remoteItemId)) {
+                if(StringUtils.isBlank(remoteItemId)) {
                     remoteItemId = remoteMetadata.getId();
                 }
                 return String.join(String.valueOf(Path.DELIMITER),
-                    parent.getDriveId(), metadata.getId(),
-                    remoteParent.getDriveId(), remoteItemId);
+                        parent.getDriveId(), metadata.getId(),
+                        remoteParent.getDriveId(), remoteItemId);
             }
         }
         else {
@@ -81,12 +81,12 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        if(file.equals(OneDriveListService.MYFILES_NAME)) {
-            final User.Metadata user = getUser();
+        if(OneDriveListService.MYFILES_NAME.equals(file)) {
+            final User.Metadata user = this.getUser();
             // creationType can be non-assigned (Microsoft Account)
             // or null, Inviation, LocalAccount or EmailVerified.
             // noinspection OptionalAssignedToNull
-            if(user.getCreationType() == null) {
+            if(null == user || user.getCreationType() == null) {
                 return new Drive(client).getRoot();
             }
             else {
