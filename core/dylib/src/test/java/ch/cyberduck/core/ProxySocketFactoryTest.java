@@ -60,7 +60,7 @@ public class ProxySocketFactoryTest {
                     }
                 }).createSocket();
         assertNotNull(socket);
-        socket.connect(new InetSocketAddress("test.cyberduck.ch", 21));
+        socket.connect(new InetSocketAddress("test.cyberduck.ch", 21), 1);
     }
 
     @Test
