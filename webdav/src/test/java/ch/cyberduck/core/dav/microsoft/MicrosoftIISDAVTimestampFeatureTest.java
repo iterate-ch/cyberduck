@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
@@ -42,7 +43,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class MicrosoftIISDAVTimestampFeatureTest {
@@ -50,17 +51,19 @@ public class MicrosoftIISDAVTimestampFeatureTest {
     @Test
     public void testSetTimestamp() throws Exception {
         final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
-            System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
+                System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
         ));
         host.setDefaultPath("/WebDAV");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(file));
+        assertNotSame(PathAttributes.EMPTY, new MicrosoftIISDAVAttributesFinderFeature(session).find(file));
         new MicrosoftIISDAVTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new MicrosoftIISDAVAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(file.getParent(),
-            new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
+                new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
