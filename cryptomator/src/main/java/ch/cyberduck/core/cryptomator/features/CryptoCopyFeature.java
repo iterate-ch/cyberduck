@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
@@ -59,10 +60,20 @@ public class CryptoCopyFeature implements Copy {
         else {
             // Copy files from or into vault requires to pass through encryption features
             final Path target = new DefaultCopyFeature(session).withTarget(this.target).copy(
-                vault.contains(source) ? vault.encrypt(session, source) : source,
-                vault.contains(copy) ? vault.encrypt(session, copy) : copy,
-                status,
-                callback, listener);
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy,
+                    new TransferStatus(status) {
+                        @Override
+                        public void setResponse(final PathAttributes attributes) {
+                            if(vault.contains(copy)) {
+                                super.setResponse(attributes.withSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                            }
+                            else {
+                                super.setResponse(attributes);
+                            }
+                        }
+                    },
+                    callback, listener);
             if(vault.contains(copy)) {
                 return vault.decrypt(session, target);
             }
