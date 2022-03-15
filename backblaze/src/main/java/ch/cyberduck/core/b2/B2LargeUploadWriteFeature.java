@@ -102,7 +102,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<IOException> canceled = new AtomicReference<>();
         private final AtomicReference<B2StartLargeFileResponse> startLargeFileResponse = new AtomicReference<>();
-        private final AtomicReference<B2FinishLargeFileResponse> finishLargeFileResponse = new AtomicReference<>();
+        private final AtomicReference<BaseB2Response> finishLargeFileResponse = new AtomicReference<>();
 
         private int partNumber;
 
@@ -134,6 +134,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Upload finished for %s with response %s", file, response));
                     }
+                    fileid.cache(file, response.getFileId());
+                    finishLargeFileResponse.set(response);
                     close.set(true);
                 }
                 else {
@@ -194,14 +196,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     return;
                 }
                 if(completed.isEmpty()) {
-                    if(null == startLargeFileResponse.get()) {
-                        // No single file upload and zero parts
-                        new B2TouchFeature(session, fileid).touch(file, overall);
-                    }
-                    else {
-                        // Cancel upload
-                        session.getClient().cancelLargeFileUpload(startLargeFileResponse.get().getFileId());
-                    }
+                    // No single file upload and zero parts
+                    this.write(new byte[0]);
                 }
                 else {
                     completed.sort(new Comparator<B2UploadPartResponse>() {
@@ -214,16 +210,14 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     for(B2UploadPartResponse part : completed) {
                         checksums.add(part.getContentSha1());
                     }
-                    final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(startLargeFileResponse.get().getFileId(), checksums.toArray(new String[checksums.size()]));
+                    final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(
+                            startLargeFileResponse.get().getFileId(), checksums.toArray(new String[checksums.size()]));
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
                     }
                     fileid.cache(file, response.getFileId());
                     finishLargeFileResponse.set(response);
                 }
-            }
-            catch(BackgroundException e) {
-                throw new IOException(e);
             }
             catch(B2ApiException e) {
                 throw new IOException(new B2ExceptionMappingService(fileid).map("Upload {0} failed", e, file));
