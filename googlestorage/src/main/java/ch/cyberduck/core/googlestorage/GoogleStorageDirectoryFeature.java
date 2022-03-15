@@ -62,7 +62,7 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 // Add placeholder object
-                return new GoogleStorageDirectoryFeature(session).withWriter(writer).mkdir(folder.withType(type),
+                return new GoogleStorageTouchFeature(session).withWriter(writer).touch(folder.withType(type),
                         status.withMime(MIMETYPE));
             }
         }
