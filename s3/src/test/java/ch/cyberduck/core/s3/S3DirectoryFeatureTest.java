@@ -208,4 +208,15 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(virtualhost).list(test, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(virtualhost).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testBackslash() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+                new Path(container, String.format("%s\\%s", new AlphanumericRandomStringService().random(),
+                        new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3FindFeature(session).find(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session).find(test));
+    }
 }
