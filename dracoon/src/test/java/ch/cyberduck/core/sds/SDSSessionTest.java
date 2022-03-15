@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -79,10 +80,10 @@ public class SDSSessionTest extends AbstractSDSTest {
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session))
                 .list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
@@ -102,10 +103,10 @@ public class SDSSessionTest extends AbstractSDSTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.retryHandler.setTokens(System.getProperties().getProperty("sds.user"),
-            System.getProperties().getProperty("sds.key"),
-            "invalid");
+                System.getProperties().getProperty("sds.key"),
+                "invalid");
         new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
@@ -115,11 +116,11 @@ public class SDSSessionTest extends AbstractSDSTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.retryHandler.setTokens(
-            "invalid",
-            System.getProperties().getProperty("sds.key"),
-            "invalid");
+                "invalid",
+                System.getProperties().getProperty("sds.key"),
+                "invalid");
         new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
@@ -133,10 +134,10 @@ public class SDSSessionTest extends AbstractSDSTest {
             "rsa.user1", "1234"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 assertEquals("Multi-Factor Authentication", reason);
@@ -157,10 +158,10 @@ public class SDSSessionTest extends AbstractSDSTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
@@ -170,10 +171,10 @@ public class SDSSessionTest extends AbstractSDSTest {
             "a", "s"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = ConnectionRefusedException.class)
