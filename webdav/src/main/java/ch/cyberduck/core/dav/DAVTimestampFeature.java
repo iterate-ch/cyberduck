@@ -67,7 +67,8 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 0, Collections.emptySet());
+            final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 0,
+                Collections.singleton(SardineUtil.createQNameWithDefaultNamespace("getlastmodified")));
             for(DavResource resource : resources) {
                 session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(),
                     this.getCustomHeaders(file, status));
