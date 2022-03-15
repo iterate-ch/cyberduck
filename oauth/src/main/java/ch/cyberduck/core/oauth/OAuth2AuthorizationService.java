@@ -73,7 +73,7 @@ public class OAuth2AuthorizationService {
     public static final String CYBERDUCK_REDIRECT_URI = String.format("%s:oauth", PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     private final JsonFactory json
-        = new GsonFactory();
+            = new GsonFactory();
 
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
@@ -82,15 +82,15 @@ public class OAuth2AuthorizationService {
     private final String clientsecret;
 
     public final BrowserLauncher browser
-        = BrowserLauncherFactory.get();
+            = BrowserLauncherFactory.get();
 
     private final List<String> scopes;
 
     private final Map<String, String> additionalParameters
-        = new HashMap<>();
+            = new HashMap<>();
 
     private Credential.AccessMethod method
-        = BearerToken.authorizationHeaderAccessMethod();
+            = BearerToken.authorizationHeaderAccessMethod();
 
     private String redirectUri = OOB_REDIRECT_URI;
 
@@ -100,7 +100,7 @@ public class OAuth2AuthorizationService {
                                       final String tokenServerUrl, final String authorizationServerUrl,
                                       final String clientid, final String clientsecret, final List<String> scopes) {
         this(new ApacheHttpTransport(client),
-            tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
     }
 
     public OAuth2AuthorizationService(final HttpTransport transport,
@@ -155,9 +155,9 @@ public class OAuth2AuthorizationService {
         }
         // Save access key and refresh key
         final OAuthTokens tokens = new OAuthTokens(
-            response.getAccessToken(), response.getRefreshToken(),
-            null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
+                response.getAccessToken(), response.getRefreshToken(),
+                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
         credentials.setOauth(tokens);
         return tokens;
     }
@@ -166,25 +166,25 @@ public class OAuth2AuthorizationService {
                                             final Credentials credentials) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
-                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                new StringAppender()
-                    .append(LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"))
-                    .append(LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")).toString(),
-                LocaleFactory.localizedString("Continue", "Credentials"),
-                LocaleFactory.localizedString("Cancel"), "oauth.browser.open.warn"
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    new StringAppender()
+                            .append(LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"))
+                            .append(LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")).toString(),
+                    LocaleFactory.localizedString("Continue", "Credentials"),
+                    LocaleFactory.localizedString("Cancel"), "oauth.browser.open.warn"
             );
         }
         // Start OAuth2 flow within browser
         final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
-            method,
-            transport, json,
-            new GenericUrl(tokenServerUrl),
-            new ClientParametersAuthentication(clientid, clientsecret),
-            clientid,
-            authorizationServerUrl)
-            .setScopes(scopes)
-            .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-            .build();
+                method,
+                transport, json,
+                new GenericUrl(tokenServerUrl),
+                new ClientParametersAuthentication(clientid, clientsecret),
+                clientid,
+                authorizationServerUrl)
+                .setScopes(scopes.isEmpty() ? null : scopes)
+                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
         final String state = new AlphanumericRandomStringService().random();
@@ -242,15 +242,15 @@ public class OAuth2AuthorizationService {
             }
             // Swap the given authorization token for access/refresh tokens
             return flow.newTokenRequest(authenticationCode.get())
-                .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
-                .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
+                    .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
+                    .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
-                .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
+                    .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -263,11 +263,11 @@ public class OAuth2AuthorizationService {
                 log.debug(String.format("Request tokens for user %s", credentials.getUsername()));
             }
             final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
-                credentials.getUsername(), credentials.getPassword()
+                    credentials.getUsername(), credentials.getPassword()
             )
-                .setClientAuthentication(new BasicAuthentication(clientid, clientsecret))
-                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                .setScopes(scopes.isEmpty() ? null : scopes);
+                    .setClientAuthentication(new BasicAuthentication(clientid, clientsecret))
+                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                    .setScopes(scopes.isEmpty() ? null : scopes);
             for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
                 request.set(values.getKey(), values.getValue());
             }
@@ -278,7 +278,7 @@ public class OAuth2AuthorizationService {
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
-                .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
+                    .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -295,10 +295,11 @@ public class OAuth2AuthorizationService {
         }
         try {
             final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
-                tokens.getRefreshToken())
-                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
-                .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
+                    tokens.getRefreshToken())
+                    .setScopes(scopes.isEmpty() ? null : scopes)
+                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                    .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
+                    .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
             if(StringUtils.isBlank(response.getRefreshToken())) {
                 return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds);
@@ -310,7 +311,7 @@ public class OAuth2AuthorizationService {
         }
         catch(HttpResponseException e) {
             throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
-                .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
+                    .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -382,11 +383,11 @@ public class OAuth2AuthorizationService {
 
         public TokenResponse toTokenResponse() {
             return new TokenResponse()
-                .setTokenType(tokenType)
-                .setScope(scope)
-                .setExpiresInSeconds(expiresInSeconds)
-                .setAccessToken(accessToken)
-                .setRefreshToken(refreshToken);
+                    .setTokenType(tokenType)
+                    .setScope(scope)
+                    .setExpiresInSeconds(expiresInSeconds)
+                    .setAccessToken(accessToken)
+                    .setRefreshToken(refreshToken);
         }
     }
 
