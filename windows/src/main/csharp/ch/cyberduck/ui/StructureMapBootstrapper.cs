@@ -87,23 +87,6 @@ namespace Ch.Cyberduck.Ui
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
-
-                if (Utils.OSVersion.IsVersion(Utils.OSVersion.Windows10.V1809))
-                {
-                    x.For<IVirtualDesktopManager>().Use<Core.VirtualDesktop.Windows1809.VirtualDesktopManager>();
-                }
-                else if (Utils.OSVersion.IsVersion(Utils.OSVersion.Windows10.V1803))
-                {
-                    x.For<IVirtualDesktopManager>().Use<Core.VirtualDesktop.Windows1803.VirtualDesktopManager>();
-                }
-                else if (Utils.OSVersion.IsVersion(Utils.OSVersion.Windows10.V1607))
-                {
-                    x.For<IVirtualDesktopManager>().Use<Core.VirtualDesktop.Windows16071709.VirtualDesktopManager>();
-                }
-                else
-                {
-                    x.For<IVirtualDesktopManager>().Use<Core.VirtualDesktop.DisabledVirtualDesktopManager>();
-                }
             });
         }
 

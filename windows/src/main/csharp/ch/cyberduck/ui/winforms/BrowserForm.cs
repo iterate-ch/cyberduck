@@ -1296,14 +1296,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        void IView.BringToFront()
-        {
-            var desktopManager = ObjectFactory.GetInstance<IVirtualDesktopManager>();
-            desktopManager.BringToCurrentDesktop(this);
-
-            this.BringToFront();
-        }
-
         private void SetShortcutText(MenuItem target, ToolStripMenuItem source, string shortCutText)
         {
             if (-1 == target.Text.IndexOf('\t'))

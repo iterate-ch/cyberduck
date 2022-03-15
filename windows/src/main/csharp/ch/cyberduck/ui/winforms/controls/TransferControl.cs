@@ -268,6 +268,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             OnClick(EventArgs.Empty);
         }
+
+        bool IView.IsOnCurrentDesktop() => default;
+        Guid IView.GetDesktopId() => default;
+        void IView.MoveToDesktop(Guid desktop)
+        {
+        }
     }
 
     public enum TransferStatus

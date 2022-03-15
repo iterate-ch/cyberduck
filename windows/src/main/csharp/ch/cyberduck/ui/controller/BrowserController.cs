@@ -2257,7 +2257,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowTransfers()
         {
-            TransferController.Instance.View.Show();
+            Guid currentDesktop = View.GetDesktopId();
+            ITransferView view = TransferController.Instance.View;
+            if (!view.IsOnCurrentDesktop())
+            {
+                view.MoveToDesktop(currentDesktop);
+            }
+            view.Show();
         }
 
         private void View_ShowInspector()
