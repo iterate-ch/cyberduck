@@ -60,7 +60,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             fail();
         }
         catch(BackgroundException e) {
-            assertEquals("Invalid Value. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Invalid argument. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }
