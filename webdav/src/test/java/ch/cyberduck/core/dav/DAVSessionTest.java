@@ -47,7 +47,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class DAVSessionTest extends AbstractDAVTest {
 
     @Test(expected = ConnectionRefusedException.class)
@@ -67,6 +66,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test(expected = InteroperabilityException.class)
+    @Category(IntegrationTest.class)
     public void testHtmlResponse() throws Exception {
         final Host host = new Host(new DAVProtocol(), "cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -86,6 +86,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test
+    @Category(IntegrationTest.class)
     public void testLoginNTLM() throws Exception {
         final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
                 System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
@@ -118,6 +119,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test(expected = SSLNegotiateException.class)
     @Ignore
+    @Category(IntegrationTest.class)
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
@@ -152,6 +154,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test(expected = ConnectionCanceledException.class)
+    @Category(IntegrationTest.class)
     public void testHandshakeFailure() throws Exception {
         final Session session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")),
                 new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new TrustManagerHostnameCallback() {
@@ -174,6 +177,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     @Ignore
+    @Category(IntegrationTest.class)
     public void testRedirectHttpsAlert() throws Exception {
         final Host host = new Host(new DAVProtocol(), "svn.cyberduck.io");
         final AtomicBoolean warning = new AtomicBoolean();
@@ -199,6 +203,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test(expected = ConnectionRefusedException.class)
+    @Category(IntegrationTest.class)
     public void testProxyNoConnect() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
@@ -222,6 +227,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Ignore
     @Test(expected = ProxyLoginFailureException.class)
+    @Category(IntegrationTest.class)
     public void testConnectProxyInvalidCredentials() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
@@ -250,6 +256,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     @Ignore
+    @Category(IntegrationTest.class)
     public void testConnectProxy() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
@@ -300,6 +307,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     @Ignore
+    @Category(IntegrationTest.class)
     public void testConnectProxyHttps() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();

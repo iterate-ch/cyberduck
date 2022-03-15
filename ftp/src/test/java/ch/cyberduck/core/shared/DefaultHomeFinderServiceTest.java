@@ -2,16 +2,13 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
 public class DefaultHomeFinderServiceTest extends AbstractFTPTest {
 
     @Test

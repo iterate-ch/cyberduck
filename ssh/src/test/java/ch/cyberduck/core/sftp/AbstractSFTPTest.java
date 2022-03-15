@@ -32,6 +32,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.EmbeddedTest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
@@ -44,6 +45,7 @@ import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
 
 import java.nio.file.Paths;
@@ -54,6 +56,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
+@Category(EmbeddedTest.class)
 public class AbstractSFTPTest {
 
     private SshServer sshServer;
@@ -119,7 +122,7 @@ public class AbstractSFTPTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SFTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), 2202, new Credentials("test", "test"));
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -129,8 +132,8 @@ public class AbstractSFTPTest {
                 return null;
             }
         },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
     }
 }

@@ -23,10 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -35,7 +33,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
 public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
 
     @Test

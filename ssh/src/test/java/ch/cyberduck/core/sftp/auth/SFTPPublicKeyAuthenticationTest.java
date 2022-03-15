@@ -27,11 +27,9 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -40,7 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
 
     @Test

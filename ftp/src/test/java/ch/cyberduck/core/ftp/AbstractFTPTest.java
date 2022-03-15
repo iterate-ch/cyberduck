@@ -33,6 +33,7 @@ import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.EmbeddedTest;
 
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
@@ -44,6 +45,7 @@ import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.experimental.categories.Category;
 import org.junit.runners.Parameterized;
 
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.fail;
 
+@Category(EmbeddedTest.class)
 public class AbstractFTPTest {
 
     protected FTPSession session;
@@ -83,7 +86,7 @@ public class AbstractFTPTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new FTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
         final Host host = new Host(profile, "localhost", PORT_NUMBER, new Credentials("test", "test"));
         session = new FTPSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             @Override

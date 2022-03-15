@@ -27,18 +27,15 @@ import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class FTPDefaultListServiceTest extends AbstractFTPTest {
 
     @Test

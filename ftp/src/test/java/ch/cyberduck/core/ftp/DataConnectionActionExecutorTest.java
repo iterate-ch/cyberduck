@@ -32,7 +32,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,14 +41,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
-public class DataConnectionActionExecutorTest extends AbstractFTPTest {
+public class DataConnectionActionExecutorTest {
 
     @Test
     @Ignore
+    @IntegrationTest
     public void testFallbackDataConnectionSocketTimeout() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         host.setFTPConnectMode(FTPConnectMode.active);
 
@@ -89,6 +88,7 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
     }
 
     @Test
+    @IntegrationTest
     public void testFallbackDataConnection500Error() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
             System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")

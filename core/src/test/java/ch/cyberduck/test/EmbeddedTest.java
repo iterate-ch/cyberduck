@@ -1,8 +1,5 @@
-package ch.cyberduck.core.sftp;
-
 /*
  * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +12,7 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.features.Quota;
+package ch.cyberduck.test;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-public class SFTPQuotaFeatureTest extends AbstractSFTPTest {
-
-    @Test
-    public void testGet() throws Exception {
-        final Quota.Space quota = new SFTPQuotaFeature(session).get();
-        assertNotNull(quota.available);
-        assertNotNull(quota.used);
-        assertNotEquals(0L, quota.available, 0L);
-        assertEquals(0L, quota.used, 0L);
-    }
+public @interface EmbeddedTest {
 }

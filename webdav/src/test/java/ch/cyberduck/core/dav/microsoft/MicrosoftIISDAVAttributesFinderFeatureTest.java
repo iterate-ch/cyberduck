@@ -17,9 +17,11 @@ package ch.cyberduck.core.dav.microsoft;
 
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import javax.xml.namespace.QName;
 import java.util.Date;
@@ -32,6 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Category(IntegrationTest.class)
 public class MicrosoftIISDAVAttributesFinderFeatureTest {
 
     @Test
