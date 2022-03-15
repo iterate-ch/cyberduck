@@ -15,12 +15,10 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -46,14 +44,8 @@ public class B2BucketListService implements RootListService {
         try {
             final AttributedList<Path> buckets = new AttributedList<Path>();
             for(B2BucketResponse bucket : session.getClient().listBuckets()) {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setVersionId(bucket.getBucketId());
-                switch(bucket.getBucketType()) {
-                    case allPublic:
-                        attributes.setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
-                        break;
-                }
-                buckets.add(new Path(PathNormalizer.normalize(bucket.getBucketName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
+                buckets.add(new Path(PathNormalizer.normalize(bucket.getBucketName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                        new B2AttributesFinderFeature(session, fileid).toAttributes(bucket)));
             }
             listener.chunk(directory, buckets);
             return buckets;

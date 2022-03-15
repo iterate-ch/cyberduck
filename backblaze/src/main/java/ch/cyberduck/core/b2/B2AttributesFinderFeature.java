@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
@@ -80,7 +81,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
                 if(null == info) {
                     throw new NotfoundException(file.getAbsolute());
                 }
-                return new PathAttributes().withVersionId(info.getBucketId());
+                return this.toAttributes(info);
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
@@ -149,6 +150,11 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
     protected PathAttributes toAttributes(final B2BucketResponse response) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(response.getBucketId());
+        attributes.setRegion(response.getBucketType().name());
+        switch(response.getBucketType()) {
+            case allPublic:
+                attributes.setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
+        }
         return attributes;
     }
 

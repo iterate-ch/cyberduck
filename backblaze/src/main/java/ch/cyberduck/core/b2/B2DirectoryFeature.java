@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -62,10 +61,6 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
             if(containerService.isContainer(folder)) {
                 final B2BucketResponse response = session.getClient().createBucket(containerService.getContainer(folder).getName(),
                         null == status.getRegion() ? BucketType.valueOf(new B2BucketTypeFeature(session, fileid).getDefault().getIdentifier()) : BucketType.valueOf(status.getRegion()));
-                switch(response.getBucketType()) {
-                    case allPublic:
-                        folder.attributes().setAcl(new Acl(new Acl.GroupUser(Acl.GroupUser.EVERYONE, false), new Acl.Role(Acl.Role.READ)));
-                }
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
                 return folder.withType(type).withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
