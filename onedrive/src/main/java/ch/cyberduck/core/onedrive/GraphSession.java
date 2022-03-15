@@ -82,19 +82,14 @@ import java.util.Optional;
 import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
-    private final static String API_VERSION = "v1.0";
-
     private static final Logger log = LogManager.getLogger(GraphSession.class);
 
-    private OAuth2RequestInterceptor authorizationService;
-
-    private User.Metadata user;
-
-    public User.Metadata getUser() {
-        return user;
-    }
+    private final static String API_VERSION = "v1.0";
 
     protected final GraphFileIdProvider fileid;
+
+    private OAuth2RequestInterceptor authorizationService;
+    private User.Metadata user;
 
     protected GraphSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -116,6 +111,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public abstract boolean isAccessible(Path file, boolean container);
 
     public abstract ContainerItem getContainer(Path file);
+
+    public User.Metadata getUser() {
+        return user;
+    }
 
     @Override
     protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException {
