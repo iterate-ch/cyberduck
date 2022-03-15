@@ -255,7 +255,7 @@ public class AbstractDAVTest {
 
 
         @Override
-        public void copyTo(final CollectionResource toCollection, final String name) {
+        public void copyTo(final CollectionResource toCollection, final String name) throws NotAuthorizedException {
             proxy.copyTo(toCollection, name);
         }
 
@@ -299,12 +299,12 @@ public class AbstractDAVTest {
             proxy.replaceContent(in, length);
         }
     }
+
     private static class MultiNamespaceCustomPropertyFsDirectoryResource extends FsDirectoryResource implements MultiNamespaceCustomPropertyResource {
         private final Map<QName, Object> properties;
         private final FsDirectoryResource proxy;
         private final String host;
         private final FileSystemResourceFactory factory;
-        private final File dir;
 
         public MultiNamespaceCustomPropertyFsDirectoryResource(final Map<QName, Object> properties, final FsDirectoryResource proxy, final String host, final FileSystemResourceFactory factory, final File dir) {
             super(host, factory, dir, new SimpleFileContentService());
@@ -312,7 +312,6 @@ public class AbstractDAVTest {
             this.proxy = proxy;
             this.host = host;
             this.factory = factory;
-            this.dir = dir;
         }
 
         @Override
@@ -374,7 +373,7 @@ public class AbstractDAVTest {
         }
 
         @Override
-        public void copyTo(final CollectionResource toCollection, final String name) {
+        public void copyTo(final CollectionResource toCollection, final String name) throws NotAuthorizedException {
             proxy.copyTo(toCollection, name);
         }
 
@@ -445,8 +444,8 @@ public class AbstractDAVTest {
         }
 
         @Override
-        public LockResult refreshLock(final String token) throws NotAuthorizedException {
-            return proxy.refreshLock(token);
+        public LockResult refreshLock(final String token, final LockTimeout timeout) throws NotAuthorizedException {
+            return proxy.refreshLock(token, timeout);
         }
 
         @Override
