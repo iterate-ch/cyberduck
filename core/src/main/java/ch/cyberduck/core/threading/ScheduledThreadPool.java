@@ -38,10 +38,39 @@ public class ScheduledThreadPool {
         pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
     }
 
+    /**
+     * Schedule at fixed rate with no delay
+     *
+     * @param runnable Task to run
+     * @param period   Repeat after
+     * @param unit     Unit for period
+     * @return Scheduled future
+     */
     public ScheduledFuture<?> repeat(final Runnable runnable, final Long period, final TimeUnit unit) {
-        return pool.scheduleAtFixedRate(runnable, 0L, period, unit);
+        return this.repeat(runnable, 0L, period, unit);
     }
 
+    /**
+     * Schedule at fixed rate with delay
+     *
+     * @param runnable Task to run
+     * @param delay    Delay prior starting at fixed rate
+     * @param period   Repeat after
+     * @param unit     Unit for period
+     * @return Scheduled future
+     */
+    public ScheduledFuture repeat(final Runnable runnable, final long delay, final Long period, final TimeUnit unit) {
+        return pool.scheduleAtFixedRate(runnable, delay, period, unit);
+    }
+
+    /**
+     * Schedule for single execution
+     *
+     * @param runnable Task to run
+     * @param delay    Delay prior running
+     * @param unit     Unit for delay
+     * @return Scheduled future
+     */
     public ScheduledFuture<?> schedule(final Runnable runnable, final Long delay, final TimeUnit unit) {
         return pool.schedule(runnable, delay, unit);
     }
