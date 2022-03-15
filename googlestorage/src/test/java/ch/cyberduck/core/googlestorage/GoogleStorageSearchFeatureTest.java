@@ -56,7 +56,6 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testSearchInDirectory() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        bucket.attributes().setRegion("us-east-1");
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new GoogleStorageTouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageSearchFeature feature = new GoogleStorageSearchFeature(session);
@@ -77,5 +76,4 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
         }
         new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
-
 }
