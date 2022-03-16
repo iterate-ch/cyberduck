@@ -42,6 +42,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -212,7 +213,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         catch(NotfoundException e) {
             //
         }
-        assertEquals(latestnodeid, test.attributes().getVersionId());
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertNull(test.attributes().getVersionId());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
