@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Core.VirtualDesktop
@@ -69,6 +66,22 @@ namespace Ch.Cyberduck.Ui.Core.VirtualDesktop
     {
         public int X;
         public int Y;
+    }
+
+    internal static class DesktopManager
+    {
+        private static readonly IVirtualDesktopManager desktopmanager;
+
+        static DesktopManager()
+        {
+            desktopmanager = (IVirtualDesktopManager)Activator.CreateInstance(Type.GetTypeFromCLSID(Guids.CLSID_VirtualDesktopManager));
+        }
+
+        public static Guid GetWindowDesktopId(Form form) => desktopmanager.GetWindowDesktopId(form.Handle);
+
+        public static bool IsWindowOnCurrentVirtualDesktop(Form form) => desktopmanager.IsWindowOnCurrentVirtualDesktop(form.Handle);
+
+        public static void MoveWindowToDesktop(Form form, in Guid desktop) => desktopmanager.MoveWindowToDesktop(form.Handle, ref Unsafe.AsRef(desktop));
     }
 
     internal static class Guids

@@ -16,6 +16,7 @@
 // feedback@cyberduck.io
 // 
 
+using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -39,6 +40,9 @@ namespace Ch.Cyberduck.Ui.Controller
         void Show(IView owner);
         void Activate();
         void BringToFront();
+        bool IsOnCurrentDesktop();
+        Guid GetDesktopId();
+        void MoveToDesktop(Guid desktop);
 
         DialogResult ShowDialog();
         DialogResult ShowDialog(IWin32Window owner);

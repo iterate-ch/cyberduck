@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Core.VirtualDesktop;
 using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -250,6 +251,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             base.Show(owner);
             Focus();
         }
+
+        public bool IsOnCurrentDesktop() => DesktopManager.IsWindowOnCurrentVirtualDesktop(this);
+
+        public Guid GetDesktopId() => DesktopManager.GetWindowDesktopId(this);
+
+        public void MoveToDesktop(Guid desktop) => DesktopManager.MoveWindowToDesktop(this, desktop);
 
         public new DialogResult ShowDialog()
         {
