@@ -103,14 +103,17 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testChangedFileId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path room = new B2DirectoryFeature(session, fileid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
-        fileid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final String invalidId = String.valueOf(RandomUtils.nextLong());
+        test.attributes().setVersionId(invalidId);
+        fileid.cache(test, invalidId);
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         assertEquals(latestnodeid, f.find(test).getVersionId());
+        assertEquals(latestnodeid, test.attributes().getVersionId());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
