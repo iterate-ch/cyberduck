@@ -76,6 +76,7 @@ public class SDSListService implements ListService {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
+                    nodeid.cache(file, attributes.getVersionId());
                     if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
                         try {
                             final AttributedList<Path> versions = new SDSAttributesFinderFeature(session, nodeid).findDeleted(file, chunksize);
