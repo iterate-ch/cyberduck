@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.logging.log4j.LogManager;
@@ -83,6 +84,9 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                     }
                     if("checksum did not match data received".equalsIgnoreCase(e.getMessage())) {
                         return new ChecksumException(buffer.toString(), e);
+                    }
+                    if(StringUtils.lowerCase(e.getMessage()).startsWith("bad file id")) {
+                        return new NotfoundException(buffer.toString(), e);
                     }
                 }
                 break;

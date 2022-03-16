@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -190,5 +191,28 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChangedNodeId() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path room = new B2DirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestnodeid = test.attributes().getVersionId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        final String invalidId = String.valueOf(RandomUtils.nextLong());
+        test.attributes().setVersionId(invalidId);
+        fileid.cache(test, invalidId);
+        try {
+            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withRemote(test.attributes()), new DisabledLoginCallback());
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        assertEquals(latestnodeid, test.attributes().getVersionId());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

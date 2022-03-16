@@ -26,7 +26,6 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,10 +60,6 @@ public class B2ReadFeature implements Read {
             return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(B2ApiException e) {
-            switch(e.getStatus()) {
-                case HttpStatus.SC_NOT_FOUND:
-                    fileid.cache(file, null);
-            }
             throw new B2ExceptionMappingService(fileid).map("Download {0} failed", e, file);
         }
         catch(IOException e) {
