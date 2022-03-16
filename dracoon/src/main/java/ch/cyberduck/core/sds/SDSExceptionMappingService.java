@@ -65,7 +65,10 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                         switch(failure.getCode()) {
                             case HttpStatus.SC_NOT_FOUND:
                                 switch(errorCode) {
+                                    // "debugInfo":"Node not found","errorCode":-41000
                                     case -41000:
+                                        // "debugInfo":"File not found","errorCode":-40751
+                                    case -40751:
                                         // Invalidate cache on Node not found
                                         fileid.cache(file, null);
                                         break;
