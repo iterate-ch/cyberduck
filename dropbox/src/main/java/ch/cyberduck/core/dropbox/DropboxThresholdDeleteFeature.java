@@ -40,4 +40,9 @@ public class DropboxThresholdDeleteFeature implements Delete {
             new DropboxBatchDeleteFeature(session).delete(files, prompt, callback);
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
+    }
 }
