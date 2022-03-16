@@ -116,6 +116,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        String resourceId;
         {
             final byte[] content = RandomUtils.nextBytes(8235);
             final TransferStatus status = new TransferStatus().withLength(content.length);
@@ -130,6 +131,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             in.close();
             out.close();
             assertEquals(checksum, out.getStatus().getChecksum());
+            resourceId = status.getResponse().getFileId();
             assertTrue(new EueFindFeature(session, fileid).find(file));
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
             assertEquals(content.length, attributes.getSize());
@@ -154,8 +156,10 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             in.close();
             out.close();
             assertEquals(checksum, out.getStatus().getChecksum());
+            assertEquals(resourceId, out.getStatus().getResourceId());
             assertTrue(new EueFindFeature(session, fileid).find(file));
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
+            assertEquals(resourceId, attributes.getFileId());
             assertEquals(content.length, attributes.getSize());
             final byte[] compare = new byte[content.length];
             final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
