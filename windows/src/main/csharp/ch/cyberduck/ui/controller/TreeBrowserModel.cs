@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetIcon(Path path)
         {
-            if (path.isVolume())
+            if (_controller.IsMounted() && path.isVolume())
             {
                 return IconProvider.GetDisk(_controller.Session.getHost().getProtocol(), 16);
             }
