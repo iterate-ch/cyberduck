@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -51,6 +50,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3VersionedObjectListService extends S3AbstractListService implements ListService {
     private static final Logger log = LogManager.getLogger(S3VersionedObjectListService.class);
@@ -197,13 +197,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 listener.chunk(directory, children);
             }
             while(priorLastKey != null);
-            for(Future<Path> future : folders) {
+            for(Future<Path> f : folders) {
                 try {
-                    children.add(future.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Listing versioned objects failed with interrupt failure");
-                    throw new ConnectionCanceledException(e);
+                    children.add(Uninterruptibles.getUninterruptibly(f));
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));

@@ -27,7 +27,6 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -52,6 +51,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDigest> {
     private static final Logger log = LogManager.getLogger(BrickUploadFeature.class);
@@ -106,14 +107,9 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 offset += length;
                 ref = uploadPartEntity.getRef();
             }
-            for(Future<TransferStatus> future : parts) {
+            for(Future<TransferStatus> f : parts) {
                 try {
-                    checksums.add(future.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed with interrupt failure");
-                    status.setCanceled();
-                    throw new ConnectionCanceledException(e);
+                    checksums.add(Uninterruptibles.getUninterruptibly(f));
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));

@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -44,6 +43,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3MultipartCopyFeature extends S3CopyFeature {
     private static final Logger log = LogManager.getLogger(S3MultipartCopyFeature.class);
@@ -93,15 +94,11 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 remaining -= length;
                 offset += length;
             }
-            for(Future<MultipartPart> future : parts) {
+            for(Future<MultipartPart> f : parts) {
                 try {
-                    final MultipartPart part = future.get();
+                    final MultipartPart part = Uninterruptibles.getUninterruptibly(f);
                     completed.add(part);
                     listener.sent(part.getSize());
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed with interrupt failure");
-                    throw new ConnectionCanceledException(e);
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));

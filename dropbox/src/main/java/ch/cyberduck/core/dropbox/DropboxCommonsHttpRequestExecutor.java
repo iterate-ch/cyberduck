@@ -152,10 +152,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             public Response finish() throws IOException {
                 final CloseableHttpResponse response;
                 try {
-                    response = future.get();
-                }
-                catch(InterruptedException e) {
-                    throw new IOException(e);
+                    response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
                     throw new IOException(e.getCause());

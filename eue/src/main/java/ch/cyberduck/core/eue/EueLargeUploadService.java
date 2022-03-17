@@ -25,7 +25,6 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEnt
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -54,6 +53,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
@@ -111,14 +112,9 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             }
             // Checksums for uploaded segments
             final List<EueWriteFeature.Chunk> chunks = new ArrayList<>();
-            for(Future<EueWriteFeature.Chunk> uploadResponseFuture : parts) {
+            for(Future<EueWriteFeature.Chunk> f : parts) {
                 try {
-                    chunks.add(uploadResponseFuture.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Part upload failed with interrupt failure");
-                    status.setCanceled();
-                    throw new ConnectionCanceledException(e);
+                    chunks.add(Uninterruptibles.getUninterruptibly(f));
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
