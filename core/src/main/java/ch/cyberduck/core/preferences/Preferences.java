@@ -594,15 +594,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("queue.connections.limit", String.valueOf(TransferConnectionLimiter.AUTO));
         this.setDefault("queue.connections.limit.default", String.valueOf(5));
         this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.ftp.name()), String.valueOf(1));
-        /*
-         * Limit for uploads with multipart feature
-         */
-        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.s3.name()), String.valueOf(2));
-        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.swift.name()), String.valueOf(2));
-        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.b2.name()), String.valueOf(2));
-        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.eue.name()), String.valueOf(2));
-        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.box.name()), String.valueOf(2));
-        this.setDefault(String.format("queue.connections.limit.%s", Protocol.Type.dracoon.name()), String.valueOf(2));
 
         {
             final StringBuilder options = new StringBuilder();
