@@ -97,10 +97,10 @@ public class SDSNodeIdProvider implements VersionIdProvider {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).searchNodes(
-                    URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
-                    StringUtils.EMPTY, -1, null,
-                    String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
-                    null, offset, chunksize, null);
+                        URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
+                        StringUtils.EMPTY, 1, null,
+                        String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
+                        null, offset, chunksize, null);
                 for(Node node : nodes.getItems()) {
                     if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
                         if(log.isInfoEnabled()) {

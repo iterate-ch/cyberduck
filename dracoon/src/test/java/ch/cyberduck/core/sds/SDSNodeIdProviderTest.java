@@ -47,6 +47,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        nodeid.clear();
         assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
         try {
             assertNull(nodeid.getNodeId(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), 1));
@@ -94,6 +95,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        nodeid.clear();
         assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
         try {
             assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
@@ -112,6 +114,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String subroomname = new AlphanumericRandomStringService().random();
         final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, subroomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        nodeid.clear();
         assertNotNull(nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), 1));
         assertNotNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), 1));
         try {
