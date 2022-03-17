@@ -218,13 +218,13 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             this.await();
             meter.reset();
-            transfer.pre(source, destination, table, connect);
+            transfer.pre(source, destination, table, progress, connect);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
             }
             this.await();
-            transfer.post(source, destination, table, connect);
+            transfer.post(source, destination, table, progress, connect);
         }
         finally {
             this.release(source, Connection.source, null);
