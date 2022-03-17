@@ -167,14 +167,17 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
     public void testChangedNodeId() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
-        nodeid.cache(test, String.valueOf(RandomUtils.nextLong()));
+        final String invalidId = String.valueOf(RandomUtils.nextLong());
+        test.attributes().setVersionId(invalidId);
+        nodeid.cache(test, invalidId);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid, true);
         assertEquals(latestnodeid, f.find(test).getVersionId());
+        assertEquals(latestnodeid, test.attributes().getVersionId());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

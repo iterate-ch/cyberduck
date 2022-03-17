@@ -140,8 +140,10 @@ public class B2ObjectListService implements ListService {
             }
             revisions.put(info.getFileName(), revision);
             attributes.setRevision(revision);
-            objects.add(new Path(directory, PathNormalizer.name(info.getFileName()),
-                info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes));
+            final Path f = new Path(directory, PathNormalizer.name(info.getFileName()),
+                    info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes);
+            fileid.cache(f, f.attributes().getVersionId());
+            objects.add(f);
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
