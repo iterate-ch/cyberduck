@@ -104,8 +104,10 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(workdir.isRoot()) {
-            // Disallow creating new top level data room
-            return false;
+            if(!new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.enable")) {
+                log.warn(String.format("Disallow creating new top level data room %s", name));
+                return false;
+            }
         }
         if(!new SDSTouchFeature(session, nodeid).validate(name)) {
             log.warn(String.format("Validation failed for target name %s", name));
