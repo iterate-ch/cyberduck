@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.SavePasswordChecked = _options.keychain();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
-            View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
+            View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password?.Trim() ?? string.Empty); };
         }
 
         public override bool Singleton => true;

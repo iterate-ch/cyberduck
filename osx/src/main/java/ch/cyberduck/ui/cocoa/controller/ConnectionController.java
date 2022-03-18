@@ -100,6 +100,6 @@ public class ConnectionController extends BookmarkController {
 
     @Action
     public void passwordFieldTextDidChange(final NSNotification notification) {
-        bookmark.getCredentials().setPassword(passwordField.stringValue());
+        bookmark.getCredentials().setPassword(StringUtils.trim(passwordField.stringValue()));
     }
 }

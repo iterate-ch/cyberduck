@@ -164,7 +164,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _host.getPort(),
                     _host.getHostname(),
                     _host.getCredentials().getUsername());
-                if (Utils.IsNotBlank(password))
+                if (!string.IsNullOrWhiteSpace(password))
                 {
                     View.Password = password;
                 }
@@ -226,7 +226,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal void View_ChangedUsernameEvent()
         {
-            _host.getCredentials().setUsername(View.Username);
+            _host.getCredentials().setUsername(View.Username?.Trim() ?? string.Empty);
             ItemChanged();
             Update();
         }

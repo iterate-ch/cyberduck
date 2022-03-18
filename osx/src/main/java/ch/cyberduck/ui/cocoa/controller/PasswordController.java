@@ -94,7 +94,7 @@ public class PasswordController extends AlertController {
 
     @Action
     public void passwordFieldTextDidChange(final NSNotification notification) {
-        credentials.setPassword(inputField.stringValue());
+        credentials.setPassword(StringUtils.trim(inputField.stringValue()));
     }
 
     @Override

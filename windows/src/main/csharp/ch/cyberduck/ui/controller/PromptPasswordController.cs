@@ -59,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     throw new LoginCanceledException();
                 }
-                credentials.setPassword(View.InputText);
+                credentials.setPassword(View.InputText.Trim());
                 credentials.setSaved(View.SavePasswordState);
             };
             _browser.Invoke(d);
@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool ValidateInputEventHandler()
         {
-            return Utils.IsNotBlank(View.InputText);
+            return !string.IsNullOrWhiteSpace(View.InputText);
         }
     }
 }
