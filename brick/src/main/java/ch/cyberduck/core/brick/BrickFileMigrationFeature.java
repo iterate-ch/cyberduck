@@ -29,10 +29,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BrickFileMigrationFeature {
@@ -79,7 +82,18 @@ public class BrickFileMigrationFeature {
                     signal.countDown();
                 }
             }, preferences.getLong("brick.migration.interval.ms"), TimeUnit.MILLISECONDS);
-            Uninterruptibles.awaitUninterruptibly(signal);
+            while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+                try {
+                    Uninterruptibles.getUninterruptibly(f, Duration.ofSeconds(0L));
+                }
+                catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
+                    throw new BackgroundException(e.getCause());
+                }
+                catch(TimeoutException e) {
+                    // Continue
+                }
+            }
             if(null != failure.get()) {
                 throw failure.get();
             }

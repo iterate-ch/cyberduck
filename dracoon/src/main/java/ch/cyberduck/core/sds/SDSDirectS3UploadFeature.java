@@ -63,6 +63,7 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +73,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -201,17 +203,17 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             }
             new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
             // Polling
-            final CountDownLatch done = new CountDownLatch(1);
+            final CountDownLatch signal = new CountDownLatch(1);
             final AtomicReference<BackgroundException> failure = new AtomicReference<>();
             final ScheduledThreadPool polling = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
                 @Override
                 public void uncaughtException(final Thread t, final Throwable e) {
                     super.uncaughtException(t, e);
                     failure.set(new BackgroundException(e));
-                    done.countDown();
+                    signal.countDown();
                 }
             });
-            final ScheduledFuture f = polling.repeat(new Runnable() {
+            final ScheduledFuture<?> f = polling.repeat(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -226,28 +228,39 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                                 break;
                             case "transfer":
                                 failure.set(new InteroperabilityException(uploadStatus.getStatus()));
-                                done.countDown();
+                                signal.countDown();
                                 break;
                             case "error":
                                 failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
-                                done.countDown();
+                                signal.countDown();
                                 break;
                             case "done":
                                 // Set node id in transfer status
                                 nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
                                 // Mark parent status as complete
                                 status.withResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
-                                done.countDown();
+                                signal.countDown();
                                 break;
                         }
                     }
                     catch(ApiException e) {
                         failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
-                        done.countDown();
+                        signal.countDown();
                     }
                 }}, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
                     new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
-            Uninterruptibles.awaitUninterruptibly(done);
+            while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+                try {
+                    Uninterruptibles.getUninterruptibly(f, Duration.ofSeconds(0L));
+                }
+                catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
+                    throw new BackgroundException(e.getCause());
+                }
+                catch(TimeoutException e) {
+                    // Continue
+                }
+            }
             polling.shutdown();
             if(null != failure.get()) {
                 throw failure.get();
