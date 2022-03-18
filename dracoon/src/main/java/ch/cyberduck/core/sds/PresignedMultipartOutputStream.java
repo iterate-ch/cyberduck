@@ -189,8 +189,8 @@ public class PresignedMultipartOutputStream extends OutputStream {
             else {
                 try {
                     final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
-                        .keepShareLinks(overall.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
-                        .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
+                            .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
+                            .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE);
                     if(overall.getFilekey() != null) {
                         final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                         final FileKey fileKey = reader.readValue(overall.getFilekey().array());
