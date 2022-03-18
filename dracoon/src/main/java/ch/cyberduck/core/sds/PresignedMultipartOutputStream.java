@@ -35,6 +35,7 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -204,15 +205,22 @@ public class PresignedMultipartOutputStream extends OutputStream {
                         new S3FileUploadPart().partEtag(StringUtils.remove(value, '"')).partNumber(key)));
                     new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                     // Polling
-                    final ScheduledThreadPool polling = new ScheduledThreadPool();
                     final CountDownLatch done = new CountDownLatch(1);
                     final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+                    final ScheduledThreadPool polling = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(final Thread t, final Throwable e) {
+                            super.uncaughtException(t, e);
+                            failure.set(new BackgroundException(e));
+                            done.countDown();
+                        }
+                    });
                     final ScheduledFuture f = polling.repeat(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                                    .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
+                                        .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
                                 switch(uploadStatus.getStatus()) {
                                     case "finishing":
                                         // Expected

@@ -35,7 +35,16 @@ public class ScheduledThreadPool {
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public ScheduledThreadPool() {
-        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
+        this(new LoggingUncaughtExceptionHandler());
+    }
+
+    /**
+     * With FIFO (first-in-first-out) ordered wait queue.
+     *
+     * @param handler Uncaught exception handler
+     */
+    public ScheduledThreadPool(final Thread.UncaughtExceptionHandler handler) {
+        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer", handler));
     }
 
     /**

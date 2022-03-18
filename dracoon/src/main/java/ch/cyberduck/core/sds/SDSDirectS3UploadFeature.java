@@ -49,6 +49,7 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -62,6 +63,7 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -201,9 +203,16 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             }
             new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
             // Polling
-            final ScheduledThreadPool polling = new ScheduledThreadPool();
             final CountDownLatch done = new CountDownLatch(1);
             final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+            final ScheduledThreadPool polling = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(final Thread t, final Throwable e) {
+                    super.uncaughtException(t, e);
+                    failure.set(new BackgroundException(e));
+                    done.countDown();
+                }
+            });
             final ScheduledFuture f = polling.repeat(new Runnable() {
                 @Override
                 public void run() {
