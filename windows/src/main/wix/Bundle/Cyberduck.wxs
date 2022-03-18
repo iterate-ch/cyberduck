@@ -275,14 +275,6 @@
       <Component Id="structuremap">
         <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-      <!-- WindowsAPICodePack-Core -->
-      <Component Id="WAPICP">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <!-- WindowsAPICodePack-Shell-->
-      <Component Id="WAPICPShell">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
       <!-- /Nuget Dependencies -->
 
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
