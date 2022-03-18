@@ -23,12 +23,13 @@ using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static Ch.Cyberduck.ImageHelper;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.PInvoke;
@@ -44,6 +45,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private static readonly int MinWidth = 450;
         private string _currentImage = string.Empty;
         private ToolStripMenuItem _lastMenuItemClicked;
+        private readonly ITaskbarList3 taskbar;
 
         public TransferForm()
         {
@@ -89,6 +91,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             //force handle creation
             IntPtr intPtr = Handle;
+
+            ITaskbarList taskbarList = (ITaskbarList)new TaskbarList();
+            taskbarList.HrInit();
+            taskbar = (ITaskbarList3)taskbarList;
+            taskbarList = null;
         }
 
         public override string[] BundleNames
@@ -359,21 +366,25 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void TaskbarOverlayIcon(Icon icon, string text)
         {
-            TaskbarManager.Instance.SetOverlayIcon(Handle, icon, text);
+            HICON hicon = default;
+            if (icon != null)
+            {
+                hicon = (HICON)icon.Handle;
+            }
+            taskbar.SetOverlayIcon((HWND)Handle, hicon, text);
         }
 
         public void UpdateOverallProgressState(long progress, long maximum)
         {
+            TBPFLAG state = TBPFLAG.TBPF_NORMAL;
             if (progress == 0 || maximum == 0)
             {
-                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
+                state = TBPFLAG.TBPF_NOPROGRESS;
             }
-            else
+            taskbar.SetProgressState((HWND)Handle, TBPFLAG.TBPF_NOPROGRESS);
+            if (state != TBPFLAG.TBPF_NOPROGRESS)
             {
-                var progressPercentage = progress / (double) maximum;
-                var progressPercentageInt = (int) Math.Round(progressPercentage * 100);
-                TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal);
-                TaskbarManager.Instance.SetProgressValue(progressPercentageInt, 100);
+                taskbar.SetProgressValue((HWND)Handle, unchecked((ulong)progress), unchecked((ulong)maximum));
             }
         }
 

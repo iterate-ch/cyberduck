@@ -14,6 +14,8 @@ HideCaret
 IDropTargetHelper
 IInitializeWithWindow
 IObjectArray
+ITaskbarList
+ITaskbarList3
 IVirtualDesktopManager
 LoadLibrary
 LVM_FIRST
@@ -25,6 +27,7 @@ RegisterClipboardFormat
 SB_BOTTOM
 SetMenuInfo
 SetMenuItemInfo
+TaskbarList
 TO_ADVANCEDTYPOGRAPHY
 VIRTUAL_KEY
 VirtualDesktopManager
