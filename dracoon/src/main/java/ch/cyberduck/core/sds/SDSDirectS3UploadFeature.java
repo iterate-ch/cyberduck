@@ -73,7 +73,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -251,14 +250,13 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
             while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
                 try {
-                    Uninterruptibles.getUninterruptibly(f, Duration.ofSeconds(0L));
+                    if(f.isDone()) {
+                        Uninterruptibles.getUninterruptibly(f);
+                    }
                 }
                 catch(ExecutionException e) {
                     Throwables.throwIfInstanceOf(e, BackgroundException.class);
                     throw new BackgroundException(e.getCause());
-                }
-                catch(TimeoutException e) {
-                    // Continue
                 }
             }
             polling.shutdown();

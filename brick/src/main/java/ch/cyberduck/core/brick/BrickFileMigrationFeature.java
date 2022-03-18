@@ -32,7 +32,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.base.Throwables;
@@ -84,14 +83,13 @@ public class BrickFileMigrationFeature {
             }, preferences.getLong("brick.migration.interval.ms"), TimeUnit.MILLISECONDS);
             while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
                 try {
-                    Uninterruptibles.getUninterruptibly(f, Duration.ofSeconds(0L));
+                    if(f.isDone()) {
+                        Uninterruptibles.getUninterruptibly(f);
+                    }
                 }
                 catch(ExecutionException e) {
                     Throwables.throwIfInstanceOf(e, BackgroundException.class);
                     throw new BackgroundException(e.getCause());
-                }
-                catch(TimeoutException e) {
-                    // Continue
                 }
             }
             if(null != failure.get()) {
