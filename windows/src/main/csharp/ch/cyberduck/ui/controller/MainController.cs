@@ -60,8 +60,6 @@ using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Contracts;
 using java.util;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.logging.log4j;
 using ReactiveUI;
 using Splat;
@@ -75,6 +73,7 @@ using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Shell;
 using Windows.Services.Store;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
@@ -95,9 +94,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpList _jumpListManager;
         private static AutoResetEvent applicationShutdown = new AutoResetEvent(true);
-        private static JumpListCustomCategory bookmarkCategory;
         private readonly BaseController _controller;
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
+        private readonly SynchronizationContext mainThreadSync;
 
         /// <summary>
         /// Saved browsers
@@ -145,6 +144,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             // Initialize WindowsFormsSynchronizationContext (sets SynchronizationContext.Current)
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+            mainThreadSync = SynchronizationContext.Current;
 
             protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
@@ -158,7 +158,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Locator.CurrentMutable.InitializeReactiveUI();
 
             // Execute OnStartup later
-            SynchronizationContext.Current.Post(OnStartup, null);
+            mainThreadSync.Post(OnStartup, null);
         }
 
         public static MainController Application => _application;
@@ -590,9 +590,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (_jumpListManager == null)
                 {
-                    TaskbarManager.Instance.ApplicationId = PreferencesFactory.get().getProperty("application.name");
-                    _jumpListManager = JumpList.CreateJumpList();
-                    _jumpListManager.AddCustomCategories(bookmarkCategory = new JumpListCustomCategory("History"));
+                    _jumpListManager = new JumpList();
                 }
             }
             catch (Exception exception)
@@ -886,25 +884,30 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RefreshJumpList()
         {
+            string appIcon = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico");
+
             InitJumpList();
 
             try
             {
                 Iterator iterator = HistoryCollection.defaultCollection().iterator();
-                _jumpListManager.ClearAllUserTasks();
+                _jumpListManager.JumpItems.Clear();
                 while (iterator.hasNext())
                 {
                     Host host = (Host)iterator.next();
                     var file = BookmarkCollection.defaultCollection().getFile(host);
                     if (file.exists())
                     {
-                        bookmarkCategory.AddJumpListItems(new JumpListLink(file.getAbsolute(), BookmarkNameProvider.toString(host))
+                        _jumpListManager.JumpItems.Add(new JumpTask()
                         {
-                            IconReference = new IconReference(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico"), 0),
+                            ApplicationPath = file.getAbsolute(),
+                            Title = BookmarkNameProvider.toString(host),
+                            IconResourcePath = appIcon,
+                            CustomCategory = "History"
                         });
                     }
                 }
-                _jumpListManager.Refresh();
+                mainThreadSync.Send(_ => _jumpListManager.Apply(), null);
             }
             catch (Exception exception)
             {
