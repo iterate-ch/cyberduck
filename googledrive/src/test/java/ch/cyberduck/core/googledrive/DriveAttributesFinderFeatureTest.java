@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -64,12 +65,14 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     }
 
     @Test
+    @Ignore
     public void testFindSharedDriveAsDefaultPath() throws Exception {
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileIdProvider(session));
         assertNotEquals(PathAttributes.EMPTY, f.find(new Path(DriveHomeFinderService.SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
+    @Ignore
     public void testFindFolderInSharedDriveAsDefaultPath() throws Exception {
         final Path test = new Path(new Path(DriveHomeFinderService.SHARED_DRIVES_NAME, "iterate", EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);

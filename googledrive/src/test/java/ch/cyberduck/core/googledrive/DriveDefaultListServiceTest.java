@@ -28,6 +28,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -56,6 +57,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     }
 
     @Test
+    @Ignore
     public void testListSharedDrive() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(
@@ -68,6 +70,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     }
 
     @Test
+    @Ignore
     public void testListSharedDriveFolder() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
