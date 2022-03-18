@@ -46,6 +46,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor {
@@ -118,6 +119,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                     response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(e, IOException.class);
                     throw new IOException(e.getCause());
                 }
                 finally {

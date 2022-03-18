@@ -22,12 +22,16 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -38,6 +42,7 @@ import com.dropbox.core.v2.files.DeleteArg;
 import com.dropbox.core.v2.files.DeleteBatchJobStatus;
 import com.dropbox.core.v2.files.DeleteBatchLaunch;
 import com.dropbox.core.v2.files.DeleteBatchResultEntry;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DropboxBatchDeleteFeature implements Delete {
@@ -50,16 +55,23 @@ public class DropboxBatchDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final ScheduledThreadPool scheduler = new ScheduledThreadPool();
+        final CountDownLatch signal = new CountDownLatch(1);
+        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+        final ScheduledThreadPool scheduler = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                super.uncaughtException(t, e);
+                failure.set(new BackgroundException(e));
+                signal.countDown();
+            }
+        });
         try {
             for(Path f : files.keySet()) {
                 callback.delete(f);
             }
             final DbxUserFilesRequests requests = new DbxUserFilesRequests(session.getClient());
             final DeleteBatchLaunch job = requests.deleteBatch(files.keySet().stream().map(f -> new DeleteArg(f.getAbsolute())).collect(Collectors.toList()));
-            final CountDownLatch signal = new CountDownLatch(1);
-            final AtomicReference<BackgroundException> failure = new AtomicReference<>();
-            scheduler.repeat(() -> {
+            final ScheduledFuture<?> f = scheduler.repeat(() -> {
                 try {
                     // Poll status
                     final DeleteBatchJobStatus status = requests.deleteBatchCheck(job.getAsyncJobIdValue());
@@ -87,7 +99,17 @@ public class DropboxBatchDeleteFeature implements Delete {
                     signal.countDown();
                 }
             }, new HostPreferences(session.getHost()).getLong("dropbox.delete.poll.interval.ms"), TimeUnit.MILLISECONDS);
-            Uninterruptibles.awaitUninterruptibly(signal);
+            while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+                try {
+                    if(f.isDone()) {
+                        Uninterruptibles.getUninterruptibly(f);
+                    }
+                }
+                catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
+                    throw new BackgroundException(e.getCause());
+                }
+            }
             if(null != failure.get()) {
                 throw failure.get();
             }

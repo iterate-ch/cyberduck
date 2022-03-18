@@ -35,6 +35,7 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -53,12 +54,14 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,6 +74,7 @@ import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class PresignedMultipartOutputStream extends OutputStream {
@@ -204,38 +208,55 @@ public class PresignedMultipartOutputStream extends OutputStream {
                         new S3FileUploadPart().partEtag(StringUtils.remove(value, '"')).partNumber(key)));
                     new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                     // Polling
-                    final ScheduledThreadPool polling = new ScheduledThreadPool();
-                    final CountDownLatch done = new CountDownLatch(1);
+                    final CountDownLatch signal = new CountDownLatch(1);
                     final AtomicReference<BackgroundException> failure = new AtomicReference<>();
-                    final ScheduledFuture f = polling.repeat(new Runnable() {
+                    final ScheduledThreadPool polling = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+                        @Override
+                        public void uncaughtException(final Thread t, final Throwable e) {
+                            super.uncaughtException(t, e);
+                            failure.set(new BackgroundException(e));
+                            signal.countDown();
+                        }
+                    });
+                    final ScheduledFuture<?> f = polling.repeat(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                                    .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
+                                        .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null);
                                 switch(uploadStatus.getStatus()) {
                                     case "finishing":
                                         // Expected
                                         break;
                                     case "transfer":
                                         failure.set(new InteroperabilityException(uploadStatus.getStatus()));
-                                        done.countDown();
+                                        signal.countDown();
                                     case "error":
                                         failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
-                                        done.countDown();
+                                        signal.countDown();
                                     case "done":
                                         nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
-                                        done.countDown();
+                                        signal.countDown();
                                         break;
                                 }
                             }
                             catch(ApiException e) {
                                 failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
-                                done.countDown();
+                                signal.countDown();
                             }
                         }
                     }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
-                    Uninterruptibles.awaitUninterruptibly(done);
+                    while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+                        try {
+                            if(f.isDone()) {
+                                Uninterruptibles.getUninterruptibly(f);
+                            }
+                        }
+                        catch(ExecutionException e) {
+                            Throwables.throwIfInstanceOf(e, BackgroundException.class);
+                            throw new BackgroundException(e.getCause());
+                        }
+                    }
                     polling.shutdown();
                     if(null != failure.get()) {
                         throw failure.get();

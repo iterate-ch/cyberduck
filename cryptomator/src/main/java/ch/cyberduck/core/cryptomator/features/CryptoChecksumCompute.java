@@ -48,6 +48,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class CryptoChecksumCompute extends AbstractChecksumCompute {
@@ -108,9 +109,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
                         Uninterruptibles.getUninterruptibly(execute);
                     }
                     catch(ExecutionException e) {
-                        if(e.getCause() instanceof BackgroundException) {
-                            throw (BackgroundException) e.getCause();
-                        }
+                        Throwables.throwIfInstanceOf(e, BackgroundException.class);
                         throw new DefaultExceptionMappingService().map(e.getCause());
                     }
                 }

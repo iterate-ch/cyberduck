@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
+
 @Category(IntegrationTest.class)
 public class DropboxBatchDeleteFeatureTest extends AbstractDropboxTest {
 
@@ -48,6 +50,8 @@ public class DropboxBatchDeleteFeatureTest extends AbstractDropboxTest {
         final Path file2 = new DropboxTouchFeature(session).touch(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxBatchDeleteFeature(session).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DropboxFindFeature(session).find(file1));
+        assertFalse(new DropboxFindFeature(session).find(file2));
     }
 
 
@@ -60,5 +64,8 @@ public class DropboxBatchDeleteFeatureTest extends AbstractDropboxTest {
         final Path file2 = new DropboxTouchFeature(session).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxBatchDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DropboxFindFeature(session).find(file1));
+        assertFalse(new DropboxFindFeature(session).find(file2));
+        assertFalse(new DropboxFindFeature(session).find(folder));
     }
 }

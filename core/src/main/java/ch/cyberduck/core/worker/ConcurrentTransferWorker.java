@@ -47,6 +47,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.Throwables;
+
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
     private static final Logger log = LogManager.getLogger(ConcurrentTransferWorker.class);
 
@@ -166,9 +168,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
             }
 
             catch(ExecutionException e) {
-                if(e.getCause() instanceof BackgroundException) {
-                    throw (BackgroundException) e.getCause();
-                }
+                Throwables.throwIfInstanceOf(e, BackgroundException.class);
                 throw new DefaultExceptionMappingService().map(e.getCause());
             }
             finally {
