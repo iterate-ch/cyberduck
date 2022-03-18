@@ -63,7 +63,6 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +81,7 @@ import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDigest> {
@@ -178,9 +178,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    if(e.getCause() instanceof BackgroundException) {
-                        throw (BackgroundException) e.getCause();
-                    }
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
                     throw new BackgroundException(e.getCause());
                 }
             }

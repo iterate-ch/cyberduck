@@ -48,6 +48,7 @@ import java.util.concurrent.Future;
 
 import com.google.api.services.storage.model.Objects;
 import com.google.api.services.storage.model.StorageObject;
+import com.google.common.base.Throwables;
 
 public class GoogleStorageObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(GoogleStorageObjectListService.class);
@@ -201,9 +202,7 @@ public class GoogleStorageObjectListService implements ListService {
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
-                    if(e.getCause() instanceof BackgroundException) {
-                        throw (BackgroundException) e.getCause();
-                    }
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
                     throw new BackgroundException(e.getCause());
                 }
             }

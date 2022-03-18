@@ -44,6 +44,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.dropbox.core.http.HttpRequestor;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
@@ -155,6 +156,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                     response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(e, IOException.class);
                     throw new IOException(e.getCause());
                 }
                 finally {

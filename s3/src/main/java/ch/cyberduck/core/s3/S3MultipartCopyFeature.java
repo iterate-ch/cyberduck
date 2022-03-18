@@ -44,6 +44,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3MultipartCopyFeature extends S3CopyFeature {
@@ -102,9 +103,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    if(e.getCause() instanceof BackgroundException) {
-                        throw (BackgroundException) e.getCause();
-                    }
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
                     throw new BackgroundException(e.getCause());
                 }
             }

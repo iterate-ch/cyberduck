@@ -49,6 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest> {
@@ -101,9 +102,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    if(e.getCause() instanceof BackgroundException) {
-                        throw (BackgroundException) e.getCause();
-                    }
+                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
                     throw new BackgroundException(e.getCause());
                 }
             }

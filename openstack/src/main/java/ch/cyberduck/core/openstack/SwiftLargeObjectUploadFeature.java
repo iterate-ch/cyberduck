@@ -54,6 +54,7 @@ import java.util.concurrent.Future;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
@@ -151,9 +152,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-            if(e.getCause() instanceof BackgroundException) {
-                throw (BackgroundException) e.getCause();
-            }
+            Throwables.throwIfInstanceOf(e, BackgroundException.class);
             throw new DefaultExceptionMappingService().map(e.getCause());
         }
         finally {
