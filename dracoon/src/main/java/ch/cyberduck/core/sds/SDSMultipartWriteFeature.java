@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -79,12 +78,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<Node> {
                         return;
                     }
                     super.close();
-                    try {
-                        node.set(upload.complete(file, uploadToken, status));
-                    }
-                    catch(ConflictException e) {
-                        node.set(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
-                    }
+                    node.set(upload.complete(file, uploadToken, status));
                 }
                 catch(BackgroundException e) {
                     throw new IOException(e);

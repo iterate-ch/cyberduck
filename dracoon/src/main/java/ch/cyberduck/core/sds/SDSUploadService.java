@@ -105,8 +105,8 @@ public class SDSUploadService {
     public Node complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
         try {
             final CompleteUploadRequest body = new CompleteUploadRequest()
-                .keepShareLinks(status.isExists() ? new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep") : false)
-                .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
+                    .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
+                    .resolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
             if(status.getFilekey() != null) {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
