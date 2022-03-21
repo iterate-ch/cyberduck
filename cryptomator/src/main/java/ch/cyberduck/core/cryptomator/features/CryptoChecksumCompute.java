@@ -109,8 +109,8 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
                         Uninterruptibles.getUninterruptibly(execute);
                     }
                     catch(ExecutionException e) {
-                        Throwables.throwIfInstanceOf(e, BackgroundException.class);
-                        throw new DefaultExceptionMappingService().map(e.getCause());
+                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                     }
                 }
             }

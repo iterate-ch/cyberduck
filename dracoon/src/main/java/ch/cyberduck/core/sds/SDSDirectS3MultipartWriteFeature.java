@@ -48,6 +48,7 @@ import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -301,8 +302,8 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                         }
                     }
                     catch(ExecutionException e) {
-                        Throwables.throwIfInstanceOf(e, BackgroundException.class);
-                        throw new BackgroundException(e.getCause());
+                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                     }
                 }
                 polling.shutdown();

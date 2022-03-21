@@ -152,8 +152,8 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         catch(ExecutionException e) {
             log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-            Throwables.throwIfInstanceOf(e, BackgroundException.class);
-            throw new DefaultExceptionMappingService().map(e.getCause());
+            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+            throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
         }
         finally {
             pool.shutdown(false);

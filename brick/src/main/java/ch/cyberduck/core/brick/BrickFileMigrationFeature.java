@@ -23,6 +23,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -88,8 +89,8 @@ public class BrickFileMigrationFeature {
                     }
                 }
                 catch(ExecutionException e) {
-                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
-                    throw new BackgroundException(e.getCause());
+                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                 }
             }
             if(null != failure.get()) {

@@ -31,6 +31,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -204,8 +205,8 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
-                    throw new BackgroundException(e.getCause());
+                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                 }
             }
             listener.chunk(directory, children);
