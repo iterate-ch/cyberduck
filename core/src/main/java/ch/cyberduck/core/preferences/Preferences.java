@@ -1170,6 +1170,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.limit.hint.second", String.valueOf(2));
         this.setDefault("eue.limit.requests.second", String.valueOf(3)); // 168 requests per minute by default allowed by server
         this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
+        this.setDefault("eue.delete.multiple.partition", String.valueOf(100));
 
         // Must be at least 20MB
         this.setDefault("box.upload.multipart.threshold", String.valueOf(20 * 1024 * 1024));
