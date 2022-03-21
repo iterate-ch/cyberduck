@@ -18,7 +18,7 @@ package ch.cyberduck.core.box;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -31,8 +31,8 @@ import java.io.InputStream;
 public class BoxBase64SHA1ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.sha1, Base64.encodeBase64String(this.digest("SHA-1",
-                this.normalize(in, status))));
+                this.normalize(in, status), status)));
     }
 }

@@ -21,7 +21,7 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
@@ -54,8 +54,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key)
-            throws ConnectionCanceledException, ChecksumException {
+    protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) throws BackgroundException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
         final AlertController alert = new UnknownHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {
@@ -68,8 +67,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key)
-            throws ConnectionCanceledException, ChecksumException {
+    protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) throws BackgroundException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
         final AlertController alert = new ChangedHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {

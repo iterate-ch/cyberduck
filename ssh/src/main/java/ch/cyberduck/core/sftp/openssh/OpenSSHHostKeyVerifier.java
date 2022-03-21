@@ -22,6 +22,7 @@ package ch.cyberduck.core.sftp.openssh;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -84,7 +85,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     }
 
     @Override
-    public boolean verify(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
         if(null == database) {
             log.warn(String.format("Missing database %s", database));
             return super.verify(host, key);

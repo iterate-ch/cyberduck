@@ -15,7 +15,7 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,7 +28,7 @@ import java.util.zip.CRC32;
 public class CRC32ChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         final InputStream normalized = this.normalize(in, status);
         final CRC32 crc32 = new CRC32();
         try {
@@ -39,7 +39,7 @@ public class CRC32ChecksumCompute extends AbstractChecksumCompute {
             }
         }
         catch(IOException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+            throw new ChecksumException(e);
         }
         finally {
             IOUtils.closeQuietly(normalized);

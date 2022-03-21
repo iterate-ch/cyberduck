@@ -17,8 +17,7 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -37,23 +36,23 @@ public final class LocalProfileDescription extends ProfileDescription {
 
     public LocalProfileDescription(final ProtocolFactory protocols, final Local file) {
         super(protocols,
-            new LazyInitializer<Checksum>() {
-                @Override
-                protected Checksum initialize() throws ConcurrentException {
-                    try {
-                        // Calculate checksum lazily
-                        return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
+                new LazyInitializer<Checksum>() {
+                    @Override
+                    protected Checksum initialize() throws ConcurrentException {
+                        try {
+                            // Calculate checksum lazily
+                            return ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
+                        }
+                        catch(BackgroundException e) {
+                            throw new ConcurrentException(e);
+                        }
                     }
-                    catch(ChecksumException | AccessDeniedException e) {
-                        throw new ConcurrentException(e);
+                }, new LazyInitializer<Local>() {
+                    @Override
+                    protected Local initialize() {
+                        return file;
                     }
                 }
-            }, new LazyInitializer<Local>() {
-                @Override
-                protected Local initialize() {
-                    return file;
-                }
-            }
         );
         this.file = file;
     }

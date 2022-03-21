@@ -191,7 +191,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         concat.append(part.getEtag());
                     }
                     final String expected = String.format("%s-%d",
-                            ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                            ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString()), completed.size());
                     final String reference = StringUtils.remove(complete.getEtag(), "\"");
                     if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                         throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),

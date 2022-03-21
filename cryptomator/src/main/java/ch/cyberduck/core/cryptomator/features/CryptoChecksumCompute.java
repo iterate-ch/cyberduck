@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
@@ -63,7 +62,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
     }
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), new TransferStatus())) {
             return Checksum.NONE;
         }
@@ -122,7 +121,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
             throw e;
         }
         catch(IOException | BackgroundException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+            throw new ChecksumException(e);
         }
     }
 

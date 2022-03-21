@@ -24,7 +24,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadedPart;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -127,7 +126,7 @@ public class BoxMultipartWriteFeature implements Write<File> {
                 }));
                 byteCounter.sent(len);
             }
-            catch(ChecksumException e) {
+            catch(BackgroundException e) {
                 throw new IOException(e);
             }
         }
