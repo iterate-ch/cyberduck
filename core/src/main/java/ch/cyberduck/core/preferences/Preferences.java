@@ -1168,7 +1168,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.share.readable", String.valueOf(true));
         this.setDefault("eue.share.notification.enable", String.valueOf(false));
         this.setDefault("eue.limit.hint.second", String.valueOf(2));
-        this.setDefault("eue.limit.requests.second", String.valueOf(10));
+        this.setDefault("eue.limit.requests.second", String.valueOf(3)); // 168 requests per minute by default allowed by server
         this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
 
         // Must be at least 20MB
