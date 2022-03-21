@@ -45,6 +45,7 @@ import ch.cyberduck.core.transfer.upload.SkipFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,6 +56,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class UploadTransfer extends Transfer {
     private static final Logger log = LogManager.getLogger(UploadTransfer.class);
@@ -212,20 +214,36 @@ public class UploadTransfer extends Transfer {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
         super.pre(source, destination, files, listener, callback);
-        final Directory mkdir = source.getFeature(Directory.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Filter for directories in transfer %s", this));
+        }
         // Create all directories first
-        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            final Path file = entry.getKey().remote;
-            if(file.isDirectory()) {
-                final TransferStatus status = entry.getValue();
-                if(!status.isExists()) {
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
-                    final AttributedList<Path> list = new AttributedList<>(cache.get(file.getParent()));
-                    list.add(mkdir.mkdir(file, status));
-                    cache.put(file.getParent(), list);
-                    status.setComplete();
-                }
-            }
+        final List<Map.Entry<TransferItem, TransferStatus>> directories = files.entrySet().stream()
+                .filter(item -> item.getKey().remote.isDirectory())
+                .filter(item -> !item.getValue().isExists())
+                .sorted(new Comparator<Map.Entry<TransferItem, TransferStatus>>() {
+                    @Override
+                    public int compare(final Map.Entry<TransferItem, TransferStatus> o1, final Map.Entry<TransferItem, TransferStatus> o2) {
+                        if(o1.getKey().remote.isChild(o2.getKey().remote)) {
+                            return 1;
+                        }
+                        if(o2.getKey().remote.isChild(o1.getKey().remote)) {
+                            return -1;
+                        }
+                        // Same parent
+                        return Integer.compare(StringUtils.countMatches(o1.getKey().remote.getAbsolute(), Path.DELIMITER),
+                                StringUtils.countMatches(o2.getKey().remote.getAbsolute(), Path.DELIMITER));
+                    }
+                }).collect(Collectors.toList());
+        final Directory mkdir = source.getFeature(Directory.class);
+        for(Map.Entry<TransferItem, TransferStatus> item : directories) {
+            final Path file = item.getKey().remote;
+            final TransferStatus status = item.getValue();
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
+            final AttributedList<Path> list = new AttributedList<>(cache.get(file.getParent()));
+            list.add(mkdir.mkdir(file, status));
+            cache.put(file.getParent(), list);
+            status.setComplete();
         }
     }
 
