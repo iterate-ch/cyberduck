@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntity;
@@ -25,6 +26,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Trash;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,26 +75,29 @@ public class EueTrashFeature implements Trash {
             }
             if(!resources.isEmpty()) {
                 final EueApiClient client = new EueApiClient(session);
-                final ResourceMoveResponseEntries resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client).resourceAliasAliasChildrenMovePost(
-                        EueResourceIdProvider.TRASH, resources.stream().map(resourceId -> String.format("%s/resource/%s", session.getBasePath(), resourceId)).collect(Collectors.toList()),
-                        null, null, null, "rename", null);
-                if(null == resourceMoveResponseEntries) {
-                    // Move of single file will return 200 status code with empty response body
-                }
-                else {
-                    for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
-                        switch(resourceMoveResponseEntry.getStatusCode()) {
-                            case HttpStatus.SC_OK:
-                                break;
-                            default:
-                                log.warn(String.format("Failure %s trashing resource %s", resourceMoveResponseEntries, resourceMoveResponseEntry));
-                                final ResourceCreationResponseEntryEntity entity = resourceMoveResponseEntry.getEntity();
-                                if(null == entity) {
-                                    throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                for(List<String> partition : new Partition<>(resources.stream().map(resourceId -> String.format("%s/resource/%s", session.getBasePath(), resourceId)).collect(Collectors.toList()),
+                        new HostPreferences(session.getHost()).getInteger("eue.delete.multiple.partition"))) {
+                    final ResourceMoveResponseEntries resourceMoveResponseEntries = new MoveChildrenForAliasApiApi(client).resourceAliasAliasChildrenMovePost(
+                            EueResourceIdProvider.TRASH, partition,
+                            null, null, null, "rename", null);
+                    if(null == resourceMoveResponseEntries) {
+                        // Move of single file will return 200 status code with empty response body
+                    }
+                    else {
+                        for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                            switch(resourceMoveResponseEntry.getStatusCode()) {
+                                case HttpStatus.SC_OK:
+                                    break;
+                                default:
+                                    log.warn(String.format("Failure %s trashing resource %s", resourceMoveResponseEntries, resourceMoveResponseEntry));
+                                    final ResourceCreationResponseEntryEntity entity = resourceMoveResponseEntry.getEntity();
+                                    if(null == entity) {
+                                        throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                                null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                                    }
+                                    throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getEntity().getError(),
                                             null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
-                                }
-                                throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getEntity().getError(),
-                                        null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                            }
                         }
                     }
                 }
