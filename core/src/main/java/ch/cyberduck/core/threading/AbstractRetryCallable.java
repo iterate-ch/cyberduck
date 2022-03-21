@@ -95,7 +95,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                             log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
                             return false;
                         }
-                        delay = PreferencesFactory.get().getInteger("connection.retry.delay");
+                        delay = preferences.getInteger("connection.retry.delay");
                     }
                 }
                 else {
