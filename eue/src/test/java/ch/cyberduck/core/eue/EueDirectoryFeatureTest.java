@@ -37,12 +37,20 @@ import static org.junit.Assert.fail;
 @Category(IntegrationTest.class)
 public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
 
+    @Test
+    public void testAttributes() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final TransferStatus status = new TransferStatus();
+        final Path directory = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
+        assertEquals(new EueAttributesFinderFeature(session, fileid).find(directory).getFileId(), directory.attributes().getFileId());
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
     @Test(expected = InteroperabilityException.class)
     public void testProhibitedName() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         try {
-            new EueDirectoryFeature(session, fileid).mkdir(new Path(String.format("%s.", new AlphanumericRandomStringService().random()),
-                    EnumSet.of(Path.Type.directory)), new TransferStatus());
+            new EueDirectoryFeature(session, fileid).mkdir(new Path(String.format("%s.", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         }
         catch(InteroperabilityException e) {
             assertEquals("Paths may not end with a . Please contact your web hosting service provider for assistance.", e.getDetail());

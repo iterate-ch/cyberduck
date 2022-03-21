@@ -15,7 +15,6 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.PostChildrenForAliasApi;
@@ -67,9 +66,10 @@ public class EueDirectoryFeature implements Directory<Void> {
                     // Already exists
                     log.warn(String.format("Folder %s already exists", folder));
                 case HttpStatus.SC_CREATED:
-                    fileid.cache(folder, EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation()));
+                    final String resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
+                    fileid.cache(folder, resourceId);
                     return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
-                            new EueAttributesFinderFeature(session, fileid).find(folder, new DisabledListProgressListener()));
+                            new EueAttributesAdapter().toAttributes(new EueWriteFeature.Chunk(resourceId, 0L, null)));
                 default:
                     log.warn(String.format("Failure %s creating folder %s", resourceCreationResponseEntry, folder));
                     final ResourceCreationResponseEntryEntity entity = resourceCreationResponseEntry.getEntity();
