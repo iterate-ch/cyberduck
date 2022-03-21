@@ -125,7 +125,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             .register(new JSON())
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());

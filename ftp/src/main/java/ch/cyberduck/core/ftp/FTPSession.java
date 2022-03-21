@@ -140,7 +140,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(new ProxySocketFactory(host));
         client.setControlEncoding(host.getEncoding());
-        final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setDefaultTimeout(timeout);
         client.setDataTimeout(timeout);
