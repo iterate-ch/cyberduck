@@ -1383,6 +1383,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
         this.setDefault("factory.quicklook.class", ApplicationLauncherQuicklook.class.getName());
+        this.setDefault("factory.connectiontimeout.class", DefaultConnectionTimeout.class.getName());
     }
 
     /**

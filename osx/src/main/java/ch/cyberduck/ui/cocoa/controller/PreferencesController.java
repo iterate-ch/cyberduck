@@ -86,6 +86,8 @@ public class PreferencesController extends ToolbarWindowController {
 
     private final Preferences preferences
         = PreferencesFactory.get();
+    private final ConnectionTimeout.MutableConnectionTimeout connectionTimeoutPreferences
+            = ConnectionTimeoutFactory.get();
 
     private final ProfilesPreferencesController profilesPanelController;
 
@@ -619,7 +621,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setConnectionTimeoutField(NSTextField b) {
         this.connectionTimeoutField = b;
-        this.connectionTimeoutField.setIntValue(preferences.getInteger("connection.timeout.seconds"));
+        this.connectionTimeoutField.setIntValue(connectionTimeoutPreferences.getTimeout());
     }
 
     @Outlet
@@ -629,13 +631,13 @@ public class PreferencesController extends ToolbarWindowController {
         this.connectionTimeoutStepper = b;
         this.connectionTimeoutStepper.setTarget(this.id());
         this.connectionTimeoutStepper.setAction(Foundation.selector("connectionTimeoutStepperClicked:"));
-        this.connectionTimeoutStepper.setIntValue(preferences.getInteger("connection.retry"));
+        this.connectionTimeoutStepper.setIntValue(connectionTimeoutPreferences.getTimeout());
     }
 
     @Action
     public void connectionTimeoutStepperClicked(final NSStepper sender) {
-        preferences.setProperty("connection.timeout.seconds", sender.intValue());
-        connectionTimeoutField.setIntValue(sender.intValue());
+        connectionTimeoutPreferences.setTimeout(sender.intValue());
+        connectionTimeoutField.setIntValue(connectionTimeoutPreferences.getTimeout());
     }
 
     @Outlet

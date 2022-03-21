@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.brick.io.swagger.client.ApiClient;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
@@ -45,7 +46,7 @@ public class BrickApiClient extends ApiClient {
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(session.getClient())))
         );
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
         this.setConnectTimeout(timeout);
         this.setReadTimeout(timeout);
         this.setUserAgent(new PreferencesUseragentProvider().get());

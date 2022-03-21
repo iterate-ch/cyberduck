@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
@@ -66,12 +67,12 @@ public class SpectraClientBuilder {
 
             @Override
             public int getConnectionTimeout() {
-                return new HostPreferences(bookmark).getInteger("connection.timeout.seconds") * 1000;
+                return ConnectionTimeoutFactory.get(bookmark).getTimeout() * 1000;
             }
 
             @Override
             public int getSocketTimeout() {
-                return new HostPreferences(bookmark).getInteger("connection.timeout.seconds") * 1000;
+                return ConnectionTimeoutFactory.get(bookmark).getTimeout() * 1000;
             }
 
             @Override

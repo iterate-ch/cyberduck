@@ -183,7 +183,7 @@ public class SFTPSession extends Session<SSHClient> {
 
     private SSHClient toClient(final HostKeyCallback key, final Config configuration) {
         final SSHClient connection = new SSHClient(configuration);
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         connection.setTimeout(timeout);
         connection.setSocketFactory(new ProxySocketFactory(host));
         connection.addHostKeyVerifier(new HostKeyVerifier() {
@@ -261,7 +261,7 @@ public class SFTPSession extends Session<SSHClient> {
         this.authenticate(client, host, prompt, cancel);
         try {
             sftp = new LoggingSFTPEngine(client, this).init();
-            sftp.setTimeoutMs(preferences.getInteger("connection.timeout.seconds") * 1000);
+            sftp.setTimeoutMs(ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);

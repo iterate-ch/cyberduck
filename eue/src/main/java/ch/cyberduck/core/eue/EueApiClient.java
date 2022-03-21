@@ -1,5 +1,6 @@
 package ch.cyberduck.core.eue;
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.eue.io.swagger.client.ApiClient;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
@@ -26,7 +27,7 @@ public class EueApiClient extends ApiClient {
 		this.setHttpClient(ClientBuilder.newClient(new ClientConfig().register(new InputStreamProvider())
 				.register(MultiPartFeature.class).register(new JSON()).register(JacksonFeature.class)
 				.connectorProvider(new HttpComponentsProvider(session.getClient()))));
-		final int timeout = new HostPreferences(session.getHost()).getInteger("connection.timeout.seconds") * 1000;
+		final int timeout = ConnectionTimeoutFactory.get(session.getHost()).getTimeout() * 1000;
 		this.setConnectTimeout(timeout);
 		this.setReadTimeout(timeout);
 		this.setUserAgent(new PreferencesUseragentProvider().get());

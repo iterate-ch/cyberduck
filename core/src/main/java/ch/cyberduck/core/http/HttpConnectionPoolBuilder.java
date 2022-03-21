@@ -17,6 +17,7 @@ package ch.cyberduck.core.http;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -142,7 +143,7 @@ public class HttpConnectionPoolBuilder {
                 break;
         }
         configuration.setUserAgent(new PreferencesUseragentProvider().get());
-        final int timeout = new HostPreferences(host).getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
         configuration.setDefaultSocketConfig(SocketConfig.custom()
             .setTcpNoDelay(true)
             .setSoTimeout(timeout)
