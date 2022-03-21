@@ -119,7 +119,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                     response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
-                    Throwables.throwIfInstanceOf(e, IOException.class);
+                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), IOException.class);
                     throw new IOException(e.getCause());
                 }
                 finally {

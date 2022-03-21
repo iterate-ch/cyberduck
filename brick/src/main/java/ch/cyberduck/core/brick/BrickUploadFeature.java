@@ -38,6 +38,7 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -114,8 +115,8 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(e, BackgroundException.class);
-                    throw new BackgroundException(e.getCause());
+                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                 }
             }
             final FileEntity entity = this.completeUpload(file, ref, status, checksums);

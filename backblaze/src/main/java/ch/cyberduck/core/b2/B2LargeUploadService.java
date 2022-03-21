@@ -177,8 +177,8 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             catch(ExecutionException e) {
                 log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                Throwables.throwIfInstanceOf(e, BackgroundException.class);
-                throw new DefaultExceptionMappingService().map(e.getCause());
+                Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override
