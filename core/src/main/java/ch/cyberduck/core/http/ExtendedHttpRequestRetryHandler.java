@@ -41,7 +41,6 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
         InterruptedIOException.class,
         UnknownHostException.class,
         ConnectException.class,
-//            ExceptionUDT.class,
         // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
         // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
         SSLHandshakeException.class);
