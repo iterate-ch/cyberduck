@@ -38,6 +38,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
@@ -50,7 +51,7 @@ public class ProxySocketFactoryTest {
         assertNotNull(new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket("localhost", 22));
     }
 
-    @Test(expected = SocketException.class)
+    @Test(expected = SocketTimeoutException.class)
     public void testCreateSocketWithProxy() throws Exception {
         final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new DefaultSocketConfigurator(),
                 new ProxyFinder() {
@@ -60,7 +61,7 @@ public class ProxySocketFactoryTest {
                     }
                 }).createSocket();
         assertNotNull(socket);
-        socket.connect(new InetSocketAddress("test.cyberduck.ch", 21), 1000);
+        socket.connect(new InetSocketAddress("test.cyberduck.ch", 21), 5);
     }
 
     @Test
