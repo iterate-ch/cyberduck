@@ -20,8 +20,5 @@ public interface ConnectionTimeout {
 
     int getTimeout();
 
-    interface MutableConnectionTimeout extends ConnectionTimeout
-    {
-        void setTimeout(int timeout);
-    }
+    void setTimeout(int timeout);
 }

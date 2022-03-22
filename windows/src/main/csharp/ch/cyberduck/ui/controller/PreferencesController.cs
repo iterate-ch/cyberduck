@@ -47,7 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string ForFiles = LocaleFactory.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = LocaleFactory.localizedString("for Folders", "Preferences");
         private static readonly Logger Log = LogManager.getLogger(typeof(PreferencesController).FullName);
-        private static ConnectionTimeout.MutableConnectionTimeout connectionTimeoutPreferences =
+        private static ConnectionTimeout connectionTimeoutPreferences =
             ConnectionTimeoutFactory.get();
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);

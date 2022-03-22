@@ -18,7 +18,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 
-public class DisabledConnectionTimeout implements ConnectionTimeout.MutableConnectionTimeout {
+public class DisabledConnectionTimeout implements ConnectionTimeout {
     private final PreferencesReader preferences;
 
     public DisabledConnectionTimeout() {

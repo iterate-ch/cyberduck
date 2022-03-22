@@ -26,11 +26,11 @@ import org.apache.logging.log4j.Logger;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout.MutableConnectionTimeout> {
+public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout> {
     private static final Logger log = LogManager.getLogger(ConnectionTimeoutFactory.class);
 
-    private final static ConnectionTimeoutFactory factory = new ConnectionTimeoutFactory();
-    private final ConnectionTimeout.MutableConnectionTimeout instance;
+    private static final ConnectionTimeoutFactory factory = new ConnectionTimeoutFactory();
+    private final ConnectionTimeout instance;
 
     private final Constructor<? extends ConnectionTimeout> constructor;
 
@@ -54,7 +54,7 @@ public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout.MutableC
         return temp;
     }
 
-    public static ConnectionTimeout.MutableConnectionTimeout get() {
+    public static ConnectionTimeout get() {
         return factory.instance;
     }
 

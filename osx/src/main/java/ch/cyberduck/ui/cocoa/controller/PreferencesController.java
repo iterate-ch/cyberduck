@@ -86,7 +86,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     private final Preferences preferences
         = PreferencesFactory.get();
-    private final ConnectionTimeout.MutableConnectionTimeout connectionTimeoutPreferences
+    private final ConnectionTimeout connectionTimeoutPreferences
             = ConnectionTimeoutFactory.get();
 
     private final ProfilesPreferencesController profilesPanelController;
