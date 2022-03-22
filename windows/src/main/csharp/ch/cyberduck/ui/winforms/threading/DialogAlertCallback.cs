@@ -52,6 +52,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             {
                 return false;
             }
+            if (type == FailureDiagnostics.Type.skip)
+            {
+                return false;
+            }
             _notification.alert(host, failure, log);
             bool r = false;
             _controller.Invoke(delegate

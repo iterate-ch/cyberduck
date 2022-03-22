@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.io.IOResumeException;
 
@@ -59,6 +60,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
             }
             if(cause instanceof ResolveFailedException) {
                 return Type.network;
+            }
+            if(failure instanceof TransferStatusCanceledException) {
+                return Type.skip;
             }
             if(failure instanceof ConnectionCanceledException) {
                 return Type.cancel;

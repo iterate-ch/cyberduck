@@ -65,6 +65,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
                 switch(new DefaultFailureDiagnostics().determine(failure)) {
                     case cancel:
+                    case skip:
                         // Interrupt transfer
                         return false;
                 }

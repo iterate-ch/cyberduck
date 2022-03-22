@@ -43,6 +43,7 @@ public class PromptAlertCallback implements AlertCallback {
         final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
         switch(type) {
             case cancel:
+            case skip:
                 return false;
             default:
                 // Send notification
