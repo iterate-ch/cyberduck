@@ -44,7 +44,11 @@ public interface FailureDiagnostics<T> {
         /**
          * Protocol cannot handle operation
          */
-        unsupported
+        unsupported,
+        /**
+         * Intentionally skipped operation
+         */
+        skip
     }
 
     Type determine(T failure);

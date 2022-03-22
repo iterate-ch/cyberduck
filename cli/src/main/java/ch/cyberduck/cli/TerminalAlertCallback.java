@@ -38,6 +38,7 @@ public class TerminalAlertCallback implements AlertCallback {
     protected void print(final BackgroundException failure) {
         switch(new DefaultFailureDiagnostics().determine(failure)) {
             case cancel:
+            case skip:
                 break;
             default:
                 final StringAppender appender = new StringAppender();
