@@ -370,12 +370,12 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Copy to %s with options %s", copy, options));
             }
-            InputStream in = null;
-            OutputStream out = null;
+            FileChannel in = null;
+            FileChannel out = null;
             try {
-                in = this.getInputStream();
-                out = copy.getOutputStream(options.append);
-                IOUtils.copy(in, out);
+                in = this.getReadChannel(this.path);
+                out = copy.getWriteChannel(copy.path, options.append);
+                out.transferFrom(in, out.size(), in.size());
             }
             catch(IOException e) {
                 throw new LocalAccessDeniedException(MessageFormat.format(
@@ -426,25 +426,38 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         return String.format("file:%s", path);
     }
 
+
     public InputStream getInputStream() throws AccessDeniedException {
-        return this.getInputStream(path);
+        return getInputStream(path);
     }
 
-    protected InputStream getInputStream(final String path) throws LocalAccessDeniedException {
+    protected InputStream getInputStream(final String path) throws AccessDeniedException {
         try {
-            final FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
-            return new SeekableByteChannelInputStream(channel);
+            return new SeekableByteChannelInputStream(getReadChannel(path));
+        }
+        catch(RuntimeException e) {
+            throw new LocalAccessDeniedException(e.getMessage(), e);
+        }
+    }
+
+    private FileChannel getReadChannel(final String path) throws LocalAccessDeniedException {
+        try {
+            return FileChannel.open(Paths.get(path), StandardOpenOption.READ);
         }
         catch(RuntimeException | IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
 
-    public OutputStream getOutputStream(final boolean append) throws AccessDeniedException {
-        return this.getOutputStream(path, append);
+    protected OutputStream getOutputStream(final String path, final boolean append) throws AccessDeniedException {
+        return Channels.newOutputStream(getWriteChannel(path, append));
     }
 
-    protected OutputStream getOutputStream(final String path, final boolean append) throws LocalAccessDeniedException {
+    public OutputStream getOutputStream(final boolean append) throws AccessDeniedException {
+        return Channels.newOutputStream(getWriteChannel(path, append));
+    }
+
+    private FileChannel getWriteChannel(final String path, final boolean append) throws LocalAccessDeniedException {
         try {
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
@@ -457,8 +470,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             else {
                 options.add(StandardOpenOption.TRUNCATE_EXISTING);
             }
-            final FileChannel channel = FileChannel.open(Paths.get(path), options);
-            return Channels.newOutputStream(channel);
+            return FileChannel.open(Paths.get(path), options);
         }
         catch(RuntimeException | IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
