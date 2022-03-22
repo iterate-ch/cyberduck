@@ -57,16 +57,18 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
+        assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
-        ;
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
-        assertEquals(random.length, attributes.getSize());
-        assertEquals(Checksum.NONE, attributes.getChecksum());
-        assertNotNull(attributes.getETag());
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(random.length, attr.getSize());
+        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
-        assertEquals(Checksum.NONE, Checksum.parse(attributes.getETag()));
+        assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -94,12 +96,14 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
+        assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
-        ;
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
-        assertEquals(random.length, attributes.getSize());
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(random.length, attr.getSize());
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3StorageClassFeature(session).getClass(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -162,7 +166,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
-        ;
+        assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

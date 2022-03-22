@@ -48,6 +48,8 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         out.close();
         assertNotNull(out.getStatus());
         assertTrue(new S3FindFeature(session).find(file));
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

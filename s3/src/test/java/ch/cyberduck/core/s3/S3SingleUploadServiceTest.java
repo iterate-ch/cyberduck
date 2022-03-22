@@ -71,8 +71,10 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
-        assertEquals(random.length, attributes.getSize());
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(random.length, attr.getSize());
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));

@@ -142,7 +142,10 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(content.length, attr.getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -159,7 +162,10 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertNotNull(status.getResponse().getVersionId());
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
+        assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
+        assertEquals(status.getResponse().getETag(), attr.getETag());
+        assertEquals(content.length, attr.getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
