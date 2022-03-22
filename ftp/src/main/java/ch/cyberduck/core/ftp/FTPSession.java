@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -139,7 +140,7 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(new ProxySocketFactory(host));
         client.setControlEncoding(host.getEncoding());
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setDefaultTimeout(timeout);
         client.setDataTimeout(timeout);

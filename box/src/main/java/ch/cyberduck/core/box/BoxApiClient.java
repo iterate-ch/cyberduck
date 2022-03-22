@@ -15,6 +15,7 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.box.io.swagger.client.ApiClient;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
@@ -46,7 +47,7 @@ public class BoxApiClient extends ApiClient {
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(client)))
         );
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
         this.setConnectTimeout(timeout);
         this.setReadTimeout(timeout);
         this.setUserAgent(new PreferencesUseragentProvider().get());

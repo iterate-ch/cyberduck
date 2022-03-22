@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -99,7 +100,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
         properties.setEncoding(host.getEncoding());
         final PreferencesReader preferences = new HostPreferences(host);
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         properties.setIrodsSocketTimeout(timeout);
         properties.setIrodsParallelSocketTimeout(timeout);
         properties.setGetBufferSize(preferences.getInteger("connection.chunksize"));

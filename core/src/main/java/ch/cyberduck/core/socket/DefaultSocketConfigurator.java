@@ -17,6 +17,7 @@ package ch.cyberduck.core.socket;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -40,7 +41,7 @@ public class DefaultSocketConfigurator implements SocketConfigurator {
         if(preferences.getInteger("connection.buffer.send") > 0) {
             socket.setSendBufferSize(preferences.getInteger("connection.buffer.send"));
         }
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
         if(log.isInfoEnabled()) {
             log.info(String.format("Set timeout to %dms for socket %s", timeout, socket));
         }

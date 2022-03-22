@@ -47,7 +47,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string ForFiles = LocaleFactory.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = LocaleFactory.localizedString("for Folders", "Preferences");
         private static readonly Logger Log = LogManager.getLogger(typeof(PreferencesController).FullName);
-
+        private static ConnectionTimeout connectionTimeoutPreferences =
+            ConnectionTimeoutFactory.get();
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, LocaleFactory.localizedString("None"), null);
 
@@ -379,7 +380,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ConnectionTimeoutChangedEvent()
         {
-            PreferencesFactory.get().setProperty("connection.timeout.seconds", View.ConnectionTimeout);
+            connectionTimeoutPreferences.setTimeout(View.ConnectionTimeout);
         }
 
         private void View_DefaultUploadThrottleChangedEvent()
@@ -1027,7 +1028,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultUploadThrottle = PreferencesFactory.get().getFloat("queue.upload.bandwidth.bytes");
             View.Retries = PreferencesFactory.get().getInteger("connection.retry");
             View.RetryDelay = PreferencesFactory.get().getInteger("connection.retry.delay");
-            View.ConnectionTimeout = PreferencesFactory.get().getInteger("connection.timeout.seconds");
+            View.ConnectionTimeout = connectionTimeoutPreferences.getTimeout();
             View.UseSystemProxy = PreferencesFactory.get().getBoolean("connection.proxy.enable");
             View.DebugLog = Level.DEBUG.equals(LoggerContext.getContext(false).getConfiguration().getRootLogger().getLevel()) ? true : false;
 

@@ -256,7 +256,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 .register(new JSON())
                 .register(JacksonFeature.class)
                 .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());

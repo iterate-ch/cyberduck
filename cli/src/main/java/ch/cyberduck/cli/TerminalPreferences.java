@@ -14,6 +14,7 @@
 
 package ch.cyberduck.cli;
 
+import ch.cyberduck.core.DisabledConnectionTimeout;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
@@ -57,6 +58,7 @@ public class TerminalPreferences extends Preferences {
         }
         this.setDefault("factory.vault.class", CryptoVault.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
+        this.setDefault("factory.connectiontimeout.class", DisabledConnectionTimeout.class.getName());
     }
 
     @Override
