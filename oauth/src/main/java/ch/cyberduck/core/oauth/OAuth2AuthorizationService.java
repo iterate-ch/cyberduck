@@ -57,7 +57,6 @@ import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
-import com.google.api.client.http.BasicAuthentication;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -265,7 +264,7 @@ public class OAuth2AuthorizationService {
             final PasswordTokenRequest request = new PasswordTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     credentials.getUsername(), credentials.getPassword()
             )
-                    .setClientAuthentication(new BasicAuthentication(clientid, clientsecret))
+                    .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                     .setScopes(scopes.isEmpty() ? null : scopes);
             for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
