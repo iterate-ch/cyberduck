@@ -7,9 +7,16 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -200,6 +207,38 @@ public class LocalTest {
         assertNotNull(l.getOutputStream(false));
         assertNotNull(l.getOutputStream(true));
         l.delete();
+    }
+
+    @Test
+    public void testFastCopy() throws Exception {
+        String a = "TestA";
+        String b = "TestB";
+        RandomAccessFile writer = new RandomAccessFile("a", "rw");
+        FileChannel channel = writer.getChannel();
+        channel.write(ByteBuffer.wrap(a.getBytes(StandardCharsets.UTF_8)));
+        IOUtils.closeQuietly(channel);
+        IOUtils.closeQuietly(writer);
+
+        writer = new RandomAccessFile("b", "rw");
+        channel = writer.getChannel();
+        channel.write(ByteBuffer.wrap(b.getBytes(StandardCharsets.UTF_8)));
+        IOUtils.closeQuietly(channel);
+        IOUtils.closeQuietly(writer);
+
+        File file = new File("new");
+        file.createNewFile();
+        Local l = new Local("new");
+        Local newLocal = new Local("a");
+        newLocal.copy(l, new Local.CopyOptions().append(true));
+        newLocal.delete();
+        newLocal = new Local("b");
+        newLocal.copy(l, new Local.CopyOptions().append(true));
+        newLocal.delete();
+
+
+        String output = FileUtils.readFileToString(new File("new"), StandardCharsets.UTF_8);
+        l.delete();
+        assertEquals("TestATestB", output);
     }
 
     @Test
