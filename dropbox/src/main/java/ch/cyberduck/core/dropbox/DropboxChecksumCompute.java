@@ -15,7 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
@@ -31,14 +31,14 @@ import java.security.NoSuchAlgorithmException;
 public class DropboxChecksumCompute extends AbstractChecksumCompute {
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         try {
             return new Checksum(HashAlgorithm.sha256, Hex.encodeHexString(this.digest(
                     this.normalize(in, status), new DropboxContentHasher(
-                            MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0))));
+                            MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0), status)));
         }
         catch(NoSuchAlgorithmException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+            throw new ChecksumException(e);
         }
     }
 }

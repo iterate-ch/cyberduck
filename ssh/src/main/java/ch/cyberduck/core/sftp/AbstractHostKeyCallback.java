@@ -20,7 +20,7 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.security.PublicKey;
@@ -30,18 +30,16 @@ public abstract class AbstractHostKeyCallback implements HostKeyCallback {
     /**
      * @param hostname Hostname
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
+     * @throws ConnectionCanceledException Canceled by user
      */
-    protected abstract boolean isUnknownKeyAccepted(Host hostname, PublicKey key)
-            throws ConnectionCanceledException, ChecksumException;
+    protected abstract boolean isUnknownKeyAccepted(Host hostname, PublicKey key) throws BackgroundException;
 
     /**
      * @param hostname Hostname
      * @return True if accepted.
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException Canceled by user
+     * @throws ConnectionCanceledException Canceled by user
      */
-    protected abstract boolean isChangedKeyAccepted(Host hostname, PublicKey key)
-            throws ConnectionCanceledException, ChecksumException;
+    protected abstract boolean isChangedKeyAccepted(Host hostname, PublicKey key) throws BackgroundException;
 
     protected abstract void allow(Host host, PublicKey key, boolean persist);
 }

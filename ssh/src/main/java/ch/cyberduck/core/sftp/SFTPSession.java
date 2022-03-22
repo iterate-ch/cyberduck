@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -192,7 +191,7 @@ public class SFTPSession extends Session<SSHClient> {
                 try {
                     return key.verify(host, publicKey);
                 }
-                catch(ConnectionCanceledException | ChecksumException e) {
+                catch(BackgroundException e) {
                     return false;
                 }
             }

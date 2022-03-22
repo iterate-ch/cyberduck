@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
@@ -40,8 +41,8 @@ public class ChunkListSHA256ChecksumCompute extends AbstractChecksumCompute {
     }
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
-        return this.compute(status.getLength(), super.digest("SHA-256", this.normalize(in, status)));
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
+        return this.compute(status.getLength(), super.digest("SHA-256", this.normalize(in, status), status));
     }
 
     /**

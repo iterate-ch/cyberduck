@@ -17,7 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,7 +34,7 @@ public class SSHFingerprintGenerator {
      * @param key Public key
      * @return The fingerprint is the MD5 of the Base64-encoded public key
      */
-    public String fingerprint(final PublicKey key) throws ChecksumException {
+    public String fingerprint(final PublicKey key) throws BackgroundException {
         return this.fingerprint(new ByteArrayInputStream(
                 new Buffer.PlainBuffer().putPublicKey(key).getCompactData()));
     }
@@ -51,7 +51,7 @@ public class SSHFingerprintGenerator {
      * @param in Public key blob
      * @return The fingerprint is the MD5 of the Base64-encoded public key
      */
-    public String fingerprint(final InputStream in) throws ChecksumException {
+    public String fingerprint(final InputStream in) throws BackgroundException {
         final String undelimited = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(in, new TransferStatus()).hash;
         final StringBuilder fp = new StringBuilder(undelimited.substring(0, 2));
         for(int i = 2; i <= undelimited.length() - 2; i += 2) {
