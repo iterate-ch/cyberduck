@@ -103,8 +103,18 @@ public class EueMoveFeature implements Move {
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-                new UpdateResourceApi(client).resourceResourceIdPatch(resourceId,
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(resourceId,
                         resourceUpdateModel, null, null, null);
+                for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                    switch(resourceMoveResponseEntry.getStatusCode()) {
+                        case HttpStatus.SC_CREATED:
+                            break;
+                        default:
+                            log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                            throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                    null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                    }
+                }
             }
             fileid.cache(file, null);
             return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));

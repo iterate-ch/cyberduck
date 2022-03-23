@@ -24,6 +24,8 @@ import ch.cyberduck.core.eue.io.swagger.client.api.CopyChildrenForAliasApiApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UpdateResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCopyResponseEntries;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCopyResponseEntry;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
@@ -97,8 +99,18 @@ public class EueCopyFeature implements Copy {
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-                new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(target, new DisabledListProgressListener()),
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(target, new DisabledListProgressListener()),
                         resourceUpdateModel, null, null, null);
+                for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                    switch(resourceMoveResponseEntry.getStatusCode()) {
+                        case HttpStatus.SC_CREATED:
+                            break;
+                        default:
+                            log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                            throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                    null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                    }
+                }
             }
             return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
         }

@@ -7,6 +7,7 @@ import ch.cyberduck.core.eue.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 
 import java.util.ArrayList;
@@ -41,9 +42,10 @@ public class UpdateResourceApi {
    * @param cookie cookie (optional)
    * @param ifMatch ifMatchHeader (optional)
    * @param lockToken  (optional)
+   * @return ResourceMoveResponseEntries
    * @throws ApiException if fails to make API call
    */
-  public void resourceResourceIdPatch(String resourceId, ResourceUpdateModel body, String cookie, String ifMatch, String lockToken) throws ApiException {
+  public ResourceMoveResponseEntries resourceResourceIdPatch(String resourceId, ResourceUpdateModel body, String cookie, String ifMatch, String lockToken) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'resourceId' is set
     if (resourceId == null) {
@@ -66,7 +68,7 @@ public class UpdateResourceApi {
       localVarHeaderParams.put("If-Match", apiClient.parameterToString(ifMatch));
 
     final String[] localVarAccepts = {
-      
+      "application/json;charset=utf-8"
     };
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
@@ -77,6 +79,7 @@ public class UpdateResourceApi {
 
     String[] localVarAuthNames = new String[] { "bearerAuth" };
 
-    apiClient.invokeAPI(localVarPath, "PATCH", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    GenericType<ResourceMoveResponseEntries> localVarReturnType = new GenericType<ResourceMoveResponseEntries>() {};
+    return apiClient.invokeAPI(localVarPath, "PATCH", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
 }

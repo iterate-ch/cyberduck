@@ -231,8 +231,12 @@ paths:
                                         }
                                     }
             responses:
-                '200':
-                    description: metadata of a file or of a container
+              '207':
+                description: MULTI STATUS
+                content:
+                  application/json;charset=utf-8:
+                    schema:
+                      $ref: '#/components/schemas/ResourceMoveResponseEntries'
         delete:
             description: Delete a resource from trash
             tags: [deleteResource]
