@@ -55,6 +55,9 @@ public class EueMoveFeature implements Move {
     public Path move(final Path file, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             final EueApiClient client = new EueApiClient(session);
+            if(status.isExists()) {
+                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(file, status), callback, delete);
+            }
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             if(!file.getParent().equals(target.getParent())) {
                 final ResourceMoveResponseEntries resourceMoveResponseEntries;
@@ -66,14 +69,14 @@ public class EueMoveFeature implements Move {
                                 .resourceAliasAliasChildrenMovePost(parentResourceId,
                                         Collections.singletonList(String.format("%s/resource/%s",
                                                 session.getBasePath(), resourceId)), null, null, null,
-                                        status.isExists() ? "overwrite" : null, null);
+                                        "rename", null);
                         break;
                     default:
                         resourceMoveResponseEntries = new MoveChildrenApi(client)
                                 .resourceResourceIdChildrenMovePost(parentResourceId,
                                         Collections.singletonList(String.format("%s/resource/%s",
                                                 session.getBasePath(), resourceId)), null, null, null,
-                                        status.isExists() ? "overwrite" : null, null);
+                                        "rename", null);
                 }
                 if(null == resourceMoveResponseEntries) {
                     // Move of single file will return 200 status code with empty response body
@@ -103,8 +106,23 @@ public class EueMoveFeature implements Move {
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-                new UpdateResourceApi(client).resourceResourceIdPatch(resourceId,
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(resourceId,
                         resourceUpdateModel, null, null, null);
+                if(null == resourceMoveResponseEntries) {
+                    // Move of single file will return 200 status code with empty response body
+                }
+                else {
+                    for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                        switch(resourceMoveResponseEntry.getStatusCode()) {
+                            case HttpStatus.SC_CREATED:
+                                break;
+                            default:
+                                log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                                throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                        null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                        }
+                    }
+                }
             }
             fileid.cache(file, null);
             return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));

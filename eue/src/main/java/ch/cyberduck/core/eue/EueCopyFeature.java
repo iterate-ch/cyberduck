@@ -24,11 +24,14 @@ import ch.cyberduck.core.eue.io.swagger.client.api.CopyChildrenForAliasApiApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.UpdateResourceApi;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCopyResponseEntries;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCopyResponseEntry;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntries;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceMoveResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -54,8 +57,12 @@ public class EueCopyFeature implements Copy {
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final EueApiClient client = new EueApiClient(session);
+            if(status.isExists()) {
+                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
+            }
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
+            String targetResourceId = null;
             final ResourceCopyResponseEntries resourceCopyResponseEntries;
             switch(parentResourceId) {
                 case EueResourceIdProvider.ROOT:
@@ -64,12 +71,12 @@ public class EueCopyFeature implements Copy {
                             .resourceAliasAliasChildrenCopyPost(parentResourceId,
                                     Collections.singletonList(String.format("%s/resource/%s",
                                             session.getBasePath(), resourceId)), null, null, null,
-                                    status.isExists() || target.isDirectory() ? "overwrite" : null, null);
+                                    "rename", null);
                     break;
                 default:
                     resourceCopyResponseEntries = new CopyChildrenApi(client).resourceResourceIdChildrenCopyPost(parentResourceId,
                             Collections.singletonList(String.format("%s/resource/%s", session.getBasePath(), resourceId)), null, null, null,
-                            status.isExists() || target.isDirectory() ? "overwrite" : null, null);
+                            "rename", null);
             }
             if(null == resourceCopyResponseEntries) {
                 // Copy of single file will return 200 status code with empty response body
@@ -78,6 +85,7 @@ public class EueCopyFeature implements Copy {
                 for(ResourceCopyResponseEntry resourceCopyResponseEntry : resourceCopyResponseEntries.values()) {
                     switch(resourceCopyResponseEntry.getStatusCode()) {
                         case HttpStatus.SC_CREATED:
+                            fileid.cache(target, EueResourceIdProvider.getResourceIdFromResourceUri(resourceCopyResponseEntry.getHeaders().getLocation()));
                             break;
                         default:
                             log.warn(String.format("Failure %s copying file %s", resourceCopyResponseEntries, file));
@@ -90,14 +98,28 @@ public class EueCopyFeature implements Copy {
             listener.sent(status.getLength());
             if(!StringUtils.equals(file.getName(), target.getName())) {
                 final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
-                ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
+                final ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
                 final Uifs uifs = new Uifs();
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-                new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(new Path(target.getParent(), file.getName(), file.getType()),
-                                new DisabledListProgressListener()),
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(target, new DisabledListProgressListener()),
                         resourceUpdateModel, null, null, null);
+                if(null == resourceMoveResponseEntries) {
+                    // Move of single file will return 200 status code with empty response body
+                }
+                else {
+                    for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                        switch(resourceMoveResponseEntry.getStatusCode()) {
+                            case HttpStatus.SC_CREATED:
+                                break;
+                            default:
+                                log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                                throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                        null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                        }
+                    }
+                }
             }
             return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
         }
