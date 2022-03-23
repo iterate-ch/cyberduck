@@ -108,14 +108,19 @@ public class EueMoveFeature implements Move {
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
                 final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(resourceId,
                         resourceUpdateModel, null, null, null);
-                for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
-                    switch(resourceMoveResponseEntry.getStatusCode()) {
-                        case HttpStatus.SC_CREATED:
-                            break;
-                        default:
-                            log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
-                            throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
-                                    null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                if(null == resourceMoveResponseEntries) {
+                    // Move of single file will return 200 status code with empty response body
+                }
+                else {
+                    for(ResourceMoveResponseEntry resourceMoveResponseEntry : resourceMoveResponseEntries.values()) {
+                        switch(resourceMoveResponseEntry.getStatusCode()) {
+                            case HttpStatus.SC_CREATED:
+                                break;
+                            default:
+                                log.warn(String.format("Failure %s renaming file %s", resourceMoveResponseEntry, file));
+                                throw new EueExceptionMappingService().map(new ApiException(resourceMoveResponseEntry.getReason(),
+                                        null, resourceMoveResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                        }
                     }
                 }
             }
