@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -48,7 +49,10 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         nodeid.clear();
-        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
+        final String nodeId = nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1);
+        assertNotNull(nodeId);
+        assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), 1));
+        assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), 1));
         try {
             assertNull(nodeid.getNodeId(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), 1));
             fail();
