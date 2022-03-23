@@ -68,6 +68,21 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
     }
 
     @Test
+    public void testMoveFileOverride() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(sourceFile, RandomUtils.nextBytes(48));
+        final Path targetFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        createFile(targetFile, RandomUtils.nextBytes(541));
+        new EueMoveFeature(session, fileid).move(sourceFile, targetFile, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
+        assertTrue(new EueFindFeature(session, fileid).find(targetFile));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveRecursive() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(

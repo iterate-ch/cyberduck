@@ -31,6 +31,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModelUpdate;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -56,6 +57,9 @@ public class EueCopyFeature implements Copy {
     public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final EueApiClient client = new EueApiClient(session);
+            if(status.isExists()) {
+                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
+            }
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
             String targetResourceId = null;
