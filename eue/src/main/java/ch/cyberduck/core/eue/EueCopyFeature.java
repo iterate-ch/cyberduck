@@ -56,6 +56,7 @@ public class EueCopyFeature implements Copy {
             final EueApiClient client = new EueApiClient(session);
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
+            String targetResourceId = null;
             final ResourceCopyResponseEntries resourceCopyResponseEntries;
             switch(parentResourceId) {
                 case EueResourceIdProvider.ROOT:
@@ -64,12 +65,12 @@ public class EueCopyFeature implements Copy {
                             .resourceAliasAliasChildrenCopyPost(parentResourceId,
                                     Collections.singletonList(String.format("%s/resource/%s",
                                             session.getBasePath(), resourceId)), null, null, null,
-                                    status.isExists() || target.isDirectory() ? "overwrite" : null, null);
+                                    "rename", null);
                     break;
                 default:
                     resourceCopyResponseEntries = new CopyChildrenApi(client).resourceResourceIdChildrenCopyPost(parentResourceId,
                             Collections.singletonList(String.format("%s/resource/%s", session.getBasePath(), resourceId)), null, null, null,
-                            status.isExists() || target.isDirectory() ? "overwrite" : null, null);
+                            "rename", null);
             }
             if(null == resourceCopyResponseEntries) {
                 // Copy of single file will return 200 status code with empty response body
@@ -78,6 +79,7 @@ public class EueCopyFeature implements Copy {
                 for(ResourceCopyResponseEntry resourceCopyResponseEntry : resourceCopyResponseEntries.values()) {
                     switch(resourceCopyResponseEntry.getStatusCode()) {
                         case HttpStatus.SC_CREATED:
+                            fileid.cache(target, EueResourceIdProvider.getResourceIdFromResourceUri(resourceCopyResponseEntry.getHeaders().getLocation()));
                             break;
                         default:
                             log.warn(String.format("Failure %s copying file %s", resourceCopyResponseEntries, file));
@@ -90,13 +92,12 @@ public class EueCopyFeature implements Copy {
             listener.sent(status.getLength());
             if(!StringUtils.equals(file.getName(), target.getName())) {
                 final ResourceUpdateModel resourceUpdateModel = new ResourceUpdateModel();
-                ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
+                final ResourceUpdateModelUpdate resourceUpdateModelUpdate = new ResourceUpdateModelUpdate();
                 final Uifs uifs = new Uifs();
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-                new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(new Path(target.getParent(), file.getName(), file.getType()),
-                                new DisabledListProgressListener()),
+                new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(target, new DisabledListProgressListener()),
                         resourceUpdateModel, null, null, null);
             }
             return target.withAttributes(new EueAttributesFinderFeature(session, fileid).find(target, new DisabledListProgressListener()));
