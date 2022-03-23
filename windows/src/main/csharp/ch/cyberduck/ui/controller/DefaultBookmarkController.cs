@@ -38,15 +38,15 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (_options.keychain() && _options.password())
             {
-                if (Utils.IsBlank(_host.getHostname()))
+                if (string.IsNullOrWhiteSpace(_host.getHostname()))
                 {
                     return;
                 }
-                if (Utils.IsBlank(_host.getCredentials().getUsername()))
+                if (string.IsNullOrWhiteSpace(_host.getCredentials().getUsername()))
                 {
                     return;
                 }
-                if (Utils.IsBlank(View.Password))
+                if (string.IsNullOrWhiteSpace(View.Password))
                 {
                     return;
                 }
@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _host.getPort(),
                         _host.getHostname(),
                         _host.getCredentials().getUsername(),
-                        StringUtils.strip(View.Password)
+                        View.Password.Trim()
                     );
                 }
                 catch (LocalAccessDeniedException e)

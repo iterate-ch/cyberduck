@@ -387,7 +387,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void usernameInputDidChange(final NSNotification sender) {
-        bookmark.getCredentials().setUsername(usernameField.stringValue());
+        bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
         this.update();
     }
 

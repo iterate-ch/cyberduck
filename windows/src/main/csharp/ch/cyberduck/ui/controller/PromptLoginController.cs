@@ -147,17 +147,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPasswordEvent(Credentials credentials)
         {
-            credentials.setPassword(Utils.SafeString(View.Password));
+            credentials.setPassword(View.Password?.Trim() ?? string.Empty);
         }
 
         private void View_ChangedUsernameEvent(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            credentials.setUsername(Utils.SafeString(View.Username));
-            if (Utils.IsNotBlank(credentials.getUsername()))
+            credentials.setUsername(View.Username?.Trim() ?? string.Empty);
+            if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
             {
                 String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                     bookmark.getHostname(), credentials.getUsername());
-                if (Utils.IsNotBlank(password))
+                if (!string.IsNullOrWhiteSpace(password))
                 {
                     View.Password = password;
                     // Make sure password fetched from keychain and set in field is set in model
