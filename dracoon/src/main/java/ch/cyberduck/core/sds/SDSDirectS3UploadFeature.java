@@ -231,7 +231,13 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                                 signal.countDown();
                                 break;
                             case "error":
-                                failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
+                                if(null == uploadStatus.getErrorDetails()) {
+                                    log.warn(String.format("Mising error details for upload status %s", uploadStatus));
+                                    failure.set(new InteroperabilityException());
+                                }
+                                else {
+                                    failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
+                                }
                                 signal.countDown();
                                 break;
                             case "done":

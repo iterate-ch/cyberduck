@@ -233,7 +233,13 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                         failure.set(new InteroperabilityException(uploadStatus.getStatus()));
                                         signal.countDown();
                                     case "error":
-                                        failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
+                                        if(null == uploadStatus.getErrorDetails()) {
+                                            log.warn(String.format("Mising error details for upload status %s", uploadStatus));
+                                            failure.set(new InteroperabilityException());
+                                        }
+                                        else {
+                                            failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
+                                        }
                                         signal.countDown();
                                     case "done":
                                         nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
