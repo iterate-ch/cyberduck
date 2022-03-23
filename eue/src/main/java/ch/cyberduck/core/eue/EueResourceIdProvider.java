@@ -29,12 +29,16 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.FileIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class EueResourceIdProvider implements FileIdProvider {
+
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
 
     public static final String ROOT = "ROOT";
     public static final String TRASH = "TRASH";
@@ -88,7 +92,7 @@ public class EueResourceIdProvider implements FileIdProvider {
                 }
                 for(Children child : fsModel.getUifs().getChildren()) {
                     // Case insensitive
-                    if(child.getUifs().getName().equalsIgnoreCase(file.getName())) {
+                    if(child.getUifs().getName().equalsIgnoreCase(normalizer.normalize(file.getName()).toString())) {
                         return getResourceIdFromResourceUri(child.getUifs().getResourceURI());
                     }
                 }
