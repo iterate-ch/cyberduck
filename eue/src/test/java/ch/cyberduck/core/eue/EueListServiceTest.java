@@ -52,7 +52,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertTrue(list.contains(folder));
         assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
         assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().withFileId("TRASH"))));
-        assertEquals(folder.attributes(), list.get(folder).attributes());
+        assertEquals(folder.attributes().getFileId(), list.get(folder).attributes().getFileId());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -104,7 +104,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(subfolder));
-        assertEquals(subfolder.attributes(), list.get(subfolder).attributes());
+        assertEquals(subfolder.attributes().getFileId(), list.get(subfolder).attributes().getFileId());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(subfolder, new DisabledListProgressListener())));

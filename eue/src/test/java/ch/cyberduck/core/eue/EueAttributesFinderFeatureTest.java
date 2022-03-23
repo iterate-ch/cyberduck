@@ -90,17 +90,17 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final String rootEtag = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag();
         assertNotNull(rootEtag);
         final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(firstlevel.attributes().getETag());
-        assertEquals(firstlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
+        final String firstLevelEtag = new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag();
+        assertNotNull(firstLevelEtag);
         final Path secondlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(secondlevel.attributes().getETag());
-        assertNotNull(secondlevel.attributes().getETag());
-        assertEquals(secondlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
+        final String secondLevelEtag = new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag();
+        assertNotNull(secondLevelEtag);
         final Path secondlevelSibling = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertNotNull(secondlevelSibling);
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(secondlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(secondlevelSibling.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevelSibling).getETag());
-        assertNotEquals(secondlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
-        assertNotEquals(firstlevel.attributes().getETag(), new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
+        final String secondLevelSiblingEtag = new EueAttributesFinderFeature(session, fileid).find(secondlevelSibling).getETag();
+        assertNotEquals(secondLevelEtag, new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
+        assertNotEquals(firstLevelEtag, new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
         assertNotEquals(rootEtag, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
