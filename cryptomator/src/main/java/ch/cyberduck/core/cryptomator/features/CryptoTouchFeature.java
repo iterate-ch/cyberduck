@@ -49,7 +49,9 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         final Path target = proxy.touch(vault.encrypt(session, file), new TransferStatus(status) {
             @Override
             public void setResponse(final PathAttributes attributes) {
-                super.setResponse(attributes.withSize(vault.toCiphertextSize(0L, attributes.getSize())));
+                status.setResponse(attributes);
+                // Will be converted back to clear text when decrypting file below set in default touch feature implementation using writer.
+                super.setResponse(new PathAttributes(attributes).withSize(vault.toCiphertextSize(0L, attributes.getSize())));
             }
         });
         final Path decrypt = vault.decrypt(session, target);
