@@ -24,6 +24,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
@@ -93,6 +94,7 @@ public class MoveWorkerTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         private final AtomicInteger count = new AtomicInteger();
+                        private final PathAttributes attr = new PathAttributes().withSize(1L);
 
                         @Override
                         public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
@@ -113,7 +115,7 @@ public class MoveWorkerTest {
                                 assertEquals(new Path("/t2", EnumSet.of(Path.Type.directory)), renamed);
                             }
                             count.incrementAndGet();
-                            return renamed;
+                            return renamed.withAttributes(attr);
                         }
 
                         @Override
