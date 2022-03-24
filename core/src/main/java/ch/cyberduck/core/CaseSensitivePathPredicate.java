@@ -24,4 +24,9 @@ public final class CaseSensitivePathPredicate extends SimplePathPredicate {
     public CaseSensitivePathPredicate(final Path.Type type, final String path) {
         super(type, path);
     }
+
+    @Override
+    public boolean test(final Path test) {
+        return this.equals(new CaseSensitivePathPredicate(test));
+    }
 }
