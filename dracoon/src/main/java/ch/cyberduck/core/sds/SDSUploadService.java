@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -87,10 +88,10 @@ public class SDSUploadService {
     public CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
-                .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
-                .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
-                .name(file.getName())
-                .directS3Upload(null);
+                    .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
+                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
+                    .name(file.getName())
+                    .directS3Upload(null);
             if(status.getTimestamp() != null) {
                 final SoftwareVersionData version = session.softwareVersion();
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
@@ -124,8 +125,8 @@ public class SDSUploadService {
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
                 final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                    TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                    TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+                        TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                        TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                 );
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
@@ -138,8 +139,8 @@ public class SDSUploadService {
                         if(checksum.algorithm.equals(server.algorithm)) {
                             if(!server.equals(checksum)) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                        checksum.hash, server.hash));
+                                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                                checksum.hash, server.hash));
                             }
                         }
                     }
@@ -177,8 +178,9 @@ public class SDSUploadService {
 
     /**
      * Poll for upload status of direct upload
-     * @param file Remote path
-     * @param status Transfer status
+     *
+     * @param file     Remote path
+     * @param status   Transfer status
      * @param uploadId Upload Id
      * @return Latest status returned from server
      * @throws BackgroundException Error status received
@@ -195,54 +197,66 @@ public class SDSUploadService {
                 signal.countDown();
             }
         });
-        final ScheduledFuture<?> f = polling.repeat(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                if(log.isDebugEnabled()) {
-                                    log.debug(String.format("Query upload status for %s", uploadId));
-                                }
-                                final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
-                                        .requestUploadStatusFiles(uploadId, StringUtils.EMPTY, null);
-                                response.set(uploadStatus);
-                                switch(uploadStatus.getStatus()) {
-                                    case "finishing":
-                                        // Expected
-                                        break;
-                                    case "transfer":
-                                        failure.set(new InteroperabilityException(uploadStatus.getStatus()));
-                                        signal.countDown();
-                                        break;
-                                    case "error":
-                                        if(null == uploadStatus.getErrorDetails()) {
-                                            log.warn(String.format("Mising error details for upload status %s", uploadStatus));
-                                            failure.set(new InteroperabilityException());
-                                        }
-                                        else {
-                                            failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
-                                        }
-                                        signal.countDown();
-                                        break;
-                                    case "done":
-                                        // Set node id in transfer status
-                                        nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
-                                        // Mark parent status as complete
-                                        status.withResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
-                                        signal.countDown();
-                                        break;
-                                }
-                            }
-                            catch(ApiException e) {
-                                failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
-                                signal.countDown();
-                            }
+        final ScheduledFuture<?> f = polling.repeat(() -> {
+                    try {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Query upload status for %s", uploadId));
                         }
-                    }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
+                        try {
+                            status.validate();
+                        }
+                        catch(ConnectionCanceledException e) {
+                            log.warn(String.format("Cancel polling for upload status of %s", file));
+                            failure.set(e);
+                            signal.countDown();
+                            return;
+                        }
+                        final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
+                                .requestUploadStatusFiles(uploadId, StringUtils.EMPTY, null);
+                        response.set(uploadStatus);
+                        switch(uploadStatus.getStatus()) {
+                            case "finishing":
+                                // Expected
+                                break;
+                            case "transfer":
+                                failure.set(new InteroperabilityException(uploadStatus.getStatus()));
+                                signal.countDown();
+                                break;
+                            case "error":
+                                if(null == uploadStatus.getErrorDetails()) {
+                                    log.warn(String.format("Mising error details for upload status %s", uploadStatus));
+                                    failure.set(new InteroperabilityException());
+                                }
+                                else {
+                                    failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
+                                }
+                                signal.countDown();
+                                break;
+                            case "done":
+                                // Set node id in transfer status
+                                nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
+                                // Mark parent status as complete
+                                status.withResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
+                                signal.countDown();
+                                break;
+                        }
+                    }
+                    catch(ApiException e) {
+                        failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
+                        signal.countDown();
+                    }
+                }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
                 new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+        final long timeout = new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.interrupt.ms");
+        final long start = System.currentTimeMillis();
         while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
             try {
                 if(f.isDone()) {
                     Uninterruptibles.getUninterruptibly(f);
+                }
+                if(System.currentTimeMillis() - start > timeout) {
+                    log.error(String.format("Cancel polling for upload status of %s after %d", file, System.currentTimeMillis() - start));
+                    status.setCanceled();
                 }
             }
             catch(ExecutionException e) {
