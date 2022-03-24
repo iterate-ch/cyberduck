@@ -132,7 +132,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             // Full size of file
-            final long size = status.getLength() + status.getOffset();
+            final long size = status.getOffset() + status.getLength();
             final List<Future<MultipartPart>> parts = new ArrayList<>();
             long remaining = status.getLength();
             long offset = 0;
@@ -205,6 +205,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             if(status.getTimestamp() != null) {
                 object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
             }
+            object.setContentLength(size);
             // Mark parent status as complete
             status.withResponse(new S3AttributesAdapter().toAttributes(object)).setComplete();
             return object;

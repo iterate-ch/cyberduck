@@ -76,6 +76,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Received response %s", proxy.getResponse()));
                     }
+                    object.setContentLength(proxy.getOffset());
                     object.setETag(proxy.getResponse().getEtag());
                     if(proxy.getResponse().getVersionId() != null) {
                         object.addMetadata(S3Object.S3_VERSION_ID, proxy.getResponse().getVersionId());
@@ -110,6 +111,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         private final AtomicReference<ServiceException> canceled = new AtomicReference<>();
         private final AtomicReference<MultipartCompleted> response = new AtomicReference<>();
 
+        private Long offset = 0L;
         private int partNumber;
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
@@ -161,6 +163,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                                 part.getContentLength());
                     }
                 }, overall).call());
+                offset += len;
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
@@ -220,6 +223,10 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
 
         public MultipartCompleted getResponse() {
             return response.get();
+        }
+
+        public Long getOffset() {
+            return offset;
         }
 
         @Override

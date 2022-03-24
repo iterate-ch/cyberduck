@@ -78,12 +78,14 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(interrupt.get());
         assertEquals(32768L, listener.getSent());
         assertFalse(status.isComplete());
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
 
         final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
                 1 * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
+        assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertTrue(append.isComplete());
@@ -148,6 +150,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
+        assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
@@ -194,7 +197,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
 
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
-        ;
+        assertEquals(content.length, status.getResponse().getSize());
+
         // Verify not canceled
         status.validate();
         assertEquals(content.length, count.getSent());

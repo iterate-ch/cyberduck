@@ -66,6 +66,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
+        assertEquals(0L, out.getStatus().getSize(), 0L);
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -87,6 +88,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            assertEquals(content.length, out.getStatus().getSize(), 0L);
         }
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -141,6 +143,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
             final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            assertEquals(content.length, out.getStatus().getSize(), 0L);
         }
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));

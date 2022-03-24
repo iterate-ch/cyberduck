@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -124,8 +123,9 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                     throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                 }
             }
+            // Full size of file
+            final long size = status.getOffset() + status.getLength();
             final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            final AtomicLong totalSize = new AtomicLong();
             chunks.stream().sorted(Comparator.comparing(EueWriteFeature.Chunk::getPartnumber)).forEach(chunk -> {
                 try {
                     messageDigest.update(Hex.decodeHex(chunk.getChecksum().hash));
@@ -134,12 +134,11 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                     log.error(String.format("Failure %s decoding hash %s", e, chunk.getChecksum()));
                 }
                 messageDigest.update(ChunkListSHA256ChecksumCompute.intToBytes(chunk.getLength().intValue()));
-                totalSize.set(totalSize.get() + chunk.getLength());
             });
             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
-                    .getCompletedUploadResponse(uploadUri, totalSize.get(), cdash64);
-            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, totalSize.get(), cdash64);
+                    .getCompletedUploadResponse(uploadUri, size, cdash64);
+            final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
             // Mark parent status as complete
             status.withResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
             return object;
