@@ -88,6 +88,6 @@ public class ScheduledThreadPool {
         if(log.isInfoEnabled()) {
             log.info(String.format("Shutdown pool %s", pool));
         }
-        pool.shutdownNow();
+        pool.shutdown();
     }
 }
