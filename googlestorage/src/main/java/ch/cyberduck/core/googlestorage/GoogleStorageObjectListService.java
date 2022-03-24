@@ -26,7 +26,6 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -50,6 +49,7 @@ import java.util.concurrent.Future;
 import com.google.api.services.storage.model.Objects;
 import com.google.api.services.storage.model.StorageObject;
 import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class GoogleStorageObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(GoogleStorageObjectListService.class);
@@ -193,13 +193,9 @@ public class GoogleStorageObjectListService implements ListService {
                 listener.chunk(directory, objects);
             }
             while(page != null);
-            for(Future<Path> future : folders) {
+            for(Future<Path> f : folders) {
                 try {
-                    objects.add(future.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Listing versioned objects failed with interrupt failure");
-                    throw new ConnectionCanceledException(e);
+                    objects.add(Uninterruptibles.getUninterruptibly(f));
                 }
                 catch(ExecutionException e) {
                     log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
