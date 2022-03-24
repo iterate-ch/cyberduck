@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -32,10 +33,14 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
+import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadStatus;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +49,12 @@ import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,6 +65,8 @@ import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SDSUploadService {
     private static final Logger log = LogManager.getLogger(SDSUploadService.class);
@@ -160,5 +173,88 @@ public class SDSUploadService {
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
         }
+    }
+
+    /**
+     * Poll for upload status of direct upload
+     * @param file Remote path
+     * @param status Transfer status
+     * @param uploadId Upload Id
+     * @return Latest status returned from server
+     * @throws BackgroundException Error status received
+     */
+    public S3FileUploadStatus await(final Path file, final TransferStatus status, final String uploadId) throws BackgroundException {
+        final CountDownLatch signal = new CountDownLatch(1);
+        final AtomicReference<S3FileUploadStatus> response = new AtomicReference<>();
+        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+        final ScheduledThreadPool polling = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                super.uncaughtException(t, e);
+                failure.set(new BackgroundException(e));
+                signal.countDown();
+            }
+        });
+        final ScheduledFuture<?> f = polling.repeat(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Query upload status for %s", uploadId));
+                                }
+                                final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
+                                        .requestUploadStatusFiles(uploadId, StringUtils.EMPTY, null);
+                                response.set(uploadStatus);
+                                switch(uploadStatus.getStatus()) {
+                                    case "finishing":
+                                        // Expected
+                                        break;
+                                    case "transfer":
+                                        failure.set(new InteroperabilityException(uploadStatus.getStatus()));
+                                        signal.countDown();
+                                        break;
+                                    case "error":
+                                        if(null == uploadStatus.getErrorDetails()) {
+                                            log.warn(String.format("Mising error details for upload status %s", uploadStatus));
+                                            failure.set(new InteroperabilityException());
+                                        }
+                                        else {
+                                            failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
+                                        }
+                                        signal.countDown();
+                                        break;
+                                    case "done":
+                                        // Set node id in transfer status
+                                        nodeid.cache(file, String.valueOf(uploadStatus.getNode().getId()));
+                                        // Mark parent status as complete
+                                        status.withResponse(new SDSAttributesAdapter(session).toAttributes(uploadStatus.getNode())).setComplete();
+                                        signal.countDown();
+                                        break;
+                                }
+                            }
+                            catch(ApiException e) {
+                                failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
+                                signal.countDown();
+                            }
+                        }
+                    }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.delay"),
+                new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
+        while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+            try {
+                if(f.isDone()) {
+                    Uninterruptibles.getUninterruptibly(f);
+                }
+            }
+            catch(ExecutionException e) {
+                Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+            }
+        }
+        polling.shutdown();
+        if(null != failure.get()) {
+            throw failure.get();
+        }
+        status.setComplete();
+        return response.get();
     }
 }
