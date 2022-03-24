@@ -173,7 +173,6 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                                         case HttpStatus.SC_OK:
                                         case HttpStatus.SC_CREATED:
                                         case HttpStatus.SC_NO_CONTENT:
-                                            offset += content.length;
                                             break;
                                         default:
                                             final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(),
@@ -196,6 +195,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                             return null;
                         }
                     }, overall).call();
+                    offset += len;
                 }
             }
             catch(BackgroundException e) {
@@ -219,7 +219,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                         final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
                         final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                                 .getCompletedUploadResponse(uploadUri, offset, cdash64);
-                        result.set(new EueWriteFeature.Chunk(resourceId, overall.getLength(), cdash64));
+                        result.set(new EueWriteFeature.Chunk(resourceId, offset, cdash64));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e);

@@ -64,6 +64,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String version = out.getStatus().getId();
         assertNotNull(version);
+        assertEquals(content.length, out.getStatus().getFileSize(), 0L);
         assertTrue(new DefaultFindFeature(session).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -161,6 +162,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String version = out.getStatus().getId();
+        assertEquals(content.length, out.getStatus().getFileSize(), 0L);
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -178,6 +180,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final HttpResponseOutputStream<FileMetadata> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
+        assertEquals(0L, out.getStatus().getFileSize(), 0L);
         final String version = out.getStatus().getId();
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));

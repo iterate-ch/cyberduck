@@ -60,6 +60,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        assertEquals(random.length, status.getResponse().getSize());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
         assertEquals(status.getResponse().getETag(), attr.getETag());
@@ -97,6 +98,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
                 count, status, new DisabledLoginCallback());
         assertEquals(random.length, count.getSent());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
+        assertEquals(random.length, status.getResponse().getSize());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new S3FindFeature(session).find(test));
@@ -166,6 +168,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        assertEquals(content.length, status.getResponse().getSize());
         assertSame(Checksum.NONE, status.getResponse().getChecksum());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
@@ -211,6 +214,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(interrupt.get());
         assertEquals(10L * 1024L * 1024L, count.getSent());
         assertFalse(status.isComplete());
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         final Path upload = new S3ListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertTrue(new S3FindFeature(session).find(upload));
         assertNotNull(upload);
@@ -224,6 +228,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(12L * 1024L * 1024L, count.getSent());
         assertTrue(append.isComplete());
         assertNotSame(PathAttributes.EMPTY, append.getResponse());
+        assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(12L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];
@@ -280,6 +285,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
             new DisabledConnectionCallback());
         assertEquals(32769L, count.getSent());
         assertTrue(append.isComplete());
+        assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new S3FindFeature(session).find(test));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         final byte[] buffer = new byte[content.length];

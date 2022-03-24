@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -76,10 +77,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                 new SwiftAttributesFinderFeature(session, regionService), status) {
             @Override
             public StorageObject getStatus() {
-                final StorageObject stored = new StorageObject(containerService.getKey(file));
-                stored.setSize(status.getLength());
-                stored.setMd5sum(proxy.getResponse());
-                return stored;
+                return proxy.getResponse();
             }
         };
     }
@@ -100,7 +98,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
         private final AtomicReference<IOException> canceled = new AtomicReference<>();
-        private final AtomicReference<String> response = new AtomicReference<>();
+        private final AtomicReference<StorageObject> response = new AtomicReference<>();
         private int segmentNumber;
 
         public LargeUploadOutputStream(final Path file, final TransferStatus status) {
@@ -175,7 +173,11 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                     return;
                 }
                 if(completed.isEmpty()) {
-                    new SwiftTouchFeature(session, regionService).touch(file, overall);
+                    // The minimum sized range is 1 byte. This is the same as the minimum segment size.
+                    final HttpResponseOutputStream<StorageObject> out
+                            = new SwiftWriteFeature(session, regionService).write(file, overall.withLength(0L), new DisabledConnectionCallback());
+                    out.close();
+                    response.set(out.getStatus());
                 }
                 else {
                     // Static Large Object
@@ -183,11 +185,19 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
                     }
-                    response.set(session.getClient().createSLOManifestObject(regionService.lookup(
+                    final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
                                     containerService.getContainer(file)),
                             containerService.getContainer(file).getName(),
                             overall.getMime(),
-                            containerService.getKey(file), manifest, Collections.emptyMap()));
+                            containerService.getKey(file), manifest, Collections.emptyMap());
+                    final StorageObject object = new StorageObject(containerService.getKey(file));
+                    object.setMd5sum(checksum);
+                    Long length = 0L;
+                    for(StorageObject part : completed) {
+                        length += part.getSize();
+                    }
+                    object.setSize(length);
+                    response.set(object);
                 }
             }
             catch(BackgroundException e) {
@@ -198,7 +208,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
             }
         }
 
-        public String getResponse() {
+        public StorageObject getResponse() {
             return response.get();
         }
     }

@@ -76,9 +76,9 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-            new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session,
-                regionService), 5242880L, 5), new SwiftWriteFeature(session,
-            regionService), cryptomator);
+                new SwiftLargeObjectUploadFeature(session, regionService, new SwiftWriteFeature(session,
+                        regionService), 5242880L, 5), new SwiftWriteFeature(session,
+                regionService), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 5242885;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -91,6 +91,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
+        assertEquals(content.length, writeStatus.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new SwiftListService(session, regionService), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

@@ -61,6 +61,7 @@ public class BoxLargeUploadServiceTest extends AbtractBoxTest {
         assertNotNull(response.getSha1());
         assertEquals(content.length, count.getSent());
         assertTrue(status.isComplete());
+        assertEquals(content.length, status.getResponse().getSize());
         assertTrue(new BoxFindFeature(session, fileid).find(file));
         assertEquals(content.length, new BoxAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];

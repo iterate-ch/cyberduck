@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
@@ -59,7 +60,10 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
         assertEquals(checksum, out.getStatus().getChecksum());
-        assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
+        assertEquals(content.length, out.getStatus().getLength(), 0L);
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
+        assertEquals(attr.getFileId(), out.getStatus().getResourceId());
+        assertEquals(content.length, attr.getSize());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -85,7 +89,10 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().getCdash64());
         assertEquals(checksum, out.getStatus().getChecksum());
-        assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
+        assertEquals(content.length, out.getStatus().getLength(), 0L);
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
+        assertEquals(attr.getFileId(), out.getStatus().getResourceId());
+        assertEquals(content.length, attr.getSize());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -113,6 +120,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
             assertNotNull(out.getStatus().getCdash64());
             // Different due to chunking
             assertNotEquals(checksum.hash, out.getStatus().getCdash64());
+            assertEquals(content.length, out.getStatus().getLength(), 0L);
             assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -132,6 +140,7 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
             assertNotNull(out.getStatus().getCdash64());
             // Different due to chunking
             assertNotEquals(checksum.hash, out.getStatus().getCdash64());
+            assertEquals(content.length, out.getStatus().getLength(), 0L);
             assertEquals(new EueAttributesFinderFeature(session, fileid).find(file).getFileId(), out.getStatus().getResourceId());
             assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];

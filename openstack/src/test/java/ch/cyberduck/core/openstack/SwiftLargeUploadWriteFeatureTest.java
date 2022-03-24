@@ -60,6 +60,7 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
             final BytecountStreamListener count = new BytecountStreamListener();
             new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
             assertEquals(content.length, count.getSent());
+            assertEquals(content.length, out.getStatus().getSize(), 0L);
             assertTrue(new SwiftFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -78,6 +79,7 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
             final BytecountStreamListener count = new BytecountStreamListener();
             new StreamCopier(new TransferStatus(), progress).withListener(count).transfer(in, out);
             assertEquals(content.length, count.getSent());
+            assertEquals(content.length, out.getStatus().getSize(), 0L);
             assertTrue(new SwiftFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -104,6 +106,7 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
+        assertEquals(0L, out.getStatus().getSize(), 0L);
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
