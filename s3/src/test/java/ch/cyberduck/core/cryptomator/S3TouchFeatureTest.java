@@ -61,8 +61,10 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final TransferStatus status = new TransferStatus();
         final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        assertEquals(0L, status.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         assertEquals(test.attributes(), new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

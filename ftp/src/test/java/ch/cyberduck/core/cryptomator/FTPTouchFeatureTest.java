@@ -42,6 +42,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -57,8 +58,10 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final TransferStatus status = new TransferStatus();
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)
-        ), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
+        ), new FTPWriteFeature(session), cryptomator).touch(test, status);
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
