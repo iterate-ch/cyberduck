@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
@@ -45,18 +44,7 @@ public class CryptoMoveV7Feature implements Move {
         // Move inside vault moves actual files and only metadata files for directories but not the actual directories
         final Path sourceEncrypted = vault.encrypt(session, file, file.isDirectory());
         final Path targetEncrypted = vault.encrypt(session, renamed, file.isDirectory());
-        final Path target = proxy.move(sourceEncrypted, targetEncrypted,
-                new TransferStatus(status) {
-                    @Override
-                    public void setResponse(final PathAttributes attributes) {
-                        if(vault.contains(renamed)) {
-                            super.setResponse(attributes.withSize(vault.toCiphertextSize(0L, attributes.getSize())));
-                        }
-                        else {
-                            super.setResponse(attributes);
-                        }
-                    }
-                }, callback, connectionCallback);
+        final Path target = proxy.move(sourceEncrypted, targetEncrypted, status, callback, connectionCallback);
         if(file.isDirectory()) {
             if(!proxy.isRecursive(file, renamed)) {
                 proxy.move(new Path(sourceEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
