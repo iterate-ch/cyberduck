@@ -47,7 +47,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
         try {
             final StatusOutputStream<T> writer = write.write(file, status, new DisabledConnectionCallback());
             writer.close();
-            if(status.getResponse() != PathAttributes.EMPTY) {
+            if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Received reply %s for creating file %s", status.getResponse(), file));
                 }
