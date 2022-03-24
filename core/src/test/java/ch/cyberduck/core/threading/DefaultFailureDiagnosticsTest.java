@@ -15,6 +15,7 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveCanceledException;
@@ -33,5 +34,6 @@ public class DefaultFailureDiagnosticsTest {
         assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new ResolveCanceledException()));
         assertEquals(FailureDiagnostics.Type.login, new DefaultFailureDiagnostics().determine(new LoginFailureException("d")));
         assertEquals(FailureDiagnostics.Type.cancel, new DefaultFailureDiagnostics().determine(new ConnectionCanceledException()));
+        assertEquals(FailureDiagnostics.Type.application, new DefaultFailureDiagnostics().determine(new BackgroundException(new ConnectionCanceledException())));
     }
 }
