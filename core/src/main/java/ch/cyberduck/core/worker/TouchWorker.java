@@ -82,7 +82,7 @@ public class TouchWorker extends Worker<Path> {
             }
         }
         final Path result = feature.touch(file, status);
-        if(result.attributes() == PathAttributes.EMPTY) {
+        if(PathAttributes.EMPTY.equals(result.attributes())) {
             return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));
         }
         return result;

@@ -26,6 +26,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -110,27 +111,37 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         log.warn(String.format("Move operation is not recursive. Create directory %s", r.getValue()));
                         // Create directory unless copy implementation is recursive
                         result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(),
-                            new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
+                                new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
-                        final TransferStatus status = this.status(session, r);
-                        result.put(r.getKey(), feature.move(r.getKey(), r.getValue(), status,
-                            new Delete.Callback() {
-                                @Override
-                                public void delete(final Path file) {
-                                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                        file.getName()));
-                                }
-                            }, callback)
-                        );
+                        final TransferStatus status = new TransferStatus()
+                                .withLockId(this.getLockId(r.getKey()))
+                                .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                                .withLength(r.getKey().attributes().getSize());
+                        if(status.isExists()) {
+                            status.withRemote(new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
+                        }
+                        final Path moved = feature.move(r.getKey(), r.getValue(), status,
+                                new Delete.Callback() {
+                                    @Override
+                                    public void delete(final Path file) {
+                                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                                file.getName()));
+                                    }
+                                }, callback);
+                        if(PathAttributes.EMPTY.equals(moved.attributes())) {
+                            moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
+                        }
+                        result.put(r.getKey(), moved);
                     }
                 }
                 // Find previous folders to be deleted
                 final List<Path> folders = recursive.entrySet().stream()
-                    .filter(f -> !feature.isRecursive(f.getKey(), f.getValue()))
-                    .collect(Collectors.toCollection(ArrayList::new)).stream()
-                    .map(Map.Entry::getKey).filter(Path::isDirectory)
-                    .collect(Collectors.toCollection(ArrayList::new));
+                        .filter(f -> !feature.isRecursive(f.getKey(), f.getValue()))
+                        .collect(Collectors.toCollection(ArrayList::new)).stream()
+                        .map(Map.Entry::getKey).filter(Path::isDirectory)
+                        .collect(Collectors.toCollection(ArrayList::new));
                 if(!folders.isEmpty()) {
                     // Must delete inverse
                     Collections.reverse(folders);
@@ -149,18 +160,6 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         }
     }
 
-    protected TransferStatus status(final Session<?> session, final Map.Entry<Path, Path> r) throws BackgroundException {
-        final TransferStatus status = new TransferStatus()
-                .withLockId(this.getLockId(r.getKey()))
-                .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
-                .withLength(r.getKey().attributes().getSize());
-        if(status.isExists()) {
-            status.withRemote(new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
-        }
-        return status;
-    }
-
     protected String getLockId(final Path file) {
         return null;
     }
@@ -173,7 +172,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             if(!move.isRecursive(source, target)) {
                 // sort ascending by timestamp to move older versions first
                 final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener))
-                    .filter(new VersionsComparator(true));
+                        .filter(new VersionsComparator(true));
                 for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
@@ -209,7 +208,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
-            files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
+                files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 
     @Override
