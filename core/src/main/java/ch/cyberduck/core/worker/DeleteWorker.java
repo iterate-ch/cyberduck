@@ -64,6 +64,7 @@ public class DeleteWorker extends Worker<List<Path>> {
      * Trash instead of delete files if feature is available
      */
     private final boolean trash;
+    private final Delete.Callback callback;
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
         this(prompt, files, cache, listener, new NullFilter<>());
@@ -76,12 +77,18 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
                         final Filter<Path> filter, final boolean trash) {
+        this(prompt, files, cache, listener, filter, trash, new Delete.DisabledCallback());
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+                        final Filter<Path> filter, final boolean trash, final Delete.Callback callback) {
         this.files = files;
         this.prompt = prompt;
         this.cache = cache;
         this.listener = listener;
         this.filter = filter;
         this.trash = trash;
+        this.callback = callback;
     }
 
     @Override
@@ -115,7 +122,8 @@ public class DeleteWorker extends Worker<List<Path>> {
             @Override
             public void delete(final Path file) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
+                        file.getName()));
+                callback.delete(file);
             }
         });
         return new ArrayList<>(recursive.keySet());
@@ -172,7 +180,7 @@ public class DeleteWorker extends Worker<List<Path>> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-            this.toString(files));
+                this.toString(files));
     }
 
     @Override
