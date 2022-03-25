@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CachingFindFeature implements Find {
-    private static final Logger log = LogManager.getLogger(CachingAttributesFinderFeature.class);
+    private static final Logger log = LogManager.getLogger(CachingFindFeature.class);
 
     private final Cache<Path> cache;
     private final Find delegate;
