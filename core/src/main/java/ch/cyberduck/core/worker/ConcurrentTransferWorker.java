@@ -178,7 +178,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
 
     @Override
     public void cleanup(final Boolean result) {
-        pool.shutdown(result);
+        // Always shutdown gracefully allowing the threads to return after checking transfer status
+        pool.shutdown(true);
     }
 
     @Override
