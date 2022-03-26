@@ -123,7 +123,8 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
 
         private Long offset = 0L;
 
-        public MultipartOutputStream(final Path file, final String resourceId, final String uploadUri, final TransferStatus status, final ConnectionCallback callback) throws NoSuchAlgorithmException {
+        public MultipartOutputStream(final Path file, final String resourceId, final String uploadUri,
+                                     final TransferStatus status, final ConnectionCallback callback) throws NoSuchAlgorithmException {
             this.file = file;
             this.resourceId = resourceId;
             this.uploadUri = uploadUri;
@@ -146,6 +147,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 if(0L == offset && content.length < new HostPreferences(session.getHost()).getLong("eue.upload.multipart.threshold")) {
                     final EueWriteFeature writer = new EueWriteFeature(session, fileid);
+                    log.warn(String.format("Cancel chunked upload for %s", file));
                     writer.cancel(uploadUri);
                     final TransferStatus status = new TransferStatus(overall).withLength(content.length);
                     final HttpResponseOutputStream<EueWriteFeature.Chunk> stream = writer.write(file,
@@ -161,7 +163,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                             final CloseableHttpClient client = session.getClient();
                             try {
                                 final String hash = new SHA256ChecksumCompute()
-                                        .compute(new ByteArrayInputStream(content, off, len), new TransferStatus()).hash;
+                                        .compute(new ByteArrayInputStream(content), new TransferStatus()).hash;
                                 messageDigest.update(Hex.decodeHex(hash));
                                 messageDigest.update(ChunkListSHA256ChecksumCompute.intToBytes(content.length));
                                 final HttpPut request = new HttpPut(String.format("%s&x_offset=%d&x_sha256=%s&x_size=%d",
@@ -214,15 +216,24 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
+                // Skip complete if previously switched to simple upload because of smaller chunk size
                 if(result.get() == null) {
-                    try {
-                        final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
-                        final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
-                                .getCompletedUploadResponse(uploadUri, offset, cdash64);
-                        result.set(new EueWriteFeature.Chunk(resourceId, offset, cdash64));
+                    if(0L == offset) {
+                        this.write(new byte[0]);
                     }
-                    catch(BackgroundException e) {
-                        throw new IOException(e);
+                    else {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Complete chunked upload for %s", file));
+                        }
+                        try {
+                            final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
+                            final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
+                                    .getCompletedUploadResponse(uploadUri, offset, cdash64);
+                            result.set(new EueWriteFeature.Chunk(resourceId, offset, cdash64));
+                        }
+                        catch(BackgroundException e) {
+                            throw new IOException(e);
+                        }
                     }
                 }
             }

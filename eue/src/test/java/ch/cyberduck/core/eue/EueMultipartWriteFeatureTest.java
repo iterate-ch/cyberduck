@@ -44,6 +44,28 @@ import static org.junit.Assert.*;
 public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
 
     @Test
+    public void testWriteZeroLength() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final EueMultipartWriteFeature feature = new EueMultipartWriteFeature(session, fileid);
+        final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(0);
+        final TransferStatus status = new TransferStatus().withLength(-1L);
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        assertEquals(content.length, IOUtils.copyLarge(in, out));
+        in.close();
+        out.close();
+        assertTrue(new DefaultFindFeature(session).find(file));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testLowerThreshold() throws Exception {
         // Uploading a file via the Upload Resource, using the chunked upload method, is only allowed for documents bigger than the chunksize (4MiB)
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
