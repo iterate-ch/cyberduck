@@ -51,7 +51,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new EueDirectoryFeature(session, fileid).mkdir(sourceFolder, new TransferStatus());
-        createFile(sourceFile, RandomUtils.nextBytes(1023));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(1023));
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
@@ -79,7 +79,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(541));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final Path targetFolder = new Path(testFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(targetFolder.attributes().getFileId());
         final EueCopyFeature feature = new EueCopyFeature(session, fileid);
@@ -100,7 +100,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(541));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final Path targetFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(targetFolder.attributes().getFileId());
         final EueCopyFeature feature = new EueCopyFeature(session, fileid);
@@ -121,7 +121,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(541));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFile = new EueCopyFeature(session, fileid).copy(sourceFile,
@@ -145,7 +145,7 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new EueDirectoryFeature(session, fileid).mkdir(sourceFolder, new TransferStatus());
-        createFile(sourceFile, RandomUtils.nextBytes(1023));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(1023));
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());

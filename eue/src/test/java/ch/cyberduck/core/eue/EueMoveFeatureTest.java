@@ -46,7 +46,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(541));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFolder = new EueDirectoryFeature(session, fileid).mkdir(
@@ -73,9 +73,9 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(48));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(48));
         final Path targetFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(targetFile, RandomUtils.nextBytes(541));
+        createFile(fileid, targetFile, RandomUtils.nextBytes(541));
         new EueMoveFeature(session, fileid).move(sourceFile, targetFile, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new EueFindFeature(session, fileid).find(sourceFile));
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
@@ -88,7 +88,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(541));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final Path targetFolder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final EueMoveFeature feature = new EueMoveFeature(session, fileid);
         assertTrue(feature.isRecursive(sourceFolder, targetFolder));
@@ -108,7 +108,7 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path sourceFile = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(sourceFile, RandomUtils.nextBytes(541));
+        createFile(fileid, sourceFile, RandomUtils.nextBytes(541));
         final PathAttributes sourceAttr = new EueAttributesFinderFeature(session, fileid).find(sourceFile);
         assertTrue(new EueFindFeature(session, fileid).find(sourceFile));
         final Path targetFile = new EueMoveFeature(session, fileid).move(sourceFile,

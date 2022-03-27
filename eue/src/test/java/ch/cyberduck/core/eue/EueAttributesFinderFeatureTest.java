@@ -122,7 +122,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path file = new Path(sourceFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        createFile(file, RandomUtils.nextBytes(0));
+        createFile(fileid, file, RandomUtils.nextBytes(0));
         assertTrue(new EueFindFeature(session, fileid).find(file));
         final ShareCreationResponseEntry shareCreationResponseEntry = createShare(fileid, file);
         final String shareName = shareCreationResponseEntry.getEntity().getName();

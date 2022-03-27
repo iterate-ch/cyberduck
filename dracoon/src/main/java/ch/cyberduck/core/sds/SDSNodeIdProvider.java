@@ -15,18 +15,16 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CachingVersionIdProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
@@ -48,14 +46,13 @@ import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class SDSNodeIdProvider implements VersionIdProvider {
+public class SDSNodeIdProvider extends CachingVersionIdProvider implements VersionIdProvider {
     private static final Logger log = LogManager.getLogger(SDSNodeIdProvider.class);
 
     private static final UnicodeNormalizer normalizer = new NFCNormalizer();
     private static final String ROOT_NODE_ID = "0";
 
     private final SDSSession session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public SDSNodeIdProvider(final SDSSession session) {
         this.session = session;
@@ -69,17 +66,17 @@ public class SDSNodeIdProvider implements VersionIdProvider {
             }
             return file.attributes().getVersionId();
         }
+        final String cached = super.getVersionId(file, listener);
+        if(cached != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached versionid %s for file %s", cached, file));
+            }
+            return cached;
+        }
         return this.getNodeId(file, new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize"));
     }
 
     protected String getNodeId(final Path file, final int chunksize) throws BackgroundException {
-        if(cache.contains(new SimplePathPredicate(file))) {
-            final String cached = cache.get(new SimplePathPredicate(file));
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Return cached node %s for file %s", cached, file));
-            }
-            return cached;
-        }
         if(file.isRoot()) {
             return ROOT_NODE_ID;
         }
@@ -97,10 +94,10 @@ public class SDSNodeIdProvider implements VersionIdProvider {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).searchNodes(
-                    URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
-                    StringUtils.EMPTY, -1, null,
-                    String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
-                    null, offset, chunksize, null);
+                        URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
+                        StringUtils.EMPTY, -1, null,
+                        String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
+                        null, offset, chunksize, null);
                 for(Node node : nodes.getItems()) {
                     if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
                         if(log.isInfoEnabled()) {
@@ -117,26 +114,6 @@ public class SDSNodeIdProvider implements VersionIdProvider {
         catch(ApiException e) {
             throw new SDSExceptionMappingService(this).map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    public String cache(final Path file, final String id) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cache %s for file %s", id, file));
-        }
-        if(null == id) {
-            cache.remove(new SimplePathPredicate(file));
-            file.attributes().setVersionId(null);
-        }
-        else {
-            cache.put(new SimplePathPredicate(file), id);
-            file.attributes().setVersionId(id);
-        }
-        return id;
-    }
-
-    @Override
-    public void clear() {
-        cache.clear();
     }
 
     public static boolean isEncrypted(final Path file) {
