@@ -53,6 +53,9 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
             }
             throw new NotfoundException(file.getAbsolute());
         }
-        return delegate.find(file, new CachingListProgressListener(cache));
+        final CachingListProgressListener caching = new CachingListProgressListener(cache);
+        final PathAttributes attr = delegate.find(file, caching);
+        caching.finish();
+        return attr;
     }
 }
