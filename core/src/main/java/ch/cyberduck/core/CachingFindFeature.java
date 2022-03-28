@@ -35,21 +35,22 @@ public class CachingFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(!file.isRoot()) {
-            if(cache.isValid(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
-                if(found != null) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found %s in cache", file));
-                    }
-                    return true;
-                }
+        if(file.isRoot()) {
+            return delegate.find(file, listener);
+        }
+        if(cache.isValid(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
+            if(found != null) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cached directory listing does not contain %s", file));
+                    log.debug(String.format("Found %s in cache", file));
                 }
-                return false;
+                return true;
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cached directory listing does not contain %s", file));
+            }
+            return false;
         }
         return delegate.find(file, new CachingListProgressListener(cache));
     }
