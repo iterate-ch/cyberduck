@@ -252,67 +252,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                 }
                 new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                 // Polling
-                final CountDownLatch signal = new CountDownLatch(1);
-                final AtomicReference<BackgroundException> failure = new AtomicReference<>();
-                final AtomicReference<S3FileUploadStatus> uploadStatus = new AtomicReference<>();
-                final ScheduledThreadPool polling = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException(final Thread t, final Throwable e) {
-                        super.uncaughtException(t, e);
-                        failure.set(new BackgroundException(e));
-                        signal.countDown();
-                    }
-                });
-                // todo
-                final ScheduledFuture<?> f = polling.repeat(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            uploadStatus.set(new NodesApi(session.getClient())
-                                    .requestUploadStatusFiles(createFileUploadResponse.getUploadId(), StringUtils.EMPTY, null));
-                            switch(uploadStatus.get().getStatus()) {
-                                case "finishing":
-                                    // Expected
-                                    break;
-                                case "transfer":
-                                    failure.set(new InteroperabilityException(uploadStatus.get().getStatus()));
-                                    signal.countDown();
-                                    break;
-                                case "error":
-                                    failure.set(new InteroperabilityException(uploadStatus.get().getErrorDetails().getMessage()));
-                                    signal.countDown();
-                                    break;
-                                case "done":
-                                    // Set node id in transfer status
-                                    nodeid.cache(file, String.valueOf(uploadStatus.get().getNode().getId()));
-                                    signal.countDown();
-                                    break;
-                            }
-                        }
-                        catch(ApiException e) {
-                            failure.set(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
-                            signal.countDown();
-                        }
-                    }
-                }, new HostPreferences(session.getHost()).getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
-                while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
-                    try {
-                        if(f.isDone()) {
-                            Uninterruptibles.getUninterruptibly(f);
-                        }
-                    }
-                    catch(ExecutionException e) {
-                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                    }
-                }
-                polling.shutdown();
-                if(null != failure.get()) {
-                    throw failure.get();
-                }
-                // Mark parent status as complete
-                overall.setComplete();
-                result.set(uploadStatus.get().getNode());
+                result.set(new SDSUploadService(session, nodeid).await(file, overall, createFileUploadResponse.getUploadId()).getNode());
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
