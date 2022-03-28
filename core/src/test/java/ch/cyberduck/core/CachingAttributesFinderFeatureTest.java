@@ -91,12 +91,12 @@ public class CachingAttributesFinderFeatureTest {
     }
 
     @Test
-    public void findWithDefault() throws Exception {
+    public void findNotfound() throws Exception {
         final PathCache cache = new PathCache(1);
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         final Path file = new Path(directory, "f", EnumSet.of(Path.Type.file));
         final CachingAttributesFinderFeature feature = new CachingAttributesFinderFeature(cache,
-            new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol()))));
+                new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol()))));
         try {
             feature.find(file, new DisabledListProgressListener());
         }
