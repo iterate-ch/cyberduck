@@ -63,7 +63,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -84,7 +84,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -106,7 +106,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -220,7 +220,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -242,7 +242,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -270,7 +270,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
             });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-downloads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -319,7 +319,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .filesExpiryPeriod(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-uploads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/upload-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -346,7 +346,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .filesExpiryPeriod(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-uploads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/upload-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -372,7 +372,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .filesExpiryPeriod(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
-        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/#/public/shares-uploads/"));
+        assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/upload-shares/"));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
