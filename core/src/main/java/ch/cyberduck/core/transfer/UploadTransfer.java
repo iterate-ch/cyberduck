@@ -252,6 +252,7 @@ public class UploadTransfer extends Transfer {
         for(Map.Entry<TransferItem, TransferStatus> item : directories) {
             final Path file = item.getKey().remote;
             final TransferStatus status = item.getValue();
+            status.validate();
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
             mkdir.mkdir(file, status);
             status.setComplete();
