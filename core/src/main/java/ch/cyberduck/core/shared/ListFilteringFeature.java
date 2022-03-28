@@ -48,8 +48,8 @@ public abstract class ListFilteringFeature {
         // Try to match path only as the version might have changed in the meantime
         final Path found = list.find(new ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("File %s not found in directory listing", file));
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("File %s not found in directory listing", file));
             }
         }
         else {

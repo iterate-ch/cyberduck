@@ -48,6 +48,9 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
                 }
                 return found.attributes();
             }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cached directory listing does not contain %s", file));
+            }
             throw new NotfoundException(file.getAbsolute());
         }
         return delegate.find(file, new CachingListProgressListener(cache));
