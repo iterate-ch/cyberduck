@@ -8,7 +8,14 @@ namespace Windows.Win32
     {
         public unsafe partial struct PCWSTR
         {
-            public static unsafe implicit operator PCWSTR(in string value) => (char*)AsPointer(ref GetReference(value.AsSpan()));
+            public PCWSTR(ref char value)
+            {
+                Value = (char*)AsPointer(ref value);
+            }
+
+            public static implicit operator PCWSTR(in ReadOnlySpan<char> value) => new(ref GetReference(value));
+
+            public static implicit operator PCWSTR(in string value) => new(ref GetReference(value.AsSpan()));
         }
     }
 }
