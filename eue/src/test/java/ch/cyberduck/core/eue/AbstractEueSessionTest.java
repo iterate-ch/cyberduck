@@ -118,8 +118,7 @@ public class AbstractEueSessionTest {
     }
 
 
-    protected Path createFile(Path file, final byte[] content) throws Exception {
-        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+    protected Path createFile(final EueResourceIdProvider fileid, Path file, final byte[] content) throws Exception {
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final TransferStatus status = new TransferStatus()
                 .withChecksum(feature.checksum(file, new TransferStatus().withLength(content.length)).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length)))

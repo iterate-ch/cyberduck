@@ -48,7 +48,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(5423);
-        createFile(file, content);
+        createFile(fileid, file, content);
         assertTrue(new EueFindFeature(session, fileid).find(file));
         final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
         assertEquals(content.length, attributes.getSize());
@@ -66,7 +66,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1000);
-        final Path test = createFile(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), content);
+        final Path test = createFile(fileid, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), content);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -88,7 +88,7 @@ public class EueReadFeatureTest extends AbstractEueSessionTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = createFile(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), content);
+        final Path test = createFile(fileid, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), content);
         // Unknown length in status
         final TransferStatus readStatus = new TransferStatus();
         // Read a single byte

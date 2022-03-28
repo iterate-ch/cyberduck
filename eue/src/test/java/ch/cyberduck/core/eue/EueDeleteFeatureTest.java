@@ -58,8 +58,8 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final Path file1 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path file2 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new EueDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-        createFile(file1, RandomUtils.nextBytes(511));
-        createFile(file2, RandomUtils.nextBytes(214));
+        createFile(fileid, file1, RandomUtils.nextBytes(511));
+        createFile(fileid, file2, RandomUtils.nextBytes(214));
         assertTrue(new EueFindFeature(session, fileid).find(file1));
         assertTrue(new EueFindFeature(session, fileid).find(file2));
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -78,14 +78,14 @@ public class EueDeleteFeatureTest extends AbstractEueSessionTest {
         final String filename = String.format("~$%s.docx", new AlphanumericRandomStringService().random());
         {
             final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
-            createFile(file1, RandomUtils.nextBytes(511));
+            createFile(fileid, file1, RandomUtils.nextBytes(511));
             assertTrue(new EueFindFeature(session, fileid).find(file1));
             new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         }
         {
             final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
-            createFile(file1, RandomUtils.nextBytes(511));
+            createFile(fileid, file1, RandomUtils.nextBytes(511));
             assertTrue(new EueFindFeature(session, fileid).find(file1));
             new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));

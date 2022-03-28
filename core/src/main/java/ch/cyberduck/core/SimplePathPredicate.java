@@ -18,6 +18,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
 
 public class SimplePathPredicate implements CacheReference<Path> {
@@ -57,6 +59,14 @@ public class SimplePathPredicate implements CacheReference<Path> {
     @Override
     public boolean test(final Path test) {
         return this.equals(new SimplePathPredicate(test));
+    }
+
+    /**
+     * @param directory Parent directory
+     * @return True if this is child of parameter based on path comparison
+     */
+    public boolean isChild(final Path directory) {
+        return StringUtils.startsWith(path, directory.getAbsolute());
     }
 
     @Override

@@ -58,8 +58,8 @@ public class EueTrashFeatureTest extends AbstractEueSessionTest {
         final Path file1 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path file2 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new EueDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-        createFile(file1, RandomUtils.nextBytes(511));
-        createFile(file2, RandomUtils.nextBytes(214));
+        createFile(fileid, file1, RandomUtils.nextBytes(511));
+        createFile(fileid, file2, RandomUtils.nextBytes(214));
         assertTrue(new EueFindFeature(session, fileid).find(file1));
         assertTrue(new EueFindFeature(session, fileid).find(file2));
         new EueTrashFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -71,6 +71,33 @@ public class EueTrashFeatureTest extends AbstractEueSessionTest {
     }
 
     @Test
+    public void testDeleteRecursively() throws Exception {
+        final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path folder = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory));
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new EueDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+        createFile(fileid, file, RandomUtils.nextBytes(511));
+        assertTrue(new EueFindFeature(session, fileid).find(file));
+        assertNotNull(fileid.getFileId(file, new DisabledListProgressListener()));
+        new EueTrashFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        file.attributes().setFileId(null);
+        try {
+            fileid.getFileId(file, new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        try {
+            fileid.getFileId(folder, new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+    }
+
+    @Test
     public void testDeleteLockOwnerFile() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
@@ -78,14 +105,14 @@ public class EueTrashFeatureTest extends AbstractEueSessionTest {
         final String filename = String.format("~$%s.docx", new AlphanumericRandomStringService().random());
         {
             final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
-            createFile(file1, RandomUtils.nextBytes(511));
+            createFile(fileid, file1, RandomUtils.nextBytes(511));
             assertTrue(new EueFindFeature(session, fileid).find(file1));
             new EueTrashFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));
         }
         {
             final Path file1 = new Path(folder, filename, EnumSet.of(Path.Type.file));
-            createFile(file1, RandomUtils.nextBytes(511));
+            createFile(fileid, file1, RandomUtils.nextBytes(511));
             assertTrue(new EueFindFeature(session, fileid).find(file1));
             new EueTrashFeature(session, fileid).delete(Collections.singletonList(file1), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse((new EueFindFeature(session, fileid).find(file1, new DisabledListProgressListener())));

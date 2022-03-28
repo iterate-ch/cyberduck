@@ -62,7 +62,7 @@ public class EueResourceIdProviderTest extends AbstractEueSessionTest {
         assertEquals(folder.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder, new DisabledListProgressListener()));
         assertEquals(folder.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.lowerCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
         assertEquals(folder.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.upperCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
-        final Path file = createFile(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
+        final Path file = createFile(fileid, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
         assertEquals(file.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(file, new DisabledListProgressListener()));
         assertEquals(file.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.lowerCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
         assertEquals(file.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.upperCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));

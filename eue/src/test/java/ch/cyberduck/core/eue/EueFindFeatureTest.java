@@ -80,14 +80,14 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
         assertEquals(folder1Folder2Folder3.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder1Folder2Folder3, new DisabledListProgressListener()));
         assertTrue(new EueFindFeature(session, fileid).find(folder1Folder2Folder3, new DisabledListProgressListener()));
         assertTrue(new DefaultFindFeature(session).find(folder1Folder2Folder3, new DisabledListProgressListener()));
-        final Path folder2TestFile = createFile(new Path(folder1Folder2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
+        final Path folder2TestFile = createFile(fileid, new Path(folder1Folder2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
         assertEquals(folder2TestFile.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder2TestFile, new DisabledListProgressListener()));
         assertTrue(new EueFindFeature(session, fileid).find(folder2TestFile, new DisabledListProgressListener()));
         // Test case insensitivity
         assertTrue(new EueFindFeature(session, fileid).find(new Path(folder2TestFile.getParent(), StringUtils.lowerCase(folder2TestFile.getName()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         assertTrue(new EueFindFeature(session, fileid).find(new Path(folder2TestFile.getParent(), StringUtils.upperCase(folder2TestFile.getName()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         assertTrue(new DefaultFindFeature(session).find(folder2TestFile, new DisabledListProgressListener()));
-        final Path folder3TestFile = createFile(new Path(folder1Folder2Folder3, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(1024));
+        final Path folder3TestFile = createFile(fileid, new Path(folder1Folder2Folder3, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(1024));
         assertEquals(folder3TestFile.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder3TestFile, new DisabledListProgressListener()));
         assertTrue(new EueFindFeature(session, fileid).find(folder3TestFile, new DisabledListProgressListener()));
         assertTrue(new DefaultFindFeature(session).find(folder3TestFile, new DisabledListProgressListener()));
