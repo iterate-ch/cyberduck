@@ -26,6 +26,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -47,6 +48,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
@@ -58,7 +61,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     private static final Logger log = LogManager.getLogger(SDSSharesUrlProvider.class);
 
     private final PathContainerService containerService
-        = new SDSPathContainerService();
+            = new SDSPathContainerService();
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -131,8 +134,8 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 final UserKeyPair pair;
                 if(null == options.getPassword()) {
                     pair = Crypto.generateUserKeyPair(session.requiredKeyPairVersion(), callback.prompt(
-                        bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                        LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
+                            bookmark, LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                            LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
                     ).getPassword());
                 }
                 else {
@@ -144,7 +147,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 options.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptedFileKey));
             }
             final DownloadShare share = new SharesApi(session.getClient()).createDownloadShare(
-                options.nodeId(fileid), StringUtils.EMPTY, null);
+                    options.nodeId(fileid), StringUtils.EMPTY, null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
@@ -152,16 +155,24 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             else {
                 final long expiry = share.getExpireAt().getMillis();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                    UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
+                        UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );
             }
-            return new DescriptiveUrl(
-                URI.create(String.format("%s://%s/#/public/shares-downloads/%s",
+            final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(session.softwareVersion().getRestApiVersion());
+            if(matcher.matches()) {
+                if(new Version(matcher.group(1)).compareTo(new Version("4.26")) < 0) {
+                    return new DescriptiveUrl(URI.create(String.format("%s://%s/#/public/shares-downloads/%s",
+                            bookmark.getProtocol().getScheme(),
+                            bookmark.getHostname(),
+                            share.getAccessKey())),
+                            DescriptiveUrl.Type.signed, help);
+                }
+            }
+            return new DescriptiveUrl(URI.create(String.format("%s://%s/public/download-shares/%s",
                     bookmark.getProtocol().getScheme(),
                     bookmark.getHostname(),
-                    share.getAccessKey())
-                ),
-                DescriptiveUrl.Type.signed, help);
+                    share.getAccessKey())),
+                    DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map(e);
@@ -183,7 +194,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             }
             final Host bookmark = session.getHost();
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
-                options.targetId(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
+                    options.targetId(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
@@ -191,16 +202,24 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             else {
                 final long expiry = share.getExpireAt().getMillis();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                    UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
+                        UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );
             }
-            return new DescriptiveUrl(
-                URI.create(String.format("%s://%s/#/public/shares-uploads/%s",
+            final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(session.softwareVersion().getRestApiVersion());
+            if(matcher.matches()) {
+                if(new Version(matcher.group(1)).compareTo(new Version("4.26")) < 0) {
+                    return new DescriptiveUrl(URI.create(String.format("%s://%s/#/public/shares-uploads/%s",
+                            bookmark.getProtocol().getScheme(),
+                            bookmark.getHostname(),
+                            share.getAccessKey())),
+                            DescriptiveUrl.Type.signed, help);
+                }
+            }
+            return new DescriptiveUrl(URI.create(String.format("%s://%s/public/upload-shares/%s",
                     bookmark.getProtocol().getScheme(),
                     bookmark.getHostname(),
-                    share.getAccessKey())
-                ),
-                DescriptiveUrl.Type.signed, help);
+                    share.getAccessKey())),
+                    DescriptiveUrl.Type.signed, help);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map(e);
