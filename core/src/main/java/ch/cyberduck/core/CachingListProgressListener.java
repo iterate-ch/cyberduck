@@ -15,8 +15,17 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class CachingListProgressListener extends DisabledListProgressListener {
+    private static final Logger log = LogManager.getLogger(CachingListProgressListener.class);
+
     private final Cache<Path> cache;
+    private final Map<Path, AttributedList<Path>> contents = new HashMap<>(1);
 
     public CachingListProgressListener(final Cache<Path> cache) {
         this.cache = cache;
@@ -24,6 +33,15 @@ public class CachingListProgressListener extends DisabledListProgressListener {
 
     @Override
     public void chunk(final Path folder, final AttributedList<Path> list) {
-        cache.put(folder, list);
+        contents.put(folder, list);
+    }
+
+    /**
+     * Add enumerated contents to cache
+     */
+    public void finish() {
+        for(Map.Entry<Path, AttributedList<Path>> entry : contents.entrySet()) {
+            cache.put(entry.getKey(), entry.getValue());
+        }
     }
 }

@@ -30,7 +30,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AttributesAdapter;
-import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
@@ -67,40 +66,6 @@ public class CachingAttributesFinderFeatureTest extends AbstractS3Test {
                 return PathAttributes.EMPTY;
             }
         }).find(test);
-    }
-
-    @Test
-    public void testAttributes() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final String name = new AlphanumericRandomStringService().random();
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path file = new S3TouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final CachingAttributesFinderFeature f = new CachingAttributesFinderFeature(cache, new S3AttributesFinderFeature(session));
-        final PathAttributes lookup = f.find(file);
-        assertNotSame(file.attributes(), lookup);
-        assertEquals(file.attributes(), lookup);
-        assertEquals(0L, lookup.getSize());
-        // Test cache
-        assertSame(lookup, new CachingAttributesFinderFeature(cache, new AttributesFinder() {
-            @Override
-            public PathAttributes find(final Path file, final ListProgressListener listener) {
-                fail("Expected cache hit");
-                return PathAttributes.EMPTY;
-            }
-        }).find(file));
-        assertTrue(cache.containsKey(file.getParent()));
-        // Test wrong type
-        try {
-            f.find(new Path(bucket, name, EnumSet.of(Path.Type.directory)));
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
-        // Test with no specific version id
-        assertSame(lookup, f.find(new Path(file).withAttributes(PathAttributes.EMPTY)));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

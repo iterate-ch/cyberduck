@@ -17,7 +17,20 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
+import ch.cyberduck.core.CachingFindFeature;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
@@ -240,9 +253,7 @@ public class UploadTransfer extends Transfer {
             final Path file = item.getKey().remote;
             final TransferStatus status = item.getValue();
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
-            final AttributedList<Path> list = new AttributedList<>(cache.get(file.getParent()));
-            list.add(mkdir.mkdir(file, status));
-            cache.put(file.getParent(), list);
+            mkdir.mkdir(file, status);
             status.setComplete();
         }
     }

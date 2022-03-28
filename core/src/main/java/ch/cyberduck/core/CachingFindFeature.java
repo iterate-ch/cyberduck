@@ -35,22 +35,26 @@ public class CachingFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(!file.isRoot()) {
-            if(cache.isValid(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
-                if(found != null) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found %s in cache", file));
-                    }
-                    return true;
-                }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Cached directory listing does not contain %s", file));
-                }
-                return false;
-            }
+        if(file.isRoot()) {
+            return delegate.find(file, listener);
         }
-        return delegate.find(file, new CachingListProgressListener(cache));
+        if(cache.isValid(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
+            if(found != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Found %s in cache", file));
+                }
+                return true;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cached directory listing does not contain %s", file));
+            }
+            return false;
+        }
+        final CachingListProgressListener caching = new CachingListProgressListener(cache);
+        final boolean found = delegate.find(file, caching);
+        caching.finish();
+        return found;
     }
 }
