@@ -30,6 +30,9 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.security.MessageDigest;
+import java.util.Collections;
+
+import static ch.cyberduck.core.eue.EueWriteFeature.RESOURCE_ID;
 
 public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
 
@@ -49,16 +52,19 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
     public EueWriteFeature.Chunk upload(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                         final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
+        final String resourceId;
         if(status.isExists()) {
-            uploadUri = EueUploadHelper.updateResource(session, fileid.getFileId(file, new DisabledListProgressListener()),
-                    UploadType.SIMPLE).getUploadURI();
+            resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            uploadUri = EueUploadHelper.updateResource(session, resourceId, UploadType.SIMPLE).getUploadURI();
         }
         else {
             final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = EueUploadHelper.
                     createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
                             status, UploadType.SIMPLE);
+            resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
             uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();
         }
+        status.setParameters(Collections.singletonMap(RESOURCE_ID, resourceId));
         status.setUrl(uploadUri);
         status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
         return super.upload(file, local, throttle, listener, status, callback);

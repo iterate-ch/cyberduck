@@ -175,8 +175,9 @@ public class EueCopyFeatureTest extends AbstractEueSessionTest {
         final byte[] random = RandomUtils.nextBytes(2547);
         IOUtils.write(random, local.getOutputStream(false));
         final TransferStatus status = new TransferStatus().withLength(random.length);
-        new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+        final EueWriteFeature.Chunk upload = new EueSingleUploadService(session, fileid, new EueWriteFeature(session, fileid)).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
+        assertNotNull(upload.getResourceId());
         local.delete();
         assertTrue(new EueFindFeature(session, fileid).find(test));
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

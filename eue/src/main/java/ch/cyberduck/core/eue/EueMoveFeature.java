@@ -56,7 +56,7 @@ public class EueMoveFeature implements Move {
         try {
             final EueApiClient client = new EueApiClient(session);
             if(status.isExists()) {
-                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(file, status), callback, delete);
+                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(target, status), callback, delete);
             }
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             if(!file.getParent().equals(target.getParent())) {

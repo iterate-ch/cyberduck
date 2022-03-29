@@ -56,6 +56,8 @@ import java.io.IOException;
 public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueWriteFeature.class);
 
+    public static final String RESOURCE_ID = "resourceId";
+
     private final EueSession session;
     private final EueResourceIdProvider fileid;
 
@@ -84,7 +86,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         }
         else {
             uploadUri = status.getUrl();
-            resourceId = status.getParameters().get(EueLargeUploadService.RESOURCE_ID);
+            resourceId = status.getParameters().get(RESOURCE_ID);
         }
         final HttpResponseOutputStream<Chunk> stream = this.write(file, status,
                 new DelayedHttpEntityCallable<Chunk>() {

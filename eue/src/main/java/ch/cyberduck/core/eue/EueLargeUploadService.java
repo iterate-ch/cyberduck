@@ -60,8 +60,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chunk, MessageDigest> {
     private static final Logger log = LogManager.getLogger(EueLargeUploadService.class);
 
-    public static final String RESOURCE_ID = "resourceId";
-
     private final EueSession session;
     private final Long chunksize;
     private final Integer concurrency;
@@ -165,7 +163,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             public EueWriteFeature.Chunk call() throws BackgroundException {
                 overall.validate();
                 final Map<String, String> parameters = new HashMap<>();
-                parameters.put(RESOURCE_ID, resourceId);
+                parameters.put(EueWriteFeature.RESOURCE_ID, resourceId);
                 final TransferStatus status = new TransferStatus()
                         .segment(true)
                         .withOffset(offset)

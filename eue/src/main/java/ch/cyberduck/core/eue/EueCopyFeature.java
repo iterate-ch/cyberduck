@@ -58,7 +58,7 @@ public class EueCopyFeature implements Copy {
         try {
             final EueApiClient client = new EueApiClient(session);
             if(status.isExists()) {
-                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
+                new EueTrashFeature(session, fileid).trash(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
