@@ -23,9 +23,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -53,8 +53,8 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testReadWrite() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final FileMetadata version;
@@ -102,8 +102,8 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final StoregateWriteFeature feature = new StoregateWriteFeature(session, nodeid);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(1);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -127,11 +127,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteWithLock() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-            new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -156,11 +156,11 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteWithLockAlreadyReleased() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
-            new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
@@ -178,17 +178,17 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteCancel() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
-                EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                        EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
 
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final BytecountStreamListener listener = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
-            public void validate() throws ConnectionCanceledException {
+            public void validate() throws TransferStatusCanceledException {
                 if(listener.getSent() >= 32768) {
-                    throw new TransferCanceledException();
+                    throw new TransferStatusCanceledException();
                 }
                 super.validate();
             }

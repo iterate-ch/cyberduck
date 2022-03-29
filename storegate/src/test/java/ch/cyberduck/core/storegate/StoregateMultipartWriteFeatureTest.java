@@ -20,9 +20,9 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -113,9 +113,9 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final BytecountStreamListener listener = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
-            public void validate() throws ConnectionCanceledException {
+            public void validate() throws TransferStatusCanceledException {
                 if(listener.getSent() >= 32768) {
-                    throw new TransferCanceledException();
+                    throw new TransferStatusCanceledException();
                 }
                 super.validate();
             }
