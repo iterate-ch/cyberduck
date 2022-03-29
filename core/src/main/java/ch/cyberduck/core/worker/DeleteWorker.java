@@ -121,9 +121,13 @@ public class DeleteWorker extends Worker<List<Path>> {
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                        file.getName()));
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
                 callback.delete(file);
+                if(file.isDirectory()) {
+                    if(delete.isRecursive()) {
+                        files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+                    }
+                }
             }
         });
         return new ArrayList<>(recursive.keySet());
