@@ -65,11 +65,10 @@ public interface TransferPathFilter {
      * Post processing of completed transfer.
      *
      * @param file     File
-     * @param options  Options
      * @param status   Transfer status
      * @param listener Progress listener
      */
-    void complete(Path file, Local local, TransferOptions options,
+    void complete(Path file, Local local,
                   TransferStatus status, ProgressListener listener) throws BackgroundException;
 
     TransferPathFilter withFinder(Find finder);

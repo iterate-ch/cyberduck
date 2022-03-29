@@ -18,7 +18,9 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
@@ -57,6 +59,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class DownloadTransfer extends Transfer {
     private static final Logger log = LogManager.getLogger(DownloadTransfer.class);
@@ -221,13 +224,14 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                    final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener progress, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         final Object id = feature.pre(Type.download, files, callback);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
-        super.pre(source, destination, files, listener, callback);
+        super.pre(source, destination, files, filter, error, progress, callback);
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
             final Path file = entry.getKey().remote;
             if(file.isDirectory()) {
@@ -239,18 +243,52 @@ public class DownloadTransfer extends Transfer {
                     continue;
                 }
                 final Local local = entry.getKey().local;
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), local.getName()));
-                new DefaultLocalDirectoryFeature().mkdir(local);
-                status.setComplete();
+                progress.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), local.getName()));
+                try {
+                    new DefaultLocalDirectoryFeature().mkdir(local);
+                    // Post process of file
+                    filter.complete(
+                            status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,
+                            status.getRename().local != null ? status.getRename().local : entry.getKey().local,
+                            status.complete(), progress);
+                }
+                catch(AccessDeniedException e) {
+                    if(error.prompt(entry.getKey(), status, e, files.size())) {
+                        // Continue
+                        log.warn(String.format("Ignore transfer failure %s", e));
+                    }
+                    else {
+                        throw new TransferCanceledException(e);
+                    }
+                }
             }
         }
     }
 
     @Override
-    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                     final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
-        feature.post(Type.download, files, callback);
-        super.post(source, destination, files, listener, callback);
+        try {
+            feature.post(Type.download, files, callback);
+            super.post(source, destination, files, error, listener, callback);
+        }
+        catch(BackgroundException e) {
+            final Optional<Map.Entry<TransferItem, TransferStatus>> entry = files.entrySet().stream().findFirst();
+            if(entry.isPresent()) {
+                final Map.Entry<TransferItem, TransferStatus> item = entry.get();
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Prompt with failure %s for item %s only", e, item.getKey()));
+                }
+                if(error.prompt(item.getKey(), item.getValue(), e, files.size())) {
+                    // Continue
+                    log.warn(String.format("Ignore transfer failure %s", e));
+                }
+                else {
+                    throw new TransferCanceledException(e);
+                }
+            }
+        }
     }
 
     @Override

@@ -14,7 +14,6 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
@@ -141,11 +140,11 @@ public class OverwriteFilterTest {
             }
         }, files, new UploadFilterOptions(host).withPermission(true).withTimestamp(true));
         final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
-        f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(source, null, status, new DisabledProgressListener());
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setComplete();
-        f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(source, null, status, new DisabledProgressListener());
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }
