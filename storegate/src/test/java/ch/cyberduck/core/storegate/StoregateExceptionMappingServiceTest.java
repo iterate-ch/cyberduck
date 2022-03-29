@@ -15,7 +15,10 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 
 import org.junit.Test;
@@ -30,8 +33,10 @@ public class StoregateExceptionMappingServiceTest {
 
     @Test
     public void testDisconnect() {
-        final StoregateExceptionMappingService service = new StoregateExceptionMappingService(new StoregateIdProvider(null));
+        final StoregateExceptionMappingService service = new StoregateExceptionMappingService(new StoregateIdProvider(
+                new StoregateSession(new Host(new StoregateProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager())
+        ));
         assertEquals(ConnectionRefusedException.class, service.map(
-            new ApiException(new ProcessingException(new SSLException(new SocketException("Operation timed out (Read failed)"))))).getClass());
+                new ApiException(new ProcessingException(new SSLException(new SocketException("Operation timed out (Read failed)"))))).getClass());
     }
 }

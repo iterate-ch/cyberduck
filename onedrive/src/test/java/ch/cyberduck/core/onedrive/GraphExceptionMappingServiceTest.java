@@ -15,10 +15,13 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.Test;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -31,11 +34,11 @@ public class GraphExceptionMappingServiceTest {
 
     @Test
     public void map() {
-        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(null)).map(
-            new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
-        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(null)).map(
-            new OneDriveAPIException("m", 404)) instanceof NotfoundException);
-        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(null)).map(
-            new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
+        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(new OneDriveSession(new Host(new OneDriveProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()))).map(
+                new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
+        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(new OneDriveSession(new Host(new OneDriveProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()))).map(
+                new OneDriveAPIException("m", 404)) instanceof NotfoundException);
+        assertTrue(new GraphExceptionMappingService(new GraphFileIdProvider(new OneDriveSession(new Host(new OneDriveProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()))).map(
+                new OneDriveAPIException("Couldn't connect to the OneDrive API due to a network error.", new SocketException())) instanceof ConnectionRefusedException);
     }
 }
