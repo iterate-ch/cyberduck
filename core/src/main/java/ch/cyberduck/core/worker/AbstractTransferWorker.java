@@ -216,7 +216,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                this.prepare(next.remote, next.local, new TransferStatus().exists(true), filter, action);
+                // Check if parent directory is found in set to determine status
+                this.prepare(next.remote, next.local, new TransferStatus()
+                        .exists(!transfer.getRoots().stream().anyMatch(f -> next.remote.isChild(f.remote))), filter, action);
             }
             this.await();
             meter.reset();
