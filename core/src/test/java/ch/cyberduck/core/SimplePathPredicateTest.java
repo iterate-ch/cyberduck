@@ -32,6 +32,18 @@ public class SimplePathPredicateTest {
         assertFalse(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
     }
 
+
+    @Test
+    public void testParent() {
+        final Path t = new Path("/a/g/f-1", EnumSet.of(Path.Type.file));
+        assertTrue(new SimplePathPredicate(t).isChild(new Path("/a/g", EnumSet.of(Path.Type.file))));
+        assertTrue(new SimplePathPredicate(t).isChild(new Path("/g", EnumSet.of(Path.Type.file))));
+        assertTrue(new SimplePathPredicate(t).isChild(new Path("/", EnumSet.of(Path.Type.file))));
+        assertFalse(new SimplePathPredicate(t).isChild(new Path("/a/g/f", EnumSet.of(Path.Type.file))));
+        assertFalse(new SimplePathPredicate(t).isChild(new Path("/a/g/f-12", EnumSet.of(Path.Type.file))));
+        assertFalse(new SimplePathPredicate(t).isChild(new Path("/a/g/a", EnumSet.of(Path.Type.file))));
+    }
+
     @Test
     public void testCollision() {
         final Path t = new Path("/d/2R", EnumSet.of(Path.Type.directory));
