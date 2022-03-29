@@ -52,7 +52,8 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
             try {
                 final Vault vault = listener.load(session, directory,
                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"), new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }
