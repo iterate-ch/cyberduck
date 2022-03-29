@@ -232,12 +232,16 @@ public class DownloadTransfer extends Transfer {
             final Path file = entry.getKey().remote;
             if(file.isDirectory()) {
                 final TransferStatus status = entry.getValue();
-                if(!status.isExists()) {
-                    final Local local = entry.getKey().local;
-                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), local.getName()));
-                    new DefaultLocalDirectoryFeature().mkdir(local);
-                    status.setComplete();
+                if(status.isExists()) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Skip existing directory %s", file));
+                    }
+                    continue;
                 }
+                final Local local = entry.getKey().local;
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), local.getName()));
+                new DefaultLocalDirectoryFeature().mkdir(local);
+                status.setComplete();
             }
         }
     }

@@ -252,6 +252,12 @@ public class UploadTransfer extends Transfer {
         for(Map.Entry<TransferItem, TransferStatus> item : directories) {
             final Path file = item.getKey().remote;
             final TransferStatus status = item.getValue();
+            if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Skip existing directory %s", file));
+                }
+                continue;
+            }
             status.validate();
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
             mkdir.mkdir(file, status);
