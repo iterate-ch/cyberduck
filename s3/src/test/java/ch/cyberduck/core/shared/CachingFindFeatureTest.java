@@ -16,7 +16,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -26,9 +25,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.s3.AbstractS3Test;
-import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -57,22 +54,6 @@ public class CachingFindFeatureTest extends AbstractS3Test {
         assertTrue(f.find(test));
         // Find without version id set in attributes
         assertTrue(f.find(new Path(test).withAttributes(PathAttributes.EMPTY)));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testFind() throws Exception {
-        final PathCache cache = new PathCache(1);
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertFalse(new CachingFindFeature(cache, new S3FindFeature(session)).find(file));
-        final Path test = new S3TouchFeature(session).touch(file, new TransferStatus());
-        // Find without version id set in attributes
-        assertTrue(new CachingFindFeature(cache, new S3FindFeature(session)).find(test));
-        assertTrue(new CachingFindFeature(cache, new S3FindFeature(session)).find(file));
-        // Test wrong type
-        assertFalse(new CachingFindFeature(cache, new S3FindFeature(session)).find(new Path(bucket, test.getName(), EnumSet.of(Path.Type.directory))));
-        assertEquals(test.attributes(), new CachingAttributesFinderFeature(cache, new S3AttributesFinderFeature(session)).find(test));
         assertTrue(new CachingFindFeature(cache, new Find() {
             @Override
             public boolean find(final Path file, final ListProgressListener listener) {
@@ -80,6 +61,6 @@ public class CachingFindFeatureTest extends AbstractS3Test {
                 return false;
             }
         }).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
