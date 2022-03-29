@@ -34,7 +34,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
-import java.util.EnumSet;
 
 public class EueDirectoryFeature implements Directory<Void> {
     private static final Logger log = LogManager.getLogger(EueDirectoryFeature.class);
@@ -68,7 +67,7 @@ public class EueDirectoryFeature implements Directory<Void> {
                 case HttpStatus.SC_CREATED:
                     final String resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
                     fileid.cache(folder, resourceId);
-                    return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
+                    return folder.withAttributes(
                             new EueAttributesAdapter().toAttributes(new EueWriteFeature.Chunk(resourceId, 0L, null)));
                 default:
                     log.warn(String.format("Failure %s creating folder %s", resourceCreationResponseEntry, folder));

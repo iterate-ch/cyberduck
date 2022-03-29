@@ -25,8 +25,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.EnumSet;
-
 public class BrickDirectoryFeature implements Directory<Void> {
 
     private final BrickSession session;
@@ -38,9 +36,9 @@ public class BrickDirectoryFeature implements Directory<Void> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            return new Path(folder.getAbsolute(), EnumSet.of(Path.Type.directory),
-                new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session))
-                    .postFoldersPath(StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER)))));
+            return folder.withAttributes(
+                    new BrickAttributesFinderFeature(session).toAttributes(new FoldersApi(new BrickApiClient(session))
+                            .postFoldersPath(StringUtils.removeStart(folder.getAbsolute(), String.valueOf(Path.DELIMITER)))));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot create folder {0}", e, folder);
