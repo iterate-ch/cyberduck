@@ -25,7 +25,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
-import ch.cyberduck.core.threading.TransferBackgroundActionState;
 
 public class SegmentRetryCallable<T> extends DefaultRetryCallable<T> {
 
@@ -36,14 +35,14 @@ public class SegmentRetryCallable<T> extends DefaultRetryCallable<T> {
                                 final StreamCancelation status,
                                 final BytecountStreamListener counter) {
         this(host, PreferencesFactory.get().getInteger("transfer.connection.retry"),
-            PreferencesFactory.get().getInteger("transfer.connection.retry.delay"), delegate, status, counter);
+                PreferencesFactory.get().getInteger("transfer.connection.retry.delay"), delegate, status, counter);
     }
 
     public SegmentRetryCallable(final Host host, final int retry, final int delay,
                                 final BackgroundExceptionCallable<T> delegate,
                                 final StreamCancelation status,
                                 final BytecountStreamListener counter) {
-        super(host, retry, delay, delegate, new DisabledProgressListener(), new TransferBackgroundActionState(status));
+        super(host, retry, delay, delegate, new DisabledProgressListener(), BackgroundActionState.running);
         this.counter = counter;
     }
 
