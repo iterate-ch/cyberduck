@@ -33,9 +33,11 @@ SetWindowLong
 SetWindowPos
 SetWindowPos
 SetWindowText
+SHAssocEnumHandlers
 SHGetFileInfo
 SHGFI_FLAGS
 SHOpenFolderAndSelectItems
+SHOpenWithDialog
 SHParseDisplayName
 TASKDIALOG_COMMON_BUTTON_FLAGS
 TASKDIALOG_ELEMENTS
