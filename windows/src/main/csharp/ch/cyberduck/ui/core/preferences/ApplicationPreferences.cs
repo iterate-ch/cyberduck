@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
             this.setDefault("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
 
-            this.setDefault("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
+            this.setDefault("factory.applicationfinder.class", typeof(ShellApplicationFinder).AssemblyQualifiedName);
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
             this.setDefault("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
             this.setDefault("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);
