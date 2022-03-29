@@ -41,7 +41,6 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
@@ -215,7 +214,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Path source, final Local n, final TransferOptions options, final TransferStatus status, final ProgressListener listener) {
+    public void complete(final Path source, final Local n, final TransferStatus status, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }

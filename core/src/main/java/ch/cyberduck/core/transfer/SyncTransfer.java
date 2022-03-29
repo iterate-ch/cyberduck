@@ -171,7 +171,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Map<TransferItem, TransferStatus> downloads = new HashMap<>();
         final Map<TransferItem, TransferStatus> uploads = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
@@ -184,8 +184,8 @@ public class SyncTransfer extends Transfer {
                     break;
             }
         }
-        download.pre(source, destination, downloads, listener, callback);
-        upload.pre(source, destination, uploads, listener, callback);
+        download.pre(source, destination, downloads, filter, error, listener, callback);
+        upload.pre(source, destination, uploads, filter, error, listener, callback);
     }
 
     @Override

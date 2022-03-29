@@ -48,7 +48,6 @@ import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.AutoTransferConnectionLimiter;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -256,8 +255,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
      */
     @Override
     public void complete(final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status,
-                         final ProgressListener listener) throws BackgroundException {
+                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

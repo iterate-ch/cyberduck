@@ -16,7 +16,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
@@ -171,7 +170,7 @@ public class RenameExistingFilterTest {
         f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
         // Complete
         status.setComplete();
-        f.complete(file, new NullLocal("t"), new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(file, new NullLocal("t"), status, new DisabledProgressListener());
         assertTrue(found.get());
         assertEquals(2, moved.get());
     }

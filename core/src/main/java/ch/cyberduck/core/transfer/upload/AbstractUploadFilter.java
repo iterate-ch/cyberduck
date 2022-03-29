@@ -50,7 +50,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -306,8 +305,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public void complete(final Path file, final Local local,
-                         final TransferOptions options, final TransferStatus status,
-                         final ProgressListener listener) throws BackgroundException {
+                         final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
@@ -317,7 +315,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                            file.getName(), status.getPermission()));
+                                file.getName(), status.getPermission()));
                         feature.setUnixPermission(file, status.getPermission());
                     }
                     catch(BackgroundException e) {

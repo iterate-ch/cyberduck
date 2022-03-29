@@ -305,10 +305,13 @@ public abstract class Transfer implements Serializable {
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
      * @param files       Files pending transfer
+     * @param filter
+     * @param error       Error callback
      * @param listener    Listener
      * @param callback    Prompt
      */
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                    final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
             try {
                 switch(this.getType()) {
@@ -331,10 +334,12 @@ public abstract class Transfer implements Serializable {
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
      * @param files       Files transfered
+     * @param error       Error callback
      * @param listener    Listener
      * @param callback    Prompt
      */
-    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                     final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
             final Map.Entry<Local, Object> entry = iter.next();
             switch(this.getType()) {

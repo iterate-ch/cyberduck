@@ -203,7 +203,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> download = source.getFeature(Bulk.class);
         {
             final Object id = download.pre(Type.download, files, callback);
@@ -225,7 +225,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> download = source.getFeature(Bulk.class);
         {
             download.post(Type.download, files, callback);

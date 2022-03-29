@@ -180,7 +180,7 @@ public class ConcurrentTransferWorkerTest {
                     }
 
                     @Override
-                    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) {
+                    public void complete(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
                         assertTrue(transferred.contains(file));
                     }
                 };
