@@ -113,6 +113,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 @Override
                 public void validate() throws ConnectionCanceledException {
                     if(cancel.isCanceled()) {
+                        log.warn(String.format("Abort pausing retry after failure %s", failure));
                         throw new ConnectionCanceledException();
                     }
                 }
