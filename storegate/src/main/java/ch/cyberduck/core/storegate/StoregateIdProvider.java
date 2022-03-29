@@ -38,6 +38,7 @@ public class StoregateIdProvider extends CachingFileIdProvider implements FileId
     private final StoregateSession session;
 
     public StoregateIdProvider(final StoregateSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 

@@ -29,9 +29,19 @@ public abstract class CachingFileIdProvider implements FileIdProvider {
     private final LRUCache<SimplePathPredicate, String> cache
             = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
+    private final Protocol.Case sensitivity;
+
+    public CachingFileIdProvider(final Protocol.Case sensitivity) {
+        this.sensitivity = sensitivity;
+    }
+
     @Override
     public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return cache.get(new SimplePathPredicate(file));
+        return cache.get(this.toPredicate(file));
+    }
+
+    private SimplePathPredicate toPredicate(final Path file) {
+        return sensitivity == Protocol.Case.sensitive ? new CaseSensitivePathPredicate(file) : new CaseInsensitivePathPredicate(file);
     }
 
     /**
@@ -46,18 +56,18 @@ public abstract class CachingFileIdProvider implements FileIdProvider {
             log.debug(String.format("Cache %s for file %s", id, file));
         }
         if(null == id) {
-            cache.remove(new SimplePathPredicate(file));
+            cache.remove(this.toPredicate(file));
             file.attributes().setFileId(null);
             if(file.isDirectory()) {
                 for(SimplePathPredicate entry : cache.asMap().keySet()) {
-                    if(entry.isChild(file)) {
+                    if(entry.isChild(this.toPredicate(file))) {
                         cache.remove(entry);
                     }
                 }
             }
         }
         else {
-            cache.put(new SimplePathPredicate(file), id);
+            cache.put(this.toPredicate(file), id);
             file.attributes().setFileId(id);
         }
         return id;

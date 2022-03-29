@@ -20,45 +20,17 @@ import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
-
-public final class CaseInsensitivePathPredicate implements CacheReference<Path> {
+public final class CaseInsensitivePathPredicate extends SimplePathPredicate {
 
     private static final UnicodeNormalizer normalizer = new NFCNormalizer();
 
-    private final Path.Type type;
-    private final String path;
-
     public CaseInsensitivePathPredicate(final Path file) {
-        this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
-        this.path = StringUtils.lowerCase(normalizer.normalize(file.getAbsolute()).toString());
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if(null == o) {
-            return false;
-        }
-        if(o instanceof CacheReference) {
-            if(this.hashCode() == o.hashCode()) {
-                return this.toString().equals(o.toString());
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, path);
+        super(file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory,
+                StringUtils.lowerCase(normalizer.normalize(file.getAbsolute()).toString()));
     }
 
     @Override
     public boolean test(final Path test) {
         return this.equals(new CaseInsensitivePathPredicate(test));
-    }
-
-    @Override
-    public String toString() {
-        return "[" + type + "]" + "-" + path;
     }
 }

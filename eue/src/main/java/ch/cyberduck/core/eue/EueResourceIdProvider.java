@@ -46,6 +46,7 @@ public class EueResourceIdProvider extends CachingFileIdProvider implements File
     private final EueSession session;
 
     public EueResourceIdProvider(final EueSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 

@@ -55,6 +55,7 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
     private final SDSSession session;
 
     public SDSNodeIdProvider(final SDSSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 
@@ -99,7 +100,8 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
                         String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
                         null, offset, chunksize, null);
                 for(Node node : nodes.getItems()) {
-                    if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
+                    // Case insensitive
+                    if(node.getName().equalsIgnoreCase(normalizer.normalize(file.getName()).toString())) {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Return node %s for file %s", node.getId(), file));
                         }

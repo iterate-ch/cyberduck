@@ -36,6 +36,7 @@ public class GraphFileIdProvider extends CachingFileIdProvider implements FileId
     private final GraphSession session;
 
     public GraphFileIdProvider(final GraphSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 

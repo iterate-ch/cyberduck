@@ -35,6 +35,7 @@ public class BoxFileidProvider extends CachingFileIdProvider implements FileIdPr
     private final BoxSession session;
 
     public BoxFileidProvider(final BoxSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 

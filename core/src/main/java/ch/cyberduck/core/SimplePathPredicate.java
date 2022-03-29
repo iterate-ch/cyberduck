@@ -65,15 +65,15 @@ public class SimplePathPredicate implements CacheReference<Path> {
      * @param directory Parent directory
      * @return True if this is child of parameter based on path comparison
      */
-    public boolean isChild(final Path directory) {
-        if(directory.isRoot()) {
+    public boolean isChild(final SimplePathPredicate directory) {
+        if(directory.path.equals(String.valueOf(Path.DELIMITER))) {
             return true;
         }
         if(StringUtils.equals(PathNormalizer.parent(path, Path.DELIMITER),
-                PathNormalizer.parent(new SimplePathPredicate(directory).path, Path.DELIMITER))) {
+                PathNormalizer.parent(directory.path, Path.DELIMITER))) {
             return false;
         }
-        return StringUtils.startsWith(path, PathNormalizer.parent(new SimplePathPredicate(directory).path, Path.DELIMITER));
+        return StringUtils.startsWith(path, PathNormalizer.parent(directory.path, Path.DELIMITER));
     }
 
     @Override

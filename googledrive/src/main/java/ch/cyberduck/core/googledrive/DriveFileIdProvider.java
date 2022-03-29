@@ -38,6 +38,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
     private final DriveSession session;
 
     public DriveFileIdProvider(final DriveSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 

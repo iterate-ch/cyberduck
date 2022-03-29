@@ -42,6 +42,7 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
     private final B2Session session;
 
     public B2VersionIdProvider(final B2Session session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 
