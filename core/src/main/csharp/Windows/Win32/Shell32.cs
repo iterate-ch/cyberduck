@@ -1,4 +1,6 @@
-﻿using Windows.Win32.Foundation;
+﻿using System;
+using System.Runtime.InteropServices;
+using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
@@ -22,7 +24,7 @@ namespace Windows.Win32
         /// <inheritdoc cref="SHGetFileInfo(PCWSTR, FILE_FLAGS_AND_ATTRIBUTES, SHFILEINFOW*, uint, SHGFI_FLAGS)"/>
         public static unsafe nuint SHGetFileInfo(string pszPath, FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in SHFILEINFOW sfi, SHGFI_FLAGS uFlags)
         {
-            fixed(SHFILEINFOW* psfiLocal = &sfi)
+            fixed (SHFILEINFOW* psfiLocal = &sfi)
             fixed (char* pszPathLocal = pszPath)
             {
                 return SHGetFileInfo(pszPathLocal, dwFileAttributes, psfiLocal, (uint)SizeOf<SHFILEINFOW>(), uFlags);
@@ -38,6 +40,16 @@ namespace Windows.Win32
             {
                 return SHParseDisplayName(pszNameLocal, pbc, (ITEMIDLIST**)ppidlLocal, sfgaoIn, psfgaOutLocal);
             }
+        }
+
+        /// <inheritdoc cref="SHCreateAssociationRegistration(global::System.Guid*, void**)"/>
+        public static unsafe HRESULT SHCreateAssociationRegistration<T>(out T ppv)
+        {
+            Guid riid = typeof(T).GUID;
+            void* ppvLocal;
+            HRESULT __result = SHCreateAssociationRegistration(&riid, &ppvLocal);
+            ppv = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvLocal);
+            return __result;
         }
     }
 }
