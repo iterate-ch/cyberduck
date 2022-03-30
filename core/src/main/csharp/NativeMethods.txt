@@ -15,6 +15,7 @@ GetTokenInformation
 GetWindowLong
 GetWindowLongPtr
 HWND_TOPMOST
+IApplicationAssociationRegistration
 IAssocHandler
 IAssocHandlerInvoker
 IDataObject
@@ -31,6 +32,8 @@ SetWindowLong
 SetWindowPos
 SetWindowText
 SHAssocEnumHandlers
+SHCreateAssociationRegistration
+Shell_GetCachedImageIndex
 SHGetFileInfo
 SHGFI_FLAGS
 SHOpenFolderAndSelectItems

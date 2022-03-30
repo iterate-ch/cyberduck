@@ -26,6 +26,17 @@ namespace Windows.Win32
             return ppszLocal.ToString();
         }
 
+        /// <inheritdoc cref="winmdroot.UI.Shell.IAssocHandler.GetIconLocation(Foundation.PWSTR*, int*)"/>
+		public static unsafe string GetIconLocation(this winmdroot.UI.Shell.IAssocHandler @this, out int pIndex)
+        {
+            fixed (int* pIndexLocal = &pIndex)
+            {
+                winmdroot.Foundation.PWSTR ppszLocal = new();
+                @this.GetIconLocation(&ppszLocal, pIndexLocal);
+                return ppszLocal.ToString();
+            }
+        }
+
         /// <inheritdoc cref="winmdroot.UI.Shell.IEnumAssocHandlers.Next(uint, winmdroot.UI.Shell.IAssocHandler[], uint*)"/>
 		public static unsafe int Next(this winmdroot.UI.Shell.IEnumAssocHandlers @this, winmdroot.UI.Shell.IAssocHandler[] rgelt)
         {
