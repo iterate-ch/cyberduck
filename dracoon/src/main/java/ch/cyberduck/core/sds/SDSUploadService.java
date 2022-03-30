@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.Checksum;
@@ -251,7 +252,7 @@ public class SDSUploadService {
                 if(System.currentTimeMillis() - start > timeout) {
                     log.error(String.format("Cancel polling for upload status of %s after %dms (%d)",
                             file, System.currentTimeMillis() - start, polls.get()));
-                    failure.set(new TransferCanceledException("Cancel polling for upload status"));
+                    failure.set(new TransferCanceledException(new ConnectionTimeoutException(file.getAbsolute())));
                     signal.countDown();
                 }
             }
