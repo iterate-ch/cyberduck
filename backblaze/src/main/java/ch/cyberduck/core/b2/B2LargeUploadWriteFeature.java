@@ -122,6 +122,10 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 if(null != canceled.get()) {
                     throw canceled.get();
                 }
+                final Map<String, String> fileinfo = new HashMap<>(overall.getMetadata());
+                if(null != overall.getTimestamp()) {
+                    fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
+                }
                 if(0 == partNumber && len < new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
                     final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
@@ -130,7 +134,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                             containerService.getKey(file),
                             new ByteArrayEntity(content, off, len),
                             checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                            overall.getMime(), overall.getMetadata());
+                            overall.getMime(), fileinfo);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Upload finished for %s with response %s", file, response));
                     }
@@ -140,10 +144,6 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 }
                 else {
                     if(0 == partNumber) {
-                        final Map<String, String> fileinfo = new HashMap<>(overall.getMetadata());
-                        if(null != overall.getTimestamp()) {
-                            fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(overall.getTimestamp()));
-                        }
                         startLargeFileResponse.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
                                 containerService.getKey(file), overall.getMime(), fileinfo));
                         if(log.isDebugEnabled()) {
