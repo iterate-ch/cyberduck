@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Core.Local
                 return shellHandler;
             }
             HRESULT result;
-            if ((result = SHAssocEnumHandlers(filename, ASSOC_FILTER_NONE, out var enumHandlers)).Failed)
+            if ((result = SHAssocEnumHandlers(filename, ASSOC_FILTER_RECOMMENDED, out var enumHandlers)).Failed)
             {
                 Log.warn("find: Failure getting IEnumAssocHandler", Marshal.GetExceptionForHR(result.Value));
                 return Application.notfound;
@@ -40,12 +40,9 @@ namespace Ch.Cyberduck.Core.Local
             {
                 while (enumHandlers.Next(passocHandler) > 0)
                 {
-                    if (/* HACK assocHandler.IsRecommended() */ true)
-                    {
-                        ShellApplication app = new(assocHandler);
-                        assocHandlerCache.put(filename, app);
-                        return app;
-                    }
+                    ShellApplication app = new(assocHandler);
+                    assocHandlerCache.put(filename, app);
+                    return app;
                 }
             }
             catch (Exception e)
@@ -58,9 +55,9 @@ namespace Ch.Cyberduck.Core.Local
         public List findAll(string filename)
         {
             filename = Path.GetExtension(filename);
-            if (assocHandlerListCache.get(filename) is not List<Application> map)
+            if (assocHandlerListCache.get(filename) is not List<ShellApplication> map)
             {
-                map = new List<Application>();
+                map = new List<ShellApplication>();
                 assocHandlerListCache.put(filename, map);
 
                 HRESULT result;
@@ -79,6 +76,7 @@ namespace Ch.Cyberduck.Core.Local
                     {
                         Log.warn("findAll: Failure enumerating IEnumAssocHandler", e);
                     }
+                    map.Sort();
                 }
                 else
                 {
@@ -96,14 +94,19 @@ namespace Ch.Cyberduck.Core.Local
 
         public bool isInstalled(Application application) => application is ShellApplication;
 
-        public class ShellApplication : Application
+        public class ShellApplication : Application, IComparable<ShellApplication>
         {
             private readonly IAssocHandler handler;
+
+            public bool IsRecommended { get; }
 
             public ShellApplication(in IAssocHandler handler) : base(handler.GetName(), handler.GetUIName())
             {
                 this.handler = handler;
+                IsRecommended = handler.IsRecommended().Succeeded;
             }
+
+            public int CompareTo(ShellApplication other) => IsRecommended == other.IsRecommended ? 0 : other.IsRecommended ? 1 : -1;
         }
     }
 }

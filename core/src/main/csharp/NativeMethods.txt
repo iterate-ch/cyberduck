@@ -1,9 +1,5 @@
-﻿AssocCreate
-ASSOCDATA
-ASSOCF_INIT_DEFAULTTOSTAR
+﻿ASSOCF_INIT_DEFAULTTOSTAR
 ASSOCF_NOTRUNCATE
-ASSOCKEY
-ASSOCSTR
 CLSID_QueryAssociations
 CoTaskMemFree
 CRED_FLAGS
@@ -19,6 +15,9 @@ GetTokenInformation
 GetWindowLong
 GetWindowLongPtr
 HWND_TOPMOST
+IAssocHandler
+IAssocHandlerInvoker
+IDataObject
 ILCreateFromPath
 IQueryAssociations
 MESSAGEBOX_RESULT
