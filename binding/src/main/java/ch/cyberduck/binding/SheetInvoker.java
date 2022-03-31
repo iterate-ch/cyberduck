@@ -150,10 +150,10 @@ public class SheetInvoker extends ProxyController {
                 public void run() {
                     //Invoke again on main thread
                     if(controller != null) {
-                        controller.window().orderOut(null);
+                        application.endSheet(controller.window());
                     }
                     else {
-                        window.orderOut(null);
+                        application.endSheet(window);
                     }
                 }
             }, true);
