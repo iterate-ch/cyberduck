@@ -38,7 +38,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
     public delegate bool RenamePathname(Path path, string newName);
 
-    public delegate void EditWithHandler(String exe);
+    public delegate void EditWithHandler(Application app);
 
     public delegate IList<Application> EditorsHandler();
 
