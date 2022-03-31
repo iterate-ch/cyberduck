@@ -10,11 +10,17 @@ using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.Shell.Common;
+using Windows.Win32.System.Com;
+using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Shell.ASSOC_FILTER;
 using static Windows.Win32.UI.Shell.ASSOCIATIONTYPE;
 using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
 using static Windows.Win32.UI.Shell.ASSOCSTR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Local
 {
@@ -117,7 +123,7 @@ namespace Ch.Cyberduck.Core.Local
 
         public Application getDescription(string filename) => Application.notfound;
 
-        public bool isInstalled(Application application) => application is ShellApplication;
+        public bool isInstalled(Application application) => application is IInvokeApplication;
 
         private static unsafe bool GetString(IQueryAssociations @this, ASSOCSTR part, out string value)
         {
@@ -149,7 +155,9 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
-        public class ProgIdApplication : Application
+        private interface IInvokeApplication { }
+
+        public class ProgIdApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
             private readonly string defaultIcon;
 
@@ -157,15 +165,22 @@ namespace Ch.Cyberduck.Core.Local
             {
                 this.defaultIcon = defaultIcon;
             }
+
+            public void Launch(ch.cyberduck.core.Local local)
+            {
+                throw new NotImplementedException();
+            }
         }
 
-        public class ShellApplication : Application, IComparable<ShellApplication>
+        public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication, IComparable<ShellApplication>
         {
             private readonly int cachedImageIndex;
             private readonly IAssocHandler handler;
+            private readonly SynchronizationContext sync;
 
             public ShellApplication(in IAssocHandler handler) : base(handler.GetName(), handler.GetUIName())
             {
+                sync = SynchronizationContext.Current;
                 this.handler = handler;
                 IsRecommended = handler.IsRecommended().Succeeded;
                 var path = handler.GetIconLocation(out var index);
@@ -175,6 +190,25 @@ namespace Ch.Cyberduck.Core.Local
             public bool IsRecommended { get; }
 
             public int CompareTo(ShellApplication other) => IsRecommended == other.IsRecommended ? 0 : other.IsRecommended ? 1 : -1;
+
+            public void Launch(ch.cyberduck.core.Local local)
+            {
+                if (SynchronizationContext.Current == null)
+                {
+                    sync.Send(d => Launch(local), null);
+                    return;
+                }
+
+                using PIDLIST_ABSOLUTEHandle pidl = ILCreateFromPath2(local.getAbsolute());
+                if (!pidl)
+                {
+                    return;
+                }
+
+                SHCreateItemFromIDList(pidl.Value, out IShellItem ppv);
+                ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
+                handler.Invoke(pdo);
+            }
         }
     }
 }
