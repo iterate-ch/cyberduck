@@ -2292,18 +2292,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_EditEvent(string exe)
+        private void View_EditEvent(Application app)
         {
             foreach (Path selected in SelectedPaths)
             {
-                if (Utils.IsBlank(exe))
-                {
-                    edit(selected);
-                }
-                else
-                {
-                    edit(new Application(exe, null), selected);
-                }
+                edit(app, selected);
             }
         }
 
