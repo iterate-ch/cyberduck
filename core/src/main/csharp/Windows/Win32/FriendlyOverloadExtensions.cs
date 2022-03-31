@@ -10,6 +10,28 @@ namespace Windows.Win32
 
     public static partial class FriendlyOverloadExtensions
     {
+        /// <inheritdoc cref="winmdroot.UI.Shell.IShellItem.BindToHandler(winmdroot.System.Com.IBindCtx, global::System.Guid*, global::System.Guid*, out object)"/>
+		public static unsafe void BindToHandler<T>(this winmdroot.UI.Shell.IShellItem @this, winmdroot.System.Com.IBindCtx pbc, in global::System.Guid bhid, out T ppv)
+        {
+            global::System.Guid riid = typeof(T).GUID;
+            fixed (global::System.Guid* bhidLocal = &bhid)
+            {
+                @this.BindToHandler(pbc, bhidLocal, &riid, out object ppvLocal);
+                ppv = (T)ppvLocal;
+            }
+        }
+
+        /// <inheritdoc cref="winmdroot.UI.Shell.IAssocHandler.GetIconLocation(Foundation.PWSTR*, int*)"/>
+		public static unsafe string GetIconLocation(this winmdroot.UI.Shell.IAssocHandler @this, out int pIndex)
+        {
+            fixed (int* pIndexLocal = &pIndex)
+            {
+                winmdroot.Foundation.PWSTR ppszLocal = new();
+                @this.GetIconLocation(&ppszLocal, pIndexLocal);
+                return ppszLocal.ToString();
+            }
+        }
+
         /// <inheritdoc cref="winmdroot.UI.Shell.IAssocHandler.GetName(winmdroot.Foundation.PWSTR*)"/>
 		public static unsafe string GetName(this winmdroot.UI.Shell.IAssocHandler @this)
         {
@@ -24,17 +46,6 @@ namespace Windows.Win32
             winmdroot.Foundation.PWSTR ppszLocal = new();
             @this.GetUIName(&ppszLocal);
             return ppszLocal.ToString();
-        }
-
-        /// <inheritdoc cref="winmdroot.UI.Shell.IAssocHandler.GetIconLocation(Foundation.PWSTR*, int*)"/>
-		public static unsafe string GetIconLocation(this winmdroot.UI.Shell.IAssocHandler @this, out int pIndex)
-        {
-            fixed (int* pIndexLocal = &pIndex)
-            {
-                winmdroot.Foundation.PWSTR ppszLocal = new();
-                @this.GetIconLocation(&ppszLocal, pIndexLocal);
-                return ppszLocal.ToString();
-            }
         }
 
         /// <inheritdoc cref="winmdroot.UI.Shell.IEnumAssocHandlers.Next(uint, winmdroot.UI.Shell.IAssocHandler[], uint*)"/>
