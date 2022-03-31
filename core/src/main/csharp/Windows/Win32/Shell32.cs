@@ -21,6 +21,29 @@ namespace Windows.Win32
             }
         }
 
+        /// <inheritdoc cref="SHCreateAssociationRegistration(global::System.Guid*, void**)"/>
+        public static unsafe HRESULT SHCreateAssociationRegistration<T>(out T ppv)
+        {
+            Guid riid = typeof(T).GUID;
+            void* ppvLocal;
+            HRESULT __result = SHCreateAssociationRegistration(&riid, &ppvLocal);
+            ppv = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvLocal);
+            return __result;
+        }
+
+        /// <inheritdoc cref="SHCreateItemFromIDList(winmdroot.UI.Shell.Common.ITEMIDLIST*, global::System.Guid*, void**)"/>
+        public static unsafe HRESULT SHCreateItemFromIDList<T>(in ITEMIDLIST pidl, out T ppv)
+        {
+            Guid riid = typeof(T).GUID;
+            void* ppvLocal;
+            fixed (ITEMIDLIST* pidlLocal = &pidl)
+            {
+                HRESULT __result = SHCreateItemFromIDList(pidlLocal, &riid, &ppvLocal);
+                ppv = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvLocal);
+                return __result;
+            }
+        }
+
         /// <inheritdoc cref="SHGetFileInfo(PCWSTR, FILE_FLAGS_AND_ATTRIBUTES, SHFILEINFOW*, uint, SHGFI_FLAGS)"/>
         public static unsafe nuint SHGetFileInfo(string pszPath, FILE_FLAGS_AND_ATTRIBUTES dwFileAttributes, in SHFILEINFOW sfi, SHGFI_FLAGS uFlags)
         {
@@ -40,16 +63,6 @@ namespace Windows.Win32
             {
                 return SHParseDisplayName(pszNameLocal, pbc, (ITEMIDLIST**)ppidlLocal, sfgaoIn, psfgaOutLocal);
             }
-        }
-
-        /// <inheritdoc cref="SHCreateAssociationRegistration(global::System.Guid*, void**)"/>
-        public static unsafe HRESULT SHCreateAssociationRegistration<T>(out T ppv)
-        {
-            Guid riid = typeof(T).GUID;
-            void* ppvLocal;
-            HRESULT __result = SHCreateAssociationRegistration(&riid, &ppvLocal);
-            ppv = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvLocal);
-            return __result;
         }
     }
 }

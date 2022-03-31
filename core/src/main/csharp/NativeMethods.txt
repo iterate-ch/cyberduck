@@ -1,5 +1,6 @@
 ﻿ASSOCF_INIT_DEFAULTTOSTAR
 ASSOCF_NOTRUNCATE
+BHID_DataObject
 CLSID_QueryAssociations
 CoTaskMemFree
 CRED_FLAGS
@@ -22,6 +23,7 @@ IAssocHandlerInvoker
 IDataObject
 ILCreateFromPath
 IQueryAssociations
+IShellItem
 MESSAGEBOX_RESULT
 PBST_ERROR
 PBST_NORMAL
@@ -35,6 +37,7 @@ SetWindowPos
 SetWindowText
 SHAssocEnumHandlers
 SHCreateAssociationRegistration
+SHCreateItemFromIDList
 Shell_GetCachedImageIndex
 SHGetFileInfo
 SHGFI_FLAGS
