@@ -33,6 +33,7 @@
     <PackageReference Update="ReactiveUI.WPF" Version="17.1.50" />
     <PackageReference Update="StructureMap" Version="2.6.4.1" />
     <PackageReference Update="System.Memory" Version="4.5.4" />
+    <PackageReference Update="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
     <PackageReference Update="WindowsAPICodePack-Core" Version="1.1.2" />
     <PackageReference Update="WindowsAPICodePack-Shell" Version="1.1.1" />
 
