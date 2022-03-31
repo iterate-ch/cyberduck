@@ -59,13 +59,14 @@ public class EueResourceIdProviderTest extends AbstractEueSessionTest {
     public void testFindCaseInsensitive() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        assertEquals(folder.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder, new DisabledListProgressListener()));
-        assertEquals(folder.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.lowerCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
-        assertEquals(folder.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.upperCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
+        assertEquals(folder.attributes().getFileId(), fileid.getFileId(folder, new DisabledListProgressListener()));
+        assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
+        assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
         final Path file = createFile(fileid, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
-        assertEquals(file.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(file, new DisabledListProgressListener()));
-        assertEquals(file.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.lowerCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
-        assertEquals(file.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(new Path(StringUtils.upperCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
+        fileid.clear();
+        assertEquals(file.attributes().getFileId(), fileid.getFileId(file, new DisabledListProgressListener()));
+        assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
+        assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
