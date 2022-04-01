@@ -837,6 +837,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("openstack.upload.largeobject.cleanup", String.valueOf(true));
 
         this.setDefault("openstack.delete.multiple.partition", String.valueOf(10000));
+        this.setDefault("openstack.delete.largeobject.segments", String.valueOf(true));
 
         this.setDefault("googledrive.list.limit", String.valueOf(1000));
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));

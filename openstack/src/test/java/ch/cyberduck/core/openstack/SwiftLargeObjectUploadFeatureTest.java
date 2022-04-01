@@ -220,6 +220,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(1048576L, segments.get(1).attributes().getSize());
         assertEquals(1L, segments.get(2).attributes().getSize());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(0, new SwiftSegmentService(session).list(test).size());
         local.delete();
     }
 }
