@@ -47,19 +47,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class EueUploadHelper {
     private static final Logger log = LogManager.getLogger(EueUploadHelper.class);
 
-    private static final String refId = "X-UI-CDOS-RefId";
-    private static final String storeId = "X-UI-CDOS-StoreId";
+    private static final String CDOS_REF_ID = "X-UI-CDOS-RefId";
+    private static final String CDOS_STORE_ID = "X-UI-CDOS-StoreId";
 
     /**
      * Read response headers from segment upload
      */
     public static UploadResponse parseUploadResponse(final HttpResponse response) throws IOException {
         final UploadResponse uploadResponse = new UploadResponse();
-        if(response.containsHeader(storeId)) {
-            uploadResponse.setStoreId(response.getFirstHeader(storeId).getValue());
+        if(response.containsHeader(CDOS_STORE_ID)) {
+            uploadResponse.setStoreId(response.getFirstHeader(CDOS_STORE_ID).getValue());
         }
-        if(response.containsHeader(refId)) {
-            uploadResponse.setReferenceId(response.getFirstHeader(refId).getValue());
+        if(response.containsHeader(CDOS_REF_ID)) {
+            uploadResponse.setReferenceId(response.getFirstHeader(CDOS_REF_ID).getValue());
         }
         else {
             return parseUploadCompletedResponse(response);
