@@ -25,6 +25,8 @@ import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.proxy.Proxy;
@@ -53,17 +55,18 @@ public class FreenetSession extends DAVSession {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
         configuration.setUserAgent(new FreenetUserAgentProvider().get());
-        configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                try {
-                    request.addHeader(new BasicHeader("X-Freenet-Insid", new MD5ChecksumCompute().compute(new MacUniqueIdService().getUUID()).hash));
+        try {
+            final String hash = new MD5ChecksumCompute().compute(new MacUniqueIdService().getUUID()).hash;
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    request.addHeader(new BasicHeader("X-Freenet-Insid", hash));
                 }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure %s retrieving MAC address", e));
-                }
-            }
-        });
+            });
+        }
+        catch(LocalAccessDeniedException | ChecksumException e) {
+            log.warn(String.format("Failure %s retrieving MAC address", e));
+        }
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
