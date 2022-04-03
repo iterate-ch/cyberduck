@@ -42,6 +42,8 @@ public class SimplePathPredicateTest {
         assertFalse(new SimplePathPredicate(t).isChild(new SimplePathPredicate(new Path("/a/g/f", EnumSet.of(Path.Type.file)))));
         assertFalse(new SimplePathPredicate(t).isChild(new SimplePathPredicate(new Path("/a/g/f-12", EnumSet.of(Path.Type.file)))));
         assertFalse(new SimplePathPredicate(t).isChild(new SimplePathPredicate(new Path("/a/g/a", EnumSet.of(Path.Type.file)))));
+        assertFalse(new SimplePathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))
+                .isChild(new SimplePathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test
