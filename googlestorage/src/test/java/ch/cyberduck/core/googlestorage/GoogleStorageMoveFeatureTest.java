@@ -17,12 +17,14 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -47,6 +49,8 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
+        assertEquals(1, new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener())
+                .filter(new SearchFilter(renamed.getName())).size());
         final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("set", metadata.get("cyberduck"));

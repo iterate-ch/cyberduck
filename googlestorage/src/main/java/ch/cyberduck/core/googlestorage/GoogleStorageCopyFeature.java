@@ -53,14 +53,16 @@ public class GoogleStorageCopyFeature implements Copy {
             }
             final StorageObject storageObject = request.execute();
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
-                containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
-            final RewriteResponse response = rewrite.execute();
-            listener.sent(status.getLength());
-            // Include this field (from the previous rewrite response) on each rewrite request after the first one,
-            // until the rewrite response 'done' flag is true.
-            while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {
-                log.warn(String.format("Pending rewrite for object %s", storageObject));
+                    containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
+            RewriteResponse response;
+            do {
+                response = rewrite.execute();
+                // Include this field (from the previous rewrite response) on each rewrite request after the first one,
+                // until the rewrite response 'done' flag is true.
+                rewrite.setRewriteToken(response.getRewriteToken());
             }
+            while(!response.getDone());
+            listener.sent(status.getLength());
             return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
         }
         catch(IOException e) {
