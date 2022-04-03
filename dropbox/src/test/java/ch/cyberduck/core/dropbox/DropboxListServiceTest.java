@@ -40,8 +40,7 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
     @Test
     public void testListHome() throws Exception {
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+        assertNotSame(AttributedList.emptyList(), list);
     }
 
     @Test
@@ -50,10 +49,12 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
         final Path file = new DropboxTouchFeature(session).touch(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new DropboxListService(session).list(home, new DisabledListProgressListener());
-        assertNotNull(list);
+        assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
         assertTrue(list.contains(file));
+        assertSame(home, list.get(file).getParent());
         assertTrue(list.contains(folder));
+        assertSame(home, list.get(folder).getParent());
         new DropboxDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

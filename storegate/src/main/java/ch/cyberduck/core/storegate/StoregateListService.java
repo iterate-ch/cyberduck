@@ -55,7 +55,7 @@ public class StoregateListService implements ListService {
                         final PathAttributes attr = new PathAttributes().withFileId(root.getId());
                         attr.setModificationDate(root.getModified().getMillis());
                         attr.setCreationDate(root.getCreated().getMillis());
-                        list.add(new Path(PathNormalizer.normalize(root.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attr));
+                        list.add(new Path(directory, PathNormalizer.normalize(root.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attr));
                         break;
                 }
             }
@@ -83,8 +83,7 @@ public class StoregateListService implements ListService {
                         final EnumSet<Path.Type> type = (f.getFlags() & 1) == 1 ?
                             EnumSet.of(Path.Type.directory) :
                             EnumSet.of(Path.Type.file);
-                        final Path p = new Path(directory, f.getName(), type, attrs);
-                        children.add(p);
+                        children.add(new Path(directory, f.getName(), type, attrs));
                         listener.chunk(directory, children);
                     }
                     pageIndex++;

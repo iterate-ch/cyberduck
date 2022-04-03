@@ -46,10 +46,11 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new DriveDefaultListService(session, new DriveFileIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
+        final AttributedList<Path> list = new DriveDefaultListService(session, new DriveFileIdProvider(session)).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
+            assertSame(directory, f.getParent());
             if(!f.isVolume()) {
                 assertNotNull(f.attributes().getFileId());
             }

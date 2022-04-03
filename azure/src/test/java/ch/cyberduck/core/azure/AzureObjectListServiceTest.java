@@ -58,6 +58,7 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
         assertEquals(1, list.size());
         assertTrue(list.contains(file));
         assertEquals(HashAlgorithm.md5, list.get(0).attributes().getChecksum().algorithm);
+        assertSame(directory, list.get(0).getParent());
         new AzureDeleteFeature(session, null).delete(Arrays.asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

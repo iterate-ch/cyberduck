@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -28,7 +29,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static ch.cyberduck.core.AbstractPath.Type.directory;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -37,12 +37,14 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
     @Test
     public void testListRoot() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        final Path directory = new Path("/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new StoregateListService(session, nodeid).list(
-            new Path("/", EnumSet.of(directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertNotNull(list);
+                directory, new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
         for(Path f : list) {
+            assertSame(directory, f.getParent());
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
             assertNotNull(nodeid.getFileId(f.withAttributes(PathAttributes.EMPTY), new DisabledListProgressListener()));
@@ -58,5 +60,6 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         final AttributedList<Path> list = new StoregateListService(session, nodeid).list(room, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertTrue(list.contains(file));
+        assertSame(room, list.get(file).getParent());
     }
 }

@@ -15,11 +15,11 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,10 +39,12 @@ public class BoxListServiceTest extends AbtractBoxTest {
     @Test
     public void testListRoot() throws Exception {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
+        final Path directory = new Path("/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new BoxListService(session, fileid).list(
-            new Path("/", EnumSet.of(directory, Path.Type.volume)), new DisabledListProgressListener());
+                directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
+            assertSame(directory, f.getParent());
             assertNotEquals(TransferStatus.UNKNOWN_LENGTH, f.attributes().getSize());
             assertNotNull(f.attributes().getFileId());
             if(f.isFile()) {

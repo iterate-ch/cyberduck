@@ -56,7 +56,7 @@ public class BrickListService implements ListService {
                 response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)),
                         cursor, chunksize, null, null, null, null, null, null);
                 for(FileEntity entity : response) {
-                    children.add(new Path(entity.getPath(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
+                    children.add(new Path(directory, entity.getDisplayName(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
                             attributes.toAttributes(entity)));
                 }
                 if(client.getResponseHeaders().containsKey("X-Files-Cursor")) {

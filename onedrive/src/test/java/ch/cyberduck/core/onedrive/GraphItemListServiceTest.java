@@ -65,14 +65,16 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListDriveChildren() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path drive = new OneDriveHomeFinderService().find();
+        final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(file));
-        final GraphItemListService listService = new GraphItemListService(session, fileid);
-        final Path drive = new OneDriveHomeFinderService().find();
-        final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
+        final AttributedList<Path> list = new GraphItemListService(session, fileid).list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        assertTrue(list.contains(file));
+        assertSame(drive, list.get(file).getParent());
         for(Path f : list) {
+            assertSame(drive, f.getParent());
             assertEquals(drive.getName(), f.getParent().getName());
             final PathAttributes attributes = f.attributes();
             assertNotEquals(-1L, attributes.getSize());

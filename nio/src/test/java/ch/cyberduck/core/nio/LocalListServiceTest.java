@@ -73,7 +73,7 @@ public class LocalListServiceTest {
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             final Path test = new Path("/D:/", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final AttributedList<Path> list = new LocalListService(session).list(test, new DisabledListProgressListener());
-            assertNotNull(list);
+            assertNotSame(AttributedList.emptyList(), list);
         }
         session.close();
     }

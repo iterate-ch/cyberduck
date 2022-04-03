@@ -46,13 +46,15 @@ public class EueListServiceTest extends AbstractEueSessionTest {
     @Test
     public void testListRoot() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
+        final Path root = new Path("/", EnumSet.of(directory));
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
+                new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder.getParent(), new DisabledListProgressListener());
         assertTrue(list.contains(folder));
         assertNotNull(list.find(f -> f.attributes().getFileId().equals(EueResourceIdProvider.TRASH)));
         assertTrue(list.contains(new Path("Gelöschte Dateien", EnumSet.of(directory)).withAttributes(new PathAttributes().withFileId("TRASH"))));
         assertEquals(folder.attributes().getFileId(), list.get(folder).attributes().getFileId());
+        assertSame(root, list.get(folder).getParent());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -105,6 +107,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertFalse(list.isEmpty());
         assertTrue(list.contains(subfolder));
         assertEquals(subfolder.attributes().getFileId(), list.get(subfolder).attributes().getFileId());
+        assertSame(folder, list.get(subfolder).getParent());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(subfolder, new DisabledListProgressListener())));
@@ -122,6 +125,7 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new DefaultPathPredicate(file)));
         assertEquals(file.attributes().getFileId(), list.get(file).attributes().getFileId());
+        assertSame(folder, list.get(file).getParent());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse((new EueFindFeature(session, fileid).find(folder, new DisabledListProgressListener())));
         assertFalse((new EueFindFeature(session, fileid).find(file, new DisabledListProgressListener())));
