@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -80,11 +81,8 @@ public class S3CopyFeature implements Copy {
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
         destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
-        final String version = this.copy(source, destination, status, listener);
-        target.attributes().setVersionId(version);
-        target.attributes().setMetadata(source.attributes().getMetadata());
-        target.attributes().setModificationDate(source.attributes().getModificationDate());
-        return target;
+        final String versionId = this.copy(source, destination, status, listener);
+        return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(versionId));
     }
 
     protected String copy(final Path source, final S3Object destination, final TransferStatus status, final StreamListener listener) throws BackgroundException {

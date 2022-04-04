@@ -32,8 +32,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3CopyFeatureTest extends AbstractS3Test {
@@ -47,6 +46,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
+        assertNull(copy.attributes().getVersionId());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
         assertEquals("application/cyberduck",
@@ -63,6 +63,26 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
                 new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session).find(test));
+        assertNull(copy.attributes().getVersionId());
+        assertEquals("m", new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("cyberduck"));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new S3FindFeature(session).find(copy));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCopyFileVersionedBucket() throws Exception {
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final TransferStatus status = new TransferStatus();
+        status.setMetadata(Collections.singletonMap("cyberduck", "m"));
+        final Path test = new S3TouchFeature(session).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        assertNotNull(test.attributes().getVersionId());
+        final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
+                new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertTrue(new S3FindFeature(session).find(test));
+        assertNotNull(copy.attributes().getVersionId());
+        assertNotEquals("", copy.attributes().getVersionId());
+        assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertEquals("m", new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("cyberduck"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
