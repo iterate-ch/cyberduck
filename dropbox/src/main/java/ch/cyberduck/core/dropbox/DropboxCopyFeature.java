@@ -28,6 +28,7 @@ import java.util.Collections;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.RelocationResult;
 
 public class DropboxCopyFeature implements Copy {
 
@@ -46,9 +47,9 @@ public class DropboxCopyFeature implements Copy {
                 new DropboxDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
             // If the source path is a folder all its contents will be copied.
-            new DbxUserFilesRequests(session.getClient(source)).copyV2(containerService.getKey(source), containerService.getKey(target));
+            final RelocationResult result = new DbxUserFilesRequests(session.getClient(source)).copyV2(containerService.getKey(source), containerService.getKey(target));
             listener.sent(status.getLength());
-            return target;
+            return target.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);
