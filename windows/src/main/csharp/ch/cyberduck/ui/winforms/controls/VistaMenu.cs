@@ -25,6 +25,7 @@ using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.PInvoke;
+using static Windows.Win32.UI.WindowsAndMessaging.MENU_ITEM_MASK;
 
 //VistaMenu v1.8.1, created by Wyatt O'Day
 //Visit: http://wyday.com/vistamenu/
@@ -286,6 +287,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             MENUITEMINFOW menuItemInfo = new();
             menuItemInfo.cbSize = (uint)SizeOf<MENUITEMINFOW>();
+            menuItemInfo.fMask = MIIM_BITMAP;
 
             // get the menu items collection
             Menu.MenuItemCollection mi = sender.GetType() == typeof(ContextMenu)
