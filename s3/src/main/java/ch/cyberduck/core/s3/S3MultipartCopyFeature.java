@@ -90,7 +90,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             final List<Future<MultipartPart>> parts = new ArrayList<>();
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 // Last part can be less than 5 MB. Adjust part size.
-                final Long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
+                final long length = Math.min(Math.max((size / S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS), partsize), remaining);
                 // Submit to queue
                 parts.add(this.submit(source, multipart, partNumber, offset, length));
                 remaining -= length;
