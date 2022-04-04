@@ -40,6 +40,37 @@ namespace Windows.Win32
             return ppszLocal.ToString();
         }
 
+        /// <inheritdoc cref="winmdroot.UI.Shell.IQueryAssociations.GetString(uint, UI.Shell.ASSOCSTR, Foundation.PCWSTR, Foundation.PWSTR, uint*)"
+        public static unsafe bool GetString(this winmdroot.UI.Shell.IQueryAssociations @this, winmdroot.UI.Shell.ASSOCSTR str, string pszExtra, out string pszOut)
+        {
+            var pool = global::System.Buffers.ArrayPool<char>.Shared;
+            uint length = 0;
+            try
+            {
+                @this.GetString(winmdroot.CorePInvoke.ASSOCF_NOTRUNCATE, str, pszExtra, default, ref length);
+                char[] buffer = null;
+                try
+                {
+                    buffer = pool.Rent((int)length);
+                    length = (uint)buffer.Length;
+                    fixed (char* bufferLocal = buffer)
+                    {
+                        @this.GetString(winmdroot.CorePInvoke.ASSOCF_NOTRUNCATE, str, pszExtra, bufferLocal, ref length);
+
+                        pszOut = ((winmdroot.Foundation.PCWSTR)bufferLocal).ToString();
+                        return true;
+                    }
+                }
+                finally
+                {
+                    pool.Return(buffer);
+                }
+            }
+            catch { }
+            pszOut = default;
+            return false;
+        }
+
         /// <inheritdoc cref="winmdroot.UI.Shell.IAssocHandler.GetUIName(winmdroot.Foundation.PWSTR*)"/>
 		public static unsafe string GetUIName(this winmdroot.UI.Shell.IAssocHandler @this)
         {
