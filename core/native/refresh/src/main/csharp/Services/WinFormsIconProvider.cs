@@ -1,9 +1,14 @@
 ﻿using ch.cyberduck.core;
+using Ch.Cyberduck.Core.Local;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
+using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
@@ -34,7 +39,29 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             return overlayed;
         }
 
-        public Image DefaultBrowser() => GetFileIcon(Utils.GetSystemDefaultBrowser(), false, true, true);
+        public Image DefaultBrowser()
+        {
+            if (IconCache.TryGetIcon("app:defaultbrowser", out Image image))
+            {
+                return image;
+            }
+
+            if (Utils.GetSystemDefaultBrowser() is not ShellApplicationFinder.ProgIdApplication app)
+            {
+                return default;
+            }
+
+            var sep = app.DefaultIcon.LastIndexOf(',');
+            var index = int.Parse(app.DefaultIcon.Substring(sep + 1));
+            var file = app.DefaultIcon.Substring(0, sep);
+
+            uint result = ExtractIconEx(file, index, out var largeIcon, out var smallIcon, 1);
+            using (smallIcon)
+            using (largeIcon)
+            {
+                return Get(largeIcon.DangerousGetHandle(), (c, s, i) => c.CacheIcon("app:defaultbrowser", s, i));
+            }
+        }
 
         public override Image GetDisk(Protocol protocol, int size)
             => IconCache.TryGetIcon(protocol, size, out Image image, "Disk")

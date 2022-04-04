@@ -3,24 +3,20 @@ using ch.cyberduck.core.local;
 using java.util;
 using org.apache.logging.log4j;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
-using Windows.Win32.System.Com;
-using System.Runtime.CompilerServices;
-using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Shell.ASSOC_FILTER;
-using static Windows.Win32.UI.Shell.ASSOCIATIONTYPE;
 using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
+using static Windows.Win32.UI.Shell.ASSOCIATIONTYPE;
 using static Windows.Win32.UI.Shell.ASSOCSTR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Local
 {
@@ -31,6 +27,9 @@ namespace Ch.Cyberduck.Core.Local
         private readonly LRUCache assocHandlerCache = LRUCache.build(25);
         private readonly LRUCache assocHandlerListCache = LRUCache.build(25);
 
+        private interface IInvokeApplication
+        { }
+
         /// <summary>
         /// Finds default associated application.
         /// </summary>
@@ -39,7 +38,7 @@ namespace Ch.Cyberduck.Core.Local
         public unsafe Application find(string filename)
         {
             filename = Path.GetExtension(filename);
-            if (assocHandlerCache.get(filename) is ShellApplication shellHandler)
+            if (assocHandlerCache.get(filename) is ProgIdApplication shellHandler)
             {
                 return shellHandler;
             }
@@ -62,12 +61,12 @@ namespace Ch.Cyberduck.Core.Local
                 }
 
                 var qa = (IQueryAssociations)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_QueryAssociations));
-                qa.Init(0, filename, default, default);
-                if (!GetString(qa, ASSOCSTR_FRIENDLYAPPNAME, out var friendlyAppName))
+                qa.Init(0, defaultQuery, default, default);
+                if (!qa.GetString(ASSOCSTR_FRIENDLYAPPNAME, "edit", out var friendlyAppName))
                 {
                     return Application.notfound;
                 }
-                if (!GetString(qa, ASSOCSTR_DEFAULTICON, out var defaultIcon))
+                if (!qa.GetString(ASSOCSTR_DEFAULTICON, "edit", out var defaultIcon))
                 {
                     return Application.notfound;
                 }
@@ -110,7 +109,6 @@ namespace Ch.Cyberduck.Core.Local
                     {
                         Log.warn("findAll: Failure enumerating IEnumAssocHandler", e);
                     }
-                    map.Sort();
                 }
                 else
                 {
@@ -125,38 +123,6 @@ namespace Ch.Cyberduck.Core.Local
 
         public bool isInstalled(Application application) => application is IInvokeApplication;
 
-        private static unsafe bool GetString(IQueryAssociations @this, ASSOCSTR part, out string value)
-        {
-            var pool = ArrayPool<char>.Shared;
-            uint length = 0;
-            try
-            {
-                @this.GetString(ASSOCF_NOTRUNCATE, part, "edit", default, ref length);
-                char[] buffer = null;
-                try
-                {
-                    buffer = pool.Rent((int)length);
-                    length = (uint)buffer.Length;
-                    fixed (char* bufferLocal = buffer)
-                    {
-                        @this.GetString(ASSOCF_NOTRUNCATE, part, "edit", bufferLocal, ref length);
-
-                        value = ((PCWSTR)bufferLocal).ToString();
-                        return true;
-                    }
-                }
-                finally
-                {
-                    pool.Return(buffer);
-                }
-            }
-            catch { }
-            value = default;
-            return false;
-        }
-
-        private interface IInvokeApplication { }
-
         public class ProgIdApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
             private readonly string defaultIcon;
@@ -166,13 +132,15 @@ namespace Ch.Cyberduck.Core.Local
                 this.defaultIcon = defaultIcon;
             }
 
+            public string DefaultIcon => defaultIcon;
+
             public void Launch(ch.cyberduck.core.Local local)
             {
                 throw new NotImplementedException();
             }
         }
 
-        public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication, IComparable<ShellApplication>
+        public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
             private readonly int cachedImageIndex;
             private readonly IAssocHandler handler;
@@ -188,8 +156,6 @@ namespace Ch.Cyberduck.Core.Local
             }
 
             public bool IsRecommended { get; }
-
-            public int CompareTo(ShellApplication other) => IsRecommended == other.IsRecommended ? 0 : other.IsRecommended ? 1 : -1;
 
             public void Launch(ch.cyberduck.core.Local local)
             {

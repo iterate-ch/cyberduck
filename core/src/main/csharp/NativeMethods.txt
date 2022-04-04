@@ -11,6 +11,7 @@ CredFree
 CredRead
 CredWrite
 DefWindowProc
+ExtractIconEx
 GetCurrentPackageFullName
 GetTokenInformation
 GetWindowLong
