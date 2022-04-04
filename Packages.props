@@ -18,6 +18,8 @@
     <ItemGroup>
         <PackageReference Update="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.97" />
         <PackageReference Update="ExceptionReporter " Version="2.4.2" />
+        <PackageReference Update="Fody" Version="6.6.0" PrivateAssets="all" />
+        <PackageReference Update="InlineIL.Fody" Version="1.7.1" PrivateAssets="all" />
         <PackageReference Update="Microsoft.Build.Utilities.Core" Version="16.10.0" />
         <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
         <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.588-beta" />
