@@ -45,7 +45,8 @@ public class FileMigrationEntity {
   public enum OperationEnum {
     DELETE("delete"),
     MOVE("move"),
-    COPY("copy");
+    COPY("copy"),
+    REGIONAL_MIGRATION("regional_migration");
 
     private String value;
 
@@ -84,7 +85,7 @@ public class FileMigrationEntity {
     PENDING("pending"),
     COUNTING("counting"),
     PROCESSING("processing"),
-    COMPLETE("complete"),
+    COMPLETED("completed"),
     PROCESSING_SUBFOLDERS("processing_subfolders"),
     FINISHING("finishing"),
     CREATING_DEST_FOLDER("creating_dest_folder"),
@@ -94,8 +95,9 @@ public class FileMigrationEntity {
     WAITING_FOR_ALL_SUBFOLDERS("waiting_for_all_subfolders"),
     FAILED("failed"),
     WAITING_FOR_ENQUEUED_OPERATIONS("waiting_for_enqueued_operations"),
-    PROCESSING_DEFERRED_FOLDERS("processing_deferred_folders"),
-    PROCESSING_RECURSIVELY("processing_recursively");
+    UNUSED("unused"),
+    PROCESSING_RECURSIVELY("processing_recursively"),
+    REMOVING_DEFERRED_FOLDERS("removing_deferred_folders");
 
     private String value;
 
@@ -123,6 +125,9 @@ public class FileMigrationEntity {
 
   }  @JsonProperty("status")
   private StatusEnum status = null;
+
+  @JsonProperty("log_url")
+  private String logUrl = null;
 
   public FileMigrationEntity id(Integer id) {
     this.id = id;
@@ -268,6 +273,24 @@ public class FileMigrationEntity {
     this.status = status;
   }
 
+  public FileMigrationEntity logUrl(String logUrl) {
+    this.logUrl = logUrl;
+    return this;
+  }
+
+   /**
+   * Link to download the log file for this migration.
+   * @return logUrl
+  **/
+  @Schema(example = "https://www.example.com/log_file", description = "Link to download the log file for this migration.")
+  public String getLogUrl() {
+    return logUrl;
+  }
+
+  public void setLogUrl(String logUrl) {
+    this.logUrl = logUrl;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -285,12 +308,13 @@ public class FileMigrationEntity {
         Objects.equals(this.filesTotal, fileMigrationEntity.filesTotal) &&
         Objects.equals(this.operation, fileMigrationEntity.operation) &&
         Objects.equals(this.region, fileMigrationEntity.region) &&
-        Objects.equals(this.status, fileMigrationEntity.status);
+        Objects.equals(this.status, fileMigrationEntity.status) &&
+        Objects.equals(this.logUrl, fileMigrationEntity.logUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, path, destPath, filesMoved, filesTotal, operation, region, status);
+    return Objects.hash(id, path, destPath, filesMoved, filesTotal, operation, region, status, logUrl);
   }
 
 
@@ -307,6 +331,7 @@ public class FileMigrationEntity {
     sb.append("    operation: ").append(toIndentedString(operation)).append("\n");
     sb.append("    region: ").append(toIndentedString(region)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    logUrl: ").append(toIndentedString(logUrl)).append("\n");
     sb.append("}");
     return sb.toString();
   }

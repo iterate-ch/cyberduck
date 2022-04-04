@@ -68,7 +68,7 @@ public class BrickFileMigrationFeature {
                     final FileMigrationEntity.StatusEnum migration = new FileMigrationsApi(client)
                             .getFileMigrationsId(entity.getFileMigrationId()).getStatus();
                     switch(migration) {
-                        case COMPLETE:
+                        case COMPLETED:
                             signal.countDown();
                             return;
                         default:
