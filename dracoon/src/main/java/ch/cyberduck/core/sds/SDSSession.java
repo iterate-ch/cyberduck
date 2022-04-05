@@ -319,23 +319,24 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 ));
                 break;
         }
+        final UserAccount account;
         try {
-            final UserAccount account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
+            account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
-            switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
-                case oauth:
-                    credentials.setUsername(account.getLogin());
-                    credentials.setSaved(true);
-            }
-            userAccount.set(new UserAccountWrapper(account));
-            requiredKeyPairVersion = this.getRequiredKeyPairVersion();
-            this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
+            throw new SDSExceptionMappingService(nodeid).map(e);
         }
+        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+            case oauth:
+                credentials.setUsername(account.getLogin());
+                credentials.setSaved(true);
+        }
+        userAccount.set(new UserAccountWrapper(account));
+        requiredKeyPairVersion = this.getRequiredKeyPairVersion();
+        this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
     }
 
     private UserKeyPair.Version getRequiredKeyPairVersion() {
