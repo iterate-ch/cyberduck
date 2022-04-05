@@ -45,7 +45,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -88,9 +87,9 @@ public class MoveWorkerTest extends AbstractS3Test {
 
     @Test
     public void testMoveVersionedDirectory() throws Exception {
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path targetDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3TouchFeature touch = new S3TouchFeature(session);
@@ -103,14 +102,10 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session);
         final AttributedList<Path> versioned = list.list(sourceDirectory, new DisabledListProgressListener());
-        final Map<Path, Path> files = new HashMap<>();
-        for(Path source : versioned) {
-            files.put(source, new Path(targetDirectory, source.getName(), source.getType(), source.attributes()));
-        }
-        final Map<Path, Path> result = new MoveWorker(files, new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
-        assertEquals(3, result.size());
+        final Map<Path, Path> result = new MoveWorker(Collections.singletonMap(sourceDirectory, targetDirectory), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        assertEquals(4, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
-            assertFalse(new S3FindFeature(session).find(entry.getKey()));
+            assertFalse(new S3FindFeature(session).find(entry.getKey().withAttributes(PathAttributes.EMPTY)));
             assertTrue(new S3FindFeature(session).find(entry.getValue()));
         }
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), PathCache.empty(), new DisabledProgressListener()).run(session);
