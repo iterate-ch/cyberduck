@@ -51,6 +51,17 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     }
 
     @Test
+    public void testDeleteFileBackslash() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(container, String.format("%s\\%s", new AlphanumericRandomStringService().random(),
+                new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session).touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(session).find(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session).find(test));
+    }
+
+    @Test
     public void testDeleteFileVirtualHost() throws Exception {
         final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(virtualhost).touch(test, new TransferStatus());
