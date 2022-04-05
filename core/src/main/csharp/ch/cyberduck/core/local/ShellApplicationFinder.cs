@@ -17,6 +17,7 @@ using static Windows.Win32.UI.Shell.ASSOC_FILTER;
 using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
 using static Windows.Win32.UI.Shell.ASSOCIATIONTYPE;
 using static Windows.Win32.UI.Shell.ASSOCSTR;
+using static Windows.Win32.UI.Shell.OPEN_AS_INFO_FLAGS;
 
 namespace Ch.Cyberduck.Core.Local
 {
@@ -119,7 +120,7 @@ namespace Ch.Cyberduck.Core.Local
             return Utils.ConvertToJavaList(map);
         }
 
-        public Application getDescription(string filename) => Application.notfound;
+        public Application getDescription(string filename) => string.Equals("shell:openfilewith", filename) ? ShellOpenWithApplication.Instance : Application.notfound;
 
         public bool isInstalled(Application application) => application is IInvokeApplication;
 
@@ -134,9 +135,17 @@ namespace Ch.Cyberduck.Core.Local
 
             public string DefaultIcon => defaultIcon;
 
-            public void Launch(ch.cyberduck.core.Local local)
+            public unsafe void Launch(ch.cyberduck.core.Local local)
             {
-                throw new NotImplementedException();
+                SHELLEXECUTEINFOW info = new()
+                {
+                    cbSize = (uint)sizeof(SHELLEXECUTEINFOW),
+                    lpClass = getIdentifier(),
+                    fMask = SEE_MASK_CLASSNAME | SEE_MASK_NOASYNC,
+                    lpVerb = "open",
+                    lpFile = local.getAbsolute()
+                };
+                ShellExecuteEx(ref info);
             }
         }
 
@@ -174,6 +183,25 @@ namespace Ch.Cyberduck.Core.Local
                 SHCreateItemFromIDList(pidl.Value, out IShellItem ppv);
                 ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
                 handler.Invoke(pdo);
+            }
+        }
+
+        public class ShellOpenWithApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
+        {
+            public static readonly ShellOpenWithApplication Instance = new();
+
+            public ShellOpenWithApplication() : base(null, "Open With …")
+            {
+            }
+
+            public void Launch(ch.cyberduck.core.Local local)
+            {
+                OPENASINFO info = new()
+                {
+                    oaifInFlags = OAIF_EXEC,
+                    pcszFile = local.getAbsolute()
+                };
+                SHOpenWithDialog(default, info);
             }
         }
     }
