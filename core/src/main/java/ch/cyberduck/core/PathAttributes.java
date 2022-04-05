@@ -299,6 +299,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.quota = quota;
     }
 
+    public PathAttributes withQuota(final long quota) {
+        this.setQuota(quota);
+        return this;
+    }
+
     @Override
     public long getModificationDate() {
         return modified;
@@ -306,6 +311,11 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setModificationDate(final long millis) {
         this.modified = millis;
+    }
+
+    public PathAttributes withModificationDate(final long millis) {
+        this.setModificationDate(millis);
+        return this;
     }
 
     @Override
@@ -341,12 +351,22 @@ public class PathAttributes extends Attributes implements Serializable {
         this.permission = p;
     }
 
+    public PathAttributes withPermission(final Permission p) {
+        this.setPermission(p);
+        return this;
+    }
+
     public Acl getAcl() {
         return acl;
     }
 
     public void setAcl(final Acl acl) {
         this.acl = acl;
+    }
+
+    public PathAttributes withAcl(final Acl acl) {
+        this.setAcl(acl);
+        return this;
     }
 
     @Override
@@ -448,9 +468,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return fileId;
     }
 
-    public PathAttributes setFileId(final String fileId) {
+    public void setFileId(final String fileId) {
         this.fileId = fileId;
-        return this;
     }
 
     public PathAttributes withFileId(final String fileId) {
@@ -475,8 +494,12 @@ public class PathAttributes extends Attributes implements Serializable {
         return lockId;
     }
 
-    public PathAttributes setLockId(final String lockId) {
+    public void setLockId(final String lockId) {
         this.lockId = lockId;
+    }
+
+    public PathAttributes withLockId(final String lockId) {
+        this.setLockId(lockId);
         return this;
     }
 
