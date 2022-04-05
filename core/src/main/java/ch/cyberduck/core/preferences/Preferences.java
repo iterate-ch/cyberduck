@@ -336,7 +336,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("transfer.cache.size", String.valueOf(100));
         this.setDefault("icon.cache.size", String.valueOf(200));
         this.setDefault("preferences.cache.size", String.valueOf(1000));
-        this.setDefault("fileid.cache.size", String.valueOf(1000));
+        this.setDefault("fileid.cache.size", String.valueOf(10000));
 
         /*
           Caching NS* proxy instances.
