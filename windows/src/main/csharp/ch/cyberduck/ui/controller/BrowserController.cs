@@ -881,7 +881,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.Effect = DragDropEffects.Copy;
                         if (args.DropTargetLocation == DropTargetLocation.Item)
                         {
-                            Host destination = (Host) args.DropTargetItem.RowObject;
+                            Host destination = (Host)args.DropTargetItem.RowObject;
 
                             DropTargetHelper.SetDropDescription(dataObject, args.Effect,
                                 "Upload to %1", BookmarkNameProvider.toString(destination));
@@ -2312,6 +2312,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 editor = EditorFactory.instance().create(Session.getHost(), file, this);
             }
+            application ??= EditorFactory.getEditor(file.getAbsolute());
+            application ??= EditorFactory.getDefaultEditor();
             background(new WorkerBackgroundAction(this, Session,
                 editor.open(application, new DisabledApplicationQuitCallback(),
                     new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));

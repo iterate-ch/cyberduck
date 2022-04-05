@@ -16,7 +16,6 @@
 // feedback@cyberduck.io
 //
 
-using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using java.security;
 using java.util;
@@ -161,6 +160,8 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("application.revision", ApplicationRevision);
             this.setDefault("application.language.custom", false.ToString());
             this.setDefault("application.localization.enable", true.ToString());
+
+            this.setDefault("editor.bundleIdentifier", "shell:openfilewith");
 
             this.setDefault("update.feed.release", "https://version.cyberduck.io/windows/changelog.rss");
             this.setDefault("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");

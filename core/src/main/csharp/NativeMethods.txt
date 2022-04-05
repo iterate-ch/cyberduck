@@ -31,6 +31,8 @@ PBST_NORMAL
 PBST_PAUSED
 S_FALSE
 S_OK
+SEE_MASK_CLASSNAME
+SEE_MASK_NOASYNC
 SendMessage
 SetWindowLong
 SetWindowPos
@@ -40,6 +42,7 @@ SHAssocEnumHandlers
 SHCreateAssociationRegistration
 SHCreateItemFromIDList
 Shell_GetCachedImageIndex
+ShellExecuteEx
 SHGetFileInfo
 SHGFI_FLAGS
 SHOpenFolderAndSelectItems
