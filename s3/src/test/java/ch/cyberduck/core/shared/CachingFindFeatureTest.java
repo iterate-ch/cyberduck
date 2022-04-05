@@ -44,7 +44,7 @@ public class CachingFindFeatureTest extends AbstractS3Test {
     @Test
     public void testFindDefault() throws Exception {
         final PathCache cache = new PathCache(1);
-        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));

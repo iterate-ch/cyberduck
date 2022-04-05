@@ -76,7 +76,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteVersionedPlaceholder() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         {
             final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
