@@ -63,11 +63,11 @@ namespace Ch.Cyberduck.Core.Local
 
                 var qa = (IQueryAssociations)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_QueryAssociations));
                 qa.Init(0, defaultQuery, default, default);
-                if (!qa.GetString(ASSOCSTR_FRIENDLYAPPNAME, "edit", out var friendlyAppName))
+                if (!qa.GetString(ASSOCSTR_FRIENDLYAPPNAME, "open", out var friendlyAppName))
                 {
                     return Application.notfound;
                 }
-                if (!qa.GetString(ASSOCSTR_DEFAULTICON, "edit", out var defaultIcon))
+                if (!qa.GetString(ASSOCSTR_DEFAULTICON, "open", out var defaultIcon))
                 {
                     return Application.notfound;
                 }
