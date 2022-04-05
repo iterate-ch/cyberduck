@@ -200,7 +200,7 @@ public class STSCredentialsConfigurator {
                                     // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
                                     // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
                             )
-                            .withRoleSessionName(new AsciiRandomStringService().random())
+                            .withRoleSessionName(basicProfile.getRoleSessionName() == null ? new AsciiRandomStringService().random() : basicProfile.getRoleSessionName())
                             .withDurationSeconds(durationSeconds
                                     // duration_seconds - Specifies the maximum duration of the role session, in seconds. The value can range from 900 seconds
                                     // (15 minutes) up to the maximum session duration setting for the role (which can be a maximum of 43200). This is an
