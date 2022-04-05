@@ -3,7 +3,6 @@ package ch.cyberduck.core.freenet;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
@@ -19,7 +18,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class FreenetFindFeatureTest extends AbstractFreenetTest {
@@ -39,7 +39,7 @@ public class FreenetFindFeatureTest extends AbstractFreenetTest {
     public void testFindFile() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotEquals(PathAttributes.EMPTY, new DAVFindFeature(session).find(test));
+        assertTrue(new DAVFindFeature(session).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -47,7 +47,7 @@ public class FreenetFindFeatureTest extends AbstractFreenetTest {
     public void testFindFolder() throws Exception {
         final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotEquals(PathAttributes.EMPTY, new DAVFindFeature(session).find(test));
+        assertTrue(new DAVFindFeature(session).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
