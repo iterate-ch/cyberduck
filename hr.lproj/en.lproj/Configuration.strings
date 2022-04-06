@@ -1,0 +1,23 @@
+﻿/* No comment provided by engineer. */
+"Set Cyberduck as default application for FTP and SFTP locations?" = "Postaviti Cyberduck kao standardni program za FTP i SFTP lokacije?";
+
+/* No comment provided by engineer. */
+"As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later." = "Kad je postavljen kao standardni program, Cyberduck će se otvoriti kad se pritisnu FTP ili SFTP poveznice u drugim programima poput web-preglednika. Ovo je moguće promijeniti u postavkama.";
+
+/* Apply proposed action. */
+"Change" = "Promijeni";
+
+/* Do not display this dialog again. */
+"Don't ask again" = "Ne pitaj ponovo";
+
+/* Don't change anything. */
+"Cancel" = "Odustani";
+
+/* Bookmark import from thirdparty applications */ 
+"Import" = "Uvezi";
+/* Import <<Application Name>> Bookmarks */
+"Import {0} Bookmarks" = "Uvezi {0} oznake";
+/* 23 bookmarks found. */
+"{0} bookmarks found. Do you want to add these to your bookmarks?" = "Broj pronađenih oznaka: {0}. Želiš li ih dodati tvojim oznakama?";
+/* Write the source application into the comment field of the imported bookmark */
+"Imported from {0}" = "Uvezeno iz {0}";
