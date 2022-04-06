@@ -46,7 +46,7 @@ public final class Resolver {
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("resolver");
 
-    private boolean preferIPv6;
+    private final boolean preferIPv6;
 
     public Resolver() {
         this(PreferencesFactory.get().getBoolean("connection.dns.ipv6"));
