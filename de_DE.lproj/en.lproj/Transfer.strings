@@ -1,0 +1,63 @@
+﻿/* NSTextField (Local File:) : <title:Local File:> (oid:123) */
+"Local File:" = "Lokale Datei:";
+
+/* NSTextField (URL:) : <title:URL:> (oid:122) */
+"URL:" = "URL:";
+
+/* NSMenuItem : <title:Unlimited Bandwidth> (oid:163) */
+"Unlimited Bandwidth" = "Unlimitierte Bandbreite";
+
+"Overwrite all files" = "Alle Dateien überschreiben";
+"Append existing files" = "Anfügen an existierende Dateien";
+"Rename transferred files with a timestamp appended to the filename" = "Dateien umbenennen mit angehängtem Zeitstempel in Dateiname";
+"Rename existing files with timestamp appended to filename" = "Existierende Dateien umbenennen mit angehängtem Zeitstempel in Dateiname";
+"Skip transfer of files that already exist" = "Existierende Dateien überspringen";
+"Prompt for action on every file" = "Nachfragen für jede existierende Datei";
+"Skip files that match size, modification date or checksum" = "Dateien mit gleicher Größe, Änderungsdatum oder Prüfsumme überspringen";
+/* Synchronization */
+"Download changed and missing files" = "Download geänderter und fehlender Dateien";
+"Upload changed and missing files" = "Upload geänderter und fehlender Dateien";
+"Download and Upload" = "Download und Upload";
+
+/* Transfer action for existing files. */
+"Overwrite" = "Überschreiben";
+"Overwrite all files" = "Alle Dateien überschreiben";
+
+/* Toolbar item in Transfer Window. Transfer action for existing files */
+"Resume" = "Fortsetzen";
+"Append existing files" = "Anfügen an existierende Dateien";
+
+/* Transfer action for existing files */
+"Rename existing" = "Vorhandene umbenennen";
+"Rename existing files with timestamp appended to filename" = "Existierende Dateien umbenennen mit angehängtem Zeitstempel in Dateiname";
+"Rename" = "Umbenennen";
+"Move" = "Verschieben";
+"Rename transferred files with a timestamp appended to the filename" = "Dateien umbenennen mit angehängtem Zeitstempel in Dateiname";
+
+/* Transfer action for existing files */
+"Skip" = "Überspringen";
+"Skip transfer of files that already exist" = "Existierende Dateien überspringen";
+"Compare" = "Vergleichen";
+"Skip files that match size, modification date or checksum" = "Dateien mit gleicher Größe, Änderungsdatum oder Prüfsumme überspringen";
+
+/* Toolbar item */
+"Trash" = "Papierkorb";
+"Move files that already exist to the Trash" = "Verschieben von existierenden Dateien in den Papierkorb";
+
+/* Synchronization actions */
+"Download changed and missing files" = "Download geänderter und fehlender Dateien";
+"Upload changed and missing files" = "Upload geänderter und fehlender Dateien";
+"Download and Upload" = "Download und Upload";
+
+/* Synchronize option */
+"Mirror" = "Spiegeln";
+
+/* NSMenuItem (Neue Verbindung öffnen) : <title:Open new connection> (oid:144) */
+"Open single connection" = "Neue Verbindung öffnen";
+
+/* NSMenuItem (Use browser connection) : <title:Use browser connection> (oid:145) */
+"Use browser connection" = "Verbindung in Browser verwenden";
+"Open multiple connections" = "Mehrere Verbindungen öffnen";
+"Connections" = "Verbindungen";
+"{0} Connections" = "{0} Verbindungen";
+"Log" = "Log";
