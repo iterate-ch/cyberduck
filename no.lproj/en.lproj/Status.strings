@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Godkjenn som {0}";
+"Calculate checksum for {0}" = "Calculate checksum for {0}";
+
+"Deleting {0}" = "Sletter {0}";
+"Disconnected" = "Koblet fra";
+"Disconnecting {0}" = "Kobler fra {0}";
+"Downloading {0}" = "Laster ned {0}";
+/* Connection type opened */
+"{0} connection opened" = "{0}-tilkobling åpnet";
+
+/* Reading size of file. */
+"Getting size of {0}" = "Henter størrelsen på {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "Henter tidsstempelet på {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "Henter rettigheter på {0}";
+
+/* No activity */
+"Idle" = "Ledig";
+"Listing directory {0}" = "Lister opp katalog {0}";
+"Making directory {0}" = "Lag katalog {0}";
+"Maximum allowed connections exceeded. Waiting" = "Maksimum antall tilkoblinger overskredet. Venter…";
+"Mounting {0}" = "Monterer {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Ingen godkjente sertifikater funnet";
+"Opening {0} connection to {1}" = "Åpne {0}-tilkobling til {1}";
+"SFTP subsystem ready" = "SFTP undersystem klart";
+"SCP subsystem ready" = "SCP undersystem klart";
+"Starting SFTP subsystem" = "Starter SFTP undersystem";
+"Starting SCP subsystem" = "Starter SCP undersystem";
+"Uploading {0}" = "Laster opp {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Endrer navn til {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "Kopierer {0} til {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "Endrer eier til {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "Endrer gruppe til {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "Endrer rettigheter til {1}";
+"Changing timestamp of {0} to {1}" = "Bytter tidsstempel fra {0} til {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} sekunder gjenstår";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} minutter gjenstår";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} timer gjenstår";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Slår opp {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Prøver igjen om {0} sekunder ({1} flere forsøk)";
+"Transfer complete" = "Overføring fullført";
+"Transfer incomplete" = "Overføring feilet";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Aktiver {0} distribusjon";
+"Disable {0} Distribution" = "Skru av {0} distribusjon";
+
+/* Compress and expand archives */
+"Archiving {0}" = "Legger {0} i arkiv";
+"Unarchiving {0}" = "Pakker ut {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Regn ut MD5-sjekksum av {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "Leser metadata for {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "Skriver metadata for {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Forbered {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "Leser CDN konfigurasjon av {0}";
+"Writing CDN configuration of {0}" = "Skriver CDN konfigurasjon av {0}";
+
+/* Growl Notification */
+"Connection failed" = "Tilkobling mislyktes";
+
+/* Growl Notification */
+"Connection opened" = "Tilkobling åpnet";
+
+/* Growl Notification */
+"Download complete" = "Nedlasting fullført";
+
+/* Growl Notification */
+"Synchronization complete" = "Synkronisering fullført";
+
+/* Growl Notification */
+"Upload complete" = "Opplasting fullført";
+
+/* Growl Notification */
+"Download failed" = "Nedlasting mislyktes";
+
+/* Growl Notification */
+"Upload failed" = "Opplasting mislyktes";
+
+/* Growl Notification */
+"Transfer queued" = "Øverføring i kø";
