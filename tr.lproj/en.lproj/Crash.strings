@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Son çökmeyi bildirmek istiyor musunuz?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "%@ uygulaması çöktü. Uygulamanın geliştirilmesine yardımcı olmak için çökme günlüğünü geliştiriciye gönderebilirsiniz.";
+
+/* Name of OK button in alert window: */
+"Send" = "Gönder";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Gönderme";
+
