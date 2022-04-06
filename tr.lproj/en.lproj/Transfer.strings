@@ -1,0 +1,63 @@
+﻿/* NSTextField (Local File:) : <title:Local File:> (oid:123) */
+"Local File:" = "Yerel dosya:";
+
+/* NSTextField (URL:) : <title:URL:> (oid:122) */
+"URL:" = "Adres:";
+
+/* NSMenuItem : <title:Unlimited Bandwidth> (oid:163) */
+"Unlimited Bandwidth" = "Sınırsız bant genişliği";
+
+"Overwrite all files" = "Tüm dosyaların üzerine yaz";
+"Append existing files" = "Var olan dosyalara ekle";
+"Rename transferred files with a timestamp appended to the filename" = "Aktarılan dosyaların adına zaman damgası eklensin";
+"Rename existing files with timestamp appended to filename" = "Var olan dosyaların adına zaman damgası eklensin";
+"Skip transfer of files that already exist" = "Zaten var olan dosyalar aktarılmasın";
+"Prompt for action on every file" = "Her dosya için ne yapılacağı sorulsun";
+"Skip files that match size, modification date or checksum" = "Boyut, değişiklik tarihi veya sağlama ile eşleşen dosyalar atlansın";
+/* Synchronization */
+"Download changed and missing files" = "Değiştirilmiş ve eksik dosyaları indir";
+"Upload changed and missing files" = "Değiştirilmiş ve eksik dosyaları yükle";
+"Download and Upload" = "İndir ve yükle";
+
+/* Transfer action for existing files. */
+"Overwrite" = "Üzerine yaz";
+"Overwrite all files" = "Tüm dosyaların üzerine yaz";
+
+/* Toolbar item in Transfer Window. Transfer action for existing files */
+"Resume" = "Sürdür";
+"Append existing files" = "Var olan dosyalara ekle";
+
+/* Transfer action for existing files */
+"Rename existing" = "Var olanı yeniden adlandır";
+"Rename existing files with timestamp appended to filename" = "Var olan dosyaların adına zaman damgası eklensin";
+"Rename" = "Yeniden adlandır";
+"Move" = "Taşı";
+"Rename transferred files with a timestamp appended to the filename" = "Aktarılan dosyaların adına zaman damgası eklensin";
+
+/* Transfer action for existing files */
+"Skip" = "Atla";
+"Skip transfer of files that already exist" = "Zaten var olan dosyalar aktarılmasın";
+"Compare" = "Karşılaştır";
+"Skip files that match size, modification date or checksum" = "Boyut, değişiklik tarihi veya sağlama ile eşleşen dosyalar atlansın";
+
+/* Toolbar item */
+"Trash" = "Çöp kutusu";
+"Move files that already exist to the Trash" = "Zaten var olan dosyalar çöpe atılsın";
+
+/* Synchronization actions */
+"Download changed and missing files" = "Değiştirilmiş ve eksik dosyaları indir";
+"Upload changed and missing files" = "Değiştirilmiş ve eksik dosyaları yükle";
+"Download and Upload" = "İndir ve yükle";
+
+/* Synchronize option */
+"Mirror" = "Yansı";
+
+/* NSMenuItem (Neue Verbindung öffnen) : <title:Open new connection> (oid:144) */
+"Open single connection" = "Tek bağlantı aç";
+
+/* NSMenuItem (Use browser connection) : <title:Use browser connection> (oid:145) */
+"Use browser connection" = "Tarayıcıdaki bağlantıyı kullan";
+"Open multiple connections" = "Birkaç bağlantı aç";
+"Connections" = "Bağlantılar";
+"{0} Connections" = "{0} bağlantı";
+"Log" = "Günlük";
