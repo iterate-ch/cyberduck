@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Vai vēlies paziņot par pēdejo kļūmi?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Aplikācijai %@ nupat radās kļūme. Lai palīdzētu novērst to, Tu vari nosūtīt kļūmes aprakstu.";
+
+/* Name of OK button in alert window: */
+"Send" = "Sūtīt";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Nesūtīt";
+
