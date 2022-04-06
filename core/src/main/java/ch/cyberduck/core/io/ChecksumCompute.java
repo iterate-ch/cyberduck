@@ -48,7 +48,7 @@ public interface ChecksumCompute {
      * @throws ChecksumException         Error calculating checksum
      * @throws ChecksumCanceledException Calculating checksum was interrrupted
      */
-    default Checksum compute(String data) throws BackgroundException {
+    default Checksum compute(final String data) throws BackgroundException {
         try {
             return this.compute(new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())),
                     new TransferStatus());
