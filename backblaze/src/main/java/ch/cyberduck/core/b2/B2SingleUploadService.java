@@ -40,13 +40,11 @@ public class B2SingleUploadService extends HttpUploadFeature<BaseB2Response, Mes
     private static final Logger log = LogManager.getLogger(B2SingleUploadService.class);
 
     private final B2Session session;
-    private final B2VersionIdProvider fileid;
     private Write<BaseB2Response> writer;
 
-    public B2SingleUploadService(final B2Session session, final B2VersionIdProvider fileid, final Write<BaseB2Response> writer) {
+    public B2SingleUploadService(final B2Session session, final Write<BaseB2Response> writer) {
         super(writer);
         this.session = session;
-        this.fileid = fileid;
         this.writer = writer;
     }
 
