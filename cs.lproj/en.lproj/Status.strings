@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Ověřuje se totožnost {0}";
+"Calculate checksum for {0}" = "Spočítat kontrolní součet pro {0}";
+
+"Deleting {0}" = "Maže se {0}";
+"Disconnected" = "Odpojeno";
+"Disconnecting {0}" = "Odpojuje se {0}";
+"Downloading {0}" = "Kopíruje se (download) {0}";
+/* Connection type opened */
+"{0} connection opened" = "{0} spojení otevřeno";
+
+/* Reading size of file. */
+"Getting size of {0}" = "Zjišťuje se velikost {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "Zjišťuje se čas {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "Zjišťují se oprávnění pro {0}";
+
+/* No activity */
+"Idle" = "Nečinný";
+"Listing directory {0}" = "Získává se výpis složky {0}";
+"Making directory {0}" = "Vytváří se složka {0}";
+"Maximum allowed connections exceeded. Waiting" = "Bylo dosaženo nejvyššího počtu povolených spojení. Čeká se…";
+"Mounting {0}" = "Připojuje se {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Nebyl nalezen žádný důvěryhodný certifikát";
+"Opening {0} connection to {1}" = "Otevírá se {0} spojení s {1}";
+"SFTP subsystem ready" = "SFTP subsystém připraven";
+"SCP subsystem ready" = "SCP subsystém připraven";
+"Starting SFTP subsystem" = "Spouští se SFTP subsystém";
+"Starting SCP subsystem" = "Spouští se SCP subsystém";
+"Uploading {0}" = "Kopíruje se (upload) {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Přejmenovává se {0} na {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "Kopíruje se {0} na {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "Mění se vlastník z {0} na {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "Mění se skupina z {0} na {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "Mění se oprávnění {0} na {1}";
+"Changing timestamp of {0} to {1}" = "Mení se čas {0} na {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "Zbývá {0} sekund";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "Zbývá {0} minut";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "Zbývá {0} hodin";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Řeší se {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Další pokus za {0} sekund (zbývá {1} pokusů)";
+"Transfer complete" = "Přenos dokončen";
+"Transfer incomplete" = "Přenos nedokončen";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Zapnout distribuci {0}";
+"Disable {0} Distribution" = "Vypnout distribuci {0}";
+
+/* Compress and expand archives */
+"Archiving {0}" = "Vytváří se archiv {0}";
+"Unarchiving {0}" = "Rozbaluje se archiv {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Počítá se MD5 hash z {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "Načítají se metadata z {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "Zapisují se metadata do {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Připravuje se {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "Načítá se nastavení CDN z {0}";
+"Writing CDN configuration of {0}" = "Zapisuje se nastavení CDN na {0}";
+
+/* Growl Notification */
+"Connection failed" = "Spojení bylo neočekávaně ukončeno";
+
+/* Growl Notification */
+"Connection opened" = "Spojení otevřeno";
+
+/* Growl Notification */
+"Download complete" = "Kopírování (download) dokončeno";
+
+/* Growl Notification */
+"Synchronization complete" = "Synchronizace dokončena";
+
+/* Growl Notification */
+"Upload complete" = "Kopírování (upload) dokončeno";
+
+/* Growl Notification */
+"Download failed" = "Kopírování (download) selhalo";
+
+/* Growl Notification */
+"Upload failed" = "Kopírování (upload) selhalo";
+
+/* Growl Notification */
+"Transfer queued" = "Kopírování se zařadilo do fronty";
