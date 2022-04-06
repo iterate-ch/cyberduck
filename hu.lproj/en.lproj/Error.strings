@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "A {0} könyvtár listázása sikertelen";
+
+/* Touch file failed */
+"Cannot create {0}" = "Nem hozható létre a {0} fájl";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Nem hozható létre a {0} mappa";
+
+/* Moving file failed */
+"Cannot rename {0}" = "A {0} nem nevezhető át";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Hiba a {0} attribútumainak olvasásakor";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Hiba a {0} attribútumainak írásakor";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Nem törölhető a {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "A tulajdonos nem módosítható";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "A csoport nem módosítható";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "A {0} engedélyei nem módosíthatóak ";
+"Cannot change timestamp of {0}" = "Nem módosítható a {0} időbélyege";
+
+/* Mount failure */
+"Connection failed" = "Kapcsolódás sikertelen";
+
+/* Transfer failure */
+"Download {0} failed" = "A {0} letöltése sikertelen";
+
+/* Transfer failure */
+"Upload {0} failed" = "A {0} feltöltése sikertelen";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Nem olvasható a  CDN konfiguráció";
+"Cannot write CDN configuration" = "Nem írható a CDN konfiguráció";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Nem olvasható a tároló konfigurációja";
+
+"Interoperability failure" = "Interoperabilitási hiba";
+"Access denied" = "Hozzáférés megtagadva";
+"File not found" = "A fájl nem található";
+"Insufficient disk space" = "Nincs elegendő hely a lemezen";
+
+"DNS lookup for {0} failed" = "A {0} DNS keresés sikertelen";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Eltérés a {0} feltöltött adat MD5 hash-ének és az ETag {1} között a szerver által visszajelezve";
+
+"Insufficient disk space" = "Nincs elegendő hely a lemezen";
+"Only {0} available disk space" = "Csak {0} szabad lemezterület áll rendelkezésre";
+
+"Insufficient disk space" = "Nincs elegendő hely a lemezen";
+"Only {0} available disk space" = "Csak {0} szabad lemezterület áll rendelkezésre";
