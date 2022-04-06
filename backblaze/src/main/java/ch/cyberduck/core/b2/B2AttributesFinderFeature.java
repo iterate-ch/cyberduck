@@ -196,17 +196,6 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setModificationDate(timestamp);
         }
-        switch(response.getAction()) {
-            case hide:
-                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
-            case start:
-                // Large file has been started, but not finished or canceled
-                attributes.setDuplicate(true);
-                break;
-            default:
-                attributes.setSize(response.getContentLength());
-                break;
-        }
         return attributes;
     }
 
