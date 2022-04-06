@@ -7,4 +7,4 @@ git:
       source_file_extension: strings
       translation_files_expression: 'i18n/src/main/resources/<lang>.lproj'
   settings:
-    pr_branch_name: transifex/<br_unique_id>
+    - pr_branch_name: transifex/<br_unique_id>
