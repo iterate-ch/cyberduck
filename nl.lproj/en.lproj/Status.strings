@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Authenticeren als {0}";
+"Calculate checksum for {0}" = "Bereken controlegetal voor {0}";
+
+"Deleting {0}" = "Verwijderen van {0}";
+"Disconnected" = "Niet verbonden";
+"Disconnecting {0}" = "Verbinding verbreken met {0}";
+"Downloading {0}" = "Downloaden van {0}";
+/* Connection type opened */
+"{0} connection opened" = "{0} verbinding geopend";
+
+/* Reading size of file. */
+"Getting size of {0}" = "Bestandsgrootte berekenen van {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "Tijdsaanduiding zoeken van {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "Bevoegdheden ophalen van {0}";
+
+/* No activity */
+"Idle" = "Gereed";
+"Listing directory {0}" = "Maplijst ophalen van {0}";
+"Making directory {0}" = "Maak map {0}";
+"Maximum allowed connections exceeded. Waiting" = "Maximumaantal verbindingen bereikt. Bezig met wachten...";
+"Mounting {0}" = "Koppelen van {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Geen vertrouwd certificaat gevonden";
+"Opening {0} connection to {1}" = "{0}-verbinding openen met {1}";
+"SFTP subsystem ready" = "SFTP-subsysteem gereed";
+"SCP subsystem ready" = "SCP-subsysteem gereed";
+"Starting SFTP subsystem" = "Starten van SFTP-subsysteem";
+"Starting SCP subsystem" = "Starten van SCP-subsysteem";
+"Uploading {0}" = "Uploaden van {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Hernoemen van {0} naar {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "Kopiëren van {0} naar {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "Wijzigen eigenaar van {0} naar {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "Wijzigen groep van {0} naar {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "Wijzigen bevoegdheden van {0} naar {1}";
+"Changing timestamp of {0} to {1}" = "Wijzigen van tijdstempel van {0} naar {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "Nog {0} seconden";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "Nog {0} minuten";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "Nog {0} uren";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Opzoeken van {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Opnieuw proberen in {0} seconden (nog {1} poging(en))";
+"Transfer complete" = "Overdracht volledig";
+"Transfer incomplete" = "Overdracht onvolledig";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Schakel {0}-distributie in";
+"Disable {0} Distribution" = "Schakel {0}-distributie uit";
+
+/* Compress and expand archives */
+"Archiving {0}" = "Archiveren van {0}";
+"Unarchiving {0}" = "Uitpakken van {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Bereken MD5-hash van {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "Lezen metadata van {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "Schrijven metadata van {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Voorbereiden van {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "Lezen van distributienetwerk-configuratie van {0}";
+"Writing CDN configuration of {0}" = "Schrijven van distributienetwerk-configuratie van {0}";
+
+/* Growl Notification */
+"Connection failed" = "Verbinding mislukt";
+
+/* Growl Notification */
+"Connection opened" = "Verbinding geopend";
+
+/* Growl Notification */
+"Download complete" = "Download voltooid";
+
+/* Growl Notification */
+"Synchronization complete" = "Synchronisatie voltooid";
+
+/* Growl Notification */
+"Upload complete" = "Upload voltooid";
+
+/* Growl Notification */
+"Download failed" = "Download mislukt";
+
+/* Growl Notification */
+"Upload failed" = "Upload mislukt";
+
+/* Growl Notification */
+"Transfer queued" = "Overdracht in wachtrij geplaatst";
