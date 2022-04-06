@@ -29,13 +29,9 @@ import java.io.IOException;
 
 public class StoregateTouchFeature implements Touch<FileMetadata> {
 
-    private final StoregateSession session;
-    private final StoregateIdProvider fileid;
     private Write<FileMetadata> writer;
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
-        this.session = session;
-        this.fileid = fileid;
         this.writer = new StoregateWriteFeature(session, fileid);
     }
 
