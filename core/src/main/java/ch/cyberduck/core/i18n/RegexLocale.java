@@ -112,7 +112,7 @@ public class RegexLocale implements Locale {
         }
     }
 
-    private final class Key {
+    private static final class Key {
         private final String table;
         private final String key;
 
