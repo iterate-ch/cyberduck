@@ -1,0 +1,597 @@
+﻿
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "3"; */
+"3.title" = "Inställningar";
+
+/* Class = "NSTabViewItem"; label = "General"; ObjectID = "6"; */
+"6.label" = "Allmänt";
+
+/* Class = "NSTabViewItem"; label = "Browser"; ObjectID = "8"; */
+"8.label" = "Fillista";
+
+/* Class = "NSTabViewItem"; label = "Transfers"; ObjectID = "10"; */
+"10.label" = "Överföringar";
+
+/* Class = "NSTabViewItem"; label = "Editor"; ObjectID = "12"; */
+"12.label" = "Redigerare";
+
+/* Class = "NSTabViewItem"; label = "FTP"; ObjectID = "14"; */
+"14.label" = "FTP";
+
+/* Class = "NSTabViewItem"; label = "SFTP"; ObjectID = "16"; */
+"16.label" = "SFTP";
+
+/* Class = "NSTabViewItem"; label = "S3"; ObjectID = "18"; */
+"18.label" = "S3";
+
+/* Class = "NSTabViewItem"; label = "Google Docs"; ObjectID = "20"; */
+"20.label" = "Google Docs";
+
+/* Class = "NSTabViewItem"; label = "Bandwidth"; ObjectID = "22"; */
+"22.label" = "Bandbredd";
+
+/* Class = "NSTabViewItem"; label = "Connection"; ObjectID = "24"; */
+"24.label" = "Anslutning";
+
+/* Class = "NSTabViewItem"; label = "Update"; ObjectID = "26"; */
+"26.label" = "Uppdatering";
+
+/* Class = "NSTabViewItem"; label = "Language"; ObjectID = "28"; */
+"28.label" = "Språk";
+
+/* Class = "NSBox"; title = "Browser"; ObjectID = "31"; */
+"31.title" = "Fillista";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "34"; */
+"34.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "35"; */
+"35.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Open new browser window on startup"; ObjectID = "37"; */
+"37.title" = "Öppna nytt fönster vid start";
+
+/* Class = "NSTextFieldCell"; title = "Connect to bookmark:"; ObjectID = "39"; */
+"39.title" = "Anslut till bokmärke:";
+
+/* Class = "NSButtonCell"; title = "Save Workspace"; ObjectID = "41"; */
+"41.title" = "Återställ anslutningarna vid start";
+
+/* Class = "NSTextFieldCell"; title = "Will save all open browsers when quitting and restore the connections upon relaunch."; ObjectID = "43"; */
+"43.title" = "Sparar alla öppna fönster när programmet avslutas och öppnar automatiskt anslutningarna igen nästa gång programmet startas.";
+
+/* Class = "NSTextFieldCell"; title = "Open an empty browser when opening the application. A connection to the selected bookmark is opened for a new browser."; ObjectID = "45"; */
+"45.title" = "Öppna ett tomt fönster när programmet startar. Om du anger ett bokmärke öppnas en anslutning automatiskt.";
+
+/* Class = "NSBox"; title = "Connection"; ObjectID = "46"; */
+"46.title" = "Anslutning";
+
+/* Class = "NSTextFieldCell"; title = "Default protocol:"; ObjectID = "48"; */
+"48.title" = "Förvalt protokoll:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "51"; */
+"51.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "52"; */
+"52.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Use Keychain"; ObjectID = "54"; */
+"54.title" = "Spara lösenord";
+
+/* Class = "NSButtonCell"; title = "Confirm disconnect"; ObjectID = "56"; */
+"56.title" = "Bekräfta nedkoppling";
+
+/* Class = "NSTextFieldCell"; title = "Search for passwords in the Keychain. Save passwords upon successful login in the Keychain by default."; ObjectID = "58"; */
+"58.title" = "Leta efter lösenord i nyckelring. Spara lösenord automatiskt vid lyckad inloggning.";
+
+/* Class = "NSTextFieldCell"; title = "Ask before closing a connected browser window."; ObjectID = "60"; */
+"60.title" = "Fråga innan ett anslutet fönster stängs.";
+
+/* Class = "NSBox"; title = "Bookmarks"; ObjectID = "62"; */
+"62.title" = "Bokmärken";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "65"; */
+"65.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Use Small Icons"; ObjectID = "66"; */
+"66.title" = "Använd små ikoner";
+
+/* Class = "NSMenuItem"; title = "Use Medium Icons"; ObjectID = "67"; */
+"67.title" = "Använd medium ikoner";
+
+/* Class = "NSMenuItem"; title = "Use Large Icons"; ObjectID = "68"; */
+"68.title" = "Använd stora ikoner";
+
+/* Class = "NSTextFieldCell"; title = "When using small icons, only the nickname of the bookmark is displayed."; ObjectID = "70"; */
+"70.title" = "När små ikoner används, visas bara bokmärkenas smeknamn i fillistan.";
+
+/* Class = "NSBox"; title = "Appearance"; ObjectID = "71"; */
+"71.title" = "Utseende";
+
+/* Class = "NSButtonCell"; title = "Use alternating row background"; ObjectID = "73"; */
+"73.title" = "Använd alternerande bakgrund på rader";
+
+/* Class = "NSButtonCell"; title = "Horizontal Lines"; ObjectID = "75"; */
+"75.title" = "Horisontella linjer";
+
+/* Class = "NSButtonCell"; title = "Vertical Lines"; ObjectID = "77"; */
+"77.title" = "Vertikala linjer";
+
+/* Class = "NSBox"; title = "General"; ObjectID = "78"; */
+"78.title" = "Allmänt";
+
+/* Class = "NSButtonCell"; title = "Show hidden files"; ObjectID = "80"; */
+"80.title" = "Visa dolda filer";
+
+/* Class = "NSButtonCell"; title = "Double click opens file in external editor"; ObjectID = "82"; */
+"82.title" = "Dubbelklick öppnar filen i en extern redigerare";
+
+/* Class = "NSButtonCell"; title = "Info window always shows current selection"; ObjectID = "84"; */
+"84.title" = "Informationsfönstret visar alltid aktuella val";
+
+/* Class = "NSButtonCell"; title = "Use spring-loaded folders when dragging files"; ObjectID = "86"; */
+"86.title" = "Öppna mappar automatiskt när filer dras";
+
+/* Class = "NSTextFieldCell"; title = "Short"; ObjectID = "90"; */
+"90.title" = "Kort";
+
+/* Class = "NSTextFieldCell"; title = "Medium"; ObjectID = "92"; */
+"92.title" = "Medium";
+
+/* Class = "NSTextFieldCell"; title = "Long"; ObjectID = "94"; */
+"94.title" = "Lång";
+
+/* Class = "NSButtonCell"; title = "with delay:"; ObjectID = "96"; */
+"96.title" = "med fördröjning:";
+
+/* Class = "NSButtonCell"; title = "Return key selects folder or file to rename"; ObjectID = "98"; */
+"98.title" = "Använd Return-tangenten för att ändra namn på mappar och filer";
+
+/* Class = "NSTabViewItem"; label = "General"; ObjectID = "101"; */
+"101.label" = "Allmänt";
+
+/* Class = "NSButtonCell"; title = "Open downloaded files with default application"; ObjectID = "104"; */
+"104.title" = "Öppna hämtade filer med förvalt program";
+
+/* Class = "NSButtonCell"; title = "Remove when transfer completes"; ObjectID = "106"; */
+"106.title" = "Ta bort objekt när överföringen är klar";
+
+/* Class = "NSTextFieldCell"; title = "Existing Files:"; ObjectID = "108"; */
+"108.title" = "Befintliga filer:";
+
+/* Class = "NSTextFieldCell"; title = "Download Folder:"; ObjectID = "110"; */
+"110.title" = "Spara hämtade filer i:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "113"; */
+"113.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "114"; */
+"114.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Bring window to front when transfer starts"; ObjectID = "116"; */
+"116.title" = "Visa fönstret överst när överföring påbörjas";
+
+/* Class = "NSButtonCell"; title = "Close window when transfer completes"; ObjectID = "118"; */
+"118.title" = "Stäng fönstret när överföringen är klar";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "121"; */
+"121.title" = "Uppladdning";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "124"; */
+"124.title" = "Nedladdning";
+
+/* Class = "NSTextFieldCell"; title = "Existing Files:"; ObjectID = "126"; */
+"126.title" = "Befintliga filer:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "129"; */
+"129.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "130"; */
+"130.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Always overwrite when reloading"; ObjectID = "132"; */
+"132.title" = "Skriv alltid över filer vid omladdning";
+
+/* Class = "NSButtonCell"; title = "Always overwrite when reloading"; ObjectID = "134"; */
+"134.title" = "Skriv alltid över filer vid omladdning";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "137"; */
+"137.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "138"; */
+"138.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Transfer Files:"; ObjectID = "140"; */
+"140.title" = "Överför filer:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "143"; */
+"143.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Open new connection"; ObjectID = "144"; */
+"144.title" = "Öppna ny anslutning";
+
+/* Class = "NSMenuItem"; title = "Use browser connection"; ObjectID = "145"; */
+"145.title" = "Använd fillistans anslutning";
+
+/* Class = "NSButtonCell"; title = "Upload with temporary filename"; ObjectID = "147"; */
+"147.title" = "Överför med temporärt filnamn";
+
+/* Class = "NSTabViewItem"; label = "Permissions"; ObjectID = "148"; */
+"148.label" = "Behörigheter";
+
+/* Class = "NSButtonCell"; title = "Change permissions"; ObjectID = "151"; */
+"151.title" = "Ändra behörigheter";
+
+/* Class = "NSButtonCell"; title = "Change permissions"; ObjectID = "153"; */
+"153.title" = "Ändra behörigheter";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "155"; */
+"155.title" = "Skriv";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "157"; */
+"157.title" = "Kör";
+
+/* Class = "NSTextFieldCell"; title = "Others"; ObjectID = "159"; */
+"159.title" = "Övriga";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "161"; */
+"161.title" = "Skriv";
+
+/* Class = "NSTextFieldCell"; title = "Group"; ObjectID = "163"; */
+"163.title" = "Grupp";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "165"; */
+"165.title" = "Kör";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "167"; */
+"167.title" = "Kör";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "169"; */
+"169.title" = "Läs";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "171"; */
+"171.title" = "Läs";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "173"; */
+"173.title" = "Läs";
+
+/* Class = "NSTextFieldCell"; title = "Owner"; ObjectID = "175"; */
+"175.title" = "Ägare";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "177"; */
+"177.title" = "Skriv";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "179"; */
+"179.title" = "Läs";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "181"; */
+"181.title" = "Kör";
+
+/* Class = "NSTextFieldCell"; title = "Group"; ObjectID = "183"; */
+"183.title" = "Grupp";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "185"; */
+"185.title" = "Kör";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "187"; */
+"187.title" = "Läs";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "189"; */
+"189.title" = "Läs";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "191"; */
+"191.title" = "Kör";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "193"; */
+"193.title" = "Skriv";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "195"; */
+"195.title" = "Skriv";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "197"; */
+"197.title" = "Skriv";
+
+/* Class = "NSTextFieldCell"; title = "Others"; ObjectID = "199"; */
+"199.title" = "Övriga";
+
+/* Class = "NSTextFieldCell"; title = "Owner"; ObjectID = "201"; */
+"201.title" = "Ägare";
+
+/* Class = "NSButtonCell"; title = "to the permissions of the local file or folder"; ObjectID = "203"; */
+"203.title" = "till de behörigheter filen eller mappen har lokalt";
+
+/* Class = "NSButtonCell"; title = "to these permissions:"; ObjectID = "205"; */
+"205.title" = "till följande behörigheter:";
+
+/* Class = "NSButtonCell"; title = "to the permissions of the remote file or folder"; ObjectID = "207"; */
+"207.title" = "till de behörigheter filen eller mappen har på servern";
+
+/* Class = "NSButtonCell"; title = "to these permissions:"; ObjectID = "209"; */
+"209.title" = "till följande behörigheter:";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "212"; */
+"212.title" = "Nedladdning";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "215"; */
+"215.title" = "Uppladdning";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "218"; */
+"218.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "for Files"; ObjectID = "219"; */
+"219.title" = "för filer";
+
+/* Class = "NSMenuItem"; title = "for Folders"; ObjectID = "220"; */
+"220.title" = "för mappar";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "223"; */
+"223.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "for Files"; ObjectID = "224"; */
+"224.title" = "för filer";
+
+/* Class = "NSMenuItem"; title = "for Folders"; ObjectID = "225"; */
+"225.title" = "för mappar";
+
+/* Class = "NSTabViewItem"; label = "Timestamps"; ObjectID = "226"; */
+"226.label" = "Tidsstämplar";
+
+/* Class = "NSButtonCell"; title = "Preserve modification date"; ObjectID = "229"; */
+"229.title" = "Bibehåll ändringsdatum";
+
+/* Class = "NSButtonCell"; title = "Preserve modification date"; ObjectID = "231"; */
+"231.title" = "Bibehåll ändringsdatum";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "234"; */
+"234.title" = "Nedladdning";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "237"; */
+"237.title" = "Uppladdning";
+
+/* Class = "NSTabViewItem"; label = "Filter"; ObjectID = "238"; */
+"238.label" = "Filter";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "242"; */
+"242.title" = "Nedladdning";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "245"; */
+"245.title" = "Uppladdning";
+
+/* Class = "NSButtonCell"; title = "Skip files matching the regular expression:"; ObjectID = "257"; */
+"257.title" = "Hoppa över filer som matchar reguljärt uttryck:";
+
+/* Class = "NSButtonCell"; title = "Skip files matching the regular expression:"; ObjectID = "259"; */
+"259.title" = "Hoppa över filer som matchar reguljärt uttryck:";
+
+/* Class = "NSButtonCell"; title = "Default"; ObjectID = "261"; */
+"261.title" = "Förvalt";
+
+/* Class = "NSButtonCell"; title = "Default"; ObjectID = "263"; */
+"263.title" = "Förvalt";
+
+/* Class = "NSBox"; title = "Default Protocol Handler"; ObjectID = "265"; */
+"265.title" = "Förvald protokollhanterare";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "268"; */
+"268.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "269"; */
+"269.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select the default application to be opened for files or links pointing to an FTP location."; ObjectID = "271"; */
+"271.title" = "Ange förvalt program som öppnas för filer eller länkar som hänvisar till en FTP-adress.";
+
+/* Class = "NSBox"; title = "Default Protocol Handler"; ObjectID = "273"; */
+"273.title" = "Förvald protokollhanterare";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "276"; */
+"276.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "277"; */
+"277.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select the default application to be opened for files or links pointing to an SFTP location."; ObjectID = "279"; */
+"279.title" = "Ange förvalt program som öppnas för filer eller länkar som hänvisar till en SFTP-adress.";
+
+/* Class = "NSBox"; title = "Text Encoding"; ObjectID = "281"; */
+"281.title" = "Teckenkodning";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "284"; */
+"284.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "285"; */
+"285.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "The selected default text encoding is used to convert characters in filenames displayed in the browser. This should match the text encoding used on the server."; ObjectID = "287"; */
+"287.title" = "Den angivna teckenkodningen används för att omvandla tecken i filnamn som visas i fillistan. Den skall matcha den teckenkodning som används av servern.";
+
+/* Class = "NSBox"; title = "Proxies"; ObjectID = "288"; */
+"288.title" = "Proxyserver";
+
+/* Class = "NSButtonCell"; title = "Change Settings…"; ObjectID = "290"; */
+"290.title" = "Ändra inställningar…";
+
+/* Class = "NSButtonCell"; title = "Use system proxy settings"; ObjectID = "292"; */
+"292.title" = "Använd operativsystemets inställningar för proxy";
+
+/* Class = "NSBox"; title = "Timeouts"; ObjectID = "293"; */
+"293.title" = "Tidsgränser";
+
+/* Class = "NSTextFieldCell"; title = "Timeout for opening connections (seconds):"; ObjectID = "295"; */
+"295.title" = "Tidsgräns för upprättande av anslutning (sekunder):";
+
+/* Class = "NSTextFieldCell"; title = "Number of retries:"; ObjectID = "301"; */
+"301.title" = "Antal försök:";
+
+/* Class = "NSTextFieldCell"; title = "with delay (seconds):"; ObjectID = "303"; */
+"303.title" = "med fördröjning (sekunder):";
+
+/* Class = "NSButtonCell"; title = "Repeat failed networking tasks"; ObjectID = "305"; */
+"305.title" = "Upprepa misslyckade nätverksåtgärder";
+
+/* Class = "NSBox"; title = "Update"; ObjectID = "316"; */
+"316.title" = "Uppdatering";
+
+/* Class = "NSButtonCell"; title = "Automatically check for updates in"; ObjectID = "318"; */
+"318.title" = "Leta automatiskt efter uppdateringar";
+
+/* Class = "NSButtonCell"; title = "Check for Update Now"; ObjectID = "320"; */
+"320.title" = "Sök efter uppdatering";
+
+/* Class = "NSDateFormatter"; ibShadowedDateFormat = "%x"; ObjectID = "323"; */
+"323.ibShadowedDateFormat" = "%x";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "326"; */
+"326.title" = "OtherViews";
+
+/* Class = "NSBox"; title = "Throttle Transfers"; ObjectID = "328"; */
+"328.title" = "Bandbreddsbegränsning";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "331"; */
+"331.title" = "Nedladdning";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "334"; */
+"334.title" = "Uppladdning";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "337"; */
+"337.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Unlimited Bandwidth"; ObjectID = "338"; */
+"338.title" = "Obegränsad bandbredd";
+
+/* Class = "NSTextFieldCell"; title = "Maximum Throughput:"; ObjectID = "341"; */
+"341.title" = "Maximal hastighet:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "344"; */
+"344.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Unlimited Bandwidth"; ObjectID = "345"; */
+"345.title" = "Obegränsad bandbredd";
+
+/* Class = "NSTextFieldCell"; title = "Maximum Throughput:"; ObjectID = "348"; */
+"348.title" = "Maximal hastighet:";
+
+/* Class = "NSBox"; title = "Encryption"; ObjectID = "350"; */
+"350.title" = "Kryptering";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "353"; */
+"353.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Choose the algorithm to encrypt files with on upload."; ObjectID = "355"; */
+"355.title" = "Välj algoritmen för att kryptera filer vid överföring.";
+
+/* Class = "NSBox"; title = "Default Bucket Location"; ObjectID = "356"; */
+"356.title" = "Förvald plats för buckets";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "359"; */
+"359.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "The geographic location in which buckets will be created by default."; ObjectID = "361"; */
+"361.title" = "Förvald geografisk plats för nya buckets.";
+
+/* Class = "NSBox"; title = "Default Storage Class"; ObjectID = "362"; */
+"362.title" = "Förvald lagringsklass";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "365"; */
+"365.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy."; ObjectID = "367"; */
+"367.title" = "Välj Reduced Redundancy Storage (RRS) för att reducera kostnader genom att lagra icke-kritisk, återskapningsbar data på lägre nivåer av redundans.";
+
+/* Class = "NSBox"; title = "Editor"; ObjectID = "369"; */
+"369.title" = "Redigerare";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "372"; */
+"372.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "373"; */
+"373.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select a text editor to open files with by default if no other application installed can be found to edit a given file type."; ObjectID = "375"; */
+"375.title" = "Ange en textredigerare som förval. Textredigeraren måste vara installerad och ha stöd för ODB-gränssnittet.";
+
+/* Class = "NSButtonCell"; title = "Always use this application"; ObjectID = "377"; */
+"377.title" = "Använd alltid det här programmet";
+
+/* Class = "NSBox"; title = "Language"; ObjectID = "409"; */
+"409.title" = "Språk";
+
+/* Class = "NSTextFieldCell"; title = "Changes take effect the next time you open the application."; ObjectID = "411"; */
+"411.title" = "Ändringar träder i kraft nästa gång du öppnar programmet.";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "414"; */
+"414.title" = "OtherViews";
+
+/* Class = "NSBox"; title = "Default ACL"; ObjectID = "413-ca-YoL"; */
+"413-ca-YoL.title" = "Förvalt ACL";
+
+/* Class = "NSTextFieldCell"; title = "Choose the predefined set of grantees and permissions to apply to new buckets and files."; ObjectID = "4Yf-WE-fsN"; */
+"4Yf-WE-fsN.title" = "Välj fördefinierad uppsättning av övertagare och behörigheter att tillämpa på nya buckets och filer.";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "8oB-mo-TeL"; */
+"8oB-mo-TeL.title" = "OtherViews";
+
+/* Class = "NSButtonCell"; title = "Segmented downloads with multiple connections per file"; ObjectID = "Dvz-7i-NUp"; */
+"Dvz-7i-NUp.title" = "Segmenterad hämtning med flera anslutningar per fil";
+
+/* Class = "NSBox"; title = "Default Storage Class"; ObjectID = "H10-BD-7Zg"; */
+"H10-BD-7Zg.title" = "Förvald lagringsklass";
+
+/* Class = "NSButtonCell"; title = "Verify checksum"; ObjectID = "JQr-Vn-9Xj"; */
+"JQr-Vn-9Xj.title" = "Verifiera checksumma";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "LOt-Ur-gZL"; */
+"LOt-Ur-gZL.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "OF7-e3-pIZ"; */
+"OF7-e3-pIZ.title" = "Uppladdning";
+
+/* Class = "NSButtonCell"; title = "Enable debug log"; ObjectID = "Ocq-JC-4Gq"; */
+"Ocq-JC-4Gq.title" = "Aktivera avlusningslogg";
+
+/* Class = "NSButtonCell"; title = "Show in Finder"; ObjectID = "Pw4-rQ-xRd"; */
+"Pw4-rQ-xRd.title" = "Visa i Finder";
+
+/* Class = "NSTextFieldCell"; title = "Choose the predefined set of grantees and permissions to apply to new buckets and files."; ObjectID = "Qg3-4s-tpR"; */
+"Qg3-4s-tpR.title" = "Välj fördefinierad uppsättning av övertagare och behörigheter att tillämpa på nya buckets och filer.";
+
+/* Class = "NSTextFieldCell"; title = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy."; ObjectID = "SEJ-MV-ehv"; */
+"SEJ-MV-ehv.title" = "Välj Reduced Redundancy Storage (RRS) för att reducera kostnader genom att lagra icke-kritisk, återskapningsbar data på lägre nivåer av redundans.";
+
+/* Class = "NSBox"; title = "Default Bucket Location"; ObjectID = "V1l-Oi-w0c"; */
+"V1l-Oi-w0c.title" = "Förvald plats för buckets";
+
+/* Class = "NSTabViewItem"; label = "Checksum"; ObjectID = "VK5-4m-22V"; */
+"VK5-4m-22V.label" = "Checksumma";
+
+/* Class = "NSTextFieldCell"; title = "The geographic location in which buckets will be created by default."; ObjectID = "Vaz-8e-u1G"; */
+"Vaz-8e-u1G.title" = "Förvald geografisk plats för nya buckets.";
+
+/* Class = "NSBox"; title = "Cryptomator"; ObjectID = "Xoe-j6-yKO"; */
+"Xoe-j6-yKO.title" = "Cryptomator";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "diO-fA-NtZ"; */
+"diO-fA-NtZ.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "jMp-5G-M0R"; */
+"jMp-5G-M0R.title" = "Nedladdning";
+
+/* Class = "NSButtonCell"; title = "Verify checksum"; ObjectID = "ksK-EV-u9o"; */
+"ksK-EV-u9o.title" = "Verifiera checksumma";
+
+/* Class = "NSBox"; title = "Log"; ObjectID = "lZs-z3-3nW"; */
+"lZs-z3-3nW.title" = "Loggning";
+
+/* Class = "NSButtonCell"; title = "Auto detect and open vault in browser"; ObjectID = "lsw-7x-O1N"; */
+"lsw-7x-O1N.title" = "Upptäck automatiskt och öppna vault i fillista";
+
+/* Class = "NSBox"; title = "Browser"; ObjectID = "mev-Su-J1f"; */
+"mev-Su-J1f.title" = "Fillista";
+
+/* Class = "NSTabViewItem"; label = "Cryptomator"; ObjectID = "prD-Uh-R1Z"; */
+"prD-Uh-R1Z.label" = "Cryptomator";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "rw5-0E-6t1"; */
+"rw5-0E-6t1.title" = "OtherViews";
+
+/* Class = "NSBox"; title = "Default ACL"; ObjectID = "y8O-CF-T0G"; */
+"y8O-CF-T0G.title" = "Förvalt ACL";
