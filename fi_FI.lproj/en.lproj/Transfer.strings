@@ -1,0 +1,63 @@
+﻿/* NSTextField (Local File:) : <title:Local File:> (oid:123) */
+"Local File:" = "Paikallinen tiedosto:";
+
+/* NSTextField (URL:) : <title:URL:> (oid:122) */
+"URL:" = "URL:";
+
+/* NSMenuItem : <title:Unlimited Bandwidth> (oid:163) */
+"Unlimited Bandwidth" = "Rajoittamaton kaista";
+
+"Overwrite all files" = "Korvaa kaikki tiedostot";
+"Append existing files" = "Liitä olemassaoleviin tiedostoihin";
+"Rename transferred files with a timestamp appended to the filename" = "Uudelleennimeä siirretyt tiedostot lisäämällä aikaleima tiedostonnimeen";
+"Rename existing files with timestamp appended to filename" = "Uudelleennimeä olemassaolevat tiedostot lisäämällä aikaleima tiedostonnimeen";
+"Skip transfer of files that already exist" = "Ohita tiedostosiirto tiedostoilta jotka ovat jo olemassa";
+"Prompt for action on every file" = "Kysy toiminta jokaiselle tiedostolle";
+"Skip files that match size, modification date or checksum" = "Ohita tiedostot jossa sama koko, muutosaika tai tarkiste";
+/* Synchronization */
+"Download changed and missing files" = "Lataa muuttuneet ja puuttuvat tiedostot";
+"Upload changed and missing files" = "Vie muuttuneet ja puuttuvat tiedostot";
+"Download and Upload" = "Lataa ja vie";
+
+/* Transfer action for existing files. */
+"Overwrite" = "Korvaa";
+"Overwrite all files" = "Korvaa kaikki tiedostot";
+
+/* Toolbar item in Transfer Window. Transfer action for existing files */
+"Resume" = "Jatka";
+"Append existing files" = "Liitä olemassaoleviin tiedostoihin";
+
+/* Transfer action for existing files */
+"Rename existing" = "Nimea olemassaoleva uudelleen";
+"Rename existing files with timestamp appended to filename" = "Uudelleennimeä olemassaolevat tiedostot lisäämällä aikaleima tiedostonnimeen";
+"Rename" = "Nimeä uudelleen";
+"Move" = "Move";
+"Rename transferred files with a timestamp appended to the filename" = "Uudelleennimeä siirretyt tiedostot lisäämällä aikaleima tiedostonnimeen";
+
+/* Transfer action for existing files */
+"Skip" = "Ohita";
+"Skip transfer of files that already exist" = "Ohita tiedostosiirto tiedostoilta jotka ovat jo olemassa";
+"Compare" = "Vertaa";
+"Skip files that match size, modification date or checksum" = "Ohita tiedostot jossa sama koko, muutosaika tai tarkiste";
+
+/* Toolbar item */
+"Trash" = "Roskakori";
+"Move files that already exist to the Trash" = "Siirrä olemassaolevat tiedostot roskakoriin";
+
+/* Synchronization actions */
+"Download changed and missing files" = "Lataa muuttuneet ja puuttuvat tiedostot";
+"Upload changed and missing files" = "Vie muuttuneet ja puuttuvat tiedostot";
+"Download and Upload" = "Lataa ja vie";
+
+/* Synchronize option */
+"Mirror" = "Peilaus";
+
+/* NSMenuItem (Neue Verbindung öffnen) : <title:Open new connection> (oid:144) */
+"Open single connection" = "Avaa uusi yhteys";
+
+/* NSMenuItem (Use browser connection) : <title:Use browser connection> (oid:145) */
+"Use browser connection" = "Käytä selaimen yhteyttä";
+"Open multiple connections" = "Avaa useampia yhteyksiä";
+"Connections" = "Yhteydet";
+"{0} Connections" = "{0} yhteyttä";
+"Log" = "Loki";
