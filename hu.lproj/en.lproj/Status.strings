@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Bejelentkezés mint {0}";
+"Calculate checksum for {0}" = "Checksum ellenőrzése {0}";
+
+"Deleting {0}" = "{0} törlése";
+"Disconnected" = "Lecsatlakozva";
+"Disconnecting {0}" = "Lecsatlakozás {0}";
+"Downloading {0}" = "{0} letöltés";
+/* Connection type opened */
+"{0} connection opened" = "{0} kapcsolat nyitva";
+
+/* Reading size of file. */
+"Getting size of {0}" = "{0} méretének megszerzése";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "{0} időbélyegének megszerzése";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "{0} engedélyének megszerzése ";
+
+/* No activity */
+"Idle" = "Tétlen";
+"Listing directory {0}" = "{0} mappa listázása";
+"Making directory {0}" = "{0} mappa létrehozása";
+"Maximum allowed connections exceeded. Waiting" = "A kapcsolatok száma elérte a maximális számot. Várakozás…";
+"Mounting {0}" = "{0} csatlakoztatása";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Nincs megbízható tanúsítvány";
+"Opening {0} connection to {1}" = "{0} kapcsolat megnyitása {1}";
+"SFTP subsystem ready" = "SFTP alrendszer kész";
+"SCP subsystem ready" = "SCP alrendszer kész";
+"Starting SFTP subsystem" = "SFTP alrendszer indítása";
+"Starting SCP subsystem" = "SCP alrendszer indítása";
+"Uploading {0}" = "{0} feltöltése";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Átnevez {0}  {1} -re";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = " {0} másolása ide {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "{0} tulajdonosának megváltoztatása {1} -re";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "{0} csoport megváltoztatása {1} -re";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "{0} engedélyének megváltoztatása {1} -re";
+"Changing timestamp of {0} to {1}" = "{0} időbélyegének módosítása erre: {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} másodperc van hátra";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} perc van hátra";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} óra van hátra";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Megoldás {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Próbálja újra {0} másodperc múlva,  (ennyiszer {1})";
+"Transfer complete" = "Átvitel befejezve";
+"Transfer incomplete" = "Átvitel hiányos";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "{0} Forgalmazás engedélyezése";
+"Disable {0} Distribution" = "{0} Forgalmazás kikapcsolása";
+
+/* Compress and expand archives */
+"Archiving {0}" = "{0} archiválása";
+"Unarchiving {0}" = "{0} kicsomagolása";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "{0} MD5 hash kiszámítása";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "{0} metaadat olvasása";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "{0} metaadat írása";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Felkészít {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "{0} CDN konfiguráció olvasása";
+"Writing CDN configuration of {0}" = "{0} CDN konfiguráció írása";
+
+/* Growl Notification */
+"Connection failed" = "Kapcsolódás sikertelen";
+
+/* Growl Notification */
+"Connection opened" = "Kapcsolat nyitva";
+
+/* Growl Notification */
+"Download complete" = "Letöltés kész";
+
+/* Growl Notification */
+"Synchronization complete" = "Szinkronizálás kész";
+
+/* Growl Notification */
+"Upload complete" = "Feltöltés kész";
+
+/* Growl Notification */
+"Download failed" = "Letöltés sikertelen";
+
+/* Growl Notification */
+"Upload failed" = "Feltöltés sikertelen";
+
+/* Growl Notification */
+"Transfer queued" = "Az átvitel sorban áll";
