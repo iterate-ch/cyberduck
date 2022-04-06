@@ -1,0 +1,21 @@
+﻿
+/* Class = "NSButtonCell"; title = "Continue"; ObjectID = "6"; */
+"6.title" = "Continuar";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "8"; */
+"8.title" = "Cancelar";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "17"; */
+"17.title" = "Outras vistas";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "18"; */
+"18.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Details"; ObjectID = "25"; */
+"25.title" = "Detalhes";
+
+/* Class = "NSTextFieldCell"; title = "Local File:"; ObjectID = "40"; */
+"40.title" = "Ficheiro local:";
+
+/* Class = "NSTextFieldCell"; title = "Remote File:"; ObjectID = "42"; */
+"42.title" = "Ficheiro remoto:";
