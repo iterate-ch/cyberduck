@@ -33,6 +33,7 @@ import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -113,9 +114,9 @@ public abstract class LicenseFactory extends Factory<License> {
         }
         try {
             final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-            return name.newInstance().open(file);
+            return name.getDeclaredConstructor().newInstance().open(file);
         }
-        catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
@@ -133,14 +134,14 @@ public abstract class LicenseFactory extends Factory<License> {
             final String clazz = preferences.getProperty("factory.licensefactory.class");
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-                final List<License> list = new ArrayList<License>(name.newInstance().open());
+                final List<License> list = new ArrayList<>(name.getDeclaredConstructor().newInstance().open());
                 list.removeIf(key -> !key.verify(callback));
                 if(list.isEmpty()) {
                     return LicenseFactory.EMPTY_LICENSE;
                 }
                 return list.iterator().next();
             }
-            catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+            catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new FactoryException(e.getMessage(), e);
             }
         }

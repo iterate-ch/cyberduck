@@ -32,6 +32,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +49,9 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
                 throw new FactoryException();
             }
             final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(clazz);
-            return name.newInstance();
+            return name.getDeclaredConstructor().newInstance();
         }
-        catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

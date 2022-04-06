@@ -44,11 +44,11 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", timezone.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(timezone);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

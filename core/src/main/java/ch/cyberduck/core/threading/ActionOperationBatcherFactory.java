@@ -40,11 +40,11 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", batchsize.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(batchsize);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledActionOperationBatcher();
         }

@@ -44,11 +44,11 @@ public class VaultFactory extends Factory<Vault> {
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(directory, masterkey, config, pepper);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return Vault.DISABLED;
         }
