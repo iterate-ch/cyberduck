@@ -21,6 +21,8 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.threading.BackgroundActionState;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,12 +34,15 @@ import java.util.concurrent.locks.ReentrantLock;
 public class StatefulSessionPool extends StatelessSessionPool {
     private static final Logger log = LogManager.getLogger(StatefulSessionPool.class);
 
+    private final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
     private final Lock lock = new ReentrantLock();
+    private final ConnectionService connect;
     private final Session<?> session;
 
     public StatefulSessionPool(final ConnectionService connect, final Session<?> session,
                                final TranscriptListener transcript, final VaultRegistry registry) {
         super(connect, session, transcript, registry);
+        this.connect = connect;
         this.session = session;
     }
 
@@ -49,7 +54,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
             }
             lock.lock();
         }
-        catch(IllegalMonitorStateException e) {
+        catch(final IllegalMonitorStateException e) {
             log.warn(String.format("Failure acquiring lock for %s", session));
             throw new ConnectionCanceledException(e);
         }
@@ -58,15 +63,28 @@ public class StatefulSessionPool extends StatelessSessionPool {
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        super.release(conn, failure);
+        lock.lock();
         try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Release lock for connection %s", session));
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                log.warn(String.format("Close session %s after failure %s", session, failure));
+                try {
+                    connect.close(conn);
+                }
+                catch(final BackgroundException e) {
+                    log.warn(String.format("Ignore failure %s closing connection", e.getMessage()));
+                }
             }
-            lock.unlock();
         }
-        catch(IllegalMonitorStateException ignored) {
-            log.warn(String.format("Failure releasing lock for %s", session));
+        finally {
+            try {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Release lock for connection %s", session));
+                }
+                lock.unlock();
+            }
+            catch(final IllegalMonitorStateException ignored) {
+                log.warn(String.format("Failure releasing lock for %s", session));
+            }
         }
     }
 
@@ -76,7 +94,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
         try {
             lock.unlock();
         }
-        catch(IllegalMonitorStateException ignored) {
+        catch(final IllegalMonitorStateException ignored) {
             log.warn(String.format("Failure releasing lock for %s", session));
         }
     }
@@ -87,7 +105,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
         try {
             lock.unlock();
         }
-        catch(IllegalMonitorStateException ignored) {
+        catch(final IllegalMonitorStateException ignored) {
             log.warn(String.format("Failure releasing lock for %s", session));
         }
     }
