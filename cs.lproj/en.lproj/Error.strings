@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "Selhalo získávání obsahu složky {0}";
+
+/* Touch file failed */
+"Cannot create {0}" = "Nelze vytvořit soubor {0}";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Nelze vytvořit složku {0}";
+
+/* Moving file failed */
+"Cannot rename {0}" = "Nelze přejmenovat soubor {0}";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Nelze získat atributy souboru";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Nelze změnit atributy souboru";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Nelze smazat soubor {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "Nelze změnit vlastníka";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Nelze změnit skupinu";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "Nelze změnit oprávnění";
+"Cannot change timestamp of {0}" = "Nelze změnit čas";
+
+/* Mount failure */
+"Connection failed" = "Spojení bylo neočekávaně ukončeno";
+
+/* Transfer failure */
+"Download {0} failed" = "Kopírování (download) selhalo";
+
+/* Transfer failure */
+"Upload {0} failed" = "Kopírování (upload) selhalo";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Nelze načíst nastavení CDN";
+"Cannot write CDN configuration" = "Nelze zapsat nastavení CDN";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Nelze načíst nastavení";
+
+"Interoperability failure" = "Selhání spolupráce";
+"Access denied" = "Přístup odepřen";
+"File not found" = "Soubor nenalezen";
+"Insufficient disk space" = "Nedostatek volného místa na disku";
+
+"DNS lookup for {0} failed" = "Nelze nalézt DNS záznam pro {0}";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Byla nalezena neshoda mezi MD5 hash {0} kopírovaných dat a ETag {1} vrácených serverem";
+
+"Insufficient disk space" = "Nedostatek volného místa na disku";
+"Only {0} available disk space" = "Je k dispozici pouze {0} místa na disku";
+
+"Insufficient disk space" = "Nedostatek volného místa na disku";
+"Only {0} available disk space" = "Je k dispozici pouze {0} místa na disku";
