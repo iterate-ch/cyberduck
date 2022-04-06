@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "授權為 {0}";
+"Calculate checksum for {0}" = "Calculate checksum for {0}";
+
+"Deleting {0}" = "刪除中 {0}";
+"Disconnected" = "斷線";
+"Disconnecting {0}" = "正在断开 {0} 连接";
+"Downloading {0}" = "下載中 {0}";
+/* Connection type opened */
+"{0} connection opened" = "{0} 連線已開啟";
+
+/* Reading size of file. */
+"Getting size of {0}" = "取得檔案大小的資訊 {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "取得時間的資訊 {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "正在获取 {0} 的权限信息";
+
+/* No activity */
+"Idle" = "待機中";
+"Listing directory {0}" = "列表中 {0}";
+"Making directory {0}" = "建立目錄 {0}";
+"Maximum allowed connections exceeded. Waiting" = "超過允許的連線上限，等待中⋯";
+"Mounting {0}" = "掛載中 {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "無可信任的憑證";
+"Opening {0} connection to {1}" = "正在開啟 {0} 連線至 {1}";
+"SFTP subsystem ready" = "SFTP 子系统已开启";
+"SCP subsystem ready" = "SCP 子系统已开启";
+"Starting SFTP subsystem" = "正在启动 SFTP 子系统";
+"Starting SCP subsystem" = "正在启动 SCP 子系统";
+"Uploading {0}" = "正在上传 {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "从 {0} 重命名为 {1} ";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "从 {0} 复制到 {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "更改持有人為 {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "更改所屬群組為 {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "更改取用權限為 {1}";
+"Changing timestamp of {0} to {1}" = "更改時間戳記由{0}至{1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} 秒鐘至完成";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} 分鐘至完成";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} 小时后完成";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "正在解析 {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "将于 {0} 秒后重试 (还将尝试 {1} 次)";
+"Transfer complete" = "传输完成";
+"Transfer incomplete" = "传输未完成";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "启用 {0} 分发";
+"Disable {0} Distribution" = "禁用 {0} 分发";
+
+/* Compress and expand archives */
+"Archiving {0}" = "正在封存 {0}";
+"Unarchiving {0}" = "正在替 {0} 解除封存";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "计算 {0} 的 MD5 哈希值";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "正在读取 {0} 的元数据";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "正在写入 {0} 的元数据";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Prepare {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "正在读取 {0} 的内容分发网络设置";
+"Writing CDN configuration of {0}" = "正在写入 {0} 的内容分发网络设置";
+
+/* Growl Notification */
+"Connection failed" = "連線失敗";
+
+/* Growl Notification */
+"Connection opened" = "連線已開啟";
+
+/* Growl Notification */
+"Download complete" = "下載完畢";
+
+/* Growl Notification */
+"Synchronization complete" = "同步完畢";
+
+/* Growl Notification */
+"Upload complete" = "上傳完畢";
+
+/* Growl Notification */
+"Download failed" = "下載失敗";
+
+/* Growl Notification */
+"Upload failed" = "上傳失敗";
+
+/* Growl Notification */
+"Transfer queued" = "传输已添加至队列";
