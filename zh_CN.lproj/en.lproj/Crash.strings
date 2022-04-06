@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "您想将上一次意外退出的报告发送给软件作者么？";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "应用程序 %@ 意外退出。您可以将意外退出报告发送给软件的作者，帮助作者尽快修复错误。";
+
+/* Name of OK button in alert window: */
+"Send" = "发送";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "不发送";
+
