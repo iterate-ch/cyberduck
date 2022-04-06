@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "你要回報程式錯誤嗎？";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "%@ 程式發生錯誤，你可以送出錯誤記錄檔作為作者修改的參考，你要送出錯誤報告嗎？";
+
+/* Name of OK button in alert window: */
+"Send" = "傳送";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "不送出";
+
