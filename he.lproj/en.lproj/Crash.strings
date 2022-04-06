@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "האם ברצונך לדווח על התקלה האחרונה?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "היישום %@ נתקל בתקלה.  בכדי לעזור לשפר אותה, ניתן לשלוח את לוג התקלה לכותב התכנה, כדי שיוכל להשתמש במידע לפתרון הכעיה.  האם ברצונך לדווח על התקלה?";
+
+/* Name of OK button in alert window: */
+"Send" = "שלח";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "אל תשלח";
+
