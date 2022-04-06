@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Желаете ли да докладвате последния срив?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Приложението „%@” наскоро претърпя срив. За да допринесете за подобряването му, може да изпратите информация за срива до автора.";
+
+/* Name of OK button in alert window: */
+"Send" = "Изпращане";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Отказ";
+
