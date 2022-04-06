@@ -21,7 +21,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,7 +38,6 @@ public class S3BucketListService implements RootListService {
     private static final Logger log = LogManager.getLogger(S3BucketListService.class);
 
     private final S3Session session;
-    private final PathContainerService containerService;
     private final S3LocationFeature.S3Region region;
 
     public S3BucketListService(final S3Session session) {
@@ -49,7 +47,6 @@ public class S3BucketListService implements RootListService {
     public S3BucketListService(final S3Session session, final S3LocationFeature.S3Region region) {
         this.session = session;
         this.region = region;
-        this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
