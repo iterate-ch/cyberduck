@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -42,7 +43,9 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(fileid.getVersionId(file, new DisabledListProgressListener()));
+        final String versionId = fileid.getVersionId(file, new DisabledListProgressListener());
+        assertNotNull(versionId);
+        assertEquals(file.attributes().getVersionId(), versionId);
         try {
             assertNull(fileid.getVersionId(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
@@ -50,6 +53,11 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
         catch(NotfoundException e) {
             // Expected
         }
+        final PathAttributes duplicate = new PathAttributes();
+        duplicate.setVersionId("d");
+        duplicate.setDuplicate(true);
+        fileid.cache(new Path(file).withAttributes(duplicate), "d");
+        assertEquals(versionId, fileid.getVersionId(file, new DisabledListProgressListener()));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
