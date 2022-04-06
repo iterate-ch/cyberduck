@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Voleu enviar la darrera fallada?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "L'aplicació %@ ha fallat recentment. Per tal d'ajudar a millorar-la podeu enviar l'informe de fallada a l'autor.";
+
+/* Name of OK button in alert window: */
+"Send" = "Envia";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "No ho enviis";
+
