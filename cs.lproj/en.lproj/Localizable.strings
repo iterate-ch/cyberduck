@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "Akce";
+"Active" = "Aktivní (PORT)";
+
+/* Window title. */
+"Activity" = "Aktivita";
+"Allow" = "Povolit";
+"Always" = "Vždy";
+
+/* Transfer action for existing files */
+"Prompt" = "Dotazovat se";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} Záložek";
+
+/* Alert sheet alternate button */
+"Cancel" = "Zrušit";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Kódování znaků";
+"Choose" = "Vybrat";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Vyčistit";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Vyprázdnit nabídku";
+
+/* Toolbar item */
+"Column" = "Sloupce";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Připojit k serveru";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Nelze otevřít nebo načíst vzdálený soubor";
+"Could not open the file" = "Nelze otevřít soubor";
+"Could not show the file" = "Nelze zobrazit soubor";
+"Could not show the file in the Finder" = "Nelze zobrazit soubor v programu Finder";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Vytvoří novou složku";
+
+/* Menu item */
+"Cut {0}" = "Vyjmout {0}";
+"Copy {0}" = "Kopírovat {0}";
+"Default" = "Výchozí";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Odstranit";
+"Delete Bookmark" = "Odstranit záložku";
+
+/* Toolbar item tooltip */
+"Delete file" = "Odstranit soubor";
+"Deny" = "Zamítnout";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Odpojit";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "Odpojit od {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Odpojit od serveru";
+"Do you want to delete the selected bookmark?" = "Přejete si odstranit vybranou záložku?";
+
+/* Toolbar item */
+"Download" = "Kopírovat (download)";
+"Download As:" = "Kopírovat (download) jako:";
+
+/* Toolbar item tooltip */
+"Download file" = "Kopírovat (download) soubor";
+"Download the selected file to…" = "Kopírovat (download) vybraný soubor do…";
+
+/* Toolbar item */
+"Edit" = "Úpravy";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Upravit soubor v aplikaci";
+
+/* Toolbar item */
+"Encoding" = "Kódování";
+
+/* Alert sheet title */
+"Error" = "Chyba";
+
+/* Quit application on Windows */
+"Exit" = "Konec";
+"File" = "Soubor";
+
+/* A column in the browser */
+"Filename" = "Jméno souboru";
+"{0} Items" = "{0} položek";
+"Folder" = "Složka";
+"FTP (File Transfer Protocol)" = "FTP (File Transfer Protocol)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Informace";
+
+/* Toolbar item */
+"Go to Folder" = "Otevřít složku";
+"History" = "Historie";
+
+"Invalid character in filename." = "Chybný znak ve jméně souboru.";
+"Invalid character in folder name." = "Chybný znak ve jméně složky.";
+
+/* A column in the browser */
+"Kind" = "Druh";
+"Extension" = "Přípona";
+"Region" = "Oblast";
+"Version" = "Verze";
+
+/* Toolbar item */
+"List" = "Ikony";
+"Local" = "Místní";
+"Local File" = "Místní soubor";
+"Mac Line Endings (CR)" = "Macintosh (CR)";
+
+/* A column in the browser */
+"Modified" = "Změněno";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Přesunout do Koše";
+"Multiple files" = "Více souborů";
+
+/* Toolbar item */
+"New Connection" = "Nové spojení";
+
+/* Toolbar item */
+"No external editor available" = "Žádná aplikace není dostupná";
+
+/* Alert sheet text */
+"No newer version available." = "Novější verze není k dispozici.";
+"No private key selected" = "Žádný soukromý klíč nebyl vybrán";
+/* Alert sheet title */
+"No update" = "Žádná novější verze";
+"None" = "Žádný";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} z {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "OK";
+"Open" = "Otevřít";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "Otevřít ve webovém prohlížeči";
+
+/* Toolbar item */
+"Outline" = "Seznam";
+
+/* A column in the browser */
+"Owner" = "Vlastník";
+
+/* A column in the browser */
+"Group" = "Skupina";
+"Passive" = "Pasivní (PASV)";
+
+/* Menu item */
+"Paste {0}" = "Vložit {0}";
+
+/* A column in the browser */
+"Permissions" = "Oprávnění";
+
+/* Toolbar item */
+"Quick Connect" = "Rychlé spojení";
+
+/* Toolbar item */
+"Quick Look" = "Rychlý náhled";
+"Quit" = "Ukončit";
+"Quit Anyway" = "Ukončit ihned";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "Smazat {0} souborů";
+
+/* Toolbar item */
+"Refresh" = "Aktualizovat";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Obnoví obsah okna";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Načíst znovu";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Odstranit";
+"Remove completed transfers from list." = "Dokončené přenosy odstranit ze seznamu.";
+
+
+"Review…" = "Ověřit…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Hledat";
+"Server File" = "Vzdálený soubor";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH File Transfer Protocol)";
+"Show" = "Zobrazit";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Zobrazit atributy souboru";
+"Show in Finder" = "Zobrazit v programu Finder";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Zobrazit okno kopírování";
+
+/* A column in the browser */
+"Size" = "Velikost";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Zastavit";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Přepne zobrazení prohlížeče";
+"Symbolic Link (File)" = "Zástupce (soubor)";
+"Symbolic Link (Folder)" = "Zástupce (složka)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Synchronizovat {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Synchronizuje soubory";
+
+/* Alert sheet text */
+"The connection will be closed." = "Spojení bude ukončeno.";
+"There are files currently being transferred. Quit anyway?" = "Ještě nebyly zkopírovány všechny soubory, které jsou ve frontě kopírování. Přejete si přesto ukončit aplikaci?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Vyskytl se problém při kontrole novějších verzí. Zkuste to prosím později.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Zobrazit/Skrýt záložky";
+"Transfer in progress" = "Probíhá kopírování";
+
+/* Toolbar item */
+"Transfers" = "Přenosy";
+
+"Auto" = "Automaticky";
+"Unknown" = "Neznámý";
+"Unknown size" = "Neznámá velikost";
+
+/* Toolbar item */
+"Upload" = "Kopírování (upload)";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Zkopíruje místní soubor na vzdálený počítač";
+
+/* Toolbar item */
+"View" = "Zobrazení";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Jste připojeni nejméně k jednomu serveru. Přejete si ověřit otevřená spojení?";
+"Open Network Diagnostics" = "Otevřít Diagnostiku sítě";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Stabilní verze";
+"Beta" = "Beta verze";
+"Snapshot Builds" = "Testovací verze";
+
+"Show Hidden Files" = "Zobrazit skryté soubory";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Skrýt řádek nástrojů";
+"Show Toolbar" = "Zobrazit řádek nástrojů";
