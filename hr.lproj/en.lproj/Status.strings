@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Autentifikacija kao {0}";
+"Calculate checksum for {0}" = "Izračunaj kontrolni zbroj od {0}";
+
+"Deleting {0}" = "Briše se {0}";
+"Disconnected" = "Odspojeno";
+"Disconnecting {0}" = "Odspaja se {0}";
+"Downloading {0}" = "Preuzima se {0}";
+/* Connection type opened */
+"{0} connection opened" = "{0} veza otvorena";
+
+/* Reading size of file. */
+"Getting size of {0}" = "Dohvaća se veličina od {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "Dohvaća se vremenska oznaka od {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "Dohvaća se dozvola od {0}";
+
+/* No activity */
+"Idle" = "Nema aktivnosti";
+"Listing directory {0}" = "Prikaz sadržaja mape {0}";
+"Making directory {0}" = "Izrada mape {0}";
+"Maximum allowed connections exceeded. Waiting" = "Prekoračen je maksimalno dopušten broj veza. Čeka se …";
+"Mounting {0}" = "Pokreće se {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Nema vjerodostojnog certifikata";
+"Opening {0} connection to {1}" = "Otvara se {0} veza prema {1}";
+"SFTP subsystem ready" = "SFTP podsustav spreman";
+"SCP subsystem ready" = "SCP podsustav spreman";
+"Starting SFTP subsystem" = "Pokreće se SFTP podsustav";
+"Starting SCP subsystem" = "Pokreće se SCP podsustav";
+"Uploading {0}" = "Prenosi se {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Preimenuje se {0} u {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "Kopira se {0} u {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "Mijenja se vlasnik za {0} u {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "Mijenja se grupa za {0} u {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "Mijenja se dozvola za {0} u {1}";
+"Changing timestamp of {0} to {1}" = "Mijenja se vremenska oznaka za {0} u {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "još {0} s";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "još {0} min";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "još {0} h";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Rješava se {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Pokušaj ponovo za {0} s (još {1} pokušaja)";
+"Transfer complete" = "Prijenos dovršen";
+"Transfer incomplete" = "Prijenos nedovršen";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Aktiviraj {0} distribuciju";
+"Disable {0} Distribution" = "Deaktiviraj {0} distribuciju";
+
+/* Compress and expand archives */
+"Archiving {0}" = "Arhivira se {0}";
+"Unarchiving {0}" = "Raspakirava se {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Izračunaj MD5 hash od {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "Čitaju se metapodaci od {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "Zapisuju se metapodaci od {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Pripremi {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "Čitanje CDN konfiguracije od {0}";
+"Writing CDN configuration of {0}" = "Zapisivanje CDN konfiguracije od {0}";
+
+/* Growl Notification */
+"Connection failed" = "Povezivanje neuspjelo";
+
+/* Growl Notification */
+"Connection opened" = "Veza otvorena";
+
+/* Growl Notification */
+"Download complete" = "Preuzimanje dovršeno";
+
+/* Growl Notification */
+"Synchronization complete" = "Sinkronizacija dovršena";
+
+/* Growl Notification */
+"Upload complete" = "Prenošenje dovršeno";
+
+/* Growl Notification */
+"Download failed" = "Preuzimanje neuspjelo";
+
+/* Growl Notification */
+"Upload failed" = "Prenošenje neuspjelo";
+
+/* Growl Notification */
+"Transfer queued" = "Prijenos stavljen u red čekanja";
