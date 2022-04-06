@@ -1,0 +1,23 @@
+﻿/* No comment provided by engineer. */
+"Set Cyberduck as default application for FTP and SFTP locations?" = "Cyberduck을 FTP나 SFTP에 대한 기본 프로그램으로 지정하시겠습니까?";
+
+/* No comment provided by engineer. */
+"As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later." = "웹브라우저와 같은 외부 응용 프로그램에서 FTP나 SFTP 링크를 클릭하면 기본 응용프로그램으로 지정된 Cyberduck이 실행됩니다. 이것을 변경하시려면 나중에 환경설정에서 하세요.";
+
+/* Apply proposed action. */
+"Change" = "변경";
+
+/* Do not display this dialog again. */
+"Don't ask again" = "다시 묻지 않기";
+
+/* Don't change anything. */
+"Cancel" = "취소";
+
+/* Bookmark import from thirdparty applications */ 
+"Import" = "가져오기";
+/* Import <<Application Name>> Bookmarks */
+"Import {0} Bookmarks" = "책갈피 {0}개 가져오기";
+/* 23 bookmarks found. */
+"{0} bookmarks found. Do you want to add these to your bookmarks?" = "{0}개의 책갈피를 발견하였습니다. 사용자의 책갈피에 추가할까요?";
+/* Write the source application into the comment field of the imported bookmark */
+"Imported from {0}" = "{0}에서 가져옴";
