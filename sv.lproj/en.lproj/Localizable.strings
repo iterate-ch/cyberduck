@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "Åtgärd";
+"Active" = "Aktiv (port)";
+
+/* Window title. */
+"Activity" = "Aktivitet";
+"Allow" = "Tillåt";
+"Always" = "Alltid";
+
+/* Transfer action for existing files */
+"Prompt" = "Fråga varje gång";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} Bokmärken";
+
+/* Alert sheet alternate button */
+"Cancel" = "Avbryt";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Teckenkodning";
+"Choose" = "Välj";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Rensa";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Rensa menyn";
+
+/* Toolbar item */
+"Column" = "Kolumn";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Anslut till server";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Kunde inte öppna eller läsa värd filen";
+"Could not open the file" = "Kunde inte öppna filen";
+"Could not show the file" = "Kunde inte visa filen";
+"Could not show the file in the Finder" = "Kunde inte visa filen i Finder";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Skapa ny mapp";
+
+/* Menu item */
+"Cut {0}" = "Klipp ut {0}";
+"Copy {0}" = "Copy {0}";
+"Default" = "Förvalt";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Radera";
+"Delete Bookmark" = "Radera bokmärke";
+
+/* Toolbar item tooltip */
+"Delete file" = "Radera fil";
+"Deny" = "Neka";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Koppla från";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "Koppla ner från {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Koppla ner från server";
+"Do you want to delete the selected bookmark?" = "Vill du radera det valda bokmärket?";
+
+/* Toolbar item */
+"Download" = "Hämta";
+"Download As:" = "Hämta som:";
+
+/* Toolbar item tooltip */
+"Download file" = "Hämta fil";
+"Download the selected file to…" = "Hämta vald fil till…";
+
+/* Toolbar item */
+"Edit" = "Redigera";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Redigera fil i extern redigerare";
+
+/* Toolbar item */
+"Encoding" = "Teckenkodning";
+
+/* Alert sheet title */
+"Error" = "Fel";
+
+/* Quit application on Windows */
+"Exit" = "Avsluta";
+"File" = "Arkiv";
+
+/* A column in the browser */
+"Filename" = "Filnamn";
+"{0} Items" = "{0} filer";
+"Folder" = "Mapp";
+"FTP (File Transfer Protocol)" = "FTP (File Transfer Protocol)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Visa info";
+
+/* Toolbar item */
+"Go to Folder" = "Gå till mapp";
+"History" = "Historik";
+
+"Invalid character in filename." = "Ogiltigt tecken i filnamnet.";
+"Invalid character in folder name." = "Ogiltigt tecken i mappnamnet.";
+
+/* A column in the browser */
+"Kind" = "Typ";
+"Extension" = "Filtillägg";
+"Region" = "Region";
+"Version" = "Version";
+
+/* Toolbar item */
+"List" = "Lista";
+"Local" = "Lokal";
+"Local File" = "Lokal fil";
+"Mac Line Endings (CR)" = "Mac-radslut (CR)";
+
+/* A column in the browser */
+"Modified" = "Ändrad";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Flytta till papperskorgen";
+"Multiple files" = "Flera filer";
+
+/* Toolbar item */
+"New Connection" = "Öppna anslutning";
+
+/* Toolbar item */
+"No external editor available" = "Ingen extern redigerare tillgänglig";
+
+/* Alert sheet text */
+"No newer version available." = "Ingen nyare version tillgänglig";
+"No private key selected" = "Ingen privat nyckel har valts";
+/* Alert sheet title */
+"No update" = "Ingen uppdatering";
+"None" = "Ingen";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} av {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "OK";
+"Open" = "Öppna";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "Öppna i webbläsare";
+
+/* Toolbar item */
+"Outline" = "Filträd";
+
+/* A column in the browser */
+"Owner" = "Ägare";
+
+/* A column in the browser */
+"Group" = "Grupp";
+"Passive" = "Passiv (PASV)";
+
+/* Menu item */
+"Paste {0}" = "Klistra in {0}";
+
+/* A column in the browser */
+"Permissions" = "Behörigheter";
+
+/* Toolbar item */
+"Quick Connect" = "Snabbanslutning";
+
+/* Toolbar item */
+"Quick Look" = "Överblick";
+"Quit" = "Avsluta";
+"Quit Anyway" = "Avsluta ändå";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "Radera {0} filer";
+
+/* Toolbar item */
+"Refresh" = "Uppdatera";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Uppdatera fillistan";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Ladda om";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Ta bort";
+"Remove completed transfers from list." = "Ta bort klara överföringar från lista.";
+
+
+"Review…" = "Granska…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Sök";
+"Server File" = "Serverfil";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH File Transfer Protocol)";
+"Show" = "Visa";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Visa filattribut";
+"Show in Finder" = "Visa i Finder";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Visa överföringsfönster";
+
+/* A column in the browser */
+"Size" = "Storlek";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Stopp";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Växla vy för fillista";
+"Symbolic Link (File)" = "Symbolisk länk (fil)";
+"Symbolic Link (Folder)" = "Symbolisk länk (mapp)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Synkronisera {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Synkronisera filer";
+
+/* Alert sheet text */
+"The connection will be closed." = "Anslutningen kommer att stängas.";
+"There are files currently being transferred. Quit anyway?" = "Filer i kön håller på att överföras. Avsluta ändå?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Sökning efter uppdatering misslyckades. Vänligen försök igen senare.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Visa/dölj bokmärken";
+"Transfer in progress" = "Överföring pågår";
+
+/* Toolbar item */
+"Transfers" = "Överföringar";
+
+"Auto" = "Automatisk";
+"Unknown" = "Okänd";
+"Unknown size" = "Okänd storlek";
+
+/* Toolbar item */
+"Upload" = "Överför";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Överför lokal fil till fjärrvärd";
+
+/* Toolbar item */
+"View" = "Visa";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Du är ansluten till en eller flera servrar. Vill du gå igenom öppna anslutningar?";
+"Open Network Diagnostics" = "Öppna nätverksdiagnos";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Release";
+"Beta" = "Beta";
+"Snapshot Builds" = "Snapshot Builds";
+
+"Show Hidden Files" = "Visa dolda filer";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Göm verktygsfält";
+"Show Toolbar" = "Visa verktygsfält";
