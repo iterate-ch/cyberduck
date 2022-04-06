@@ -1,0 +1,23 @@
+﻿/* No comment provided by engineer. */
+"Set Cyberduck as default application for FTP and SFTP locations?" = "Να οριστεί το Cyberduck ως προεπιλεγμένη εφαρμογή για τοποθεσίες FTP και SFTP;";
+
+/* No comment provided by engineer. */
+"As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later." = "Ως προεπιλεγμένη εφαρμογή, το Cyberduck θα ανοίγει όταν κάνετε κλικ σε δεσμούς FTP ή SFTP σε άλλες εφαρμογές, όπως ο φυλλομετρητής σας. Μπορείτε να αλλάξετε αυτή τη ρύθμιση στις Προτιμήσεις αργότερα.";
+
+/* Apply proposed action. */
+"Change" = "Αλλαγή";
+
+/* Do not display this dialog again. */
+"Don't ask again" = "Να μην ξαναγίνει η ερώτηση";
+
+/* Don't change anything. */
+"Cancel" = "Άκυρο";
+
+/* Bookmark import from thirdparty applications */ 
+"Import" = "Εισαγωγή";
+/* Import <<Application Name>> Bookmarks */
+"Import {0} Bookmarks" = "Εισαγωγή {0} Σελιδοδεικτών";
+/* 23 bookmarks found. */
+"{0} bookmarks found. Do you want to add these to your bookmarks?" = "{0} σελιδοδείκτες βρέθηκαν. Θέλετε να τους προσθέσετε στους σελιδοδείκτες σας;";
+/* Write the source application into the comment field of the imported bookmark */
+"Imported from {0}" = "Εισαγμένο από {0}";
