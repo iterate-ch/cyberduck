@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Ydych chi eisiau adrodd y chwalfa diwethaf?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Mae’r rhaglen %@ wedi chwalu yn ddiweddar. I gynorthwyo i’w gwella, gallwch anfon y cofnod chwalfa i’r awdur.";
+
+/* Name of OK button in alert window: */
+"Send" = "Send";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Peidio Anfon";
+
