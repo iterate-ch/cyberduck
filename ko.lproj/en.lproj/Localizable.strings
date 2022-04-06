@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "동작";
+"Active" = "사용중";
+
+/* Window title. */
+"Activity" = "활동";
+"Allow" = "허용";
+"Always" = "언제나";
+
+/* Transfer action for existing files */
+"Prompt" = "물어보기";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} 북마크";
+
+/* Alert sheet alternate button */
+"Cancel" = "취소";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "문자 인코딩";
+"Choose" = "선택";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "지움";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "메뉴 지움";
+
+/* Toolbar item */
+"Column" = "열";
+
+/* Toolbar item tooltip */
+"Connect to server" = "서버에 연결";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "호스트 파일을 열 수 없거나 읽을 수 없습니다";
+"Could not open the file" = "파일을 열 수 없습니다";
+"Could not show the file" = "파일을 보여줄 수 없습니다";
+"Could not show the file in the Finder" = "Finder에 있는 파일을 보여줄 수 없습니다";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "새 폴더 만들기";
+
+/* Menu item */
+"Cut {0}" = "{0} 오려두기";
+"Copy {0}" = "{0} 복사하기";
+"Default" = "기본 설정 값";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "삭제";
+"Delete Bookmark" = "책갈피 삭제";
+
+/* Toolbar item tooltip */
+"Delete file" = "파일 삭제";
+"Deny" = "거부";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "접속 종료";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "다음에서 연결을 끊음: {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "다음 서버에서 연결을 끊음";
+"Do you want to delete the selected bookmark?" = "선택된 책갈피를 삭제하시겠습니까?";
+
+/* Toolbar item */
+"Download" = "다운로드";
+"Download As:" = "다른 이름으로 다운로드:";
+
+/* Toolbar item tooltip */
+"Download file" = "파일 다운로드";
+"Download the selected file to…" = "선택된 파일을 위치 지정하여 다운로드…";
+
+/* Toolbar item */
+"Edit" = "편집";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "외부편집기에서 파일 편집";
+
+/* Toolbar item */
+"Encoding" = "인코딩";
+
+/* Alert sheet title */
+"Error" = "에러";
+
+/* Quit application on Windows */
+"Exit" = "종료";
+"File" = "파일";
+
+/* A column in the browser */
+"Filename" = "파일명";
+"{0} Items" = "{0}개의 파일";
+"Folder" = "폴더";
+"FTP (File Transfer Protocol)" = "FTP (File Transfer Protocol)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "정보 가져오기";
+
+/* Toolbar item */
+"Go to Folder" = "폴더로 이동";
+"History" = "접속 기록";
+
+"Invalid character in filename." = "파일 이름에 유효하지 않은 문자가 있습니다.";
+"Invalid character in folder name." = "폴더 이름에 유효하지 않은 문자가 있습니다.";
+
+/* A column in the browser */
+"Kind" = "종류";
+"Extension" = "확장자";
+"Region" = "지역";
+"Version" = "버전";
+
+/* Toolbar item */
+"List" = "목록";
+"Local" = "로컬";
+"Local File" = "로컬 파일";
+"Mac Line Endings (CR)" = "Mac 줄바꿈 문자 (CR)";
+
+/* A column in the browser */
+"Modified" = "수정일";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "휴지통으로 이동";
+"Multiple files" = "여러 파일";
+
+/* Toolbar item */
+"New Connection" = "새 연결";
+
+/* Toolbar item */
+"No external editor available" = "사용 가능한 외부 편집기가 없습니다";
+
+/* Alert sheet text */
+"No newer version available." = "더 새로운 버전은 없습니다.";
+"No private key selected" = "개인키가 선택되지 않음";
+/* Alert sheet title */
+"No update" = "업데이트 없음";
+"None" = "없음";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{1} 개 중 {0}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "승인";
+"Open" = "열기";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "웹 브라우저에서 열기";
+
+/* Toolbar item */
+"Outline" = "개요";
+
+/* A column in the browser */
+"Owner" = "소유자";
+
+/* A column in the browser */
+"Group" = "그룹";
+"Passive" = "수동";
+
+/* Menu item */
+"Paste {0}" = "{0} 붙이기";
+
+/* A column in the browser */
+"Permissions" = "권한";
+
+/* Toolbar item */
+"Quick Connect" = "빠른 연결";
+
+/* Toolbar item */
+"Quick Look" = "훑어보기";
+"Quit" = "종료";
+"Quit Anyway" = "무조건 종료";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "정말로 다음 파일을 지우시겠습니까? 이 명령은 취소가 불가능합니다.";
+
+/* Toolbar item */
+"Refresh" = "새로 고침";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "디렉토리 목록을 새로 고침";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "새로 고침";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "제거";
+"Remove completed transfers from list." = "전송완료 후 목록에서 지우기.";
+
+
+"Review…" = "검토…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "검색";
+"Server File" = "서버 파일";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH File Transfer Protocol)";
+"Show" = "보기";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "파일 속성 보기";
+"Show in Finder" = "Finder에서 보기";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "전송 윈도우 보기";
+
+/* A column in the browser */
+"Size" = "크기";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "중지";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "브라우저 보기 전환";
+"Symbolic Link (File)" = "심볼릭 링크 (파일)";
+"Symbolic Link (Folder)" = "심볼릭 링크 (폴더)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "{0}를 동기화";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "파일 동기화";
+
+/* Alert sheet text */
+"The connection will be closed." = "연결이 끊깁니다.";
+"There are files currently being transferred. Quit anyway?" = "현재 전송되고 있는 파일이 있습니다. 그래도 종료하시겠습니까?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "업데이트를 확인하는 중 문제가 발생했습니다. 나중에 다시 시도하십시오.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "책갈피 토글";
+"Transfer in progress" = "전송 중";
+
+/* Toolbar item */
+"Transfers" = "전송";
+
+"Auto" = "자동";
+"Unknown" = "알 수 없음";
+"Unknown size" = "크기 정보 없음";
+
+/* Toolbar item */
+"Upload" = "업로드";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "로컬 파일을 원격 호스트에 업로드";
+
+/* Toolbar item */
+"View" = "보기";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "한 개 이상의 사이트에 접속 중 입니다. 열린 브라우저를 검토해 보시겠습니까?";
+"Open Network Diagnostics" = "네트워크 진단 열기";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "릴리즈";
+"Beta" = "베타";
+"Snapshot Builds" = "스냅샷 빌드";
+
+"Show Hidden Files" = "숨겨진 파일 보기";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "도구 막대 숨기기";
+"Show Toolbar" = "툴바 보이기";
