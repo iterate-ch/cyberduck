@@ -23,7 +23,7 @@ public class ReadMetadataWorkerTest {
 
     @Test
     public void testEmpty() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         ReadMetadataWorker worker = new ReadMetadataWorker(files) {
             @Override
             public void cleanup(final Map<String, String> result) {
@@ -59,7 +59,7 @@ public class ReadMetadataWorkerTest {
 
     @Test
     public void testDifferent() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         files.add(new Path("a", EnumSet.of(Path.Type.file)));
         files.add(new Path("b", EnumSet.of(Path.Type.file)));
         files.add(new Path("c", EnumSet.of(Path.Type.file)));
@@ -113,7 +113,7 @@ public class ReadMetadataWorkerTest {
 
     @Test
     public void testRun() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         files.add(new Path("a", EnumSet.of(Path.Type.file)));
         files.add(new Path("b", EnumSet.of(Path.Type.file)));
         files.add(new Path("c", EnumSet.of(Path.Type.file)));
@@ -136,7 +136,7 @@ public class ReadMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) {
-                            final HashMap<String, String> map = new HashMap<String, String>();
+                            final HashMap<String, String> map = new HashMap<>();
                             switch(file.getName()) {
                                 case "a":
                                     map.put("key1", "v1");

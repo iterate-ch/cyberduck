@@ -114,7 +114,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     @Override
     public List<String> list() {
         // List of issuer distinguished name
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         try {
             final KeyStore store;
             try {
@@ -154,7 +154,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
         // List of issuer distinguished name
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         for(String alias : this.list()) {
             // returns the first element of the certificate chain of that key entry
             final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
@@ -269,7 +269,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             catch(IOException e) {
                 return null;
             }
-            final List<X509Certificate> result = new ArrayList<X509Certificate>();
+            final List<X509Certificate> result = new ArrayList<>();
             final Certificate[] chain = store.getCertificateChain(alias);
             if(null == chain) {
                 log.warn(String.format("No certificate chain for alias %s", alias));

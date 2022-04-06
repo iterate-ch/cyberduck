@@ -208,7 +208,7 @@ public class TransferCollection extends Collection<Transfer> {
 
     @Override
     public boolean addAll(java.util.Collection<? extends Transfer> c) {
-        final List<Transfer> temporary = new ArrayList<Transfer>();
+        final List<Transfer> temporary = new ArrayList<>();
         for(Transfer transfer : c) {
             if(temporary.contains(transfer)) {
                 log.warn(String.format("Reset UUID of duplicate in collection for %s", transfer));

@@ -113,7 +113,7 @@ public class TransferDictionaryTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         }));
         transfer.action(null, null, true, false, new DisabledTransferPrompt() {

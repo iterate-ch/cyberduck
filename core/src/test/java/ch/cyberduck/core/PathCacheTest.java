@@ -10,9 +10,9 @@ public class PathCacheTest {
 
     @Test
     public void testLookup() {
-        final Cache<Path> cache = new ReverseLookupCache<Path>(new PathCache(1), 1);
+        final Cache<Path> cache = new ReverseLookupCache<>(new PathCache(1), 1);
         assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
-        final AttributedList<Path> list = new AttributedList<Path>();
+        final AttributedList<Path> list = new AttributedList<>();
         final Path directory = new Path("p", EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(directory, "name1", EnumSet.of(Path.Type.file));
         list.add(file1);
@@ -27,7 +27,7 @@ public class PathCacheTest {
     public void testIsEmpty() {
         final PathCache cache = new PathCache(1);
         assertTrue(cache.isEmpty());
-        cache.put(new Path("/", EnumSet.of(Path.Type.directory)), new AttributedList<Path>());
+        cache.put(new Path("/", EnumSet.of(Path.Type.directory)), new AttributedList<>());
         assertFalse(cache.isEmpty());
     }
 
@@ -36,7 +36,7 @@ public class PathCacheTest {
         final PathCache cache = new PathCache(1);
         final Path f = new Path("/", EnumSet.of(Path.Type.directory));
         assertFalse(cache.containsKey(f));
-        cache.put(f, new AttributedList<Path>());
+        cache.put(f, new AttributedList<>());
         final CacheReference reference = new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)));
         assertTrue(cache.containsKey(f));
         assertTrue(cache.isCached(f));
@@ -45,7 +45,7 @@ public class PathCacheTest {
     @Test
     public void testInvalidate() {
         final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = new AttributedList<Path>();
+        final AttributedList<Path> list = new AttributedList<>();
         final Path f = new Path("/t", EnumSet.of(Path.Type.directory));
         cache.put(f, list);
         assertFalse(cache.get(f).attributes().isInvalid());

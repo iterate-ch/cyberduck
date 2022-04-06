@@ -20,7 +20,7 @@ import java.util.Map;
 
 public abstract class DefaultPreferences extends Preferences {
 
-    private final Map<String, String> defaults = new HashMap<String, String>();
+    private final Map<String, String> defaults = new HashMap<>();
 
     /**
      * Default value for a given property.

@@ -156,13 +156,13 @@ public class ResumeFilterTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
                 final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))
-                    .withAttributes(new PathAttributes().withSize(3L))));
+                        .withAttributes(new PathAttributes().withSize(3L))));
                 listener.chunk(folder, list);
                 return list;
             }
         };
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)));
+                new UploadFilterOptions(host).withTemporary(true), new DefaultUploadFeature<>(new NullWriteFeature(session)));
         final long size = 3L;
         final Path t = new Path("t", EnumSet.of(Path.Type.file));
         assertFalse(f.accept(t, new NullLocal("t") {

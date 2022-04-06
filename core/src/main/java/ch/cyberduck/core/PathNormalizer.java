@@ -158,7 +158,7 @@ public final class PathNormalizer {
      * @return Normalized
      */
     public static List<Path> normalize(final List<Path> selected) {
-        final List<Path> normalized = new Collection<Path>();
+        final List<Path> normalized = new Collection<>();
         for(Path f : selected) {
             boolean duplicate = false;
             for(Path n : normalized) {

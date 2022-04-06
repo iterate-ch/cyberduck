@@ -29,7 +29,7 @@ import java.util.Objects;
 public abstract class TransferAction {
 
     private static final Map<String, TransferAction> registry
-            = new HashMap<String, TransferAction>();
+            = new HashMap<>();
 
     public static TransferAction forName(final String name) {
         return registry.get(name);

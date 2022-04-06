@@ -48,7 +48,7 @@ public class MemoryPreferences extends DefaultPreferences {
 
     @Override
     public void load() {
-        store = new HashMap<String, String>();
+        store = new HashMap<>();
     }
 
     @Override

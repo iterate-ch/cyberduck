@@ -35,7 +35,7 @@ public class DefaultRetryCallableTest {
     @Test
     public void testCall() throws Exception {
         final AtomicInteger count = new AtomicInteger();
-        final DefaultRetryCallable<Void> c = new DefaultRetryCallable<Void>(new Host(new TestProtocol()), 1, 0, new BackgroundExceptionCallable<Void>() {
+        final DefaultRetryCallable<Void> c = new DefaultRetryCallable<>(new Host(new TestProtocol()), 1, 0, new BackgroundExceptionCallable<Void>() {
             @Override
             public Void call() throws BackgroundException {
                 count.incrementAndGet();

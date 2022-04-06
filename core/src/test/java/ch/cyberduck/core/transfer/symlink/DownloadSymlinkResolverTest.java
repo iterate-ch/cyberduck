@@ -26,7 +26,7 @@ public class DownloadSymlinkResolverTest {
 
     @Test
     public void testResolve() {
-        final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
+        final ArrayList<TransferItem> files = new ArrayList<>();
         files.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory))));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
         Path p = new Path("/a/b", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -38,7 +38,7 @@ public class DownloadSymlinkResolverTest {
 
     @Test
     public void testResolveRoot() {
-        final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
+        final ArrayList<TransferItem> files = new ArrayList<>();
         files.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory))));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
         Path p = new Path("/b", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));

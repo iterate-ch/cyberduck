@@ -70,7 +70,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         registry.add(action);
         action.init();
         // Start background task
-        final Callable<T> command = new BackgroundCallable<T>(action, controller);
+        final Callable<T> command = new BackgroundCallable<>(action, controller);
         try {
             final Future<T> task = concurrentExecutor.execute(command);
             if(log.isInfoEnabled()) {

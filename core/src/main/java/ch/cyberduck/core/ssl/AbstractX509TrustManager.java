@@ -35,11 +35,10 @@ public abstract class AbstractX509TrustManager implements X509TrustManager {
     private static final Logger log = LogManager.getLogger(AbstractX509TrustManager.class);
 
     /**
-     * A set of all X509 certificates accepted by the user that contains
-     * no duplicate elements
+     * A set of all X509 certificates accepted by the user that contains no duplicate elements
      */
     private final Set<X509Certificate> accepted
-            = Collections.synchronizedSet(new LinkedHashSet<X509Certificate>());
+            = Collections.synchronizedSet(new LinkedHashSet<>());
 
     protected void accept(final List<X509Certificate> certs) {
         if(log.isTraceEnabled()) {

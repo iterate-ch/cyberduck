@@ -131,14 +131,14 @@ public class MoveWorkerTest {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(new Path("/t", EnumSet.of(Path.Type.directory)))) {
-                    return new AttributedList<Path>(Arrays.asList(
-                        new Path("/t/a", EnumSet.of(Path.Type.file)),
-                        new Path("/t/d", EnumSet.of(Path.Type.directory))
+                    return new AttributedList<>(Arrays.asList(
+                            new Path("/t/a", EnumSet.of(Path.Type.file)),
+                            new Path("/t/d", EnumSet.of(Path.Type.directory))
                     ));
                 }
                 if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
-                    return new AttributedList<Path>(Collections.singletonList(
-                        new Path("/t/d/b", EnumSet.of(Path.Type.file))
+                    return new AttributedList<>(Collections.singletonList(
+                            new Path("/t/d/b", EnumSet.of(Path.Type.file))
                     ));
                 }
                 if(file.equals(new Path("/", EnumSet.of(Path.Type.directory)))) {

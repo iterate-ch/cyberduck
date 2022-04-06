@@ -32,7 +32,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Trans
 
     @Override
     public List<TransferItem> normalize(final List<TransferItem> roots) {
-        final List<TransferItem> normalized = new ArrayList<TransferItem>();
+        final List<TransferItem> normalized = new ArrayList<>();
         for(TransferItem upload : roots) {
             boolean duplicate = false;
             for(Iterator<TransferItem> iter = normalized.iterator(); iter.hasNext(); ) {

@@ -43,8 +43,8 @@ public class ProxySocketFactory extends SocketFactory {
     private final ProxyFinder proxyFinder;
     private final Host host;
 
-    private final List<Proxy.Type> types = new ArrayList<Proxy.Type>(
-        Arrays.asList(Proxy.Type.DIRECT, Proxy.Type.SOCKS, Proxy.Type.HTTP, Proxy.Type.HTTPS));
+    private final List<Proxy.Type> types = new ArrayList<>(
+            Arrays.asList(Proxy.Type.DIRECT, Proxy.Type.SOCKS, Proxy.Type.HTTP, Proxy.Type.HTTPS));
 
     public ProxySocketFactory(final Host host) {
         this(host, new DefaultSocketConfigurator());

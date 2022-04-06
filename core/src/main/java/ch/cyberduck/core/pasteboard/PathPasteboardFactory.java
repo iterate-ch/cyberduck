@@ -10,7 +10,7 @@ import java.util.Map;
 public final class PathPasteboardFactory {
 
     private static final Map<Host, PathPasteboard> pasteboards
-            = new HashMap<Host, PathPasteboard>();
+            = new HashMap<>();
 
     private PathPasteboardFactory() {
         //
@@ -36,7 +36,7 @@ public final class PathPasteboardFactory {
      * @return All available pasteboards
      */
     public static List<PathPasteboard> allPasteboards() {
-        return new ArrayList<PathPasteboard>(pasteboards.values());
+        return new ArrayList<>(pasteboards.values());
     }
 
     /**

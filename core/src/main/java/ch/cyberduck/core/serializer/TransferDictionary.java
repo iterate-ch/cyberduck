@@ -78,7 +78,7 @@ public class TransferDictionary {
         }
         host.setWorkdir(null);
         final List<T> itemsObj = dict.listForKey("Items");
-        final List<TransferItem> roots = new ArrayList<TransferItem>();
+        final List<TransferItem> roots = new ArrayList<>();
         if(itemsObj != null) {
             for(T rootDict : itemsObj) {
                 final TransferItem item = new TransferItemDictionary(factory).deserialize(rootDict);
@@ -183,7 +183,7 @@ public class TransferDictionary {
                     return null;
                 }
                 if(roots.size() == destinations.size()) {
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    final Map<Path, Path> files = new HashMap<>();
                     for(int i = 0; i < roots.size(); i++) {
                         final Path target = new PathDictionary(factory).deserialize(destinations.get(i));
                         if(null == target) {

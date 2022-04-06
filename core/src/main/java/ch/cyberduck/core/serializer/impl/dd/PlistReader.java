@@ -45,7 +45,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
 
     @Override
     public Collection<S> readCollection(final Local file) throws AccessDeniedException {
-        final Collection<S> c = new Collection<S>();
+        final Collection<S> c = new Collection<>();
         final NSArray list = (NSArray) this.parse(file.getInputStream());
         if(null == list) {
             log.error(String.format("Invalid bookmark file %s", file));

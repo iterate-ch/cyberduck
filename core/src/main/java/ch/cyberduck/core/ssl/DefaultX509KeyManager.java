@@ -92,7 +92,7 @@ public class DefaultX509KeyManager extends AbstractX509KeyManager implements X50
 
     @Override
     public List<String> list() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         try {
             final javax.net.ssl.X509KeyManager manager = this.getKeystore();
             {

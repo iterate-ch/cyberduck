@@ -58,7 +58,7 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
                                  final String level,
                                  final boolean recursive,
                                  final ProgressListener listener) {
-        this(files, level, new BooleanRecursiveCallback<String>(recursive), listener);
+        this(files, level, new BooleanRecursiveCallback<>(recursive), listener);
     }
 
     public WriteRedundancyWorker(final List<Path> files,

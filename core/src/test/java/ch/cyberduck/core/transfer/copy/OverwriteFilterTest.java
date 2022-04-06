@@ -28,7 +28,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testAcceptDirectoryNew() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())),
@@ -38,7 +38,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testAcceptDirectoryExists() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         final Find find = new Find() {
@@ -64,7 +64,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testPrepareFile() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
         files.put(source, new Path("a", EnumSet.of(Path.Type.file)));
@@ -75,7 +75,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testPrepareDirectory() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         source.attributes().setSize(1L);
         final Path target = new Path("a", EnumSet.of(Path.Type.directory));
@@ -87,7 +87,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testComplete() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
         source.attributes().setPermission(new Permission(777));

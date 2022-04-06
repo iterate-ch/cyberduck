@@ -36,7 +36,7 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Tra
 
     @Override
     public List<TransferItem> normalize(final List<TransferItem> roots) {
-        final List<TransferItem> normalized = new ArrayList<TransferItem>();
+        final List<TransferItem> normalized = new ArrayList<>();
         for(final TransferItem download : roots) {
             boolean duplicate = false;
             for(Iterator<TransferItem> iter = normalized.iterator(); iter.hasNext(); ) {

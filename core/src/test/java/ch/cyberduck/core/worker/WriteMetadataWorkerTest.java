@@ -27,7 +27,7 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRunEmpty() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         WriteMetadataWorker worker = new WriteMetadataWorker(files, Collections.emptyMap(), false, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
@@ -64,13 +64,13 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRunEqual() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
-        final Map<String, String> previous = new HashMap<String, String>();
+        final Map<String, String> previous = new HashMap<>();
         previous.put("key", "v1");
         p.attributes().setMetadata(previous);
         files.add(p);
-        final Map<String, String> updated = new HashMap<String, String>();
+        final Map<String, String> updated = new HashMap<>();
         updated.put("key", "v1");
 
         WriteMetadataWorker worker = new WriteMetadataWorker(files, updated, false, new DisabledProgressListener()) {
@@ -108,14 +108,14 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRunUpdated() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         files.add(p);
-        final Map<String, String> previous = new HashMap<String, String>();
+        final Map<String, String> previous = new HashMap<>();
         previous.put("nullified", "hash");
         previous.put("key", "v1");
         p.attributes().setMetadata(previous);
-        final Map<String, String> updated = new HashMap<String, String>();
+        final Map<String, String> updated = new HashMap<>();
         updated.put("nullified", null);
         updated.put("key", "v2");
 
@@ -160,13 +160,13 @@ public class WriteMetadataWorkerTest {
 
     @Test
     public void testRunAdd() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         files.add(p);
-        final Map<String, String> previous = new HashMap<String, String>();
+        final Map<String, String> previous = new HashMap<>();
         previous.put("k1", "v1");
         p.attributes().setMetadata(previous);
-        final Map<String, String> updated = new HashMap<String, String>();
+        final Map<String, String> updated = new HashMap<>();
         updated.put("k1", "v1");
         updated.put("k2", "v2");
 
@@ -213,7 +213,7 @@ public class WriteMetadataWorkerTest {
     public void testRunDifferent() throws Exception {
         final PathAttributes attributesA = new PathAttributes();
         {
-            final Map<String, String> map = new HashMap<String, String>();
+            final Map<String, String> map = new HashMap<>();
             map.put("equal", "equal");
             map.put("different", "diff1");
             map.put("unique", "unique");
@@ -221,7 +221,7 @@ public class WriteMetadataWorkerTest {
         }
         final PathAttributes attributesB = new PathAttributes();
         {
-            final Map<String, String> map = new HashMap<String, String>();
+            final Map<String, String> map = new HashMap<>();
             map.put("equal", "equal");
             map.put("different", "diff2");
             attributesB.setMetadata(map);
@@ -232,7 +232,7 @@ public class WriteMetadataWorkerTest {
             new Path("b", EnumSet.of(Path.Type.file),
                 attributesB));
 
-        final Map<String, String> updated = new HashMap<String, String>();
+        final Map<String, String> updated = new HashMap<>();
         updated.put("equal", "equal-changed");
         updated.put("unique", null);
         updated.put("different", null);

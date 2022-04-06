@@ -93,7 +93,7 @@ public class CopyTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(new Path("/s/c", EnumSet.of(Path.Type.file)));
                 return children;
             }

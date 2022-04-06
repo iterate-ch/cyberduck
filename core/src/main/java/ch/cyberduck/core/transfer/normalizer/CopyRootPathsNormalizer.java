@@ -35,7 +35,7 @@ public class CopyRootPathsNormalizer implements RootPathsNormalizer<Map<Path, Pa
      */
     @Override
     public Map<Path, Path> normalize(final Map<Path, Path> files) {
-        final Map<Path, Path> normalized = new HashMap<Path, Path>();
+        final Map<Path, Path> normalized = new HashMap<>();
         Iterator<Path> sourcesIter = files.keySet().iterator();
         Iterator<Path> destinationsIter = files.values().iterator();
         while(sourcesIter.hasNext()) {

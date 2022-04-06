@@ -61,7 +61,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
 
     @Override
     public PooledObject<Session> wrap(final Session session) {
-        return new DefaultPooledObject<Session>(session);
+        return new DefaultPooledObject<>(session);
     }
 
     @Override

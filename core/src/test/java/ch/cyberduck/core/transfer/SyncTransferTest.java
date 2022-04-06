@@ -57,7 +57,7 @@ public class SyncTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.<Local>singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.<Local>singletonList(new NullLocal("p", "a")));
             }
         }));
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -166,7 +166,7 @@ public class SyncTransferTest {
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public AttributedList<Local> list() {
-                final AttributedList<Local> list = new AttributedList<Local>();
+                final AttributedList<Local> list = new AttributedList<>();
                 list.add(new NullLocal(this, "a"));
                 return list;
             }
@@ -176,7 +176,7 @@ public class SyncTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> list = new AttributedList<Path>();
+                final AttributedList<Path> list = new AttributedList<>();
                 if(file.equals(root.getParent())) {
                     list.add(root);
                 }
@@ -204,7 +204,7 @@ public class SyncTransferTest {
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public AttributedList<Local> list() {
-                final AttributedList<Local> list = new AttributedList<Local>();
+                final AttributedList<Local> list = new AttributedList<>();
                 list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a") {
                     @Override
                     public boolean exists() {
@@ -236,14 +236,14 @@ public class SyncTransferTest {
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>();
+                return new AttributedList<>();
             }
         };
         new DefaultLocalDirectoryFeature().mkdir(directory);
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> list = new AttributedList<Path>();
+                final AttributedList<Path> list = new AttributedList<>();
                 if(file.equals(root.getParent())) {
                     list.add(root);
                 }

@@ -229,7 +229,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public AttributedList<Local> list(final String path, final Filter<String> filter) throws AccessDeniedException {
-        final AttributedList<Local> children = new AttributedList<Local>();
+        final AttributedList<Local> children = new AttributedList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept(final Path entry) {

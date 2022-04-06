@@ -143,7 +143,7 @@ public class ConcurrentTransferWorkerTest {
         final int files = 20;
         final int connections = 3;
         final Set<Path> transferred = ConcurrentHashMap.newKeySet();
-        final List<TransferItem> list = new ArrayList<TransferItem>();
+        final List<TransferItem> list = new ArrayList<>();
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path("/t" + i, EnumSet.of(Path.Type.file)), new NullLocal("/t" + i)));
         }

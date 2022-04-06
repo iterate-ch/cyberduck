@@ -56,7 +56,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,
                                  final boolean recursive, final ProgressListener listener) {
-        this(files, algorithm, new BooleanRecursiveCallback<Encryption.Algorithm>(recursive), listener);
+        this(files, algorithm, new BooleanRecursiveCallback<>(recursive), listener);
     }
 
     public WriteEncryptionWorker(final List<Path> files, final Encryption.Algorithm algorithm,

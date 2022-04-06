@@ -19,7 +19,7 @@ public class UploadRootPathsNormalizerTest {
     @Test
     public void testNormalize() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
-        final List<TransferItem> list = new ArrayList<TransferItem>();
+        final List<TransferItem> list = new ArrayList<>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override
             public boolean isDirectory() {
@@ -41,7 +41,7 @@ public class UploadRootPathsNormalizerTest {
     @Test
     public void testNormalizeLargeSet() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
-        final List<TransferItem> list = new ArrayList<TransferItem>();
+        final List<TransferItem> list = new ArrayList<>();
         for(int i = 0; i < 1000; i++) {
             final String name = String.format("f-%d", i);
             list.add(new TransferItem(new Path(name, EnumSet.of(Path.Type.file)), new NullLocal(name)));
@@ -53,7 +53,7 @@ public class UploadRootPathsNormalizerTest {
     @Test
     public void testNameClash() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
-        final List<TransferItem> list = new ArrayList<TransferItem>();
+        final List<TransferItem> list = new ArrayList<>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal("/f/a")));
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal("/g/a")));
         final List<TransferItem> normalized = n.normalize(list);

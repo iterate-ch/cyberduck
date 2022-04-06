@@ -37,7 +37,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(new Path("/t/c", EnumSet.of(Path.Type.file)));
                 return children;
             }
@@ -58,7 +58,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(new Path("/t/c", EnumSet.of(Path.Type.file)));
                 children.add(new Path("/t/c.html", EnumSet.of(Path.Type.file)));
                 return children;
@@ -221,7 +221,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -246,7 +246,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -272,7 +272,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -298,7 +298,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -341,7 +341,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> l = new AttributedList<Path>();
+                final AttributedList<Path> l = new AttributedList<>();
                 l.add(new Path("/t/.DS_Store", EnumSet.of(Path.Type.file)));
                 l.add(new Path("/t/t", EnumSet.of(Path.Type.file)));
                 return l;
@@ -361,7 +361,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> l = new AttributedList<Path>();
+                final AttributedList<Path> l = new AttributedList<>();
                 // File first in list
                 l.add(new Path("/f", EnumSet.of(Path.Type.file)));
                 l.add(new Path("/f", EnumSet.of(Path.Type.directory)));

@@ -194,7 +194,7 @@ public abstract class Archive {
      * @return Expanded filenames
      */
     public List<Path> getExpanded(final List<Path> files) {
-        final List<Path> expanded = new ArrayList<Path>();
+        final List<Path> expanded = new ArrayList<>();
         for(Path file : files) {
             expanded.add(new Path(file.getParent(),
                     StringUtils.remove(file.getName(), String.format(".%s", this.getIdentifier())), EnumSet.of(Path.Type.file)));
@@ -228,7 +228,7 @@ public abstract class Archive {
             // Use default filename
             archive.append(this.escape(files.get(0).getParent().getAbsolute())).append(Path.DELIMITER).append("Archive");
         }
-        final List<String> command = new ArrayList<String>();
+        final List<String> command = new ArrayList<>();
         for(Path path : files) {
             command.add(this.escape(PathRelativizer.relativize(workdir.getAbsolute(), path.getAbsolute())));
         }

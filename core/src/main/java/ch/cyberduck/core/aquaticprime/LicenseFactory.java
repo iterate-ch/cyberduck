@@ -94,7 +94,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected abstract License open(Local file);
 
     public List<License> open() throws AccessDeniedException {
-        final List<License> keys = new ArrayList<License>();
+        final List<License> keys = new ArrayList<>();
         if(folder.exists()) {
             for(Local key : folder.list().filter(filter)) {
                 keys.add(this.open(key));

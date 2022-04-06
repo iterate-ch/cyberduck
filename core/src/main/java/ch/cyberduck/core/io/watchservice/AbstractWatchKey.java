@@ -54,7 +54,7 @@ abstract class AbstractWatchKey implements WatchKey {
     protected AbstractWatchKey(final AbstractWatchService watcher) {
         this.watcher = watcher;
         this.state = State.READY;
-        this.events = new ArrayList<WatchEvent<?>>();
+        this.events = new ArrayList<>();
     }
 
     /**
@@ -104,7 +104,7 @@ abstract class AbstractWatchKey implements WatchKey {
             }
 
             // non-repeated event
-            events.add(new Event<Object>((WatchEvent.Kind<Object>) kind, context));
+            events.add(new Event<>((WatchEvent.Kind<Object>) kind, context));
             signal();
         }
     }
@@ -113,7 +113,7 @@ abstract class AbstractWatchKey implements WatchKey {
     public final List<WatchEvent<?>> pollEvents() {
         synchronized(this) {
             List<WatchEvent<?>> result = events;
-            events = new ArrayList<WatchEvent<?>>();
+            events = new ArrayList<>();
             return result;
         }
     }

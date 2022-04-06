@@ -28,7 +28,7 @@ public class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManag
      * Target hostname of current request stored as thread local
      */
     private final ThreadLocal<String> target
-        = new ThreadLocal<String>();
+            = new ThreadLocal<>();
 
     private final X509TrustManager delegate;
 

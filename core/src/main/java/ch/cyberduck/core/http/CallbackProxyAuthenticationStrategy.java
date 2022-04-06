@@ -97,7 +97,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
     @Override
     public Queue<AuthOption> select(final Map<String, Header> challenges, final HttpHost authhost, final HttpResponse response, final HttpContext context) throws MalformedChallengeException {
         final HttpClientContext clientContext = HttpClientContext.adapt(context);
-        final Queue<AuthOption> options = new LinkedList<AuthOption>();
+        final Queue<AuthOption> options = new LinkedList<>();
         final RequestConfig config = clientContext.getRequestConfig();
         Collection<String> authPrefs = config.getProxyPreferredAuthSchemes();
         if(authPrefs == null) {

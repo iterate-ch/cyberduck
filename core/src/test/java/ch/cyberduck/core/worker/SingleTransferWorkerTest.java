@@ -55,7 +55,7 @@ public class SingleTransferWorkerTest {
         final NullLocal local = new NullLocal("l") {
             @Override
             public AttributedList<Local> list() {
-                AttributedList<Local> l = new AttributedList<Local>();
+                AttributedList<Local> l = new AttributedList<>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
                     public boolean exists() {
@@ -95,7 +95,7 @@ public class SingleTransferWorkerTest {
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
                     public AttributedList<Local> list() {
-                        AttributedList<Local> l = new AttributedList<Local>();
+                        AttributedList<Local> l = new AttributedList<>();
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
                     }
@@ -115,7 +115,7 @@ public class SingleTransferWorkerTest {
         final NullLocal local = new NullLocal("l") {
             @Override
             public AttributedList<Local> list() {
-                AttributedList<Local> l = new AttributedList<Local>();
+                AttributedList<Local> l = new AttributedList<>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
                     public boolean exists() {
@@ -147,7 +147,7 @@ public class SingleTransferWorkerTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
+                return new AttributedList<>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
         final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -224,7 +224,7 @@ public class SingleTransferWorkerTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(child);
                 return children;
             }
@@ -269,7 +269,7 @@ public class SingleTransferWorkerTest {
         final NullSession session = new NullSession(bookmark) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
+                return new AttributedList<>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
         try {

@@ -26,7 +26,7 @@ public class UploadSymlinkResolverTest {
 
     @Test
     public void testResolve() throws Exception {
-        final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
+        final ArrayList<TransferItem> files = new ArrayList<>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         files.add(new TransferItem(a, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override

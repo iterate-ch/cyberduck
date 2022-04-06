@@ -84,7 +84,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         }
         if(value instanceof NSArray) {
             final NSArray array = (NSArray) value;
-            final List<T> list = new ArrayList<T>();
+            final List<T> list = new ArrayList<>();
             for(int i = 0; i < array.count(); i++) {
                 final NSObject next = array.objectAtIndex(i);
                 if(next instanceof NSDictionary) {

@@ -71,7 +71,7 @@ public class RenameExistingFilterTest {
 
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> l = new AttributedList<Path>();
+                final AttributedList<Path> l = new AttributedList<>();
                 l.add(new Path("t", EnumSet.of(Path.Type.file)));
                 return l;
             }

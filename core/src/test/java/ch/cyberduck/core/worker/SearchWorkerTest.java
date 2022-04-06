@@ -94,7 +94,7 @@ public class SearchWorkerTest {
             new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
 
         final AttributedList<Path> search2 = new SearchWorker(new Path("/", EnumSet.of(Path.Type.directory)),
-            new NullFilter<Path>(), cache, new DisabledListProgressListener()).run(new NullSession(new Host(new TestProtocol())));
+                new NullFilter<>(), cache, new DisabledListProgressListener()).run(new NullSession(new Host(new TestProtocol())));
         assertTrue(search2.contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));
         assertTrue(search2.contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
         assertTrue(cache.get(new Path("/", EnumSet.of(Path.Type.directory))).contains(new Path("/t1.png", EnumSet.of(Path.Type.file))));

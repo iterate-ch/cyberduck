@@ -51,11 +51,11 @@ public class WritePermissionWorkerTest {
         );
         // Tests all actions set to read
         final Path path = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.read));
-        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, new BooleanRecursiveCallback<Permission>(true), new DisabledProgressListener());
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, new BooleanRecursiveCallback<>(true), new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 // test just group set to read
                 children.add(new Path("b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.none, Permission.Action.read, Permission.Action.none)));
                 return children;
@@ -101,12 +101,12 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwrite.Action(false, true, false)
         );
         final Path a = new Path("a", EnumSet.of(Path.Type.directory), new TestPermissionAttributes(Permission.Action.all));
-        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, new BooleanRecursiveCallback<Permission>(true), new DisabledProgressListener());
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(a), permission, new BooleanRecursiveCallback<>(true), new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(a)) {
-                    final AttributedList<Path> children = new AttributedList<Path>();
+                    final AttributedList<Path> children = new AttributedList<>();
                     final Path d = new Path("d", EnumSet.of(Path.Type.directory));
                     d.attributes().setPermission(new Permission(744));
                     children.add(d);
@@ -171,12 +171,12 @@ public class WritePermissionWorkerTest {
                 new PermissionOverwrite.Action(true, true, true),
                 new PermissionOverwrite.Action(false, true, true),
                 new PermissionOverwrite.Action(true, false, true)
-        ), new BooleanRecursiveCallback<Permission>(true), new DisabledProgressListener());
+        ), new BooleanRecursiveCallback<>(true), new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(a)) {
-                    final AttributedList<Path> children = new AttributedList<Path>();
+                    final AttributedList<Path> children = new AttributedList<>();
                     d.attributes().setPermission(new Permission(774));
                     children.add(d);
                     d.attributes().setPermission(new Permission(666));
@@ -235,11 +235,11 @@ public class WritePermissionWorkerTest {
         final Path path = new Path("a", EnumSet.of(Path.Type.directory));
         path.attributes().setPermission(new Permission(Permission.Action.none, Permission.Action.read, Permission.Action.none,
                 true, false, false));
-        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, new BooleanRecursiveCallback<Permission>(true), new DisabledProgressListener());
+        final WritePermissionWorker worker = new WritePermissionWorker(Collections.singletonList(path), permission, new BooleanRecursiveCallback<>(true), new DisabledProgressListener());
         worker.run(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 // File has all set
                 children.add(new Path("b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all)));
                 return children;
