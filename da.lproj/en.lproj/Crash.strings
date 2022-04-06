@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Vil du rapportere det sidste nedbrud?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Programmet %@ har fornylig haft et uventet nedbrud. For at hjælpe med at udbedre fejlen, kan du sende rapporten om nedbruddet til udvikleren.";
+
+/* Name of OK button in alert window: */
+"Send" = "Send";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Send ikke";
+
