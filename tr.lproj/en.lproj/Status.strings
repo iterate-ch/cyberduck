@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "{0} olarak oturum açılıyor";
+"Calculate checksum for {0}" = "{0} için sağlamayı hesapla";
+
+"Deleting {0}" = "{0} siliniyor";
+"Disconnected" = "Bağlantı kesildi";
+"Disconnecting {0}" = "{0} bağlantısı kesiliyor";
+"Downloading {0}" = "{0} indiriliyor";
+/* Connection type opened */
+"{0} connection opened" = "{0} bağlantısı açıldı";
+
+/* Reading size of file. */
+"Getting size of {0}" = "{0} boyutu alınıyor";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "{0} zaman damgası alınıyor";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "{0} izinleri alınıyor";
+
+/* No activity */
+"Idle" = "Boşta";
+"Listing directory {0}" = "{0} klasörü listeleniyor";
+"Making directory {0}" = "{0} klasörü oluşturuluyor";
+"Maximum allowed connections exceeded. Waiting" = "İzin verilen en fazla bağlantı sayısı aşıldı. Bekleniyor…";
+"Mounting {0}" = "{0} takılıyor";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Güvenilen bir sertifika bulunamadı";
+"Opening {0} connection to {1}" = "{0} bağlantısı {1} sunucusuna açılıyor";
+"SFTP subsystem ready" = "\"SFTP alt sistemi hazır";
+"SCP subsystem ready" = "SCP alt sistemi hazır";
+"Starting SFTP subsystem" = "SFTP alt sistemi başlatılıyor";
+"Starting SCP subsystem" = "SCP alt sistemi başlatılıyor";
+"Uploading {0}" = "{0} yükleniyor";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "{0} adı {1} olarak değiştiriliyor";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "{0} {1} üzerine kopyalanıyor";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "{0} sahibi {1} olarak değiştiriliyor";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "{0} grubu {1} olarak değiştiriliyor";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "{0} izni {1} olarak değiştiriliyor";
+"Changing timestamp of {0} to {1}" = "{0} zaman damgası {1} olarak değiştiriliyor";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} saniye kaldı";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} dakika kaldı";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} saat kaldı";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "{0} çözümleniyor";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "{0} saniye sonra yeniden denenecek ({1} deneme daha)";
+"Transfer complete" = "Aktarım tamamlandı";
+"Transfer incomplete" = "Aktarım tamamlanamadı";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "{0} dağıtımını etkinleştir";
+"Disable {0} Distribution" = "{0} dağıtımını devre dışı bırak";
+
+/* Compress and expand archives */
+"Archiving {0}" = "{0} arşivleniyor";
+"Unarchiving {0}" = "{0} ayıklanıyor";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "{0} MD5 karmasını hesapla";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "{0} üst verileri okunuyor";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "{0} üst verileri yazılıyor";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "{0} ({1}) hazırla";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "{0} CDN yapılandırması okunuyor";
+"Writing CDN configuration of {0}" = "{0} CDN yapılandırması yazılıyor";
+
+/* Growl Notification */
+"Connection failed" = "Bağlantı kurulamadı";
+
+/* Growl Notification */
+"Connection opened" = "Bağlantı açıldı";
+
+/* Growl Notification */
+"Download complete" = "İndirme tamamlandı";
+
+/* Growl Notification */
+"Synchronization complete" = "Eşitleme tamamlandı";
+
+/* Growl Notification */
+"Upload complete" = "Yükleme tamamlandı";
+
+/* Growl Notification */
+"Download failed" = "İndirme tamamlanamadı";
+
+/* Growl Notification */
+"Upload failed" = "Yükleme tamamlanamadı";
+
+/* Growl Notification */
+"Transfer queued" = "Aktarım kuyruğa alındı";
