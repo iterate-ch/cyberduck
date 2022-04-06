@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "{0} klasörü listelenemedi";
+
+/* Touch file failed */
+"Cannot create {0}" = "{0} dosyası oluşturulamadı";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "{0} klasörü oluşturulamadı";
+
+/* Moving file failed */
+"Cannot rename {0}" = "{0} dosyası yeniden adlandırılamadı";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "{0} öznitelikleri okunamadı";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "{0} öznitelikleri yazılamadı";
+
+/* Removing file failed */
+"Cannot delete {0}" = "{0} silinemedi";
+
+/* Ownership of file */
+"Cannot change owner" = "Sahip değiştirilemedi";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Grup değiştirilemedi";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "{0} izinleri değiştirilemedi";
+"Cannot change timestamp of {0}" = "{0} zaman damgası değiştirilemedi";
+
+/* Mount failure */
+"Connection failed" = "Bağlantı kurulamadı";
+
+/* Transfer failure */
+"Download {0} failed" = "{0} indirilemedi";
+
+/* Transfer failure */
+"Upload {0} failed" = "{0} yüklenemedi";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "CDN yapılandırması okunamadı";
+"Cannot write CDN configuration" = "CDN yapılandırması yazılamadı";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Kapsayıcı yapılandırması okunamadı";
+
+"Interoperability failure" = "Birlikte çalışabilirlik sorunu";
+"Access denied" = "Erişim reddedildi";
+"File not found" = "Dosya bulunamadı";
+"Insufficient disk space" = "Disk alanı yetersiz";
+
+"DNS lookup for {0} failed" = "{0} için DNS araması yapılamadı";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Yüklenen verilerin MD5 karması {0} ile sunucu tarafından döndürülen ETag {1} uyuşmuyor";
+
+"Insufficient disk space" = "Disk alanı yetersiz";
+"Only {0} available disk space" = "Yalnız {0} kullanılabilir disk alanı var ";
+
+"Insufficient disk space" = "Disk alanı yetersiz";
+"Only {0} available disk space" = "Yalnız {0} kullanılabilir disk alanı var ";
