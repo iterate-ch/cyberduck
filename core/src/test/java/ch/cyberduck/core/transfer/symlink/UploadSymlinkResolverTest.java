@@ -20,7 +20,7 @@ public class UploadSymlinkResolverTest {
 
     @Test
     public void testNoSymbolicLink() throws Exception {
-        UploadSymlinkResolver resolver = new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList());
+        UploadSymlinkResolver resolver = new UploadSymlinkResolver(null, Collections.emptyList());
         assertFalse(resolver.resolve(new NullLocal("a")));
     }
 

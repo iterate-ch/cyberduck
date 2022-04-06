@@ -17,7 +17,7 @@ public class DownloadSymlinkResolverTest {
 
     @Test
     public void testNotSupported() {
-        DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(null, Collections.<TransferItem>singletonList(
+        DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(null, Collections.singletonList(
                 new TransferItem(new Path("/", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir")))
         ));
         Path p = new Path("/a", EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
@@ -48,7 +48,7 @@ public class DownloadSymlinkResolverTest {
 
     @Test
     public void testRelativize() {
-        DownloadSymlinkResolver r = new DownloadSymlinkResolver(Collections.<TransferItem>emptyList());
+        DownloadSymlinkResolver r = new DownloadSymlinkResolver(Collections.emptyList());
         assertEquals("d", r.relativize("/a/b/c", "/a/b/d"));
         assertEquals("../boot-screens/syslinux.cfg", r.relativize("/ubuntu/dists/precise/main/installer-i386/current/images/netboot/ubuntu-installer/i386/pxelinux.cfg/syslinux.cfg",
                 "/ubuntu/dists/precise/main/installer-i386/current/images/netboot/ubuntu-installer/i386/boot-screens/syslinux.cfg"));

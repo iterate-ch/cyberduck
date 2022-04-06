@@ -37,7 +37,7 @@ public class ReadAclWorkerTest {
 
     @Test
     public void testRun() throws Exception {
-        final ReadAclWorker worker = new ReadAclWorker(Arrays.<Path>asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
+        final ReadAclWorker worker = new ReadAclWorker(Arrays.asList(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file)))) {
             @Override
             public void cleanup(final List<Acl.UserAndRole> result) {
                 throw new UnsupportedOperationException();

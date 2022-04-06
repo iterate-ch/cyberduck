@@ -44,7 +44,7 @@ public class CopyRootPathsNormalizerTest {
         final HashMap<Path, Path> files = new HashMap<>();
         files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
         files.put(new Path("/p/child", EnumSet.of(Path.Type.directory)), new Path("/d/child", EnumSet.of(Path.Type.directory)));
-        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory))), normalizer.normalize(files));
+        assertEquals(Collections.singletonMap(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory))), normalizer.normalize(files));
     }
 
     @Test
@@ -53,6 +53,6 @@ public class CopyRootPathsNormalizerTest {
         final HashMap<Path, Path> files = new HashMap<>();
         files.put(new Path("/p/child", EnumSet.of(Path.Type.directory)), new Path("/d/child", EnumSet.of(Path.Type.directory)));
         files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
-        assertEquals(Collections.<Path, Path>singletonMap(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory))), normalizer.normalize(files));
+        assertEquals(Collections.singletonMap(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory))), normalizer.normalize(files));
     }
 }

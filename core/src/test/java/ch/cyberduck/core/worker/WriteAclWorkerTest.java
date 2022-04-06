@@ -23,7 +23,7 @@ public class WriteAclWorkerTest {
     @Test
     public void testRunNoFiles() throws Exception {
         final Acl acl = new Acl();
-        final WriteAclWorker worker = new WriteAclWorker(Collections.<Path>emptyList(), acl, true, new DisabledProgressListener()) {
+        final WriteAclWorker worker = new WriteAclWorker(Collections.emptyList(), acl, true, new DisabledProgressListener()) {
             @Override
             public void cleanup(final Boolean result) {
                 //

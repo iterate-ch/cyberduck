@@ -29,7 +29,7 @@ public class LimitedListProgressListenerTest {
     @Test
     public void testChunk() throws Exception {
         new LimitedListProgressListener(new DisabledProgressListener()).chunk(
-                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), AttributedList.<Path>emptyList()
+                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)), AttributedList.emptyList()
         );
     }
 

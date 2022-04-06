@@ -67,7 +67,7 @@ public class PathCacheTest {
     public void testDisabledCache() {
         PathCache cache = PathCache.empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
-        cache.put(file, AttributedList.<Path>emptyList());
+        cache.put(file, AttributedList.emptyList());
         assertFalse(cache.containsKey(file));
         assertEquals(0, cache.size());
     }

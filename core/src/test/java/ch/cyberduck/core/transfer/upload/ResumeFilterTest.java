@@ -110,7 +110,7 @@ public class ResumeFilterTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 final Path f = new Path("t", EnumSet.of(Path.Type.file));
                 f.attributes().setSize(7L);
-                return new AttributedList<>(Collections.<Path>singletonList(f));
+                return new AttributedList<>(Collections.singletonList(f));
             }
         }, new UploadFilterOptions(host).withTemporary(true));
         final Path t = new Path("t", EnumSet.of(Path.Type.file));

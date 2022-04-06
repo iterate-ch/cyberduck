@@ -64,7 +64,7 @@ public class SessionListWorkerTest {
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                throw new ListCanceledException(AttributedList.<Path>emptyList());
+                throw new ListCanceledException(AttributedList.emptyList());
             }
         };
         final PathCache cache = new PathCache(1);

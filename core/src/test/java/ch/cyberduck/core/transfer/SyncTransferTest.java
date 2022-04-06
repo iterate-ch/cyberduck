@@ -57,7 +57,7 @@ public class SyncTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<>(Collections.<Local>singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         }));
         final AtomicBoolean prompt = new AtomicBoolean();

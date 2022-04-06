@@ -38,9 +38,9 @@ public class RecursiveSearchFilterTest {
 
     @Test
     public void testAcceptDirectory() {
-        final RecursiveSearchFilter f = new RecursiveSearchFilter(new AttributedList<>(Arrays.<Path>asList(
-            new Path("/d", EnumSet.of(Path.Type.directory)),
-            new Path("/d/f", EnumSet.of(Path.Type.file)))
+        final RecursiveSearchFilter f = new RecursiveSearchFilter(new AttributedList<>(Arrays.asList(
+                new Path("/d", EnumSet.of(Path.Type.directory)),
+                new Path("/d/f", EnumSet.of(Path.Type.file)))
         ));
         assertTrue(f.accept(new Path("/d", EnumSet.of(Path.Type.directory))));
         assertTrue(f.accept(new Path("/d/f", EnumSet.of(Path.Type.file))));
@@ -50,8 +50,8 @@ public class RecursiveSearchFilterTest {
 
     @Test
     public void testAcceptDirectoryChildrenOnly() {
-        final RecursiveSearchFilter f = new RecursiveSearchFilter(new AttributedList<>(Arrays.<Path>asList(
-            new Path("/d/f", EnumSet.of(Path.Type.file)))
+        final RecursiveSearchFilter f = new RecursiveSearchFilter(new AttributedList<>(Arrays.asList(
+                new Path("/d/f", EnumSet.of(Path.Type.file)))
         ));
         assertTrue(f.accept(new Path("/d", EnumSet.of(Path.Type.directory))));
         assertTrue(f.accept(new Path("/d/f", EnumSet.of(Path.Type.file))));
