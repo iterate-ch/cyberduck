@@ -1,0 +1,23 @@
+﻿/* No comment provided by engineer. */
+"Set Cyberduck as default application for FTP and SFTP locations?" = "Definir o Cyberduck como aplicativo padrão para endereços de FTP e SFTP?";
+
+/* No comment provided by engineer. */
+"As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later." = "Como aplicativo padrão, o Cyberduck irá abrir quando você clicar em links de FTP ou SFTP em outros aplicativos, como seu navegador Web. Você pode mudar essas configurações posteriormente no painel de Preferências.";
+
+/* Apply proposed action. */
+"Change" = "Alterar";
+
+/* Do not display this dialog again. */
+"Don't ask again" = "Não perguntar novamente";
+
+/* Don't change anything. */
+"Cancel" = "Cancelar";
+
+/* Bookmark import from thirdparty applications */ 
+"Import" = "Importar";
+/* Import <<Application Name>> Bookmarks */
+"Import {0} Bookmarks" = "Importar {0} Favoritos";
+/* 23 bookmarks found. */
+"{0} bookmarks found. Do you want to add these to your bookmarks?" = "{0} favoritos encontrados. Você deseja adicioná-los aos seus favoritos?";
+/* Write the source application into the comment field of the imported bookmark */
+"Imported from {0}" = "Importado(s) de {0}";
