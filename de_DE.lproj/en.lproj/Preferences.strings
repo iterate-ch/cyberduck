@@ -1,0 +1,597 @@
+﻿
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "3"; */
+"3.title" = "Einstellungen";
+
+/* Class = "NSTabViewItem"; label = "General"; ObjectID = "6"; */
+"6.label" = "Allgemein";
+
+/* Class = "NSTabViewItem"; label = "Browser"; ObjectID = "8"; */
+"8.label" = "Browser";
+
+/* Class = "NSTabViewItem"; label = "Transfers"; ObjectID = "10"; */
+"10.label" = "Dateitransfers";
+
+/* Class = "NSTabViewItem"; label = "Editor"; ObjectID = "12"; */
+"12.label" = "Editorprogramm";
+
+/* Class = "NSTabViewItem"; label = "FTP"; ObjectID = "14"; */
+"14.label" = "FTP";
+
+/* Class = "NSTabViewItem"; label = "SFTP"; ObjectID = "16"; */
+"16.label" = "SFTP";
+
+/* Class = "NSTabViewItem"; label = "S3"; ObjectID = "18"; */
+"18.label" = "S3";
+
+/* Class = "NSTabViewItem"; label = "Google Docs"; ObjectID = "20"; */
+"20.label" = "Google Drive";
+
+/* Class = "NSTabViewItem"; label = "Bandwidth"; ObjectID = "22"; */
+"22.label" = "Bandbreite";
+
+/* Class = "NSTabViewItem"; label = "Connection"; ObjectID = "24"; */
+"24.label" = "Verbindung";
+
+/* Class = "NSTabViewItem"; label = "Update"; ObjectID = "26"; */
+"26.label" = "Aktualisierung";
+
+/* Class = "NSTabViewItem"; label = "Language"; ObjectID = "28"; */
+"28.label" = "Sprache";
+
+/* Class = "NSBox"; title = "Browser"; ObjectID = "31"; */
+"31.title" = "Browser";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "34"; */
+"34.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "35"; */
+"35.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Open new browser window on startup"; ObjectID = "37"; */
+"37.title" = "Nach Programmstart neuen Browser öffnen";
+
+/* Class = "NSTextFieldCell"; title = "Connect to bookmark:"; ObjectID = "39"; */
+"39.title" = "Mit Lesezeichen verbinden:";
+
+/* Class = "NSButtonCell"; title = "Save Workspace"; ObjectID = "41"; */
+"41.title" = "Arbeitsumgebung sichern";
+
+/* Class = "NSTextFieldCell"; title = "Will save all open browsers when quitting and restore the connections upon relaunch."; ObjectID = "43"; */
+"43.title" = "Sichert alle offenen Browser Fenster beim Beenden und öffnet die Verbindungen beim Neustart wieder.";
+
+/* Class = "NSTextFieldCell"; title = "Open an empty browser when opening the application. A connection to the selected bookmark is opened for a new browser."; ObjectID = "45"; */
+"45.title" = "Nach dem Starten der Applikation ein neues Browser Fenster öffnen. Eine Verbindung zum ausgewählten Lesezeichen wird geöffnet.";
+
+/* Class = "NSBox"; title = "Connection"; ObjectID = "46"; */
+"46.title" = "Verbindung";
+
+/* Class = "NSTextFieldCell"; title = "Default protocol:"; ObjectID = "48"; */
+"48.title" = "Standard Protokoll:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "51"; */
+"51.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "52"; */
+"52.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Use Keychain"; ObjectID = "54"; */
+"54.title" = "Schlüsselbund verwenden";
+
+/* Class = "NSButtonCell"; title = "Confirm disconnect"; ObjectID = "56"; */
+"56.title" = "Trennen von Verbindung bestätigen";
+
+/* Class = "NSTextFieldCell"; title = "Search for passwords in the Keychain. Save passwords upon successful login in the Keychain by default."; ObjectID = "58"; */
+"58.title" = "Suche nach Passwörtern im Schlüsselbund. Speichere Passwörter standardmäßig im Schlüsselbund, wenn erfolgreich angemeldet.";
+
+/* Class = "NSTextFieldCell"; title = "Ask before closing a connected browser window."; ObjectID = "60"; */
+"60.title" = "Fragen beim Schließen eines verbundenen Browser Fensters.";
+
+/* Class = "NSBox"; title = "Bookmarks"; ObjectID = "62"; */
+"62.title" = "Lesezeichen";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "65"; */
+"65.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Use Small Icons"; ObjectID = "66"; */
+"66.title" = "Klein";
+
+/* Class = "NSMenuItem"; title = "Use Medium Icons"; ObjectID = "67"; */
+"67.title" = "Mittel";
+
+/* Class = "NSMenuItem"; title = "Use Large Icons"; ObjectID = "68"; */
+"68.title" = "Groß";
+
+/* Class = "NSTextFieldCell"; title = "When using small icons, only the nickname of the bookmark is displayed."; ObjectID = "70"; */
+"70.title" = "Bei der kleinen Ansicht wird nur der Name des Lesezeichens angezeigt.";
+
+/* Class = "NSBox"; title = "Appearance"; ObjectID = "71"; */
+"71.title" = "Erscheinungsbild";
+
+/* Class = "NSButtonCell"; title = "Use alternating row background"; ObjectID = "73"; */
+"73.title" = "Alternierender Zeilenhintergrund";
+
+/* Class = "NSButtonCell"; title = "Horizontal Lines"; ObjectID = "75"; */
+"75.title" = "Horizontale Linien";
+
+/* Class = "NSButtonCell"; title = "Vertical Lines"; ObjectID = "77"; */
+"77.title" = "Vertikale Linien";
+
+/* Class = "NSBox"; title = "General"; ObjectID = "78"; */
+"78.title" = "Allgemein";
+
+/* Class = "NSButtonCell"; title = "Show hidden files"; ObjectID = "80"; */
+"80.title" = "Dateien mit '.' anzeigen";
+
+/* Class = "NSButtonCell"; title = "Double click opens file in external editor"; ObjectID = "82"; */
+"82.title" = "Doppelklick öffnet Datei in externem Editor";
+
+/* Class = "NSButtonCell"; title = "Info window always shows current selection"; ObjectID = "84"; */
+"84.title" = "Info Fenster zeigt immer selektierte Datei";
+
+/* Class = "NSButtonCell"; title = "Use spring-loaded folders when dragging files"; ObjectID = "86"; */
+"86.title" = "Automatisch aufspringende Ordner beim Verschieben von Dateien";
+
+/* Class = "NSTextFieldCell"; title = "Short"; ObjectID = "90"; */
+"90.title" = "Kurz";
+
+/* Class = "NSTextFieldCell"; title = "Medium"; ObjectID = "92"; */
+"92.title" = "Mittel";
+
+/* Class = "NSTextFieldCell"; title = "Long"; ObjectID = "94"; */
+"94.title" = "Lang";
+
+/* Class = "NSButtonCell"; title = "with delay:"; ObjectID = "96"; */
+"96.title" = "mit Verzögerung:";
+
+/* Class = "NSButtonCell"; title = "Return key selects folder or file to rename"; ObjectID = "98"; */
+"98.title" = "Umschalttaste selektiert Datei oder Ordner zum Umbenennen";
+
+/* Class = "NSTabViewItem"; label = "General"; ObjectID = "101"; */
+"101.label" = "Allgemein";
+
+/* Class = "NSButtonCell"; title = "Open downloaded files with default application"; ObjectID = "104"; */
+"104.title" = "Heruntergeladene Dateien mit Standardprogramm öffnen";
+
+/* Class = "NSButtonCell"; title = "Remove when transfer completes"; ObjectID = "106"; */
+"106.title" = "Einträge löschen wenn Transfer fertig";
+
+/* Class = "NSTextFieldCell"; title = "Existing Files:"; ObjectID = "108"; */
+"108.title" = "Bestehende Dateien:";
+
+/* Class = "NSTextFieldCell"; title = "Download Folder:"; ObjectID = "110"; */
+"110.title" = "Download-Ordner:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "113"; */
+"113.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "114"; */
+"114.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Bring window to front when transfer starts"; ObjectID = "116"; */
+"116.title" = "Fenster einblenden bei Dateitransfers";
+
+/* Class = "NSButtonCell"; title = "Close window when transfer completes"; ObjectID = "118"; */
+"118.title" = "Fenster schließen wenn alle Dateitransfers beendet";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "121"; */
+"121.title" = "Uploads";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "124"; */
+"124.title" = "Downloads";
+
+/* Class = "NSTextFieldCell"; title = "Existing Files:"; ObjectID = "126"; */
+"126.title" = "Bestehende Dateien:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "129"; */
+"129.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "130"; */
+"130.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Always overwrite when reloading"; ObjectID = "132"; */
+"132.title" = "Beim erneuten Laden immer überschreiben";
+
+/* Class = "NSButtonCell"; title = "Always overwrite when reloading"; ObjectID = "134"; */
+"134.title" = "Beim erneuten Laden immer überschreiben";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "137"; */
+"137.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "138"; */
+"138.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Transfer Files:"; ObjectID = "140"; */
+"140.title" = "Dateitransfers:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "143"; */
+"143.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Open new connection"; ObjectID = "144"; */
+"144.title" = "Neue Verbindung öffnen";
+
+/* Class = "NSMenuItem"; title = "Use browser connection"; ObjectID = "145"; */
+"145.title" = "Verbindung in Browser verwenden";
+
+/* Class = "NSButtonCell"; title = "Upload with temporary filename"; ObjectID = "147"; */
+"147.title" = "Upload mit provisorischem Dateinamen";
+
+/* Class = "NSTabViewItem"; label = "Permissions"; ObjectID = "148"; */
+"148.label" = "Berechtigungen";
+
+/* Class = "NSButtonCell"; title = "Change permissions"; ObjectID = "151"; */
+"151.title" = "Berechtigungen ändern";
+
+/* Class = "NSButtonCell"; title = "Change permissions"; ObjectID = "153"; */
+"153.title" = "Berechtigungen ändern";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "155"; */
+"155.title" = "Schreiben";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "157"; */
+"157.title" = "Ausführen";
+
+/* Class = "NSTextFieldCell"; title = "Others"; ObjectID = "159"; */
+"159.title" = "Andere";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "161"; */
+"161.title" = "Schreiben";
+
+/* Class = "NSTextFieldCell"; title = "Group"; ObjectID = "163"; */
+"163.title" = "Gruppe";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "165"; */
+"165.title" = "Ausführen";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "167"; */
+"167.title" = "Ausführen";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "169"; */
+"169.title" = "Lesen";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "171"; */
+"171.title" = "Lesen";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "173"; */
+"173.title" = "Lesen";
+
+/* Class = "NSTextFieldCell"; title = "Owner"; ObjectID = "175"; */
+"175.title" = "Besitzer";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "177"; */
+"177.title" = "Schreiben";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "179"; */
+"179.title" = "Lesen";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "181"; */
+"181.title" = "Ausführen";
+
+/* Class = "NSTextFieldCell"; title = "Group"; ObjectID = "183"; */
+"183.title" = "Gruppe";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "185"; */
+"185.title" = "Ausführen";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "187"; */
+"187.title" = "Lesen";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "189"; */
+"189.title" = "Lesen";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "191"; */
+"191.title" = "Ausführen";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "193"; */
+"193.title" = "Schreiben";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "195"; */
+"195.title" = "Schreiben";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "197"; */
+"197.title" = "Schreiben";
+
+/* Class = "NSTextFieldCell"; title = "Others"; ObjectID = "199"; */
+"199.title" = "Andere";
+
+/* Class = "NSTextFieldCell"; title = "Owner"; ObjectID = "201"; */
+"201.title" = "Besitzer";
+
+/* Class = "NSButtonCell"; title = "to the permissions of the local file or folder"; ObjectID = "203"; */
+"203.title" = "zu den Berechtigungen der lokalen Datei";
+
+/* Class = "NSButtonCell"; title = "to these permissions:"; ObjectID = "205"; */
+"205.title" = "zu diesen Berechtigungen:";
+
+/* Class = "NSButtonCell"; title = "to the permissions of the remote file or folder"; ObjectID = "207"; */
+"207.title" = "zu den Berechtigungen der Datei auf dem Server";
+
+/* Class = "NSButtonCell"; title = "to these permissions:"; ObjectID = "209"; */
+"209.title" = "zu diesen Berechtigungen:";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "212"; */
+"212.title" = "Downloads";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "215"; */
+"215.title" = "Uploads";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "218"; */
+"218.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "for Files"; ObjectID = "219"; */
+"219.title" = "für Dateien";
+
+/* Class = "NSMenuItem"; title = "for Folders"; ObjectID = "220"; */
+"220.title" = "für Ordner";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "223"; */
+"223.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "for Files"; ObjectID = "224"; */
+"224.title" = "für Dateien";
+
+/* Class = "NSMenuItem"; title = "for Folders"; ObjectID = "225"; */
+"225.title" = "für Ordner";
+
+/* Class = "NSTabViewItem"; label = "Timestamps"; ObjectID = "226"; */
+"226.label" = "Zeitstempel";
+
+/* Class = "NSButtonCell"; title = "Preserve modification date"; ObjectID = "229"; */
+"229.title" = "Änderungsdatum beibehalten";
+
+/* Class = "NSButtonCell"; title = "Preserve modification date"; ObjectID = "231"; */
+"231.title" = "Änderungsdatum beibehalten";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "234"; */
+"234.title" = "Downloads";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "237"; */
+"237.title" = "Uploads";
+
+/* Class = "NSTabViewItem"; label = "Filter"; ObjectID = "238"; */
+"238.label" = "Erweitert";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "242"; */
+"242.title" = "Downloads";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "245"; */
+"245.title" = "Uploads";
+
+/* Class = "NSButtonCell"; title = "Skip files matching the regular expression:"; ObjectID = "257"; */
+"257.title" = "Dateien die dem regulären Ausdruck entsprechen überspringen:";
+
+/* Class = "NSButtonCell"; title = "Skip files matching the regular expression:"; ObjectID = "259"; */
+"259.title" = "Dateien die dem regulären Ausdruck entsprechen überspringen:";
+
+/* Class = "NSButtonCell"; title = "Default"; ObjectID = "261"; */
+"261.title" = "Standard";
+
+/* Class = "NSButtonCell"; title = "Default"; ObjectID = "263"; */
+"263.title" = "Standard";
+
+/* Class = "NSBox"; title = "Default Protocol Handler"; ObjectID = "265"; */
+"265.title" = "Standard Protokoll Helfer";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "268"; */
+"268.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "269"; */
+"269.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select the default application to be opened for files or links pointing to an FTP location."; ObjectID = "271"; */
+"271.title" = "Wähle die Standardapplikation zum Öffnen von Dateien und Links die auf eine FTP Verbindung verweisen.";
+
+/* Class = "NSBox"; title = "Default Protocol Handler"; ObjectID = "273"; */
+"273.title" = "Standard Protokoll Helfer";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "276"; */
+"276.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "277"; */
+"277.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select the default application to be opened for files or links pointing to an SFTP location."; ObjectID = "279"; */
+"279.title" = "Wähle die Standardapplikation zum Öffnen von Dateien und Links die auf eine SFTP Verbindung verweisen.";
+
+/* Class = "NSBox"; title = "Text Encoding"; ObjectID = "281"; */
+"281.title" = "Zeichenkodierung";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "284"; */
+"284.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "285"; */
+"285.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "The selected default text encoding is used to convert characters in filenames displayed in the browser. This should match the text encoding used on the server."; ObjectID = "287"; */
+"287.title" = "Die ausgewählte Zeichenkodierung wird benutzt um Dateinamen im Browser zu konvertieren. Dies sollte mit der verwendeten Zeichenkodierung auf dem Server übereinstimmen.";
+
+/* Class = "NSBox"; title = "Proxies"; ObjectID = "288"; */
+"288.title" = "Proxies";
+
+/* Class = "NSButtonCell"; title = "Change Settings…"; ObjectID = "290"; */
+"290.title" = "Konfiguration ändern…";
+
+/* Class = "NSButtonCell"; title = "Use system proxy settings"; ObjectID = "292"; */
+"292.title" = "Proxy in Systemeinstellungen verwenden";
+
+/* Class = "NSBox"; title = "Timeouts"; ObjectID = "293"; */
+"293.title" = "Zeitlimiten";
+
+/* Class = "NSTextFieldCell"; title = "Timeout for opening connections (seconds):"; ObjectID = "295"; */
+"295.title" = "Zeitlimit beim Öffnen von Verbindungen (Sekunden):";
+
+/* Class = "NSTextFieldCell"; title = "Number of retries:"; ObjectID = "301"; */
+"301.title" = "Anzahl erneuter Versuche:";
+
+/* Class = "NSTextFieldCell"; title = "with delay (seconds):"; ObjectID = "303"; */
+"303.title" = "mit Verzögerung (Sekunden):";
+
+/* Class = "NSButtonCell"; title = "Repeat failed networking tasks"; ObjectID = "305"; */
+"305.title" = "Fehlgeschlagene Netzwerkaufgaben wiederholen";
+
+/* Class = "NSBox"; title = "Update"; ObjectID = "316"; */
+"316.title" = "Aktualisierung";
+
+/* Class = "NSButtonCell"; title = "Automatically check for updates in"; ObjectID = "318"; */
+"318.title" = "Automatisch auf aktuelle Version überprüfen in";
+
+/* Class = "NSButtonCell"; title = "Check for Update Now"; ObjectID = "320"; */
+"320.title" = "Jetzt auf neue Version prüfen";
+
+/* Class = "NSDateFormatter"; ibShadowedDateFormat = "%x"; ObjectID = "323"; */
+"323.ibShadowedDateFormat" = "%x";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "326"; */
+"326.title" = "OtherViews";
+
+/* Class = "NSBox"; title = "Throttle Transfers"; ObjectID = "328"; */
+"328.title" = "Bandbreite der Dateitransfers begrenzen";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "331"; */
+"331.title" = "Downloads";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "334"; */
+"334.title" = "Uploads";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "337"; */
+"337.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Unlimited Bandwidth"; ObjectID = "338"; */
+"338.title" = "Unlimitierte Bandbreite";
+
+/* Class = "NSTextFieldCell"; title = "Maximum Throughput:"; ObjectID = "341"; */
+"341.title" = "Maximale Durchsatzrate:";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "344"; */
+"344.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = "Unlimited Bandwidth"; ObjectID = "345"; */
+"345.title" = "Unlimitierte Bandbreite";
+
+/* Class = "NSTextFieldCell"; title = "Maximum Throughput:"; ObjectID = "348"; */
+"348.title" = "Maximale Durchsatzrate:";
+
+/* Class = "NSBox"; title = "Encryption"; ObjectID = "350"; */
+"350.title" = "Verschlüsselung";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "353"; */
+"353.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Choose the algorithm to encrypt files with on upload."; ObjectID = "355"; */
+"355.title" = "Der zu verwendende Algorithmus zur Verschlüsselung von hochgeladenen Dateien";
+
+/* Class = "NSBox"; title = "Default Bucket Location"; ObjectID = "356"; */
+"356.title" = "Standard Bucket Ort";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "359"; */
+"359.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "The geographic location in which buckets will be created by default."; ObjectID = "361"; */
+"361.title" = "Standard Ort für neu angelegte Buckets.";
+
+/* Class = "NSBox"; title = "Default Storage Class"; ObjectID = "362"; */
+"362.title" = "Standard Speicherklasse";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "365"; */
+"365.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy."; ObjectID = "367"; */
+"367.title" = "Reduced Redundancy Storage (RRS) verringert die Kosten zur Speicherung von nicht kritischen, reproduzierbaren Dateien.";
+
+/* Class = "NSBox"; title = "Editor"; ObjectID = "369"; */
+"369.title" = "Editorprogramm";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "372"; */
+"372.title" = "OtherViews";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "373"; */
+"373.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select a text editor to open files with by default if no other application installed can be found to edit a given file type."; ObjectID = "375"; */
+"375.title" = "Applikation zum Editieren von Dateitypen wenn keine Standardapplikation für diesen Dateityp gefunden werden kann.";
+
+/* Class = "NSButtonCell"; title = "Always use this application"; ObjectID = "377"; */
+"377.title" = "Immer Standard Editorprogramm verwenden";
+
+/* Class = "NSBox"; title = "Language"; ObjectID = "409"; */
+"409.title" = "Sprache";
+
+/* Class = "NSTextFieldCell"; title = "Changes take effect the next time you open the application."; ObjectID = "411"; */
+"411.title" = "Änderungen werden beim nächsten Programmstart wirksam.";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "414"; */
+"414.title" = "OtherViews";
+
+/* Class = "NSBox"; title = "Default ACL"; ObjectID = "413-ca-YoL"; */
+"413-ca-YoL.title" = "Standard Zugriffssteuerungsliste";
+
+/* Class = "NSTextFieldCell"; title = "Choose the predefined set of grantees and permissions to apply to new buckets and files."; ObjectID = "4Yf-WE-fsN"; */
+"4Yf-WE-fsN.title" = "Auswahl von vordefinierten Genehmigungen und Berechtigungen für Buckets und Dateien.";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "8oB-mo-TeL"; */
+"8oB-mo-TeL.title" = "OtherViews";
+
+/* Class = "NSButtonCell"; title = "Segmented downloads with multiple connections per file"; ObjectID = "Dvz-7i-NUp"; */
+"Dvz-7i-NUp.title" = "Segmentierte Downloads mit mehreren Verbindungen pro Datei";
+
+/* Class = "NSBox"; title = "Default Storage Class"; ObjectID = "H10-BD-7Zg"; */
+"H10-BD-7Zg.title" = "Standard Speicherklasse";
+
+/* Class = "NSButtonCell"; title = "Verify checksum"; ObjectID = "JQr-Vn-9Xj"; */
+"JQr-Vn-9Xj.title" = "Prüfsumme verifizieren";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "LOt-Ur-gZL"; */
+"LOt-Ur-gZL.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "OF7-e3-pIZ"; */
+"OF7-e3-pIZ.title" = "Uploads";
+
+/* Class = "NSButtonCell"; title = "Enable debug log"; ObjectID = "Ocq-JC-4Gq"; */
+"Ocq-JC-4Gq.title" = "Erweitertes Log aktivieren";
+
+/* Class = "NSButtonCell"; title = "Show in Finder"; ObjectID = "Pw4-rQ-xRd"; */
+"Pw4-rQ-xRd.title" = "Im Finder zeigen";
+
+/* Class = "NSTextFieldCell"; title = "Choose the predefined set of grantees and permissions to apply to new buckets and files."; ObjectID = "Qg3-4s-tpR"; */
+"Qg3-4s-tpR.title" = "Auswahl von vordefinierten Genehmigungen und Berechtigungen für Buckets und Dateien.";
+
+/* Class = "NSTextFieldCell"; title = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy."; ObjectID = "SEJ-MV-ehv"; */
+"SEJ-MV-ehv.title" = "Reduced Redundancy Storage (RRS) verringert die Kosten zur Speicherung von nicht kritischen, reproduzierbaren Dateien.";
+
+/* Class = "NSBox"; title = "Default Bucket Location"; ObjectID = "V1l-Oi-w0c"; */
+"V1l-Oi-w0c.title" = "Standard Bucket Ort";
+
+/* Class = "NSTabViewItem"; label = "Checksum"; ObjectID = "VK5-4m-22V"; */
+"VK5-4m-22V.label" = "Prüfsumme";
+
+/* Class = "NSTextFieldCell"; title = "The geographic location in which buckets will be created by default."; ObjectID = "Vaz-8e-u1G"; */
+"Vaz-8e-u1G.title" = "Standard Ort für neu angelegte Buckets.";
+
+/* Class = "NSBox"; title = "Cryptomator"; ObjectID = "Xoe-j6-yKO"; */
+"Xoe-j6-yKO.title" = "Cryptomator";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "diO-fA-NtZ"; */
+"diO-fA-NtZ.title" = "OtherViews";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "jMp-5G-M0R"; */
+"jMp-5G-M0R.title" = "Downloads";
+
+/* Class = "NSButtonCell"; title = "Verify checksum"; ObjectID = "ksK-EV-u9o"; */
+"ksK-EV-u9o.title" = "Prüfsumme verifizieren";
+
+/* Class = "NSBox"; title = "Log"; ObjectID = "lZs-z3-3nW"; */
+"lZs-z3-3nW.title" = "Log";
+
+/* Class = "NSButtonCell"; title = "Auto detect and open vault in browser"; ObjectID = "lsw-7x-O1N"; */
+"lsw-7x-O1N.title" = "Automatisch erkennen und im Browser öffnen";
+
+/* Class = "NSBox"; title = "Browser"; ObjectID = "mev-Su-J1f"; */
+"mev-Su-J1f.title" = "Browser";
+
+/* Class = "NSTabViewItem"; label = "Cryptomator"; ObjectID = "prD-Uh-R1Z"; */
+"prD-Uh-R1Z.label" = "Cryptomator";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "rw5-0E-6t1"; */
+"rw5-0E-6t1.title" = "OtherViews";
+
+/* Class = "NSBox"; title = "Default ACL"; ObjectID = "y8O-CF-T0G"; */
+"y8O-CF-T0G.title" = "Standard Zugriffssteuerungsliste";
