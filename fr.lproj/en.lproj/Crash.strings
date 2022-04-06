@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Voulez-vous envoyer le rapport du dernier plantage ?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "L'application %@ a récemment quitté inopinément. Pour participer à son amélioration, vous pouvez envoyer le journal de plantage à l'auteur.";
+
+/* Name of OK button in alert window: */
+"Send" = "Envoyer";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Ne pas envoyer";
+
