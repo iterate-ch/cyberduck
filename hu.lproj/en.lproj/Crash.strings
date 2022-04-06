@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Szeretné jelenteni az utolsó hibát?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Az alkalmazás%@ összeomlott. A fejlesztést segítheti, ha a hibaüzenetet elküldheti a program készítőinek.";
+
+/* Name of OK button in alert window: */
+"Send" = "Elküld";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Mégsem küldi el";
+
