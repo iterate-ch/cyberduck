@@ -19,8 +19,6 @@ package ch.cyberduck.core.diagnostics;
 
 import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
