@@ -19,7 +19,7 @@ import org.apache.commons.text.RandomStringGenerator;
 
 public class AsciiRandomStringService implements RandomStringService {
 
-    private int length;
+    private final int length;
 
     public AsciiRandomStringService() {
         this(8);

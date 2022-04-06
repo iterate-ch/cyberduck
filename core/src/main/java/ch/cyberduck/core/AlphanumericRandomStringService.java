@@ -20,7 +20,7 @@ import org.apache.commons.text.RandomStringGenerator;
 
 public class AlphanumericRandomStringService implements RandomStringService {
 
-    private int length;
+    private final int length;
 
     public AlphanumericRandomStringService() {
         this(8);
