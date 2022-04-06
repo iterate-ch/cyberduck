@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Autentiserar som {0}";
+"Calculate checksum for {0}" = "Kalkylera checksumma för {0}";
+
+"Deleting {0}" = "Raderar {0}";
+"Disconnected" = "Nedkopplad";
+"Disconnecting {0}" = "Kopplar ner {0}";
+"Downloading {0}" = "Hämtar {0}";
+/* Connection type opened */
+"{0} connection opened" = "{0}-anslutning öppnad";
+
+/* Reading size of file. */
+"Getting size of {0}" = "Hämtar storleken på {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "Hämtar tidsstämpel för {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "Hämtar behörigheter för {0}";
+
+/* No activity */
+"Idle" = "Inaktiv";
+"Listing directory {0}" = "Listar mapp {0}";
+"Making directory {0}" = "Skapar mapp {0}";
+"Maximum allowed connections exceeded. Waiting" = "Maximalt antal anslutningar har överskridits. Väntar…";
+"Mounting {0}" = "Monterar {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Inget pålitligt certifikat hittades";
+"Opening {0} connection to {1}" = "Öppnar {0}-anslutning till {1}";
+"SFTP subsystem ready" = "SFTP-delsystem redo";
+"SCP subsystem ready" = "SCP-delsystem redo";
+"Starting SFTP subsystem" = "Startar SFTP-delsystem";
+"Starting SCP subsystem" = "Startar SCP-delsystem";
+"Uploading {0}" = "Överför {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Byter namn {0} till {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "Kopierar {0} till {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "Ändrar ägare för {0} till {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "Ändrar grupp för {0} till {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "Ändrar behörigheter för {0} till {1}";
+"Changing timestamp of {0} to {1}" = "Ändrar tidsstämpel för {0} till {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} sekunder återstår";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} minuter återstår";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} timmar återstår";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Slår upp {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Försök igen om {0} sekunder ({1} försök återstår)";
+"Transfer complete" = "Överföring klar";
+"Transfer incomplete" = "Överföring avbruten";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Aktivera {0}-distribution";
+"Disable {0} Distribution" = "Inaktivera {0}-distribution";
+
+/* Compress and expand archives */
+"Archiving {0}" = "Arkiverar {0}";
+"Unarchiving {0}" = "Avarkiverar {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Beräknar MD5-hash för {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "Läser metadata för {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "Skriver metadata för {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Förbereder {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "Läser CDN-konfiguration för {0}";
+"Writing CDN configuration of {0}" = "Skriver CDN-konfiguration för {0}";
+
+/* Growl Notification */
+"Connection failed" = "Anslutning misslyckad";
+
+/* Growl Notification */
+"Connection opened" = "Anslutning öppnad";
+
+/* Growl Notification */
+"Download complete" = "Hämtning klar";
+
+/* Growl Notification */
+"Synchronization complete" = "Synkronisering klar";
+
+/* Growl Notification */
+"Upload complete" = "Överföring klar";
+
+/* Growl Notification */
+"Download failed" = "Hämtning misslyckad";
+
+/* Growl Notification */
+"Upload failed" = "Överföring misslyckad";
+
+/* Growl Notification */
+"Transfer queued" = "Överföring placerad i kö";
