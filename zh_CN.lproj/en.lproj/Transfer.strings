@@ -1,0 +1,63 @@
+﻿/* NSTextField (Local File:) : <title:Local File:> (oid:123) */
+"Local File:" = "本地文件:";
+
+/* NSTextField (URL:) : <title:URL:> (oid:122) */
+"URL:" = "URL:";
+
+/* NSMenuItem : <title:Unlimited Bandwidth> (oid:163) */
+"Unlimited Bandwidth" = "不限制带宽";
+
+"Overwrite all files" = "覆写所有文件";
+"Append existing files" = "对于已存在的文件";
+"Rename transferred files with a timestamp appended to the filename" = "文件传输完成后，在文件名末尾添加时间戳";
+"Rename existing files with timestamp appended to filename" = "在现存文件的文件名后添加时间戳";
+"Skip transfer of files that already exist" = "跳过已存在的文件";
+"Prompt for action on every file" = "对每个文件的操作均进行提示";
+"Skip files that match size, modification date or checksum" = "跳过大小、修改日期或校验和相同的文件";
+/* Synchronization */
+"Download changed and missing files" = "下载已变更及丢失的文件";
+"Upload changed and missing files" = "上传已变更及丢失的文件";
+"Download and Upload" = "下载及上传";
+
+/* Transfer action for existing files. */
+"Overwrite" = "覆盖";
+"Overwrite all files" = "覆写所有文件";
+
+/* Toolbar item in Transfer Window. Transfer action for existing files */
+"Resume" = "续传";
+"Append existing files" = "对于已存在的文件";
+
+/* Transfer action for existing files */
+"Rename existing" = "重命名现有文件";
+"Rename existing files with timestamp appended to filename" = "在现存文件的文件名后添加时间戳";
+"Rename" = "重命名";
+"Move" = "移动";
+"Rename transferred files with a timestamp appended to the filename" = "文件传输完成后，在文件名末尾添加时间戳";
+
+/* Transfer action for existing files */
+"Skip" = "跳过";
+"Skip transfer of files that already exist" = "跳过已存在的文件";
+"Compare" = "比较";
+"Skip files that match size, modification date or checksum" = "跳过大小、修改日期或校验和相同的文件";
+
+/* Toolbar item */
+"Trash" = "废纸篓";
+"Move files that already exist to the Trash" = "将已存在的文件移动至废纸篓";
+
+/* Synchronization actions */
+"Download changed and missing files" = "下载已变更及丢失的文件";
+"Upload changed and missing files" = "上传已变更及丢失的文件";
+"Download and Upload" = "下载及上传";
+
+/* Synchronize option */
+"Mirror" = "镜像";
+
+/* NSMenuItem (Neue Verbindung öffnen) : <title:Open new connection> (oid:144) */
+"Open single connection" = "开启新的连接";
+
+/* NSMenuItem (Use browser connection) : <title:Use browser connection> (oid:145) */
+"Use browser connection" = "使用浏览器连接";
+"Open multiple connections" = "开启多个连接";
+"Connections" = "连接";
+"{0} Connections" = "{0} 个连接";
+"Log" = "日志";
