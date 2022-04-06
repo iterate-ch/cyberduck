@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -78,9 +77,12 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new BrickDirectoryFeature(session).mkdir(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path sourceFile = new BrickTouchFeature(session).touch(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path targetFile = new Path(target, sourceFile.getName(), EnumSet.of(Path.Type.file));
         new BrickMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new BrickFindFeature(session).find(test));
         assertTrue(new BrickFindFeature(session).find(target));
+        assertTrue(new BrickFindFeature(session).find(targetFile));
         new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

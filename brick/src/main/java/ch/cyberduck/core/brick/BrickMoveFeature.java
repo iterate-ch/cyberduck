@@ -52,8 +52,8 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, delete);
             }
             final FileActionEntity entity = new FileActionsApi(client)
-                .move(new MovePathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
-                    StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
+                    .move(new MovePathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
+                            StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }
@@ -62,5 +62,10 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Cannot rename {0}", e, file);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
     }
 }
