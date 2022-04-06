@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "마지막 오류를 보고하시겠습니까?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "%@ 응용프로그램이 예기치 못한 오류로 종료되었습니다. 문제 개선을 위해 저작자에게 오류 로그를 보낼 수 있습니다.";
+
+/* Name of OK button in alert window: */
+"Send" = "보내기";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "보내지 않기";
+
