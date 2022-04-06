@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
-import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.ui.cocoa.datasource.SyncPromptDataSource;

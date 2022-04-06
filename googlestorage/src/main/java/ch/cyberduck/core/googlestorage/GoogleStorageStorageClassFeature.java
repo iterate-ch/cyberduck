@@ -22,10 +22,7 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.jets3t.service.model.S3Object;
-
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
