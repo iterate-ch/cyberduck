@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "Listing directory {0} failed";
+
+/* Touch file failed */
+"Cannot create {0}" = "Cannot create file {0}";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Cannot create folder {0}";
+
+/* Moving file failed */
+"Cannot rename {0}" = "Cannot rename {0}";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Failure to read attributes of {0}";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Failure to write attributes of {0}";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Cannot delete {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "Cannot change owner";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Cannot change group";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "Cannot change permissions of {0}";
+"Cannot change timestamp of {0}" = "Cannot change timestamp of {0}";
+
+/* Mount failure */
+"Connection failed" = "Connection failed";
+
+/* Transfer failure */
+"Download {0} failed" = "Download {0} failed";
+
+/* Transfer failure */
+"Upload {0} failed" = "Upload {0} failed";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Cannot read CDN configuration";
+"Cannot write CDN configuration" = "Cannot write CDN configuration";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Cannot read container configuration";
+
+"Interoperability failure" = "Interoperability failure";
+"Access denied" = "Access denied";
+"File not found" = "File not found";
+"Insufficient disk space" = "Insufficient disk space";
+
+"DNS lookup for {0} failed" = "DNS lookup for {0} failed";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server";
+
+"Insufficient disk space" = "Insufficient disk space";
+"Only {0} available disk space" = "Only {0} available disk space";
+
+"Insufficient disk space" = "Insufficient disk space";
+"Only {0} available disk space" = "Only {0} available disk space";
