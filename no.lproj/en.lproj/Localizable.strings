@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "Handling";
+"Active" = "Aktiv";
+
+/* Window title. */
+"Activity" = "Aktivitet";
+"Allow" = "Tillat";
+"Always" = "Alltid";
+
+/* Transfer action for existing files */
+"Prompt" = "Spør meg hva som skal gjøres";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} Bokmerke";
+
+/* Alert sheet alternate button */
+"Cancel" = "Avbryt";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Tegn-enkoding";
+"Choose" = "Velg";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Rydd opp";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Tøm meny";
+
+/* Toolbar item */
+"Column" = "Kolonne";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Koble til tjener";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Kunne ikke åpne eller lese vertsfilen";
+"Could not open the file" = "Kunne ikke åpne filen";
+"Could not show the file" = "Kunne ikke vise filen";
+"Could not show the file in the Finder" = "Kunne ikke vise filen i Finder";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Lag ny katalog";
+
+/* Menu item */
+"Cut {0}" = "Klipp ut {0}";
+"Copy {0}" = "Kopier {0}";
+"Default" = "Grunninnstilling";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Slett";
+"Delete Bookmark" = "Slett bokmerke";
+
+/* Toolbar item tooltip */
+"Delete file" = "Slett fil";
+"Deny" = "Nekte";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Koble fra";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "Koble fra {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Koble fra tjener";
+"Do you want to delete the selected bookmark?" = "Ønsker du å slette det valgte bokmerket?";
+
+/* Toolbar item */
+"Download" = "Last ned";
+"Download As:" = "Last ned som:";
+
+/* Toolbar item tooltip */
+"Download file" = "Last ned fil";
+"Download the selected file to…" = "Last ned den valgte filen til…";
+
+/* Toolbar item */
+"Edit" = "Rediger";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Rediger fil i eksternt redigeringsverktøy";
+
+/* Toolbar item */
+"Encoding" = "Koding";
+
+/* Alert sheet title */
+"Error" = "Feil";
+
+/* Quit application on Windows */
+"Exit" = "Avslutt";
+"File" = "Fil";
+
+/* A column in the browser */
+"Filename" = "Filnavn";
+"{0} Items" = "{0} filer";
+"Folder" = "katalog";
+"FTP (File Transfer Protocol)" = "FTP (Filoverføring)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Hent informasjon";
+
+/* Toolbar item */
+"Go to Folder" = "Gå til katalog";
+"History" = "Historie";
+
+"Invalid character in filename." = "Ugyldig tegn i filnavnet.";
+"Invalid character in folder name." = "Ugyldig tegn i katalognavnet.";
+
+/* A column in the browser */
+"Kind" = "Type";
+"Extension" = "Filending";
+"Region" = "Region";
+"Version" = "Versjon";
+
+/* Toolbar item */
+"List" = "Liste";
+"Local" = "Lokal";
+"Local File" = "Lokal fil";
+"Mac Line Endings (CR)" = "Mac linjeavslutninger (CR)";
+
+/* A column in the browser */
+"Modified" = "Endret";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Flytt til papirkurv";
+"Multiple files" = "Flere filer";
+
+/* Toolbar item */
+"New Connection" = "Ny tilkobling";
+
+/* Toolbar item */
+"No external editor available" = "Ingen eksterne redigeringsverktøy er tilgjengelige";
+
+/* Alert sheet text */
+"No newer version available." = "Ingen nyere versjon er tilgjengelig.";
+"No private key selected" = "Ingen private nøkler er valgt";
+/* Alert sheet title */
+"No update" = "Ingen oppdatering";
+"None" = "Ingen";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} av {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "OK";
+"Open" = "Åpne";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "Åpne i nettleser";
+
+/* Toolbar item */
+"Outline" = "Katalogtre";
+
+/* A column in the browser */
+"Owner" = "Eier";
+
+/* A column in the browser */
+"Group" = "Gruppe";
+"Passive" = "Passiv";
+
+/* Menu item */
+"Paste {0}" = "Lim inn {0}";
+
+/* A column in the browser */
+"Permissions" = "Rettigheter";
+
+/* Toolbar item */
+"Quick Connect" = "Hurtigtilkobling";
+
+/* Toolbar item */
+"Quick Look" = "Hurtigvisning";
+"Quit" = "Avslutt";
+"Quit Anyway" = "Avslutt likevel";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "Sikker på at du vil slette filene? Dette kan ikke gjøres om.";
+
+/* Toolbar item */
+"Refresh" = "Gjenoppfrisk";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Gjenoppfrisk katalog-oversikten";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Gjenoppfrisk";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Slett";
+"Remove completed transfers from list." = "Fjern fullførte overføringer fra listen.";
+
+
+"Review…" = "Gå gjennom…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Søk";
+"Server File" = "Tjenerfil";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH Sikker filoverføring)";
+"Show" = "Vis";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Vis filattributter";
+"Show in Finder" = "Vis i Finder";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Vis overføringsvindu";
+
+/* A column in the browser */
+"Size" = "Størrelse";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Stopp";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Bytt utforsker visning";
+"Symbolic Link (File)" = "Symbolsk lenke (fil)";
+"Symbolic Link (Folder)" = "Symbolsk lenke (katalog)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Synkroniser {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Synkroniser filer";
+
+/* Alert sheet text */
+"The connection will be closed." = "Tilkoblingen vil bli stengt.";
+"There are files currently being transferred. Quit anyway?" = "Det står fortsatt filer i køen for å bli overført. Vil du avslutte likevel?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Det oppstod et problem under oppdateringen. Vennligst prøv igjen senere.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Veksle Bokmerker";
+"Transfer in progress" = "Overføring er igang";
+
+/* Toolbar item */
+"Transfers" = "Overføringer";
+
+"Auto" = "Auto";
+"Unknown" = "Ukjent";
+"Unknown size" = "Ukjent størrelse";
+
+/* Toolbar item */
+"Upload" = "Last opp";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Last opp lokal fil til fjern vert";
+
+/* Toolbar item */
+"View" = "Se";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Du er tilkoblet minst en fjern tjener. Vil du se åpne utforskere?";
+"Open Network Diagnostics" = "Åpne verktøy for nettverksdiagnostikk";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Utgivelse";
+"Beta" = "Beta";
+"Snapshot Builds" = "Snapshot Builds";
+
+"Show Hidden Files" = "Vis skjulte filer";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Skjul verktøylinje";
+"Show Toolbar" = "Vis Verktøylinje";
