@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "Autentificando como {0}";
+"Calculate checksum for {0}" = "Calcular suma de chequeo para {0}";
+
+"Deleting {0}" = "Borrando {0}";
+"Disconnected" = "Desconectado";
+"Disconnecting {0}" = "Desconectando {0}";
+"Downloading {0}" = "Bajando {0}";
+/* Connection type opened */
+"{0} connection opened" = "Conexión {0} abierta";
+
+/* Reading size of file. */
+"Getting size of {0}" = "Obteniendo el tamaño de {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "Obteniendo la fecha de {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "Obteniendo permiso de {0}";
+
+/* No activity */
+"Idle" = "Inactivo";
+"Listing directory {0}" = "Escribiendo el listado {0}";
+"Making directory {0}" = "Crear directorio {0}";
+"Maximum allowed connections exceeded. Waiting" = "Se ha superado el número máximo de conexiones. Esperando…";
+"Mounting {0}" = "Montando {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "No se ha encontrado un certificado fiable";
+"Opening {0} connection to {1}" = "Abriendo conexión {0} con {1}";
+"SFTP subsystem ready" = "Subsistema SFTP preparado";
+"SCP subsystem ready" = "Subsistema SCP preparado";
+"Starting SFTP subsystem" = "Empezando subsistema SFTP";
+"Starting SCP subsystem" = "Empezando subsistema SCP";
+"Uploading {0}" = "Subiendo {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "Renombrando a {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "Copiando {0} a {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "Cambiando propietario a {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "Cambiando grupo a {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "Cambiando permisos a {1}";
+"Changing timestamp of {0} to {1}" = "Cambiando día y hora de {0} a {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "Quedan {0} segundos";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "Quedan {0} minutos";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "Quedan {0} horas";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "Identificando {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Reintentar después de {0} segundos ({1} intentos más)";
+"Transfer complete" = "Trasferencia completada";
+"Transfer incomplete" = "Trasferencia incompleta";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Activar distribución {0}";
+"Disable {0} Distribution" = "Desactivar distribución {0}";
+
+/* Compress and expand archives */
+"Archiving {0}" = "Comprimiendo {0}";
+"Unarchiving {0}" = "Descomprimiendo {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Calcular el hash MD5 de {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "Leyendo metadatos de {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "Escribiendo metadatos de {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Preparar {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "Leyendo configuración CDN de {0}";
+"Writing CDN configuration of {0}" = "Escribiendo configuración CDN de {0}";
+
+/* Growl Notification */
+"Connection failed" = "Falló la conexión";
+
+/* Growl Notification */
+"Connection opened" = "Se ha establecido la conexión";
+
+/* Growl Notification */
+"Download complete" = "Descarga completada";
+
+/* Growl Notification */
+"Synchronization complete" = "Sincronización completada";
+
+/* Growl Notification */
+"Upload complete" = "Subida completada";
+
+/* Growl Notification */
+"Download failed" = "Falló la descarga";
+
+/* Growl Notification */
+"Upload failed" = "Falló la subida";
+
+/* Growl Notification */
+"Transfer queued" = "Trasferencia en cola";
