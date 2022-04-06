@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Apakah anda mau melaporkan kerusakan tak terduga yang baru saja terjadi?";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Aplikasi %@ baru saja mengalami kerusakan tak terduga. Untuk membantu memperbaiki kerusakan ini, anda dapat mengirimkan data tentang kerusakan kepada pembuat aplikasi ini.";
+
+/* Name of OK button in alert window: */
+"Send" = "Kirimkan";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Jangan Kirim";
+
