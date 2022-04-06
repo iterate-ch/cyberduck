@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "Neuspjela izrada popisa mape {0}";
+
+/* Touch file failed */
+"Cannot create {0}" = "Nije moguće stvoriti datoteku {0}";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Nije moguće stvoriti mapu {0}";
+
+/* Moving file failed */
+"Cannot rename {0}" = "Nije moguće preimenovati {0}";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Neuspjelo čitanje svojstva od {0}";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Neuspjelo zapisivanje svojstva od {0}";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Nije moguće izbrisati {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "Nije moguće promijeniti vlasnika";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Nije moguće promijeniti grupu";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "Nije moguće promijeniti dozvole za {0}";
+"Cannot change timestamp of {0}" = "Nije moguće promijeniti vremensku oznaku za {0}";
+
+/* Mount failure */
+"Connection failed" = "Povezivanje neuspjelo";
+
+/* Transfer failure */
+"Download {0} failed" = "Preuzimanje {0} neuspjelo";
+
+/* Transfer failure */
+"Upload {0} failed" = "Prenošenje {0} neuspio";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Nije moguće čitati CDN konfiguraciju";
+"Cannot write CDN configuration" = "Nije moguće zapisati CDN konfiguraciju";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Nije moguće čitati konfiguraciju kontejnera";
+
+"Interoperability failure" = "Greška u interoperabilnosti";
+"Access denied" = "Pristup zabranjen";
+"File not found" = "Datoteka nije pronađena";
+"Insufficient disk space" = "Nedovoljno memorije na disku";
+
+"DNS lookup for {0} failed" = "DNS pretraga za {0} neuspjela";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Nepoklapanje između MD5 hash-a {0} prenesenih podataka i ETag-a {1} vraćeno od poslužitelja";
+
+"Insufficient disk space" = "Nedovoljno memorije na disku";
+"Only {0} available disk space" = "Dostupno je samo {0} prostora na disku";
+
+"Insufficient disk space" = "Nedovoljno memorije na disku";
+"Only {0} available disk space" = "Dostupno je samo {0} prostora na disku";
