@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "功能";
+"Active" = "主動";
+
+/* Window title. */
+"Activity" = "活動";
+"Allow" = "允許";
+"Always" = "總是";
+
+/* Transfer action for existing files */
+"Prompt" = "詢問我";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} 書籤";
+
+/* Alert sheet alternate button */
+"Cancel" = "取消";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "文字編碼";
+"Choose" = "選擇";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "清除";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "清除選單";
+
+/* Toolbar item */
+"Column" = "欄位";
+
+/* Toolbar item tooltip */
+"Connect to server" = "連接伺服器";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} 網址";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "無法開取或讀取檔案";
+"Could not open the file" = "無法開啟檔案";
+"Could not show the file" = "無法顯示檔案";
+"Could not show the file in the Finder" = "無法在 Finder 顯示檔案";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "新增資料夾";
+
+/* Menu item */
+"Cut {0}" = "剪下 {0}";
+"Copy {0}" = "複製 {0}";
+"Default" = "預設";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "刪除";
+"Delete Bookmark" = "刪除書籤";
+
+/* Toolbar item tooltip */
+"Delete file" = "刪除檔案";
+"Deny" = "拒絕";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "中斷連線";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "中斷連線 {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "中斷與伺服器連線";
+"Do you want to delete the selected bookmark?" = "刪除所選擇的書籤？";
+
+/* Toolbar item */
+"Download" = "下載";
+"Download As:" = "下載為：";
+
+/* Toolbar item tooltip */
+"Download file" = "下載檔案";
+"Download the selected file to…" = "下載所選檔案至⋯";
+
+/* Toolbar item */
+"Edit" = "編輯";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "用文字編輯器編輯檔案";
+
+/* Toolbar item */
+"Encoding" = "編碼";
+
+/* Alert sheet title */
+"Error" = "錯誤";
+
+/* Quit application on Windows */
+"Exit" = "離開";
+"File" = "文件";
+
+/* A column in the browser */
+"Filename" = "檔案名稱";
+"{0} Items" = "{0} 檔案";
+"Folder" = "資料夾";
+"FTP (File Transfer Protocol)" = "FTP (檔案傳輸協定)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "簡介";
+
+/* Toolbar item */
+"Go to Folder" = "前往資料夾";
+"History" = "歷史記錄";
+
+"Invalid character in filename." = "檔案名稱中有無效的字元。";
+"Invalid character in folder name." = "資料夾名稱中有無效的字元。";
+
+/* A column in the browser */
+"Kind" = "種類";
+"Extension" = "附加元件";
+"Region" = "Region";
+"Version" = "版本";
+
+/* Toolbar item */
+"List" = "列表";
+"Local" = "本機";
+"Local File" = "本機檔案";
+"Mac Line Endings (CR)" = "Mac 句尾 (CR)";
+
+/* A column in the browser */
+"Modified" = "修改日期";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "移動到垃圾筒";
+"Multiple files" = "數個檔案";
+
+/* Toolbar item */
+"New Connection" = "新增連線";
+
+/* Toolbar item */
+"No external editor available" = "無可用的外部編輯器";
+
+/* Alert sheet text */
+"No newer version available." = "尚無新版本。";
+"No private key selected" = "無已選的私有金鑰";
+/* Alert sheet title */
+"No update" = "無更新版本";
+"None" = "無";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} / {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "確定";
+"Open" = "開啟";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "在網頁瀏覽器中開啟";
+
+/* Toolbar item */
+"Outline" = "簡介";
+
+/* A column in the browser */
+"Owner" = "擁有者";
+
+/* A column in the browser */
+"Group" = "群組";
+"Passive" = "被動 (PASV)";
+
+/* Menu item */
+"Paste {0}" = "貼上 {0}";
+
+/* A column in the browser */
+"Permissions" = "使用權限";
+
+/* Toolbar item */
+"Quick Connect" = "快速連接";
+
+/* Toolbar item */
+"Quick Look" = "快速查看";
+"Quit" = "結束";
+"Quit Anyway" = "強制結束";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "刪除{0}檔案";
+
+/* Toolbar item */
+"Refresh" = "重新整理";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "重新整理目錄列表";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "重新整理";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "移除";
+"Remove completed transfers from list." = "從清單中移除已完成的傳輸。";
+
+
+"Review…" = "重新檢視⋯";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "搜尋";
+"Server File" = "伺服器檔案";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (安全遠端連線檔案傳輸通訊協定)";
+"Show" = "顯示";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "顯示檔案屬性";
+"Show in Finder" = "在 Finder 中顯示";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "顯示傳輸視窗";
+
+/* A column in the browser */
+"Size" = "大小";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "停止";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "轉換瀏覽視窗";
+"Symbolic Link (File)" = "符號連結 (檔案)";
+"Symbolic Link (Folder)" = "符號連結 (資料夾)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "同步 {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "同步檔案";
+
+/* Alert sheet text */
+"The connection will be closed." = "連線將終止";
+"There are files currently being transferred. Quit anyway?" = "目前尚有項目在傳輸，確定要結束嗎？";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "檢查更新時發生錯誤，請稍後再嘗試。";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "切換書籤";
+"Transfer in progress" = "傳輸中";
+
+/* Toolbar item */
+"Transfers" = "傳輸";
+
+"Auto" = "自動";
+"Unknown" = "未知";
+"Unknown size" = "未知的大小";
+
+/* Toolbar item */
+"Upload" = "上傳";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "上傳檔案至遠端主機";
+
+/* Toolbar item */
+"View" = "顯示方式";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "您連線到一個或一個以上的遠端主機。您需要重新檢視已開啟的視窗嗎？";
+"Open Network Diagnostics" = "開啟網路診斷";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (網頁導向分工編寫及版本管理)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Release";
+"Beta" = "Beta";
+"Snapshot Builds" = "Snapshot Builds";
+
+"Show Hidden Files" = "顯示隱藏檔案";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "隱藏工具列";
+"Show Toolbar" = "顯示工具列";
