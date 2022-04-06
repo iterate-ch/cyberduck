@@ -1,0 +1,23 @@
+﻿/* No comment provided by engineer. */
+"Set Cyberduck as default application for FTP and SFTP locations?" = "Да стане ли „Cyberduck” приложението по подразбиране за FTP и SFTP адреси?";
+
+/* No comment provided by engineer. */
+"As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later." = "Като приложение по подразбиране, „Cyberduck” ще стартира, когато щракнете върху FTP или SFTP връзки в други програми, като например Вашия уеб браузър. По-късно може да промените тази опция в предпочитанията.";
+
+/* Apply proposed action. */
+"Change" = "Промяна";
+
+/* Do not display this dialog again. */
+"Don't ask again" = "Да не се пита отново";
+
+/* Don't change anything. */
+"Cancel" = "Отказ";
+
+/* Bookmark import from thirdparty applications */ 
+"Import" = "Внос";
+/* Import <<Application Name>> Bookmarks */
+"Import {0} Bookmarks" = "Внасяне на {0} отметки";
+/* 23 bookmarks found. */
+"{0} bookmarks found. Do you want to add these to your bookmarks?" = "Намерени бяха {0} отметки. Желаете ли да ги прибавите към Вашите?";
+/* Write the source application into the comment field of the imported bookmark */
+"Imported from {0}" = "Внос от {0}";
