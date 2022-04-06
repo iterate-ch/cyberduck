@@ -66,6 +66,13 @@ public class FreenetSession extends DAVSession {
         }
         catch(LocalAccessDeniedException | ChecksumException e) {
             log.warn(String.format("Failure %s retrieving MAC address", e));
+            final String identifier = new MD5ChecksumCompute().compute(System.getProperty("user.name")).hash;
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    request.addHeader(new BasicHeader("X-Freenet-Insid", identifier));
+                }
+            });
         }
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
