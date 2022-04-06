@@ -1,0 +1,23 @@
+﻿/* No comment provided by engineer. */
+"Set Cyberduck as default application for FTP and SFTP locations?" = "Chcete nastaviť Cyberduck ako predvolenú aplikáciu pre FTP a SFTP umiestnenia?";
+
+/* No comment provided by engineer. */
+"As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later." = "Cyberduck ako predvolená aplikácia sa bude otvárať po kliknutí na FTP alebo SFTP odkazy v iných aplikáciách, napríklad v prehliadači internetových stránok. Toto nastavenie je možné kedykoľvek zmeniť v predvoľbách.";
+
+/* Apply proposed action. */
+"Change" = "Zmeniť";
+
+/* Do not display this dialog again. */
+"Don't ask again" = "Viac nezobraziť";
+
+/* Don't change anything. */
+"Cancel" = "Zrušiť";
+
+/* Bookmark import from thirdparty applications */ 
+"Import" = "Načítať";
+/* Import <<Application Name>> Bookmarks */
+"Import {0} Bookmarks" = "Načítať záložky z aplikácie {0}";
+/* 23 bookmarks found. */
+"{0} bookmarks found. Do you want to add these to your bookmarks?" = "Nájdených záložiek: {0}. Chcete ich pridať k vašim záložkám?";
+/* Write the source application into the comment field of the imported bookmark */
+"Imported from {0}" = "Načítaná z aplikácie {0}";
