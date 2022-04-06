@@ -146,7 +146,7 @@ public class HostDictionary {
                 // Legacy
                 Object connObj = dict.stringForKey("Maximum Connections");
                 if(connObj != null) {
-                    if(1 == Integer.valueOf(connObj.toString())) {
+                    if(1 == Integer.parseInt(connObj.toString())) {
                         bookmark.setTransfer(Host.TransferType.browser);
                     }
                 }
