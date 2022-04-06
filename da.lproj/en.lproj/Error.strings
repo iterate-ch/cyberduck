@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "Visning af direktiv {0} fejlede";
+
+/* Touch file failed */
+"Cannot create {0}" = "Kan ikke oprette fil {0}";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Kan ikke oprette mappe {0}";
+
+/* Moving file failed */
+"Cannot rename {0}" = "Kan ikke omdøbe {0}";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Fejl under aflæsning af {0}'s egenskaber";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Fejl under skrivning af {0}'s egenskaber";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Kan ikke slette {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "Kan ikke skifte ejer";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Kan ikke skifte gruppe";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "Kan ikke ændre tilladelser af {0}";
+"Cannot change timestamp of {0}" = "Kan ikke ændre tidsstempel af {0}";
+
+/* Mount failure */
+"Connection failed" = "Forbindelse mislykkedes";
+
+/* Transfer failure */
+"Download {0} failed" = "Download af {0} mislykkedes";
+
+/* Transfer failure */
+"Upload {0} failed" = "Upload af {0} mislykkedes";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Kan ikke læse CDN Konfiguration";
+"Cannot write CDN configuration" = "Kan ikke skrive CDN konfiguration";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Kan ikke læse beholde rkonfiguration";
+
+"Interoperability failure" = "Interoperabilitetsfejl";
+"Access denied" = "Adgang nægtet";
+"File not found" = "Fil ikke fundet";
+"Insufficient disk space" = "Der er ikke nok diskplads";
+
+"DNS lookup for {0} failed" = "DNS opslag for {0} fejlede";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Uoverensstemmelse mellem MD5 hash {0} af uploaded data og ETag {1} returneret af serveren.";
+
+"Insufficient disk space" = "Der er ikke nok diskplads";
+"Only {0} available disk space" = "Kun {0} diskplads tilgængelig";
+
+"Insufficient disk space" = "Der er ikke nok diskplads";
+"Only {0} available disk space" = "Kun {0} diskplads tilgængelig";
