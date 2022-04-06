@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "A autenticar como {0}";
+"Calculate checksum for {0}" = "Calcular 'checksum' para {0}";
+
+"Deleting {0}" = "A apagar {0}";
+"Disconnected" = "Desligado";
+"Disconnecting {0}" = "A desligar {0}";
+"Downloading {0}" = "A descarregar {0}";
+/* Connection type opened */
+"{0} connection opened" = "Ligação {0} aberta";
+
+/* Reading size of file. */
+"Getting size of {0}" = "A obter tamanho de {0}";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "A obter marca temporal de {0}";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "A obter permissões de {0}";
+
+/* No activity */
+"Idle" = "Inativo";
+"Listing directory {0}" = "A listar diretório {0}";
+"Making directory {0}" = "A criar diretório {0}";
+"Maximum allowed connections exceeded. Waiting" = "Excedido o número máximo de ligações permitidas. A aguardar…";
+"Mounting {0}" = "A montar {0}";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "Não foi encontrado um certificado de confiança";
+"Opening {0} connection to {1}" = "A abrir ligação de {0} a {1}";
+"SFTP subsystem ready" = "Subsistema SFTP pronto";
+"SCP subsystem ready" = "Subsistema SCP pronto";
+"Starting SFTP subsystem" = "A inicializar subsistema SFTP";
+"Starting SCP subsystem" = "A inicializar subsistema SCP";
+"Uploading {0}" = "A carregar {0}";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "A renomear {0} para {1}";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "A copiar {0} para {1}";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "A alterar proprietário de {0} para {1}";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "A alterar grupo de {0} para {1}";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "A alterar permissões de {0} para {1}";
+"Changing timestamp of {0} to {1}" = "Alterando carimbo de data e hora de {0} para {1}";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} segundos restantes";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} minutos restantes";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} horas restantes";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "A resolver {0}";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "Nova tentativa dentro de {0} segundos (mais {1} tentativas)";
+"Transfer complete" = "Transferência terminada";
+"Transfer incomplete" = "Transferência não terminada";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "Ativar distribuição {0}";
+"Disable {0} Distribution" = "Desativar distribuição {0}";
+
+/* Compress and expand archives */
+"Archiving {0}" = "A comprimir {0}";
+"Unarchiving {0}" = "A descomprimir {0}";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "Determinar hash MD5 de {0}";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "A ler meta-dados de {0}";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "A escrever meta-dados de {0}";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "Preparar {0} ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "A ler configuração CDN de {0}";
+"Writing CDN configuration of {0}" = "A escrever configuração CDN de {0}";
+
+/* Growl Notification */
+"Connection failed" = "Falha de ligação";
+
+/* Growl Notification */
+"Connection opened" = "Ligação estabelecida";
+
+/* Growl Notification */
+"Download complete" = "Descarga terminada";
+
+/* Growl Notification */
+"Synchronization complete" = "Sincronização terminada";
+
+/* Growl Notification */
+"Upload complete" = "Carregamento terminado";
+
+/* Growl Notification */
+"Download failed" = "Erro ao descarregar";
+
+/* Growl Notification */
+"Upload failed" = "Falha ao carregar";
+
+/* Growl Notification */
+"Transfer queued" = "Transferência colocada na fila";
