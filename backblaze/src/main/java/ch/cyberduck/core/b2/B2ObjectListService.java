@@ -27,7 +27,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,15 +36,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import synapticloop.b2.Action;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
-
-import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2ObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(B2ObjectListService.class);
@@ -118,6 +114,7 @@ public class B2ObjectListService implements ListService {
 
     protected Marker parse(final Path directory, final AttributedList<Path> objects,
                            final B2ListFilesResponse response, final Map<String, Long> revisions) {
+        final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
                 continue;
@@ -128,7 +125,7 @@ public class B2ObjectListService implements ListService {
                 objects.add(placeholder);
                 continue;
             }
-            final PathAttributes attributes = this.parse(info);
+            final PathAttributes attributes = attr.toAttributes(info);
             final long revision;
             if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
@@ -142,50 +139,13 @@ public class B2ObjectListService implements ListService {
             attributes.setRevision(revision);
             final Path f = new Path(directory, PathNormalizer.name(info.getFileName()),
                     info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes);
-            fileid.cache(f, f.attributes().getVersionId());
+            fileid.cache(f, info.getFileId());
             objects.add(f);
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
         }
         return new Marker(response.getNextFileName(), response.getNextFileId());
-    }
-
-    /**
-     * @param response List filenames response from server
-     * @return Null when respone filename is not child of working directory directory
-     */
-    protected PathAttributes parse(final B2FileInfoResponse response) {
-        final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(
-            Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
-        );
-        final long timestamp = response.getUploadTimestamp();
-        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);
-            try {
-                attributes.setModificationDate(Long.parseLong(value));
-            }
-            catch(NumberFormatException e) {
-                log.warn(String.format("Failure parsing src_last_modified_millis with value %s", value));
-            }
-        }
-        else {
-            attributes.setModificationDate(timestamp);
-        }
-        attributes.setVersionId(response.getFileId());
-        switch(response.getAction()) {
-            case hide:
-                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
-            case start:
-                // Large file has been started, but not finished or canceled
-                attributes.setDuplicate(true);
-                break;
-            default:
-                attributes.setSize(response.getContentLength());
-                break;
-        }
-        return attributes;
     }
 
     private static final class Marker {

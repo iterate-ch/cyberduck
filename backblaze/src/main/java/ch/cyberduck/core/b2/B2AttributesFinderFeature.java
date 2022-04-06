@@ -41,6 +41,7 @@ import java.util.Locale;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2BucketResponse;
+import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.B2FinishLargeFileResponse;
 import synapticloop.b2.response.BaseB2Response;
@@ -118,6 +119,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         if(response instanceof B2FileResponse) {
             return this.toAttributes((B2FileResponse) response);
         }
+        if(response instanceof B2FileInfoResponse) {
+            return this.toAttributes((B2FileInfoResponse) response);
+        }
         if(response instanceof B2BucketResponse) {
             return this.toAttributes((B2BucketResponse) response);
         }
@@ -128,9 +132,8 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         return PathAttributes.EMPTY;
     }
 
-    protected PathAttributes toAttributes(final B2FileResponse response) {
+    protected PathAttributes toAttributes(final B2FileInfoResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setSize(response.getContentLength());
         if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
             attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
         }
@@ -141,8 +144,68 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         }
         attributes.setVersionId(response.getFileId());
+        final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);
+            try {
+                attributes.setModificationDate(Long.parseLong(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing src_last_modified_millis with value %s", value));
+            }
+        }
+        else {
+            attributes.setModificationDate(timestamp);
+        }
+        switch(response.getAction()) {
+            case hide:
+                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+            case start:
+                // Large file has been started, but not finished or canceled
+                attributes.setDuplicate(true);
+                break;
+            default:
+                attributes.setSize(response.getContentLength());
+                break;
+        }
+        return attributes;
+    }
+
+    protected PathAttributes toAttributes(final B2FileResponse response) {
+        final PathAttributes attributes = new PathAttributes();
+        if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
+            attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
+        }
+        else {
+            attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
+        }
+        if(!response.getFileInfo().isEmpty()) {
+            attributes.setMetadata(new HashMap<>(response.getFileInfo()));
+        }
+        attributes.setVersionId(response.getFileId());
+        final long timestamp = response.getUploadTimestamp();
+        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
+            final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);
+            try {
+                attributes.setModificationDate(Long.parseLong(value));
+            }
+            catch(NumberFormatException e) {
+                log.warn(String.format("Failure parsing src_last_modified_millis with value %s", value));
+            }
+        }
+        else {
+            attributes.setModificationDate(timestamp);
+        }
+        switch(response.getAction()) {
+            case hide:
+                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+            case start:
+                // Large file has been started, but not finished or canceled
+                attributes.setDuplicate(true);
+                break;
+            default:
+                attributes.setSize(response.getContentLength());
+                break;
         }
         return attributes;
     }
