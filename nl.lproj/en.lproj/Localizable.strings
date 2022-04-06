@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "Actie";
+"Active" = "Actief (PORT)";
+
+/* Window title. */
+"Activity" = "Activiteit";
+"Allow" = "Toestaan";
+"Always" = "Altijd";
+
+/* Transfer action for existing files */
+"Prompt" = "Vraag";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} bladwijzers";
+
+/* Alert sheet alternate button */
+"Cancel" = "Annuleer";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Tekencodering";
+"Choose" = "Kies";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Wis";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Wis menu";
+
+/* Toolbar item */
+"Column" = "Kolom";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Verbind met server";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0}-URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Kan hostbestand niet openen of lezen";
+"Could not open the file" = "Kan dit bestand niet openen";
+"Could not show the file" = "Kan dit bestand niet tonen";
+"Could not show the file in the Finder" = "Kan dit bestand niet tonen in de Finder";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Maak Nieuwe Map";
+
+/* Menu item */
+"Cut {0}" = "Knip {0}";
+"Copy {0}" = "Kopieer {0}";
+"Default" = "Standaard";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Wis";
+"Delete Bookmark" = "Verwijder Bladwijzer";
+
+/* Toolbar item tooltip */
+"Delete file" = "Verwijder bestand";
+"Deny" = "Verbieden";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Verbreek verbinding";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "Verbreek verbinding met {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Verbreek verbinding met server";
+"Do you want to delete the selected bookmark?" = "Wil u de geselecteerde bladwijzer verwijderen?";
+
+/* Toolbar item */
+"Download" = "Download";
+"Download As:" = "Download als:";
+
+/* Toolbar item tooltip */
+"Download file" = "Download bestand";
+"Download the selected file to…" = "Download het geselecteerde bestand naar…";
+
+/* Toolbar item */
+"Edit" = "Wijzig";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Bewerk bestand in externe editor";
+
+/* Toolbar item */
+"Encoding" = "Codering";
+
+/* Alert sheet title */
+"Error" = "Fout";
+
+/* Quit application on Windows */
+"Exit" = "Afsluiten";
+"File" = "Bestand";
+
+/* A column in the browser */
+"Filename" = "Bestandsnaam";
+"{0} Items" = "{0} bestanden";
+"Folder" = "Map";
+"FTP (File Transfer Protocol)" = "FTP (File Transfer Protocol)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Toon Info";
+
+/* Toolbar item */
+"Go to Folder" = "Ga naar Map";
+"History" = "Geschiedenis";
+
+"Invalid character in filename." = "Ongeldig teken in bestandsnaam.";
+"Invalid character in folder name." = "Ongeldig teken in mapnaam.";
+
+/* A column in the browser */
+"Kind" = "Soort";
+"Extension" = "Extensie";
+"Region" = "Regio";
+"Version" = "Versie";
+
+/* Toolbar item */
+"List" = "Lijst";
+"Local" = "Lokaal";
+"Local File" = "Lokaal Bestand";
+"Mac Line Endings (CR)" = "Mac regeleinden (CR)";
+
+/* A column in the browser */
+"Modified" = "Bewerkingsdatum";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Verwijder naar Prullenmand";
+"Multiple files" = "Meerdere bestanden";
+
+/* Toolbar item */
+"New Connection" = "Nieuwe verbinding";
+
+/* Toolbar item */
+"No external editor available" = "Geen externe editor beschikbaar";
+
+/* Alert sheet text */
+"No newer version available." = "Geen nieuwere versie beschikbaar.";
+"No private key selected" = "Geen Private Sleutel geselecteerd";
+/* Alert sheet title */
+"No update" = "Geen update";
+"None" = "Geen";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} van {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "OK";
+"Open" = "Open";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "Open in webbrowser";
+
+/* Toolbar item */
+"Outline" = "Structuur";
+
+/* A column in the browser */
+"Owner" = "Eigenaar";
+
+/* A column in the browser */
+"Group" = "Groep";
+"Passive" = "Passief (PASV)";
+
+/* Menu item */
+"Paste {0}" = "Plak {0}";
+
+/* A column in the browser */
+"Permissions" = "Bevoegdheden";
+
+/* Toolbar item */
+"Quick Connect" = "Verbind snel";
+
+/* Toolbar item */
+"Quick Look" = "Snelle weergave";
+"Quit" = "Stop";
+"Quit Anyway" = "Stop toch";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "Verwijder {0} bestanden";
+
+/* Toolbar item */
+"Refresh" = "Laad opnieuw";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Vernieuw maplijst";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Herlaad";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Verwijder";
+"Remove completed transfers from list." = "Verwijder voltooide bestandsoverdrachten van lijst.";
+
+
+"Review…" = "Bekijk…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Zoek";
+"Server File" = "Serverbestand";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH-beveiligde bestandsoverdracht)";
+"Show" = "Toon";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Toon bestandskenmerken";
+"Show in Finder" = "Toon in Finder";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Toon venster Overdrachten ";
+
+/* A column in the browser */
+"Size" = "Grootte";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Stop";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Wissel van browserweergave";
+"Symbolic Link (File)" = "Symbolische link (bestand)";
+"Symbolic Link (Folder)" = "Symbolische link (Map)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Synchroniseer {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Synchroniseer bestanden";
+
+/* Alert sheet text */
+"The connection will be closed." = "De verbinding wordt gesloten.";
+"There are files currently being transferred. Quit anyway?" = "Er worden nog bestanden overgebracht. Toch stoppen?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Er was een probleem tijdens de updatecontrole. Probeer het later nog eens.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Toon/verberg Bladwijzers";
+"Transfer in progress" = "Overdracht bezig";
+
+/* Toolbar item */
+"Transfers" = "Wachtrij";
+
+"Auto" = "Automatisch";
+"Unknown" = "Onbekend";
+"Unknown size" = "Grootte onbekend";
+
+/* Toolbar item */
+"Upload" = "Upload";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Upload lokaal bestand naar de externe host";
+
+/* Toolbar item */
+"View" = "Weergave";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "U bent met minstens één locatie verbonden. Wilt u de openstaande verbindingen bekijken?";
+"Open Network Diagnostics" = "Open Netwerkdiagnostiek";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Versie";
+"Beta" = "Bèta";
+"Snapshot Builds" = "Tussentijdse versies";
+
+"Show Hidden Files" = "Toon Verborgen Bestanden";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Verberg Knoppenbalk";
+"Show Toolbar" = "Toon werkbalk";
