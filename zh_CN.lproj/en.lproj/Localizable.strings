@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "操作";
+"Active" = "活动 (端口)";
+
+/* Window title. */
+"Activity" = "活动";
+"Allow" = "允许";
+"Always" = "总是";
+
+/* Transfer action for existing files */
+"Prompt" = "询问我";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} 书签";
+
+/* Alert sheet alternate button */
+"Cancel" = "取消";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "字符编码";
+"Choose" = "选择";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "清除";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "清除历史菜单";
+
+/* Toolbar item */
+"Column" = "列";
+
+/* Toolbar item tooltip */
+"Connect to server" = "连接到这个服务器";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "无法打开或读取文件";
+"Could not open the file" = "无法打开文件";
+"Could not show the file" = "无法显示文件";
+"Could not show the file in the Finder" = "无法在 Finder 中显示文件";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "新建文件夹";
+
+/* Menu item */
+"Cut {0}" = "剪切 {0}";
+"Copy {0}" = "复制 {0}";
+"Default" = "默认";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "删除";
+"Delete Bookmark" = "删除书签";
+
+/* Toolbar item tooltip */
+"Delete file" = "删除文件";
+"Deny" = "拒绝";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "断开连接";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "断开 {0} 连接";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "与服务器断开连接";
+"Do you want to delete the selected bookmark?" = "您要删除选定的书签吗？";
+
+/* Toolbar item */
+"Download" = "下载";
+"Download As:" = "下载另存为:";
+
+/* Toolbar item tooltip */
+"Download file" = "下载文件";
+"Download the selected file to…" = "将选定的文件下载至…";
+
+/* Toolbar item */
+"Edit" = "编辑";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "在外部编辑器中编辑文件";
+
+/* Toolbar item */
+"Encoding" = "编码";
+
+/* Alert sheet title */
+"Error" = "错误";
+
+/* Quit application on Windows */
+"Exit" = "退出";
+"File" = "文件";
+
+/* A column in the browser */
+"Filename" = "文件名";
+"{0} Items" = "{0} 文件";
+"Folder" = "文件夹";
+"FTP (File Transfer Protocol)" = "FTP (文件传输协议)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "显示简介";
+
+/* Toolbar item */
+"Go to Folder" = "转到文件夹";
+"History" = "历史记录";
+
+"Invalid character in filename." = "文件名中包含无效的字符。";
+"Invalid character in folder name." = "文件夹名称中包含无效的字符。";
+
+/* A column in the browser */
+"Kind" = "种类";
+"Extension" = "扩展名";
+"Region" = "区域";
+"Version" = "版本";
+
+/* Toolbar item */
+"List" = "列表";
+"Local" = "本地";
+"Local File" = "本地文件";
+"Mac Line Endings (CR)" = "Mac 换行符 (CR)";
+
+/* A column in the browser */
+"Modified" = "修改时间";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "移到废纸篓";
+"Multiple files" = "多个文件";
+
+/* Toolbar item */
+"New Connection" = "新建连接";
+
+/* Toolbar item */
+"No external editor available" = "没有可用的外部编辑器。";
+
+/* Alert sheet text */
+"No newer version available." = "还没有新的版本。";
+"No private key selected" = "没有选择私钥";
+/* Alert sheet title */
+"No update" = "没有更新";
+"None" = "无";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} / {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "确定";
+"Open" = "打开";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "在浏览器中打开";
+
+/* Toolbar item */
+"Outline" = "大纲";
+
+/* A column in the browser */
+"Owner" = "所有者";
+
+/* A column in the browser */
+"Group" = "组别";
+"Passive" = "被动";
+
+/* Menu item */
+"Paste {0}" = "粘贴 {0}";
+
+/* A column in the browser */
+"Permissions" = "访问权限";
+
+/* Toolbar item */
+"Quick Connect" = "快速连接";
+
+/* Toolbar item */
+"Quick Look" = "快速查看";
+"Quit" = "退出";
+"Quit Anyway" = "强制退出";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "确定删除以下文件？本操作无法还原。";
+
+/* Toolbar item */
+"Refresh" = "刷新";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "刷新目录列表";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "重新下载";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "移除";
+"Remove completed transfers from list." = "从列表中移除已完成的传输。";
+
+
+"Review…" = "回顾…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "搜索";
+"Server File" = "服务器文件";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH 文件传输协议)";
+"Show" = "显示";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "显示文件属性";
+"Show in Finder" = "在 Finder 中显示";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "显示传输窗口";
+
+/* A column in the browser */
+"Size" = "大小";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "停止";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "切换浏览模式";
+"Symbolic Link (File)" = "符号链接 (文件)";
+"Symbolic Link (Folder)" = "符号链接 (文件夹)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "同步 {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "同步文件";
+
+/* Alert sheet text */
+"The connection will be closed." = "连接将会断开。";
+"There are files currently being transferred. Quit anyway?" = "队列中还有等待传输的文件，确定退出么？";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "检查新版本时出现错误，请稍后再试。";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "开关书签栏";
+"Transfer in progress" = "传输进行中";
+
+/* Toolbar item */
+"Transfers" = "传输";
+
+"Auto" = "自动";
+"Unknown" = "未知";
+"Unknown size" = "未知大小";
+
+/* Toolbar item */
+"Upload" = "上传";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "上传本地文件到远程主机";
+
+/* Toolbar item */
+"View" = "视图";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "您已经连接一个或多个远程站点。要查看开启的窗口吗？";
+"Open Network Diagnostics" = "打开网络诊断";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (基于Web的分布式编集及版本控制)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "正式版";
+"Beta" = "测试版";
+"Snapshot Builds" = "预览版";
+
+"Show Hidden Files" = "显示隐藏文件";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "隐藏工具栏";
+"Show Toolbar" = "显示工具栏";
