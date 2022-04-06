@@ -1,0 +1,12 @@
+﻿/* Title of alert window when we had a crash: */
+"Do you want to report the last crash?" = "Θέλετε να αναφέρετε την τελευταία βλάβη;";
+
+/* Message for alert window when we had a crash: */
+"The application %@ has recently crashed. To help improve it, you can send the crash log to the author." = "Η εφαρμογή %@ έχει πρόσφατα παρουσιάσει βλάβη. Για να βοηθήσετε στην βελτίωσή της, μπορείτε να στείλετε το ιστορικό βλαβών στο δημιουργό.";
+
+/* Name of OK button in alert window: */
+"Send" = "Αποστολή";
+
+/* Name of Cancel button in alert window: */
+"Don't Send" = "Μη Αποστολή";
+
