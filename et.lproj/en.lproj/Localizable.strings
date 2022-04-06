@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "Toiming";
+"Active" = "Aktiivne (PORT)";
+
+/* Window title. */
+"Activity" = "Toiming";
+"Allow" = "Luba";
+"Always" = "Alati";
+
+/* Transfer action for existing files */
+"Prompt" = "Küsi";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} Järjehoidjat";
+
+/* Alert sheet alternate button */
+"Cancel" = "Loobu";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Märgistik";
+"Choose" = "Vali";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Tühjenda";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Tühjenda menüü";
+
+/* Toolbar item */
+"Column" = "Veerg";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Ühendu serverisseÜhenda serverisse";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Hosti faili avamine või lugemine ebaõnnestus";
+"Could not open the file" = "Faili ei õnnestunud avada";
+"Could not show the file" = "Faili ei õnnestunud näidata";
+"Could not show the file in the Finder" = "Faili näitamine failihalduris ebaõnnestus";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Loo uus kaust";
+
+/* Menu item */
+"Cut {0}" = "Lõika {0}";
+"Copy {0}" = "Kopeeri {0}";
+"Default" = "Vaikeväärtus";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Kustuta";
+"Delete Bookmark" = "Kustuta järjehoidja";
+
+/* Toolbar item tooltip */
+"Delete file" = "Kustuta fail";
+"Deny" = "Keela";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Katkesta ühendus";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "Katkesta ühendus {0}";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Katkesta ühendus serveriga";
+"Do you want to delete the selected bookmark?" = "Kas soovid valitud järjehoidjat kustutada?";
+
+/* Toolbar item */
+"Download" = "Laadi alla";
+"Download As:" = "Laadi alla kui:";
+
+/* Toolbar item tooltip */
+"Download file" = "Laadi fail alla";
+"Download the selected file to…" = "Laadi valitud fail kausta...";
+
+/* Toolbar item */
+"Edit" = "Muuda";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Muuda faili välises redaktoris";
+
+/* Toolbar item */
+"Encoding" = "Kodeering";
+
+/* Alert sheet title */
+"Error" = "Viga";
+
+/* Quit application on Windows */
+"Exit" = "Välju";
+"File" = "Fail";
+
+/* A column in the browser */
+"Filename" = "Failinimi";
+"{0} Items" = "{0} faili";
+"Folder" = "Kaust";
+"FTP (File Transfer Protocol)" = "FTP (File Transfer Protocol)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Hangi info";
+
+/* Toolbar item */
+"Go to Folder" = "Mine kausta";
+"History" = "Ajalugu";
+
+"Invalid character in filename." = "Vigane märk failinimes.";
+"Invalid character in folder name." = "Vigane märk kaustanimes.";
+
+/* A column in the browser */
+"Kind" = "Liik";
+"Extension" = "Laiend";
+"Region" = "Piirkond";
+"Version" = "Versioon";
+
+/* Toolbar item */
+"List" = "Nimekiri";
+"Local" = "Kohalik";
+"Local File" = "Kohalik fail";
+"Mac Line Endings (CR)" = "Mac realõpud (CR)";
+
+/* A column in the browser */
+"Modified" = "Muudetud";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Liiguta prügikasti";
+"Multiple files" = "Mitu faili";
+
+/* Toolbar item */
+"New Connection" = "Ava ühendus";
+
+/* Toolbar item */
+"No external editor available" = "Välist redaktorit pole saadaval";
+
+/* Alert sheet text */
+"No newer version available." = "Uuemat versiooni pole saadaval.";
+"No private key selected" = "Privaatset võtit pole valitud";
+/* Alert sheet title */
+"No update" = "Uuendusi pole";
+"None" = "Pole";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} / {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "OK";
+"Open" = "Ava";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "Ava veebibrauseris";
+
+/* Toolbar item */
+"Outline" = "Outline";
+
+/* A column in the browser */
+"Owner" = "Omanik";
+
+/* A column in the browser */
+"Group" = "Grupp";
+"Passive" = "Passiivne (PASV)";
+
+/* Menu item */
+"Paste {0}" = "Aseta {0}";
+
+/* A column in the browser */
+"Permissions" = "Õigused";
+
+/* Toolbar item */
+"Quick Connect" = "Kiirühendus";
+
+/* Toolbar item */
+"Quick Look" = "Kiirvaade";
+"Quit" = "Lõpeta";
+"Quit Anyway" = "Lõpeta sellegipoolest";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "Kustuta {0} faili";
+
+/* Toolbar item */
+"Refresh" = "Värskenda";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Värskenda kaustade nimekirja";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Laadi uuesti";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Eemalda";
+"Remove completed transfers from list." = "Eemalda ülekantud failid nimekirjast.";
+
+
+"Review…" = "Vaata üle...";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Otsi";
+"Server File" = "Serveri fail";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH File Transfer Protocol)";
+"Show" = "Näita";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Näita faili omadusi";
+"Show in Finder" = "Näita failihalduris";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Näita ülekannete akent";
+
+/* A column in the browser */
+"Size" = "Suurus";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Peata";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Lülita sirvija vaadet";
+"Symbolic Link (File)" = "Sümboolne link (fail)";
+"Symbolic Link (Folder)" = "Sümboolne link (kaust)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Sünkrooni {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Sünkrooni faile";
+
+/* Alert sheet text */
+"The connection will be closed." = "Ühendus suletakse.";
+"There are files currently being transferred. Quit anyway?" = "Failide liigutamine on hetkel pooleli. Kas soovid sellegipoolest väljuda?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Uuenduste kontrollimisel tekkis tõrge. Palun proovi hiljem uuesti.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Järjehoidjate lülitamine";
+"Transfer in progress" = "Ülekanne on käimas";
+
+/* Toolbar item */
+"Transfers" = "Ülekanded";
+
+"Auto" = "Automaatne";
+"Unknown" = "Tundmatu";
+"Unknown size" = "Tundmatu suurus";
+
+/* Toolbar item */
+"Upload" = "Laadi üles";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Upload local file to the remote host";
+
+/* Toolbar item */
+"View" = "Vaata";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Sa oled vähemalt ühe saidiga ühendatud. Kas soovid avatud sirvijad üle vaadata?";
+"Open Network Diagnostics" = "Ava võrgu diagnostika";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Vabasta";
+"Beta" = "Beeta";
+"Snapshot Builds" = "Snapshot Builds";
+
+"Show Hidden Files" = "Näita peidetud faile";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Peida tööriistariba";
+"Show Toolbar" = "Näita tööriistariba";
