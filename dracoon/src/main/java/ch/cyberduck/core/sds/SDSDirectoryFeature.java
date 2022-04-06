@@ -86,7 +86,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         }
         roomRequest.setName(room.getName());
         final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
-        nodeid.cache(room, node.getId().toString());
+        nodeid.cache(room, String.valueOf(node.getId()));
         if(encrypt) {
             final EncryptRoomRequest options = new EncryptRoomRequest();
             options.setIsEncrypted(true);
