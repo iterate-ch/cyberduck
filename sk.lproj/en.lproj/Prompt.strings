@@ -1,0 +1,21 @@
+﻿
+/* Class = "NSButtonCell"; title = "Continue"; ObjectID = "6"; */
+"6.title" = "Pokračovať";
+
+/* Class = "NSButtonCell"; title = "Cancel"; ObjectID = "8"; */
+"8.title" = "Zrušiť";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "17"; */
+"17.title" = "Iné zobrazenia";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "18"; */
+"18.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Details"; ObjectID = "25"; */
+"25.title" = "Detaily";
+
+/* Class = "NSTextFieldCell"; title = "Local File:"; ObjectID = "40"; */
+"40.title" = "Lokálny súbor:";
+
+/* Class = "NSTextFieldCell"; title = "Remote File:"; ObjectID = "42"; */
+"42.title" = "Vzdialený súbor:";
