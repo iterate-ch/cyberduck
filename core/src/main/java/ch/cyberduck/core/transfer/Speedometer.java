@@ -34,7 +34,7 @@ public class Speedometer {
     /**
      * Formatter for file size
      */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+    private final SizeFormatter sizeFormatter;
 
     /**
      * The time to start counting bytes transferred
