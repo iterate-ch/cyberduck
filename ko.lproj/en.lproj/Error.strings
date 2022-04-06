@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "디렉토리 {0}의 목록을 얻어오는데 실패하였습니다";
+
+/* Touch file failed */
+"Cannot create {0}" = "{0} 파일을 생성할 수 없습니다";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "{0} 폴더를 생성할 수 없습니다";
+
+/* Moving file failed */
+"Cannot rename {0}" = "{0} 이름을 변경할 수 없습니다";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "파일속성을 읽을 수 없습니다";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "파일속성을 쓸 수 없습니다";
+
+/* Removing file failed */
+"Cannot delete {0}" = "{0}을(를) 삭제할 수 없습니다";
+
+/* Ownership of file */
+"Cannot change owner" = "소유자를 변경할 수 없습니다";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "그룹을 변경할 수 없습니다";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "권한을 변경할 수 없습니다";
+"Cannot change timestamp of {0}" = "날짜를 변경할 수 없습니다";
+
+/* Mount failure */
+"Connection failed" = "연결 실패";
+
+/* Transfer failure */
+"Download {0} failed" = "다운로드가 실패하였습니다";
+
+/* Transfer failure */
+"Upload {0} failed" = "업로드가 실패하였습니다";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "CDN 설정을 읽을 수 없습니다";
+"Cannot write CDN configuration" = "CDN 설정을 쓸 수 없습니다";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "컨테이너 설정을 읽을 수 없습니다";
+
+"Interoperability failure" = "호환성 실패";
+"Access denied" = "접속 불가";
+"File not found" = "파일을 찾을 수 없습니다";
+"Insufficient disk space" = "디스크 공간이 부족합니다";
+
+"DNS lookup for {0} failed" = "{0} DNS 조희가 실패하였습니다";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "업로드한 자료의 MD5 해시 {0}와 서버에서 반환된 ETag {1}가 일치하지 않습니다";
+
+"Insufficient disk space" = "디스크 공간이 부족합니다";
+"Only {0} available disk space" = "디스크 공간이 {0} 만큼 남았습니다";
+
+"Insufficient disk space" = "디스크 공간이 부족합니다";
+"Only {0} available disk space" = "디스크 공간이 {0} 만큼 남았습니다";
