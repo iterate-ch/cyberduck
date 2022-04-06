@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "Mapinhoud ophalen mislukt {0}";
+
+/* Touch file failed */
+"Cannot create {0}" = "Kan bestand {0} niet maken";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Kan map {0} niet maken";
+
+/* Moving file failed */
+"Cannot rename {0}" = "Kan bestand {0} niet van naam wijzigen";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Fout bij lezen van bestandskenmerken van {0}";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Fout bij schrijven bestandskenmerken van {0}";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Kan bestand {0} niet verwijderen";
+
+/* Ownership of file */
+"Cannot change owner" = "Kan bestandseigenaar niet wijzigen";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Kan groep niet veranderen";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "Fout bij wijzigen bevoegdheden van {0}";
+"Cannot change timestamp of {0}" = "Fout bij wijzigen tijdstempel van {0}";
+
+/* Mount failure */
+"Connection failed" = "Verbinding mislukt";
+
+/* Transfer failure */
+"Download {0} failed" = "Download mislukt";
+
+/* Transfer failure */
+"Upload {0} failed" = "Upload mislukt";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Kan distributienetwerk-configuratie niet lezen";
+"Cannot write CDN configuration" = "Kan distributienetwerk-configuratie niet schrijven";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Kan containerconfiguratie niet lezen";
+
+"Interoperability failure" = "Interoperabiliteitsfout";
+"Access denied" = "Toegang geweigerd";
+"File not found" = "Bestand niet gevonden";
+"Insufficient disk space" = "Onvoldoende schijfruimte";
+
+"DNS lookup for {0} failed" = "DNS verzoek voor {0} mislukt";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "Verschillen tussen MD5-hash {0} van geüploade data en door de server teruggegeven ETag {1}";
+
+"Insufficient disk space" = "Onvoldoende schijfruimte";
+"Only {0} available disk space" = "Slechts {0} beschikbare schijfruimte";
+
+"Insufficient disk space" = "Onvoldoende schijfruimte";
+"Only {0} available disk space" = "Slechts {0} beschikbare schijfruimte";
