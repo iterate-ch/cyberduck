@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "列表失败 {0}";
+
+/* Touch file failed */
+"Cannot create {0}" = "无法创建 {0}";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "无法创建文件夹 {0}";
+
+/* Moving file failed */
+"Cannot rename {0}" = "无法重命名文件 {0}";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "无法读取文件属性";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "无法写入文件属性";
+
+/* Removing file failed */
+"Cannot delete {0}" = "无法删除 {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "无法更改所有者";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "无法更改组别";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "无法更改权限";
+"Cannot change timestamp of {0}" = "无法更改时间戳";
+
+/* Mount failure */
+"Connection failed" = "连接失败";
+
+/* Transfer failure */
+"Download {0} failed" = "下载失败";
+
+/* Transfer failure */
+"Upload {0} failed" = "上传失败";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "无法读取内容分发网络设置";
+"Cannot write CDN configuration" = "无法写入内容分发网络设置";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "无法读取收纳容器的设置";
+
+"Interoperability failure" = "操作失败";
+"Access denied" = "拒绝访问";
+"File not found" = "未找到文件";
+"Insufficient disk space" = "磁盘空间不足";
+
+"DNS lookup for {0} failed" = "对 {0} 的 DNS 查询失败";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "已上传数据的 MD5 哈希值 {0} 与服务器返回的 ETag {1} 不匹配";
+
+"Insufficient disk space" = "磁盘空间不足";
+"Only {0} available disk space" = "仅剩 {0} 磁盘空间";
+
+"Insufficient disk space" = "磁盘空间不足";
+"Only {0} available disk space" = "仅剩 {0} 磁盘空间";
