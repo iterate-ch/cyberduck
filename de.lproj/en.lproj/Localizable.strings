@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "Aktion";
+"Active" = "Aktiv (PORT)";
+
+/* Window title. */
+"Activity" = "Aktivität";
+"Allow" = "Erlauben";
+"Always" = "Immer";
+
+/* Transfer action for existing files */
+"Prompt" = "Fragen";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} Lesezeichen";
+
+/* Alert sheet alternate button */
+"Cancel" = "Abbrechen";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Zeichenkodierung";
+"Choose" = "Auswählen";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Leeren";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Menü löschen";
+
+/* Toolbar item */
+"Column" = "Spalte";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Zu Server verbinden";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} URL";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Die 'known_hosts' Datei konnte nicht geöffnet oder gelesen werden";
+"Could not open the file" = "Die Datei kann nicht geöffnet werden";
+"Could not show the file" = "Die Datei kann nicht angezeigt werden";
+"Could not show the file in the Finder" = "Die Datei konnte nicht im Finder angezeigt werden";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Neuen Ordner anlegen";
+
+/* Menu item */
+"Cut {0}" = "{0} Ausschneiden";
+"Copy {0}" = "{0} Kopieren";
+"Default" = "Standard";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Löschen";
+"Delete Bookmark" = "Lesezeichen löschen";
+
+/* Toolbar item tooltip */
+"Delete file" = "Datei löschen";
+"Deny" = "Ablehnen";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Trennen";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "Verbindung zu {0} trennen";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Verbindung zu Server trennen";
+"Do you want to delete the selected bookmark?" = "Soll das ausgewählte Lesezeichen gelöscht werden?";
+
+/* Toolbar item */
+"Download" = "Download";
+"Download As:" = "Download Unter:";
+
+/* Toolbar item tooltip */
+"Download file" = "Datei herunterladen";
+"Download the selected file to…" = "Die Datei herunterladen nach…";
+
+/* Toolbar item */
+"Edit" = "Bearbeiten";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Datei in externem Editorprogramm öffnen";
+
+/* Toolbar item */
+"Encoding" = "Kodierung";
+
+/* Alert sheet title */
+"Error" = "Fehler";
+
+/* Quit application on Windows */
+"Exit" = "Beenden";
+"File" = "Ablage";
+
+/* A column in the browser */
+"Filename" = "Dateiname";
+"{0} Items" = "{0} Dateien";
+"Folder" = "Ordner";
+"FTP (File Transfer Protocol)" = "FTP (Unverschlüsselte Verbindung)";
+"FTPS (FTP/SSL)" = "FTP-SSL (FTP über TLS/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Info";
+
+/* Toolbar item */
+"Go to Folder" = "Gehe zum Ordner";
+"History" = "Verlauf";
+
+"Invalid character in filename." = "Ungültiges Zeichen im Dateinamen.";
+"Invalid character in folder name." = "Ungültiges Zeichen im Ordnernamen.";
+
+/* A column in the browser */
+"Kind" = "Art";
+"Extension" = "Dateiendung";
+"Region" = "Region";
+"Version" = "Version";
+
+/* Toolbar item */
+"List" = "Liste";
+"Local" = "Lokal";
+"Local File" = "Lokale Datei";
+"Mac Line Endings (CR)" = "Mac Zeilenende (CR)";
+
+/* A column in the browser */
+"Modified" = "Geändert";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "In den Papierkorb verschieben";
+"Multiple files" = "Mehrere Dateien";
+
+/* Toolbar item */
+"New Connection" = "Neue Verbindung";
+
+/* Toolbar item */
+"No external editor available" = "Kein externes Editorprogramm verfügbar";
+
+/* Alert sheet text */
+"No newer version available." = "Keine neuere Version verfügbar.";
+"No private key selected" = "Kein privater Schlüssel ausgewählt";
+/* Alert sheet title */
+"No update" = "Keine neue Version";
+"None" = "Keine";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} von {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "OK";
+"Open" = "Öffnen";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "In Web Browser öffnen";
+
+/* Toolbar item */
+"Outline" = "Erweiterte Liste";
+
+/* A column in the browser */
+"Owner" = "Besitzer";
+
+/* A column in the browser */
+"Group" = "Gruppe";
+"Passive" = "Passiv (PASV)";
+
+/* Menu item */
+"Paste {0}" = "{0} Einfügen";
+
+/* A column in the browser */
+"Permissions" = "Berechtigungen";
+
+/* Toolbar item */
+"Quick Connect" = "Quick Connect";
+
+/* Toolbar item */
+"Quick Look" = "Übersicht";
+"Quit" = "Beenden";
+"Quit Anyway" = "Trotzdem beenden";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "Lösche {0} Dateien";
+
+/* Toolbar item */
+"Refresh" = "Aktualisieren";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Ordnerliste aktualisieren";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Neu laden";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Löschen";
+"Remove completed transfers from list." = "Remove completed transfers from list.";
+
+
+"Review…" = "Überprüfen…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Suche";
+"Server File" = "Server Datei";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH Verbindung)";
+"Show" = "Zeigen";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Zeige Datei Attribute";
+"Show in Finder" = "Im Finder zeigen";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Dateitransfer Fenster anzeigen";
+
+/* A column in the browser */
+"Size" = "Größe";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Stopp";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Wechsle Browser Ansicht";
+"Symbolic Link (File)" = "Symbolischer Link (Datei)";
+"Symbolic Link (Folder)" = "Symbolischer Link (Ordner)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Synchronisieren {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Dateien synchronisieren";
+
+/* Alert sheet text */
+"The connection will be closed." = "Die Verbindung wird unterbrochen.";
+"There are files currently being transferred. Quit anyway?" = "In der Warteschlange sind Dateitransfers aktiv. Trotzdem beenden?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Beim Überprüfen auf ein Update ist ein Fehler aufgetreten. Bitte versuchen Sie später erneut.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Lesezeichen ein-/ausblenden";
+"Transfer in progress" = "Transfer in Gang";
+
+/* Toolbar item */
+"Transfers" = "Dateitransfers";
+
+"Auto" = "Automatisch";
+"Unknown" = "Unbekannt";
+"Unknown size" = "Unbekannte Größe";
+
+/* Toolbar item */
+"Upload" = "Upload";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Lokale Datei auf entfernten Rechner laden";
+
+/* Toolbar item */
+"View" = "Darstellung";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "Sie sind mit noch mindestens einem Server verbunden. Sollen offene Browser angezeigt werden?";
+"Open Network Diagnostics" = "Netzwerkdiagnose öffnen";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (Web-based Distributed Authoring and Versioning)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Release";
+"Beta" = "Beta";
+"Snapshot Builds" = "Snapshot Builds";
+
+"Show Hidden Files" = "Versteckte Dateien anzeigen";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Symbolleiste ausblenden";
+"Show Toolbar" = "Symbolleiste einblenden";
