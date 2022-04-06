@@ -1,0 +1,271 @@
+﻿/* Toolbar item */
+"Action" = "İşlem";
+"Active" = "Etkin (KAPI)";
+
+/* Window title. */
+"Activity" = "Etkinlik";
+"Allow" = "İzin ver";
+"Always" = "Her zaman";
+
+/* Transfer action for existing files */
+"Prompt" = "Sorulsun";
+
+/* Toolbar item */
+"{0} Bookmarks" = "{0} yer imleri";
+
+/* Alert sheet alternate button */
+"Cancel" = "İptal";
+
+/* Toolbar item tooltip */
+"Character Encoding" = "Karakter kodlaması";
+"Choose" = "Seçin";
+
+/* Toolbar item in Transfer Window. */
+"Clean Up" = "Temizle";
+
+/* Remove all bookmarks from history. */
+"Clear Menu" = "Menüyü temizle";
+
+/* Toolbar item */
+"Column" = "Sütun";
+
+/* Toolbar item tooltip */
+"Connect to server" = "Sunucu ile bağlantı kur";
+
+/* Copy {FTP|Web|Distribution} URL */
+"{0} URL" = "{0} adres";
+
+/* Alert sheet text */
+"Could not open or read the host file" = "Sunucu dosyası açılamıyor ya da okunamıyor";
+"Could not open the file" = "Dosya açılamıyor";
+"Could not show the file" = "Dosya görüntülenemiyor";
+"Could not show the file in the Finder" = "Dosya Finder içinde görüntülenemiyor";
+
+/* Toolbar item tooltip */
+"Create New Folder" = "Yeni klasör oluştur";
+
+/* Menu item */
+"Cut {0}" = "Kes {0}";
+"Copy {0}" = "Copy {0}";
+"Default" = "Saptanmış";
+
+/* Alert sheet title
+   Alert sheet default button
+   Toolbar item */
+"Delete" = "Sil";
+"Delete Bookmark" = "Yer imini sil";
+
+/* Toolbar item tooltip */
+"Delete file" = "Dosyayı sil";
+"Deny" = "Reddet";
+
+/* Alert sheet default button
+   Toolbar item */
+"Disconnect" = "Bağlantıyı kes";
+
+/* Alert sheet title */
+"Disconnect from {0}" = "{0} bağlantısını kes";
+
+/* Toolbar item tooltip */
+"Disconnect from server" = "Sunucu bağlantısını kes";
+"Do you want to delete the selected bookmark?" = "Seçilmiş yer imini silmek istiyor musunuz?";
+
+/* Toolbar item */
+"Download" = "İndir";
+"Download As:" = "Farklı indir:";
+
+/* Toolbar item tooltip */
+"Download file" = "Dosyayı indir";
+"Download the selected file to…" = "Seçilmiş dosyayı şuraya indir…";
+
+/* Toolbar item */
+"Edit" = "Düzenle";
+
+/* Toolbar item tooltip */
+"Edit file in external editor" = "Dosyayı dış düzenleyicide düzenle";
+
+/* Toolbar item */
+"Encoding" = "Kodlama";
+
+/* Alert sheet title */
+"Error" = "Hata";
+
+/* Quit application on Windows */
+"Exit" = "Çık";
+"File" = "Dosya";
+
+/* A column in the browser */
+"Filename" = "Dosya adı";
+"{0} Items" = "{0} öge";
+"Folder" = "Klasör";
+"FTP (File Transfer Protocol)" = "FTP (dosya aktarım iletişim kuralı)";
+"FTPS (FTP/SSL)" = "FTPS (FTP/SSL)";
+
+/* Toolbar item */
+"Get Info" = "Bilgi al";
+
+/* Toolbar item */
+"Go to Folder" = "Klasöre git";
+"History" = "Geçmiş";
+
+"Invalid character in filename." = "Dosya adında geçersiz karakterler var.";
+"Invalid character in folder name." = "Klasör adında geçersiz karakterler var.";
+
+/* A column in the browser */
+"Kind" = "Tür";
+"Extension" = "Uzantı";
+"Region" = "Bölge";
+"Version" = "Sürüm";
+
+/* Toolbar item */
+"List" = "Liste";
+"Local" = "Yerel";
+"Local File" = "Yerel dosya";
+"Mac Line Endings (CR)" = "Mac satır sonu (CR)";
+
+/* A column in the browser */
+"Modified" = "Değiştirilme";
+
+/* Move a downloaded file to the trash */
+"Move to Trash" = "Çöpe at";
+"Multiple files" = "Birkaç dosya";
+
+/* Toolbar item */
+"New Connection" = "Bağlantıyı aç";
+
+/* Toolbar item */
+"No external editor available" = "Kullanılabilecek bir dış düzenleyici yok";
+
+/* Alert sheet text */
+"No newer version available." = "Kullanılabilecek yeni bir sürüm yok.";
+"No private key selected" = "Herhangi bir kişisel anahtar seçilmemiş ";
+/* Alert sheet title */
+"No update" = "Herhangi bir güncelleme yok";
+"None" = "Yok";
+
+/* 1.2MB of 3.4MB */
+"{0} of {1}" = "{0} / {1}";
+
+/* Alert default button
+   Alert sheet default button */
+"OK" = "Tamam";
+"Open" = "Aç";
+
+/* Open corresponding HTTP URL in default browser tooltip */
+"Open in Web Browser" = "Web tarayıcıda aç";
+
+/* Toolbar item */
+"Outline" = "Çerçeve";
+
+/* A column in the browser */
+"Owner" = "Sahip";
+
+/* A column in the browser */
+"Group" = "Grup";
+"Passive" = "Pasif (PASV)";
+
+/* Menu item */
+"Paste {0}" = "Yapıştır {0}";
+
+/* A column in the browser */
+"Permissions" = "İzinler";
+
+/* Toolbar item */
+"Quick Connect" = "Hızlı bağlan";
+
+/* Toolbar item */
+"Quick Look" = "Hızlı bakış";
+"Quit" = "Çık";
+"Quit Anyway" = "Yine de çık";
+
+/* Confirm deleting files. */
+"Delete {0} files" = "{0} dosyayı sil";
+
+/* Toolbar item */
+"Refresh" = "Yenile";
+
+/* Toolbar item tooltip */
+"Refresh directory listing" = "Klasör listesini yenile";
+
+/* Toolbar item in Transfer Window. */
+"Reload" = "Yeniden yükle";
+
+/* Toolbar item in Transfer Window. */
+"Remove" = "Sil";
+"Remove completed transfers from list." = "Tamamlanmış aktarımlar listeden kaldırılsın..";
+
+
+"Review…" = "İncele…";
+
+/* Toolbar item in Transfer Window. */
+"Search" = "Ara";
+"Server File" = "Sunucu dosyası";
+"SFTP (SSH File Transfer Protocol)" = "SFTP (SSH dosya aktarım iletişim kuralı)";
+"Show" = "Göster";
+
+/* Toolbar item tooltip */
+"Show file attributes" = "Dosya özniteliklerini göster";
+"Show in Finder" = "Finder içinde göster";
+
+/* Toolbar item tooltip */
+"Show Transfers window" = "Aktarılanlar penceresini göster";
+
+/* A column in the browser */
+"Size" = "Boyut";
+
+/* Toolbar item in Transfer Window. */
+"Stop" = "Durdur";
+
+/* Toolbar item tooltip */
+"Switch Browser View" = "Tarayıcı görünümünü değiştir";
+"Symbolic Link (File)" = "Sembolik bağlantı (dosya)";
+"Symbolic Link (Folder)" = "Sembolik bağlantı (klasör)";
+
+/* Toolbar item */
+"Synchronize {0} with" = "Eşitle {0}";
+
+/* Toolbar item tooltip */
+"Synchronize files" = "Dosyaları eşitle";
+
+/* Alert sheet text */
+"The connection will be closed." = "Bağlantı kapatılacak.";
+"There are files currently being transferred. Quit anyway?" = "Şu anda aktarılan ögeler var. Yine de çıkılsın mı?";
+
+/* Alert sheet text */
+"There was a problem checking for an update. Please try again later." = "Güncelleme denetlenirken bir sorun çıktı. Lütfen bir süre sonra yeniden deneyin.";
+
+/* Toolbar item tooltip */
+"Toggle Bookmarks" = "Yer imlerini aç/kapat";
+"Transfer in progress" = "Aktarılıyor";
+
+/* Toolbar item */
+"Transfers" = "Aktarımlar";
+
+"Auto" = "Oto";
+"Unknown" = "Bilinmiyor";
+"Unknown size" = "Bilinmeyen boyut";
+
+/* Toolbar item */
+"Upload" = "Yükle";
+
+/* Toolbar item tooltip */
+"Upload local file to the remote host" = "Yerel dosyayı uzak sunucuya yükle";
+
+/* Toolbar item */
+"View" = "Görünüm";
+
+"You are connected to at least one remote site. Do you want to review open browsers?" = "En az bir uzak site ile bağlantınız var. Açık tarayıcıları incelemek ister misiniz?";
+"Open Network Diagnostics" = "Ağ tanılamasını aç";
+"WebDAV (Web-based Distributed Authoring and Versioning)" = "WebDAV (web temelli dağıtılmış denetim ve sürümlendirme)";
+"WebDAV (HTTP/SSL)" = "WebDAV (HTTP/SSL)";
+
+/* Update sources */
+"Release" = "Sürüm";
+"Beta" = "Beta";
+"Snapshot Builds" = "Anlık yapımlar";
+
+"Show Hidden Files" = "Gizli dosyaları göster";
+
+/* Toggle Toolbar on Windows */
+"Hide Toolbar" = "Araç çubuğunu gizle";
+"Show Toolbar" = "Araç çubuğunu göster";
