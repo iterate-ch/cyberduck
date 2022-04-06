@@ -5,4 +5,4 @@ git:
       source_language: en
       source_file_dir: i18n/src/main/resources
       source_file_extension: strings
-      translation_files_expression: '<lang>.lproj'
+      translation_files_expression: 'i18n/src/main/resources/<lang>.lproj'
