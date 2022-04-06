@@ -1,0 +1,116 @@
+﻿/* No comment provided by engineer. */
+"Authenticating as {0}" = "{0}로 승인하는 중";
+"Calculate checksum for {0}" = "Calculate checksum for {0}";
+
+"Deleting {0}" = "{0} 삭제 중";
+"Disconnected" = "연결 끊김";
+"Disconnecting {0}" = "{0} 연결 끊는 중";
+"Downloading {0}" = "{0} 다운로드 중";
+/* Connection type opened */
+"{0} connection opened" = "{0} 연결 됨";
+
+/* Reading size of file. */
+"Getting size of {0}" = "{0} 크기 가져오는 중 ";
+
+/* Reading modification date of file. */
+"Getting timestamp of {0}" = "{0} 타임스탬프 가져오는 중";
+
+/* Reading permission of file. */
+"Getting permission of {0}" = "{0} 권한 가져오는 중";
+
+/* No activity */
+"Idle" = "대기중";
+"Listing directory {0}" = "{0} 디렉토리를 목록을 보여주는 중";
+"Making directory {0}" = "{0} 디렉토리 생성 중 ";
+"Maximum allowed connections exceeded. Waiting" = "최대 연결 수 초과. 기다리는 중";
+"Mounting {0}" = "{0} 마운트 중";
+
+/* The user did not accept the certificate or is not valid */
+"No trusted certificate found" = "신뢰할 수 있는 인증서를 찾을 수 없음";
+"Opening {0} connection to {1}" = "{1} 로의 {0} 연결 맺는 중";
+"SFTP subsystem ready" = "SFTP 하위시스템 준비됨";
+"SCP subsystem ready" = "SCP 하위시스템 준비됨";
+"Starting SFTP subsystem" = "SFTP 하위시스템을 시작 중";
+"Starting SCP subsystem" = "SCP 하위시스템을 시작 중";
+"Uploading {0}" = "{0} 업로드 중";
+
+/* Renaming file status message; Renaming to <new filename>. */
+"Renaming {0} to {1}" = "{0}에서 {1}로 이름 변경 중";
+
+/* Duplicate a file */
+"Copying {0} to {1}" = "{0}에서 {1}로 복사 중";
+
+/* Changing the owner of a file */
+"Changing owner of {0} to {1}" = "{0}에서 {1}로 소유자 변경 중";
+
+/* Changing the group owner of a file */
+"Changing group of {0} to {1}" = "{0}에서 {1}로 그룹 변경 중";
+
+/* Changing UNIX file permissions */
+"Changing permission of {0} to {1}" = "{0}에서 {1}로 권한 변경 중";
+"Changing timestamp of {0} to {1}" = "{0}의 타임스탬프를 {1}으로 변경하는 중";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} seconds remaining" = "{0} 초 남음 ";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} minutes remaining" = "{0} 분 남음";
+
+/* Indicates remaining time needed for files to transfer */
+"{0} hours remaining" = "{0} 시간 남음";
+
+/* When trying to determine the IP address of a server hostname; e.g. Resolving example.net */
+"Resolving {0}" = "{0}의 주소 확인 중";
+
+/* Retry in 10 seconds - Used to indicate the time left until another connection attempt is made */
+"Retry again in {0} seconds ({1} more attempts)" = "{0} 초 후에 재시도 ({1} 회의 시도 남음)";
+"Transfer complete" = "전송 완료";
+"Transfer incomplete" = "전송 실패";
+
+/* Content distribution network (CDN) */
+"Enable {0} Distribution" = "{0} 분배 활성화";
+"Disable {0} Distribution" = "{0} 분배 비활성화";
+
+/* Compress and expand archives */
+"Archiving {0}" = "{0} 압축 중";
+"Unarchiving {0}" = "{0} 압축 해제 중";
+
+/* Compute MD5 hash */
+"Compute MD5 hash of {0}" = "{0}의 MD5 해시 계산";
+
+/* Reading HTTP headers */
+"Reading metadata of {0}" = "{0}의 메타데이터 읽는 중";
+
+/* Writing custom HTTP headers */
+"Writing metadata of {0}" = "{0}의 메타데이터 쓰는 중";
+
+/* Prepare path for transfer */
+"Prepare {0} ({1})" = "{0} 준비하기 ({1})";
+
+/* Content distribution network (CDN) configuration */
+"Reading CDN configuration of {0}" = "{0}의 CDN 설정 읽는 중";
+"Writing CDN configuration of {0}" = "{0}의 CDN 설정 쓰는 중";
+
+/* Growl Notification */
+"Connection failed" = "연결 실패";
+
+/* Growl Notification */
+"Connection opened" = "연결됨";
+
+/* Growl Notification */
+"Download complete" = "다운로드 완료";
+
+/* Growl Notification */
+"Synchronization complete" = "동기화 완료";
+
+/* Growl Notification */
+"Upload complete" = "업로드 완료";
+
+/* Growl Notification */
+"Download failed" = "다운로드 실패";
+
+/* Growl Notification */
+"Upload failed" = "업로드 실패";
+
+/* Growl Notification */
+"Transfer queued" = "전송큐에 삽입됨";
