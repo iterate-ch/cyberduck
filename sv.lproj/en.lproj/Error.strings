@@ -1,0 +1,61 @@
+﻿/* No comment */
+"Listing directory {0} failed" = "Kan inte läsa mappinnehåll {0}";
+
+/* Touch file failed */
+"Cannot create {0}" = "Kan inte skapa fil {0}";
+
+/* Create directory failed */
+"Cannot create folder {0}" = "Kan inte skapa mapp {0}";
+
+/* Moving file failed */
+"Cannot rename {0}" = "Kan inte byta namn på fil {0}";
+
+/* Reading metadata of file failed */
+"Failure to read attributes of {0}" = "Kan inte läsa filattribut på {0}";
+
+/* Writing metadata of file failed */
+"Failure to write attributes of {0}" = "Kan inte skriva filattribut på {0}";
+
+/* Removing file failed */
+"Cannot delete {0}" = "Kan inte radera fil {0}";
+
+/* Ownership of file */
+"Cannot change owner" = "Kan inte ändra ägare";
+
+/* Group ownership of file or folder */
+"Cannot change group" = "Kan inte ändra grupp";
+
+/* Fails to change UNIX access permissions */
+"Cannot change permissions of {0}" = "Kan inte ändra behörigheter på {0}";
+"Cannot change timestamp of {0}" = "Kan inte ändra tidstämpel på {0}";
+
+/* Mount failure */
+"Connection failed" = "Anslutning misslyckad";
+
+/* Transfer failure */
+"Download {0} failed" = "Hämtning för {0} misslyckades";
+
+/* Transfer failure */
+"Upload {0} failed" = "Överföring för {0} misslyckades";
+
+/* Content distribution network configuration failures */
+"Cannot read CDN configuration" = "Kan inte läsa CDN-inställningar";
+"Cannot write CDN configuration" = "Kan inte skriva CDN-inställningar";
+
+/* Container configuration such as logging or versioning */
+"Cannot read container configuration" = "Kan inte läsa behållare-inställningar";
+
+"Interoperability failure" = "Interoperabilitetsfel";
+"Access denied" = "Åtkomst nekad";
+"File not found" = "Fil ej hittad";
+"Insufficient disk space" = "Otillräckligt diskutrymme";
+
+"DNS lookup for {0} failed" = "DNS-sökning efter {0} misslyckades";
+
+"Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server" = "MD5 hash {0} av överförd data stämmer inte mot ETag {1} återsänd av servern";
+
+"Insufficient disk space" = "Otillräckligt diskutrymme";
+"Only {0} available disk space" = "Endast {0} tillgängligt diskutrymme";
+
+"Insufficient disk space" = "Otillräckligt diskutrymme";
+"Only {0} available disk space" = "Endast {0} tillgängligt diskutrymme";
