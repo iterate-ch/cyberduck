@@ -61,8 +61,8 @@ public class StreamGobbler extends InputStream {
 
                             if(need_space > buffer.length) {
                                 int inc = need_space / 3;
-                                inc = (inc < 256) ? 256 : inc;
-                                inc = (inc > 8192) ? 8192 : inc;
+                                inc = Math.max(inc, 256);
+                                inc = Math.min(inc, 8192);
                                 new_buffer = new byte[need_space + inc];
                             }
 
@@ -180,7 +180,7 @@ public class StreamGobbler extends InputStream {
 
             int avail = write_pos - read_pos;
 
-            avail = (avail > len) ? len : avail;
+            avail = Math.min(avail, len);
 
             System.arraycopy(buffer, read_pos, b, off, avail);
 
