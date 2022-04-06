@@ -1,0 +1,597 @@
+﻿
+/* Class = "NSWindow"; title = "Preferences"; ObjectID = "3"; */
+"3.title" = "偏好設定";
+
+/* Class = "NSTabViewItem"; label = "General"; ObjectID = "6"; */
+"6.label" = "一般";
+
+/* Class = "NSTabViewItem"; label = "Browser"; ObjectID = "8"; */
+"8.label" = "瀏覽視窗";
+
+/* Class = "NSTabViewItem"; label = "Transfers"; ObjectID = "10"; */
+"10.label" = "傳輸";
+
+/* Class = "NSTabViewItem"; label = "Editor"; ObjectID = "12"; */
+"12.label" = "編輯器";
+
+/* Class = "NSTabViewItem"; label = "FTP"; ObjectID = "14"; */
+"14.label" = "FTP";
+
+/* Class = "NSTabViewItem"; label = "SFTP"; ObjectID = "16"; */
+"16.label" = "SFTP";
+
+/* Class = "NSTabViewItem"; label = "S3"; ObjectID = "18"; */
+"18.label" = "S3";
+
+/* Class = "NSTabViewItem"; label = "Google Docs"; ObjectID = "20"; */
+"20.label" = "Google 文件";
+
+/* Class = "NSTabViewItem"; label = "Bandwidth"; ObjectID = "22"; */
+"22.label" = "頻寬";
+
+/* Class = "NSTabViewItem"; label = "Connection"; ObjectID = "24"; */
+"24.label" = "連線";
+
+/* Class = "NSTabViewItem"; label = "Update"; ObjectID = "26"; */
+"26.label" = "更新";
+
+/* Class = "NSTabViewItem"; label = "Language"; ObjectID = "28"; */
+"28.label" = "語言";
+
+/* Class = "NSBox"; title = "Browser"; ObjectID = "31"; */
+"31.title" = "瀏覽視窗";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "34"; */
+"34.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "35"; */
+"35.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Open new browser window on startup"; ObjectID = "37"; */
+"37.title" = "啟動時開啟新視窗";
+
+/* Class = "NSTextFieldCell"; title = "Connect to bookmark:"; ObjectID = "39"; */
+"39.title" = "連結到書籤：";
+
+/* Class = "NSButtonCell"; title = "Save Workspace"; ObjectID = "41"; */
+"41.title" = "儲存工作區";
+
+/* Class = "NSTextFieldCell"; title = "Will save all open browsers when quitting and restore the connections upon relaunch."; ObjectID = "43"; */
+"43.title" = "Will save all open browsers when quitting and restore the connections upon relaunch.";
+
+/* Class = "NSTextFieldCell"; title = "Open an empty browser when opening the application. A connection to the selected bookmark is opened for a new browser."; ObjectID = "45"; */
+"45.title" = "Open an empty browser when opening the application. A connection to the selected bookmark is opened for a new browser.";
+
+/* Class = "NSBox"; title = "Connection"; ObjectID = "46"; */
+"46.title" = "連線";
+
+/* Class = "NSTextFieldCell"; title = "Default protocol:"; ObjectID = "48"; */
+"48.title" = "預設通訊協定：";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "51"; */
+"51.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "52"; */
+"52.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Use Keychain"; ObjectID = "54"; */
+"54.title" = "使用鑰匙圈";
+
+/* Class = "NSButtonCell"; title = "Confirm disconnect"; ObjectID = "56"; */
+"56.title" = "確認中斷連線";
+
+/* Class = "NSTextFieldCell"; title = "Search for passwords in the Keychain. Save passwords upon successful login in the Keychain by default."; ObjectID = "58"; */
+"58.title" = "Search for passwords in the Keychain. Save passwords upon successful login in the Keychain by default.";
+
+/* Class = "NSTextFieldCell"; title = "Ask before closing a connected browser window."; ObjectID = "60"; */
+"60.title" = "Ask before closing a connected browser window.";
+
+/* Class = "NSBox"; title = "Bookmarks"; ObjectID = "62"; */
+"62.title" = "書籤";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "65"; */
+"65.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = "Use Small Icons"; ObjectID = "66"; */
+"66.title" = "使用小圖示";
+
+/* Class = "NSMenuItem"; title = "Use Medium Icons"; ObjectID = "67"; */
+"67.title" = "使用中圖示";
+
+/* Class = "NSMenuItem"; title = "Use Large Icons"; ObjectID = "68"; */
+"68.title" = "使用大圖示";
+
+/* Class = "NSTextFieldCell"; title = "When using small icons, only the nickname of the bookmark is displayed."; ObjectID = "70"; */
+"70.title" = "當使用小圖示時，只顯示該書籤的暱稱。";
+
+/* Class = "NSBox"; title = "Appearance"; ObjectID = "71"; */
+"71.title" = "使用者界面";
+
+/* Class = "NSButtonCell"; title = "Use alternating row background"; ObjectID = "73"; */
+"73.title" = "使用顏色交替的背景列";
+
+/* Class = "NSButtonCell"; title = "Horizontal Lines"; ObjectID = "75"; */
+"75.title" = "水平格線";
+
+/* Class = "NSButtonCell"; title = "Vertical Lines"; ObjectID = "77"; */
+"77.title" = "垂直格線";
+
+/* Class = "NSBox"; title = "General"; ObjectID = "78"; */
+"78.title" = "一般";
+
+/* Class = "NSButtonCell"; title = "Show hidden files"; ObjectID = "80"; */
+"80.title" = "顯示隱藏檔案";
+
+/* Class = "NSButtonCell"; title = "Double click opens file in external editor"; ObjectID = "82"; */
+"82.title" = "雙擊項目會將該檔於編輯器中開啟";
+
+/* Class = "NSButtonCell"; title = "Info window always shows current selection"; ObjectID = "84"; */
+"84.title" = "簡介顯示目前所選的項目";
+
+/* Class = "NSButtonCell"; title = "Use spring-loaded folders when dragging files"; ObjectID = "86"; */
+"86.title" = "拖拉檔案時使用自動開合式資料夾";
+
+/* Class = "NSTextFieldCell"; title = "Short"; ObjectID = "90"; */
+"90.title" = "短";
+
+/* Class = "NSTextFieldCell"; title = "Medium"; ObjectID = "92"; */
+"92.title" = "中";
+
+/* Class = "NSTextFieldCell"; title = "Long"; ObjectID = "94"; */
+"94.title" = "長";
+
+/* Class = "NSButtonCell"; title = "with delay:"; ObjectID = "96"; */
+"96.title" = "延遲：";
+
+/* Class = "NSButtonCell"; title = "Return key selects folder or file to rename"; ObjectID = "98"; */
+"98.title" = "Return key selects folder or file to rename";
+
+/* Class = "NSTabViewItem"; label = "General"; ObjectID = "101"; */
+"101.label" = "一般";
+
+/* Class = "NSButtonCell"; title = "Open downloaded files with default application"; ObjectID = "104"; */
+"104.title" = "以預設程式開啟下載的檔案";
+
+/* Class = "NSButtonCell"; title = "Remove when transfer completes"; ObjectID = "106"; */
+"106.title" = "傳輸完成後移除項目";
+
+/* Class = "NSTextFieldCell"; title = "Existing Files:"; ObjectID = "108"; */
+"108.title" = "現有的檔案：";
+
+/* Class = "NSTextFieldCell"; title = "Download Folder:"; ObjectID = "110"; */
+"110.title" = "下載資料夾：";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "113"; */
+"113.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "114"; */
+"114.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Bring window to front when transfer starts"; ObjectID = "116"; */
+"116.title" = "Bring window to front when transfer starts";
+
+/* Class = "NSButtonCell"; title = "Close window when transfer completes"; ObjectID = "118"; */
+"118.title" = "Close window when transfer completes";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "121"; */
+"121.title" = "上傳";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "124"; */
+"124.title" = "下載";
+
+/* Class = "NSTextFieldCell"; title = "Existing Files:"; ObjectID = "126"; */
+"126.title" = "現有的檔案：";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "129"; */
+"129.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "130"; */
+"130.title" = " ";
+
+/* Class = "NSButtonCell"; title = "Always overwrite when reloading"; ObjectID = "132"; */
+"132.title" = "重新載入時覆蓋原檔案";
+
+/* Class = "NSButtonCell"; title = "Always overwrite when reloading"; ObjectID = "134"; */
+"134.title" = "重新載入時覆蓋原檔案";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "137"; */
+"137.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "138"; */
+"138.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Transfer Files:"; ObjectID = "140"; */
+"140.title" = "傳送檔案：";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "143"; */
+"143.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = "Open new connection"; ObjectID = "144"; */
+"144.title" = "開啟新連線";
+
+/* Class = "NSMenuItem"; title = "Use browser connection"; ObjectID = "145"; */
+"145.title" = "使用瀏灠器連線";
+
+/* Class = "NSButtonCell"; title = "Upload with temporary filename"; ObjectID = "147"; */
+"147.title" = "Upload with temporary filename";
+
+/* Class = "NSTabViewItem"; label = "Permissions"; ObjectID = "148"; */
+"148.label" = "使用權限";
+
+/* Class = "NSButtonCell"; title = "Change permissions"; ObjectID = "151"; */
+"151.title" = "變更使用權限";
+
+/* Class = "NSButtonCell"; title = "Change permissions"; ObjectID = "153"; */
+"153.title" = "變更使用權限";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "155"; */
+"155.title" = "寫入";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "157"; */
+"157.title" = "執行";
+
+/* Class = "NSTextFieldCell"; title = "Others"; ObjectID = "159"; */
+"159.title" = "其他";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "161"; */
+"161.title" = "寫入";
+
+/* Class = "NSTextFieldCell"; title = "Group"; ObjectID = "163"; */
+"163.title" = "群組";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "165"; */
+"165.title" = "執行";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "167"; */
+"167.title" = "執行";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "169"; */
+"169.title" = "讀取";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "171"; */
+"171.title" = "讀取";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "173"; */
+"173.title" = "讀取";
+
+/* Class = "NSTextFieldCell"; title = "Owner"; ObjectID = "175"; */
+"175.title" = "擁有者";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "177"; */
+"177.title" = "寫入";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "179"; */
+"179.title" = "讀取";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "181"; */
+"181.title" = "執行";
+
+/* Class = "NSTextFieldCell"; title = "Group"; ObjectID = "183"; */
+"183.title" = "群組";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "185"; */
+"185.title" = "執行";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "187"; */
+"187.title" = "讀取";
+
+/* Class = "NSButtonCell"; title = "Read"; ObjectID = "189"; */
+"189.title" = "讀取";
+
+/* Class = "NSButtonCell"; title = "Execute"; ObjectID = "191"; */
+"191.title" = "執行";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "193"; */
+"193.title" = "寫入";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "195"; */
+"195.title" = "寫入";
+
+/* Class = "NSButtonCell"; title = "Write"; ObjectID = "197"; */
+"197.title" = "寫入";
+
+/* Class = "NSTextFieldCell"; title = "Others"; ObjectID = "199"; */
+"199.title" = "其他";
+
+/* Class = "NSTextFieldCell"; title = "Owner"; ObjectID = "201"; */
+"201.title" = "擁有者";
+
+/* Class = "NSButtonCell"; title = "to the permissions of the local file or folder"; ObjectID = "203"; */
+"203.title" = "變更本機檔案或資料夾的使用權限";
+
+/* Class = "NSButtonCell"; title = "to these permissions:"; ObjectID = "205"; */
+"205.title" = "變更為使用權限：";
+
+/* Class = "NSButtonCell"; title = "to the permissions of the remote file or folder"; ObjectID = "207"; */
+"207.title" = "變更為遠端檔案或資料夾的使用權限";
+
+/* Class = "NSButtonCell"; title = "to these permissions:"; ObjectID = "209"; */
+"209.title" = "變更為使用權限：";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "212"; */
+"212.title" = "下載";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "215"; */
+"215.title" = "上傳";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "218"; */
+"218.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = "for Files"; ObjectID = "219"; */
+"219.title" = "檔案";
+
+/* Class = "NSMenuItem"; title = "for Folders"; ObjectID = "220"; */
+"220.title" = "資料夾";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "223"; */
+"223.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = "for Files"; ObjectID = "224"; */
+"224.title" = "檔案";
+
+/* Class = "NSMenuItem"; title = "for Folders"; ObjectID = "225"; */
+"225.title" = "資料夾";
+
+/* Class = "NSTabViewItem"; label = "Timestamps"; ObjectID = "226"; */
+"226.label" = "時間戳記";
+
+/* Class = "NSButtonCell"; title = "Preserve modification date"; ObjectID = "229"; */
+"229.title" = "保留原有修改日期";
+
+/* Class = "NSButtonCell"; title = "Preserve modification date"; ObjectID = "231"; */
+"231.title" = "保留原有修改日期";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "234"; */
+"234.title" = "下載";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "237"; */
+"237.title" = "上傳";
+
+/* Class = "NSTabViewItem"; label = "Filter"; ObjectID = "238"; */
+"238.label" = "過濾";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "242"; */
+"242.title" = "下載";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "245"; */
+"245.title" = "上傳";
+
+/* Class = "NSButtonCell"; title = "Skip files matching the regular expression:"; ObjectID = "257"; */
+"257.title" = "略過檔案的正則表達式：";
+
+/* Class = "NSButtonCell"; title = "Skip files matching the regular expression:"; ObjectID = "259"; */
+"259.title" = "略過檔案的正則表達式：";
+
+/* Class = "NSButtonCell"; title = "Default"; ObjectID = "261"; */
+"261.title" = "預設";
+
+/* Class = "NSButtonCell"; title = "Default"; ObjectID = "263"; */
+"263.title" = "預設";
+
+/* Class = "NSBox"; title = "Default Protocol Handler"; ObjectID = "265"; */
+"265.title" = "預設通訊協定處理常式";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "268"; */
+"268.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "269"; */
+"269.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select the default application to be opened for files or links pointing to an FTP location."; ObjectID = "271"; */
+"271.title" = "Select the default application to be opened for files or links pointing to an FTP location.";
+
+/* Class = "NSBox"; title = "Default Protocol Handler"; ObjectID = "273"; */
+"273.title" = "預設通訊協定處理常式";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "276"; */
+"276.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "277"; */
+"277.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select the default application to be opened for files or links pointing to an SFTP location."; ObjectID = "279"; */
+"279.title" = "Select the default application to be opened for files or links pointing to an SFTP location.";
+
+/* Class = "NSBox"; title = "Text Encoding"; ObjectID = "281"; */
+"281.title" = "文字編碼";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "284"; */
+"284.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "285"; */
+"285.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "The selected default text encoding is used to convert characters in filenames displayed in the browser. This should match the text encoding used on the server."; ObjectID = "287"; */
+"287.title" = "The selected default text encoding is used to convert characters in filenames displayed in the browser. This should match the text encoding used on the server.";
+
+/* Class = "NSBox"; title = "Proxies"; ObjectID = "288"; */
+"288.title" = "Proxies";
+
+/* Class = "NSButtonCell"; title = "Change Settings…"; ObjectID = "290"; */
+"290.title" = "變更設定...";
+
+/* Class = "NSButtonCell"; title = "Use system proxy settings"; ObjectID = "292"; */
+"292.title" = "使用系統 Proxy 設定";
+
+/* Class = "NSBox"; title = "Timeouts"; ObjectID = "293"; */
+"293.title" = "逾時";
+
+/* Class = "NSTextFieldCell"; title = "Timeout for opening connections (seconds):"; ObjectID = "295"; */
+"295.title" = "連線超時時間 (秒)：";
+
+/* Class = "NSTextFieldCell"; title = "Number of retries:"; ObjectID = "301"; */
+"301.title" = "重試次數：";
+
+/* Class = "NSTextFieldCell"; title = "with delay (seconds):"; ObjectID = "303"; */
+"303.title" = "延遲 (秒)：";
+
+/* Class = "NSButtonCell"; title = "Repeat failed networking tasks"; ObjectID = "305"; */
+"305.title" = "Repeat failed networking tasks";
+
+/* Class = "NSBox"; title = "Update"; ObjectID = "316"; */
+"316.title" = "更新";
+
+/* Class = "NSButtonCell"; title = "Automatically check for updates in"; ObjectID = "318"; */
+"318.title" = "自動檢查更新版本";
+
+/* Class = "NSButtonCell"; title = "Check for Update Now"; ObjectID = "320"; */
+"320.title" = "立即檢查是否有更新檔";
+
+/* Class = "NSDateFormatter"; ibShadowedDateFormat = "%x"; ObjectID = "323"; */
+"323.ibShadowedDateFormat" = "%x";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "326"; */
+"326.title" = "其它顯示方式";
+
+/* Class = "NSBox"; title = "Throttle Transfers"; ObjectID = "328"; */
+"328.title" = "Throttle Transfers";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "331"; */
+"331.title" = "下載";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "334"; */
+"334.title" = "上傳";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "337"; */
+"337.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = "Unlimited Bandwidth"; ObjectID = "338"; */
+"338.title" = "不限制带宽";
+
+/* Class = "NSTextFieldCell"; title = "Maximum Throughput:"; ObjectID = "341"; */
+"341.title" = "最小吞吐量：";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "344"; */
+"344.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = "Unlimited Bandwidth"; ObjectID = "345"; */
+"345.title" = "不限制带宽";
+
+/* Class = "NSTextFieldCell"; title = "Maximum Throughput:"; ObjectID = "348"; */
+"348.title" = "最小吞吐量：";
+
+/* Class = "NSBox"; title = "Encryption"; ObjectID = "350"; */
+"350.title" = "加密";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "353"; */
+"353.title" = "其它顯示方式";
+
+/* Class = "NSTextFieldCell"; title = "Choose the algorithm to encrypt files with on upload."; ObjectID = "355"; */
+"355.title" = "Choose the algorithm to encrypt files with on upload.";
+
+/* Class = "NSBox"; title = "Default Bucket Location"; ObjectID = "356"; */
+"356.title" = "Default Bucket Location";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "359"; */
+"359.title" = "其它顯示方式";
+
+/* Class = "NSTextFieldCell"; title = "The geographic location in which buckets will be created by default."; ObjectID = "361"; */
+"361.title" = "The geographic location in which buckets will be created by default.";
+
+/* Class = "NSBox"; title = "Default Storage Class"; ObjectID = "362"; */
+"362.title" = "預設儲存類別";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "365"; */
+"365.title" = "其它顯示方式";
+
+/* Class = "NSTextFieldCell"; title = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy."; ObjectID = "367"; */
+"367.title" = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy.";
+
+/* Class = "NSBox"; title = "Editor"; ObjectID = "369"; */
+"369.title" = "編輯器";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "372"; */
+"372.title" = "其它顯示方式";
+
+/* Class = "NSMenuItem"; title = " "; ObjectID = "373"; */
+"373.title" = " ";
+
+/* Class = "NSTextFieldCell"; title = "Select a text editor to open files with by default if no other application installed can be found to edit a given file type."; ObjectID = "375"; */
+"375.title" = "Select a text editor to open files with by default if no other application installed can be found to edit a given file type.";
+
+/* Class = "NSButtonCell"; title = "Always use this application"; ObjectID = "377"; */
+"377.title" = "總是使用這個程式";
+
+/* Class = "NSBox"; title = "Language"; ObjectID = "409"; */
+"409.title" = "語言";
+
+/* Class = "NSTextFieldCell"; title = "Changes take effect the next time you open the application."; ObjectID = "411"; */
+"411.title" = "更改將於下次打開程式時生效。";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "414"; */
+"414.title" = "其它顯示方式";
+
+/* Class = "NSBox"; title = "Default ACL"; ObjectID = "413-ca-YoL"; */
+"413-ca-YoL.title" = "預設 ACL";
+
+/* Class = "NSTextFieldCell"; title = "Choose the predefined set of grantees and permissions to apply to new buckets and files."; ObjectID = "4Yf-WE-fsN"; */
+"4Yf-WE-fsN.title" = "選擇一組預先定義的被授予者和權限以套用於新的貯體和檔案。";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "8oB-mo-TeL"; */
+"8oB-mo-TeL.title" = "其它顯示方式";
+
+/* Class = "NSButtonCell"; title = "Segmented downloads with multiple connections per file"; ObjectID = "Dvz-7i-NUp"; */
+"Dvz-7i-NUp.title" = "使用分段方式下載檔案";
+
+/* Class = "NSBox"; title = "Default Storage Class"; ObjectID = "H10-BD-7Zg"; */
+"H10-BD-7Zg.title" = "預設儲存類別";
+
+/* Class = "NSButtonCell"; title = "Verify checksum"; ObjectID = "JQr-Vn-9Xj"; */
+"JQr-Vn-9Xj.title" = "驗證總和檢查碼";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "LOt-Ur-gZL"; */
+"LOt-Ur-gZL.title" = "其它顯示方式";
+
+/* Class = "NSTextFieldCell"; title = "Uploads"; ObjectID = "OF7-e3-pIZ"; */
+"OF7-e3-pIZ.title" = "上傳";
+
+/* Class = "NSButtonCell"; title = "Enable debug log"; ObjectID = "Ocq-JC-4Gq"; */
+"Ocq-JC-4Gq.title" = "啟用除錯紀錄";
+
+/* Class = "NSButtonCell"; title = "Show in Finder"; ObjectID = "Pw4-rQ-xRd"; */
+"Pw4-rQ-xRd.title" = "在 Finder 中顯示";
+
+/* Class = "NSTextFieldCell"; title = "Choose the predefined set of grantees and permissions to apply to new buckets and files."; ObjectID = "Qg3-4s-tpR"; */
+"Qg3-4s-tpR.title" = "選擇一組預先定義的被授予者和權限以套用於新的貯體和檔案。";
+
+/* Class = "NSTextFieldCell"; title = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy."; ObjectID = "SEJ-MV-ehv"; */
+"SEJ-MV-ehv.title" = "Choose Reduced Redundancy Storage (RRS) to reduce costs by storing non-critical, reproducible data at lower levels of redundancy.";
+
+/* Class = "NSBox"; title = "Default Bucket Location"; ObjectID = "V1l-Oi-w0c"; */
+"V1l-Oi-w0c.title" = "Default Bucket Location";
+
+/* Class = "NSTabViewItem"; label = "Checksum"; ObjectID = "VK5-4m-22V"; */
+"VK5-4m-22V.label" = "總和檢查碼";
+
+/* Class = "NSTextFieldCell"; title = "The geographic location in which buckets will be created by default."; ObjectID = "Vaz-8e-u1G"; */
+"Vaz-8e-u1G.title" = "The geographic location in which buckets will be created by default.";
+
+/* Class = "NSBox"; title = "Cryptomator"; ObjectID = "Xoe-j6-yKO"; */
+"Xoe-j6-yKO.title" = "Cryptomator";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "diO-fA-NtZ"; */
+"diO-fA-NtZ.title" = "其它顯示方式";
+
+/* Class = "NSTextFieldCell"; title = "Downloads"; ObjectID = "jMp-5G-M0R"; */
+"jMp-5G-M0R.title" = "下載";
+
+/* Class = "NSButtonCell"; title = "Verify checksum"; ObjectID = "ksK-EV-u9o"; */
+"ksK-EV-u9o.title" = "驗證總和檢查碼";
+
+/* Class = "NSBox"; title = "Log"; ObjectID = "lZs-z3-3nW"; */
+"lZs-z3-3nW.title" = "記錄檔";
+
+/* Class = "NSButtonCell"; title = "Auto detect and open vault in browser"; ObjectID = "lsw-7x-O1N"; */
+"lsw-7x-O1N.title" = "自動偵測並在瀏覽器開啟";
+
+/* Class = "NSBox"; title = "Browser"; ObjectID = "mev-Su-J1f"; */
+"mev-Su-J1f.title" = "瀏覽視窗";
+
+/* Class = "NSTabViewItem"; label = "Cryptomator"; ObjectID = "prD-Uh-R1Z"; */
+"prD-Uh-R1Z.label" = "Cryptomator";
+
+/* Class = "NSMenu"; title = "OtherViews"; ObjectID = "rw5-0E-6t1"; */
+"rw5-0E-6t1.title" = "其它顯示方式";
+
+/* Class = "NSBox"; title = "Default ACL"; ObjectID = "y8O-CF-T0G"; */
+"y8O-CF-T0G.title" = "預設 ACL";
