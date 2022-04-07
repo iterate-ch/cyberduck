@@ -21,6 +21,15 @@ namespace Windows.Win32
             }
         }
 
+        /// <inheritdoc cref="winmdroot.UI.Shell.IExtractIconW.Extract(winmdroot.Foundation.PCWSTR, uint, winmdroot.UI.WindowsAndMessaging.HICON*, winmdroot.UI.WindowsAndMessaging.HICON*, uint)"/>
+		public static unsafe void Extract(this winmdroot.UI.Shell.IExtractIconW @this, string pszFile, uint nIconIndex, in winmdroot.UI.WindowsAndMessaging.HICON phiconLarge, in winmdroot.UI.WindowsAndMessaging.HICON phiconSmall, uint nIconSize)
+        {
+            fixed (char* pszFileLocal = pszFile)
+            {
+                @this.Extract(pszFileLocal, nIconIndex, (winmdroot.UI.WindowsAndMessaging.HICON*)phiconLarge.Value, (winmdroot.UI.WindowsAndMessaging.HICON*)phiconSmall.Value, nIconSize);
+            }
+        }
+
         /// <inheritdoc cref="winmdroot.UI.Shell.IAssocHandler.GetIconLocation(Foundation.PWSTR*, int*)"/>
 		public static unsafe string GetIconLocation(this winmdroot.UI.Shell.IAssocHandler @this, out int pIndex)
         {

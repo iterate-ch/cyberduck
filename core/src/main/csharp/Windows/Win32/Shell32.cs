@@ -5,12 +5,23 @@ using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace Windows.Win32
 {
     public partial class CorePInvoke
     {
+        /// <inheritdoc cref="ExtractIconEx(winmdroot.Foundation.PCWSTR, int, winmdroot.UI.WindowsAndMessaging.HICON*, winmdroot.UI.WindowsAndMessaging.HICON*, uint)"/>
+		public static unsafe uint ExtractIconEx(string lpszFile, int nIconIndex, in HICON phiconLarge, in HICON phiconSmall, uint nIcons)
+        {
+            fixed (char* lpszFileLocal = lpszFile)
+            {
+                uint __result = ExtractIconEx(lpszFileLocal, nIconIndex, (HICON*)phiconLarge.Value, (HICON*)phiconSmall.Value, nIcons);
+                return __result;
+            }
+        }
+
         /// <inheritdoc cref="ILCreateFromPath(PCWSTR)"/>
         public static unsafe ref ITEMIDLIST ILCreateFromPath2(string pszPath)
         {
@@ -29,6 +40,19 @@ namespace Windows.Win32
             HRESULT __result = SHCreateAssociationRegistration(&riid, &ppvLocal);
             ppv = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvLocal);
             return __result;
+        }
+
+        /// <inheritdoc cref="SHCreateFileExtractIcon(winmdroot.Foundation.PCWSTR, uint, global::System.Guid*, void**)"/>
+		public static unsafe HRESULT SHCreateFileExtractIcon<T>(string pszFile, uint dwFileAttributes, out T ppv)
+        {
+            Guid riid = typeof(T).GUID;
+            void* ppvLocal;
+            fixed (char* pszFileLocal = pszFile)
+            {
+                HRESULT __result = SHCreateFileExtractIcon(pszFileLocal, dwFileAttributes, &riid, &ppvLocal);
+                ppv = (T)Marshal.GetObjectForIUnknown((IntPtr)ppvLocal);
+                return __result;
+            }
         }
 
         /// <inheritdoc cref="SHCreateItemFromIDList(winmdroot.UI.Shell.Common.ITEMIDLIST*, global::System.Guid*, void**)"/>

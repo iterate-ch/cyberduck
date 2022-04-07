@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.UI.Shell;
 using static Windows.Win32.CorePInvoke;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
@@ -51,11 +48,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return default;
             }
 
-            var sep = app.DefaultIcon.LastIndexOf(',');
-            var index = int.Parse(app.DefaultIcon.Substring(sep + 1));
-            var file = app.DefaultIcon.Substring(0, sep);
-
-            uint result = ExtractIconEx(file, index, out var largeIcon, out var smallIcon, 1);
+            uint result = ExtractIconEx(app.IconPath, app.IconIndex, out var largeIcon, out var smallIcon, 1);
             using (smallIcon)
             using (largeIcon)
             {

@@ -1170,7 +1170,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(app.getName());
                 item.Click += delegate { EditEvent(app); };
                 vistaMenu1.UpdateParent(mainItem);
-                vistaMenu1.SetImage(item, IconProvider.GetFileIcon(app.getIdentifier(), false, false, true));
+                vistaMenu1.SetImage(item, IconProvider.GetApplication(app, 16));
             }
             vistaMenu1.UpdateParent(browserContextMenu);
         }
@@ -1193,7 +1193,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Application app in GetEditorsForSelection())
             {
                 ToolStripItem item = new ToolStripMenuItem(app.getName());
-                item.Image = IconProvider.GetFileIcon(app.getIdentifier(), false, false, true);
+                item.Image = IconProvider.GetApplication(app, 16);
                 item.Click += (o, args) => EditEvent(app);
                 editorMenuStrip.Items.Add(item);
             }

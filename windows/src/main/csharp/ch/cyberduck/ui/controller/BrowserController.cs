@@ -2347,23 +2347,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateEditIcon()
         {
+            System.Drawing.Image image = Images.Pencil.Size(32);
             Path selected = SelectedPath;
             if (null != selected)
             {
                 if (IsEditable(selected))
                 {
                     Application app = EditorFactory.getEditor(selected.getName());
-                    string editCommand = app != null ? app.getIdentifier() : null;
-                    if (Utils.IsNotBlank(editCommand))
+                    if (IconProvider.GetApplication(app, 32) is System.Drawing.Image appIcon)
                     {
-                        View.EditIcon = IconProvider.GetFileIcon(
-                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                            false, true, true);
-                        return;
+                        image = appIcon;
                     }
                 }
             }
-            View.EditIcon = Images.Pencil.Size(32);
+            View.EditIcon = image;
         }
 
         private void UpdateOpenIcon()

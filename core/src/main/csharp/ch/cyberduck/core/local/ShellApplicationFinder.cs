@@ -29,7 +29,11 @@ namespace Ch.Cyberduck.Core.Local
         private readonly LRUCache assocHandlerListCache = LRUCache.build(25);
 
         private interface IInvokeApplication
-        { }
+        {
+            int IconIndex { get; }
+
+            string IconPath { get; }
+        }
 
         /// <summary>
         /// Finds default associated application.
@@ -38,7 +42,11 @@ namespace Ch.Cyberduck.Core.Local
         /// <returns></returns>
         public unsafe Application find(string filename)
         {
-            filename = Path.GetExtension(filename);
+            int dotIndex = filename.LastIndexOf('.');
+            if (dotIndex != -1)
+            {
+                filename = filename.Substring(dotIndex);
+            }
             if (assocHandlerCache.get(filename) is ProgIdApplication shellHandler)
             {
                 return shellHandler;
@@ -63,6 +71,7 @@ namespace Ch.Cyberduck.Core.Local
 
                 var qa = (IQueryAssociations)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_QueryAssociations));
                 qa.Init(0, defaultQuery, default, default);
+
                 if (!qa.GetString(ASSOCSTR_FRIENDLYAPPNAME, "open", out var friendlyAppName))
                 {
                     return Application.notfound;
@@ -126,14 +135,16 @@ namespace Ch.Cyberduck.Core.Local
 
         public class ProgIdApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
-            private readonly string defaultIcon;
-
             public ProgIdApplication(string identifier, string name, string defaultIcon) : base(identifier, name)
             {
-                this.defaultIcon = defaultIcon;
+                PWSTR pszIconFile = defaultIcon;
+                IconIndex = PathParseIconLocation(pszIconFile);
+                IconPath = pszIconFile.ToString();
             }
 
-            public string DefaultIcon => defaultIcon;
+            public int IconIndex { get; }
+
+            public string IconPath { get; }
 
             public unsafe void Launch(ch.cyberduck.core.Local local)
             {
@@ -151,8 +162,9 @@ namespace Ch.Cyberduck.Core.Local
 
         public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
-            private readonly int cachedImageIndex;
             private readonly IAssocHandler handler;
+            private readonly int iconIndex;
+            private readonly string iconPath;
             private readonly SynchronizationContext sync;
 
             public ShellApplication(in IAssocHandler handler) : base(handler.GetName(), handler.GetUIName())
@@ -160,9 +172,12 @@ namespace Ch.Cyberduck.Core.Local
                 sync = SynchronizationContext.Current;
                 this.handler = handler;
                 IsRecommended = handler.IsRecommended().Succeeded;
-                var path = handler.GetIconLocation(out var index);
-                cachedImageIndex = Shell_GetCachedImageIndex(path, index, 0);
+                iconPath = handler.GetIconLocation(out iconIndex);
             }
+
+            public int IconIndex => iconIndex;
+
+            public string IconPath => iconPath;
 
             public bool IsRecommended { get; }
 
@@ -193,6 +208,10 @@ namespace Ch.Cyberduck.Core.Local
             public ShellOpenWithApplication() : base(null, "Open With …")
             {
             }
+
+            int IInvokeApplication.IconIndex => throw new NotImplementedException();
+
+            string IInvokeApplication.IconPath => throw new NotImplementedException();
 
             public void Launch(ch.cyberduck.core.Local local)
             {
