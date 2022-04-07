@@ -66,7 +66,6 @@ public class CopyWorkerTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(source));
         assertTrue(new BrickFindFeature(session).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         local.delete();
     }
 
@@ -92,7 +91,6 @@ public class CopyWorkerTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         assertTrue(new BrickFindFeature(session).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         local.delete();
     }
 
@@ -119,7 +117,6 @@ public class CopyWorkerTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(folder));
         assertTrue(new BrickFindFeature(session).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
         local.delete();
     }
 }
