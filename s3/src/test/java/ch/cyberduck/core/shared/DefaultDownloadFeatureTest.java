@@ -87,6 +87,5 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
             assertArrayEquals(content, buffer);
         }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

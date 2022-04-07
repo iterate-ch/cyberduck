@@ -107,7 +107,6 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
-        session.close();
     }
 
     @Test

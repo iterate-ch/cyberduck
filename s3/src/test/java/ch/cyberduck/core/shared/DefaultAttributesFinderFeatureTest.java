@@ -89,6 +89,5 @@ public class DefaultAttributesFinderFeatureTest extends AbstractS3Test {
         assertNotEquals(initialVersion, f.find(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(newVersion))).getVersionId());
         assertEquals(new S3AttributesAdapter().toAttributes(out.getStatus()).getVersionId(), f.find(file).getVersionId());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

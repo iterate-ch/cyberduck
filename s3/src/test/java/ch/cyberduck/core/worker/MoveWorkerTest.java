@@ -82,7 +82,6 @@ public class MoveWorkerTest extends AbstractS3Test {
             new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -109,6 +108,5 @@ public class MoveWorkerTest extends AbstractS3Test {
             assertTrue(new S3FindFeature(session).find(entry.getValue()));
         }
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 }

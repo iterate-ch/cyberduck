@@ -141,7 +141,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
             //
         }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
