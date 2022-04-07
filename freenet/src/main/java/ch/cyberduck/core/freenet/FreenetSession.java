@@ -19,18 +19,26 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -47,6 +55,25 @@ public class FreenetSession extends DAVSession {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
         configuration.setUserAgent(new FreenetUserAgentProvider().get());
+        try {
+            final String hash = new MD5ChecksumCompute().compute(new MacUniqueIdService().getUUID()).hash;
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    request.addHeader(new BasicHeader("X-Freenet-Insid", hash));
+                }
+            });
+        }
+        catch(LocalAccessDeniedException | ChecksumException e) {
+            log.warn(String.format("Failure %s retrieving MAC address", e));
+            final String identifier = new MD5ChecksumCompute().compute(System.getProperty("user.name")).hash;
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    request.addHeader(new BasicHeader("X-Freenet-Insid", identifier));
+                }
+            });
+        }
         return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
