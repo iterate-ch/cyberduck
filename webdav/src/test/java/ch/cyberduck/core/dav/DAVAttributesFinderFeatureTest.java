@@ -205,6 +205,5 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
-        session.close();
     }
 }
