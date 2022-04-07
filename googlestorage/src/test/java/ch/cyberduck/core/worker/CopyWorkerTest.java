@@ -92,6 +92,5 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(folder));
         assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 }
