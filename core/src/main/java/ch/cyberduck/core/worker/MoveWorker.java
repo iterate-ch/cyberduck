@@ -41,9 +41,8 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.comparator.TimestampComparator;
+import ch.cyberduck.ui.comparator.VersionsComparator;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,7 +93,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 log.debug(String.format("Run with feature %s", feature));
             }
             final ListService list = session.getFeature(ListService.class);
-            // sort ascending by timestamp to move older versions first
+            // Sort ascending by timestamp to move older versions first
             final Map<Path, Path> sorted = new TreeMap<>(new VersionsComparator(true));
             sorted.putAll(files);
             final Map<Path, Path> result = new HashMap<>();
@@ -182,27 +181,6 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             }
         }
         return recursive;
-    }
-
-    private static final class VersionsComparator extends TimestampComparator {
-        public VersionsComparator(final boolean ascending) {
-            super(ascending);
-        }
-
-        @Override
-        protected int compareFirst(final Path p1, final Path p2) {
-            final int result = super.compareFirst(p1, p2);
-            if(0 == result) {
-                // Version with no duplicate flag first
-                final int duplicate = Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
-                if(0 == duplicate) {
-                    return StringUtils.compare(p1.attributes().getVersionId(), p2.attributes().getVersionId());
-                }
-                return duplicate;
-
-            }
-            return result;
-        }
     }
 
     @Override
