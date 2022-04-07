@@ -22,9 +22,10 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.OneDriveHomeFinderService;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
@@ -65,7 +66,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         ), new GraphWriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new GraphFindFeature(session, fileid), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);
@@ -84,7 +85,7 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         ), new GraphWriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVault());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertNotNull(attributes.getFileId());
         assertEquals(test.attributes(), attributes);

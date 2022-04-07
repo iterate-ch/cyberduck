@@ -23,7 +23,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -84,7 +84,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new DAVFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(test))).size, 0L);
         {

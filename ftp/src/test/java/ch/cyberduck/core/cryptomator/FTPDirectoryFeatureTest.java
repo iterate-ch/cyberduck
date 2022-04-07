@@ -20,9 +20,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
@@ -60,10 +60,10 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testdirectory));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(testdirectory));
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(testdirectory2, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testdirectory2));
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(testfile2));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(testdirectory2));
+        assertFalse(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(testfile2));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(testdirectory2, testdirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -77,7 +77,7 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(test, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

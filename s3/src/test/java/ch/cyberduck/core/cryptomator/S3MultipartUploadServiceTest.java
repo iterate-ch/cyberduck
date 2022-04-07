@@ -25,7 +25,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.features.Delete;
@@ -93,7 +93,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
@@ -125,7 +125,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         writeStatus.setLength(content.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
@@ -157,7 +157,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         IOUtils.write(content, local.getOutputStream(false));
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);

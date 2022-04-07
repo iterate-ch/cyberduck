@@ -30,7 +30,7 @@ import ch.cyberduck.core.b2.B2ReadFeature;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
@@ -85,7 +85,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertEquals(content.length, attributes.getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(attributes)).size, 0L);

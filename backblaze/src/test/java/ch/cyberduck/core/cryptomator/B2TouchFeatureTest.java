@@ -28,9 +28,10 @@ import ch.cyberduck.core.b2.B2TouchFeature;
 import ch.cyberduck.core.b2.B2VersionIdProvider;
 import ch.cyberduck.core.b2.B2WriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -65,7 +66,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         final Path test = new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         assertEquals(test.attributes(), new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -81,7 +82,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         new CryptoTouchFeature<>(session, new B2TouchFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -97,7 +98,7 @@ public class B2TouchFeatureTest extends AbstractB2Test {
         ), new B2WriteFeature(session, fileid), cryptomator).touch(
                 new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new B2DeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

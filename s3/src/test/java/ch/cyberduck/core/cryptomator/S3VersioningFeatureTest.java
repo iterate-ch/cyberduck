@@ -25,7 +25,7 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoVersioningFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -94,7 +94,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         assertFalse(updated.getVersions().isEmpty());
         assertEquals(1, updated.getVersions().size());
         assertEquals(new Path(test).withAttributes(initialAttributes), updated.getVersions().get(0));
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(updated.getVersions().get(0)));
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(updated.getVersions().get(0)));
         assertEquals(initialVersion, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(updated.getVersions().get(0)).getVersionId());
         new CryptoVersioningFeature(session, new S3VersioningFeature(session, new S3AccessControlListFeature(session)), cryptomator).revert(new Path(test).withAttributes(initialAttributes));
         final PathAttributes reverted = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, true), cryptomator).find(new Path(test).withAttributes(PathAttributes.EMPTY));

@@ -17,7 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.Delete;
@@ -109,10 +109,10 @@ public class CryptoSFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
+        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
         final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
         assertEquals(1513092263000L, attributes1.getModificationDate());
         assertEquals(1513092263000L, new CryptoListService(session, new SFTPListService(session), cryptomator).list(dir1, new DisabledListProgressListener()).get(file1).attributes().getModificationDate());

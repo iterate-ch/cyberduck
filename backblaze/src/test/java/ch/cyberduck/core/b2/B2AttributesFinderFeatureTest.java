@@ -32,7 +32,6 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -68,6 +67,30 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     }
 
     @Test
+    public void testHideMarker() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final long timestamp = System.currentTimeMillis();
+        final TransferStatus status = new TransferStatus().withTimestamp(timestamp);
+        new B2TouchFeature(session, fileid).touch(test, status);
+        assertNotNull(status.getResponse().getVersionId());
+        assertNotNull(test.attributes().getVersionId());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(test).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
+        try {
+            f.find(new Path(test).withAttributes(PathAttributes.EMPTY));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testFindDirectory() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -84,6 +107,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         catch(NotfoundException e) {
             // Expected
         }
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -95,6 +119,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         assertNotNull(attributes);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertEquals(bucket.attributes().getVersionId(), attributes.getVersionId());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -103,26 +128,25 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.upload));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-            fileid.getVersionId(bucket, new DisabledListProgressListener()),
-            file.getName(), null, Collections.emptyMap());
+                fileid.getVersionId(bucket, new DisabledListProgressListener()),
+                file.getName(), null, Collections.emptyMap());
         final PathAttributes attributes = new B2AttributesFinderFeature(session, fileid).find(file);
         assertNotSame(PathAttributes.EMPTY, attributes);
         assertEquals(0L, attributes.getSize());
-        final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
-            new SimplePathPredicate(file));
-        assertTrue(found.getType().contains(Path.Type.upload));
         new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()).close();
+        final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
+                new SimplePathPredicate(file));
+        assertTrue(found.getType().contains(Path.Type.upload));
         new B2ReadFeature(session, fileid).read(found, new TransferStatus(), new DisabledConnectionCallback()).close();
-        assertNotNull(fileid.getVersionId(file, new DisabledListProgressListener()));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 
     @Test
     public void testChangedFileId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path room = new B2DirectoryFeature(session, fileid).mkdir(
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
@@ -130,8 +154,14 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         test.attributes().setVersionId(invalidId);
         fileid.cache(test, invalidId);
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
-        assertEquals(latestnodeid, f.find(test).getVersionId());
-        assertEquals(latestnodeid, test.attributes().getVersionId());
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        try {
+            f.find(test).getVersionId();
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

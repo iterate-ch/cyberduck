@@ -20,40 +20,20 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.shared.DisabledBulkFeature;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
-import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 

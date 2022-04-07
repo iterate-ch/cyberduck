@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -92,25 +91,25 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             }
         }
         else {
-            final String id = fileid.getVersionId(file, listener);
             try {
-                return this.findInfo(file, id);
+                final PathAttributes attr = this.toAttributes(session.getClient().getFileInfo(fileid.getVersionId(file, listener)));
+                if(attr.isDuplicate()) {
+                    // Throw failure if latest version has hide marker set
+                    if(StringUtils.isBlank(file.attributes().getVersionId())) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Latest version of %s is duplicate", file));
+                        }
+                        throw new NotfoundException(file.getAbsolute());
+                    }
+                }
+                return attr;
             }
-            catch(InteroperabilityException e) {
-                return this.findInfo(file, fileid.getVersionId(file, listener));
+            catch(B2ApiException e) {
+                throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
             }
-        }
-    }
-
-    private PathAttributes findInfo(final Path file, final String id) throws BackgroundException {
-        try {
-            return this.toAttributes(session.getClient().getFileInfo(id));
-        }
-        catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
+            }
         }
     }
 
@@ -157,16 +156,18 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setModificationDate(timestamp);
         }
-        switch(response.getAction()) {
-            case hide:
-                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
-            case start:
-                // Large file has been started, but not finished or canceled
-                attributes.setDuplicate(true);
-                break;
-            default:
-                attributes.setSize(response.getContentLength());
-                break;
+        if(response.getAction() != null) {
+            switch(response.getAction()) {
+                case hide:
+                    // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+                case start:
+                    // Large file has been started, but not finished or canceled
+                    attributes.setDuplicate(true);
+                    break;
+                default:
+                    attributes.setSize(response.getContentLength());
+                    break;
+            }
         }
         return attributes;
     }
@@ -196,6 +197,19 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         }
         else {
             attributes.setModificationDate(timestamp);
+        }
+        if(response.getAction() != null) {
+            switch(response.getAction()) {
+                case hide:
+                    // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+                case start:
+                    // Large file has been started, but not finished or canceled
+                    attributes.setDuplicate(true);
+                    break;
+                default:
+                    attributes.setSize(response.getContentLength());
+                    break;
+            }
         }
         return attributes;
     }

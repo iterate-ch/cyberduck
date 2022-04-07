@@ -26,7 +26,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.eue.AbstractEueSessionTest;
@@ -94,7 +94,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new EueAttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
@@ -130,7 +130,7 @@ public class EueUploadServiceTest extends AbstractEueSessionTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new EueAttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);

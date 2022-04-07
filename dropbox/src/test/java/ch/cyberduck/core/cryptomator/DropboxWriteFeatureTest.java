@@ -24,7 +24,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -85,7 +85,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new DropboxFindFeature(session), cryptomator).find(test));
         final PathAttributes pathAttributes = new CryptoListService(session, new DropboxListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, pathAttributes.getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, 150000000L), cryptomator).append(test, status.withRemote(pathAttributes)).size, 0L);

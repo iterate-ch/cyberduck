@@ -35,7 +35,7 @@ import ch.cyberduck.core.box.BoxThresholdUploadService;
 import ch.cyberduck.core.box.BoxThresholdWriteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.features.Delete;
@@ -97,7 +97,7 @@ public class BoxThresholdUploadServiceTest extends AbtractBoxTest {
         feature.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, new DisabledConnectionCallback());
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoAttributesFeature(session, new BoxAttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);

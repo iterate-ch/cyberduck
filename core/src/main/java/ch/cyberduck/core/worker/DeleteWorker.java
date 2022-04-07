@@ -137,23 +137,23 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            switch(host.getProtocol().getType()) {
-                case s3:
-                    if(!file.attributes().isDuplicate()) {
-                        if(!file.getType().contains(Path.Type.upload)) {
-                            // Add delete marker
-                            final Path marker = new Path(file);
-                            log.debug(String.format("Nullify version to add delete marker for %s", file));
-                            marker.attributes().setVersionId(null);
-                            recursive.put(marker, new TransferStatus().withLockId(this.getLockId(marker)));
-                            break;
-                        }
+            if(null != file.attributes().getVersionId()) {
+                if(file.attributes().isDuplicate()) {
+                    // Delete previous versions or pending upload
+                    log.warn(String.format("Delete version %s", file));
+                }
+                else {
+                    if(file.getType().contains(Path.Type.upload)) {
+                        log.warn(String.format("Delete pending upload %s", file));
                     }
-                    // Break through for default
-                default:
-                    recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
-                    break;
+                    else {
+                        // Add delete marker
+                        log.warn(String.format("Nullify version to add delete marker for %s", file));
+                        file.attributes().setVersionId(null);
+                    }
+                }
             }
+            recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {

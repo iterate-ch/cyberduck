@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -42,7 +43,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -81,7 +81,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
                         assertEquals(923L, length);
                         // Ignore update. As with unknown length for chunked transfer
                     }
-            }, new DisabledLoginCallback());
+                }, new DisabledLoginCallback());
         assertEquals(923L, local.attributes().getSize());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -197,9 +197,9 @@ public class B2ReadFeatureTest extends AbstractB2Test {
     @Test
     public void testChangedNodeId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path room = new B2DirectoryFeature(session, fileid).mkdir(
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
@@ -214,6 +214,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
             //
         }
         assertNull(test.attributes().getVersionId());
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
