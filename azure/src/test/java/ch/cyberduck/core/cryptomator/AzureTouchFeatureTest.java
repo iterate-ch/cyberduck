@@ -61,7 +61,6 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
         new CryptoTouchFeature<>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -76,6 +75,5 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
         new CryptoTouchFeature<>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

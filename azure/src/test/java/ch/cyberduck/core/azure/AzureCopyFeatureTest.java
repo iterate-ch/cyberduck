@@ -40,7 +40,6 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -74,7 +73,6 @@ public class AzureCopyFeatureTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(test));
         assertTrue(new AzureFindFeature(session, null).find(copy));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

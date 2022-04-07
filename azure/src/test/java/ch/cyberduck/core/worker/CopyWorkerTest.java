@@ -53,7 +53,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(source));
         assertTrue(new AzureFindFeature(session, null).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -72,7 +71,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(sourceFile));
         assertTrue(new AzureFindFeature(session, null).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -94,6 +92,5 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(folder));
         assertTrue(new AzureFindFeature(session, null).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 }

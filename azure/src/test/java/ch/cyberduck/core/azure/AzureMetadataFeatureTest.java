@@ -31,7 +31,6 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -46,6 +45,5 @@ public class AzureMetadataFeatureTest extends AbstractAzureTest {
         assertTrue(metadata.containsKey("Cache-Control"));
         assertEquals("public, max-age=0", metadata.get("Cache-Control"));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

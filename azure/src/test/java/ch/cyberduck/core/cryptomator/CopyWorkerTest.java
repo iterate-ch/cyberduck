@@ -93,7 +93,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session, null), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -117,7 +116,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -141,7 +139,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -171,7 +168,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -200,7 +196,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertArrayEquals(content, out.toByteArray());
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -228,7 +223,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -255,7 +249,6 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
@@ -283,6 +276,5 @@ public class CopyWorkerTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(fileRenamed));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 }

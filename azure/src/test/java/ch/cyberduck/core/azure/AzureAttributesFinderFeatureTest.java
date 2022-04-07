@@ -47,7 +47,6 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getETag());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -59,7 +58,6 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertNotNull(attributes.getETag());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -82,6 +80,5 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
         assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session, null).find(directory));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

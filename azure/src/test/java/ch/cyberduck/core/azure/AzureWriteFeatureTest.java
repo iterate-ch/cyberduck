@@ -69,7 +69,6 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         overwrite.close();
         assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session, context).find(test).getSize());
         new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -110,6 +109,5 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         overwrite.close();
         assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session, context).find(test).getSize());
         new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

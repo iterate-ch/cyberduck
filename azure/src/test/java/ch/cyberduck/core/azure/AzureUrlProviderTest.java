@@ -31,7 +31,6 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
         assertNotNull("https://kahy9boj3eib.blob.core.windows.net/cyberduck/f%20g?sp=r&sr=b&sv=2012-02-12&se=2014-01-29T14%3A48%3A26Z&sig=HlAF9RjXNic2%2BJa2ghOgs8MTgJva4bZqNZrb7BIv2mI%3D",
             new AzureUrlProvider(session).toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

@@ -40,7 +40,6 @@ public class AzureSessionTest extends AbstractAzureTest {
     @Test
     public void testConnect() throws Exception {
         assertTrue(session.isConnected());
-        session.close();
         assertFalse(session.isConnected());
     }
 
@@ -68,7 +67,6 @@ public class AzureSessionTest extends AbstractAzureTest {
             new DisabledPasswordStore(), new DisabledProgressListener());
         connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
-        session.close();
         assertFalse(session.isConnected());
     }
 
@@ -110,7 +108,6 @@ public class AzureSessionTest extends AbstractAzureTest {
             new DisabledPasswordStore(), new DisabledProgressListener());
         connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
-        session.close();
         assertFalse(session.isConnected());
     }
 

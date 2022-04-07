@@ -43,7 +43,6 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         assertNotNull(in);
         in.close();
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -70,6 +69,5 @@ public class AzureReadFeatureTest extends AbstractAzureTest {
         // Test double close
         in.close();
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

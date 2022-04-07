@@ -61,6 +61,5 @@ public class AzureListServiceTest extends AbstractAzureTest {
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new AzureWriteFeature(session, null)), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new AzureObjectListService(session, null), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

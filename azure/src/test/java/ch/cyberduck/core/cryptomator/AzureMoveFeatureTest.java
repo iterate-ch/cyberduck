@@ -81,6 +81,5 @@ public class AzureMoveFeatureTest extends AbstractAzureTest {
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(fileRenamedInRenamedFolder));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(
             fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
