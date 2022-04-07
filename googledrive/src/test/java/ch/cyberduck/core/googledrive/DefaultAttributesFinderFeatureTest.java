@@ -87,6 +87,5 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNotEquals(initialFileid, f.find(file.withAttributes(new PathAttributes(file.attributes()).withFileId(newFileid))).getFileId());
         assertEquals(out.getStatus().getId(), f.find(file).getFileId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
