@@ -94,7 +94,6 @@ public class CopyWorkerTest extends AbstractDropboxTest {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new DropboxReadFeature(session), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test
