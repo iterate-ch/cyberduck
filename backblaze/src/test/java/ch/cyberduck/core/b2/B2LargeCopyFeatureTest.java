@@ -65,7 +65,6 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         stream.close();
         assertArrayEquals(content, compare);
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -91,7 +90,6 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         stream.close();
         assertArrayEquals(content, compare);
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

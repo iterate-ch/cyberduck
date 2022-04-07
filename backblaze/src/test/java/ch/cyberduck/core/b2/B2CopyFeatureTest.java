@@ -50,7 +50,6 @@ public class B2CopyFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -66,7 +65,6 @@ public class B2CopyFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

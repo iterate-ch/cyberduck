@@ -90,6 +90,5 @@ public class CachingAttributesFinderFeatureTest extends AbstractB2Test {
             // Expected
         }
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
