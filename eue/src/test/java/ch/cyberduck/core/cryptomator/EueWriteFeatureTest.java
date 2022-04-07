@@ -97,6 +97,5 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         cryptomator.getFeature(session, Delete.class, new EueDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
