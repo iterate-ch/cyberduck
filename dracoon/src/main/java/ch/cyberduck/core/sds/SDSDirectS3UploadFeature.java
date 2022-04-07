@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Buffer;
 import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.io.StreamCopier;
@@ -146,13 +147,14 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Encrypted contents for part %d to %s", partNumber, temporary));
                         }
+                        final FileBuffer buffer = new FileBuffer(temporary);
                         new StreamCopier(status, StreamProgress.noop).withAutoclose(false).withLimit(length)
-                                .transfer(in, new BufferOutputStream(new FileBuffer(temporary)));
-                        parts.add(this.submit(pool, file, temporary, throttle, listener, status,
+                                .transfer(in, new BufferOutputStream(buffer));
+                        parts.add(this.submit(pool, file, temporary, buffer, throttle, listener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), 0L, length, callback));
                     }
                     else {
-                        parts.add(this.submit(pool, file, local, throttle, listener, status,
+                        parts.add(this.submit(pool, file, local, Buffer.noop, throttle, listener, status,
                                 presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
                     }
                     remaining -= length;
@@ -246,7 +248,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     }
 
     private Future<TransferStatus> submit(final ThreadPool pool, final Path file, final Local local,
-                                          final BandwidthThrottle throttle, final StreamListener listener,
+                                          final Buffer buffer, final BandwidthThrottle throttle, final StreamListener listener,
                                           final TransferStatus overall, final String url, final Integer partNumber,
                                           final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
@@ -270,12 +272,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response for part number %d", partNumber));
                 }
-                if(SDSNodeIdProvider.isEncrypted(file)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Delete temporary file %s", file));
-                    }
-                    local.delete();
-                }
+                // Delete temporary file if any
+                buffer.close();
                 return status;
             }
         }, overall, counter));
