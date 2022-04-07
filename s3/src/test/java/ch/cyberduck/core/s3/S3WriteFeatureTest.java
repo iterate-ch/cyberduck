@@ -163,6 +163,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         out.close();
         assertNotNull(status.getResponse().getVersionId());
         final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
+        assertEquals(status.getResponse().getVersionId(), attr.getVersionId());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(content.length, attr.getSize());
