@@ -91,6 +91,5 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         stream.close();
         assertArrayEquals(content, compare);
         cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
