@@ -24,7 +24,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
@@ -92,7 +92,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
         assertEquals(content.length, writeStatus.getResponse().getSize());
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new SwiftFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new SwiftListService(session, regionService), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);

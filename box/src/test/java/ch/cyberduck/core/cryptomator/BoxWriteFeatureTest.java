@@ -29,7 +29,7 @@ import ch.cyberduck.core.box.BoxFileidProvider;
 import ch.cyberduck.core.box.BoxFindFeature;
 import ch.cyberduck.core.box.BoxReadFeature;
 import ch.cyberduck.core.box.BoxWriteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
@@ -85,7 +85,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         assertEquals(content.length, count.getSent());
         assertEquals(content.length, count.getRecv());
         assertNotNull(out.getStatus());
-        assertTrue(new CryptoFindFeature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -119,7 +119,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         assertEquals(content.length, count.getSent());
         assertEquals(content.length, count.getRecv());
         assertNotNull(out.getStatus());
-        assertTrue(new CryptoFindFeature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new BoxFindFeature(session, fileid), cryptomator).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new BoxReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

@@ -29,7 +29,7 @@ import ch.cyberduck.core.azure.AzureFindFeature;
 import ch.cyberduck.core.azure.AzureListService;
 import ch.cyberduck.core.azure.AzureReadFeature;
 import ch.cyberduck.core.azure.AzureWriteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -84,7 +84,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final OperationContext context = new OperationContext();
-        assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, context), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, context), cryptomator).find(test));
         final PathAttributes attributes = new CryptoListService(session, new AzureListService(session, context), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context), cryptomator).append(test, status.withRemote(attributes)).size, 0L);

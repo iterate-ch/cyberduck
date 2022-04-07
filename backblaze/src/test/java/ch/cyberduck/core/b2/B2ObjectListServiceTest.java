@@ -159,6 +159,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
                 assertTrue(f.attributes().isDuplicate());
             }
         }
+
         assertFalse(new B2FindFeature(session, fileid).find(file));
         assertFalse(new DefaultFindFeature(session).find(file));
         try {

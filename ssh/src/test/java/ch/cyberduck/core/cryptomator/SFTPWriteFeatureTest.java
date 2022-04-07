@@ -28,7 +28,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -91,7 +91,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
-        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(test));
         assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test))).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -122,7 +122,7 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(test));
         final Path found = new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test);
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
