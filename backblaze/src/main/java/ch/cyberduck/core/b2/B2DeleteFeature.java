@@ -60,16 +60,16 @@ public class B2DeleteFeature implements Delete {
             else {
                 if(file.isDirectory()) {
                     // Delete /.bzEmpty if any
-                    final String fileid;
+                    final String placeholder;
                     try {
-                        fileid = this.fileid.getVersionId(file, new DisabledListProgressListener());
+                        placeholder = fileid.getVersionId(file, new DisabledListProgressListener());
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
                         continue;
                     }
                     try {
-                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid);
+                        session.getClient().deleteFileVersion(containerService.getKey(file), placeholder);
                     }
                     catch(B2ApiException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
