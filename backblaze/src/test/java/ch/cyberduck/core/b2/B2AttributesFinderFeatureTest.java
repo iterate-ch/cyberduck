@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -47,6 +48,23 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testFind() throws Exception {
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final long timestamp = System.currentTimeMillis();
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withTimestamp(timestamp));
+        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
+        final PathAttributes attributes = f.find(test);
+        assertEquals(0L, attributes.getSize());
+        assertEquals(timestamp, attributes.getModificationDate());
+        assertNotNull(attributes.getVersionId());
+        assertNull(attributes.getFileId());
+        assertNotEquals(Checksum.NONE, attributes.getChecksum());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

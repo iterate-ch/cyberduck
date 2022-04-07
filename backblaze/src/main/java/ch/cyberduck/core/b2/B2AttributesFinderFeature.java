@@ -173,6 +173,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
 
     protected PathAttributes toAttributes(final B2FileResponse response) {
         final PathAttributes attributes = new PathAttributes();
+        attributes.setSize(response.getContentLength());
         if(response.getFileInfo().containsKey(X_BZ_INFO_LARGE_FILE_SHA1)) {
             attributes.setChecksum(Checksum.parse(response.getFileInfo().get(X_BZ_INFO_LARGE_FILE_SHA1)));
         }
