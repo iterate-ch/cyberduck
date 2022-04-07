@@ -47,7 +47,7 @@ public class B2ObjectListService implements ListService {
     private static final Logger log = LogManager.getLogger(B2ObjectListService.class);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final B2Session session;
 
@@ -86,10 +86,10 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                    containerId,
-                    marker.nextFilename, marker.nextFileId, chunksize,
-                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), Path.DELIMITER),
-                    String.valueOf(Path.DELIMITER));
+                        containerId,
+                        marker.nextFilename, marker.nextFileId, chunksize,
+                        containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), Path.DELIMITER),
+                        String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {
                     if(!response.getFiles().isEmpty()) {
@@ -112,8 +112,8 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    protected Marker parse(final Path directory, final AttributedList<Path> objects,
-                           final B2ListFilesResponse response, final Map<String, Long> revisions) {
+    private Marker parse(final Path directory, final AttributedList<Path> objects,
+                         final B2ListFilesResponse response, final Map<String, Long> revisions) {
         final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
@@ -126,17 +126,14 @@ public class B2ObjectListService implements ListService {
                 continue;
             }
             final PathAttributes attributes = attr.toAttributes(info);
-            final long revision;
+            long revision = 0;
             if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
                 revision = revisions.get(info.getFileName()) + 1L;
-            }
-            else {
-                revision = 1L;
+                attributes.setRevision(revision);
             }
             revisions.put(info.getFileName(), revision);
-            attributes.setRevision(revision);
             final Path f = new Path(directory, PathNormalizer.name(info.getFileName()),
                     info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes);
             fileid.cache(f, info.getFileId());

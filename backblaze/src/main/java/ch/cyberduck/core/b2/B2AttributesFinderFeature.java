@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -92,13 +91,17 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             }
         }
         else {
-            final String id = fileid.getVersionId(file, listener);
-            try {
-                return this.findInfo(file, id);
+            final PathAttributes attr = this.findInfo(file, fileid.getVersionId(file, listener));
+            if(attr.isDuplicate()) {
+                // Throw failure if latest version has hide marker set
+                if(StringUtils.isBlank(file.attributes().getVersionId())) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Latest version of %s is duplicate", file));
+                    }
+                    throw new NotfoundException(file.getAbsolute());
+                }
             }
-            catch(InteroperabilityException e) {
-                return this.findInfo(file, fileid.getVersionId(file, listener));
-            }
+            return attr;
         }
     }
 
@@ -157,16 +160,18 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         else {
             attributes.setModificationDate(timestamp);
         }
-        switch(response.getAction()) {
-            case hide:
-                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
-            case start:
-                // Large file has been started, but not finished or canceled
-                attributes.setDuplicate(true);
-                break;
-            default:
-                attributes.setSize(response.getContentLength());
-                break;
+        if(response.getAction() != null) {
+            switch(response.getAction()) {
+                case hide:
+                    // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+                case start:
+                    // Large file has been started, but not finished or canceled
+                    attributes.setDuplicate(true);
+                    break;
+                default:
+                    attributes.setSize(response.getContentLength());
+                    break;
+            }
         }
         return attributes;
     }
@@ -196,6 +201,19 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         }
         else {
             attributes.setModificationDate(timestamp);
+        }
+        if(response.getAction() != null) {
+            switch(response.getAction()) {
+                case hide:
+                    // File version marking the file as hidden, so that it will not show up in b2_list_file_names
+                case start:
+                    // Large file has been started, but not finished or canceled
+                    attributes.setDuplicate(true);
+                    break;
+                default:
+                    attributes.setSize(response.getContentLength());
+                    break;
+            }
         }
         return attributes;
     }
