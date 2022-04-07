@@ -22,8 +22,6 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,7 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class StatelessSessionPool implements SessionPool {
     private static final Logger log = LogManager.getLogger(StatelessSessionPool.class);
 
-    private final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;
     private final TranscriptListener transcript;
     private final Session<?> session;
