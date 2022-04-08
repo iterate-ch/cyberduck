@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.3.2
+- [Bugfix] Connection not released causing freeze in browser or transfer (FTP) (#13273)
+
 8.3.1
 - [Bugfix] Failure reconnecting when control connection is closed on server (FTP) (#13037)
 - [Bugfix] Set role session name from configuration when connecting using credentials from AWS Command Line Interface (S3)
