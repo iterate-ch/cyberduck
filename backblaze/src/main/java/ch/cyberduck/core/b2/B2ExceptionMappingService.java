@@ -60,12 +60,15 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
         switch(e.getStatus()) {
             case HttpStatus.SC_FORBIDDEN:
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())
-                    || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
-                    || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
+                        || "storage_cap_exceeded".equalsIgnoreCase(e.getCode())
+                        || "transaction_cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }
                 break;
             case HttpStatus.SC_BAD_REQUEST:
+                if("no_such_file".equalsIgnoreCase(e.getCode())) {
+                    return new NotfoundException(buffer.toString(), e);
+                }
                 if("file_not_present".equalsIgnoreCase(e.getCode())) {
                     return new NotfoundException(buffer.toString(), e);
                 }
