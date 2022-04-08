@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
-public class EueDirectoryFeature implements Directory<Void> {
+public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
     private static final Logger log = LogManager.getLogger(EueDirectoryFeature.class);
 
     private final EueSession session;
@@ -91,7 +91,7 @@ public class EueDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Directory<Void> withWriter(final Write<Void> writer) {
+    public Directory<EueWriteFeature.Chunk> withWriter(final Write<EueWriteFeature.Chunk> writer) {
         return this;
     }
 }
