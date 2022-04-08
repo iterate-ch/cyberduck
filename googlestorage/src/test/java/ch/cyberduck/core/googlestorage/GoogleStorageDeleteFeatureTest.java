@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -40,6 +41,13 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFoundKey() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testDeleteContainer() throws Exception {
