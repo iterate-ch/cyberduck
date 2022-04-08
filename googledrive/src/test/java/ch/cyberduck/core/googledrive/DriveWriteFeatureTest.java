@@ -67,7 +67,9 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             fileid = out.getStatus().getId();
             assertNotNull(fileid);
             assertTrue(new DefaultFindFeature(session).find(test));
+            assertEquals(status.getTimestamp(), new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()).getModificationDate(), 0L);
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
+            assertEquals(new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()), attributes);
             assertEquals(fileid, attributes.getFileId());
             assertEquals(1620113107725L, attributes.getModificationDate());
             assertEquals(content.length, attributes.getSize());
@@ -95,6 +97,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             final PathAttributes attributes = new DriveListService(session, idProvider).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
             assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getFileId()).execute().getMimeType());
+            assertEquals(new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()), attributes);
         }
         new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

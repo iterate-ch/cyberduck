@@ -89,8 +89,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
                         final String fileid = DriveWriteFeature.this.fileid.getFileId(file, new DisabledListProgressListener());
-                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true",
-                                session.getClient().getRootUrl(), fileid));
+                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true&fields=%s",
+                                session.getClient().getRootUrl(), fileid, DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                         }
@@ -98,8 +98,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                         request.setEntity(entity);
                     }
                     else {
-                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s",
-                                session.getClient().getRootUrl(), new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")));
+                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s&fields=%s",
+                                session.getClient().getRootUrl(), new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"),
+                                DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         final StringBuilder metadata = new StringBuilder("{");
                         metadata.append(String.format("\"name\":\"%s\"", file.getName()));
                         if(null != status.getTimestamp()) {
