@@ -32,8 +32,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageCopyFeatureTest extends AbstractGoogleStorageTest {
@@ -60,8 +59,10 @@ public class GoogleStorageCopyFeatureTest extends AbstractGoogleStorageTest {
         final TransferStatus status = new TransferStatus();
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        assertNotNull(test.attributes().getVersionId());
         final Path copy = new GoogleStorageCopyFeature(session).copy(test,
                 new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertEquals("m", new GoogleStorageMetadataFeature(session).getMetadata(copy).get("cyberduck"));
         assertEquals(1, new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener())
