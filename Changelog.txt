@@ -4,6 +4,7 @@ https://cyberduck.io/
 8.3.1
 - [Bugfix] Failure reconnecting when control connection is closed on server (FTP) (#13037)
 - [Bugfix] Set role session name from configuration when connecting using credentials from AWS Command Line Interface (S3)
+- [Bugfix] Hide file when deleting latest version to allow later restore (Backblaze B2)
 
 8.3.0
 - [Bugfix] Enable authentication using OpenSSH agent on Windows (SFTP, Windows) (#12880)
