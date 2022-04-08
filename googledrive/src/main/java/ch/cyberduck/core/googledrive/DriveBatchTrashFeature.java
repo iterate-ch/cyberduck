@@ -120,4 +120,9 @@ public class DriveBatchTrashFeature implements Trash {
             callback.delete(file);
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
+    }
 }

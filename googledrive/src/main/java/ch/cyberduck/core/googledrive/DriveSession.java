@@ -72,17 +72,17 @@ public class DriveSession extends HttpSession<Drive> {
     protected Drive connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) throws HostParserException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-            new HostPreferences(host).getInteger("googledrive.limit.requests.second")
+                new HostPreferences(host).getInteger("googledrive.limit.requests.second")
         )));
         this.transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
         return new Drive.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))
-            .setApplicationName(ua.get())
-            .build();
+                .setApplicationName(ua.get())
+                .build();
     }
 
     /**
@@ -97,7 +97,7 @@ public class DriveSession extends HttpSession<Drive> {
         public void initialize(final HttpRequest request) {
             super.initialize(request);
             request.setUnsuccessfulResponseHandler(new HttpBackOffUnsuccessfulResponseHandler(new ExponentialBackOff())
-                .setBackOffRequired(HttpBackOffUnsuccessfulResponseHandler.BackOffRequired.ALWAYS));
+                    .setBackOffRequired(HttpBackOffUnsuccessfulResponseHandler.BackOffRequired.ALWAYS));
         }
     }
 
@@ -155,10 +155,10 @@ public class DriveSession extends HttpSession<Drive> {
             return (T) new DriveDirectoryFeature(this, fileid);
         }
         if(type == Delete.class) {
-            return (T) new DriveBatchDeleteFeature(this, fileid);
+            return (T) new DriveThresholdDeleteFeature(this, fileid);
         }
         if(type == Trash.class) {
-            return (T) new DriveBatchTrashFeature(this, fileid);
+            return (T) new DriveThresholdTrashFeature(this, fileid);
         }
         if(type == Move.class) {
             return (T) new DriveMoveFeature(this, fileid);

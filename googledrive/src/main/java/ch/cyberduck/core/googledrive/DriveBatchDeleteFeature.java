@@ -116,4 +116,9 @@ public class DriveBatchDeleteFeature implements Delete {
             callback.delete(file);
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
+    }
 }
