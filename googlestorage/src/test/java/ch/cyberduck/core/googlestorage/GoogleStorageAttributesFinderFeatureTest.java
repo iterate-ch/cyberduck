@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -64,7 +63,6 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
     @Test
     public void testPreviousVersionReferences() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageVersioningFeature(session).setConfiguration(container, new DisabledPasswordCallback(), new VersioningConfiguration(true));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = new GoogleStorageAttributesFinderFeature(session).find(test).getVersionId();
         assertEquals(test.attributes().getVersionId(), versionId);
