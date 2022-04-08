@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FoldersApi;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -25,7 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BrickDirectoryFeature implements Directory<Void> {
+public class BrickDirectoryFeature implements Directory<FileEntity> {
 
     private final BrickSession session;
 
@@ -46,7 +47,7 @@ public class BrickDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public Directory<Void> withWriter(final Write<Void> writer) {
+    public Directory<FileEntity> withWriter(final Write<FileEntity> writer) {
         return this;
     }
 }
