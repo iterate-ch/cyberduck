@@ -63,7 +63,6 @@ public class StatefulSessionPool extends StatelessSessionPool {
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        lock.lock();
         try {
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
                 log.warn(String.format("Close session %s after failure %s", session, failure));
