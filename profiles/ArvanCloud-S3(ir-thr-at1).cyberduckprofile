@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>arvancloud-ir-thr-at1</string>
+        <key>Description</key>
+        <string>ArvanCloud IR THR AT1(Tehran-Asiatech)</string>
+        <key>Default Hostname</key>
+        <string>s3.ir-thr-at1.arvanstorage.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
+        <key>Default Port</key>
+        <string>443</string>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Username Placeholder</key>
+        <string>Access Key</string>
+        <key>Password Placeholder</key>
+        <string>Secret Key</string>
+    </dict>
+</plist>
