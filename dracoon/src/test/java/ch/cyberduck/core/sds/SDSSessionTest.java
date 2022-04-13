@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
@@ -38,7 +37,6 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -122,31 +120,6 @@ public class SDSSessionTest extends AbstractSDSTest {
                 System.getProperties().getProperty("sds.key"),
                 "invalid");
         new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-    }
-
-    @Ignore
-    @Test(expected = ConnectionTimeoutException.class)
-    public void testLoginRadius() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/DRACOON (Radius).cyberduckprofile"));
-        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
-            "rsa.user1", "1234"
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                assertEquals("Multi-Factor Authentication", reason);
-                assertFalse(options.user);
-                assertTrue(options.password);
-                return new Credentials(StringUtils.EMPTY, "889153");
-            }
-        }, new DisabledCancelCallback());
-        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
     @Test(expected = LoginCanceledException.class)
