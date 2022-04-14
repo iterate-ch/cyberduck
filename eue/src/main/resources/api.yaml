@@ -921,10 +921,20 @@ components:
                         format: int64
                     uploadType:
                         $ref: '#/components/schemas/uploadType'
+                    properties:
+                        type: array
+                        items:
+                            $ref: '#/components/schemas/ResourceCreationPropertiesModel'
                 required:
                     - overwrite
                     - path
                     - resourceType
+        ResourceCreationPropertiesModel:
+            properties:
+                ui:win32:
+                    $ref: '#/components/schemas/UiWin32'
+                ui:share:
+                    $ref: '#/components/schemas/UiShareModel'
         ResourceCreationResponseEntry:
             type: object
             properties:
