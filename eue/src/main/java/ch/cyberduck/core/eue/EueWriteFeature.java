@@ -158,6 +158,11 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         return new Append(false).withStatus(status);
     }
 
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
+
     public void cancel(final String uploadUri) throws BackgroundException {
         final HttpDelete request = new HttpDelete(uploadUri);
         try {

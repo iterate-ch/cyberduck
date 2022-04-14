@@ -137,14 +137,15 @@ public class EueMultipartWriteFeatureTest extends AbstractEueSessionTest {
         long timestamp;
         {
             final byte[] content = RandomUtils.nextBytes(8943045);
-            final TransferStatus status = new TransferStatus().withLength(-1L);
+            final long ts = System.currentTimeMillis();
+            final TransferStatus status = new TransferStatus().withLength(-1L).withTimestamp(ts);
             final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
             final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
             assertNotNull(out.getStatus());
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
-            assertNotEquals(-1L, attributes.getModificationDate());
+            assertEquals(ts, attributes.getModificationDate());
             timestamp = attributes.getModificationDate();
             assertEquals(attributes.getFileId(), out.getStatus().getResourceId());
             assertNotNull(out.getStatus().getCdash64());
