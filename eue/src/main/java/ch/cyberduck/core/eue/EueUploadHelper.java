@@ -76,7 +76,7 @@ public final class EueUploadHelper {
     public static UploadResponse parseUploadCompletedResponse(final HttpResponse response) throws IOException {
         final UploadResponse uploadResponse = new UploadResponse();
         final UiFsModel uiFsModel = new JSON().getContext(UiFsModel.class).readValue(
-            new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), UiFsModel.class);
+                new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8), UiFsModel.class);
         final Uifs uifs = uiFsModel.getUifs();
         uploadResponse.setTotalSze(uifs.getSize());
         uploadResponse.setCdash64(uifs.getCdash64());
@@ -89,7 +89,7 @@ public final class EueUploadHelper {
                                                                   final UploadType uploadType) throws BackgroundException {
         try {
             return new PostResourceApi(new EueApiClient(session)).resourceResourceIdPost(
-                resourceId, new ResourceResourceIdBody().uploadType(uploadType), null, null, null, null);
+                    resourceId, new ResourceResourceIdBody().uploadType(uploadType), null, null, null, null);
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map(e);
@@ -117,13 +117,13 @@ public final class EueUploadHelper {
             switch(resourceId) {
                 case EueResourceIdProvider.ROOT:
                     resourceCreationResponseEntries = new PostChildrenForAliasApi(client)
-                        .resourceAliasAliasChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
-                            null, null, null, null, null);
+                            .resourceAliasAliasChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
+                                    null, null, null, null, null);
                     break;
                 default:
                     resourceCreationResponseEntries = new PostChildrenApi(client)
-                        .resourceResourceIdChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
-                            null, null, null, null, null);
+                            .resourceResourceIdChildrenPost(resourceId, Collections.singletonList(resourceCreationRepresentation),
+                                    null, null, null, null, null);
                     break;
             }
             if(!resourceCreationResponseEntries.containsKey(filename)) {
@@ -137,10 +137,10 @@ public final class EueUploadHelper {
                     log.warn(String.format("Failure %s creating file %s", resourceCreationResponseEntry, filename));
                     if(null == resourceCreationResponseEntry.getEntity()) {
                         throw new EueExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getReason(),
-                            null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                                null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
                     }
                     throw new EueExceptionMappingService().map(new ApiException(resourceCreationResponseEntry.getEntity().getError(),
-                        null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                            null, resourceCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
             }
             return resourceCreationResponseEntry;
         }
