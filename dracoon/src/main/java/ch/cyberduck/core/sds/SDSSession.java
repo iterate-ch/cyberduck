@@ -15,11 +15,23 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ExpiringObjectHolder;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
@@ -31,7 +43,6 @@ import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
-import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
@@ -40,9 +51,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfoList;
 import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
-import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
-import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -76,7 +85,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,7 +105,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
-    protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
     private final PreferencesReader preferences = new HostPreferences(host);
@@ -110,9 +117,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
             = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
-
-    private final ExpiringObjectHolder<SystemDefaults> systemDefaults
-            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
@@ -131,78 +135,52 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         super(host, trust, key);
     }
 
-    private static final class OAuthFinderPredicate implements Predicate<Protocol> {
-        private final String identifier;
-
-        public OAuthFinderPredicate(final String identifier) {
-            this.identifier = identifier;
-        }
-
-        @Override
-        public boolean test(final Protocol protocol) {
-            return StringUtils.equals(identifier, protocol.getIdentifier())
-                    && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization());
-        }
-    }
-
     @Override
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
-            case oauth:
-            case password:
-                authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) {
-                        if(request instanceof HttpRequestWrapper) {
-                            final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                            if(null != wrapper.getTarget()) {
-                                if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                                    request.addHeader(HttpHeaders.AUTHORIZATION,
-                                            String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
-                                }
-                            }
-                        }
-                    }
-                }).build(), host) {
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                        if(request instanceof HttpRequestWrapper) {
-                            final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                            if(null != wrapper.getTarget()) {
-                                if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                                    super.process(request, context);
-                                }
-                            }
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                if(request instanceof HttpRequestWrapper) {
+                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                    if(null != wrapper.getTarget()) {
+                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                            request.addHeader(HttpHeaders.AUTHORIZATION,
+                                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                         }
                     }
                 }
-                        .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
-                                Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
-                        );
-
-                try {
-                    authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
-                }
-                catch(UnknownHostException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-                configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-                configuration.addInterceptorLast(authorizationService);
-                configuration.addInterceptorLast(new HttpRequestInterceptor() {
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) {
-                        request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
+            }
+        }).build(), host) {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                if(request instanceof HttpRequestWrapper) {
+                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                    if(null != wrapper.getTarget()) {
+                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                            super.process(request, context);
+                        }
                     }
-                });
-                break;
-            default:
-                retryHandler = new SDSErrorResponseInterceptor(this, nodeid);
-                configuration.setServiceUnavailableRetryStrategy(retryHandler);
-                configuration.addInterceptorLast(retryHandler);
-                break;
+                }
+            }
+        }.withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+        );
+        try {
+            authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
         }
+        catch(UnknownHostException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        configuration.addInterceptorLast(authorizationService);
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
+            }
+        });
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
@@ -232,8 +210,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         final Credentials credentials = host.getCredentials();
-        final String login = credentials.getUsername();
-        final String password = credentials.getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
@@ -251,29 +227,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel,
                         SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
                                 ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode));
-                break;
-            case radius:
-                final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                        new LoginOptions()
-                                .icon(host.getProtocol().disk())
-                                .user(false)
-                                .keychain(false)
-                );
-                // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
-                        .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                        .login(login)
-                        .password(additional.getPassword())
-                ));
-                break;
-            default:
-                // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
-                        .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                        .login(login)
-                        .password(password)
-                ));
                 break;
         }
         final UserAccount account;
@@ -413,30 +366,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         keyPairDeprecated.set(null);
     }
 
-    private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
-        try {
-            try {
-                return new AuthApi(client).login(request).getToken();
-            }
-            catch(ApiException e) {
-                throw new SDSExceptionMappingService(nodeid).map(e);
-            }
-        }
-        catch(PartialLoginFailureException e) {
-            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(),
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
-                    new LoginOptions()
-                            .icon(host.getProtocol().disk())
-                            .user(false)
-                            .keychain(false)
-            );
-            return this.login(controller, new LoginRequest()
-                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                    .password(additional.getPassword())
-            );
-        }
-    }
-
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
@@ -512,20 +441,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         return softwareVersion.get();
-    }
-
-    public SystemDefaults systemDefaults() throws BackgroundException {
-        if(systemDefaults.get() == null) {
-            try {
-                systemDefaults.set(new ConfigApi(client).requestSystemDefaultsInfo(StringUtils.EMPTY));
-            }
-            catch(ApiException e) {
-                // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading system defaults", new SDSExceptionMappingService(nodeid).map(e)));
-                throw new SDSExceptionMappingService(nodeid).map(e);
-            }
-        }
-        return systemDefaults.get();
     }
 
     public GeneralSettingsInfo generalSettingsInfo() throws BackgroundException {

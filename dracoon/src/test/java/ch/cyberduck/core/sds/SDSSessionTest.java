@@ -58,7 +58,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     @Test
     public void testLoginUserPassword() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -95,40 +95,13 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertEquals(0, policies.getShareClassificationPolicies().getClassificationRequiresSharePassword().getValue().intValue());
     }
 
-    @Test
-    public void testLoginRefreshToken() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        session.retryHandler.setTokens(System.getProperties().getProperty("sds.user"),
-                System.getProperties().getProperty("sds.key"),
-                "invalid");
-        new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-    }
-
-    @Test(expected = LoginFailureException.class)
-    public void testLoginFailureInvalidUser() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        session.retryHandler.setTokens(
-                "invalid",
-                System.getProperties().getProperty("sds.key"),
-                "invalid");
-        new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-    }
-
     @Test(expected = LoginCanceledException.class)
     public void testLoginOAuthExpiredRefreshToken() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -141,7 +114,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            "a", "s"
+                "a", "s"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -153,20 +126,20 @@ public class SDSSessionTest extends AbstractSDSTest {
     @Test(expected = ConnectionRefusedException.class)
     public void testProxyNoConnect() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener(),
-            new ProxyFinder() {
-                @Override
-                public Proxy find(final String target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new ProxyFinder() {
+                    @Override
+                    public Proxy find(final String target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    }
                 }
-            }
         );
         c.connect(session, new DisabledCancelCallback());
     }
@@ -175,27 +148,27 @@ public class SDSSessionTest extends AbstractSDSTest {
     @Test(expected = ProxyLoginFailureException.class)
     public void testConnectProxyInvalidCredentials() throws Exception {
         final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                    return new Credentials("test", "n");
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                        return new Credentials("test", "n");
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new ProxyFinder() {
+                    @Override
+                    public Proxy find(final String target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    }
                 }
-            },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener(),
-            new ProxyFinder() {
-                @Override
-                public Proxy find(final String target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-                }
-            }
         );
         c.connect(session, new DisabledCancelCallback());
     }
