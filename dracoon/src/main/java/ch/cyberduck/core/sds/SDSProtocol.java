@@ -52,7 +52,7 @@ public class SDSProtocol extends AbstractProtocol {
 
     @Override
     public String getAuthorization() {
-        return Authorization.sql.name();
+        return Authorization.oauth.name();
     }
 
     @Override
