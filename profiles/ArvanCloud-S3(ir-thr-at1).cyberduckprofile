@@ -20,5 +20,15 @@
         <string>Access Key</string>
         <key>Password Placeholder</key>
         <string>Secret Key</string>
+        <key>Region</key>
+            <string>default</string>
+        <key>Regions</key>
+        <array>
+            <string>default</string>
+        </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD</string>
+        </array>
     </dict>
 </plist>
