@@ -34,21 +34,6 @@ import static org.junit.Assert.*;
 public class SDSProtocolTest {
 
     @Test
-    public void testParse() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
-        assertTrue(profile.isHostnameConfigurable());
-        assertTrue(profile.isPortConfigurable());
-        assertTrue(profile.isUsernameConfigurable());
-        assertTrue(profile.isPasswordConfigurable());
-        factory.register(profile);
-        final Host host = new HostParser(factory).get("dracoon://duck");
-        assertNotNull(host);
-        assertEquals(profile, host.getProtocol());
-    }
-
-    @Test
     public void testParseOAuth() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(

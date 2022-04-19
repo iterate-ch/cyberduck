@@ -29,36 +29,6 @@ import static org.junit.Assert.assertTrue;
 public class AbstractHostCollectionTest {
 
     @Test
-    public void testRevealActiveDirectoryBookmark() throws Exception {
-        final AbstractHostCollection c = new AbstractHostCollection() {
-        };
-        final Profile profileOAuth = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
-        final Host bookmarkActiveDirectory = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            this.getClass().getResourceAsStream("/DRACOON (Active Directory).cyberduckprofile")));
-        final Host bookmarkOAuth = new Host(profileOAuth);
-        c.add(bookmarkActiveDirectory);
-        final Optional<Host> matched = c.find(bookmarkOAuth);
-        assertTrue(matched.isPresent());
-        assertSame(bookmarkActiveDirectory, matched.get());
-    }
-
-    @Test
-    public void testRevealOAuthBookmark() throws Exception {
-        final AbstractHostCollection c = new AbstractHostCollection() {
-        };
-        final Profile profileOAuth = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
-        final Host bookmarkActiveDirectory = new Host(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            this.getClass().getResourceAsStream("/DRACOON (Active Directory).cyberduckprofile")));
-        final Host bookmarkOAuth = new Host(profileOAuth);
-        c.add(bookmarkOAuth);
-        final Optional<Host> matched = c.find(bookmarkActiveDirectory);
-        assertTrue(matched.isPresent());
-        assertSame(bookmarkOAuth, matched.get());
-    }
-
-    @Test
     public void testFindDefaultPath() throws Exception {
         final AbstractHostCollection c = new AbstractHostCollection() {
         };
