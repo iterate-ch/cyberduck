@@ -36,6 +36,7 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
@@ -100,7 +101,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.options = options;
         return this;
     }
-
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         final Local volume = local.getVolume();
@@ -190,51 +190,56 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         status.setAcl(attributes.getAcl());
         if(options.segments) {
-            if(file.isFile()) {
-                // Free space on disk
-                long space = 0L;
-                try {
-                    space = Files.getFileStore(Paths.get(local.getParent().getAbsolute())).getUsableSpace();
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
-                }
-                long threshold = preferences.getLong("queue.download.segments.threshold");
-                if(status.getLength() * 2 > space) {
-                    log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
-                }
-                else if(status.getLength() > threshold) {
-                    // if file is smaller than threshold do not attempt to segment
-                    final long segmentSize = findSegmentSize(status.getLength(),
-                        new AutoTransferConnectionLimiter().getLimit(session.getHost()), threshold,
-                        preferences.getLong("queue.download.segments.size"),
-                        preferences.getLong("queue.download.segments.count"));
-
-                    // with default settings this can handle files up to 16 GiB, with 128 segments at 128 MiB.
-                    // this scales down to files of size 20MiB with 2 segments at 10 MiB
-                    long remaining = status.getLength(), offset = 0;
-                    // Sorted list
-                    final List<TransferStatus> segments = new ArrayList<>();
-                    final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
-                    for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                        final Local segmentFile = LocalFactory.get(
-                            segmentsFolder, String.format("%d.cyberducksegment", segmentNumber));
-                        // Last part can be less than 5 MB. Adjust part size.
-                        long length = Math.min(segmentSize, remaining);
-                        final TransferStatus segmentStatus = new TransferStatus()
-                            .segment(true) // Skip completion filter for single segment
-                            .append(true) // Read with offset
-                            .withOffset(offset)
-                            .withLength(length)
-                            .rename(segmentFile);
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
-                        }
-                        segments.add(segmentStatus);
-                        remaining -= length;
-                        offset += length;
+            if(!session.getFeature(Read.class).offset(file)) {
+                log.warn(String.format("Reading with offsets not supported for %s", file));
+            }
+            else {
+                if(file.isFile()) {
+                    // Free space on disk
+                    long space = 0L;
+                    try {
+                        space = Files.getFileStore(Paths.get(local.getParent().getAbsolute())).getUsableSpace();
                     }
-                    status.withSegments(segments);
+                    catch(IOException e) {
+                        log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
+                    }
+                    long threshold = preferences.getLong("queue.download.segments.threshold");
+                    if(status.getLength() * 2 > space) {
+                        log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
+                    }
+                    else if(status.getLength() > threshold) {
+                        // if file is smaller than threshold do not attempt to segment
+                        final long segmentSize = findSegmentSize(status.getLength(),
+                            new AutoTransferConnectionLimiter().getLimit(session.getHost()), threshold,
+                            preferences.getLong("queue.download.segments.size"),
+                            preferences.getLong("queue.download.segments.count"));
+
+                        // with default settings this can handle files up to 16 GiB, with 128 segments at 128 MiB.
+                        // this scales down to files of size 20MiB with 2 segments at 10 MiB
+                        long remaining = status.getLength(), offset = 0;
+                        // Sorted list
+                        final List<TransferStatus> segments = new ArrayList<>();
+                        final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
+                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                            final Local segmentFile = LocalFactory.get(
+                                segmentsFolder, String.format("%d.cyberducksegment", segmentNumber));
+                            // Last part can be less than 5 MB. Adjust part size.
+                            long length = Math.min(segmentSize, remaining);
+                            final TransferStatus segmentStatus = new TransferStatus()
+                                .segment(true) // Skip completion filter for single segment
+                                .append(true) // Read with offset
+                                .withOffset(offset)
+                                .withLength(length)
+                                .rename(segmentFile);
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
+                            }
+                            segments.add(segmentStatus);
+                            remaining -= length;
+                            offset += length;
+                        }
+                        status.withSegments(segments);
+                    }
                 }
             }
         }
