@@ -41,7 +41,7 @@ public final class DownloadFilterOptions {
     public boolean open;
 
     public DownloadFilterOptions(final Host bookmark) {
-        final PreferencesReader preferences = new HostPreferences(bookmark, PreferencesFactory.get());
+        final PreferencesReader preferences = new HostPreferences(bookmark);
         segments = preferences.getBoolean("queue.download.segments");
         permissions = preferences.getBoolean("queue.download.permissions.change");
         timestamp = preferences.getBoolean("queue.download.timestamp.change");
