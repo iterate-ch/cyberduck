@@ -23,7 +23,7 @@
     <artifactId>ssh</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <sshj-version>0.32.4</sshj-version>
+        <sshj-version>0.33.0</sshj-version>
     </properties>
     <dependencies>
         <dependency>
@@ -44,7 +44,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.ssh</groupId>
+            <groupId>com.hierynomus</groupId>
             <artifactId>sshj</artifactId>
             <version>${sshj-version}</version>
         </dependency>
