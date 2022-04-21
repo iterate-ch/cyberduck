@@ -109,7 +109,7 @@ public final class EueUploadHelper {
         if(status.getTimestamp() != null) {
             final ResourceCreationPropertiesModel property = new ResourceCreationPropertiesModel();
             property.setUiwin32(new UiWin32().lastModificationMillis(new DateTime(status.getTimestamp()).getMillis()));
-            resourceCreationRepresentation.addPropertiesItem(property);
+            resourceCreationRepresentation.setProperties(property);
         }
         try {
             final ResourceCreationResponseEntries resourceCreationResponseEntries;

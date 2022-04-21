@@ -20,8 +20,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.ArrayList;
-import java.util.List;
 /**
  * ResourceCreationRepresentationArrayInner
  */
@@ -82,7 +80,7 @@ public class ResourceCreationRepresentationArrayInner {
   private UploadType uploadType = null;
 
   @JsonProperty("properties")
-  private List<ResourceCreationPropertiesModel> properties = null;
+  private ResourceCreationPropertiesModel properties = null;
 
   public ResourceCreationRepresentationArrayInner forceOverwrite(Boolean forceOverwrite) {
     this.forceOverwrite = forceOverwrite;
@@ -210,16 +208,8 @@ public class ResourceCreationRepresentationArrayInner {
     this.uploadType = uploadType;
   }
 
-  public ResourceCreationRepresentationArrayInner properties(List<ResourceCreationPropertiesModel> properties) {
+  public ResourceCreationRepresentationArrayInner properties(ResourceCreationPropertiesModel properties) {
     this.properties = properties;
-    return this;
-  }
-
-  public ResourceCreationRepresentationArrayInner addPropertiesItem(ResourceCreationPropertiesModel propertiesItem) {
-    if (this.properties == null) {
-      this.properties = new ArrayList<>();
-    }
-    this.properties.add(propertiesItem);
     return this;
   }
 
@@ -228,11 +218,11 @@ public class ResourceCreationRepresentationArrayInner {
    * @return properties
   **/
   @Schema(description = "")
-  public List<ResourceCreationPropertiesModel> getProperties() {
+  public ResourceCreationPropertiesModel getProperties() {
     return properties;
   }
 
-  public void setProperties(List<ResourceCreationPropertiesModel> properties) {
+  public void setProperties(ResourceCreationPropertiesModel properties) {
     this.properties = properties;
   }
 

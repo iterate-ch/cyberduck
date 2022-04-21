@@ -922,9 +922,7 @@ components:
                     uploadType:
                         $ref: '#/components/schemas/uploadType'
                     properties:
-                        type: array
-                        items:
-                            $ref: '#/components/schemas/ResourceCreationPropertiesModel'
+                        $ref: '#/components/schemas/ResourceCreationPropertiesModel'
                 required:
                     - overwrite
                     - path
