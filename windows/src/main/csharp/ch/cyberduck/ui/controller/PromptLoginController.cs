@@ -147,12 +147,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPasswordEvent(Credentials credentials)
         {
-            credentials.setPassword(View.Password?.Trim() ?? string.Empty);
+            credentials.setPassword(View.Password);
         }
 
         private void View_ChangedUsernameEvent(Host bookmark, Credentials credentials, LoginOptions options)
         {
-            credentials.setUsername(View.Username?.Trim() ?? string.Empty);
+            credentials.setUsername(View.Username);
             if (!string.IsNullOrWhiteSpace(credentials.getUsername()))
             {
                 String password = keychain.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),

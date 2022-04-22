@@ -73,7 +73,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Password
         {
-            get { return textBoxPassword.Text; }
+            get { return textBoxPassword.Text.Trim(); }
             set { textBoxPassword.Text = value; }
         }
 
@@ -328,7 +328,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Username
         {
-            get { return textBoxUsername.Text; }
+            get { return textBoxUsername.Text.Trim(); }
             set { textBoxUsername.Text = value; }
         }
 

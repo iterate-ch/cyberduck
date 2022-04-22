@@ -226,7 +226,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal void View_ChangedUsernameEvent()
         {
-            _host.getCredentials().setUsername(View.Username?.Trim() ?? string.Empty);
+            _host.getCredentials().setUsername(View.Username);
             ItemChanged();
             Update();
         }
