@@ -55,7 +55,8 @@ namespace Ch.Cyberduck.Core.Diagnostics
                             Log.debug($"Reachability test with url {url}");
                         }
 
-                        WebRequest request = WebRequest.Create(url);
+                        HttpWebRequest request = WebRequest.CreateHttp(url);
+                        request.UserAgent = new PreferencesUseragentProvider().get();
                         request.Timeout = 10000;
                         using (request.GetResponse())
                         {
