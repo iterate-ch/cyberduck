@@ -14,6 +14,7 @@ package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceUpdateModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -27,6 +28,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public class ResourceResourceIdBody {
   @JsonProperty("uploadType")
   private UploadType uploadType = null;
+
+  @JsonProperty("patch")
+  private ResourceUpdateModel patch = null;
 
   @JsonProperty("size")
   private Long size = null;
@@ -47,6 +51,24 @@ public class ResourceResourceIdBody {
 
   public void setUploadType(UploadType uploadType) {
     this.uploadType = uploadType;
+  }
+
+  public ResourceResourceIdBody patch(ResourceUpdateModel patch) {
+    this.patch = patch;
+    return this;
+  }
+
+   /**
+   * Get patch
+   * @return patch
+  **/
+  @Schema(description = "")
+  public ResourceUpdateModel getPatch() {
+    return patch;
+  }
+
+  public void setPatch(ResourceUpdateModel patch) {
+    this.patch = patch;
   }
 
   public ResourceResourceIdBody size(Long size) {
@@ -78,12 +100,13 @@ public class ResourceResourceIdBody {
     }
     ResourceResourceIdBody resourceResourceIdBody = (ResourceResourceIdBody) o;
     return Objects.equals(this.uploadType, resourceResourceIdBody.uploadType) &&
+        Objects.equals(this.patch, resourceResourceIdBody.patch) &&
         Objects.equals(this.size, resourceResourceIdBody.size);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uploadType, size);
+    return Objects.hash(uploadType, patch, size);
   }
 
 
@@ -93,6 +116,7 @@ public class ResourceResourceIdBody {
     sb.append("class ResourceResourceIdBody {\n");
     
     sb.append("    uploadType: ").append(toIndentedString(uploadType)).append("\n");
+    sb.append("    patch: ").append(toIndentedString(patch)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("}");
     return sb.toString();

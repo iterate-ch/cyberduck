@@ -74,7 +74,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         if(null == status.getUrl()) {
             if(status.isExists()) {
                 resourceId = fileid.getFileId(file, new DisabledListProgressListener());
-                uploadUri = EueUploadHelper.updateResource(session, resourceId, UploadType.SIMPLE).getUploadURI();
+                uploadUri = EueUploadHelper.updateResource(session, resourceId, status, UploadType.SIMPLE).getUploadURI();
             }
             else {
                 final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = EueUploadHelper

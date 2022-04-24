@@ -171,6 +171,8 @@ paths:
                             properties:
                                 uploadType:
                                     $ref: '#/components/schemas/uploadType'
+                                patch:
+                                    $ref: '#/components/schemas/ResourceUpdateModel'
                                 size:
                                     type: integer
                                     format: int64

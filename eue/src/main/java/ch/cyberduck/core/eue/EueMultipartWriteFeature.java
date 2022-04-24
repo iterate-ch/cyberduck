@@ -79,7 +79,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
         if(status.isExists()) {
             resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             uploadUri = EueUploadHelper.updateResource(session,
-                    resourceId, UploadType.CHUNKED).getUploadURI();
+                    resourceId, status, UploadType.CHUNKED).getUploadURI();
         }
         else {
             final ResourceCreationResponseEntry resourceCreationResponseEntry =
