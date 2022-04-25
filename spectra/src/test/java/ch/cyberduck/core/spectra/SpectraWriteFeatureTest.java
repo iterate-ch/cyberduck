@@ -44,7 +44,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -58,14 +57,15 @@ public class SpectraWriteFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
+                new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1000);
         final TransferStatus status = new TransferStatus().withLength(content.length);
@@ -88,7 +88,7 @@ public class SpectraWriteFeatureTest {
             out.close();
         }
         assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -99,15 +99,16 @@ public class SpectraWriteFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
+                new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // Make 0-byte file
         new SpectraTouchFeature(session).touch(test, new TransferStatus());
         // Replace content
@@ -120,7 +121,7 @@ public class SpectraWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
@@ -131,14 +132,15 @@ public class SpectraWriteFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
             new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-69", EnumSet.of(Path.Type.directory));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         // Allocate
         final SpectraBulkService bulk = new SpectraBulkService(session);
@@ -175,7 +177,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(status, status).transfer(in, buffer);
             assertArrayEquals(content2, buffer.toByteArray());
         }
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

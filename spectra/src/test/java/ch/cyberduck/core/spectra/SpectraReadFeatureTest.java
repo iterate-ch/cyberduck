@@ -14,6 +14,7 @@
 
 package ch.cyberduck.core.spectra;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -28,7 +29,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
@@ -65,15 +65,16 @@ public class SpectraReadFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
+                new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
         new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
@@ -86,19 +87,20 @@ public class SpectraReadFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
+                new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1023);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         status.setChecksum(new CRC32ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        final OutputStream out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = new SpectraWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -120,11 +122,11 @@ public class SpectraReadFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
+                new DefaultX509KeyManager());
         assertFalse(new SpectraReadFeature(session).offset(null));
     }
 
@@ -136,8 +138,8 @@ public class SpectraReadFeatureTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
