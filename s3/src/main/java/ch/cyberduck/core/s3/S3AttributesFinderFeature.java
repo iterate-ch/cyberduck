@@ -104,7 +104,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 if(references) {
                     try {
                         // Add references to previous versions
-                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
+                        final AttributedList<Path> list = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).list(file, new DisabledListProgressListener());
                         final Path versioned = list.find(new DefaultPathPredicate(new Path(file).withAttributes(attr)));
                         if(null != versioned) {
                             if(versioned.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {

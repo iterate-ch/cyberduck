@@ -17,7 +17,6 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -87,7 +86,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                 if(versioning.isEnabled()) {
                     if(references) {
                         // Add references to previous versions
-                        final AttributedList<Path> list = new GoogleStorageObjectListService(session, true).list(file, new DisabledListProgressListener());
+                        final AttributedList<Path> list = new GoogleStorageVersioningFeature(session).list(file, listener);
                         final Path versioned = list.find(new DefaultPathPredicate(file));
                         if(null != versioned) {
                             attributes.setDuplicate(versioned.attributes().isDuplicate());

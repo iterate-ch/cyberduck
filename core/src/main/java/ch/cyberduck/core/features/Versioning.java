@@ -15,7 +15,9 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -68,4 +70,14 @@ public interface Versioning {
      * @throws ConnectionCanceledException Prompt dismissed
      */
     Credentials getToken(String mfaSerial, PasswordCallback callback) throws ConnectionCanceledException;
+
+    /**
+     * Find all versions for path
+     *
+     * @param file     File on server
+     * @param listener Progress notification callback
+     * @return List of versions or singleton list if no other versions found on server
+     * @throws BackgroundException Failure reading versions from server
+     */
+    AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
 }

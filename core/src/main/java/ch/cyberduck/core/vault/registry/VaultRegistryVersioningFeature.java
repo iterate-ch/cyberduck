@@ -15,7 +15,9 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -66,6 +68,11 @@ public class VaultRegistryVersioningFeature implements Versioning {
     @Override
     public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         return proxy.getToken(mfaSerial, callback);
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Versioning.class, proxy).list(file, listener);
     }
 
     @Override

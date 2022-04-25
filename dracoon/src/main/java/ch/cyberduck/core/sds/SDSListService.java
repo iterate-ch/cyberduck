@@ -79,7 +79,7 @@ public class SDSListService implements ListService {
                     nodeid.cache(file, String.valueOf(node.getId()));
                     if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
                         try {
-                            final AttributedList<Path> versions = new SDSAttributesFinderFeature(session, nodeid).findDeleted(file, chunksize);
+                            final AttributedList<Path> versions = new SDSVersioningFeature(session, nodeid).list(file, listener);
                             children.addAll(versions);
                             attributes.setVersions(versions);
                         }

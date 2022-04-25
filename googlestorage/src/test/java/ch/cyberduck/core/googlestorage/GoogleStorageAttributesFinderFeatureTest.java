@@ -18,6 +18,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -83,6 +84,7 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         for(Path version : versions) {
             assertTrue(version.attributes().isDuplicate());
         }
+        assertEquals(versions, new GoogleStorageVersioningFeature(session).list(test, new DisabledListProgressListener()));
         assertFalse(attributes.isDuplicate());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

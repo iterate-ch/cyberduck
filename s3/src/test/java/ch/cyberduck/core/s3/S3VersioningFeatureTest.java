@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -104,7 +105,9 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         assertEquals(new Path(test).withAttributes(initialAttributes), updated.getVersions().get(0));
         assertTrue(new S3FindFeature(session).find(updated.getVersions().get(0)));
         assertEquals(initialVersion, new S3AttributesFinderFeature(session).find(updated.getVersions().get(0)).getVersionId());
-        new S3VersioningFeature(session, new S3AccessControlListFeature(session)).revert(new Path(test).withAttributes(initialAttributes));
+        final S3VersioningFeature feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
+        assertEquals(updated.getVersions(), feature.list(test, new DisabledListProgressListener()));
+        feature.revert(new Path(test).withAttributes(initialAttributes));
         final PathAttributes reverted = new S3AttributesFinderFeature(session, true).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, reverted.getVersionId());
         assertEquals(2, reverted.getVersions().size());

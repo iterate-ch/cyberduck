@@ -17,7 +17,9 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
@@ -205,14 +207,19 @@ public class S3VersioningFeature implements Versioning {
     public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         // Prompt for multi factor authentication credentials.
         return callback.prompt(
-            session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), mfaSerial),
-            new LoginOptions()
-                .icon(session.getHost().getProtocol().disk())
-                .password(true)
-                .user(false)
-                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                .keychain(false)
+                session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), mfaSerial),
+                new LoginOptions()
+                        .icon(session.getHost().getProtocol().disk())
+                        .password(true)
+                        .user(false)
+                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                        .keychain(false)
         );
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new S3VersionedObjectListService(session, false).list(file, listener);
     }
 }

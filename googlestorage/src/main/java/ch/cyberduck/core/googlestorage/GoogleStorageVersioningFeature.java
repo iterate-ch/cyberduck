@@ -13,8 +13,10 @@ package ch.cyberduck.core.googlestorage;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -87,5 +89,10 @@ public class GoogleStorageVersioningFeature implements Versioning {
     @Override
     public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         return null;
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new GoogleStorageObjectListService(session, true).list(file, listener);
     }
 }
