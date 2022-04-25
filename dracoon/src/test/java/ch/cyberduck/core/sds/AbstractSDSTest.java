@@ -24,12 +24,19 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 public class AbstractSDSTest {
 
@@ -42,17 +49,31 @@ public class AbstractSDSTest {
 
     @Before
     public void setup() throws Exception {
-        session = new SDSSession(new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.enableMetrics();
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(System.getProperties().getProperty("sds.user")));
+        session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 throw new LoginCanceledException();
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         connect.check(session, new DisabledCancelCallback());
+    }
+
+    public static class TestPasswordStore extends DisabledPasswordStore {
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Access Token")) {
+                return System.getProperties().getProperty("sds.accesstoken");
+            }
+            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Refresh Token")) {
+                return System.getProperties().getProperty("sds.refreshtoken");
+            }
+            return null;
+        }
     }
 }
