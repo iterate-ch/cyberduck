@@ -54,7 +54,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
             }
             lock.lock();
         }
-        catch(final IllegalMonitorStateException e) {
+        catch(IllegalMonitorStateException e) {
             log.warn(String.format("Failure acquiring lock for %s", session));
             throw new ConnectionCanceledException(e);
         }
@@ -81,7 +81,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
                 }
                 lock.unlock();
             }
-            catch(final IllegalMonitorStateException ignored) {
+            catch(IllegalMonitorStateException ignored) {
                 log.warn(String.format("Failure releasing lock for %s", session));
             }
         }
@@ -93,7 +93,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
         try {
             lock.unlock();
         }
-        catch(final IllegalMonitorStateException ignored) {
+        catch(IllegalMonitorStateException ignored) {
             log.warn(String.format("Failure releasing lock for %s", session));
         }
     }
@@ -104,7 +104,7 @@ public class StatefulSessionPool extends StatelessSessionPool {
         try {
             lock.unlock();
         }
-        catch(final IllegalMonitorStateException ignored) {
+        catch(IllegalMonitorStateException ignored) {
             log.warn(String.format("Failure releasing lock for %s", session));
         }
     }
