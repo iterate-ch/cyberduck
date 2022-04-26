@@ -24,6 +24,7 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
 public class CryptoVersioningFeature implements Versioning {
 
@@ -59,7 +60,7 @@ public class CryptoVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.list(vault.encrypt(session, file), listener);
+        return delegate.list(vault.encrypt(session, file), new DecryptingListProgressListener(session, vault, listener));
     }
 
     @Override
