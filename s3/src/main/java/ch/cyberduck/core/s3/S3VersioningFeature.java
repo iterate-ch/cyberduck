@@ -22,6 +22,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -49,7 +50,7 @@ public class S3VersioningFeature implements Versioning {
     private final S3AccessControlListFeature accessControlListFeature;
 
     private final LRUCache<Path, VersioningConfiguration> cache
-        = LRUCache.build(10);
+            = LRUCache.build(10);
 
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
@@ -153,8 +154,8 @@ public class S3VersioningFeature implements Versioning {
     }
 
     /**
-     * Versioning support. Copy a previous version of the object into the same bucket.
-     * The copied object becomes the latest version of that object and all object versions are preserved.
+     * Versioning support. Copy a previous version of the object into the same bucket. The copied object becomes the
+     * latest version of that object and all object versions are preserved.
      */
     @Override
     public void revert(final Path file) throws BackgroundException {
@@ -175,12 +176,12 @@ public class S3VersioningFeature implements Versioning {
                     log.warn(String.format("Ignore failure %s", e));
                 }
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
-                    containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
+                        containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
                 if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
                     // revert placeholder
                     session.getClient().deleteVersionedObject(
-                        file.getParent().attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file.getParent()));
+                            file.getParent().attributes().getVersionId(),
+                            containerService.getContainer(file).getName(), containerService.getKey(file.getParent()));
                 }
             }
             catch(ServiceException e) {
@@ -217,6 +218,11 @@ public class S3VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new S3VersionedObjectListService(session, false).list(file, listener);
+        return new S3VersionedObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return file.attributes().isDuplicate();
+            }
+        });
     }
 }

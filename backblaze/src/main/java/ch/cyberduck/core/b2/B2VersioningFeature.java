@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -61,8 +62,11 @@ public class B2VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(file, listener);
-        list.remove(file);
-        return list;
+        return new B2ObjectListService(session, fileid).list(file, listener).filter(new NullFilter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return file.attributes().isDuplicate();
+            }
+        });
     }
 }
