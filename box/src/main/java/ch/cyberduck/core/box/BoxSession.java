@@ -95,6 +95,9 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        finally {
+            fileid.clear();
+        }
     }
 
     @Override
