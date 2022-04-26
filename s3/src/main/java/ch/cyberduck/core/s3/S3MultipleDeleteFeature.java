@@ -124,7 +124,7 @@ public class S3MultipleDeleteFeature implements Delete {
         try {
             if(versioningService != null
                     && versioningService.getConfiguration(bucket).isMultifactor()) {
-                final Credentials factor = versioningService.getToken(StringUtils.EMPTY, prompt);
+                final Credentials factor = versioningService.getToken(prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(bucket.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                         factor.getUsername(),

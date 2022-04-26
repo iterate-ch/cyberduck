@@ -64,7 +64,7 @@ public class S3VersioningFeature implements Versioning {
             final VersioningConfiguration current = this.getConfiguration(bucket);
             if(current.isMultifactor()) {
                 // The bucket is already MFA protected.
-                final Credentials factor = this.getToken(StringUtils.EMPTY, prompt);
+                final Credentials factor = this.getToken(prompt);
                 if(configuration.isEnabled()) {
                     if(current.isEnabled()) {
                         log.debug(String.format("Versioning already enabled for bucket %s", bucket));
@@ -84,7 +84,7 @@ public class S3VersioningFeature implements Versioning {
                 if(configuration.isEnabled() && !configuration.isMultifactor()) {
                     log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), bucket));
                     // User has choosen to disable MFA
-                    final Credentials factor2 = this.getToken(StringUtils.EMPTY, prompt);
+                    final Credentials factor2 = this.getToken(prompt);
                     session.getClient().disableMFAForVersionedBucket(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                             factor2.getUsername(), factor2.getPassword());
                 }
@@ -92,7 +92,7 @@ public class S3VersioningFeature implements Versioning {
             else {
                 if(configuration.isEnabled()) {
                     if(configuration.isMultifactor()) {
-                        final Credentials factor = this.getToken(StringUtils.EMPTY, prompt);
+                        final Credentials factor = this.getToken(prompt);
                         log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), bucket));
                         session.getClient().enableBucketVersioningWithMFA(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                                 factor.getUsername(), factor.getPassword());
@@ -197,17 +197,15 @@ public class S3VersioningFeature implements Versioning {
     /**
      * Prompt for MFA credentials
      *
-     * @param mfaSerial Serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
-     *                  a virtual device (such as arn:aws:iam::123456789012:mfa/user)
-     * @param callback  Prompt controller
+     * @param callback Prompt controller
      * @return MFA one time authentication password.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
-    protected Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
+    protected Credentials getToken(final PasswordCallback callback) throws ConnectionCanceledException {
         // Prompt for multi factor authentication credentials.
         return callback.prompt(
                 session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), mfaSerial),
+                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
                 new LoginOptions()
                         .icon(session.getHost().getProtocol().disk())
                         .password(true)
