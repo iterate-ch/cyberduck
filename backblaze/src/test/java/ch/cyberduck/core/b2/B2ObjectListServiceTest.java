@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -159,7 +160,6 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
                 assertTrue(f.attributes().isDuplicate());
             }
         }
-
         assertFalse(new B2FindFeature(session, fileid).find(file));
         assertFalse(new DefaultFindFeature(session).find(file));
         try {
@@ -169,13 +169,16 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         catch(NotfoundException e) {
             //
         }
-        {
-            final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
-            for(Path f : list) {
-                new B2DeleteFeature(session, fileid).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            }
+        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
+        assertEquals(list, new B2VersioningFeature(session, fileid).list(file, new DisabledListProgressListener()));
+        final Path other = new B2TouchFeature(session, fileid).touch(new Path(bucket, name + new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> versions = new B2VersioningFeature(session, fileid).list(file, new DisabledListProgressListener());
+        assertEquals(list, versions);
+        assertFalse(versions.contains(other));
+        for(Path f : list) {
+            new B2DeleteFeature(session, fileid).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(other, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

@@ -73,7 +73,12 @@ public class B2ObjectListService implements ListService {
                 marker = new Marker(null, null);
             }
             else {
-                marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
+                if(directory.isDirectory()) {
+                    marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
+                }
+                else {
+                    marker = new Marker(containerService.getKey(directory), null);
+                }
             }
             final String containerId = fileid.getVersionId(containerService.getContainer(directory), new DisabledListProgressListener());
             // Seen placeholders
@@ -88,7 +93,8 @@ public class B2ObjectListService implements ListService {
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         containerId,
                         marker.nextFilename, marker.nextFileId, chunksize,
-                        containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), Path.DELIMITER),
+                        containerService.isContainer(directory) ? null :
+                                directory.isDirectory() ? String.format("%s%s", containerService.getKey(directory), Path.DELIMITER) : containerService.getKey(directory),
                         String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {
@@ -119,9 +125,15 @@ public class B2ObjectListService implements ListService {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
                 continue;
             }
+            if(directory.isFile()) {
+                if(!StringUtils.equals(directory.getName(), PathNormalizer.name(info.getFileName()))) {
+                    log.warn(String.format("Skip %s not matching %s", info, directory.getName()));
+                    continue;
+                }
+            }
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
-                final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 objects.add(placeholder);
                 continue;
             }
@@ -134,7 +146,7 @@ public class B2ObjectListService implements ListService {
                 attributes.setRevision(revision);
             }
             revisions.put(info.getFileName(), revision);
-            final Path f = new Path(directory, PathNormalizer.name(info.getFileName()),
+            final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(info.getFileName()),
                     info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes);
             fileid.cache(f, info.getFileId());
             objects.add(f);
