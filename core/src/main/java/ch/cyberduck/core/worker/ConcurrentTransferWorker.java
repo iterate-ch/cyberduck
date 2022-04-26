@@ -45,6 +45,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.Throwables;
@@ -90,8 +91,16 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connect, notification);
         this.source = source;
         this.destination = destination;
-        this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-            new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority);
+        switch(source.getHost().getProtocol().getStatefulness()) {
+            case stateful:
+                this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
+                        new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
+                break;
+            default:
+                this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
+                        new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority);
+                break;
+        }
         this.completion = new ExecutorCompletionService<>(pool.executor());
     }
 
