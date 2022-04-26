@@ -24,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 
 public class DefaultBackgroundExecutor implements BackgroundExecutor {
@@ -54,7 +55,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     }
 
     public DefaultBackgroundExecutor(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
-        this(ThreadPoolFactory.get(prefix, size, handler));
+        this(ThreadPoolFactory.get(prefix, size, ThreadPool.Priority.norm, new LinkedBlockingQueue<>(Integer.MAX_VALUE), handler));
     }
 
     public DefaultBackgroundExecutor(final ThreadPool concurrentExecutor) {
