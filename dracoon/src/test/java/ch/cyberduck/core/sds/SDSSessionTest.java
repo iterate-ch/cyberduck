@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
@@ -54,20 +53,6 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SDSSessionTest extends AbstractSDSTest {
-
-    @Test
-    public void testLoginUserPassword() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-        assertNotNull(session.shareClassificationsPolicies());
-    }
 
     @Test
     public void testLoginOAuthPasswordFlow() throws Exception {
@@ -109,18 +94,6 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.getClient());
         session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-    }
-
-    @Test(expected = LoginFailureException.class)
-    public void testLoginFailure() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-                "a", "s"
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = ConnectionRefusedException.class)
