@@ -275,18 +275,4 @@ public class GoogleStorageObjectListService implements ListService {
         }
         return prefix;
     }
-
-    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
-        public LatestVersionPathPredicate(final Path f) {
-            super(f);
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            if(super.test(test)) {
-                return !test.attributes().isDuplicate();
-            }
-            return false;
-        }
-    }
 }
