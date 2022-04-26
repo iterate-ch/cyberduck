@@ -251,6 +251,24 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         userAccount.set(new UserAccountWrapper(account));
         requiredKeyPairVersion = this.getRequiredKeyPairVersion();
         this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
+        this.updateDirectS3UploadSetting();
+    }
+
+    private void updateDirectS3UploadSetting() {
+        boolean isS3DirectUploadSupported = false;
+        try {
+            if(this.generalSettingsInfo().isUseS3Storage()) {
+                final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+                if(matcher.matches()) {
+                    isS3DirectUploadSupported = new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0;
+                }
+            }
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure reading software version. %s", e.getMessage()));
+            isS3DirectUploadSupported = true;
+        }
+        host.setProperty("sds.upload.s3.enable", String.valueOf(isS3DirectUploadSupported));
     }
 
     private UserKeyPair.Version getRequiredKeyPairVersion() {
@@ -498,25 +516,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return requiredKeyPairVersion;
     }
 
-    protected boolean isS3DirectUploadSupported() {
-        if(preferences.getBoolean("sds.upload.s3.enable")) {
-            try {
-                if(this.generalSettingsInfo().isUseS3Storage()) {
-                    final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
-                    if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Failure reading software version. %s", e.getMessage()));
-            }
-        }
-        return false;
-    }
-
     @Override
     protected void logout() {
         client.getHttpClient().close();
@@ -533,13 +532,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(this.isS3DirectUploadSupported()) {
+            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
-            if(this.isS3DirectUploadSupported()) {
+            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
                 return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
             }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
