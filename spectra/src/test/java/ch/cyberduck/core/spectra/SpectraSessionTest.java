@@ -35,7 +35,7 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 @Category(IntegrationTest.class)
-public class SpectraSessionTest {
+public class SpectraSessionTest extends AbstractSpectraTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailureInvalidSecret() throws Exception {
@@ -73,19 +73,6 @@ public class SpectraSessionTest {
 
     @Test
     public void testLogin() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         new SpectraListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        session.close();
     }
 }
