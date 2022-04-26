@@ -33,6 +33,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
+
 public class SDSVersioningFeature implements Versioning {
 
     private final SDSSession session;
@@ -80,7 +82,7 @@ public class SDSVersioningFeature implements Versioning {
         try {
             int offset = 0;
             DeletedNodeVersionsList nodes;
-            final AttributedList<Path> versions = new AttributedList<>();
+            final AttributedList<Path> versions = new AttributedList<>(Collections.singleton(file));
             do {
                 nodes = new NodesApi(session.getClient()).requestDeletedNodeVersions(
                         Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())),
