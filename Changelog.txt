@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.3.3
+- [Bugfix] Failing transfers with multipe files (FTP) (#13322)
+
 8.3.2
 - [Bugfix] Connection not released causing freeze in browser or transfer (FTP) (#13273)
 

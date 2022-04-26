@@ -38,7 +38,7 @@ public class StatelessSessionPool implements SessionPool {
     private final Session<?> session;
     private final VaultRegistry registry;
 
-    private final Lock lock = new ReentrantLock();
+    private final Lock sync = new ReentrantLock();
 
     public StatelessSessionPool(final ConnectionService connect, final Session<?> session,
                                 final TranscriptListener transcript, final VaultRegistry registry) {
@@ -51,13 +51,13 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-        lock.lock();
+        sync.lock();
         try {
             connect.check(session.withListener(transcript), new BackgroundActionStateCancelCallback(callback));
             return session;
         }
         finally {
-            lock.unlock();
+            sync.unlock();
         }
     }
 
@@ -68,7 +68,7 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void evict() {
-        lock.lock();
+        sync.lock();
         try {
             try {
                 session.close();
@@ -82,13 +82,13 @@ public class StatelessSessionPool implements SessionPool {
             }
         }
         finally {
-            lock.unlock();
+            sync.unlock();
         }
     }
 
     @Override
     public void shutdown() {
-        lock.lock();
+        sync.lock();
         try {
             try {
                 session.close();
@@ -101,7 +101,7 @@ public class StatelessSessionPool implements SessionPool {
             }
         }
         finally {
-            lock.unlock();
+            sync.unlock();
         }
     }
 

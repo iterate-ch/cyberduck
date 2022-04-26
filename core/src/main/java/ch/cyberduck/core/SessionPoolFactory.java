@@ -80,54 +80,34 @@ public class SessionPoolFactory {
 
     public static SessionPool create(final ConnectionService connect, final TranscriptListener transcript,
                                      final Host bookmark,
-                                     final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
+                                     final X509TrustManager trust, final X509KeyManager key,
                                      final VaultRegistry registry,
                                      final Usage... usage) {
         switch(bookmark.getProtocol().getStatefulness()) {
             case stateful:
                 if(Arrays.asList(usage).contains(Usage.browser)) {
-                    return stateful(connect, transcript, bookmark, x509TrustManager, x509KeyManager, registry);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Create new stateful connection pool for %s", bookmark));
+                    }
+                    final Session<?> session = SessionFactory.create(new Host(bookmark).withCredentials(new Credentials(bookmark.getCredentials())), trust, key);
+                    return new StatefulSessionPool(connect, session, transcript, registry);
                 }
                 // Break through to default pool
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
-                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, transcript, bookmark)
-                    .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
-                    .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
-                    .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+                return new DefaultSessionPool(connect, trust, key, registry, transcript, bookmark)
+                        .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
+                        .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
+                        .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
             default:
                 // Stateless protocol
-                return stateless(connect, transcript, bookmark, x509TrustManager, x509KeyManager, registry);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Create new stateless connection pool for %s", bookmark));
+                }
+                final Session<?> session = SessionFactory.create(bookmark, trust, key);
+                return new StatelessSessionPool(connect, session, transcript, registry);
         }
-    }
-
-    /**
-     * @return Single stateless session
-     */
-    protected static SessionPool stateless(final ConnectionService connect, final TranscriptListener transcript,
-                                           final Host bookmark,
-                                           final X509TrustManager trust, final X509KeyManager key,
-                                           final VaultRegistry vault) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Create new stateless connection pool for %s", bookmark));
-        }
-        final Session<?> session = SessionFactory.create(bookmark, trust, key);
-        return new StatelessSessionPool(connect, session, transcript, vault);
-    }
-
-    /**
-     * @return Single stateful session
-     */
-    protected static SessionPool stateful(final ConnectionService connect, final TranscriptListener transcript,
-                                          final Host bookmark,
-                                          final X509TrustManager trust, final X509KeyManager key,
-                                          final VaultRegistry vault) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Create new stateful connection pool for %s", bookmark));
-        }
-        final Session<?> session = SessionFactory.create(new Host(bookmark).withCredentials(new Credentials(bookmark.getCredentials())), trust, key);
-        return new StatefulSessionPool(connect, session, transcript, vault);
     }
 
     public enum Usage {

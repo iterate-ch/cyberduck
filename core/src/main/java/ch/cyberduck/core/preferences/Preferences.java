@@ -652,6 +652,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
           connection is attached.
          */
         this.setDefault("ftp.datachannel.verify", String.valueOf(false));
+        /**
+         * Always use EPSV also for IPv4
+         */
+        this.setDefault("ftp.datachannel.epsv", String.valueOf(false));
         this.setDefault("ftp.socket.buffer", String.valueOf(0));
 
         this.setDefault("ftp.parser.multiline.strict", String.valueOf(false));
