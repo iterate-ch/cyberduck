@@ -68,18 +68,7 @@ public class B2ObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> objects = new AttributedList<>();
-            Marker marker;
-            if(containerService.isContainer(directory)) {
-                marker = new Marker(null, null);
-            }
-            else {
-                if(directory.isDirectory()) {
-                    marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
-                }
-                else {
-                    marker = new Marker(containerService.getKey(directory), null);
-                }
-            }
+            Marker marker = new Marker(this.createPrefix(directory), null);
             final String containerId = fileid.getVersionId(containerService.getContainer(directory), new DisabledListProgressListener());
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
@@ -93,8 +82,7 @@ public class B2ObjectListService implements ListService {
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
                         containerId,
                         marker.nextFilename, marker.nextFileId, chunksize,
-                        containerService.isContainer(directory) ? null :
-                                directory.isDirectory() ? String.format("%s%s", containerService.getKey(directory), Path.DELIMITER) : containerService.getKey(directory),
+                        this.createPrefix(directory),
                         String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {
@@ -116,6 +104,11 @@ public class B2ObjectListService implements ListService {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    private String createPrefix(final Path directory) {
+        return containerService.isContainer(directory) ? StringUtils.EMPTY :
+                directory.isDirectory() ? String.format("%s%s", containerService.getKey(directory), Path.DELIMITER) : containerService.getKey(directory);
     }
 
     private Marker parse(final Path directory, final AttributedList<Path> objects,
