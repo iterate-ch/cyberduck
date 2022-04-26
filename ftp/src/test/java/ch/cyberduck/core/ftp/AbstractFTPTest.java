@@ -83,8 +83,16 @@ public class AbstractFTPTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new FTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
-        final Host host = new Host(profile, "localhost", PORT_NUMBER, new Credentials("test", "test"));
+                this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
+        final Host host = new Host(profile, "localhost", PORT_NUMBER, new Credentials("test", "test")) {
+            @Override
+            public String getProperty(final String key) {
+                if(key.equals("ftp.datachannel.epsv")) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         session = new FTPSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public <T> T _getFeature(final Class<T> type) {
