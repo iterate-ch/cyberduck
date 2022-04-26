@@ -14,7 +14,6 @@ package ch.cyberduck.core.googlestorage;/*
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
@@ -23,7 +22,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -84,11 +82,6 @@ public class GoogleStorageVersioningFeature implements Versioning {
     @Override
     public boolean isRevertable(final Path file) {
         return file.attributes().isDuplicate();
-    }
-
-    @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
-        return null;
     }
 
     @Override

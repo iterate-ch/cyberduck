@@ -16,14 +16,12 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -74,11 +72,6 @@ public class SDSVersioningFeature implements Versioning {
     @Override
     public boolean isRevertable(final Path file) {
         return true;
-    }
-
-    @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
-        return null;
     }
 
     @Override

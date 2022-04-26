@@ -16,7 +16,6 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
@@ -134,11 +133,6 @@ public class SpectraVersioningFeature implements Versioning {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot revert file", e, file);
         }
-    }
-
-    @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) {
-        return null;
     }
 
     @Override

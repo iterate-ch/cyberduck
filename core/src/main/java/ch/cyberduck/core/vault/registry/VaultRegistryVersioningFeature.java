@@ -16,14 +16,12 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
@@ -63,11 +61,6 @@ public class VaultRegistryVersioningFeature implements Versioning {
     @Override
     public void revert(final Path file) throws BackgroundException {
         registry.find(session, file).getFeature(session, Versioning.class, proxy).revert(file);
-    }
-
-    @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
-        return proxy.getToken(mfaSerial, callback);
     }
 
     @Override

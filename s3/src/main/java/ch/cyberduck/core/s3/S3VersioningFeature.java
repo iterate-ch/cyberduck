@@ -203,8 +203,7 @@ public class S3VersioningFeature implements Versioning {
      * @return MFA one time authentication password.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
-    @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
+    protected Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         // Prompt for multi factor authentication credentials.
         return callback.prompt(
                 session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),

@@ -16,13 +16,11 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface Versioning {
 
@@ -60,16 +58,6 @@ public interface Versioning {
      * @return True if this file version can be reverted
      */
     boolean isRevertable(Path file);
-
-    /**
-     * Prompt for MFA Authentication Code
-     *
-     * @param mfaSerial Serial number of device
-     * @param callback  Prompt
-     * @return MFA Code entered in prompt
-     * @throws ConnectionCanceledException Prompt dismissed
-     */
-    Credentials getToken(String mfaSerial, PasswordCallback callback) throws ConnectionCanceledException;
 
     /**
      * Find all versions for path
