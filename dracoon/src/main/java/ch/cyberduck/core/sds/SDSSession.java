@@ -52,6 +52,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfi
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
+import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
@@ -117,6 +118,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
             = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+
+    private final ExpiringObjectHolder<SystemDefaults> systemDefaults
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
             = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
@@ -441,6 +445,20 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         return softwareVersion.get();
+    }
+
+    public SystemDefaults systemDefaults() throws BackgroundException {
+        if(systemDefaults.get() == null) {
+            try {
+                systemDefaults.set(new ConfigApi(client).requestSystemDefaultsInfo(StringUtils.EMPTY));
+            }
+            catch(ApiException e) {
+                // Precondition: Right "Config Read" required.
+                log.warn(String.format("Failure %s reading system defaults", new SDSExceptionMappingService(nodeid).map(e)));
+                throw new SDSExceptionMappingService(nodeid).map(e);
+            }
+        }
+        return systemDefaults.get();
     }
 
     public GeneralSettingsInfo generalSettingsInfo() throws BackgroundException {
