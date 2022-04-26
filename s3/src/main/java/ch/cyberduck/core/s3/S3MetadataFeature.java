@@ -60,7 +60,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return new S3AttributesFinderFeature(session, false).find(file).getMetadata();
+        return new S3AttributesFinderFeature(session).find(file).getMetadata();
     }
 
     @Override

@@ -37,7 +37,7 @@ public class S3FindFeature implements Find {
 
     public S3FindFeature(final S3Session session) {
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session, false);
+        this.attributes = new S3AttributesFinderFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
     }
 

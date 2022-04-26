@@ -114,8 +114,8 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         for(Path path : new S3ListService(session).list(container, new DisabledListProgressListener())) {
             if(new SimplePathPredicate(test).test(path)) {
                 assertTrue(path.attributes().isDuplicate());
-                assertTrue(new S3AttributesFinderFeature(session, true).find(path).isDuplicate());
-                assertTrue(new S3AttributesFinderFeature(session, false).find(path).isDuplicate());
+                assertTrue(new S3AttributesFinderFeature(session).find(path).isDuplicate());
+                assertTrue(new S3AttributesFinderFeature(session).find(path).isDuplicate());
                 break;
             }
         }

@@ -65,7 +65,7 @@ public class S3StorageClassFeature implements Redundancy {
         }
         // HEAD request provides storage class information of the object.
         // S3 returns this header for all objects except for Standard storage class objects.
-        final String redundancy = new S3AttributesFinderFeature(session, false).find(file).getStorageClass();
+        final String redundancy = new S3AttributesFinderFeature(session).find(file).getStorageClass();
         if(StringUtils.isBlank(redundancy)) {
             return S3Object.STORAGE_CLASS_STANDARD;
         }

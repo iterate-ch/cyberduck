@@ -19,11 +19,9 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
@@ -41,23 +39,13 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public static final String KEY_ENCRYPTED = "encrypted";
     public static final String KEY_CLASSIFICATION = "classification";
 
-    /**
-     * Lookup previous versions
-     */
-    private final boolean references;
-
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private final SDSAttributesAdapter adapter;
 
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, new HostPreferences(session.getHost()).getBoolean("sds.versioning.references.enable"));
-    }
-
-    public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
         this.session = session;
         this.nodeid = nodeid;
-        this.references = references;
         this.adapter = new SDSAttributesAdapter(session);
     }
 
@@ -95,18 +83,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             else {
                 final Node node = new NodesApi(session.getClient()).requestNode(
                         Long.parseLong(nodeId), StringUtils.EMPTY, null);
-                final PathAttributes attr = adapter.toAttributes(node);
-                if(adapter.toType(node).contains(Path.Type.file)) {
-                    if(references) {
-                        try {
-                            attr.setVersions(new SDSVersioningFeature(session, nodeid).list(file, listener));
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
-                        }
-                    }
-                }
-                return attr;
+                return adapter.toAttributes(node);
             }
         }
         catch(ApiException e) {

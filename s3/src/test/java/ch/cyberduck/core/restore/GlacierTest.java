@@ -59,7 +59,7 @@ public class GlacierTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals("GLACIER", new S3AttributesFinderFeature(session, true).find(test).getStorageClass());
+        assertEquals("GLACIER", new S3AttributesFinderFeature(session).find(test).getStorageClass());
         final Glacier feature = new Glacier(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         feature.restore(test, new DisabledLoginCallback());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
