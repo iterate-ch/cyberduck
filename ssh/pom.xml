@@ -24,6 +24,7 @@
     <packaging>jar</packaging>
     <properties>
         <sshj-version>0.33.0</sshj-version>
+        <jsch-agentproxy-version>0.0.10</jsch-agentproxy-version>
     </properties>
     <dependencies>
         <dependency>
@@ -56,7 +57,7 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch.agentproxy.sshj</artifactId>
-            <version>0.0.9</version>
+            <version>${jsch-agentproxy-version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>net.schmizz</groupId>
@@ -67,17 +68,17 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch.agentproxy.sshagent</artifactId>
-            <version>0.0.9</version>
+            <version>${jsch-agentproxy-version}</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch.agentproxy.pageant</artifactId>
-            <version>0.0.9</version>
+            <version>${jsch-agentproxy-version}</version>
         </dependency>
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch.agentproxy.usocket-jna</artifactId>
-            <version>0.0.9</version>
+            <version>${jsch-agentproxy-version}</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
