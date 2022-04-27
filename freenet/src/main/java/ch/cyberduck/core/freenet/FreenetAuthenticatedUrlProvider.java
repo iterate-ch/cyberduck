@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledCertificateTrustCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -60,6 +61,16 @@ import com.google.api.client.json.gson.GsonFactory;
 public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
     private static final Logger log = LogManager.getLogger(FreenetAuthenticatedUrlProvider.class);
 
+    private final HostPasswordStore keychain;
+
+    public FreenetAuthenticatedUrlProvider() {
+        this(PasswordStoreFactory.get());
+    }
+
+    public FreenetAuthenticatedUrlProvider(final HostPasswordStore keychain) {
+        this.keychain = keychain;
+    }
+
     @Override
     public DescriptiveUrl toUrl(final Host bookmark) {
         try {
@@ -68,29 +79,33 @@ public class FreenetAuthenticatedUrlProvider implements WebUrlProvider {
             try {
                 final Host target = new Host(new DAVSSLProtocol(), "oauth.freenet.de");
                 final X509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(),
-                    new DefaultTrustManagerHostnameCallback(target), CertificateStoreFactory.get());
+                        new DefaultTrustManagerHostnameCallback(target), CertificateStoreFactory.get());
                 final X509KeyManager key = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), target,
-                    CertificateStoreFactory.get());
+                        CertificateStoreFactory.get());
                 final CloseableHttpClient client = new HttpConnectionPoolBuilder(
-                    target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()
+                        target, new ThreadLocalHostnameDelegatingTrustManager(trust, target.getHostname()), key, ProxyFactory.get()
                 ).build(ProxyFactory.get().find(new ProxyHostUrlProvider().get(target)), new DisabledTranscriptListener(), new DisabledLoginCallback())
-                    .setUserAgent(new FreenetUserAgentProvider().get())
-                    .build();
+                        .setUserAgent(new FreenetUserAgentProvider().get())
+                        .build();
                 final String username = bookmark.getCredentials().getUsername();
                 final String password;
                 if(StringUtils.isBlank(bookmark.getCredentials().getPassword())) {
-                    password = PasswordStoreFactory.get().findLoginPassword(bookmark);
+                    password = keychain.findLoginPassword(bookmark);
                 }
                 else {
                     password = bookmark.getCredentials().getPassword();
                 }
+                if(null == password) {
+                    log.warn(String.format("No password found for %s", bookmark));
+                    return DescriptiveUrl.EMPTY;
+                }
                 response = new PasswordTokenRequest(new ApacheHttpTransport(client),
-                    new GsonFactory(), new GenericUrl("https://oauth.freenet.de/oauth/token"), username, password)
-                    .setClientAuthentication(new BasicAuthentication("desktop_client", "6LIGIHuOSkznLomu5xw0EPPBJOXb2jLp"))
-                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new FreenetUserAgentProvider()))
-                    .set("world", new HostPreferences(bookmark).getProperty("world"))
-                    .set("webLogin", Boolean.TRUE)
-                    .execute();
+                        new GsonFactory(), new GenericUrl("https://oauth.freenet.de/oauth/token"), username, password)
+                        .setClientAuthentication(new BasicAuthentication("desktop_client", "6LIGIHuOSkznLomu5xw0EPPBJOXb2jLp"))
+                        .setRequestInitializer(new UserAgentHttpRequestInitializer(new FreenetUserAgentProvider()))
+                        .set("world", new HostPreferences(bookmark).getProperty("world"))
+                        .set("webLogin", Boolean.TRUE)
+                        .execute();
                 final FreenetTemporaryLoginResponse login = this.getLoginSession(client, response.getAccessToken());
                 return new DescriptiveUrl(URI.create(login.urls.login), DescriptiveUrl.Type.authenticated);
             }
