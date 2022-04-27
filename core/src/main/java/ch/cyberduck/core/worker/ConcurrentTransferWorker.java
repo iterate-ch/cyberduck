@@ -91,16 +91,8 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connect, notification);
         this.source = source;
         this.destination = destination;
-        switch(source.getHost().getProtocol().getStatefulness()) {
-            case stateful:
-                this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-                        new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
-                break;
-            default:
-                this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-                        new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority);
-                break;
-        }
+        this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
+                new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
         this.completion = new ExecutorCompletionService<>(pool.executor());
     }
 
