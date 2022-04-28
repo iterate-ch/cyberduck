@@ -44,6 +44,9 @@ public class S3BucketCreateService {
     }
 
     public void create(final Path bucket, final String region) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Create bucket %s in region %s", bucket, region));
+        }
         if(!session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
             if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
                 throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
@@ -59,12 +62,19 @@ public class S3BucketCreateService {
         try {
             if(StringUtils.isNotBlank(region)) {
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    session.getClient().getConfiguration().setProperty("s3service.s3-endpoint", String.format("s3.dualstack.%s.amazonaws.com", region));
+                    final String endpoint = String.format("s3.dualstack.%s.amazonaws.com", region);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Set endpoint to %s matching region %s", endpoint, region));
+                    }
+                    session.getClient().getConfiguration().setProperty("s3service.s3-endpoint", endpoint);
                 }
+            }
+            else {
+                log.warn("Missing region for bucket location");
             }
             // Create bucket
             session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()),
-                "us-east-1".equals(region) ? "US" : region, acl);
+                    "us-east-1".equals(region) ? "US" : region, acl);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);
