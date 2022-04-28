@@ -120,7 +120,7 @@ public class DownloadTransferTest {
             new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().exists(true),
-                transfer.filter(session, null, TransferAction.overwrite, new DisabledProgressListener()), TransferAction.overwrite
+                TransferAction.overwrite
         );
     }
 
@@ -151,7 +151,7 @@ public class DownloadTransferTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, testLocal, new TransferStatus().exists(true),
-                transfer.filter(session, null, TransferAction.overwrite, new DisabledProgressListener()), TransferAction.overwrite
+                TransferAction.overwrite
         );
         final TransferStatus status = new TransferStatus();
         status.setExists(false);
@@ -197,7 +197,7 @@ public class DownloadTransferTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, local, new TransferStatus().exists(true),
-                transfer.filter(session, null, TransferAction.resume, new DisabledProgressListener()), TransferAction.resume);
+                TransferAction.resume);
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         final TransferStatus expected = new TransferStatus();
