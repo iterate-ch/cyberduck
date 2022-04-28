@@ -73,7 +73,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final StreamListener streamListener,
                                     final NotificationService notification) {
         this(source, destination, transfer, ThreadPool.Priority.norm, options, meter, prompt, error,
-            connect, progressListener, streamListener, notification);
+                connect, progressListener, streamListener, notification);
     }
 
     public ConcurrentTransferWorker(final SessionPool source,
@@ -178,7 +178,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public void cleanup(final Boolean result) {
+    protected void shutdown() {
         // Always shutdown gracefully allowing the threads to return after checking transfer status
         pool.shutdown(true);
     }

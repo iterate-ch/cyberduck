@@ -253,7 +253,7 @@ public class UploadTransferTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), directoryname), new TransferStatus().exists(true),
-                transfer.filter(session, null, TransferAction.overwrite, new DisabledProgressListener()), TransferAction.overwrite);
+                TransferAction.overwrite);
         assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(test, local)));
         final TransferStatus expected = new TransferStatus();
         assertEquals(expected, worker.getStatus().get(new TransferItem(new Path(directoryname + "/" + name, EnumSet.of(Path.Type.file)), new Local(local, name))));
@@ -297,7 +297,7 @@ public class UploadTransferTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(testDirectory, localDirectory, new TransferStatus().exists(true),
-                transfer.filter(session, null, TransferAction.resume, new DisabledProgressListener()), TransferAction.resume);
+                TransferAction.resume);
         assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
         final TransferStatus expected = new TransferStatus().exists(true);
         expected.setAppend(true);
@@ -401,15 +401,15 @@ public class UploadTransferTest {
         }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
-            public Future<TransferStatus> transfer(final TransferItem item, final TransferPathFilter filter, final TransferAction action) throws BackgroundException {
-                return super.transfer(item, filter, action);
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
+                return super.transfer(item, action);
             }
         };
         final TransferPathFilter filter = transfer.filter(session, null, TransferAction.overwrite, new DisabledProgressListener());
-        worker.prepare(test, local, new TransferStatus().exists(true), filter, TransferAction.overwrite);
+        worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.overwrite);
         assertNotNull(worker.getStatus().get(new TransferItem(test, local)));
         assertNotNull(worker.getStatus().get(new TransferItem(test, local)).getRename());
-        worker.transfer(new TransferItem(test, local), filter, TransferAction.overwrite);
+        worker.transfer(new TransferItem(test, local), TransferAction.overwrite);
         assertTrue(set.get());
         assertTrue(moved.get());
     }

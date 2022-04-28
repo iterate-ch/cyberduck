@@ -27,7 +27,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
@@ -88,7 +87,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
-            public Future<TransferStatus> transfer(final TransferItem item, final TransferPathFilter filter, final TransferAction action) throws BackgroundException {
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
                     assertTrue(this.getCache().isCached(new TransferItem(root, local)));
                 }
@@ -99,7 +98,7 @@ public class SingleTransferWorkerTest {
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
                     }
-                }), filter, action);
+                }), action);
                 assertFalse(this.getCache().isCached(new TransferItem(child, local)));
                 return null;
             }
@@ -158,11 +157,11 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
-            public Future<TransferStatus> transfer(final TransferItem item, final TransferPathFilter filter, final TransferAction action) throws BackgroundException {
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
                     assertTrue(this.getCache().isCached(new TransferItem(root, local)));
                 }
-                super.transfer(item, filter, action);
+                super.transfer(item, action);
                 assertFalse(this.getCache().isCached(new TransferItem(child, local)));
                 return null;
             }
@@ -237,11 +236,11 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
-            public Future<TransferStatus> transfer(final TransferItem item, final TransferPathFilter filter, final TransferAction action) throws BackgroundException {
+            public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
                     assertTrue(this.getCache().isCached(new TransferItem(root, local)));
                 }
-                super.transfer(new TransferItem(item.remote, new NullLocal("l")), filter, action);
+                super.transfer(new TransferItem(item.remote, new NullLocal("l")), action);
                 if(item.remote.equals(root)) {
                     assertFalse(this.getCache().isCached(new TransferItem(root, local)));
                 }
@@ -281,7 +280,7 @@ public class SingleTransferWorkerTest {
             }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
                 @Override
-                public Future<TransferStatus> transfer(final TransferItem file, final TransferPathFilter filter, final TransferAction action) {
+                public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) {
                     // Expected not found
                     fail();
                     return null;
