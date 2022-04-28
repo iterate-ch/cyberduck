@@ -238,6 +238,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
                         "Transfer incomplete", transfer.getName());
             }
+            this.shutdown();
             sleep.release(lock);
             table.clear();
             cache.clear();
@@ -516,6 +517,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             log.warn(String.format("Skip file %s with unknown transfer status", item));
         }
         return ConcurrentUtils.constantFuture(null);
+    }
+
+    protected void shutdown() {
+        // No-op
     }
 
     @Override
