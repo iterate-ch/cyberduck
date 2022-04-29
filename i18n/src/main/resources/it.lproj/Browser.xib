@@ -302,7 +302,7 @@
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Nuovo File…" keyEquivalent="f" id="82">
+                <menuItem title="Nuovo file…" keyEquivalent="f" id="82">
                     <connections>
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
@@ -483,7 +483,7 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Ordina per" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Nick" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>

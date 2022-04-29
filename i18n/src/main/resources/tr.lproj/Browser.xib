@@ -335,7 +335,7 @@
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Çoğalt…" keyEquivalent="d" id="73">
+                <menuItem title="Kopyala…" keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
@@ -472,7 +472,7 @@ DQ
                         <action selector="editBookmarkButtonClicked:" target="-1" id="171"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Yer imini çoğalt" id="105">
+                <menuItem title="Yer imini kopyala" id="105">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="duplicateBookmarkButtonClicked:" target="-1" id="183"/>

@@ -67,18 +67,18 @@
                             <menuItem isSeparatorItem="YES" id="237">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Cyberduck gizle" keyEquivalent="h" id="238">
+                            <menuItem title="Cyberduck penceresini gizle" keyEquivalent="h" id="238">
                                 <connections>
                                     <action selector="hide:" target="224" id="370"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Diğerlerini gizle" keyEquivalent="h" id="239">
+                            <menuItem title="Diğer pencereleri gizle" keyEquivalent="h" id="239">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="hideOtherApplications:" target="224" id="371"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Tümünü göster" id="240">
+                            <menuItem title="Tüm pencereleri göster" id="240">
                                 <connections>
                                     <action selector="unhideAllApplications:" target="224" id="372"/>
                                 </connections>
@@ -86,7 +86,7 @@
                             <menuItem isSeparatorItem="YES" id="241">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Cyberduck'dan çık" keyEquivalent="q" id="242">
+                            <menuItem title="Cyberduck uygulamasından çık" keyEquivalent="q" id="242">
                                 <connections>
                                     <action selector="terminate:" target="224" id="373"/>
                                 </connections>
@@ -153,7 +153,7 @@
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Çoğalt…" keyEquivalent="d" id="254">
+                            <menuItem title="Kopyala…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
@@ -343,7 +343,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="300"/>
-                            <menuItem title="Gizli dosyaları göster" keyEquivalent="R" id="301">
+                            <menuItem title="Gizli dosyaları gösterilsin" keyEquivalent="R" id="301">
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
@@ -471,7 +471,7 @@ CA
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Yer imini çoğalt" id="334">
+                            <menuItem title="Yer imini kopyala" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
