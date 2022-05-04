@@ -149,12 +149,6 @@
     <LayoutFile Include="$(OutputPath)\StructureMap.dll">
       <PackagePath>$(PackageLayout)\StructureMap.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.dll">
-      <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.dll</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.Shell.dll">
-      <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.Shell.dll</PackagePath>
-    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Microsoft.Toolkit.Uwp.Notifications.dll">
       <PackagePath>$(PackageLayout)\Microsoft.Toolkit.Uwp.Notifications.dll</PackagePath>
     </LayoutFile>
@@ -203,11 +197,24 @@
     <LayoutFile Include="$(OutputPath)\Splat.dll">
       <PackagePath>$(PackageLayout)\Splat.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\System.Reactive.dll">
-      <PackagePath>$(PackageLayout)\System.Reactive.dll</PackagePath>
+
+    <LayoutFile Include="$(OutputPath)\System.Buffers.dll">
+      <PackagePath>$(PackageLayout)\System.Buffers.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Memory.dll">
+       <PackagePath>$(PackageLayout)\System.Memory.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Numerics.Vectors.dll">
+      <PackagePath>$(PackageLayout)\System.Numerics.Vectors.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll">
-        <PackagePath>$(PackageLayout)\System.Runtime.CompilerServices.Unsafe.dll</PackagePath>
+      <PackagePath>$(PackageLayout)\System.Runtime.CompilerServices.Unsafe.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Threading.Tasks.Extensions.dll">
+      <PackagePath>$(PackageLayout)\System.Threading.Tasks.Extensions.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.ValueTuple.dll">
+      <PackagePath>$(PackageLayout)\System.ValueTuple.dll</PackagePath>
     </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)Acknowledgments.rtf">

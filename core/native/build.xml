@@ -38,28 +38,25 @@
     </target>
 
     <target name="restore" depends="init-msbuild, version">
-        <msbuild buildfile="../src/main/csharp/Cyberduck.Core.Native.csproj">
-            <target name="Restore" />
-        </msbuild>
-        <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
-            <target name="Restore" />
+        <msbuild buildfile="build.proj">
+            <target name="Restore"/>
         </msbuild>
     </target>
 
     <target name="build" depends="init-msbuild, version">
-        <!-- Create DLL Cyberduck.Core.Native -->
-        <msbuild buildfile="../src/main/csharp/Cyberduck.Core.Native.csproj">
+        <msbuild buildfile="build.proj">
             <target name="Build"/>
 
-            <property name="Version" value="${version}.${revision}" />
-            <property name="Copyright" value="${copyright}" />
+            <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 
     <target name="test" depends="init-msbuild, version" unless="${skip}">
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
-            <target name="Build,Test"/>
+            <target name="Test"/>
 
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>

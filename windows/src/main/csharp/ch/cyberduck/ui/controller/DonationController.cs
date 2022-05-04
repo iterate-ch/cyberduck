@@ -25,7 +25,7 @@ using ch.cyberduck.core.notification;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.TaskDialog;
 using StructureMap;
-
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class DonationController : IDonationController
@@ -40,25 +40,32 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             int uses = PreferencesFactory.get().getInteger("uses");
 
-            var result = TaskDialog.Show(
-                owner: IntPtr.Zero,
-                allowDialogCancellation: true,
-                title: Localize("Please Donate") + " (" + uses + ")",
-                verificationText: PreferencesFactory.get().getBoolean("donate.reminder.suppress.enable") ? Localize("Don't show again for this version") : null,
-                mainInstruction: Localize("Thank you for using Cyberduck!"),
-                content: $@"{Localize("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!")} {Localize("As a contributor to Cyberduck, you receive a registration key that disables this prompt.")}",
-                commandLinks: new[] { Localize("Donate"), Localize("Later"), Localize("Buy in Windows Store") },
-                verificationByDefault: false);
+            var dialog = TaskDialog.Create()
+                .AllowCancellation()
+                .Title(Localize("Please Donate") + "(" + uses + ")")
+                .Instruction(Localize("Thank you for using Cyberduck!"))
+                .Content($@"{Localize("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!")} {Localize("As a contributor to Cyberduck, you receive a registration key that disables this prompt.")}")
+                .CommandLinks(add =>
+                {
+                    add(IDOK, Localize("Donate"), true);
+                    add(IDIGNORE, Localize("Later"), false);
+                    add(IDCONTINUE, Localize("Buy in Windows Store"), false);
+                });
+            if (PreferencesFactory.get().getBoolean("donate.reminder.suppress.enable"))
+            {
+                dialog.VerificationText(Localize("Don't show again for this version"), false);
+            }
+            var result = dialog.Show();
             if (result.VerificationChecked == true)
             {
                 PreferencesFactory.get().setProperty("donate.reminder", Assembly.GetExecutingAssembly().GetName().Version.ToString());
             }
 
-            if (result.CommandButtonResult == 0)
+            if (result.Button == IDOK)
             {
                 BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate"));
             }
-            if (result.CommandButtonResult == 2)
+            if (result.Button == IDCONTINUE)
             {
                 BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.store"));
             }

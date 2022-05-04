@@ -15,30 +15,30 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
 
-    <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
+  <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
 
-    <Target Name="GenerateImageResources" BeforeTargets="ResolveReferences" DependsOnTargets="ResolveProjectReferences">
-        <ImageDiscoverTask ImageResources="@(ImageResource)">
-            <Output ItemName="ImageDiscover" TaskParameter="Resources" />
-        </ImageDiscoverTask>
-        
-        <ResourcesGenerator
-            ResourceFiles="@(ImageDiscover)"
-            OutputPath="$(IntermediateOutputPath)"
-            OutputResourcesFile="$(IntermediateOutputPath)Images.resources">
+  <Target Name="GenerateImageResources" BeforeTargets="ResolveReferences" DependsOnTargets="ResolveProjectReferences">
+    <ImageDiscoverTask ImageResources="@(ImageResource)">
+      <Output ItemName="ImageDiscover" TaskParameter="Resources" />
+    </ImageDiscoverTask>
 
-            <Output ItemName="FileWrites" TaskParameter="OutputResourcesFile" />
-        </ResourcesGenerator>
+    <ResourcesGenerator
+        ResourceFiles="@(ImageDiscover)"
+        OutputPath="$(IntermediateOutputPath)"
+        OutputResourcesFile="$(IntermediateOutputPath)Images.resources">
 
-        <ItemGroup>
-            <EmbeddedResource Include="$(IntermediateOutputPath)Images.resources">
-                <GenerateResource>false</GenerateResource>
-                <Type>Resx</Type>
-                <WithCulture>false</WithCulture>
-                <OutputResource>$(IntermediateOutputPath)Images.resources</OutputResource>
-            </EmbeddedResource>
-        </ItemGroup>
-    </Target>
+      <Output ItemName="FileWrites" TaskParameter="OutputResourcesFile" />
+    </ResourcesGenerator>
+
+    <ItemGroup>
+      <EmbeddedResource Include="$(IntermediateOutputPath)Images.resources">
+        <GenerateResource>false</GenerateResource>
+        <Type>Resx</Type>
+        <WithCulture>false</WithCulture>
+        <OutputResource>$(IntermediateOutputPath)Images.resources</OutputResource>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
 </Project>

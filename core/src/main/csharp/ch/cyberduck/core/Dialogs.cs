@@ -24,6 +24,8 @@ using System;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
+using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 
 namespace Ch.Cyberduck.Core.Native
 {
@@ -31,40 +33,37 @@ namespace Ch.Cyberduck.Core.Native
     {
         public static void AwaitBackgroundAction(CountDownLatch signal, Host bookmark, string title, string message, Icon icon)
         {
-            IActiveTaskDialog taskDialog = default;
+            TaskDialogConstructedEventArgs taskDialogWindow = default;
 
             CancellationTokenSource cancelToken = new CancellationTokenSource();
             Task task = Wrap(signal, cancelToken.Token).ContinueWith(_ =>
             {
-                taskDialog.ClickButton((int)TaskDialogSimpleResult.Ok);
+                taskDialogWindow.ClickButton((uint)IDOK);
             });
 
-            var result = TaskDialog.TaskDialog.Show(allowDialogCancellation: true,
-                customMainIcon: icon,
-                commonButtons: TaskDialogCommonButtons.Cancel,
-                content: message,
-                mainInstruction: title,
-                title: BookmarkNameProvider.toString(bookmark),
-                showMarqueeProgressBar: true,
-                callback: (d, a, o) =>
+            var taskDialog = TaskDialog.TaskDialog.Create()
+                .AllowCancellation()
+                .MainIcon(icon)
+                .CommonButtons(TDCBF_CANCEL_BUTTON)
+                .Content(message)
+                .Instruction(title)
+                .Title(BookmarkNameProvider.toString(bookmark))
+                .ShowProgressbar(true)
+                .Callback((s, e) =>
                 {
-                    switch (a.Notification)
+                    if (e is TaskDialogConstructedEventArgs args)
                     {
-                        case TaskDialogNotification.DialogConstructed:
-                            taskDialog = d;
-
-                            d.SetProgressBarMarquee(true, 0);
-                            break;
-
-                        case TaskDialogNotification.ButtonClicked:
-                            return false;
+                        taskDialogWindow = args;
+                        args.SetProgressBarMarquee(true, 0);
                     }
-
-                    return true;
+                    return false;
                 });
+
+            var result = taskDialog.Show();
+
             cancelToken.Cancel();
 
-            if (result.Result == TaskDialogSimpleResult.Cancel)
+            if (result.Button == IDCANCEL)
             {
                 throw new ConnectionCanceledException();
             }

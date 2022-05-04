@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -20,13 +20,13 @@
 
   <ItemGroup>
     <PackageReference Include="nunit" />
-    <PackageReference Include="NUnit.Runners" />
-    <PackageReference Include="NUnitTestAdapter" />
+    <PackageReference Include="NUnit.Console" />
+    <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
   </ItemGroup>
 
   <Target Name="Test">
-    <Exec Command="&quot;$(PkgNUnit_Runners)\Tools\nunit-console.exe&quot; &quot;$(TargetPath)&quot; --framework=net-4.7" WorkingDirectory="$(TargetBuildDir)" />
+    <Exec Command="&quot;$(PkgNUnit_ConsoleRunner)\Tools\nunit3-console.exe&quot; &quot;$(TargetPath)&quot; --framework=net-4.7 --result=nunit2" WorkingDirectory="$(TargetBuildDir)" />
   </Target>
 
 </Project>

@@ -16,13 +16,9 @@
 <Project>
 
     <PropertyGroup>
-        <ParentBuildProps>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</ParentBuildProps>
+        <BasePath>$([MSBuild]::GetDirectoryNameOfFileAbove('$(MSBuildThisFileDirectory)../', 'Directory.Build.props'))/</BasePath>
     </PropertyGroup>
-    <Import Project="$(ParentBuildProps)Directory.Build.props" />
-
     <Import Project="$(BasePath)windows/Directory.Build.props" />
-
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(ParentBuildProps)../'))" />
 
     <PropertyGroup>
         <OutputPath>$(OutputPath)$(Configuration)</OutputPath>

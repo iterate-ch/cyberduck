@@ -45,7 +45,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
@@ -515,7 +519,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogCommonButtons.OK,
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS.TDCBF_OK_BUTTON,
                     TaskDialogIcon.Error);
                 Log.error("Exception while upload selection", e);
             }
@@ -1103,7 +1107,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void ScrollToBottom(RichTextBox richTextBox)
         {
-            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage((HWND)richTextBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
         }
         
         private void SetupComparators()

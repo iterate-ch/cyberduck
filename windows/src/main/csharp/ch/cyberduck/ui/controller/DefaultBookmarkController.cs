@@ -52,12 +52,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 try
                 {
-                    PasswordStoreFactory.get().addPassword(_host.getProtocol().getScheme(),
-                        _host.getPort(),
-                        _host.getHostname(),
-                        _host.getCredentials().getUsername(),
-                        View.Password.Trim()
-                    );
+                    _host.getCredentials().setPassword(View.Password);
+                    PasswordStoreFactory.get().save(_host);
                 }
                 catch (LocalAccessDeniedException e)
                 {
