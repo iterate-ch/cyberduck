@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
+import ch.cyberduck.core.onedrive.features.GraphUrlProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -180,9 +181,6 @@ public class OneDriveSession extends GraphSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
             return (T) new OneDriveListService(this, fileid);
-        }
-        if(type == UrlProvider.class) {
-            return (T) new OneDriveUrlProvider();
         }
         if(type == Lock.class) {
             // this is a hack. Graph creationType can be present, but `null`, which is totally valid.

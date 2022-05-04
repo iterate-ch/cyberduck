@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
@@ -56,7 +55,7 @@ public class GraphReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(file.getType().contains(Path.Type.placeholder)) {
-                final DescriptiveUrl link = new OneDriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+                final DescriptiveUrl link = new GraphUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
                 if(DescriptiveUrl.EMPTY.equals(link)) {
                     log.warn(String.format("Missing web link for file %s", file));
                     return new NullInputStream(file.attributes().getSize());
