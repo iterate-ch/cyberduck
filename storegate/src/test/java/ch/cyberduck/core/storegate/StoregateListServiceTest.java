@@ -45,6 +45,7 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         assertEquals(2, list.size());
         for(Path f : list) {
             assertSame(directory, f.getParent());
+            assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
             assertNotNull(nodeid.getFileId(f.withAttributes(PathAttributes.EMPTY), new DisabledListProgressListener()));
