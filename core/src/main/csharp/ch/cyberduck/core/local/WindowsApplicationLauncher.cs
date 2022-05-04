@@ -41,19 +41,27 @@ namespace Ch.Cyberduck.Core.Local
 
         public bool open(ch.cyberduck.core.Local local, Application application)
         {
-            Process process = new Process();
-            if (null == application)
+            if (application is IInvokeApplication invoke)
             {
-                process.StartInfo.FileName = "\"" + local.getAbsolute() + "\"";
+                invoke.Launch(local);
+                return true;
             }
             else
             {
-                process.StartInfo.FileName = GetExecutableCommand(application.getIdentifier());
-                process.StartInfo.UseShellExecute = true;
-                process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
-            }
+                Process process = new Process();
+                if (null == application)
+                {
+                    process.StartInfo.FileName = "\"" + local.getAbsolute() + "\"";
+                }
+                else
+                {
+                    process.StartInfo.FileName = GetExecutableCommand(application.getIdentifier());
+                    process.StartInfo.UseShellExecute = true;
+                    process.StartInfo.Arguments = "\"" + local.getAbsolute() + "\"";
+                }
 
-            return Utils.StartProcess(process);
+                return Utils.StartProcess(process);
+            }
         }
 
         public bool open(Application application, string args)
@@ -77,6 +85,11 @@ namespace Ch.Cyberduck.Core.Local
             }
 
             return command;
+        }
+
+        internal interface IInvokeApplication
+        {
+            void Launch(ch.cyberduck.core.Local local);
         }
     }
 }

@@ -5,17 +5,15 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 using Windows.Win32.Foundation;
-using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
+using static System.Runtime.InteropServices.ComTypes.DVASPECT;
+using static System.Runtime.InteropServices.ComTypes.TYMED;
+using static Windows.Win32.PInvoke;
+using static Windows.Win32.System.Com.CLSCTX;
 using ComTypes = System.Runtime.InteropServices.ComTypes;
 
 namespace Windows.Win32
 {
-    using static CLSCTX;
-    using static DVASPECT;
-    using static PInvoke;
-    using static TYMED;
-
     public static unsafe partial class DropTargetHelper
     {
         private static readonly IDictionary<Control, ComTypes.IDataObject> s_dataContext = new Dictionary<Control, ComTypes.IDataObject>();

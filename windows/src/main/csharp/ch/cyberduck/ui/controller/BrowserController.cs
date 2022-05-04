@@ -881,7 +881,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.Effect = DragDropEffects.Copy;
                         if (args.DropTargetLocation == DropTargetLocation.Item)
                         {
-                            Host destination = (Host) args.DropTargetItem.RowObject;
+                            Host destination = (Host)args.DropTargetItem.RowObject;
 
                             DropTargetHelper.SetDropDescription(dataObject, args.Effect,
                                 "Upload to %1", BookmarkNameProvider.toString(destination));
@@ -2292,18 +2292,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_EditEvent(string exe)
+        private void View_EditEvent(Application app)
         {
             foreach (Path selected in SelectedPaths)
             {
-                if (Utils.IsBlank(exe))
-                {
-                    edit(selected);
-                }
-                else
-                {
-                    edit(new Application(exe, null), selected);
-                }
+                edit(app, selected);
             }
         }
 
@@ -2319,6 +2312,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 editor = EditorFactory.instance().create(Session.getHost(), file, this);
             }
+            application ??= EditorFactory.getEditor(file.getAbsolute());
+            application ??= EditorFactory.getDefaultEditor();
             background(new WorkerBackgroundAction(this, Session,
                 editor.open(application, new DisabledApplicationQuitCallback(),
                     new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
@@ -2352,23 +2347,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateEditIcon()
         {
+            System.Drawing.Image image = Images.Pencil.Size(32);
             Path selected = SelectedPath;
             if (null != selected)
             {
                 if (IsEditable(selected))
                 {
                     Application app = EditorFactory.getEditor(selected.getName());
-                    string editCommand = app != null ? app.getIdentifier() : null;
-                    if (Utils.IsNotBlank(editCommand))
+                    if (IconProvider.GetApplication(app, 32) is System.Drawing.Image appIcon)
                     {
-                        View.EditIcon = IconProvider.GetFileIcon(
-                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                            false, true, true);
-                        return;
+                        image = appIcon;
                     }
                 }
             }
-            View.EditIcon = Images.Pencil.Size(32);
+            View.EditIcon = image;
         }
 
         private void UpdateOpenIcon()

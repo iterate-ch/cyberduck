@@ -16,13 +16,12 @@
 // yves@cyberduck.ch
 // 
 
-using System;
-using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.pool;
 using org.apache.logging.log4j;
+using System;
+using System.IO;
 using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core.Editor
