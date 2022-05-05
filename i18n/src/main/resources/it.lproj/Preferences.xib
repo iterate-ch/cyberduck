@@ -184,7 +184,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Uso banda" identifier="bandwidth" id="22">
+                            <tabViewItem label="Larghezza banda" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -234,7 +234,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="40">
                                 <rect key="frame" x="10" y="44" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Salva workspace" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
+                                <buttonCell key="cell" type="check" title="Salva spazio di lavoro" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -323,7 +323,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hyX-wz-Yx3">
                                 <rect key="frame" x="7" y="55" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Collegati a un preferito:" id="39">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Collegati ad un preferito:" id="39">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1496,7 +1496,7 @@ Ad accesso completato salva in modo predefinito la password nel portachiavi.</st
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Log" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
+                <box fixedFrame="YES" title="Registro" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Qz9-Ok-1iw">
@@ -1506,7 +1506,7 @@ Ad accesso completato salva in modo predefinito la password nel portachiavi.</st
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P74-g6-epb">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Attivare log di debug" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
+                                <buttonCell key="cell" type="check" title="Attiva regsitro di debug" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1906,7 +1906,7 @@ Ad accesso completato salva in modo predefinito la password nel portachiavi.</st
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Locazione predefinita bucket" translatesAutoresizingMaskIntoConstraints="NO" id="V1l-Oi-w0c">
+                <box fixedFrame="YES" title="Percorso predefinito bucket" translatesAutoresizingMaskIntoConstraints="NO" id="V1l-Oi-w0c">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="geU-Rj-cda">
@@ -1982,7 +1982,7 @@ Ad accesso completato salva in modo predefinito la password nel portachiavi.</st
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lB4-Ql-F2I">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Scegli il set predefinito di beneficiari e autorizzazioni da applicare a nuovi bucket e file." id="4Yf-WE-fsN">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Scegli il set predefinito di beneficiari ed autorizzazioni da applicare a nuovi bucket e file." id="4Yf-WE-fsN">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

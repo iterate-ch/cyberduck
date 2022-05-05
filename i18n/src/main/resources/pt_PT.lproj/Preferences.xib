@@ -662,7 +662,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Segmented downloads with multiple connections per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="Transferências segmentadas com múltiplas conexões por arquivo" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1036,7 +1036,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="Buu-j0-hMk">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                        <buttonCell key="cell" type="check" title="Analisar soma de verificação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1044,7 +1044,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="jvf-VY-vT3">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                        <buttonCell key="cell" type="check" title="Analisar soma de verificação" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1497,7 +1497,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Log" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
+                <box fixedFrame="YES" title="Registro" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Qz9-Ok-1iw">
@@ -1507,7 +1507,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P74-g6-epb">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Enable debug log" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
+                                <buttonCell key="cell" type="check" title="Ativar registro de depuração" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>

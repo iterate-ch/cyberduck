@@ -248,7 +248,7 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Abrir URL" id="257"/>
                             </menuItem>
-                            <menuItem title="Share…" id="Dp0-uw-cX3">
+                            <menuItem title="Compartilhar..." id="Dp0-uw-cX3">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
