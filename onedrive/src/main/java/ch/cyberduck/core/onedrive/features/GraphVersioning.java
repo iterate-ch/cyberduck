@@ -15,7 +15,7 @@ package ch.cyberduck.core.onedrive.features;/*
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
@@ -47,12 +47,12 @@ public class GraphVersioning implements Versioning {
 
     @Override
     public void setConfiguration(Path container, PasswordCallback prompt, VersioningConfiguration configuration) throws BackgroundException {
-        throw new InteroperabilityException();
+        throw new UnsupportedException();
     }
 
     @Override
     public void revert(Path file) throws BackgroundException {
-        throw new InteroperabilityException();
+        throw new UnsupportedException();
     }
 
     @Override
@@ -71,9 +71,9 @@ public class GraphVersioning implements Versioning {
                 versions.add(new Path(file).withAttributes(attributes.toAttributes(parentMetadata, version)));
             }
         } catch (OneDriveAPIException e) {
-            throw new GraphExceptionMappingService(fileid).map("List versions for {0} failed", e, file);
+            throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         } catch (IOException e) {
-            throw new DefaultIOExceptionMappingService().map("List versions for {0} failed", e, file);
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
 
         return versions;
