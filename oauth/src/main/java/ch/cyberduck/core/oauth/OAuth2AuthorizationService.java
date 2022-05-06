@@ -200,7 +200,8 @@ public class OAuth2AuthorizationService {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
         final AtomicReference<String> authenticationCode = new AtomicReference<>();
-        if(StringUtils.contains(redirectUri, CYBERDUCK_REDIRECT_URI)) {
+        if(StringUtils.endsWith(redirectUri, ":oauth")) {
+            // Assume scheme handler is registered
             final CountDownLatch signal = new CountDownLatch(1);
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
             registry.register(state, new OAuth2TokenListener() {
@@ -216,6 +217,9 @@ public class OAuth2AuthorizationService {
                     signal.countDown();
                 }
             });
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Await callback from custom scheme %s and state %s", redirectUri, state));
+            }
             prompt.await(signal, bookmark, LocaleFactory.localizedString("Login", "Login"),
                     LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
             if(StringUtils.isBlank(authenticationCode.get())) {
@@ -223,6 +227,9 @@ public class OAuth2AuthorizationService {
             }
         }
         else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Prompt for authentication code for state %s", state));
+            }
             final Credentials input = prompt.prompt(bookmark,
                     LocaleFactory.localizedString("Login", "Login"),
                     LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
