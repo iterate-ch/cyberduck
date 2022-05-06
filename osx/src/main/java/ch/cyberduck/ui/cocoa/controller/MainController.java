@@ -1061,14 +1061,18 @@ public class MainController extends BundleController implements NSApplication.De
             profiles.register();
         }
         // Register OAuth handler
-        final String handler = preferences.getProperty("oauth.handler.scheme");
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register OAuth handler %s", handler));
+        final ProtocolFactory protocols = ProtocolFactory.get();
+        for(String handler : Arrays.asList(preferences.getProperty("oauth.handler.scheme"),
+                StringUtils.substringBefore(protocols.forType(Protocol.Type.googlestorage).getOAuthRedirectUrl(), ':'),
+                StringUtils.substringBefore(protocols.forType(Protocol.Type.googledrive).getOAuthRedirectUrl(), ':'))) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register OAuth handler %s", handler));
+            }
+            schemeHandler.setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
+                    Collections.singletonList(handler));
         }
-        SchemeHandlerFactory.get().setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
-            Collections.singletonList(handler));
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
-            this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
+                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
 
     /**
