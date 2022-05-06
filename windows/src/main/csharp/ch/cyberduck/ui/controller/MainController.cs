@@ -72,6 +72,7 @@ using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Threading;
+using System.Web;
 using System.Windows.Forms;
 using System.Windows.Shell;
 using Windows.Services.Store;
@@ -402,10 +403,32 @@ namespace Ch.Cyberduck.Ui.Controller
             NewBrowser();
         }
 
-        void ICyberduck.OAuth(string state, string code)
+        bool ICyberduck.OAuth(Uri result)
         {
-            var oauth = OAuth2TokenListenerRegistry.get();
-            oauth.notify(state, code);
+            var success = false;
+            string state = default, code = default;
+            if (result.AbsolutePath == "oauth")
+            {
+                success = true;
+                var query = HttpUtility.ParseQueryString(result.Query);
+                state = query.Get("state");
+                code = query.Get("code");
+            }
+            if (result.OriginalString.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
+            {
+                success = true;
+                var query = HttpUtility.ParseQueryString(result.Query);
+                code = query.Get("ActivationCode");
+            }
+            if (success)
+            {
+                if (Logger.isDebugEnabled())
+                {
+                    Logger.debug($"Notify OAuth with {state} ({code})");
+                }
+                OAuth2TokenListenerRegistry.get().notify(state, code);
+            }
+            return success;
         }
 
         void ICyberduck.QuickConnect(string arg)
@@ -434,7 +457,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                     .Equals(new HostUrlProvider().get(h)))
                             {
                                 b.View.BringToFront();
-                                if(Path.Type.directory == _detector.detect(h.getDefaultPath())) {
+                                if (Path.Type.directory == _detector.detect(h.getDefaultPath()))
+                                {
                                     b.SetWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(AbstractPath.Type.directory)));
                                 }
                                 return;
@@ -545,13 +569,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void InitializeProtocolHandler()
         {
+            var self = new Application(System.Windows.Forms.Application.ExecutablePath);
             var handler = SchemeHandlerFactory.get();
             if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") &&
                             PreferencesFactory.get().getInteger("uses") > 0)
             {
                 if (
-                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
-                        new Application(System.Windows.Forms.Application.ExecutablePath)))
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()), self))
                 {
                     Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
                         LocaleFactory.localizedString(
@@ -572,7 +596,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                                    handler.setDefaultHandler(self,
                                         Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
@@ -580,8 +604,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             // Register OAuth handler
-            handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
-                Arrays.asList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
+            var protocols = ProtocolFactory.get();
+            handler.setDefaultHandler(self, Arrays.asList(
+                PreferencesFactory.get().getProperty("oauth.handler.scheme"),
+                new Uri(protocols.forType(Protocol.Type.googlestorage).getOAuthRedirectUrl()).Scheme,
+                new Uri(protocols.forType(Protocol.Type.googledrive).getOAuthRedirectUrl()).Scheme));
         }
 
         private static void InitJumpList()

@@ -62,7 +62,6 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -80,6 +79,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
+import ch.cyberduck.core.urlhandler.SchemeHandler;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -984,6 +984,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
+        final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
         if(preferences.getBoolean("defaulthandler.reminder")
             && preferences.getInteger("uses") > 0) {
             if(!SchemeHandlerFactory.get().isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
@@ -1005,7 +1006,7 @@ public class MainController extends BundleController implements NSApplication.De
                     preferences.setProperty("defaulthandler.reminder", false);
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
-                    SchemeHandlerFactory.get().setDefaultHandler(
+                    schemeHandler.setDefaultHandler(
                         new Application(preferences.getProperty("application.identifier")),
                         Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name())
                     );
@@ -1060,14 +1061,18 @@ public class MainController extends BundleController implements NSApplication.De
             profiles.register();
         }
         // Register OAuth handler
-        final String handler = preferences.getProperty("oauth.handler.scheme");
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register OAuth handler %s", handler));
+        final ProtocolFactory protocols = ProtocolFactory.get();
+        for(String handler : Arrays.asList(preferences.getProperty("oauth.handler.scheme"),
+                StringUtils.substringBefore(protocols.forType(Protocol.Type.googlestorage).getOAuthRedirectUrl(), ':'),
+                StringUtils.substringBefore(protocols.forType(Protocol.Type.googledrive).getOAuthRedirectUrl(), ':'))) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register OAuth handler %s", handler));
+            }
+            schemeHandler.setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
+                    Collections.singletonList(handler));
         }
-        SchemeHandlerFactory.get().setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
-            Collections.singletonList(handler));
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
-            this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
+                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
 
     /**
@@ -1271,8 +1276,11 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.check(false);
                 break;
             default:
-                if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
-                    final String action = StringUtils.removeStart(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                if(StringUtils.contains(url, ":oauth")) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Handle %s as OAuth callback", url));
+                    }
+                    final String action = StringUtils.substringAfter(url, ":oauth");
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
