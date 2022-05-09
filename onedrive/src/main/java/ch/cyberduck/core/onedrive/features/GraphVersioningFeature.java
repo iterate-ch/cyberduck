@@ -27,13 +27,13 @@ import org.nuxeo.onedrive.client.types.DriveItemVersion;
 import java.io.IOException;
 import java.util.List;
 
-public class GraphVersioning implements Versioning {
+public class GraphVersioningFeature implements Versioning {
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
     private final GraphAttributesFinderFeature attributes;
 
-    public GraphVersioning(final GraphSession session, final GraphFileIdProvider fileid) {
+    public GraphVersioningFeature(final GraphSession session, final GraphFileIdProvider fileid) {
 
         this.session = session;
         this.fileid = fileid;
