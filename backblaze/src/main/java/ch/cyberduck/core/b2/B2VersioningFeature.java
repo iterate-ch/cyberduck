@@ -15,14 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersioningConfiguration;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
@@ -31,7 +24,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public class B2VersioningFeature implements Versioning {
 
-    private final PathContainerService containerService = new B2PathContainerService();
     private final B2Session session;
     private final B2VersionIdProvider fileid;
 
@@ -57,7 +49,7 @@ public class B2VersioningFeature implements Versioning {
 
     @Override
     public boolean isRevertable(final Path file) {
-        return false;
+        return true;
     }
 
     @Override
