@@ -41,7 +41,7 @@ public class GraphVersioningFeature implements Versioning {
     }
 
     @Override
-    public VersioningConfiguration getConfiguration(Path container) throws BackgroundException {
+    public VersioningConfiguration getConfiguration(Path container) {
         return VersioningConfiguration.empty();
     }
 
@@ -75,7 +75,6 @@ public class GraphVersioningFeature implements Versioning {
         } catch (IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-
         return versions;
     }
 }
