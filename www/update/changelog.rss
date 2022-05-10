@@ -12,6 +12,7 @@
             <pubDate>${TIMESTAMP}</pubDate>
             <enclosure sparkle:version="${REVISION}"
                        sparkle:shortVersionString="${VERSION}"
+                       sparkle:edSignature="${EDSIGNATURE}"
                        sparkle:dsaSignature="${DSASIGNATURE}"
                        url="${ARCHIVE}"
                        type="application/octet-stream"/>

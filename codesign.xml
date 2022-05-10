@@ -80,9 +80,21 @@
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --deep --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                line="codesign ${codesign.options} --entitlements ${setup}/app/org.sparkle-project.Downloader.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
-                <include name="Sparkle.framework/Versions/A/Resources/Autoupdate.app"/>
+                <include name="Sparkle.framework/Versions/*/XPCServices/org.sparkle-project.Downloader.xpc"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/xcrun" failonerror="false"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.frameworks}">
+                <include name="Sparkle.framework/Versions/*/XPCServices/org.sparkle-project.InstallerLauncher.xpc"/>
+                <include name="Sparkle.framework/Versions/*/Autoupdate"/>
+                <include name="Sparkle.framework/Versions/*/*.app"/>
             </fileset>
             <srcfile/>
         </apply>
@@ -92,7 +104,7 @@
             <arg
                 line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
-                <include name="*.framework/Versions/A"/>
+                <include name="*.framework"/>
             </fileset>
             <srcfile/>
         </apply>
