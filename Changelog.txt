@@ -3,6 +3,9 @@ https://cyberduck.io/
 
 8.4.0
 - [Feature] Windows 10 Build 14393/Windows Server 2016 or later required (Windows)
+- [Feature] Support applications installed from Windows Store for editing files (#12802) (Windows)
+- [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
+- [Feature] Migrate OAuth out-of-band flow to an alternative method (#13360) (Google Drive, Google Storage)
 
 8.3.3
 - [Bugfix] Failing transfers with multipe files (FTP) (#13322)
