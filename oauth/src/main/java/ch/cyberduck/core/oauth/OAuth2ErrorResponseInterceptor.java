@@ -69,6 +69,11 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                         log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
                     }
                 }
+                else {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
+                    }
+                }
                 break;
         }
         return false;
