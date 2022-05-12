@@ -456,6 +456,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(softwareVersion.get() == null) {
             try {
                 softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Server version %s", softwareVersion.get()));
+                }
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure %s updating software version", new SDSExceptionMappingService(nodeid).map(e)));
