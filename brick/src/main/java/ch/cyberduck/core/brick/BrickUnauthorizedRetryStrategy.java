@@ -94,6 +94,11 @@ public class BrickUnauthorizedRetryStrategy extends DisabledServiceUnavailableRe
                         semaphore.release();
                     }
                 }
+                else {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
+                    }
+                }
         }
         return false;
     }

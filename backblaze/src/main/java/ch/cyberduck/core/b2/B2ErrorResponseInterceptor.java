@@ -80,6 +80,11 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
                     }
             }
         }
+        else {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
+            }
+        }
         return false;
     }
 
