@@ -98,6 +98,10 @@ public class DriveMoveFeature implements Move {
         if(target.isRoot()) {
             return false;
         }
-        return !source.getType().contains(Path.Type.placeholder);
+        if(source.isPlaceholder()) {
+            // Disable for application/vnd.google-apps
+            return false;
+        }
+        return true;
     }
 }

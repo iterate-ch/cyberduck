@@ -66,7 +66,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
             return PathAttributes.EMPTY;
         }
         final Path query;
-        if(file.getType().contains(Path.Type.placeholder)) {
+        if(file.isPlaceholder()) {
             query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
         }
         else {

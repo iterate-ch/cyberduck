@@ -70,7 +70,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
             return this.cache(file, found.attributes().getFileId());
         }
         final Path query;
-        if(file.getType().contains(Path.Type.placeholder)) {
+        if(file.isPlaceholder()) {
             query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
         }
         else {

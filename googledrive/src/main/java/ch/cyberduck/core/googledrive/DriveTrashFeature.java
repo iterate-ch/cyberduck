@@ -46,7 +46,8 @@ public class DriveTrashFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path f : files.keySet()) {
-            if(f.getType().contains(Path.Type.placeholder)) {
+            if(f.isPlaceholder()) {
+                log.warn(String.format("Ignore placeholder %s", f));
                 continue;
             }
             try {
@@ -75,6 +76,10 @@ public class DriveTrashFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
+        if(file.isPlaceholder()) {
+            // Disable for application/vnd.google-apps
+            return false;
+        }
         return !file.getType().contains(Path.Type.shared);
     }
 
