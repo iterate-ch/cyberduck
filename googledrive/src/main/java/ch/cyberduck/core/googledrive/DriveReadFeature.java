@@ -66,7 +66,7 @@ public class DriveReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(file.getType().contains(Path.Type.placeholder)) {
+        if(file.isPlaceholder()) {
             final DescriptiveUrl link = new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
             if(DescriptiveUrl.EMPTY.equals(link)) {
                 log.warn(String.format("Missing web link for file %s", file));
