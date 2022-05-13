@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>s3-cloudflare-r2</string>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Description</key>
+        <string>Cloudflare R2 Storage (S3)</string>
+        <key>Default Hostname</key>
+        <string>&lt;accountid&gt;.r2.cloudflarestorage.com</string>
+        <key>Hostname Configurable</key>
+        <true/>
+        <key>Port Configurable</key>
+        <false/>
+        <key>Region</key>
+        <string>auto</string>
+        <key>Regions</key>
+        <array>
+            <string>auto</string>
+        </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD</string>
+            <string>s3.upload.multipart=false</string>
+            <string>s3service.disable-dns-buckets=true</string>
+        </array>
+        <key>Help</key>
+        <string>https://docs.cyberduck.io/protocols/s3/cloudflare/</string>
+    </dict>
+</plist>
