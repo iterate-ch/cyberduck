@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -146,19 +147,21 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
-            final List<MultipartUpload> upload = multipartService.find(file);
-            if(!upload.isEmpty()) {
-                Long size = 0L;
-                for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
-                    size += completed.getSize();
+        if(!new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
+            try {
+                final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
+                final List<MultipartUpload> upload = multipartService.find(file);
+                if(!upload.isEmpty()) {
+                    Long size = 0L;
+                    for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
+                        size += completed.getSize();
+                    }
+                    return new Append(true).withStatus(status).withSize(size);
                 }
-                return new Append(true).withStatus(status).withSize(size);
             }
-        }
-        catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+            }
         }
         return Write.override;
     }
