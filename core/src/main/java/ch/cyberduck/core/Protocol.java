@@ -229,6 +229,11 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
     String favicon();
 
     /**
+     * @return Host label
+     */
+    String getHostnamePlaceholder();
+
+    /**
      * @return Username label
      */
     String getUsernamePlaceholder();

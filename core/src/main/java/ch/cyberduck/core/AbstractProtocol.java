@@ -169,6 +169,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getHostnamePlaceholder() {
+        return this.getDefaultHostname();
+    }
+
+    @Override
     public String getUsernamePlaceholder() {
         return LocaleFactory.localizedString("Username", "Credentials");
     }
