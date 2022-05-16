@@ -34,7 +34,6 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     private final PathContainerService containerService;
     private final S3Session session;
 
-    public static final String S3_ACCELERATE_HOSTNAME = "s3-accelerate.amazonaws.com";
     public static final String S3_ACCELERATE_DUALSTACK_HOSTNAME = "s3-accelerate.dualstack.amazonaws.com";
 
     private final String hostname;
