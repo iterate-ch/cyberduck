@@ -47,11 +47,7 @@ import org.cryptomator.cryptolib.api.Masterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -205,14 +201,13 @@ public class CryptoVault implements Vault {
             passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
         }
-        final MasterkeyFile mkFile;
-        try {
-            mkFile = MasterkeyFile.read(new ContentReader(session).getReader(masterkey));
-        }
-        catch(JsonParseException | IllegalArgumentException | IllegalStateException | IOException e) {
+        final MasterkeyFile masterkeyFile;
+        try (Reader reader = new ContentReader(session).getReader(masterkey)) {
+            masterkeyFile = MasterkeyFile.read(reader);
+        } catch (JsonParseException | IllegalArgumentException | IllegalStateException | IOException e) {
             throw new VaultException(String.format("Failure reading vault master key file %s", masterkey.getName()), e);
         }
-        this.unlock(session, mkFile, passphrase, bookmark, prompt,
+        this.unlock(session, masterkeyFile, passphrase, bookmark, prompt,
                 MessageFormat.format(LocaleFactory.localizedString("Provide your passphrase to unlock the Cryptomator Vault {0}", "Cryptomator"), home.getName()),
                 keychain);
         return this;
