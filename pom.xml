@@ -79,7 +79,7 @@
         <argLine />
         <jna-version>5.11.0</jna-version>
         <jersey-version>2.35</jersey-version>
-        <jackson-version>2.13.2</jackson-version>
+        <jackson-version>2.13.3</jackson-version>
         <slf4j-version>1.7.36</slf4j-version>
         <log4j-version>2.17.2</log4j-version>
         <bouncycastle-version>1.70</bouncycastle-version>
@@ -251,7 +251,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.13.2.2</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
