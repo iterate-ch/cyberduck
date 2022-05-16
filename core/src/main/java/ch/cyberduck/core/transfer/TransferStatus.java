@@ -414,23 +414,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return displayname;
     }
 
-    public TransferStatus rename(final Path renamed) {
-        this.rename.remote = renamed;
+    public TransferStatus withRename(final Path renamed) {
+        this.rename.withRemote(renamed);
         return this;
     }
 
-    /**
-     * @param temporary Temporary file to open output stream to
-     * @param finalname Target name
-     */
-    public TransferStatus temporary(final Path temporary, final Path finalname) {
-        this.rename.remote = temporary;
-        this.displayname.remote = finalname;
-        return this;
-    }
-
-    public TransferStatus rename(final Local renamed) {
-        this.rename.local = renamed;
+    public TransferStatus withRename(final Local renamed) {
+        this.rename.withLocal(renamed);
         return this;
     }
 
@@ -438,7 +428,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * @param finalname Target filename to rename temporary file to
      */
     public TransferStatus withDisplayname(final Local finalname) {
-        this.displayname.local = finalname;
+        this.displayname.withLocal(finalname);
+        return this;
+    }
+
+    public TransferStatus withDisplayname(final Path finalname) {
+        this.displayname.withRemote(finalname);
         return this;
     }
 
@@ -735,6 +730,25 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
          * Target filename is temporary and file should be renamed to display name when transfer is complete
          */
         public Local local;
+        /**
+         * Target exists
+         */
+        public boolean exists;
+
+        public Displayname withRemote(final Path remote) {
+            this.remote = remote;
+            return this;
+        }
+
+        public Displayname withLocal(final Local local) {
+            this.local = local;
+            return this;
+        }
+
+        public Displayname exists(final boolean exists) {
+            this.exists = exists;
+            return this;
+        }
 
         @Override
         public String toString() {
@@ -757,6 +771,16 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
          * Renamed local target
          */
         public Local local;
+
+        public Rename withRemote(final Path remote) {
+            this.remote = remote;
+            return this;
+        }
+
+        public Rename withLocal(final Local local) {
+            this.local = local;
+            return this;
+        }
 
         @Override
         public String toString() {

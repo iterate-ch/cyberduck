@@ -89,7 +89,7 @@ public class RenameExistingFilterTest {
     }
 
     @Test
-    public void testTemporaryFileUpload() throws Exception {
+    public void testFileUploadWithTemporaryFilename() throws Exception {
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicInteger moved = new AtomicInteger();
@@ -163,9 +163,12 @@ public class RenameExistingFilterTest {
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
+        f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
+        assertFalse(status.isExists());
+        assertFalse(status.getDisplayname().exists);
         assertNotNull(status.getRename());
         assertNotNull(status.getRename().remote);
-        assertNotEquals(file, status.getDisplayname().local);
+        assertEquals(file, status.getDisplayname().remote);
         assertNull(status.getRename().local);
         f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
         // Complete

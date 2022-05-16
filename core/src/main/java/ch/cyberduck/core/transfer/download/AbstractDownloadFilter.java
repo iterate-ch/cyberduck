@@ -230,7 +230,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                                 .append(true) // Read with offset
                                 .withOffset(offset)
                                 .withLength(length)
-                                .rename(segmentFile);
+                                .withRename(segmentFile);
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
                             }
