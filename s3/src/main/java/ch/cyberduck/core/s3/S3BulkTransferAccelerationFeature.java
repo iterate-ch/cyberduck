@@ -102,21 +102,18 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
         }
     }
 
-    private boolean accelerate(final Path file, final ConnectionCallback prompt) throws BackgroundException {
-        if(containerService.isContainer(file)) {
-            return false;
-        }
+    private boolean accelerate(final Path bucket, final ConnectionCallback prompt) throws BackgroundException {
         switch(session.getSignatureVersion()) {
             case AWS2:
                 return false;
         }
-        if(accelerationService.getStatus(file)) {
-            log.info(String.format("S3 transfer acceleration enabled for file %s", file));
+        if(accelerationService.getStatus(bucket)) {
+            log.info(String.format("S3 transfer acceleration enabled for file %s", bucket));
             return true;
         }
         if(new HostPreferences(session.getHost()).getBoolean("s3.accelerate.prompt")) {
-            if(accelerationService.prompt(session.getHost(), file, prompt)) {
-                log.info(String.format("S3 transfer acceleration enabled for file %s", file));
+            if(accelerationService.prompt(session.getHost(), bucket, prompt)) {
+                log.info(String.format("S3 transfer acceleration enabled for file %s", bucket));
                 return true;
             }
         }
