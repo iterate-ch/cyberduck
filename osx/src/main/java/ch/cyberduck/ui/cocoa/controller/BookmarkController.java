@@ -241,7 +241,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 updateField(hostField, bookmark.getHostname());
                 hostField.setEnabled(bookmark.getProtocol().isHostnameConfigurable());
-                hostField.cell().setPlaceholderString(bookmark.getProtocol().getDefaultHostname());
+                hostField.cell().setPlaceholderString(bookmark.getProtocol().getHostnamePlaceholder());
             }
         });
     }
