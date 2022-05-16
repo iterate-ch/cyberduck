@@ -8,7 +8,7 @@
 	<string>oracle-eu-frankfurt-1</string>
 	<key>Description</key>
 	<string>OCI Object Storage (eu-frankfurt-1)</string>
-	<key>Default Hostname</key>
+	<key>Hostname Placeholder</key>
 	<string>&lt;namespace&gt;.compat.objectstorage.eu-frankfurt-1.oraclecloud.com</string>
 	<key>Hostname Configurable</key>
 	<true/>

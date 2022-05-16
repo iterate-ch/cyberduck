@@ -8,7 +8,7 @@
 	<string>oracle-ap-hyderabad-1</string>
 	<key>Description</key>
 	<string>OCI Object Storage (ap-hyderabad-1)</string>
-	<key>Default Hostname</key>
+	<key>Hostname Placeholder</key>
 	<string>&lt;namespace&gt;.compat.objectstorage.ap-hyderabad-1.oraclecloud.com</string>
 	<key>Hostname Configurable</key>
 	<true/>
