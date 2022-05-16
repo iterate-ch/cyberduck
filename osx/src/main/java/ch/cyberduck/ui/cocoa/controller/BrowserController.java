@@ -79,11 +79,9 @@ import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -3828,53 +3826,4 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    private static final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
-        private final QuickLook quicklook;
-        private final List<TransferItem> downloads;
-
-        public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
-                                                 final List<TransferItem> downloads) {
-            super(controller, session, download, new TransferCallback() {
-                @Override
-                public void complete(final Transfer transfer) {
-                    //
-                }
-            }, new TransferPrompt() {
-                @Override
-                public TransferAction prompt(final TransferItem item) {
-                    return TransferAction.comparison;
-                }
-
-                @Override
-                public boolean isSelected(final TransferItem file) {
-                    return true;
-                }
-
-                @Override
-                public void message(final String message) {
-                    controller.message(message);
-                }
-            });
-            this.quicklook = quicklook;
-            this.downloads = downloads;
-        }
-
-        @Override
-        public void cleanup() {
-            super.cleanup();
-            final List<Local> previews = new ArrayList<>();
-            for(TransferItem download : downloads) {
-                previews.add(download.local);
-            }
-            // Change files in Quick Look
-            quicklook.select(previews);
-            // Open Quick Look Preview Panel
-            quicklook.open();
-        }
-
-        @Override
-        public String getActivity() {
-            return LocaleFactory.localizedString("Quick Look", "Status");
-        }
-    }
 }
