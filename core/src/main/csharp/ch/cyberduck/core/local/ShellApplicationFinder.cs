@@ -1,0 +1,227 @@
+﻿using ch.cyberduck.core.cache;
+using ch.cyberduck.core.local;
+using java.util;
+using org.apache.logging.log4j;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.Shell.Common;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.UI.Shell.ASSOC_FILTER;
+using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
+using static Windows.Win32.UI.Shell.ASSOCIATIONTYPE;
+using static Windows.Win32.UI.Shell.ASSOCSTR;
+using static Windows.Win32.UI.Shell.OPEN_AS_INFO_FLAGS;
+
+namespace Ch.Cyberduck.Core.Local
+{
+    public class ShellApplicationFinder : ApplicationFinder
+    {
+        private static readonly Logger Log = LogManager.getLogger(typeof(ShellApplicationFinder).FullName);
+
+        private readonly LRUCache assocHandlerCache = LRUCache.build(25);
+        private readonly LRUCache assocHandlerListCache = LRUCache.build(25);
+
+        private interface IInvokeApplication
+        {
+            int IconIndex { get; }
+
+            string IconPath { get; }
+        }
+
+        /// <summary>
+        /// Finds default associated application.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public unsafe Application find(string filename)
+        {
+            int dotIndex = filename.LastIndexOf('.');
+            if (dotIndex != -1)
+            {
+                filename = filename.Substring(dotIndex);
+            }
+            if (assocHandlerCache.get(filename) is ProgIdApplication shellHandler)
+            {
+                return shellHandler;
+            }
+
+            if (SHCreateAssociationRegistration(out IApplicationAssociationRegistration reg).Failed)
+            {
+                return Application.notfound;
+            }
+
+            PWSTR defaultQuery = default;
+            try
+            {
+                try
+                {
+                    reg.QueryCurrentDefault(filename, AT_FILEEXTENSION, AL_EFFECTIVE, out defaultQuery);
+                }
+                catch
+                {
+                    return Application.notfound;
+                }
+
+                var qa = (IQueryAssociations)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_QueryAssociations));
+                qa.Init(0, defaultQuery, default, default);
+
+                if (!qa.GetString(ASSOCSTR_FRIENDLYAPPNAME, "open", out var friendlyAppName))
+                {
+                    return Application.notfound;
+                }
+                if (!qa.GetString(ASSOCSTR_DEFAULTICON, "open", out var defaultIcon))
+                {
+                    return Application.notfound;
+                }
+
+                ProgIdApplication app = new(defaultQuery.ToString(), friendlyAppName, defaultIcon);
+                assocHandlerCache.put(filename, app);
+                return app;
+            }
+            catch
+            {
+                return Application.notfound;
+            }
+            finally
+            {
+                CoTaskMemFree(defaultQuery.Value);
+            }
+        }
+
+        public List findAll(string filename)
+        {
+            filename = Path.GetExtension(filename);
+            if (assocHandlerListCache.get(filename) is not List<ShellApplication> map)
+            {
+                map = new List<ShellApplication>();
+                assocHandlerListCache.put(filename, map);
+
+                HRESULT result;
+                if ((result = SHAssocEnumHandlers(filename, ASSOC_FILTER_RECOMMENDED, out var enumHandlers)).Succeeded)
+                {
+                    IAssocHandler[] passocHandler = new IAssocHandler[1];
+                    ref IAssocHandler assocHandler = ref passocHandler[0];
+                    try
+                    {
+                        while (enumHandlers.Next(passocHandler) > 0)
+                        {
+                            map.Add(new ShellApplication(assocHandler));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.warn("findAll: Failure enumerating IEnumAssocHandler", e);
+                    }
+                }
+                else
+                {
+                    Log.warn("findAll: Failure getting IEnumAssocHandler", Marshal.GetExceptionForHR(result.Value));
+                }
+            }
+
+            return Utils.ConvertToJavaList(map);
+        }
+
+        public Application getDescription(string filename) => string.Equals("shell:openfilewith", filename) ? ShellOpenWithApplication.Instance : Application.notfound;
+
+        public bool isInstalled(Application application) => application is IInvokeApplication;
+
+        public class ProgIdApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
+        {
+            public ProgIdApplication(string identifier, string name, string defaultIcon) : base(identifier, name)
+            {
+                PWSTR pszIconFile = defaultIcon;
+                IconIndex = PathParseIconLocation(pszIconFile);
+                IconPath = pszIconFile.ToString();
+            }
+
+            public int IconIndex { get; }
+
+            public string IconPath { get; }
+
+            public unsafe void Launch(ch.cyberduck.core.Local local)
+            {
+                SHELLEXECUTEINFOW info = new()
+                {
+                    cbSize = (uint)sizeof(SHELLEXECUTEINFOW),
+                    lpClass = getIdentifier(),
+                    fMask = SEE_MASK_CLASSNAME | SEE_MASK_NOASYNC,
+                    lpVerb = "open",
+                    lpFile = local.getAbsolute()
+                };
+                ShellExecuteEx(ref info);
+            }
+        }
+
+        public class ShellApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
+        {
+            private readonly IAssocHandler handler;
+            private readonly int iconIndex;
+            private readonly string iconPath;
+            private readonly SynchronizationContext sync;
+
+            public ShellApplication(in IAssocHandler handler) : base(handler.GetName(), handler.GetUIName())
+            {
+                sync = SynchronizationContext.Current;
+                this.handler = handler;
+                IsRecommended = handler.IsRecommended().Succeeded;
+                iconPath = handler.GetIconLocation(out iconIndex);
+            }
+
+            public int IconIndex => iconIndex;
+
+            public string IconPath => iconPath;
+
+            public bool IsRecommended { get; }
+
+            public void Launch(ch.cyberduck.core.Local local)
+            {
+                if (SynchronizationContext.Current == null)
+                {
+                    sync.Send(d => Launch(local), null);
+                    return;
+                }
+
+                using PIDLIST_ABSOLUTEHandle pidl = ILCreateFromPath2(local.getAbsolute());
+                if (!pidl)
+                {
+                    return;
+                }
+
+                SHCreateItemFromIDList(pidl.Value, out IShellItem ppv);
+                ppv.BindToHandler(null, BHID_DataObject, out IDataObject pdo);
+                handler.Invoke(pdo);
+            }
+        }
+
+        public class ShellOpenWithApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
+        {
+            public static readonly ShellOpenWithApplication Instance = new();
+
+            public ShellOpenWithApplication() : base(null, "Open With …")
+            {
+            }
+
+            int IInvokeApplication.IconIndex => throw new NotImplementedException();
+
+            string IInvokeApplication.IconPath => throw new NotImplementedException();
+
+            public void Launch(ch.cyberduck.core.Local local)
+            {
+                OPENASINFO info = new()
+                {
+                    oaifInFlags = OAIF_EXEC,
+                    pcszFile = local.getAbsolute()
+                };
+                SHOpenWithDialog(default, info);
+            }
+        }
+    }
+}

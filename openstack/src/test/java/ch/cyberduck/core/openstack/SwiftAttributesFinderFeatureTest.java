@@ -2,6 +2,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -42,13 +44,14 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID() + ".txt";
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
+        final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
+        assertEquals(attributes.getModificationDate(), new SwiftObjectListService(session).list(container, new DisabledListProgressListener())
+                .find(new DefaultPathPredicate(test)).attributes().getModificationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {

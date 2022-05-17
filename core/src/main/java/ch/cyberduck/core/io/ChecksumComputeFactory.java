@@ -17,6 +17,8 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.dropbox.DropboxChecksumCompute;
+
 public final class ChecksumComputeFactory {
 
     private ChecksumComputeFactory() {
@@ -35,6 +37,8 @@ public final class ChecksumComputeFactory {
                 return new SHA512ChecksumCompute();
             case crc32:
                 return new CRC32ChecksumCompute();
+            case dropbox_content_hash:
+                return new DropboxChecksumCompute();
             default:
                 return new DisabledChecksumCompute();
         }

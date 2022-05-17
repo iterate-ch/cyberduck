@@ -20,6 +20,6 @@
         <ModulePath>$(BasePath)</ModulePath>
     </PropertyGroup>
 
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(BasePath)../))" />
 
 </Project>

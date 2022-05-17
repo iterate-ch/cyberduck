@@ -18,10 +18,17 @@ package ch.cyberduck.core.http;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DisabledServiceUnavailableRetryStrategy implements ServiceUnavailableRetryStrategy {
+    private static final Logger log = LogManager.getLogger(DisabledServiceUnavailableRetryStrategy.class);
+
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("No retry for response %s", response));
+        }
         return false;
     }
 

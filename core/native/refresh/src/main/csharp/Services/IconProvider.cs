@@ -1,11 +1,19 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using ch.cyberduck.core;
+﻿using ch.cyberduck.core;
+using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.Local;
+using System;
+using System.IO;
+using Windows.Win32;
+using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.Storage.FileSystem.FILE_FLAGS_AND_ATTRIBUTES;
+using static Windows.Win32.UI.Shell.SHGFI_FLAGS;
+using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Refresh.Services
 {
-    using System.IO;
-
     public abstract class IconProvider
     {
         public IconProvider(IconCache iconCache, IIconProviderImageSource imageSource)
@@ -38,9 +46,42 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public delegate bool GetCacheIconCallback(IconCache cache, int size);
 
-        public abstract T GetDisk(Protocol protocol, int size);
+        public T GetApplication(Application application, int size)
+        {
+            string key = "app:" + application.getIdentifier();
+            if (!IconCache.TryGetIcon(key, size, out T image))
+            {
+                string iconPath;
+                int iconIndex;
+                switch (application)
+                {
+                    case ShellApplicationFinder.ShellApplication shell:
+                        iconPath = shell.IconPath;
+                        iconIndex = shell.IconIndex;
+                        break;
 
-        public abstract T GetIcon(Protocol protocol, int size);
+                    case ShellApplicationFinder.ProgIdApplication progId:
+                        iconPath = progId.IconPath;
+                        iconIndex = progId.IconIndex;
+                        break;
+
+                    default:
+                        return default;
+                }
+                iconPath = SHLoadIndirectString(iconPath);
+
+                SHCreateFileExtractIcon(iconPath, 0, out IExtractIconW icon);
+                using HICON_Handle largeIcon = new();
+                using HICON_Handle smallIcon = new();
+                icon.Extract(iconPath, (uint)iconIndex, largeIcon.Ref, smallIcon.Ref, 0);
+                Get(largeIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
+                Get(smallIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
+                image = Get(key, size);
+            }
+            return image;
+        }
+
+        public abstract T GetDisk(Protocol protocol, int size);
 
         public T GetFileIcon(string filename, bool isFolder, bool large, bool isExecutable)
         {
@@ -63,16 +104,15 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                 return image;
             }
 
-            uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
-            flags |= large ? Shell32.SHGFI_LARGEICON : Shell32.SHGFI_SMALLICON;
+            SHGFI_FLAGS flags = SHGFI_ICON | SHGFI_USEFILEATTRIBUTES;
+            flags |= large ? SHGFI_LARGEICON : SHGFI_SMALLICON;
 
-            uint fileAttributes = isFolder ? Shell32.FILE_ATTRIBUTE_DIRECTORY : Shell32.FILE_ATTRIBUTE_NORMAL;
+            FILE_FLAGS_AND_ATTRIBUTES fileAttributes = isFolder ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
 
-            Shell32.SHFILEINFO shfi = new();
+            SHFILEINFOW shfi = new();
             try
             {
-                IntPtr hSuccess = Shell32.SHGetFileInfo(isFolder ? "_unknown" : filename, fileAttributes, ref shfi, (uint)Marshal.SizeOf<Shell32.SHFILEINFO>(), flags);
-                if (hSuccess == IntPtr.Zero)
+                if (SHGetFileInfo(isFolder ? "_unknown" : filename, fileAttributes, shfi, flags) == 0)
                 {
                     return default;
                 }
@@ -80,9 +120,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             }
             finally
             {
-                User32.DestroyIcon(shfi.hIcon);
+                DestroyIcon(shfi.hIcon);
             }
         }
+
+        public abstract T GetIcon(Protocol protocol, int size);
 
         public T GetResource(string name, int? requestSize = default) => requestSize switch
         {

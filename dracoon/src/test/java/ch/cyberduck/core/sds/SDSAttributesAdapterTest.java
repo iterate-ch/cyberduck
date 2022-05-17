@@ -27,7 +27,6 @@ public class SDSAttributesAdapterTest extends AbstractSDSTest {
 
     @Test
     public void testPermissionsFile() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSAttributesAdapter f = new SDSAttributesAdapter(session);
         final Node node = new Node();
         node.setIsEncrypted(false);
@@ -47,7 +46,6 @@ public class SDSAttributesAdapterTest extends AbstractSDSTest {
 
     @Test
     public void testPermissionsFolder() throws Exception {
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final SDSAttributesAdapter f = new SDSAttributesAdapter(session);
         final Node node = new Node();
         node.setIsEncrypted(false);

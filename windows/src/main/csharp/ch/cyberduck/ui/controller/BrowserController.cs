@@ -16,16 +16,9 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
-using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
@@ -51,7 +44,14 @@ using java.text;
 using java.util;
 using org.apache.logging.log4j;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Windows.Forms;
+using Windows.Win32;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
@@ -516,7 +516,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
                                 Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
                             true);
-                    if (result.CommandButtonResult == 0)
+                    if (result.Button == 0)
                     {
                         background(new SearchAction(this));
                     }
@@ -882,7 +882,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (args.DropTargetLocation == DropTargetLocation.Item)
                         {
                             Host destination = (Host)args.DropTargetItem.RowObject;
-                            (args.DataObject as DataObject).SetDropDescription((DropImageType)args.Effect,
+
+                            DropTargetHelper.SetDropDescription(dataObject, args.Effect,
                                 "Upload to %1", BookmarkNameProvider.toString(destination));
                         }
                         args.DropTargetLocation = DropTargetLocation.Item;
@@ -1407,7 +1408,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TaskDialogResult result = QuestionBox(LocaleFactory.localizedString("Delete Bookmark"),
                 LocaleFactory.localizedString("Do you want to delete the selected bookmark?"), alertText.ToString(),
                 String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (result.CommandButtonResult == 0)
+            if (result.Button == 0)
             {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }
@@ -2210,7 +2211,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Log.trace("Entering View_BrowserCanDrop with " + args.Effect);
             if (IsMounted() && !(args.DataObject is OLVDataObject))
             {
-                if (args.DataObject is DataObject && ((DataObject)args.DataObject).ContainsFileDropList())
+                if (args.DataObject is DataObject dataObject && dataObject.ContainsFileDropList())
                 {
                     Path destination;
                     switch (args.DropTargetLocation)
@@ -2249,8 +2250,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         args.DropTargetItem = args.ListView.ModelToItem(destination);
                     }
-                    (args.DataObject as DataObject).SetDropDescription((DropImageType)args.Effect, "Copy to %1",
-                        destination.getName());
+                    DropTargetHelper.SetDropDescription(dataObject, args.Effect,
+                        "Copy to %1", destination.getName());
                 }
             }
         }
@@ -2291,18 +2292,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_EditEvent(string exe)
+        private void View_EditEvent(Application app)
         {
             foreach (Path selected in SelectedPaths)
             {
-                if (Utils.IsBlank(exe))
-                {
-                    edit(selected);
-                }
-                else
-                {
-                    edit(new Application(exe, null), selected);
-                }
+                edit(app, selected);
             }
         }
 
@@ -2318,6 +2312,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 editor = EditorFactory.instance().create(Session.getHost(), file, this);
             }
+            application ??= EditorFactory.getEditor(file.getAbsolute());
+            application ??= EditorFactory.getDefaultEditor();
             background(new WorkerBackgroundAction(this, Session,
                 editor.open(application, new DisabledApplicationQuitCallback(),
                     new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
@@ -2351,23 +2347,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateEditIcon()
         {
+            System.Drawing.Image image = Images.Pencil.Size(32);
             Path selected = SelectedPath;
             if (null != selected)
             {
                 if (IsEditable(selected))
                 {
                     Application app = EditorFactory.getEditor(selected.getName());
-                    string editCommand = app != null ? app.getIdentifier() : null;
-                    if (Utils.IsNotBlank(editCommand))
+                    if (IconProvider.GetApplication(app, 32) is System.Drawing.Image appIcon)
                     {
-                        View.EditIcon = IconProvider.GetFileIcon(
-                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                            false, true, true);
-                        return;
+                        image = appIcon;
                     }
                 }
             }
-            View.EditIcon = Images.Pencil.Size(32);
+            View.EditIcon = image;
         }
 
         private void UpdateOpenIcon()
@@ -2881,7 +2874,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     break;
                             }
                         });
-                    return result.Result != TaskDialogSimpleResult.Cancel;
+                    return result.Button != IDCANCEL;
                 }
             }
             UnmountImpl(disconnected);
@@ -3115,7 +3108,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
                 content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (r.CommandButtonResult == 0)
+            if (r.Button == 0)
             {
                 DeletePathsImpl(normalized);
             }
@@ -3176,7 +3169,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Overwrite"), alertText.ToString(),
                     content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Overwrite")), true);
-                return r.CommandButtonResult == 0;
+                return r.Button == 0;
             }
             else
             {

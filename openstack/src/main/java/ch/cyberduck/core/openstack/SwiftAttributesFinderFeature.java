@@ -76,7 +76,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
         try {
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,
-                    containerService.getContainer(file).getName());
+                        containerService.getContainer(file).getName());
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(info.getTotalSize());
                 attributes.setRegion(info.getRegion().getRegionId());
@@ -86,7 +86,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
             try {
                 try {
                     metadata = session.getClient().getObjectMetaData(region,
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                            containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 catch(GenericException e) {
                     throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -163,10 +163,10 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();
         try {
-            attributes.setModificationDate(rfc1123DateFormatter.parse(lastModified).getTime());
+            attributes.setModificationDate(new Double(Double.parseDouble(lastModified) * 1000).longValue());
         }
-        catch(InvalidDateException e) {
-            log.warn(String.format("%s is not RFC 1123 format %s", lastModified, e.getMessage()));
+        catch(NumberFormatException e) {
+            log.warn(String.format("%s is not in UNIX Epoch time stamp format %s", lastModified, e.getMessage()));
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
             final String etag = RegExUtils.removePattern(metadata.getETag(), "\"");

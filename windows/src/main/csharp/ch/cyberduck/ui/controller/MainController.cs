@@ -24,8 +24,6 @@ using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.box;
 using ch.cyberduck.core.brick;
 using ch.cyberduck.core.ctera;
-using ch.cyberduck.core.nextcloud;
-using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.exception;
@@ -43,6 +41,7 @@ using ch.cyberduck.core.notification;
 using ch.cyberduck.core.oauth;
 using ch.cyberduck.core.onedrive;
 using ch.cyberduck.core.openstack;
+using ch.cyberduck.core.owncloud;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
@@ -60,10 +59,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Core.Contracts;
-using Ch.Cyberduck.Ui.Core.UWP;
 using java.util;
-using Microsoft.WindowsAPICodePack.Shell;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.logging.log4j;
 using ReactiveUI;
 using Splat;
@@ -76,8 +72,12 @@ using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using System.Threading;
+using System.Web;
 using System.Windows.Forms;
+using System.Windows.Shell;
 using Windows.Services.Store;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using Application = ch.cyberduck.core.local.Application;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
@@ -95,9 +95,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private static MainController _application;
         private static JumpList _jumpListManager;
         private static AutoResetEvent applicationShutdown = new AutoResetEvent(true);
-        private static JumpListCustomCategory bookmarkCategory;
         private readonly BaseController _controller;
         private readonly PathKindDetector _detector = new DefaultPathKindDetector();
+        private readonly SynchronizationContext mainThreadSync;
 
         /// <summary>
         /// Saved browsers
@@ -145,6 +145,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             // Initialize WindowsFormsSynchronizationContext (sets SynchronizationContext.Current)
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
+            mainThreadSync = SynchronizationContext.Current;
 
             protocolFactory.register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
@@ -158,7 +159,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Locator.CurrentMutable.InitializeReactiveUI();
 
             // Execute OnStartup later
-            SynchronizationContext.Current.Post(OnStartup, null);
+            mainThreadSync.Post(OnStartup, null);
         }
 
         public static MainController Application => _application;
@@ -402,10 +403,32 @@ namespace Ch.Cyberduck.Ui.Controller
             NewBrowser();
         }
 
-        void ICyberduck.OAuth(string state, string code)
+        bool ICyberduck.OAuth(Uri result)
         {
-            var oauth = OAuth2TokenListenerRegistry.get();
-            oauth.notify(state, code);
+            var success = false;
+            string state = default, code = default;
+            if (result.AbsolutePath == "oauth")
+            {
+                success = true;
+                var query = HttpUtility.ParseQueryString(result.Query);
+                state = query.Get("state");
+                code = query.Get("code");
+            }
+            if (result.OriginalString.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
+            {
+                success = true;
+                var query = HttpUtility.ParseQueryString(result.Query);
+                code = query.Get("ActivationCode");
+            }
+            if (success)
+            {
+                if (Logger.isDebugEnabled())
+                {
+                    Logger.debug($"Notify OAuth with {state} ({code})");
+                }
+                OAuth2TokenListenerRegistry.get().notify(state, code);
+            }
+            return success;
         }
 
         void ICyberduck.QuickConnect(string arg)
@@ -434,7 +457,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                     .Equals(new HostUrlProvider().get(h)))
                             {
                                 b.View.BringToFront();
-                                if(Path.Type.directory == _detector.detect(h.getDefaultPath())) {
+                                if (Path.Type.directory == _detector.detect(h.getDefaultPath()))
+                                {
                                     b.SetWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(AbstractPath.Type.directory)));
                                 }
                                 return;
@@ -545,13 +569,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static void InitializeProtocolHandler()
         {
+            var self = new Application(System.Windows.Forms.Application.ExecutablePath);
             var handler = SchemeHandlerFactory.get();
             if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") &&
                             PreferencesFactory.get().getInteger("uses") > 0)
             {
                 if (
-                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
-                        new Application(System.Windows.Forms.Application.ExecutablePath)))
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()), self))
                 {
                     Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
                         LocaleFactory.localizedString(
@@ -572,7 +596,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                                    handler.setDefaultHandler(self,
                                         Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
@@ -580,8 +604,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             // Register OAuth handler
-            handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
-                Arrays.asList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
+            var protocols = ProtocolFactory.get();
+            handler.setDefaultHandler(self, Arrays.asList(
+                PreferencesFactory.get().getProperty("oauth.handler.scheme"),
+                new Uri(protocols.forType(Protocol.Type.googlestorage).getOAuthRedirectUrl()).Scheme,
+                new Uri(protocols.forType(Protocol.Type.googledrive).getOAuthRedirectUrl()).Scheme));
         }
 
         private static void InitJumpList()
@@ -590,9 +617,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (_jumpListManager == null)
                 {
-                    TaskbarManager.Instance.ApplicationId = PreferencesFactory.get().getProperty("application.name");
-                    _jumpListManager = JumpList.CreateJumpList();
-                    _jumpListManager.AddCustomCategories(bookmarkCategory = new JumpListCustomCategory("History"));
+                    _jumpListManager = new JumpList();
                 }
             }
             catch (Exception exception)
@@ -856,7 +881,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             var storeContext = StoreContext.GetDefault();
             var initWindow = (IInitializeWithWindow)(object)storeContext;
-            initWindow.Initialize(MainForm.Handle);
+            initWindow.Initialize((HWND)MainForm.Handle);
         }
 
         private void OnStartup(object state)
@@ -886,25 +911,30 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RefreshJumpList()
         {
+            string appIcon = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico");
+
             InitJumpList();
 
             try
             {
                 Iterator iterator = HistoryCollection.defaultCollection().iterator();
-                _jumpListManager.ClearAllUserTasks();
+                _jumpListManager.JumpItems.Clear();
                 while (iterator.hasNext())
                 {
                     Host host = (Host)iterator.next();
                     var file = BookmarkCollection.defaultCollection().getFile(host);
                     if (file.exists())
                     {
-                        bookmarkCategory.AddJumpListItems(new JumpListLink(file.getAbsolute(), BookmarkNameProvider.toString(host))
+                        _jumpListManager.JumpItems.Add(new JumpTask()
                         {
-                            IconReference = new IconReference(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cyberduck-application.ico"), 0),
+                            ApplicationPath = file.getAbsolute(),
+                            Title = BookmarkNameProvider.toString(host),
+                            IconResourcePath = appIcon,
+                            CustomCategory = "History"
                         });
                     }
                 }
-                _jumpListManager.Refresh();
+                mainThreadSync.Send(_ => _jumpListManager.Apply(), null);
             }
             catch (Exception exception)
             {

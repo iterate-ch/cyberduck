@@ -22,6 +22,7 @@ using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 
 namespace Ch.Cyberduck.Ui.Winforms.Threading
 {
@@ -60,7 +61,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                 _option = c.Value;
                             }
                         });
-                    if (result.Result == TaskDialogSimpleResult.Cancel)
+                    if (result.Button == IDCANCEL)
                     {
                         c.SetValue(false);
                     }

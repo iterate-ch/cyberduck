@@ -258,6 +258,9 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+        finally {
+            resourceid.clear();
+        }
     }
 
     @Override

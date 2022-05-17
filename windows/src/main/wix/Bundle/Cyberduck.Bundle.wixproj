@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" TreatAsLocalProperty="SignOutput" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>65ab4ce3-5af4-411a-928c-7ffd250c6d85</ProjectGuid>
@@ -89,7 +89,7 @@
       <Assemblies Remove="$(TargetBuildDir)System*.dll" />
     </ItemGroup>
 
-      <Exec
-          Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(Assemblies.Identity)&quot;"/>
+    <Exec
+        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(Assemblies.Identity)&quot;"/>
   </Target>
 </Project>

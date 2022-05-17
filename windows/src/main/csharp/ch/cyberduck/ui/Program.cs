@@ -59,58 +59,33 @@ namespace Ch.Cyberduck.Ui
                     foreach (var item in args)
                     {
                         Uri result;
-                        if (Uri.TryCreate(item, UriKind.Absolute, out result))
+                        if (Uri.TryCreate(item, UriKind.Absolute, out result) && !proxy.OAuth(result))
                         {
-                            switch (result.Scheme.ToLowerInvariant())
+                            var scheme = result.Scheme.ToLowerInvariant();
+                            if (scheme == "file" && result.IsFile)
                             {
-                                case var scheme when scheme == preferences.getProperty("oauth.handler.scheme"):
-                                    if (result.AbsolutePath == "oauth")
+                                var localPath = result.LocalPath;
+                                if (File.Exists(localPath))
+                                {
+                                    switch (Path.GetExtension(localPath).ToLowerInvariant())
                                     {
-                                        var query = HttpUtility.ParseQueryString(result.Query);
-                                        var state = query.Get("state");
-                                        var code = query.Get("code");
-                                        proxy.OAuth(state, code);
+                                        case ".cyberducklicense":
+                                            proxy.RegisterRegistration(localPath);
+                                            break;
+
+                                        case ".cyberduckprofile":
+                                            proxy.RegisterProfile(localPath);
+                                            break;
+
+                                        case ".duck":
+                                            proxy.RegisterBookmark(localPath);
+                                            break;
                                     }
-                                    else if (item.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
-                                    {
-                                        var query = HttpUtility.ParseQueryString(result.Query);
-                                        var code = query.Get("ActivationCode");
-                                        proxy.OAuth(String.Empty, code);
-                                    }
-                                    break;
-
-                                case "file":
-                                    var localPath = result.LocalPath;
-                                    if (result.IsFile)
-                                    {
-                                        if (File.Exists(localPath))
-                                        {
-                                            switch (Path.GetExtension(localPath).ToLowerInvariant())
-                                            {
-                                                case ".cyberducklicense":
-                                                    proxy.RegisterRegistration(localPath);
-                                                    break;
-
-                                                case ".cyberduckprofile":
-                                                    proxy.RegisterProfile(localPath);
-                                                    break;
-
-                                                case ".duck":
-                                                    proxy.RegisterBookmark(localPath);
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        proxy.QuickConnect(item);
-                                    }
-
-                                    break;
-
-                                default:
-                                    proxy.QuickConnect(item);
-                                    break;
+                                }
+                            }
+                            else
+                            {
+                                proxy.QuickConnect(item);
                             }
                         }
                     }

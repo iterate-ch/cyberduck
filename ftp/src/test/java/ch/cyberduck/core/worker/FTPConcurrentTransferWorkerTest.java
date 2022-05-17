@@ -48,7 +48,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.junit.Ignore;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.File;
@@ -65,11 +65,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
+        Assume.assumeTrue(Factory.Platform.getDefault() != Factory.Platform.Name.windows);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[98305];
         new Random().nextBytes(content);

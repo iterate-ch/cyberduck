@@ -97,9 +97,11 @@ public final class TransferQueue {
     /**
      * Resize queue with current setting in preferences.
      *
-     * @param limit New limit
+     * @param size New limit
      */
-    public void resize(int limit) {
+    public void resize(int size) {
+        int limit = size == TransferConnectionLimiter.AUTO ?
+                PreferencesFactory.get().getInteger("queue.connections.limit.default") : size;
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resize queue to %d", limit));
         }
@@ -115,10 +117,6 @@ public final class TransferQueue {
     }
 
     private static final class ResizeableSemaphore extends Semaphore {
-        public ResizeableSemaphore(final int permits) {
-            super(permits);
-        }
-
         public ResizeableSemaphore(final int permits, final boolean fair) {
             super(permits, fair);
         }

@@ -26,6 +26,7 @@ using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.TaskDialog;
 using ExceptionReporting.Core;
 using Path = System.IO.Path;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 
 namespace Ch.Cyberduck.Core
 {
@@ -60,21 +61,19 @@ namespace Ch.Cyberduck.Core
             {
                 outfile.Write(report.ToString());
             }
-            TaskDialogResult result =
-                TaskDialog.TaskDialog.Show(
-                    title: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
-                    mainInstruction: LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"),
-                    content:
-                        LocaleFactory.localizedString(
-                            "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
-                            "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")),
-                    commandLinks:
-                        new string[]
-                        {
-                            LocaleFactory.localizedString("Send", "Crash"),
-                            LocaleFactory.localizedString("Don't Send", "Crash")
-                        }, mainIcon: TaskDialogIcon.Error);
-            if (result.CommandButtonResult == 0)
+            var result = TaskDialog.TaskDialog.Create()
+                .Title(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"))
+                .Instruction(LocaleFactory.localizedString("Do you want to report the last crash?", "Crash"))
+                .Content(LocaleFactory.localizedString(
+                    "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
+                    "Crash").Replace("%@", PreferencesFactory.get().getProperty("application.name")))
+                .CommandLinks(c =>
+                {
+                    c(IDYES, LocaleFactory.localizedString("Send", "Crash"), true);
+                    c(IDNO, LocaleFactory.localizedString("Don't Send", "Crash"), true);
+                })
+                .Show();
+            if (result.Button == IDYES)
             {
                 Post(report.ToString());
             }

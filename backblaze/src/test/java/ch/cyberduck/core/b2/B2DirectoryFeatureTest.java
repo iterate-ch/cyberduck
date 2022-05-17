@@ -106,7 +106,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(directory).getModificationDate());
         // Timestamp for placeholder is unknown. Only set on /.bzEmpty
-        assertEquals(timestamp, new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
+        assertNotEquals(timestamp, new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

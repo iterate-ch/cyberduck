@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" TreatAsLocalProperty="SignOutput" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>ef87de0e-bc36-4d3c-8852-c8ad11d01f04</ProjectGuid>
@@ -14,12 +14,12 @@
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-  <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck CLI Bundle.wxs" />
-    <Compile Include="$(CyberduckDir)NetFx47.wxs">
-      <Link>NetFx47.wxs</Link>
+    <Compile Include="$(CyberduckDir)NetFx472.wxs">
+      <Link>NetFx472.wxs</Link>
     </Compile>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
@@ -78,11 +78,11 @@
   </Target>
 
   <Target Name="SignBundle" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
-      <Exec
-          Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;"/>
+    <Exec
+        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;"/>
   </Target>
 
-    <!--
+  <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
 	Other similar extension points exist, see Wix.targets.
 	<Target Name="BeforeBuild">

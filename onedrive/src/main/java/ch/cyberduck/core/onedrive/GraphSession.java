@@ -218,6 +218,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(type == Quota.class) {
             return (T) new GraphQuotaFeature(this, fileid);
         }
+        if(type == UrlProvider.class) {
+            return (T) new GraphUrlProvider();
+        }
         if(type == PromptUrlProvider.class) {
             return (T) new GraphPromptUrlProvider(this);
         }

@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 
@@ -146,7 +147,7 @@ public class S3VersioningFeature implements Versioning {
                 log.warn(String.format("Missing permission to read versioning configuration for %s %s", bucket, e.getMessage()));
                 return VersioningConfiguration.empty();
             }
-            catch(InteroperabilityException i) {
+            catch(InteroperabilityException | NotfoundException i) {
                 log.warn(String.format("Not supported to read versioning configuration for %s %s", bucket, e.getMessage()));
                 return VersioningConfiguration.empty();
             }

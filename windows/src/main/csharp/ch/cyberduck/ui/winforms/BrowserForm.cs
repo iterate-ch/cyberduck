@@ -45,7 +45,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
@@ -515,7 +519,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogCommonButtons.OK,
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS.TDCBF_OK_BUTTON,
                     TaskDialogIcon.Error);
                 Log.error("Exception while upload selection", e);
             }
@@ -1103,7 +1107,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void ScrollToBottom(RichTextBox richTextBox)
         {
-            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage((HWND)richTextBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
         }
         
         private void SetupComparators()
@@ -1164,10 +1168,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Application app in editors)
             {
                 MenuItem item = mainItem.MenuItems.Add(app.getName());
-                item.Tag = app.getIdentifier();
-                item.Click += delegate { EditEvent(item.Tag as String); };
+                item.Click += delegate { EditEvent(app); };
                 vistaMenu1.UpdateParent(mainItem);
-                vistaMenu1.SetImage(item, IconProvider.GetFileIcon(app.getIdentifier(), false, false, true));
+                vistaMenu1.SetImage(item, IconProvider.GetApplication(app, 16));
             }
             vistaMenu1.UpdateParent(browserContextMenu);
         }
@@ -1190,9 +1193,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Application app in GetEditorsForSelection())
             {
                 ToolStripItem item = new ToolStripMenuItem(app.getName());
-                item.Tag = app.getIdentifier();
-                item.Image = IconProvider.GetFileIcon(app.getIdentifier(), false, false, true);
-                item.Click += (o, args) => EditEvent(item.Tag as String);
+                item.Image = IconProvider.GetApplication(app, 16);
+                item.Click += (o, args) => EditEvent(app);
                 editorMenuStrip.Items.Add(item);
             }
             if (editorMenuStrip.Items.Count == 0)

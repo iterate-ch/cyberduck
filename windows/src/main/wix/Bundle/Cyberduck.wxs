@@ -6,12 +6,6 @@
     <MajorUpgrade AllowDowngrades="yes" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
-    <Condition Message="Windows 7 SP1, Windows Server 2008 R2 or later is required to run this application.">
-      <![CDATA[VersionNT >= 601 AND (VersionNT <> 601 OR (ServicePackLevel >= 1 OR MsiNTProductType <> 1))]]>
-    </Condition>
-    <Condition Message="Installation on Windows 8 is not supported.">
-      <![CDATA[VersionNT <> 602 OR MsiNTProductType <> 1]]>
-    </Condition>
     <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
       <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
     </Condition>
@@ -107,7 +101,7 @@
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Native.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="Cyberduck.Core.Refresh">
-          <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Core.Refresh.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Protocols">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Protocols.dll" KeyPath="yes" Checksum="yes"/>
@@ -115,32 +109,32 @@
       <Component Id="Cyberduck.Bonjour">
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-        <Component Id="Cyberduck.Bonjour.Native">
-            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="Cyberduck.Importer">
-            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="Cyberduck.Cryptomator">
-            <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="WinSparkle">
-            <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="msvcr120">
-            <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="ikvm.beans">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="ikvm.core">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="ikvm.charsets">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="ikvm.localedata">
-            <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes"/>
+      <Component Id="Cyberduck.Bonjour.Native">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Bonjour.Native.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="Cyberduck.Importer">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Importer.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="Cyberduck.Cryptomator">
+        <File Source="$(var.cyberduck.TargetDir)/Cyberduck.Cryptomator.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="WinSparkle">
+        <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="msvcr120">
+        <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.beans">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Beans.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.core">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Core.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.charsets">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Charsets.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.localedata">
+        <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Localedata.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ikvm.security">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Security.dll" KeyPath="yes" Checksum="yes"/>
@@ -209,10 +203,25 @@
         <File Source="$(var.cyberduck.TargetDir)/sunec.dll" KeyPath="yes" Checksum="yes" />
       </Component>
 
+      <Component Id="System.Buffers">
+        <File Source="$(var.cyberduck.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Memory">
+        <File Source="$(var.cyberduck.TargetDir)/System.Memory.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Numerics.Vectors">
+        <File Source="$(var.cyberduck.TargetDir)/System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="System.Runtime.CompilerServices.Unsafe">
         <File Source="$(var.cyberduck.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
       </Component>
-        
+      <Component Id="System.Threading.Tasks.Extensions">
+        <File Source="$(var.cyberduck.TargetDir)/System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.ValueTuple">
+        <File Source="$(var.cyberduck.TargetDir)/System.ValueTuple.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+
       <!-- NuGet Dependencies -->
       <!-- DotNetProjects.Extended.Wpf.Toolkit -->
       <Component Id="DotNetProjects.Wpf.Extended.Toolkit.dll">
@@ -260,21 +269,13 @@
       <Component Id="structuremap">
         <File Source="$(var.cyberduck.TargetDir)/StructureMap.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-      <!-- WindowsAPICodePack-Core -->
-      <Component Id="WAPICP">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
-      <!-- WindowsAPICodePack-Shell-->
-      <Component Id="WAPICPShell">
-        <File Source="$(var.cyberduck.TargetDir)/Microsoft.WindowsAPICodePack.Shell.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
       <!-- /Nuget Dependencies -->
-            
+
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
       </Component>
-      
+
       <!-- Protocol Handlers -->
       <Component Id="URLAssociations">
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.ProtocolHandler">
@@ -282,7 +283,7 @@
           <RegistryValue Key="DefaultIcon" Value="[#product.exe],0" Type="string" />
           <RegistryValue Key="shell\open\command" Value='"[#product.exe]" "%1"' Type="string" />
         </RegistryKey>
-          
+
         <RegistryKey Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations">
           <RegistryValue Name="ftp" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="ftps" Value="Cyberduck.ProtocolHandler" Type="string" />

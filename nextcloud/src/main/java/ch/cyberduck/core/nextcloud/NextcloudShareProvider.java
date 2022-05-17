@@ -22,18 +22,15 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
-import ch.cyberduck.core.shared.DefaultPathHomeFeature;
-import ch.cyberduck.core.shared.DelegatingHomeFeature;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -73,16 +70,15 @@ public class NextcloudShareProvider implements PromptUrlProvider {
     public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d",
-            bookmark.getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), new DelegatingHomeFeature(
-                new DefaultPathHomeFeature(session.getHost()), session.getFeature(Home.class)).find().getAbsolute())),
-            3 // Public link
+                bookmark.getHostname(),
+                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
+                3 // Public link
         ));
         try {
             request.append(String.format("&password=%s", callback.prompt(bookmark,
-                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
+                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
         }
         catch(LoginCanceledException e) {
             // Ignore no password set
@@ -127,16 +123,15 @@ public class NextcloudShareProvider implements PromptUrlProvider {
     public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&publicUpload=true",
-            bookmark.getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), new DelegatingHomeFeature(
-                new DefaultPathHomeFeature(session.getHost()), session.getFeature(Home.class)).find().getAbsolute())),
-            3 // Public link
+                bookmark.getHostname(),
+                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
+                3 // Public link
         ));
         try {
             request.append(String.format("&password=%s", callback.prompt(bookmark,
-                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
+                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
         }
         catch(LoginCanceledException e) {
             // Ignore no password set

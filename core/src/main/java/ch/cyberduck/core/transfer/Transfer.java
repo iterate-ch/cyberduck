@@ -305,7 +305,7 @@ public abstract class Transfer implements Serializable {
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
      * @param files       Files pending transfer
-     * @param filter
+     * @param filter      Transfer filter
      * @param error       Error callback
      * @param listener    Listener
      * @param callback    Prompt

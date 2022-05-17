@@ -45,6 +45,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.common.base.Throwables;
@@ -72,7 +73,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final StreamListener streamListener,
                                     final NotificationService notification) {
         this(source, destination, transfer, ThreadPool.Priority.norm, options, meter, prompt, error,
-            connect, progressListener, streamListener, notification);
+                connect, progressListener, streamListener, notification);
     }
 
     public ConcurrentTransferWorker(final SessionPool source,
@@ -91,7 +92,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-            new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority);
+                new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
         this.completion = new ExecutorCompletionService<>(pool.executor());
     }
 
@@ -177,7 +178,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public void cleanup(final Boolean result) {
+    protected void shutdown() {
         // Always shutdown gracefully allowing the threads to return after checking transfer status
         pool.shutdown(true);
     }
