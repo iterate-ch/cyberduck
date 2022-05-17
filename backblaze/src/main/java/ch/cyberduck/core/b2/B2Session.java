@@ -164,6 +164,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Metadata.class) {
             return (T) new B2MetadataFeature(this, fileid);
         }
+        if(type == Versioning.class) {
+            return (T) new B2VersioningFeature(this, fileid);
+        }
         return super._getFeature(type);
     }
 }
