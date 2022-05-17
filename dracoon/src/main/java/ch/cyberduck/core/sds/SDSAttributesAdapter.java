@@ -93,7 +93,7 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
         attributes.setSize(node.getSize());
-        attributes.setOwner(node.getUpdatedBy().getDisplayName());
+        attributes.setOwner(node.getDeletedBy().getDisplayName());
         return attributes;
     }
 
