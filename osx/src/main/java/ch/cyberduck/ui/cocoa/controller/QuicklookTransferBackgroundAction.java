@@ -65,14 +65,16 @@ public class QuicklookTransferBackgroundAction extends BrowserTransferBackground
     @Override
     public void cleanup() {
         super.cleanup();
-        final List<Local> previews = new ArrayList<>();
-        for(TransferItem download : downloads) {
-            previews.add(download.local);
+        if(!this.hasFailed()) {
+            final List<Local> previews = new ArrayList<>();
+            for(TransferItem download : downloads) {
+                previews.add(download.local);
+            }
+            // Change files in Quick Look
+            quicklook.select(previews);
+            // Open Quick Look Preview Panel
+            quicklook.open();
         }
-        // Change files in Quick Look
-        quicklook.select(previews);
-        // Open Quick Look Preview Panel
-        quicklook.open();
     }
 
     @Override
