@@ -180,6 +180,7 @@ public class HttpConnectionPoolBuilder {
                 new BackportWindowsNegotiateSchemeFactory(null) :
                 new SPNegoSchemeFactory())
             .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
+        configuration.setDnsResolver(new CustomDnsResolver());
         return configuration;
     }
 
