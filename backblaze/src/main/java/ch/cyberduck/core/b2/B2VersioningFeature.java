@@ -22,6 +22,8 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class B2VersioningFeature implements Versioning {
 
     private final B2Session session;
@@ -56,8 +58,12 @@ public class B2VersioningFeature implements Versioning {
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new B2ObjectListService(session, fileid).list(file, listener).filter(new NullFilter<Path>() {
             @Override
-            public boolean accept(final Path file) {
-                return file.attributes().isDuplicate();
+            public boolean accept(final Path f) {
+                if(!StringUtils.equals(f.getName(), f.getName())) {
+                    // List with prefix will also return other keys
+                    return false;
+                }
+                return f.attributes().isDuplicate();
             }
         });
     }
