@@ -221,8 +221,12 @@ public class S3VersioningFeature implements Versioning {
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         return new S3VersionedObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
             @Override
-            public boolean accept(final Path file) {
-                return file.attributes().isDuplicate();
+            public boolean accept(final Path f) {
+                if(!StringUtils.equals(f.getName(), file.getName())) {
+                    // List with prefix will also return other keys
+                    return false;
+                }
+                return f.attributes().isDuplicate();
             }
         });
     }
