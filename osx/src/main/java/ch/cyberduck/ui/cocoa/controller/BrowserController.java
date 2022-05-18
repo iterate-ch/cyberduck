@@ -57,6 +57,7 @@ import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
@@ -192,6 +193,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private final Navigation navigation = new Navigation();
     private final TranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
+    private final TemporaryFileService temporary = TemporaryFileServiceFactory.instance();
 
     /**
      * Connection pool
@@ -589,7 +591,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(file, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), file)));
+            downloads.add(new TransferItem(file, temporary.create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
@@ -3526,6 +3528,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         for(Editor editor : editors.values()) {
             editor.close();
         }
+        temporary.shutdown();
         quicklook.close();
 
         bookmarkTable.setDelegate(null);
