@@ -58,6 +58,8 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
+import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -67,8 +69,12 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.worker.*;
 import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
+import ch.cyberduck.ui.quicklook.QuickLook;
+import ch.cyberduck.ui.quicklook.QuickLookFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -103,7 +109,11 @@ public class InfoController extends ToolbarWindowController {
     private final SessionPool session;
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
     private final NSNotificationCenter notificationCenter
-        = NSNotificationCenter.defaultCenter();
+            = NSNotificationCenter.defaultCenter();
+    private final QuickLook quicklook
+            = QuickLookFactory.get();
+    private final TemporaryFileService temporary
+            = TemporaryFileServiceFactory.instance();
 
     /**
      * Selected files
@@ -126,8 +136,12 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Custom HTTP headers for REST protocols
      */
-    private final List<Header> metadata
-        = new ArrayList<>();
+    private final List<Header> metadata = new ArrayList<>();
+
+    /**
+     * Previous versions of selected file
+     */
+    private final AttributedList<Path> versions = new AttributedList<>();
 
     @Outlet
     private NSTextField filenameField;
@@ -167,6 +181,8 @@ public class InfoController extends ToolbarWindowController {
     private NSProgressIndicator aclProgress;
     @Outlet
     private NSProgressIndicator metadataProgress;
+    @Outlet
+    private NSProgressIndicator versionsProgress;
     @Outlet
     private NSProgressIndicator distributionProgress;
     @Outlet
@@ -238,6 +254,18 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSButton metadataRemoveButton;
     @Outlet
+    private NSTableView versionsTable;
+    @Delegate
+    private ListDataSource versionsTableModel;
+    @Delegate
+    private AbstractTableDelegate<String, MetadataColumn> versionsTableDelegate;
+    @Outlet
+    private NSButton versionsRevertButton;
+    @Outlet
+    private NSButton versionsDeleteButton;
+    @Outlet
+    private NSButton versionsQuicklookButton;
+    @Outlet
     private NSButton ownerr;
     @Outlet
     private NSButton ownerw;
@@ -269,11 +297,20 @@ public class InfoController extends ToolbarWindowController {
     private NSView panelAcl;
     @Outlet
     private NSView panelGeneral;
+    @Outlet
+    private NSView panelVersions;
 
     public InfoController(final Controller controller, final SessionPool session, final List<Path> files) {
         this.controller = controller;
         this.session = session;
         this.files = files;
+    }
+
+    @Override
+    public void invalidate() {
+        temporary.shutdown();
+        quicklook.close();
+        super.invalidate();
     }
 
     private Path getSelected() {
@@ -301,8 +338,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public void windowWillClose(final NSNotification notification) {
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-            this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(), this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
         super.windowWillClose(notification);
     }
 
@@ -339,6 +375,9 @@ public class InfoController extends ToolbarWindowController {
                 break;
             case metadata:
                 this.initMetadata();
+                break;
+            case versions:
+                this.initVersions();
                 break;
         }
     }
@@ -377,6 +416,9 @@ public class InfoController extends ToolbarWindowController {
             case acl:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSUserGroup", 32));
                 break;
+            case versions:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
+                break;
         }
         return item;
     }
@@ -408,15 +450,17 @@ public class InfoController extends ToolbarWindowController {
                     return false;
                 }
                 return session.getHost().getProtocol().getType() == Protocol.Type.s3
-                    || session.getHost().getProtocol().getType() == Protocol.Type.b2
-                    || session.getHost().getProtocol().getType() == Protocol.Type.azure
-                    || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+                        || session.getHost().getProtocol().getType() == Protocol.Type.b2
+                        || session.getHost().getProtocol().getType() == Protocol.Type.azure
+                        || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             case metadata:
                 if(anonymous) {
                     return false;
                 }
                 // Not enabled if not a cloud session
                 return session.getFeature(Metadata.class) != null;
+            case versions:
+                return session.getFeature(Versioning.class) != null;
         }
         return true;
     }
@@ -444,6 +488,7 @@ public class InfoController extends ToolbarWindowController {
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
         views.put(new Label(InfoToolbarItem.info.name(), InfoToolbarItem.info.label()), panelGeneral);
+        views.put(new Label(InfoToolbarItem.versions.name(), InfoToolbarItem.versions.label()), panelVersions);
         if(session.getFeature(AclPermission.class) != null) {
             views.put(new Label(InfoToolbarItem.acl.name(), InfoToolbarItem.acl.label()), panelAcl);
         }
@@ -561,6 +606,12 @@ public class InfoController extends ToolbarWindowController {
         this.metadataProgress = p;
         this.metadataProgress.setDisplayedWhenStopped(false);
         this.metadataProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
+    }
+
+    public void setVersionsProgress(NSProgressIndicator versionsProgress) {
+        this.versionsProgress = versionsProgress;
+        this.versionsProgress.setDisplayedWhenStopped(false);
+        this.versionsProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
     }
 
     public void setDistributionProgress(final NSProgressIndicator p) {
@@ -1049,6 +1100,161 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
+    private void setVersions(AttributedList<Path> versions) {
+        this.versions.clear();
+        this.versions.addAll(versions);
+        versionsTable.reloadData();
+    }
+
+    public void setVersionsTable(NSTableView t) {
+        this.versionsTable = t;
+        this.versionsTable.setAllowsMultipleSelection(false);
+        this.versionsTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
+        this.versionsTable.setDataSource((versionsTableModel = new ListDataSource() {
+            @Override
+            public NSInteger numberOfRowsInTableView(NSTableView view) {
+                return new NSInteger(versions.size());
+            }
+
+            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
+                if(row.intValue() < versions.size()) {
+                    final String identifier = tableColumn.identifier();
+                    if(identifier.equals(VersionsColumn.TIMESTAMP.name())) {
+                        final String timestamp = UserDateFormatterFactory.get().getMediumFormat(versions.get(row.intValue()).attributes().getModificationDate());
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(timestamp) ? timestamp : StringUtils.EMPTY);
+                    }
+                    if(identifier.equals(VersionsColumn.CHECKSUM.name())) {
+                        final Checksum checksum = versions.get(row.intValue()).attributes().getChecksum();
+                        return NSAttributedString.attributedString(!Checksum.NONE.equals(checksum) ? checksum.hash : LocaleFactory.localizedString("None"));
+                    }
+                    if(identifier.equals(VersionsColumn.SIZE.name())) {
+                        final long size = versions.get(row.intValue()).attributes().getSize();
+                        return NSAttributedString.attributedString(SizeFormatterFactory.get().format(size));
+                    }
+                    if(identifier.equals(VersionsColumn.OWNER.name())) {
+                        final String owner = versions.get(row.intValue()).attributes().getOwner();
+                        return NSAttributedString.attributedString(StringUtils.isBlank(owner) ? LocaleFactory.localizedString("Unknown") : owner);
+                    }
+                }
+                return null;
+            }
+        }).id());
+        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<String, MetadataColumn>(versionsTable.tableColumnWithIdentifier(VersionsColumn.TIMESTAMP.name())) {
+            @Override
+            public void tableRowDoubleClicked(final ID sender) {
+                this.enterKeyPressed(sender);
+            }
+
+            @Override
+            public void enterKeyPressed(final ID sender) {
+            }
+
+            @Action
+            public void spaceKeyPressed(final ID sender) {
+                versionsQuicklookButtonClicked(sender);
+            }
+
+            @Override
+            public void deleteKeyPressed(final ID sender) {
+                versionsDeleteButtonClicked(sender);
+            }
+
+            @Override
+            public String tooltip(String c, final MetadataColumn column) {
+                return c;
+            }
+
+            @Override
+            public void tableColumnClicked(NSTableView view, NSTableColumn c) {
+                //
+            }
+
+            @Override
+            public void selectionDidChange(final NSNotification notification) {
+                versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+                versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+                versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+            }
+
+            @Override
+            protected boolean isTypeSelectSupported() {
+                return false;
+            }
+        }).id());
+        this.versionsTable.sizeToFit();
+    }
+
+    public void setVersionsRevertButton(final NSButton b) {
+        this.versionsRevertButton = b;
+        this.versionsRevertButton.setTarget(this.id());
+        this.versionsRevertButton.setAction(Foundation.selector("versionsRevertButtonClicked:"));
+    }
+
+    public void setVersionsDeleteButton(final NSButton b) {
+        this.versionsDeleteButton = b;
+        this.versionsDeleteButton.setTarget(this.id());
+        this.versionsDeleteButton.setAction(Foundation.selector("versionsDeleteButtonClicked:"));
+    }
+
+    @Action
+    public void versionsRevertButtonClicked(ID sender) {
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = versions.get(versionsTable.selectedRow().intValue());
+            this.background(new WorkerBackgroundAction<>(controller, session,
+                    new RevertWorker(Collections.singletonList(selected)) {
+                        @Override
+                        public void cleanup(final List<Path> deleted) {
+                            toggleVersionsSettings(true);
+                            initVersions();
+                        }
+                    }
+            ));
+        }
+    }
+
+    @Action
+    public void versionsDeleteButtonClicked(ID sender) {
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = versions.get(versionsTable.selectedRow().intValue());
+            this.background(new WorkerBackgroundAction<>(controller, session,
+                    new DeleteWorker(LoginCallbackFactory.get(controller), Collections.singletonList(selected), PathCache.empty(), controller) {
+                        @Override
+                        public void cleanup(final List<Path> deleted) {
+                            toggleVersionsSettings(true);
+                            initVersions();
+                        }
+                    }
+            ));
+        }
+    }
+
+    public void setVersionsQuicklookButton(NSButton b) {
+        this.versionsQuicklookButton = b;
+        // Only enable upon selection change
+        this.versionsQuicklookButton.setEnabled(false);
+        this.versionsQuicklookButton.setAction(Foundation.selector("versionsQuicklookButtonClicked:"));
+        this.versionsQuicklookButton.setTarget(this.id());
+    }
+
+    @Action
+    public void versionsQuicklookButtonClicked(ID sender) {
+        NSIndexSet iterator = versionsTable.selectedRowIndexes();
+        List<TransferItem> items = new ArrayList<>();
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+            final Path f = versions.get(index.intValue());
+            items.add(new TransferItem(f, temporary.create(session.getHost().getUuid(), f)));
+        }
+        if(toggleVersionsSettings(false)) {
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, new DownloadTransfer(session.getHost(), items), items) {
+                @Override
+                public void cleanup() {
+                    super.cleanup();
+                    toggleVersionsSettings(true);
+                }
+            });
+        }
+    }
+
     /**
      * Replace current metadata model. Will reload the table view.
      *
@@ -1379,6 +1585,10 @@ public class InfoController extends ToolbarWindowController {
 
     public void setPanelMetadata(NSView v) {
         this.panelMetadata = v;
+    }
+
+    public void setPanelVersions(final NSView v) {
+        this.panelVersions = v;
     }
 
     public void setPanelCloud(NSView v) {
@@ -1925,20 +2135,60 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.emptyList());
         if(this.toggleMetadataSettings(false)) {
-            this.background(new WorkerBackgroundAction<>(controller, session,
-                    new ReadMetadataWorker(files) {
-                        @Override
-                        public void cleanup(final Map<String, String> updated) {
-                            final List<Header> m = new ArrayList<>();
-                            if(updated != null) {
-                                for(Map.Entry<String, String> key : updated.entrySet()) {
-                                    m.add(new Header(key.getKey(), key.getValue()));
-                                }
-                            }
-                            setMetadata(m);
-                        toggleMetadataSettings(true);
+            this.background(new WorkerBackgroundAction<>(controller, session, new ReadMetadataWorker(files) {
+                @Override
+                public void cleanup(final Map<String, String> updated) {
+                    final List<Header> m = new ArrayList<>();
+                    if(updated != null) {
+                        for(Map.Entry<String, String> key : updated.entrySet()) {
+                            m.add(new Header(key.getKey(), key.getValue()));
+                        }
                     }
+                    setMetadata(m);
+                    toggleMetadataSettings(true);
                 }
+            }));
+        }
+    }
+
+    /**
+     * Toggle settings before and after update
+     *
+     * @param stop Enable controls and stop progress spinner
+     * @return True if progress animation has started and settings are toggled
+     */
+    private boolean toggleVersionsSettings(final boolean stop) {
+        this.window().endEditingFor(null);
+        boolean enable = session.getFeature(Versioning.class) != null;
+        versionsTable.setEnabled(stop && enable);
+        boolean selection = versionsTable.selectedRowIndexes().count().intValue() == 1;
+        versionsRevertButton.setEnabled(stop && enable && selection);
+        versionsDeleteButton.setEnabled(stop && enable && selection);
+        versionsQuicklookButton.setEnabled(stop && enable && selection);
+        if(stop) {
+            versionsProgress.stopAnimation(null);
+        }
+        else if(enable) {
+            versionsProgress.startAnimation(null);
+        }
+        return enable;
+    }
+
+    /**
+     * Read file versions
+     */
+    private void initVersions() {
+        this.setVersions(AttributedList.emptyList());
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = this.getSelected();
+            this.background(new WorkerBackgroundAction<>(controller, session,
+                    new VersionsWorker(selected, new DisabledListProgressListener()) {
+                        @Override
+                        public void cleanup(AttributedList<Path> result) {
+                            setVersions(result);
+                            toggleVersionsSettings(true);
+                        }
+                    }
             ));
         }
     }
@@ -2356,6 +2606,13 @@ public class InfoController extends ToolbarWindowController {
         VALUE
     }
 
+    private enum VersionsColumn {
+        TIMESTAMP,
+        CHECKSUM,
+        SIZE,
+        OWNER
+    }
+
     private enum InfoToolbarItem {
         /**
          * General
@@ -2385,7 +2642,8 @@ public class InfoController extends ToolbarWindowController {
                 return LocaleFactory.localizedString(StringUtils.capitalize("Amazon S3"), "Info");
             }
         },
-        metadata;
+        metadata,
+        versions;
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");
