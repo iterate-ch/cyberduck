@@ -1217,15 +1217,13 @@ public class InfoController extends ToolbarWindowController {
     public void versionsDeleteButtonClicked(ID sender) {
         if(this.toggleVersionsSettings(false)) {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            this.background(new WorkerBackgroundAction<>(controller, session,
-                    new DeleteWorker(LoginCallbackFactory.get(controller), Collections.singletonList(selected), PathCache.empty(), controller) {
-                        @Override
-                        public void cleanup(final List<Path> deleted) {
-                            toggleVersionsSettings(true);
-                            initVersions();
-                        }
-                    }
-            ));
+            new DeleteController(this, session, PathCache.empty()).delete(Collections.singletonList(selected), new DeleteController.Callback() {
+                @Override
+                public void deleted(final List<Path> deleted) {
+                    toggleVersionsSettings(true);
+                    initVersions();
+                }
+            });
         }
     }
 
