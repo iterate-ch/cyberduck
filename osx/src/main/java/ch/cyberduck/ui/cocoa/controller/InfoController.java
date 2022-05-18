@@ -1172,7 +1172,8 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void selectionDidChange(final NSNotification notification) {
                 versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
-                versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+                versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
+                        && session.getFeature(Versioning.class).isRevertable(getSelected()));
                 versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
             }
 
@@ -2159,10 +2160,11 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleVersionsSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        boolean enable = session.getFeature(Versioning.class) != null;
+        final Versioning versioning = session.getFeature(Versioning.class);
+        boolean enable = versioning != null;
         versionsTable.setEnabled(stop && enable);
         boolean selection = versionsTable.selectedRowIndexes().count().intValue() == 1;
-        versionsRevertButton.setEnabled(stop && enable && selection);
+        versionsRevertButton.setEnabled(stop && enable && selection && versioning.isRevertable(this.getSelected()));
         versionsDeleteButton.setEnabled(stop && enable && selection);
         versionsQuicklookButton.setEnabled(stop && enable && selection);
         if(stop) {
