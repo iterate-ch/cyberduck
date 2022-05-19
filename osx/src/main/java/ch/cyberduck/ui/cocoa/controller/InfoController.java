@@ -1175,6 +1175,9 @@ public class InfoController extends ToolbarWindowController {
                 versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
                         && session.getFeature(Versioning.class).isRevertable(getSelected()));
                 versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+                if(quicklook.isOpen()) {
+                    versionsQuicklookButtonClicked(null);
+                }
             }
 
             @Override
