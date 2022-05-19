@@ -69,7 +69,6 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
-import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.worker.*;
 import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
@@ -124,10 +123,10 @@ public class InfoController extends ToolbarWindowController {
     private final LoginCallback prompt = LoginCallbackFactory.get(this);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final Preferences preferences
-        = PreferencesFactory.get();
+            = PreferencesFactory.get();
 
     /**
      * Grant editing model.
@@ -539,9 +538,9 @@ public class InfoController extends ToolbarWindowController {
     public void setOctalField(NSTextField t) {
         this.octalField = t;
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("octalPermissionsInputDidEndEditing:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            t.id());
+                Foundation.selector("octalPermissionsInputDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                t.id());
     }
 
     public void setOwnerField(NSTextField t) {
@@ -722,8 +721,8 @@ public class InfoController extends ToolbarWindowController {
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final LoggingConfiguration configuration = new LoggingConfiguration(
-                bucketLoggingButton.state() == NSCell.NSOnState,
-                null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
+                    bucketLoggingButton.state() == NSCell.NSOnState,
+                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
             );
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteLoggingWorker(files, configuration) {
                 @Override
@@ -758,8 +757,8 @@ public class InfoController extends ToolbarWindowController {
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final VersioningConfiguration configuration = new VersioningConfiguration(
-                bucketVersioningButton.state() == NSCell.NSOnState,
-                bucketMfaButton.state() == NSCell.NSOnState);
+                    bucketVersioningButton.state() == NSCell.NSOnState,
+                    bucketMfaButton.state() == NSCell.NSOnState);
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteVersioningWorker(files, prompt, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {
@@ -837,7 +836,7 @@ public class InfoController extends ToolbarWindowController {
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final LifecycleConfiguration configuration = new LifecycleConfiguration(
-                lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
+                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                     lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteLifecycleWorker(files, configuration) {
                 @Override
@@ -852,9 +851,9 @@ public class InfoController extends ToolbarWindowController {
     public void setDistributionCnameField(NSTextField t) {
         this.distributionCnameField = t;
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("distributionApplyButtonClicked:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            t.id());
+                Foundation.selector("distributionApplyButtonClicked:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                t.id());
     }
 
     public void setDistributionOriginField(NSTextField t) {
@@ -933,14 +932,14 @@ public class InfoController extends ToolbarWindowController {
                         grant.getRole().setName(value.toString());
                     }
                     if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
-                        && StringUtils.isNotBlank(grant.getRole().getName())) {
+                            && StringUtils.isNotBlank(grant.getRole().getName())) {
                         InfoController.this.aclInputDidEndEditing();
                     }
                 }
             }
         }).id());
         this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<Acl.UserAndRole, AclColumn>(
-            aclTable.tableColumnWithIdentifier(AclColumn.GRANTEE.name())
+                aclTable.tableColumnWithIdentifier(AclColumn.GRANTEE.name())
         ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, NSInteger row) {
@@ -1241,13 +1240,13 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void versionsQuicklookButtonClicked(ID sender) {
         NSIndexSet iterator = versionsTable.selectedRowIndexes();
-        List<TransferItem> items = new ArrayList<>();
+        final List<TransferItem> items = new ArrayList<>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Path f = versions.get(index.intValue());
             items.add(new TransferItem(f, temporary.create(session.getHost().getUuid(), f)));
         }
         if(toggleVersionsSettings(false)) {
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, new DownloadTransfer(session.getHost(), items), items) {
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, items) {
                 @Override
                 public void cleanup() {
                     super.cleanup();
@@ -1313,7 +1312,7 @@ public class InfoController extends ToolbarWindowController {
             }
         }).id());
         this.metadataTable.setDelegate((metadataTableDelegate = new AbstractTableDelegate<String, MetadataColumn>(
-            metadataTable.tableColumnWithIdentifier(MetadataColumn.NAME.name())
+                metadataTable.tableColumnWithIdentifier(MetadataColumn.NAME.name())
         ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, NSInteger row) {
@@ -1328,8 +1327,8 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void enterKeyPressed(final ID sender) {
                 metadataTable.editRow(
-                    metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()),
-                    metadataTable.selectedRow(), true);
+                        metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()),
+                        metadataTable.selectedRow(), true);
             }
 
             @Override
@@ -1474,8 +1473,8 @@ public class InfoController extends ToolbarWindowController {
         this.setMetadata(updated);
         metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
         metadataTable.editRow(
-            selectValue ? metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()) : metadataTable.columnWithIdentifier(MetadataColumn.NAME.name()),
-            new NSInteger(row), true);
+                selectValue ? metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()) : metadataTable.columnWithIdentifier(MetadataColumn.NAME.name()),
+                new NSInteger(row), true);
     }
 
     public void setMetadataRemoveButton(NSButton b) {
@@ -1619,7 +1618,7 @@ public class InfoController extends ToolbarWindowController {
             filenameField.setStringValue(this.getName());
             final Path file = this.getSelected();
             filenameField.setEnabled(1 == count
-                && session.getFeature(Move.class).isSupported(file, file));
+                    && session.getFeature(Move.class).isSupported(file, file));
             // Where
             String path;
             if(file.isSymbolicLink()) {
@@ -1648,8 +1647,8 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(modifiedField, UserDateFormatterFactory.get().getLongFormat(
-                        file.attributes().getModificationDate()),
-                        TRUNCATE_MIDDLE_ATTRIBUTES
+                                    file.attributes().getModificationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
                     );
                 }
                 if(-1 == file.attributes().getCreationDate()) {
@@ -1657,19 +1656,19 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(createdField, UserDateFormatterFactory.get().getLongFormat(
-                        file.attributes().getCreationDate()),
-                        TRUNCATE_MIDDLE_ATTRIBUTES
+                                    file.attributes().getCreationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
                     );
                 }
             }
             // Owner
             this.updateField(ownerField, count > 1 ? String.format("(%s)", LocaleFactory.localizedString("Multiple files")) :
-                    StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
-                TRUNCATE_MIDDLE_ATTRIBUTES
+                            StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES
             );
             this.updateField(groupField, count > 1 ? String.format("(%s)", LocaleFactory.localizedString("Multiple files")) :
-                    StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
-                TRUNCATE_MIDDLE_ATTRIBUTES
+                            StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES
             );
             // Icon
             if(count > 1) {
@@ -1785,7 +1784,7 @@ public class InfoController extends ToolbarWindowController {
 
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-            cdn.getName()));
+                cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(LocaleFactory.localizedString("None"));
         for(Distribution.Method method : cdn.getMethods(file)) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
@@ -1826,8 +1825,8 @@ public class InfoController extends ToolbarWindowController {
 
     private void setSize(final Long size) {
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-            SizeFormatterFactory.get().format(size, true),
-            TRUNCATE_MIDDLE_ATTRIBUTES));
+                SizeFormatterFactory.get().format(size, true),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void initChecksum() {
@@ -1861,9 +1860,9 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
-            || session.getHost().getProtocol().getType() == Protocol.Type.b2
-            || session.getHost().getProtocol().getType() == Protocol.Type.azure
-            || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+                || session.getHost().getProtocol().getType() == Protocol.Type.b2
+                || session.getHost().getProtocol().getType() == Protocol.Type.azure
+                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
         if(enable) {
             enable = !credentials.isAnonymousLogin();
         }
@@ -1885,7 +1884,7 @@ public class InfoController extends ToolbarWindowController {
         encryptionPopup.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
-            && bucketVersioningButton.state() == NSCell.NSOnState);
+                && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketTransferAccelerationButton.setEnabled(stop && enable && acceleration);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
@@ -2026,7 +2025,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     for(Encryption.Algorithm algorithm : selectedEncryptionKeys) {
                         encryptionPopup.itemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(algorithm.toString()))
-                            .setState(selectedEncryptionKeys.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                                .setState(selectedEncryptionKeys.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
                     }
 
                     if(!selectedStorageClasses.isEmpty()) {
@@ -2043,7 +2042,7 @@ public class InfoController extends ToolbarWindowController {
                     for(String storageClass : selectedStorageClasses) {
                         if(-1 != storageClassPopup.indexOfItemWithRepresentedObject(storageClass).intValue()) {
                             storageClassPopup.itemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass))
-                                .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                                    .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
                         }
                     }
                     if(lifecycle != null) {
@@ -2079,7 +2078,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                        this.toString(files));
+                            this.toString(files));
                 }
             });
         }
@@ -2308,9 +2307,9 @@ public class InfoController extends ToolbarWindowController {
             sender.setState(NSCell.NSOnState);
         }
         final PermissionOverwrite permission = new PermissionOverwrite(
-            new PermissionOverwrite.Action(ownerr.state() == NSCell.NSOnState, ownerw.state() == NSCell.NSOnState, ownerx.state() == NSCell.NSOnState),
-            new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
-            new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
+                new PermissionOverwrite.Action(ownerr.state() == NSCell.NSOnState, ownerw.state() == NSCell.NSOnState, ownerx.state() == NSCell.NSOnState),
+                new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
+                new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<>(controller, session,
                             new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<>(false), controller) {
@@ -2448,7 +2447,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleDistributionSettings(false)) {
             final Path file = this.getSelected();
             final Distribution.Method method
-                = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+                    = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             this.background(new WorkerBackgroundAction<>(controller, session, new ReadDistributionWorker(files, prompt, method) {
                 @Override
                 public void cleanup(final Distribution distribution) {
@@ -2560,13 +2559,13 @@ public class InfoController extends ToolbarWindowController {
                         @Override
                         protected void update(final long size) {
                             invoke(new WindowMainAction(InfoController.this) {
-                            @Override
-                            public void run() {
-                                setSize(size);
-                            }
-                        });
+                                @Override
+                                public void run() {
+                                    setSize(size);
+                                }
+                            });
+                        }
                     }
-                }
             ));
         }
     }

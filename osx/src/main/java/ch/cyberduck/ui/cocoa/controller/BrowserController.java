@@ -594,8 +594,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             downloads.add(new TransferItem(file, temporary.create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
-            final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, downloads));
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, downloads));
         }
     }
 
