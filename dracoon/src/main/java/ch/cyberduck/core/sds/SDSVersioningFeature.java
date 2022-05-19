@@ -39,7 +39,7 @@ public class SDSVersioningFeature implements Versioning {
 
     @Override
     public VersioningConfiguration getConfiguration(final Path container) {
-        return VersioningConfiguration.empty();
+        return new VersioningConfiguration(true);
     }
 
     @Override
