@@ -28,6 +28,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using String = System.String;
 using static Ch.Cyberduck.ImageHelper;
+using Ch.Cyberduck.Core.Refresh.Views;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -51,6 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             generalButton.Image = Images.TryGet(_ => _.Info);
             metadataButton.Image = Images.TryGet(_ => _.Pencil);
             permissionsButton.Image = Images.TryGet(_ => _.Permissions);
+            versionsButton.Image = Images.TryGet(_ => _.Multiple);
 
             Load += delegate
             {
@@ -153,6 +155,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     return InfoTab.General;
                 }
+                if (panelManager.SelectedPanel == managedVersionsPanel)
+                {
+                    return InfoTab.Versions;
+                }
                 if (panelManager.SelectedPanel == managedPermissionsPanel)
                 {
                     if (panelManagerPermissions.SelectedPanel == cloudManagedPanel)
@@ -180,6 +186,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (value == InfoTab.General)
                 {
                     generalButton_Click(this, EventArgs.Empty);
+                }
+                if (value == InfoTab.Versions)
+                {
+                    versionsButton_Click(this, EventArgs.Empty);
                 }
                 if (value == InfoTab.Permissions || value == InfoTab.Acl)
                 {
@@ -953,6 +963,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public VersionsInfoTab Versions => versionsInfoTab;
+
         public event VoidHandler DistributionDefaultRootChanged = delegate { };
 
         private void InitMetadataGrid()
@@ -1345,6 +1357,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             Name,
             Value
+        }
+
+        private void versionsButton_Click(object sender, EventArgs e)
+        {
+            if (!versionsButton.Checked)
+            {
+                DisableAll();
+                versionsButton.Checked = true;
+                panelManager.SelectedPanel = managedVersionsPanel;
+            }
         }
     }
 }
