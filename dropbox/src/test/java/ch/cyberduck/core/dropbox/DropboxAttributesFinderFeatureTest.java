@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -30,7 +31,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DropboxAttributesFinderFeatureTest extends AbstractDropboxTest {
@@ -39,8 +41,9 @@ public class DropboxAttributesFinderFeatureTest extends AbstractDropboxTest {
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                new DropboxAttributesFinderFeature(session).find(file).getChecksum().hash);
+        final PathAttributes attr = new DropboxAttributesFinderFeature(session).find(file);
+        assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", attr.getChecksum().hash);
+        assertNotNull(attr.getVersionId());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

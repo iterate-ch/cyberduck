@@ -31,7 +31,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.DbxRawClientV2;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -56,7 +55,6 @@ public class DropboxListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             ListFolderResult result;
-            final DbxRawClientV2 client;
             this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient(directory)).listFolder(containerService.getKey(directory)));
             // If true, then there are more entries available. Pass the cursor to list_folder/continue to retrieve the rest.
             while(result.getHasMore()) {
@@ -70,7 +68,7 @@ public class DropboxListService implements ListService {
     }
 
     private void parse(final Path directory, final ListProgressListener listener, final AttributedList<Path> children, final ListFolderResult result)
-        throws ConnectionCanceledException {
+            throws ConnectionCanceledException {
         for(Metadata md : result.getEntries()) {
             final Path child = this.parse(directory, md);
             if(child == null) {
