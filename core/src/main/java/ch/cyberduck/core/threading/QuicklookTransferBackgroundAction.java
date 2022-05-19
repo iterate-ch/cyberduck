@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.controller;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
-import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;

@@ -66,6 +66,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.threading.QuicklookTransferBackgroundAction;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
