@@ -42,7 +42,7 @@ public class GraphVersioningFeature implements Versioning {
 
     @Override
     public VersioningConfiguration getConfiguration(Path container) {
-        return VersioningConfiguration.empty();
+        return new VersioningConfiguration(true);
     }
 
     @Override
