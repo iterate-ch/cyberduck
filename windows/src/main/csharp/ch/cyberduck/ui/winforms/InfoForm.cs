@@ -89,21 +89,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(1000, Height + 30);
         }
 
-        /// <summary>
-        /// Activate Double-Buffering for _all_ controls on a form
-        /// </summary>
-        /// <see cref="http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/aaed00ce-4bc9-424e-8c05-c30213171c2c"/>
-        /// <see cref="http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/afc667cd-d877-4e44-9c00-8501998865e2"/>
-        /// <see cref="http://stackoverflow.com/questions/3466003/winforms-controls-are-flickering-when-resizing-on-windows7-x64"/>
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000;
-                return cp;
-            }
-        }
 
         public override ToolStrip ToolStrip
         {
@@ -145,6 +130,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool ToolbarMetadataEnabled
         {
             set { metadataButton.Enabled = value; }
+        }
+
+        public bool ToolbarVersionsEnabled
+        {
+            set { versionsButton.Enabled = value; }
         }
 
         public InfoTab ActiveTab

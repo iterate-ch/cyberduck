@@ -181,9 +181,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitVersions()
         {
-            var viewmodel = new VersionsViewModel(_controller, _controller.Session);
-            View.Versions.ViewModel = viewmodel;
-            viewmodel.Select.ExecuteIfPossible(SelectedPath).Subscribe();
+            var viewModel = View.Versions.ViewModel ??= new VersionsViewModel(_controller, _controller.Session);
+            viewModel.Selection = SelectedPath;
+            viewModel.Load.ExecuteIfPossible().Subscribe();
         }
 
         private Map ConvertMetadataToMap()
@@ -243,6 +243,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     || session.getHost().getProtocol().getType() == Protocol.Type.b2
                     || session.getHost().getProtocol().getType() == Protocol.Type.azure
                     || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+            }
+            if (anonymous)
+            {
+                View.ToolbarVersionsEnabled = false;
+            }
+            else
+            {
+                View.ToolbarVersionsEnabled = session.getFeature(typeof(Versioning)) != null;
             }
 
             if (anonymous)

@@ -29,9 +29,12 @@ namespace Ch.Cyberduck.Core.Refresh.Views
             this.WhenActivated(d =>
             {
                 d(this.OneWayBind(ViewModel, vm => vm.Busy, v => v.Status.IsBusy));
-                d(this.OneWayBind(ViewModel, vm => vm.Enabled, v => v.IsEnabled));
                 d(this.OneWayBind(ViewModel, vm => vm.Versions, v => v.VersionGrid.ItemsSource));
                 d(this.Bind(ViewModel, vm => vm.SelectedVersion, v => v.VersionGrid.SelectedItem));
+                d(this.BindCommand(ViewModel, vm => vm.Revert, v => v.RevertButton));
+                d(this.BindCommand(ViewModel, vm => vm.Remove, v => v.RemoveButton));
+                d(this.BindCommand(ViewModel, vm => vm.Open, v => v.OpenButton));
+                d(this.BindCommand(ViewModel, vm => vm.Help, v => v.HelpButton));
             });
         }
     }

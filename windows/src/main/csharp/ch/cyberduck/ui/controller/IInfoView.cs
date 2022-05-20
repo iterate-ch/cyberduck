@@ -49,6 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
         String ToolbarS3Label { set; }
         bool ToolbarPermissionsEnabled { set; }
         bool ToolbarMetadataEnabled { set; }
+        bool ToolbarVersionsEnabled { set; }
 
         Image FileIcon { set; }
         string Filename { set; get; }

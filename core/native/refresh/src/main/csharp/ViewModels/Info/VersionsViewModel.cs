@@ -1,4 +1,5 @@
 ﻿using ch.cyberduck.core;
+using ch.cyberduck.core.features;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
@@ -24,6 +25,8 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 
         public VersionsViewModel(Controller controller, SessionPool session)
         {
+            var versioning = (Versioning)session.getFeature(typeof(Versioning));
+
             /* setup tracking */
             viewModelCache = versions.Connect()
                 .AddKey(x => x)
@@ -40,66 +43,68 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 .Switch().ToProperty(this, nameof(SelectedVersion), out selectedVersionProperty);
 
             /* setup commands */
-            Select = ReactiveCommand.CreateFromTask(async (Path file) =>
+            Revert = ReactiveCommand.CreateFromTask(async () =>
             {
-                // handle multiple selection
-                if (file == null)
-                {
-                    Enabled = false;
-                    return;
-                }
-
+                TaskCompletionSource<object> result = new();
+                controller.background(
+                    new AsyncWorkerBackgroundAction(controller, session, result,
+                        new RevertWorker(Collections.singletonList(SelectedVersionValue.Path))));
+                await result.Task;
+                await Load.ExecuteIfPossible();
+            }, Observable.CombineLatest(
+                this.WhenAnyValue(v => v.Selection),
+                this.WhenAnyValue(v => v.SelectedVersionValue),
+                (s, v) => v != null && versioning.isRevertable(s)));
+            Load = ReactiveCommand.CreateFromTask(async () =>
+            {
                 TaskCompletionSource<AttributedList> result = new();
                 controller.background(
                     new WorkerBackgroundAction(
-                        controller, session, new VersionsWorkerImpl(file, new DisabledListProgressListener(), result)));
-                try
+                        controller, session, new VersionsWorkerImpl(Selection, new DisabledListProgressListener(), result)));
+                var versions = await result.Task;
+                this.versions.Edit(u =>
                 {
-                    Busy = true;
-                    var versions = await result.Task;
-                    this.versions.Edit(u =>
+                    u.Clear();
+                    Iterator versionIterator = versions.iterator();
+                    try
                     {
-                        u.Clear();
-                        Iterator versionIterator = versions.iterator();
-                        try
+                        while (versionIterator.hasNext())
                         {
-                            while (versionIterator.hasNext())
+                            Path path;
+                            try
                             {
-                                Path path;
-                                try
-                                {
-                                    path = (Path)versionIterator.next();
-                                }
-                                catch (Exception)
-                                {
-                                    // Catch next
-                                    continue;
-                                }
-
-                                u.Add(new VersionModel(path));
+                                path = (Path)versionIterator.next();
                             }
+                            catch (Exception)
+                            {
+                                // Log exception
+                                continue;
+                            }
+
+                            u.Add(new VersionModel(path));
                         }
-                        catch (Exception)
-                        {
-                            // Catch hasNext
-                        }
-                    });
-                    Enabled = true;
-                }
-                finally
-                {
-                    Busy = false;
-                }
+                    }
+                    catch (Exception)
+                    {
+                        // Log exception
+                    }
+                });
             });
+            Load.IsExecuting.ToPropertyEx(this, x => x.Busy);
         }
 
-        [Reactive]
-        public bool Busy { get; set; }
+        [ObservableAsProperty]
+        public bool Busy { get; }
 
-        [Reactive]
-        public bool Enabled { get; private set; }
+        public ReactiveCommand<Unit, Unit> Help { get; }
 
-        public ReactiveCommand<Path, Unit> Select { get; }
+        public ReactiveCommand<Unit, Unit> Load { get; }
+
+        public ReactiveCommand<Unit, Unit> Open { get; }
+
+        public ReactiveCommand<Unit, Unit> Remove { get; }
+
+        public ReactiveCommand<Unit, Unit> Revert { get; }
 
         public VersionViewModel SelectedVersion
         {
@@ -107,10 +112,29 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             set => SelectedVersionValue = value?.Model;
         }
 
+        [Reactive]
+        public Path Selection { get; set; }
+
         public BindingList<VersionViewModel> Versions { get; } = new();
 
         [Reactive]
         private VersionModel SelectedVersionValue { get; set; }
+
+        private class AsyncWorkerBackgroundAction : WorkerBackgroundAction
+        {
+            private readonly TaskCompletionSource<object> completionSource;
+
+            public AsyncWorkerBackgroundAction(Controller controller, SessionPool session, TaskCompletionSource<object> completionSource, Worker worker) : base(controller, session, worker)
+            {
+                this.completionSource = completionSource;
+            }
+
+            public override void cleanup()
+            {
+                base.cleanup();
+                completionSource.SetResult(default);
+            }
+        }
 
         private class VersionsWorkerImpl : VersionsWorker
         {

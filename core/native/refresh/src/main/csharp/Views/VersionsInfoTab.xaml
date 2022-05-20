@@ -24,9 +24,11 @@
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   Margin="11,2,11,0"
+                  SelectionMode="Single"
+                  SelectionUnit="FullRow"
                   Grid.Row="1">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{xaml:Text 'Modification Date', Table=Info}"
+                <DataGridTextColumn Header="{xaml:Text 'Modified', Table=Info}"
                                     Binding="{Binding Timestamp}"
                                     Width="*" />
                 <DataGridTextColumn Header="{xaml:Text 'Checksum', Table=Info}"
@@ -35,7 +37,7 @@
                 <DataGridTextColumn Header="{xaml:Text 'Size', Table=Info}"
                                     Binding="{Binding Size}"
                                     Width="*" />
-                <DataGridTextColumn Header="{xaml:Text 'Owner', Table=Info}"
+                <DataGridTextColumn Header="{xaml:Text 'Changed By', Table=Info}"
                                     Binding="{Binding Owner}"
                                     Width="*" />
             </DataGrid.Columns>
@@ -49,7 +51,7 @@
             <Grid>
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Left">
-                    <Button x:Name="RestoreButton"
+                    <Button x:Name="RevertButton"
                             Content="&#xE777;"
                             FontFamily="Segoe MDL2 Assets"
                             Height="23"
