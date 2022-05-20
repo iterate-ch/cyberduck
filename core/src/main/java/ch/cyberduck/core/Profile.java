@@ -131,6 +131,15 @@ public class Profile implements Protocol {
     }
 
     @Override
+    public String getHostnamePlaceholder() {
+        final String v = this.value("Hostname Placeholder");
+        if(StringUtils.isBlank(v)) {
+            return parent.getHostnamePlaceholder();
+        }
+        return v;
+    }
+
+    @Override
     public String getUsernamePlaceholder() {
         final String v = this.value("Username Placeholder");
         if(StringUtils.isBlank(v)) {
