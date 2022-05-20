@@ -1,15 +1,9 @@
 package ch.cyberduck.core.sds.io.swagger.client;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import ch.cyberduck.core.sds.io.swagger.client.auth.ApiKeyAuth;
+import ch.cyberduck.core.sds.io.swagger.client.auth.Authentication;
+import ch.cyberduck.core.sds.io.swagger.client.auth.HttpBasicAuth;
+import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
@@ -21,35 +15,35 @@ import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
-
-import java.net.URLEncoder;
-
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-
-import java.text.DateFormat;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ch.cyberduck.core.sds.io.swagger.client.auth.Authentication;
-import ch.cyberduck.core.sds.io.swagger.client.auth.HttpBasicAuth;
-import ch.cyberduck.core.sds.io.swagger.client.auth.ApiKeyAuth;
-import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
@@ -707,7 +701,7 @@ import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
       } else if ("PUT".equals(method)) {
         response = invocationBuilder.put(entity);
       } else if ("DELETE".equals(method)) {
-        response = invocationBuilder.delete();
+        response = invocationBuilder.method("DELETE", entity);
       } else if ("PATCH".equals(method)) {
         response = invocationBuilder.method("PATCH", entity);
       } else if ("HEAD".equals(method)) {
