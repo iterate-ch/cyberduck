@@ -6,6 +6,10 @@ https://cyberduck.io/
 - [Feature] Support applications installed from Windows Store for editing files (#12802) (Windows)
 - [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
 - [Feature] Migrate OAuth out-of-band flow to an alternative method (#13360) (Google Drive, Google Storage)
+- [Bugfix] Do not attempt to set ACL on files uploaded to bucket with owner controls set that disallows ACLs (S3) (#13386)
+- [Bugfix] Register custom DNS resolver to handle IPv6 preference (#13399)
+- [Bugfix] Failure opening vault (Cryptomator, FTP) (#13375)
+- [Bugfix] Mismatch between SHA256 hash error when downloading files (Dropbox) (#13361)
 
 8.3.3
 - [Bugfix] Failing transfers with multipe files (FTP) (#13322)
