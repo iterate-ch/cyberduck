@@ -143,7 +143,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
         final PreferencesReader preferences = new HostPreferences(session.getHost());
         if(S3Session.isAwsHostname(host.getHostname(), false)) {
             // Check if not already set to accelerated endpoint
-            if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
+            if(StringUtils.equals(S3TransferAccelerationService.S3_ACCELERATE_DUALSTACK_HOSTNAME,
+                    properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")))) {
                 log.debug("Skip adjusting endpoint with transfer acceleration");
             }
             else {
