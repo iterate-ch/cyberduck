@@ -10,6 +10,9 @@ https://cyberduck.io/
 - [Bugfix] Register custom DNS resolver to handle IPv6 preference (#13399)
 - [Bugfix] Failure opening vault (Cryptomator, FTP) (#13375)
 - [Bugfix] Mismatch between SHA256 hash error when downloading files (Dropbox) (#13361)
+- [Bugfix] No such file error when uploading with tempoprary filename option (SFTP) (#13367)
+- [Bugfix] Transfer acceleration endpoints not used (S3) (#13359)
+- [Bugfix] Delete multiple files with batch request (DRACOON)
 
 8.3.3
 - [Bugfix] Failing transfers with multipe files (FTP) (#13322)
@@ -1200,7 +1203,7 @@ https://cyberduck.io/
 - [Feature] Support US West (Oregon) location (S3)
 - [Feature] Try public key authentication login with default keys from OpenSSH (SFTP) (#3982)
 - [Bugfix] Performance improvement preparing files for download
-- [Bugfix] ETag mismatch deleting files	(Google Docs) (#6204)
+- [Bugfix] ETag mismatch deleting files    (Google Docs) (#6204)
 - [Bugfix] Creating new file (WebDAV) (#6341)
 - [Bugfix] No error message when SFTP subsystem is disabled (SFTP) (#5902)
 
