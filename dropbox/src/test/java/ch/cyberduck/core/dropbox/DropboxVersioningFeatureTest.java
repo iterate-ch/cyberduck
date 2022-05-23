@@ -31,6 +31,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
@@ -40,7 +41,7 @@ import com.dropbox.core.v2.files.Metadata;
 
 import static org.junit.Assert.*;
 
-@IntegrationTest
+@Category(IntegrationTest.class)
 public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
 
     @Test
