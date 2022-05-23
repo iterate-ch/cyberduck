@@ -163,7 +163,11 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set temporary filename %s", renamed));
                     }
-                    status.temporary(renamed, file);
+                    // Set target name after transfer
+                    status.withRename(renamed).withDisplayname(file);
+                    // Remember status of target file for later rename
+                    status.getDisplayname().exists(status.isExists());
+                    // Keep exist flag for subclasses to determine additional rename strategy
                 }
             }
             status.withMime(new MappingMimeTypeService().getMime(file.getName()));
@@ -300,7 +304,13 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
-        //
+        if(status.getRename().remote != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Clear exist flag for file %s", local));
+            }
+            // Reset exist flag after subclass hae applied strategy
+            status.setExists(false);
+        }
     }
 
     @Override
@@ -360,7 +370,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));
                     }
-                    move.move(file, status.getDisplayname().remote, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                    move.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
+                            new Delete.DisabledCallback(), new DisabledConnectionCallback());
                 }
             }
         }

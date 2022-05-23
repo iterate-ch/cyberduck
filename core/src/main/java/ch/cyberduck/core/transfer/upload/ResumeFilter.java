@@ -96,11 +96,9 @@ public class ResumeFilter extends AbstractUploadFilter {
                 final Write.Append append = upload.append(file, status);
                 if(append.append && append.size < status.getLength()) {
                     // Append to existing file
-                    status.setAppend(true);
+                    status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
                     status.setLength(status.getLength() - append.size);
                     status.setOffset(append.size);
-                    // Disable use of temporary target when resuming upload
-                    status.temporary(null, null);
                 }
             }
         }

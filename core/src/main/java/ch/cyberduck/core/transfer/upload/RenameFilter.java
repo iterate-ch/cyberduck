@@ -33,6 +33,8 @@ import org.apache.logging.log4j.Logger;
 public class RenameFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(RenameFilter.class);
 
+    private final UploadFilterOptions options;
+
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
         this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
@@ -40,6 +42,7 @@ public class RenameFilter extends AbstractUploadFilter {
     public RenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                         final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
+        this.options = options;
     }
 
     @Override
@@ -53,11 +56,13 @@ public class RenameFilter extends AbstractUploadFilter {
                 if(StringUtils.isNotBlank(Path.getExtension(filename))) {
                     proposal += String.format(".%s", Path.getExtension(filename));
                 }
-                if(parent.getRename().remote != null) {
-                    status.rename(new Path(parent.getRename().remote, proposal, file.getType()));
+                final Path renamed = new Path(file.getParent(), proposal, file.getType());
+                if(options.temporary) {
+                    // Adjust final destination when uploading with temporary filename
+                    status.getDisplayname().withRemote(renamed).exists(false);
                 }
                 else {
-                    status.rename(new Path(file.getParent(), proposal, file.getType()));
+                    status.withRename(renamed);
                 }
             }
             while(find.find(status.getRename().remote));
@@ -71,7 +76,14 @@ public class RenameFilter extends AbstractUploadFilter {
         }
         else {
             if(parent.getRename().remote != null) {
-                status.rename(new Path(parent.getRename().remote, file.getName(), file.getType()));
+                final Path renamed = new Path(parent.getRename().remote, file.getName(), file.getType());
+                if(options.temporary) {
+                    // Adjust final destination when uploading with temporary filename
+                    status.getDisplayname().withRemote(renamed).exists(false);
+                }
+                else {
+                    status.withRename(renamed);
+                }
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));

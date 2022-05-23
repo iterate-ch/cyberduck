@@ -91,7 +91,7 @@ public class ResumeFilterTest {
     }
 
     @Test
-    public void testPrepareFalse() throws Exception {
+    public void testPrepareNoAppend() throws Exception {
         final Host host = new Host(new TestProtocol());
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
             new UploadFilterOptions(host).withTemporary(true));
@@ -99,11 +99,13 @@ public class ResumeFilterTest {
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
         assertFalse(status.isAppend());
+        assertFalse(status.isExists());
         assertNotNull(status.getRename().remote);
+        assertNotEquals(t, status.getRename().remote);
     }
 
     @Test
-    public void testPrepare() throws Exception {
+    public void testPrepareAppend() throws Exception {
         final Host host = new Host(new TestProtocol());
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host) {
             @Override
@@ -131,22 +133,10 @@ public class ResumeFilterTest {
             }
         }, new TransferStatus().exists(true), new DisabledProgressListener());
         assertTrue(status.isAppend());
+        assertTrue(status.isExists());
         // Temporary target
         assertNull(status.getRename().remote);
         assertEquals(7L, status.getOffset());
-    }
-
-    @Test
-    public void testPrepare0() throws Exception {
-        final Host host = new Host(new TestProtocol());
-        final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), new NullSession(host),
-            new UploadFilterOptions(host).withTemporary(true));
-        final Path t = new Path("t", EnumSet.of(Path.Type.file));
-        t.attributes().setSize(0L);
-        final TransferStatus status = f.prepare(t, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
-        assertFalse(status.isAppend());
-        assertNotNull(status.getRename().remote);
-        assertEquals(0L, status.getOffset());
     }
 
     @Test

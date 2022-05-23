@@ -76,7 +76,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Clear exist flag for file %s", file));
             }
-            status.setExists(false);
+            status.exists(false).getDisplayname().exists(false);
         }
         super.apply(file, local, status, listener);
     }
