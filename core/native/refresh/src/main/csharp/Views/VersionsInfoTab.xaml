@@ -48,36 +48,27 @@
                 Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
                 BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"
                 Grid.Row="2">
-            <Grid>
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Left">
-                    <Button x:Name="RevertButton"
-                            Content="&#xE777;"
-                            FontFamily="Segoe MDL2 Assets"
-                            Height="23"
-                            Margin="0,0,3.5,0"
-                            Width="25" />
-                    <Button x:Name="RemoveButton"
-                            Content="&#xE738;"
-                            FontFamily="Segoe MDL2 Assets"
-                            Height="23"
-                            Margin="3.5,0"
-                            Width="25" />
-                    <Button x:Name="OpenButton"
-                            Content="&#xE890;"
-                            FontFamily="Segoe MDL2 Assets"
-                            Height="23"
-                            Margin="3.5,0,0,0"
-                            Width="25" />
-                </StackPanel>
-
-                <Button x:Name="HelpButton"
-                        Content="&#xE897;"
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Left">
+                <Button x:Name="RevertButton"
+                        Content="&#xE777;"
                         FontFamily="Segoe MDL2 Assets"
                         Height="23"
-                        HorizontalAlignment="Right"
+                        Margin="0,0,3.5,0"
                         Width="25" />
-            </Grid>
+                <Button x:Name="RemoveButton"
+                        Content="&#xE738;"
+                        FontFamily="Segoe MDL2 Assets"
+                        Height="23"
+                        Margin="3.5,0"
+                        Width="25" />
+                <Button x:Name="OpenButton"
+                        Content="&#xE890;"
+                        FontFamily="Segoe MDL2 Assets"
+                        Height="23"
+                        Margin="3.5,0,0,0"
+                        Width="25" />
+            </StackPanel>
         </Border>
 
         <xctk:BusyIndicator x:Name="Status"

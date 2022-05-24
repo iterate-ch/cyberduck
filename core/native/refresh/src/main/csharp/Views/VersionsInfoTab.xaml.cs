@@ -1,4 +1,4 @@
-﻿using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -31,10 +31,9 @@ namespace Ch.Cyberduck.Core.Refresh.Views
                 d(this.OneWayBind(ViewModel, vm => vm.Busy, v => v.Status.IsBusy));
                 d(this.OneWayBind(ViewModel, vm => vm.Versions, v => v.VersionGrid.ItemsSource));
                 d(this.Bind(ViewModel, vm => vm.SelectedVersion, v => v.VersionGrid.SelectedItem));
-                d(this.BindCommand(ViewModel, vm => vm.Revert, v => v.RevertButton));
-                d(this.BindCommand(ViewModel, vm => vm.Remove, v => v.RemoveButton));
                 d(this.BindCommand(ViewModel, vm => vm.Open, v => v.OpenButton));
-                d(this.BindCommand(ViewModel, vm => vm.Help, v => v.HelpButton));
+                d(this.BindCommand(ViewModel, vm => vm.Remove, v => v.RemoveButton));
+                d(this.BindCommand(ViewModel, vm => vm.Revert, v => v.RevertButton));
             });
         }
     }

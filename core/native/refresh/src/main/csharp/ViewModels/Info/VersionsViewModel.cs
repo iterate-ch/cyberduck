@@ -9,6 +9,7 @@ using java.util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -43,64 +44,105 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 .Switch().ToProperty(this, nameof(SelectedVersion), out selectedVersionProperty);
 
             /* setup commands */
+            Remove = ReactiveCommand.CreateFromTask(async () =>
+            {
+                var norm = PathNormalizer.normalize(Collections.singletonList(SelectedVersionValue.Path));
+                if (norm.size() == 0)
+                {
+                    return;
+                }
+                var native = Utils.ConvertFromJavaList<Path>(norm);
+                if (!await PromptDelete.Handle(native))
+                {
+                    return;
+                }
+                try
+                {
+                    Busy = true;
+                    TaskCompletionSource<object> result = new();
+                    controller.background(
+                        new AsyncWorkerBackgroundAction(controller, session, result,
+                            new DeleteWorker(
+                                LoginCallbackFactory.get(controller), norm,
+                                PathCache.empty(), new DisabledProgressListener())));
+                    await result.Task;
+                }
+                finally
+                {
+                    Busy = false;
+                }
+                await Load.ExecuteIfPossible();
+            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null));
             Revert = ReactiveCommand.CreateFromTask(async () =>
             {
-                TaskCompletionSource<object> result = new();
-                controller.background(
-                    new AsyncWorkerBackgroundAction(controller, session, result,
-                        new RevertWorker(Collections.singletonList(SelectedVersionValue.Path))));
-                await result.Task;
+                try
+                {
+                    Busy = true;
+                    TaskCompletionSource<object> result = new();
+                    controller.background(
+                        new AsyncWorkerBackgroundAction(controller, session, result,
+                            new RevertWorker(Collections.singletonList(SelectedVersionValue.Path))));
+                    await result.Task;
+                }
+                finally
+                {
+                    Busy = false;
+                }
                 await Load.ExecuteIfPossible();
-            }, Observable.CombineLatest(
-                this.WhenAnyValue(v => v.Selection),
-                this.WhenAnyValue(v => v.SelectedVersionValue),
-                (s, v) => v != null && versioning.isRevertable(s)));
+            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null && versioning.isRevertable(v.Path)));
             Load = ReactiveCommand.CreateFromTask(async () =>
             {
-                TaskCompletionSource<AttributedList> result = new();
-                controller.background(
-                    new WorkerBackgroundAction(
-                        controller, session, new VersionsWorkerImpl(Selection, new DisabledListProgressListener(), result)));
-                var versions = await result.Task;
-                this.versions.Edit(u =>
+                try
                 {
-                    u.Clear();
-                    Iterator versionIterator = versions.iterator();
-                    try
+                    Busy = true;
+                    TaskCompletionSource<AttributedList> result = new();
+                    controller.background(
+                        new WorkerBackgroundAction(
+                            controller, session, new VersionsWorkerImpl(Selection, new DisabledListProgressListener(), result)));
+                    var versions = await result.Task;
+                    this.versions.Edit(u =>
                     {
-                        while (versionIterator.hasNext())
+                        u.Clear();
+                        Iterator versionIterator = versions.iterator();
+                        try
                         {
-                            Path path;
-                            try
+                            while (versionIterator.hasNext())
                             {
-                                path = (Path)versionIterator.next();
-                            }
-                            catch (Exception)
-                            {
-                                // Log exception
-                                continue;
-                            }
+                                Path path;
+                                try
+                                {
+                                    path = (Path)versionIterator.next();
+                                }
+                                catch (Exception)
+                                {
+                                    // Log exception
+                                    continue;
+                                }
 
-                            u.Add(new VersionModel(path));
+                                u.Add(new VersionModel(path));
+                            }
                         }
-                    }
-                    catch (Exception)
-                    {
-                        // Log exception
-                    }
-                });
+                        catch (Exception)
+                        {
+                            // Log exception
+                        }
+                    });
+                }
+                finally
+                {
+                    Busy = false;
+                }
             });
-            Load.IsExecuting.ToPropertyEx(this, x => x.Busy);
         }
 
-        [ObservableAsProperty]
-        public bool Busy { get; }
-
-        public ReactiveCommand<Unit, Unit> Help { get; }
+        [Reactive]
+        public bool Busy { get; private set; }
 
         public ReactiveCommand<Unit, Unit> Load { get; }
 
         public ReactiveCommand<Unit, Unit> Open { get; }
+
+        public Interaction<ICollection<Path>, bool> PromptDelete { get; } = new();
 
         public ReactiveCommand<Unit, Unit> Remove { get; }
 
