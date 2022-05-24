@@ -79,7 +79,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
         if(status.isExists()) {
             resourceId = fileid.getFileId(file, new DisabledListProgressListener());
             uploadUri = EueUploadHelper.updateResource(session,
-                    resourceId, UploadType.CHUNKED).getUploadURI();
+                    resourceId, status, UploadType.CHUNKED).getUploadURI();
         }
         else {
             final ResourceCreationResponseEntry resourceCreationResponseEntry =
@@ -108,6 +108,11 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new SHA256ChecksumCompute();
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 
     private final class MultipartOutputStream extends OutputStream {

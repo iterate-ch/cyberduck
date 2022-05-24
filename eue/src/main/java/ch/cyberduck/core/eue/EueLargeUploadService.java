@@ -93,7 +93,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             final String uploadUri;
             if(status.isExists()) {
                 resourceId = fileid.getFileId(file, new DisabledListProgressListener());
-                uploadUri = EueUploadHelper.updateResource(session, resourceId, UploadType.CHUNKED).getUploadURI();
+                uploadUri = EueUploadHelper.updateResource(session, resourceId, status, UploadType.CHUNKED).getUploadURI();
             }
             else {
                 final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = EueUploadHelper.

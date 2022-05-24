@@ -14,6 +14,7 @@ package ch.cyberduck.core.eue.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationPropertiesModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -77,6 +78,9 @@ public class ResourceCreationRepresentationArrayInner {
 
   @JsonProperty("uploadType")
   private UploadType uploadType = null;
+
+  @JsonProperty("properties")
+  private ResourceCreationPropertiesModel properties = null;
 
   public ResourceCreationRepresentationArrayInner forceOverwrite(Boolean forceOverwrite) {
     this.forceOverwrite = forceOverwrite;
@@ -204,6 +208,24 @@ public class ResourceCreationRepresentationArrayInner {
     this.uploadType = uploadType;
   }
 
+  public ResourceCreationRepresentationArrayInner properties(ResourceCreationPropertiesModel properties) {
+    this.properties = properties;
+    return this;
+  }
+
+   /**
+   * Get properties
+   * @return properties
+  **/
+  @Schema(description = "")
+  public ResourceCreationPropertiesModel getProperties() {
+    return properties;
+  }
+
+  public void setProperties(ResourceCreationPropertiesModel properties) {
+    this.properties = properties;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -220,12 +242,13 @@ public class ResourceCreationRepresentationArrayInner {
         Objects.equals(this.resourceType, resourceCreationRepresentationArrayInner.resourceType) &&
         Objects.equals(this.sha256, resourceCreationRepresentationArrayInner.sha256) &&
         Objects.equals(this.size, resourceCreationRepresentationArrayInner.size) &&
-        Objects.equals(this.uploadType, resourceCreationRepresentationArrayInner.uploadType);
+        Objects.equals(this.uploadType, resourceCreationRepresentationArrayInner.uploadType) &&
+        Objects.equals(this.properties, resourceCreationRepresentationArrayInner.properties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(forceOverwrite, ovewrite, path, resourceType, sha256, size, uploadType);
+    return Objects.hash(forceOverwrite, ovewrite, path, resourceType, sha256, size, uploadType, properties);
   }
 
 
@@ -241,6 +264,7 @@ public class ResourceCreationRepresentationArrayInner {
     sb.append("    sha256: ").append(toIndentedString(sha256)).append("\n");
     sb.append("    size: ").append(toIndentedString(size)).append("\n");
     sb.append("    uploadType: ").append(toIndentedString(uploadType)).append("\n");
+    sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("}");
     return sb.toString();
   }

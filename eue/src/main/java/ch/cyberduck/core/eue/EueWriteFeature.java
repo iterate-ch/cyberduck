@@ -74,7 +74,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         if(null == status.getUrl()) {
             if(status.isExists()) {
                 resourceId = fileid.getFileId(file, new DisabledListProgressListener());
-                uploadUri = EueUploadHelper.updateResource(session, resourceId, UploadType.SIMPLE).getUploadURI();
+                uploadUri = EueUploadHelper.updateResource(session, resourceId, status, UploadType.SIMPLE).getUploadURI();
             }
             else {
                 final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = EueUploadHelper
@@ -156,6 +156,11 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 
     public void cancel(final String uploadUri) throws BackgroundException {
