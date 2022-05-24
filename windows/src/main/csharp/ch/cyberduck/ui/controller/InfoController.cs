@@ -181,7 +181,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitVersions()
         {
-            var viewModel = View.Versions.ViewModel ??= new VersionsViewModel(_controller, _controller.Session);
+            if (View.Versions.ViewModel is not VersionsViewModel viewModel)
+            {
+                viewModel = new VersionsViewModel(_controller, _controller.Session);
+                View.Versions.ViewModel = viewModel;
+                viewModel.PromptDelete.RegisterHandler(c => c.SetOutput(_controller.DeletePathsPrompt(c.Input)));
+            }
             viewModel.Selection = SelectedPath;
             viewModel.Load.ExecuteIfPossible().Subscribe();
         }
