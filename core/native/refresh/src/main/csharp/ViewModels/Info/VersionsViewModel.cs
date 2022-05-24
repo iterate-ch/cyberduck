@@ -1,8 +1,11 @@
 ﻿using ch.cyberduck.core;
 using ch.cyberduck.core.features;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.worker;
+using ch.cyberduck.ui.quicklook;
 using Ch.Cyberduck.Core.Refresh.Models;
 using DynamicData;
 using java.util;
@@ -26,6 +29,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 
         public VersionsViewModel(Controller controller, SessionPool session)
         {
+            var temporary = TemporaryFileServiceFactory.get();
             var versioning = (Versioning)session.getFeature(typeof(Versioning));
 
             /* setup tracking */
@@ -44,6 +48,13 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 .Switch().ToProperty(this, nameof(SelectedVersion), out selectedVersionProperty);
 
             /* setup commands */
+            Open = ReactiveCommand.Create(() =>
+            {
+                var f = SelectedVersionValue.Path;
+                controller.background(new QuicklookTransferBackgroundAction(
+                    controller, QuickLookFactory.get(), session, Collections.singletonList(
+                        new TransferItem(f, temporary.create(session.getHost().getUuid(), f)))));
+            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null));
             Remove = ReactiveCommand.CreateFromTask(async () =>
             {
                 var norm = PathNormalizer.normalize(Collections.singletonList(SelectedVersionValue.Path));
