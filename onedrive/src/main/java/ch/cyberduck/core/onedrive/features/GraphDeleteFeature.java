@@ -68,7 +68,7 @@ public class GraphDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return session.isAccessible(file, false);
+        return !file.attributes().isDuplicate() && session.isAccessible(file, false);
     }
 
     @Override

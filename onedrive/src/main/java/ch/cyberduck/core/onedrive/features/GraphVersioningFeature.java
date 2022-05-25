@@ -68,7 +68,9 @@ public class GraphVersioningFeature implements Versioning {
             final DriveItem.Metadata parentMetadata = item.getMetadata();
             final List<DriveItemVersion> versionList = Files.versions(item);
             for (final DriveItemVersion version : versionList) {
-                versions.add(new Path(file).withAttributes(attributes.toAttributes(parentMetadata, version)));
+                PathAttributes attr = attributes.toAttributes(parentMetadata, version);
+                attr.setDuplicate(true);
+                versions.add(new Path(file).withAttributes(attr));
             }
         } catch (OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
