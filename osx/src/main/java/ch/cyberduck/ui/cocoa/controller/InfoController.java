@@ -42,6 +42,7 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
@@ -1171,10 +1172,13 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+                final Path version = versions.get(versionsTable.selectedRow().intValue());
+                versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
+                        && session.getFeature(Delete.class).isSupported(version));
                 versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && session.getFeature(Versioning.class).isRevertable(getSelected()));
-                versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1);
+                        && session.getFeature(Versioning.class).isRevertable(version));
+                versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
+                        && version.attributes().getPermission().isReadable());
                 if(quicklook.isOpen()) {
                     versionsQuicklookButtonClicked(null);
                 }
