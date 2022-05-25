@@ -124,8 +124,10 @@ public class OneDriveSession extends GraphSession {
         if(file.isRoot()) {
             return false;
         }
-
-        final ContainerItem containerItem = getContainer(file);
+        if(file.attributes().isDuplicate()) {
+            return false;
+        }
+        final ContainerItem containerItem = this.getContainer(file);
 
         // Operations using container access:
         // touch, directory

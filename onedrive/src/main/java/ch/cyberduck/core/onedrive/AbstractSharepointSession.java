@@ -150,8 +150,10 @@ public abstract class AbstractSharepointSession extends GraphSession {
         if(file.isRoot()) {
             return false;
         }
-
-        final ContainerItem containerItem = getContainer(file);
+        if(file.attributes().isDuplicate()) {
+            return false;
+        }
+        final ContainerItem containerItem = this.getContainer(file);
         if(!containerItem.isDefined()) {
             return false;
         }
