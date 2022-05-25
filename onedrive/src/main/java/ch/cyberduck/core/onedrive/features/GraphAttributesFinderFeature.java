@@ -116,6 +116,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
     public PathAttributes toAttributes(final DriveItem.Metadata metadata, final DriveItemVersion version) {
         final PathAttributes attributes = toAttributes(metadata);
         attributes.setVersionId(version.getId());
+        attributes.setDuplicate(true);
         attributes.setSize(version.getSize());
         attributes.setModificationDate(version.getLastModifiedDateTime().toInstant().toEpochMilli());
         return attributes;
