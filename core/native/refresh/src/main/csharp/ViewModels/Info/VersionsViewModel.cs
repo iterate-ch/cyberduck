@@ -30,6 +30,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
         public VersionsViewModel(Controller controller, SessionPool session)
         {
             var temporary = TemporaryFileServiceFactory.get();
+            var delete = (Delete)session.getFeature(typeof(Delete));
             var versioning = (Versioning)session.getFeature(typeof(Versioning));
 
             /* setup tracking */
@@ -83,7 +84,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                     Busy = false;
                 }
                 await Load.ExecuteIfPossible();
-            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null));
+            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null && delete.isSupported(v.Path)));
             Revert = ReactiveCommand.CreateFromTask(async () =>
             {
                 try
