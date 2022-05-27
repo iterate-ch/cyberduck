@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 controller.background(new QuicklookTransferBackgroundAction(
                     controller, QuickLookFactory.get(), session, Collections.singletonList(
                         new TransferItem(f, temporary.create(session.getHost().getUuid(), f)))));
-            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null));
+            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null && v.Path.attributes().getPermission().isReadable()));
             Remove = ReactiveCommand.CreateFromTask(async () =>
             {
                 var norm = PathNormalizer.normalize(Collections.singletonList(SelectedVersionValue.Path));
