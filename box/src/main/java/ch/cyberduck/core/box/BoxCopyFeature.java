@@ -31,9 +31,13 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Collections;
 
 public class BoxCopyFeature implements Copy {
+    private static final Logger log = LogManager.getLogger(BoxCopyFeature.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -44,22 +48,25 @@ public class BoxCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
+    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                }
                 new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
-            if(source.isDirectory()) {
+            if(file.isDirectory()) {
                 return target.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                         new FoldersApi(new BoxApiClient(session.getClient())).postFoldersIdCopy(
-                                fileid.getFileId(source, new DisabledListProgressListener()),
+                                fileid.getFileId(file, new DisabledListProgressListener()),
                                 new FolderIdCopyBody().name(target.getName()).parent(new FoldersfolderIdcopyParent().id(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))),
                                 BoxAttributesFinderFeature.DEFAULT_FIELDS)
                 ));
             }
             return target.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FilesApi(new BoxApiClient(session.getClient())).postFilesIdCopy(
-                            fileid.getFileId(source, new DisabledListProgressListener()),
+                            fileid.getFileId(file, new DisabledListProgressListener()),
                             new FileIdCopyBody()
                                     .name(target.getName())
                                     .parent(new FilesfileIdcopyParent().id(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))),
@@ -67,7 +74,7 @@ public class BoxCopyFeature implements Copy {
             ));
         }
         catch(ApiException e) {
-            throw new BoxExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
+            throw new BoxExceptionMappingService(fileid).map("Cannot copy {0}", e, file);
         }
     }
 

@@ -52,17 +52,20 @@ public class GraphCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
+    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         final CopyOperation copyOperation = new CopyOperation();
-        if(!StringUtils.equals(source.getName(), target.getName())) {
+        if(!StringUtils.equals(file.getName(), target.getName())) {
             copyOperation.rename(target.getName());
         }
         if(status.isExists()) {
+            if(logger.isWarnEnabled()) {
+                logger.warn(String.format("Delete file %s to be replaced with %s", target, file));
+            }
             new GraphDeleteFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
         final DriveItem targetItem = session.getItem(target.getParent());
         copyOperation.copy(targetItem);
-        final DriveItem item = session.getItem(source);
+        final DriveItem item = session.getItem(file);
         try {
             Files.copy(item, copyOperation).await(statusObject -> logger.info(String.format("Copy Progress Operation %s progress %f status %s",
                 statusObject.getOperation(),
@@ -75,10 +78,10 @@ public class GraphCopyFeature implements Copy {
             return target.withAttributes(attr);
         }
         catch(OneDriveAPIException e) {
-            throw new GraphExceptionMappingService(fileid).map("Cannot copy {0}", e, source);
+            throw new GraphExceptionMappingService(fileid).map("Cannot copy {0}", e, file);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, file);
         }
     }
 

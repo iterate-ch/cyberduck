@@ -49,6 +49,9 @@ public class BrickMoveFeature extends BrickFileMigrationFeature implements Move 
         try {
             final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                }
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, delete);
             }
             final FileActionEntity entity = new FileActionsApi(client)

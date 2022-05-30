@@ -32,9 +32,13 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Collections;
 
 public class BoxMoveFeature implements Move {
+    private static final Logger log = LogManager.getLogger(BoxMoveFeature.class);
 
     private final BoxSession session;
     private final BoxFileidProvider fileid;
@@ -48,6 +52,9 @@ public class BoxMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
+                }
                 new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
             final String id = fileid.getFileId(file, new DisabledListProgressListener());

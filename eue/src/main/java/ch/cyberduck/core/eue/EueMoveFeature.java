@@ -56,6 +56,9 @@ public class EueMoveFeature implements Move {
         try {
             final EueApiClient client = new EueApiClient(session);
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Trash file %s to be replaced with %s", target, file));
+                }
                 new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, delete);
             }
             final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
