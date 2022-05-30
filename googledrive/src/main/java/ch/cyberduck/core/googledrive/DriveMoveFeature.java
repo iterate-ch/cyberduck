@@ -25,6 +25,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -32,6 +34,7 @@ import java.util.Collections;
 import com.google.api.services.drive.model.File;
 
 public class DriveMoveFeature implements Move {
+    private static final Logger log = LogManager.getLogger(DriveMoveFeature.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -47,6 +50,9 @@ public class DriveMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Trash file %s to be replaced with %s", renamed, file));
+                }
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             final String id = fileid.getFileId(file, new DisabledListProgressListener());
