@@ -29,7 +29,6 @@ import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.DeleteWorker;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -86,11 +85,18 @@ public class DeleteController extends ProxyController {
                             )
                     );
                 }
+                else {
+                    callback.cancel();
+                }
             }
         });
     }
 
     public interface Callback {
+        default void cancel() {
+            //
+        }
+
         void deleted(final List<Path> deleted);
     }
 }

@@ -1226,6 +1226,11 @@ public class InfoController extends ToolbarWindowController {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
             new DeleteController(this, session, PathCache.empty()).delete(Collections.singletonList(selected), new DeleteController.Callback() {
                 @Override
+                public void cancel() {
+                    toggleVersionsSettings(true);
+                }
+
+                @Override
                 public void deleted(final List<Path> deleted) {
                     toggleVersionsSettings(true);
                     initVersions();
