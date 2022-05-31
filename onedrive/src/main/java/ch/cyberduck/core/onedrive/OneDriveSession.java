@@ -19,12 +19,11 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
-import ch.cyberduck.core.onedrive.features.GraphUrlProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -167,10 +166,10 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public ContainerItem getContainer(final Path file) {
-        if(OneDriveListService.MYFILES_PREDICATE.test(file) || file.isChild(OneDriveListService.MYFILES_NAME)) {
+        if(new SimplePathPredicate(OneDriveListService.MYFILES_NAME).test(file) || file.isChild(OneDriveListService.MYFILES_NAME)) {
             return MYFILES;
         }
-        if(OneDriveListService.SHARED_PREDICATE.test(file) || file.isChild(OneDriveListService.SHARED_NAME)) {
+        if(new SimplePathPredicate(OneDriveListService.SHARED_NAME).test(file) || file.isChild(OneDriveListService.SHARED_NAME)) {
             return SHAREDFILES;
         }
         return ContainerItem.EMPTY;

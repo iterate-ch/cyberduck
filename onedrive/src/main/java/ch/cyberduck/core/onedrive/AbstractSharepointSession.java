@@ -97,13 +97,12 @@ public abstract class AbstractSharepointSession extends GraphSession {
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
-
         // Finds Sites/<Site Name>/Drives/<drive id>
         // Finds /Groups/<Groups Name>/<drive id>
         // Finds /Default/Drives/<drive id>
         // collection is: Drives
         // container is: Drives/<drive id>
-        final GraphSession.ContainerItem driveContainer = getContainer(file);
+        final GraphSession.ContainerItem driveContainer = this.getContainer(file);
         if(!driveContainer.isDrive()) {
             throw new NotfoundException(String.format("File %s is not in a drive.", file.getAbsolute()));
         }
@@ -111,7 +110,6 @@ public abstract class AbstractSharepointSession extends GraphSession {
         if(drive == null) {
             throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
         }
-
         final DriveItem ownItem;
         if(driveContainer.getContainerPath().map(file::equals).orElse(false)) {
             ownItem = drive.getRoot();

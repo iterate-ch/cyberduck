@@ -29,10 +29,7 @@ import java.util.EnumSet;
 public class OneDriveListService implements ListService {
 
     public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
-    public static final SimplePathPredicate MYFILES_PREDICATE = new SimplePathPredicate(MYFILES_NAME);
-
     public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
-    public static final SimplePathPredicate SHARED_PREDICATE = new SimplePathPredicate(SHARED_NAME);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -51,7 +48,7 @@ public class OneDriveListService implements ListService {
             listener.chunk(directory, list);
             return list;
         }
-        else if(SHARED_PREDICATE.test(directory)) {
+        else if(new SimplePathPredicate(SHARED_NAME).test(directory)) {
             return new SharedWithMeListService(session, fileid).list(directory, listener);
         }
         else {
