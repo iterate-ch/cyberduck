@@ -21,7 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 public class InvalidLicenseException extends BackgroundException {
 
     public InvalidLicenseException() {
-        super();
+        super(LocaleFactory.localizedString("Not a valid registration key", "License"), (String) null);
     }
 
     public InvalidLicenseException(final String detail) {
