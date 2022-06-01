@@ -756,10 +756,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
 
         this.setDefault("s3.versioning.enable", String.valueOf(true));
         /*
-         * Reference previous versions in file attributes
-         */
-        this.setDefault("s3.versioning.references.enable", String.valueOf(false));
-        /*
          * Standard,Bulk,Expedited
          */
         this.setDefault("s3.glacier.restore.tier", "Standard");
@@ -781,10 +777,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("googlestorage.lifecycle.transition.class", "ARCHIVE");
         this.setDefault("googlestorage.acl.default", "private");
         this.setDefault("googlestorage.location", "us");
-        /*
-         * Reference previous versions in file attributes
-         */
-        this.setDefault("googlestorage.versioning.references.enable", String.valueOf(false));
 
         this.setDefault("onedrive.listing.chunksize", String.valueOf(1000));
         /*
@@ -880,7 +872,6 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));
         this.setDefault("sds.upload.s3.enable", String.valueOf(true));
-        this.setDefault("sds.versioning.references.enable", String.valueOf(false));
         this.setDefault("sds.upload.s3.status.delay", String.valueOf(50)); // In millis
         this.setDefault("sds.upload.s3.status.period", String.valueOf(100)); // In millis
         this.setDefault("sds.upload.s3.status.interrupt.ms", String.valueOf(30 * 1000L)); // 30sec in millis

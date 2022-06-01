@@ -196,6 +196,9 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == AttributesFinder.class) {
             return (T) new DriveAttributesFinderFeature(this, fileid);
         }
+        if(type == Versioning.class) {
+            return (T) new DriveVersioningFeature(this, fileid);
+        }
         return super._getFeature(type);
     }
 

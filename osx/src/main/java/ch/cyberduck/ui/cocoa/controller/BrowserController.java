@@ -57,6 +57,7 @@ import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
@@ -73,17 +74,16 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
+import ch.cyberduck.core.threading.QuicklookTransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -194,6 +194,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private final Navigation navigation = new Navigation();
     private final TranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
+    private final TemporaryFileService temporary = TemporaryFileServiceFactory.instance();
 
     /**
      * Connection pool
@@ -591,11 +592,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(file, TemporaryFileServiceFactory.get().create(pool.getHost().getUuid(), file)));
+            downloads.add(new TransferItem(file, temporary.create(pool.getHost().getUuid(), file)));
         }
         if(downloads.size() > 0) {
-            final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, downloads));
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, downloads));
         }
     }
 
@@ -2530,7 +2530,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void deleteFileButtonClicked(final ID sender) {
-        new DeleteController(this).delete(this.getSelectedPaths());
+        final List<Path> selected = this.getSelectedPaths();
+        new DeleteController(this, pool, cache).delete(selected, new DeleteController.Callback() {
+            @Override
+            public void deleted(final List<Path> deleted) {
+                reload(workdir(), selected, Collections.emptyList());
+            }
+        });
     }
 
     @Action
@@ -3528,6 +3534,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         for(Editor editor : editors.values()) {
             editor.close();
         }
+        temporary.shutdown();
         quicklook.close();
 
         bookmarkTable.setDelegate(null);
@@ -3828,53 +3835,4 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
     }
 
-    private static final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
-        private final QuickLook quicklook;
-        private final List<TransferItem> downloads;
-
-        public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
-                                                 final List<TransferItem> downloads) {
-            super(controller, session, download, new TransferCallback() {
-                @Override
-                public void complete(final Transfer transfer) {
-                    //
-                }
-            }, new TransferPrompt() {
-                @Override
-                public TransferAction prompt(final TransferItem item) {
-                    return TransferAction.comparison;
-                }
-
-                @Override
-                public boolean isSelected(final TransferItem file) {
-                    return true;
-                }
-
-                @Override
-                public void message(final String message) {
-                    controller.message(message);
-                }
-            });
-            this.quicklook = quicklook;
-            this.downloads = downloads;
-        }
-
-        @Override
-        public void cleanup() {
-            super.cleanup();
-            final List<Local> previews = new ArrayList<>();
-            for(TransferItem download : downloads) {
-                previews.add(download.local);
-            }
-            // Change files in Quick Look
-            quicklook.select(previews);
-            // Open Quick Look Preview Panel
-            quicklook.open();
-        }
-
-        @Override
-        public String getActivity() {
-            return LocaleFactory.localizedString("Quick Look", "Status");
-        }
-    }
 }

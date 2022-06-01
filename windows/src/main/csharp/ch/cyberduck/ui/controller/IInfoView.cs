@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core.cdn;
+using Ch.Cyberduck.Core.Refresh.Views;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -32,12 +33,14 @@ namespace Ch.Cyberduck.Ui.Controller
         Acl,
         Distribution,
         S3,
-        Metadata
+        Metadata,
+        Versions
     }
 
     public interface IInfoView : IView
     {
         InfoTab ActiveTab { set; get; }
+        VersionsInfoTab Versions { get; }
 
         Image ToolbarDistributionImage { set; }
         bool ToolbarDistributionEnabled { set; }
@@ -46,6 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
         String ToolbarS3Label { set; }
         bool ToolbarPermissionsEnabled { set; }
         bool ToolbarMetadataEnabled { set; }
+        bool ToolbarVersionsEnabled { set; }
 
         Image FileIcon { set; }
         string Filename { set; get; }

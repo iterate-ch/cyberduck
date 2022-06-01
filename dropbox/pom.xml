@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dropbox</artifactId>
     <properties>
-        <dropbox-core-sdk-version>5.0.0</dropbox-core-sdk-version>
+        <dropbox-core-sdk-version>5.2.0</dropbox-core-sdk-version>
     </properties>
     <dependencies>
         <dependency>

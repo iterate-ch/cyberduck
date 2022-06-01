@@ -22,7 +22,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -42,19 +41,9 @@ public class SDSListService implements ListService {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
-    /**
-     * Lookup previous versions
-     */
-    private final boolean references;
-
     public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        this(session, nodeid, new HostPreferences(session.getHost()).getBoolean("sds.versioning.references.enable"));
-    }
-
-    public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
         this.session = session;
         this.nodeid = nodeid;
-        this.references = references;
     }
 
     @Override
@@ -77,16 +66,6 @@ public class SDSListService implements ListService {
                     final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     nodeid.cache(file, String.valueOf(node.getId()));
-                    if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
-                        try {
-                            final AttributedList<Path> versions = new SDSAttributesFinderFeature(session, nodeid).findDeleted(file, chunksize);
-                            children.addAll(versions);
-                            attributes.setVersions(versions);
-                        }
-                        catch(AccessDeniedException e) {
-                            log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
-                        }
-                    }
                     children.add(file);
                     listener.chunk(directory, children);
                 }

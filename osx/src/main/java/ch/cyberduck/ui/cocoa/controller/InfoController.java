@@ -42,6 +42,7 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Location;
@@ -58,17 +59,23 @@ import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
+import ch.cyberduck.core.local.TemporaryFileService;
+import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.threading.QuicklookTransferBackgroundAction;
 import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.worker.*;
 import ch.cyberduck.ui.cocoa.callback.PromptRecursiveCallback;
+import ch.cyberduck.ui.quicklook.QuickLook;
+import ch.cyberduck.ui.quicklook.QuickLookFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -103,7 +110,11 @@ public class InfoController extends ToolbarWindowController {
     private final SessionPool session;
     private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
     private final NSNotificationCenter notificationCenter
-        = NSNotificationCenter.defaultCenter();
+            = NSNotificationCenter.defaultCenter();
+    private final QuickLook quicklook
+            = QuickLookFactory.get();
+    private final TemporaryFileService temporary
+            = TemporaryFileServiceFactory.instance();
 
     /**
      * Selected files
@@ -114,10 +125,10 @@ public class InfoController extends ToolbarWindowController {
     private final LoginCallback prompt = LoginCallbackFactory.get(this);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final Preferences preferences
-        = PreferencesFactory.get();
+            = PreferencesFactory.get();
 
     /**
      * Grant editing model.
@@ -126,8 +137,12 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Custom HTTP headers for REST protocols
      */
-    private final List<Header> metadata
-        = new ArrayList<>();
+    private final List<Header> metadata = new ArrayList<>();
+
+    /**
+     * Previous versions of selected file
+     */
+    private final AttributedList<Path> versions = new AttributedList<>();
 
     @Outlet
     private NSTextField filenameField;
@@ -167,6 +182,8 @@ public class InfoController extends ToolbarWindowController {
     private NSProgressIndicator aclProgress;
     @Outlet
     private NSProgressIndicator metadataProgress;
+    @Outlet
+    private NSProgressIndicator versionsProgress;
     @Outlet
     private NSProgressIndicator distributionProgress;
     @Outlet
@@ -238,6 +255,18 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSButton metadataRemoveButton;
     @Outlet
+    private NSTableView versionsTable;
+    @Delegate
+    private ListDataSource versionsTableModel;
+    @Delegate
+    private AbstractTableDelegate<String, MetadataColumn> versionsTableDelegate;
+    @Outlet
+    private NSButton versionsRevertButton;
+    @Outlet
+    private NSButton versionsDeleteButton;
+    @Outlet
+    private NSButton versionsQuicklookButton;
+    @Outlet
     private NSButton ownerr;
     @Outlet
     private NSButton ownerw;
@@ -269,11 +298,20 @@ public class InfoController extends ToolbarWindowController {
     private NSView panelAcl;
     @Outlet
     private NSView panelGeneral;
+    @Outlet
+    private NSView panelVersions;
 
     public InfoController(final Controller controller, final SessionPool session, final List<Path> files) {
         this.controller = controller;
         this.session = session;
         this.files = files;
+    }
+
+    @Override
+    public void invalidate() {
+        temporary.shutdown();
+        quicklook.close();
+        super.invalidate();
     }
 
     private Path getSelected() {
@@ -301,8 +339,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Override
     public void windowWillClose(final NSNotification notification) {
-        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(),
-            this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
+        cascade = new NSPoint(this.window().frame().origin.x.doubleValue(), this.window().frame().origin.y.doubleValue() + this.window().frame().size.height.doubleValue());
         super.windowWillClose(notification);
     }
 
@@ -339,6 +376,9 @@ public class InfoController extends ToolbarWindowController {
                 break;
             case metadata:
                 this.initMetadata();
+                break;
+            case versions:
+                this.initVersions();
                 break;
         }
     }
@@ -377,6 +417,9 @@ public class InfoController extends ToolbarWindowController {
             case acl:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSUserGroup", 32));
                 break;
+            case versions:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
+                break;
         }
         return item;
     }
@@ -408,15 +451,17 @@ public class InfoController extends ToolbarWindowController {
                     return false;
                 }
                 return session.getHost().getProtocol().getType() == Protocol.Type.s3
-                    || session.getHost().getProtocol().getType() == Protocol.Type.b2
-                    || session.getHost().getProtocol().getType() == Protocol.Type.azure
-                    || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+                        || session.getHost().getProtocol().getType() == Protocol.Type.b2
+                        || session.getHost().getProtocol().getType() == Protocol.Type.azure
+                        || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
             case metadata:
                 if(anonymous) {
                     return false;
                 }
                 // Not enabled if not a cloud session
                 return session.getFeature(Metadata.class) != null;
+            case versions:
+                return session.getFeature(Versioning.class) != null;
         }
         return true;
     }
@@ -444,6 +489,7 @@ public class InfoController extends ToolbarWindowController {
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
         views.put(new Label(InfoToolbarItem.info.name(), InfoToolbarItem.info.label()), panelGeneral);
+        views.put(new Label(InfoToolbarItem.versions.name(), InfoToolbarItem.versions.label()), panelVersions);
         if(session.getFeature(AclPermission.class) != null) {
             views.put(new Label(InfoToolbarItem.acl.name(), InfoToolbarItem.acl.label()), panelAcl);
         }
@@ -494,9 +540,9 @@ public class InfoController extends ToolbarWindowController {
     public void setOctalField(NSTextField t) {
         this.octalField = t;
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("octalPermissionsInputDidEndEditing:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            t.id());
+                Foundation.selector("octalPermissionsInputDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                t.id());
     }
 
     public void setOwnerField(NSTextField t) {
@@ -561,6 +607,12 @@ public class InfoController extends ToolbarWindowController {
         this.metadataProgress = p;
         this.metadataProgress.setDisplayedWhenStopped(false);
         this.metadataProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
+    }
+
+    public void setVersionsProgress(NSProgressIndicator versionsProgress) {
+        this.versionsProgress = versionsProgress;
+        this.versionsProgress.setDisplayedWhenStopped(false);
+        this.versionsProgress.setStyle(NSProgressIndicator.NSProgressIndicatorSpinningStyle);
     }
 
     public void setDistributionProgress(final NSProgressIndicator p) {
@@ -671,8 +723,8 @@ public class InfoController extends ToolbarWindowController {
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final LoggingConfiguration configuration = new LoggingConfiguration(
-                bucketLoggingButton.state() == NSCell.NSOnState,
-                null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
+                    bucketLoggingButton.state() == NSCell.NSOnState,
+                    null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject()
             );
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteLoggingWorker(files, configuration) {
                 @Override
@@ -707,8 +759,8 @@ public class InfoController extends ToolbarWindowController {
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final VersioningConfiguration configuration = new VersioningConfiguration(
-                bucketVersioningButton.state() == NSCell.NSOnState,
-                bucketMfaButton.state() == NSCell.NSOnState);
+                    bucketVersioningButton.state() == NSCell.NSOnState,
+                    bucketMfaButton.state() == NSCell.NSOnState);
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteVersioningWorker(files, prompt, configuration) {
                 @Override
                 public void cleanup(final Boolean result) {
@@ -786,7 +838,7 @@ public class InfoController extends ToolbarWindowController {
     public void lifecyclePopupClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             final LifecycleConfiguration configuration = new LifecycleConfiguration(
-                lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
+                    lifecycleTransitionCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleTransitionPopup.selectedItem().representedObject()) : null,
                     lifecycleDeleteCheckbox.state() == NSCell.NSOnState ? Integer.valueOf(lifecycleDeletePopup.selectedItem().representedObject()) : null);
             this.background(new WorkerBackgroundAction<>(controller, session, new WriteLifecycleWorker(files, configuration) {
                 @Override
@@ -801,9 +853,9 @@ public class InfoController extends ToolbarWindowController {
     public void setDistributionCnameField(NSTextField t) {
         this.distributionCnameField = t;
         notificationCenter.addObserver(this.id(),
-            Foundation.selector("distributionApplyButtonClicked:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            t.id());
+                Foundation.selector("distributionApplyButtonClicked:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                t.id());
     }
 
     public void setDistributionOriginField(NSTextField t) {
@@ -882,14 +934,14 @@ public class InfoController extends ToolbarWindowController {
                         grant.getRole().setName(value.toString());
                     }
                     if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
-                        && StringUtils.isNotBlank(grant.getRole().getName())) {
+                            && StringUtils.isNotBlank(grant.getRole().getName())) {
                         InfoController.this.aclInputDidEndEditing();
                     }
                 }
             }
         }).id());
         this.aclTable.setDelegate((aclTableDelegate = new AbstractTableDelegate<Acl.UserAndRole, AclColumn>(
-            aclTable.tableColumnWithIdentifier(AclColumn.GRANTEE.name())
+                aclTable.tableColumnWithIdentifier(AclColumn.GRANTEE.name())
         ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, NSInteger row) {
@@ -1049,6 +1101,171 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
+    private void setVersions(AttributedList<Path> versions) {
+        this.versions.clear();
+        this.versions.addAll(versions);
+        versionsTable.reloadData();
+    }
+
+    public void setVersionsTable(NSTableView t) {
+        this.versionsTable = t;
+        this.versionsTable.setAllowsMultipleSelection(false);
+        this.versionsTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
+        this.versionsTable.setDataSource((versionsTableModel = new ListDataSource() {
+            @Override
+            public NSInteger numberOfRowsInTableView(NSTableView view) {
+                return new NSInteger(versions.size());
+            }
+
+            public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
+                if(row.intValue() < versions.size()) {
+                    final String identifier = tableColumn.identifier();
+                    if(identifier.equals(VersionsColumn.TIMESTAMP.name())) {
+                        final String timestamp = UserDateFormatterFactory.get().getMediumFormat(versions.get(row.intValue()).attributes().getModificationDate());
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(timestamp) ? timestamp : StringUtils.EMPTY);
+                    }
+                    if(identifier.equals(VersionsColumn.CHECKSUM.name())) {
+                        final Checksum checksum = versions.get(row.intValue()).attributes().getChecksum();
+                        return NSAttributedString.attributedString(!Checksum.NONE.equals(checksum) ? checksum.hash : LocaleFactory.localizedString("None"));
+                    }
+                    if(identifier.equals(VersionsColumn.SIZE.name())) {
+                        final long size = versions.get(row.intValue()).attributes().getSize();
+                        return NSAttributedString.attributedString(SizeFormatterFactory.get().format(size));
+                    }
+                    if(identifier.equals(VersionsColumn.OWNER.name())) {
+                        final String owner = versions.get(row.intValue()).attributes().getOwner();
+                        return NSAttributedString.attributedString(StringUtils.isBlank(owner) ? LocaleFactory.localizedString("Unknown") : owner);
+                    }
+                }
+                return null;
+            }
+        }).id());
+        this.versionsTable.setDelegate((versionsTableDelegate = new AbstractTableDelegate<String, MetadataColumn>(versionsTable.tableColumnWithIdentifier(VersionsColumn.TIMESTAMP.name())) {
+            @Override
+            public void tableRowDoubleClicked(final ID sender) {
+                this.enterKeyPressed(sender);
+            }
+
+            @Override
+            public void enterKeyPressed(final ID sender) {
+            }
+
+            @Action
+            public void spaceKeyPressed(final ID sender) {
+                versionsQuicklookButtonClicked(sender);
+            }
+
+            @Override
+            public void deleteKeyPressed(final ID sender) {
+                versionsDeleteButtonClicked(sender);
+            }
+
+            @Override
+            public String tooltip(String c, final MetadataColumn column) {
+                return c;
+            }
+
+            @Override
+            public void tableColumnClicked(NSTableView view, NSTableColumn c) {
+                //
+            }
+
+            @Override
+            public void selectionDidChange(final NSNotification notification) {
+                final Path version = versions.get(versionsTable.selectedRow().intValue());
+                versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
+                        && session.getFeature(Delete.class).isSupported(version));
+                versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
+                        && session.getFeature(Versioning.class).isRevertable(version));
+                versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
+                        && version.attributes().getPermission().isReadable());
+                if(quicklook.isOpen()) {
+                    versionsQuicklookButtonClicked(null);
+                }
+            }
+
+            @Override
+            protected boolean isTypeSelectSupported() {
+                return false;
+            }
+        }).id());
+        this.versionsTable.sizeToFit();
+    }
+
+    public void setVersionsRevertButton(final NSButton b) {
+        this.versionsRevertButton = b;
+        this.versionsRevertButton.setTarget(this.id());
+        this.versionsRevertButton.setAction(Foundation.selector("versionsRevertButtonClicked:"));
+    }
+
+    public void setVersionsDeleteButton(final NSButton b) {
+        this.versionsDeleteButton = b;
+        this.versionsDeleteButton.setTarget(this.id());
+        this.versionsDeleteButton.setAction(Foundation.selector("versionsDeleteButtonClicked:"));
+    }
+
+    @Action
+    public void versionsRevertButtonClicked(ID sender) {
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = versions.get(versionsTable.selectedRow().intValue());
+            this.background(new WorkerBackgroundAction<>(controller, session,
+                    new RevertWorker(Collections.singletonList(selected)) {
+                        @Override
+                        public void cleanup(final List<Path> deleted) {
+                            toggleVersionsSettings(true);
+                            initVersions();
+                        }
+                    }
+            ));
+        }
+    }
+
+    @Action
+    public void versionsDeleteButtonClicked(ID sender) {
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = versions.get(versionsTable.selectedRow().intValue());
+            new DeleteController(this, session, PathCache.empty()).delete(Collections.singletonList(selected), new DeleteController.Callback() {
+                @Override
+                public void cancel() {
+                    toggleVersionsSettings(true);
+                }
+
+                @Override
+                public void deleted(final List<Path> deleted) {
+                    toggleVersionsSettings(true);
+                    initVersions();
+                }
+            });
+        }
+    }
+
+    public void setVersionsQuicklookButton(NSButton b) {
+        this.versionsQuicklookButton = b;
+        // Only enable upon selection change
+        this.versionsQuicklookButton.setEnabled(false);
+        this.versionsQuicklookButton.setAction(Foundation.selector("versionsQuicklookButtonClicked:"));
+        this.versionsQuicklookButton.setTarget(this.id());
+    }
+
+    @Action
+    public void versionsQuicklookButtonClicked(ID sender) {
+        NSIndexSet iterator = versionsTable.selectedRowIndexes();
+        final List<TransferItem> items = new ArrayList<>();
+        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+            final Path f = versions.get(index.intValue());
+            items.add(new TransferItem(f, temporary.create(session.getHost().getUuid(), f)));
+        }
+        if(toggleVersionsSettings(false)) {
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, session, items) {
+                @Override
+                public void cleanup() {
+                    super.cleanup();
+                    toggleVersionsSettings(true);
+                }
+            });
+        }
+    }
+
     /**
      * Replace current metadata model. Will reload the table view.
      *
@@ -1105,7 +1322,7 @@ public class InfoController extends ToolbarWindowController {
             }
         }).id());
         this.metadataTable.setDelegate((metadataTableDelegate = new AbstractTableDelegate<String, MetadataColumn>(
-            metadataTable.tableColumnWithIdentifier(MetadataColumn.NAME.name())
+                metadataTable.tableColumnWithIdentifier(MetadataColumn.NAME.name())
         ) {
             @Override
             public boolean isColumnRowEditable(NSTableColumn column, NSInteger row) {
@@ -1120,8 +1337,8 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void enterKeyPressed(final ID sender) {
                 metadataTable.editRow(
-                    metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()),
-                    metadataTable.selectedRow(), true);
+                        metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()),
+                        metadataTable.selectedRow(), true);
             }
 
             @Override
@@ -1266,8 +1483,8 @@ public class InfoController extends ToolbarWindowController {
         this.setMetadata(updated);
         metadataTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
         metadataTable.editRow(
-            selectValue ? metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()) : metadataTable.columnWithIdentifier(MetadataColumn.NAME.name()),
-            new NSInteger(row), true);
+                selectValue ? metadataTable.columnWithIdentifier(MetadataColumn.VALUE.name()) : metadataTable.columnWithIdentifier(MetadataColumn.NAME.name()),
+                new NSInteger(row), true);
     }
 
     public void setMetadataRemoveButton(NSButton b) {
@@ -1381,6 +1598,10 @@ public class InfoController extends ToolbarWindowController {
         this.panelMetadata = v;
     }
 
+    public void setPanelVersions(final NSView v) {
+        this.panelVersions = v;
+    }
+
     public void setPanelCloud(NSView v) {
         this.panelCloud = v;
     }
@@ -1407,7 +1628,7 @@ public class InfoController extends ToolbarWindowController {
             filenameField.setStringValue(this.getName());
             final Path file = this.getSelected();
             filenameField.setEnabled(1 == count
-                && session.getFeature(Move.class).isSupported(file, file));
+                    && session.getFeature(Move.class).isSupported(file, file));
             // Where
             String path;
             if(file.isSymbolicLink()) {
@@ -1436,8 +1657,8 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(modifiedField, UserDateFormatterFactory.get().getLongFormat(
-                        file.attributes().getModificationDate()),
-                        TRUNCATE_MIDDLE_ATTRIBUTES
+                                    file.attributes().getModificationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
                     );
                 }
                 if(-1 == file.attributes().getCreationDate()) {
@@ -1445,19 +1666,19 @@ public class InfoController extends ToolbarWindowController {
                 }
                 else {
                     this.updateField(createdField, UserDateFormatterFactory.get().getLongFormat(
-                        file.attributes().getCreationDate()),
-                        TRUNCATE_MIDDLE_ATTRIBUTES
+                                    file.attributes().getCreationDate()),
+                            TRUNCATE_MIDDLE_ATTRIBUTES
                     );
                 }
             }
             // Owner
             this.updateField(ownerField, count > 1 ? String.format("(%s)", LocaleFactory.localizedString("Multiple files")) :
-                    StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
-                TRUNCATE_MIDDLE_ATTRIBUTES
+                            StringUtils.isBlank(file.attributes().getOwner()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getOwner(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES
             );
             this.updateField(groupField, count > 1 ? String.format("(%s)", LocaleFactory.localizedString("Multiple files")) :
-                    StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
-                TRUNCATE_MIDDLE_ATTRIBUTES
+                            StringUtils.isBlank(file.attributes().getGroup()) ? LocaleFactory.localizedString("Unknown") : file.attributes().getGroup(),
+                    TRUNCATE_MIDDLE_ATTRIBUTES
             );
             // Icon
             if(count > 1) {
@@ -1573,7 +1794,7 @@ public class InfoController extends ToolbarWindowController {
 
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
-            cdn.getName()));
+                cdn.getName()));
         distributionDeliveryPopup.removeItemWithTitle(LocaleFactory.localizedString("None"));
         for(Distribution.Method method : cdn.getMethods(file)) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
@@ -1614,8 +1835,8 @@ public class InfoController extends ToolbarWindowController {
 
     private void setSize(final Long size) {
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-            SizeFormatterFactory.get().format(size, true),
-            TRUNCATE_MIDDLE_ATTRIBUTES));
+                SizeFormatterFactory.get().format(size, true),
+                TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void initChecksum() {
@@ -1649,9 +1870,9 @@ public class InfoController extends ToolbarWindowController {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
-            || session.getHost().getProtocol().getType() == Protocol.Type.b2
-            || session.getHost().getProtocol().getType() == Protocol.Type.azure
-            || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+                || session.getHost().getProtocol().getType() == Protocol.Type.b2
+                || session.getHost().getProtocol().getType() == Protocol.Type.azure
+                || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
         if(enable) {
             enable = !credentials.isAnonymousLogin();
         }
@@ -1673,7 +1894,7 @@ public class InfoController extends ToolbarWindowController {
         encryptionPopup.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
-            && bucketVersioningButton.state() == NSCell.NSOnState);
+                && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketTransferAccelerationButton.setEnabled(stop && enable && acceleration);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
@@ -1814,7 +2035,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                     for(Encryption.Algorithm algorithm : selectedEncryptionKeys) {
                         encryptionPopup.itemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(algorithm.toString()))
-                            .setState(selectedEncryptionKeys.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                                .setState(selectedEncryptionKeys.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
                     }
 
                     if(!selectedStorageClasses.isEmpty()) {
@@ -1831,7 +2052,7 @@ public class InfoController extends ToolbarWindowController {
                     for(String storageClass : selectedStorageClasses) {
                         if(-1 != storageClassPopup.indexOfItemWithRepresentedObject(storageClass).intValue()) {
                             storageClassPopup.itemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass))
-                                .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                                    .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
                         }
                     }
                     if(lifecycle != null) {
@@ -1867,7 +2088,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public String getActivity() {
                     return MessageFormat.format(LocaleFactory.localizedString("Reading metadata of {0}", "Status"),
-                        this.toString(files));
+                            this.toString(files));
                 }
             });
         }
@@ -1925,20 +2146,61 @@ public class InfoController extends ToolbarWindowController {
     private void initMetadata() {
         this.setMetadata(Collections.emptyList());
         if(this.toggleMetadataSettings(false)) {
-            this.background(new WorkerBackgroundAction<>(controller, session,
-                    new ReadMetadataWorker(files) {
-                        @Override
-                        public void cleanup(final Map<String, String> updated) {
-                            final List<Header> m = new ArrayList<>();
-                            if(updated != null) {
-                                for(Map.Entry<String, String> key : updated.entrySet()) {
-                                    m.add(new Header(key.getKey(), key.getValue()));
-                                }
-                            }
-                            setMetadata(m);
-                        toggleMetadataSettings(true);
+            this.background(new WorkerBackgroundAction<>(controller, session, new ReadMetadataWorker(files) {
+                @Override
+                public void cleanup(final Map<String, String> updated) {
+                    final List<Header> m = new ArrayList<>();
+                    if(updated != null) {
+                        for(Map.Entry<String, String> key : updated.entrySet()) {
+                            m.add(new Header(key.getKey(), key.getValue()));
+                        }
                     }
+                    setMetadata(m);
+                    toggleMetadataSettings(true);
                 }
+            }));
+        }
+    }
+
+    /**
+     * Toggle settings before and after update
+     *
+     * @param stop Enable controls and stop progress spinner
+     * @return True if progress animation has started and settings are toggled
+     */
+    private boolean toggleVersionsSettings(final boolean stop) {
+        this.window().endEditingFor(null);
+        final Versioning versioning = session.getFeature(Versioning.class);
+        boolean enable = versioning != null;
+        versionsTable.setEnabled(stop && enable);
+        boolean selection = versionsTable.selectedRowIndexes().count().intValue() == 1;
+        versionsRevertButton.setEnabled(stop && enable && selection && versioning.isRevertable(this.getSelected()));
+        versionsDeleteButton.setEnabled(stop && enable && selection);
+        versionsQuicklookButton.setEnabled(stop && enable && selection);
+        if(stop) {
+            versionsProgress.stopAnimation(null);
+        }
+        else if(enable) {
+            versionsProgress.startAnimation(null);
+        }
+        return enable;
+    }
+
+    /**
+     * Read file versions
+     */
+    private void initVersions() {
+        this.setVersions(AttributedList.emptyList());
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = this.getSelected();
+            this.background(new WorkerBackgroundAction<>(controller, session,
+                    new VersionsWorker(selected, new DisabledListProgressListener()) {
+                        @Override
+                        public void cleanup(AttributedList<Path> result) {
+                            setVersions(result);
+                            toggleVersionsSettings(true);
+                        }
+                    }
             ));
         }
     }
@@ -2055,9 +2317,9 @@ public class InfoController extends ToolbarWindowController {
             sender.setState(NSCell.NSOnState);
         }
         final PermissionOverwrite permission = new PermissionOverwrite(
-            new PermissionOverwrite.Action(ownerr.state() == NSCell.NSOnState, ownerw.state() == NSCell.NSOnState, ownerx.state() == NSCell.NSOnState),
-            new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
-            new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
+                new PermissionOverwrite.Action(ownerr.state() == NSCell.NSOnState, ownerw.state() == NSCell.NSOnState, ownerx.state() == NSCell.NSOnState),
+                new PermissionOverwrite.Action(groupr.state() == NSCell.NSOnState, groupw.state() == NSCell.NSOnState, groupx.state() == NSCell.NSOnState),
+                new PermissionOverwrite.Action(otherr.state() == NSCell.NSOnState, otherw.state() == NSCell.NSOnState, otherx.state() == NSCell.NSOnState));
         if(this.togglePermissionSettings(false)) {
             this.background(new WorkerBackgroundAction<>(controller, session,
                             new WritePermissionWorker(files, permission, new BooleanRecursiveCallback<>(false), controller) {
@@ -2195,7 +2457,7 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleDistributionSettings(false)) {
             final Path file = this.getSelected();
             final Distribution.Method method
-                = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+                    = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
             this.background(new WorkerBackgroundAction<>(controller, session, new ReadDistributionWorker(files, prompt, method) {
                 @Override
                 public void cleanup(final Distribution distribution) {
@@ -2307,13 +2569,13 @@ public class InfoController extends ToolbarWindowController {
                         @Override
                         protected void update(final long size) {
                             invoke(new WindowMainAction(InfoController.this) {
-                            @Override
-                            public void run() {
-                                setSize(size);
-                            }
-                        });
+                                @Override
+                                public void run() {
+                                    setSize(size);
+                                }
+                            });
+                        }
                     }
-                }
             ));
         }
     }
@@ -2356,6 +2618,13 @@ public class InfoController extends ToolbarWindowController {
         VALUE
     }
 
+    private enum VersionsColumn {
+        TIMESTAMP,
+        CHECKSUM,
+        SIZE,
+        OWNER
+    }
+
     private enum InfoToolbarItem {
         /**
          * General
@@ -2385,7 +2654,8 @@ public class InfoController extends ToolbarWindowController {
                 return LocaleFactory.localizedString(StringUtils.capitalize("Amazon S3"), "Info");
             }
         },
-        metadata;
+        metadata,
+        versions;
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");

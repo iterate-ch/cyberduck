@@ -617,7 +617,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            new DeleteController(controller).delete(pasteboard);
+            new DeleteController(controller, controller.getSession(), cache).delete(pasteboard, new DeleteController.Callback() {
+                @Override
+                public void deleted(final List<Path> deleted) {
+                    controller.reload(controller.workdir(), pasteboard, Collections.emptyList());
+                }
+            });
         }
         pasteboard.clear();
     }

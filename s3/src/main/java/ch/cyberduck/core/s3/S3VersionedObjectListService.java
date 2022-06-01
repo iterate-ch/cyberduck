@@ -65,38 +65,27 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     private final Integer concurrency;
 
     /**
-     * Reference previous versions in file attributes
-     */
-    private final boolean references;
-    /**
      * Use HEAD request for every object found to add complete metadata in file attributes
      */
     private final boolean metadata;
 
     public S3VersionedObjectListService(final S3Session session) {
-        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"),
-            new HostPreferences(session.getHost()).getBoolean("s3.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"));
     }
 
-    public S3VersionedObjectListService(final S3Session session, final boolean references) {
-        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"), references);
-    }
-
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references) {
-        this(session, concurrency, references, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency) {
+        this(session, concurrency, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
     /**
      * @param session     Connection
      * @param concurrency Number of threads to handle prefixes
-     * @param references  Set references of previous versions in file attributes
      */
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references, final boolean metadata) {
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean metadata) {
         super(session);
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session, false);
+        this.attributes = new S3AttributesFinderFeature(session);
         this.concurrency = concurrency;
-        this.references = references;
         this.containerService = session.getFeature(PathContainerService.class);
         this.metadata = metadata;
     }
@@ -159,28 +148,12 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         }
                     }
                     final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(),
-                        PathNormalizer.name(key), EnumSet.of(Path.Type.file), attr);
+                            PathNormalizer.name(key), EnumSet.of(Path.Type.file), attr);
                     if(metadata) {
                         f.withAttributes(attributes.find(f));
                     }
                     children.add(f);
                     lastKey = key;
-                }
-                if(references) {
-                    for(Path f : children) {
-                        if(f.attributes().isDuplicate()) {
-                            final Path latest = children.find(new LatestVersionPathPredicate(f));
-                            if(latest != null) {
-                                // Reference version
-                                final AttributedList<Path> versions = new AttributedList<>(latest.attributes().getVersions());
-                                versions.add(f);
-                                latest.attributes().setVersions(versions);
-                            }
-                            else {
-                                log.warn(String.format("No current version found for %s", f));
-                            }
-                        }
-                    }
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
@@ -274,19 +247,5 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 }
             }
         });
-    }
-
-    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
-        public LatestVersionPathPredicate(final Path f) {
-            super(f);
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            if(super.test(test)) {
-                return !test.attributes().isDuplicate();
-            }
-            return false;
-        }
     }
 }

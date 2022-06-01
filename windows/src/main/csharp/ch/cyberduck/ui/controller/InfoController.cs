@@ -16,28 +16,23 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Media;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cdn.features;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.io;
 using ch.cyberduck.core.lifecycle;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.logging;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
-using ch.cyberduck.core.s3;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
-using ch.cyberduck.core.io;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Refresh;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
@@ -45,14 +40,19 @@ using java.text;
 using java.util;
 using org.apache.commons.lang3;
 using org.apache.logging.log4j;
-using org.jets3t.service.model;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Media;
+using System.Windows.Forms;
 using static Ch.Cyberduck.ImageHelper;
 using Boolean = java.lang.Boolean;
 using Object = System.Object;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
-using ch.cyberduck.core.exception;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -173,7 +173,22 @@ namespace Ch.Cyberduck.Ui.Controller
                 case InfoTab.Metadata:
                     InitMetadata();
                     break;
+                case InfoTab.Versions:
+                    InitVersions();
+                    break;
             }
+        }
+
+        private void InitVersions()
+        {
+            if (View.Versions.ViewModel is not VersionsViewModel viewModel)
+            {
+                viewModel = new VersionsViewModel(_controller, _controller.Session);
+                View.Versions.ViewModel = viewModel;
+                viewModel.PromptDelete.RegisterHandler(c => c.SetOutput(_controller.DeletePathsPrompt(c.Input)));
+            }
+            viewModel.Selection = SelectedPath;
+            viewModel.Load.ExecuteIfPossible().Subscribe();
         }
 
         private Map ConvertMetadataToMap()
@@ -208,7 +223,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
-                View.ToolbarDistributionImage = Images.S3.Size(32);
+                View.ToolbarDistributionImage = ImageHelper.Images.S3.Size(32);
             }
             else
             {
@@ -220,7 +235,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    View.ToolbarDistributionImage = Images.S3.Size(32);
+                    View.ToolbarDistributionImage = ImageHelper.Images.S3.Size(32);
                 }
             }
             if (anonymous)
@@ -233,6 +248,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     || session.getHost().getProtocol().getType() == Protocol.Type.b2
                     || session.getHost().getProtocol().getType() == Protocol.Type.azure
                     || session.getHost().getProtocol().getType() == Protocol.Type.googlestorage;
+            }
+            if (anonymous)
+            {
+                View.ToolbarVersionsEnabled = false;
+            }
+            else
+            {
+                View.ToolbarVersionsEnabled = session.getFeature(typeof(Versioning)) != null;
             }
 
             if (anonymous)
@@ -961,7 +984,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (count > 1)
                 {
-                    View.FileIcon = Images.Multiple;
+                    View.FileIcon = ImageHelper.Images.Multiple;
                 }
                 else
                 {
@@ -1479,7 +1502,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Iterator iter = redundancyFeature.getClasses().iterator();
                     while (iter.hasNext())
                     {
-                        string redundancy = (string) iter.next();
+                        string redundancy = (string)iter.next();
                         _storageClasses.Add(
                             new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"), redundancy));
                     }

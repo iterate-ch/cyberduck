@@ -18,22 +18,16 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CancellingListProgressListener;
-import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,18 +44,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    /**
-     * Lookup previous versions
-     */
-    private final boolean references;
 
     public S3AttributesFinderFeature(final S3Session session) {
-        this(session, new HostPreferences(session.getHost()).getBoolean("s3.versioning.references.enable"));
-    }
-
-    public S3AttributesFinderFeature(final S3Session session, final boolean references) {
         this.session = session;
-        this.references = references;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -86,12 +71,14 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             PathAttributes attr;
             final Path bucket = containerService.getContainer(file);
             try {
-                attr = new S3AttributesAdapter().toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
+                attr = new S3AttributesAdapter().toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
                 switch(e.getResponseCode()) {
                     case 405:
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Mark file %s as delete marker", file));
+                        }
                         // Only DELETE method is allowed for delete markers
                         attr = new PathAttributes();
                         attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
@@ -101,41 +88,21 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             if(StringUtils.isNotBlank(attr.getVersionId())) {
-                if(references) {
-                    try {
-                        // Add references to previous versions
-                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
-                        final Path versioned = list.find(new DefaultPathPredicate(new Path(file).withAttributes(attr)));
-                        if(null != versioned) {
-                            if(versioned.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
-                                attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                            }
-                            attr.setDuplicate(versioned.attributes().isDuplicate());
-                            attr.setVersions(versioned.attributes().getVersions());
-                        }
-                    }
-                    catch(InteroperabilityException | AccessDeniedException e) {
-                        log.warn(String.format("Ignore failure %s reading object versions for %s", e, file));
+                // Determine if latest version
+                try {
+                    // Duplicate if not latest version
+                    final String latest = new S3AttributesAdapter().toAttributes(session.getClient().getObjectDetails(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
+                    if(null != latest) {
+                        attr.setDuplicate(!latest.equals(attr.getVersionId()));
                     }
                 }
-                else {
-                    // Determine if latest version
-                    try {
-                        // Duplicate if not latest version
-                        final String latest = new S3AttributesAdapter().toAttributes(session.getClient().getObjectDetails(
-                                bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
-                        if(null != latest) {
-                            attr.setDuplicate(!latest.equals(attr.getVersionId()));
-                        }
+                catch(ServiceException e) {
+                    final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                    if(failure instanceof NotfoundException) {
+                        attr.setDuplicate(true);
                     }
-                    catch(ServiceException e) {
-                        final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                        if(failure instanceof NotfoundException) {
-                            attr.setDuplicate(true);
-                        }
-                        else {
-                            throw failure;
-                        }
+                    else {
+                        throw failure;
                     }
                 }
             }

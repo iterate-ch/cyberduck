@@ -66,12 +66,12 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(test).getModificationDate());
         assertEquals(1630305150672L, new S3ObjectListService(session, true).list(container,
             new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
-        assertEquals(1630305150672L, new S3VersionedObjectListService(session, 1, false, true).list(container,
-            new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
+        assertEquals(1630305150672L, new S3VersionedObjectListService(session, 1, true).list(container,
+                new DisabledListProgressListener()).find(new DefaultPathPredicate(test)).attributes().getModificationDate());
         assertNotEquals(1630305150672L, new S3ObjectListService(session, false).list(container,
             new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
-        assertNotEquals(1630305150672L, new S3VersionedObjectListService(session, 1, false, false).list(container,
-            new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
+        assertNotEquals(1630305150672L, new S3VersionedObjectListService(session, 1, false).list(container,
+                new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getModificationDate());
         final Path moved = new S3MoveFeature(session).move(test, new Path(container,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(moved).getModificationDate());

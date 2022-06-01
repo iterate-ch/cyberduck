@@ -15,8 +15,9 @@ package ch.cyberduck.core.spectra;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -45,12 +46,12 @@ public class SpectraVersioningFeature implements Versioning {
     private static final Logger log = LogManager.getLogger(SpectraVersioningFeature.class);
 
     public static final String KEY_REVERTABLE
-        = "revertable";
+            = "revertable";
 
     private final SpectraSession session;
     private final PathContainerService containerService;
     private final LRUCache<Path, VersioningConfiguration> cache
-        = LRUCache.build(10);
+            = LRUCache.build(10);
 
     public SpectraVersioningFeature(final SpectraSession session) {
         this.session = session;
@@ -70,9 +71,9 @@ public class SpectraVersioningFeature implements Versioning {
         try {
             final GetBucketSpectraS3Response bucket = client.getBucketSpectraS3(new GetBucketSpectraS3Request(container.getName()));
             final GetDataPolicySpectraS3Response policy = client.getDataPolicySpectraS3(
-                new GetDataPolicySpectraS3Request(bucket.getBucketResult().getDataPolicyId()));
+                    new GetDataPolicySpectraS3Request(bucket.getBucketResult().getDataPolicyId()));
             final VersioningConfiguration configuration = new VersioningConfiguration(
-                policy.getDataPolicyResult().getVersioning() == VersioningLevel.KEEP_MULTIPLE_VERSIONS, false);
+                    policy.getDataPolicyResult().getVersioning() == VersioningLevel.KEEP_MULTIPLE_VERSIONS, false);
             cache.put(container, configuration);
             return configuration;
         }
@@ -135,7 +136,7 @@ public class SpectraVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) {
-        return null;
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return AttributedList.emptyList();
     }
 }

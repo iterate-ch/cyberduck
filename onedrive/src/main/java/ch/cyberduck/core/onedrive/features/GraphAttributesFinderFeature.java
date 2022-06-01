@@ -32,6 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.DriveItemVersion;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
 
 import java.io.IOException;
@@ -109,6 +110,15 @@ public class GraphAttributesFinderFeature implements AttributesFinder, Attribute
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
+        return attributes;
+    }
+
+    public PathAttributes toAttributes(final DriveItem.Metadata metadata, final DriveItemVersion version) {
+        final PathAttributes attributes = toAttributes(metadata);
+        attributes.setVersionId(version.getId());
+        attributes.setDuplicate(true);
+        attributes.setSize(version.getSize());
+        attributes.setModificationDate(version.getLastModifiedDateTime().toInstant().toEpochMilli());
         return attributes;
     }
 

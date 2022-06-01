@@ -18,7 +18,9 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -97,19 +99,27 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final PathAttributes updated = new S3AttributesFinderFeature(session, true).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+        final PathAttributes updated = new S3AttributesFinderFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, updated.getVersionId());
-        assertFalse(updated.getVersions().isEmpty());
-        assertEquals(1, updated.getVersions().size());
-        assertEquals(new Path(test).withAttributes(initialAttributes), updated.getVersions().get(0));
-        assertTrue(new S3FindFeature(session).find(updated.getVersions().get(0)));
-        assertEquals(initialVersion, new S3AttributesFinderFeature(session).find(updated.getVersions().get(0)).getVersionId());
-        new S3VersioningFeature(session, new S3AccessControlListFeature(session)).revert(new Path(test).withAttributes(initialAttributes));
-        final PathAttributes reverted = new S3AttributesFinderFeature(session, true).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+        final S3VersioningFeature feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
+        {
+            final AttributedList<Path> versions = feature.list(new Path(test).withAttributes(status.getResponse()), new DisabledListProgressListener());
+            assertFalse(versions.isEmpty());
+            assertEquals(1, versions.size());
+            assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
+            assertTrue(new S3FindFeature(session).find(versions.get(0)));
+            assertEquals(initialVersion, new S3AttributesFinderFeature(session).find(versions.get(0)).getVersionId());
+        }
+        feature.revert(new Path(test).withAttributes(initialAttributes));
+        final PathAttributes reverted = new S3AttributesFinderFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, reverted.getVersionId());
-        assertEquals(2, reverted.getVersions().size());
-        assertEquals(test.attributes().getSize(), reverted.getSize());
-        assertEquals(content.length, reverted.getVersions().get(0).attributes().getSize());
+        {
+            final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
+            assertFalse(versions.isEmpty());
+            assertEquals(2, versions.size());
+            assertEquals(test.attributes().getSize(), reverted.getSize());
+            assertEquals(content.length, versions.get(0).attributes().getSize());
+        }
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(directory, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -13,15 +13,16 @@ package ch.cyberduck.core.googlestorage;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -85,7 +86,12 @@ public class GoogleStorageVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
-        return null;
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new GoogleStorageObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return file.attributes().isDuplicate();
+            }
+        });
     }
 }

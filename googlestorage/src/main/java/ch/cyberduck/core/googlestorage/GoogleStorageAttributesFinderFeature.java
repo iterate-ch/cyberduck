@@ -15,9 +15,6 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -30,7 +27,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -47,19 +43,10 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
-    /**
-     * Lookup previous versions
-     */
-    private final boolean references;
 
     public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session) {
-        this(session, new HostPreferences(session.getHost()).getBoolean("googlestorage.versioning.references.enable"));
-    }
-
-    public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session, final boolean references) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
-        this.references = references;
     }
 
     @Override
@@ -85,35 +72,24 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                 }
                 final PathAttributes attributes = this.toAttributes(request.execute());
                 if(versioning.isEnabled()) {
-                    if(references) {
-                        // Add references to previous versions
-                        final AttributedList<Path> list = new GoogleStorageObjectListService(session, true).list(file, new DisabledListProgressListener());
-                        final Path versioned = list.find(new DefaultPathPredicate(file));
-                        if(null != versioned) {
-                            attributes.setDuplicate(versioned.attributes().isDuplicate());
-                            attributes.setVersions(versioned.attributes().getVersions());
+                    // Determine if latest version
+                    try {
+                        // Duplicate if not latest version
+                        final String latest = this.toAttributes(session.getClient().objects().get(
+                                containerService.getContainer(file).getName(), containerService.getKey(file)).execute()).getVersionId();
+                        if(null != latest) {
+                            attributes.setDuplicate(!latest.equals(attributes.getVersionId()));
                         }
                     }
-                    else {
-                        // Determine if latest version
-                        try {
-                            // Duplicate if not latest version
-                            final String latest = this.toAttributes(session.getClient().objects().get(
-                                    containerService.getContainer(file).getName(), containerService.getKey(file)).execute()).getVersionId();
-                            if(null != latest) {
-                                attributes.setDuplicate(!latest.equals(attributes.getVersionId()));
-                            }
+                    catch(IOException e) {
+                        // Noncurrent versions only appear in requests that explicitly call for object versions to be included
+                        final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                        if(failure instanceof NotfoundException) {
+                            // The latest version is a delete marker
+                            attributes.setDuplicate(true);
                         }
-                        catch(IOException e) {
-                            // Noncurrent versions only appear in requests that explicitly call for object versions to be included
-                            final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                            if(failure instanceof NotfoundException) {
-                                // The latest version is a delete marker
-                                attributes.setDuplicate(true);
-                            }
-                            else {
-                                throw failure;
-                            }
+                        else {
+                            throw failure;
                         }
                     }
                 }

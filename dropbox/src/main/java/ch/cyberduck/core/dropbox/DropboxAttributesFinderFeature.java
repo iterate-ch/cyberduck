@@ -78,6 +78,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
                 attributes.setLockId(String.valueOf(file.getFileLockInfo().getIsLockholder()));
             }
             attributes.setChecksum(new Checksum(HashAlgorithm.dropbox_content_hash, file.getContentHash()));
+            attributes.setVersionId(file.getRev());
         }
         if(metadata instanceof FolderMetadata) {
             final FolderMetadata folder = (FolderMetadata) metadata;

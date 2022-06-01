@@ -57,24 +57,17 @@ public class GoogleStorageObjectListService implements ListService {
     private final GoogleStorageSession session;
     private final GoogleStorageAttributesFinderFeature attributes;
     private final PathContainerService containerService;
-    private final boolean references;
     private final Integer concurrency;
 
     public GoogleStorageObjectListService(final GoogleStorageSession session) {
-        this(session, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.concurrency"),
-                new HostPreferences(session.getHost()).getBoolean("googlestorage.versioning.references.enable"));
+        this(session, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.concurrency"));
     }
 
-    public GoogleStorageObjectListService(final GoogleStorageSession session, final boolean references) {
-        this(session, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.concurrency"), references);
-    }
-
-    public GoogleStorageObjectListService(final GoogleStorageSession session, final Integer concurrency, final boolean references) {
+    public GoogleStorageObjectListService(final GoogleStorageSession session, final Integer concurrency) {
         this.session = session;
         this.attributes = new GoogleStorageAttributesFinderFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
         this.concurrency = concurrency;
-        this.references = references;
     }
 
     @Override
@@ -141,24 +134,6 @@ public class GoogleStorageObjectListService implements ListService {
                         }
                         objects.add(file);
                         lastKey = key;
-                    }
-                    if(versioning.isEnabled()) {
-                        if(references) {
-                            for(Path f : objects) {
-                                if(f.attributes().isDuplicate()) {
-                                    final Path latest = objects.find(new LatestVersionPathPredicate(f));
-                                    if(latest != null) {
-                                        // Reference version
-                                        final AttributedList<Path> versions = new AttributedList<>(latest.attributes().getVersions());
-                                        versions.add(f);
-                                        latest.attributes().setVersions(versions);
-                                    }
-                                    else {
-                                        log.warn(String.format("No current version found for %s", f));
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
                 if(response.getPrefixes() != null) {
@@ -274,19 +249,5 @@ public class GoogleStorageObjectListService implements ListService {
             }
         }
         return prefix;
-    }
-
-    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
-        public LatestVersionPathPredicate(final Path f) {
-            super(f);
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            if(super.test(test)) {
-                return !test.attributes().isDuplicate();
-            }
-            return false;
-        }
     }
 }

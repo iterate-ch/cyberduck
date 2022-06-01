@@ -17,9 +17,12 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -48,7 +51,7 @@ public class S3VersioningFeature implements Versioning {
     private final S3AccessControlListFeature accessControlListFeature;
 
     private final LRUCache<Path, VersioningConfiguration> cache
-        = LRUCache.build(10);
+            = LRUCache.build(10);
 
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
@@ -63,7 +66,7 @@ public class S3VersioningFeature implements Versioning {
             final VersioningConfiguration current = this.getConfiguration(bucket);
             if(current.isMultifactor()) {
                 // The bucket is already MFA protected.
-                final Credentials factor = this.getToken(StringUtils.EMPTY, prompt);
+                final Credentials factor = this.getToken(prompt);
                 if(configuration.isEnabled()) {
                     if(current.isEnabled()) {
                         log.debug(String.format("Versioning already enabled for bucket %s", bucket));
@@ -83,7 +86,7 @@ public class S3VersioningFeature implements Versioning {
                 if(configuration.isEnabled() && !configuration.isMultifactor()) {
                     log.debug(String.format("Disable MFA %s for %s", factor.getUsername(), bucket));
                     // User has choosen to disable MFA
-                    final Credentials factor2 = this.getToken(StringUtils.EMPTY, prompt);
+                    final Credentials factor2 = this.getToken(prompt);
                     session.getClient().disableMFAForVersionedBucket(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                             factor2.getUsername(), factor2.getPassword());
                 }
@@ -91,7 +94,7 @@ public class S3VersioningFeature implements Versioning {
             else {
                 if(configuration.isEnabled()) {
                     if(configuration.isMultifactor()) {
-                        final Credentials factor = this.getToken(StringUtils.EMPTY, prompt);
+                        final Credentials factor = this.getToken(prompt);
                         log.debug(String.format("Enable bucket versioning with MFA %s for %s", factor.getUsername(), bucket));
                         session.getClient().enableBucketVersioningWithMFA(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
                                 factor.getUsername(), factor.getPassword());
@@ -152,8 +155,8 @@ public class S3VersioningFeature implements Versioning {
     }
 
     /**
-     * Versioning support. Copy a previous version of the object into the same bucket.
-     * The copied object becomes the latest version of that object and all object versions are preserved.
+     * Versioning support. Copy a previous version of the object into the same bucket. The copied object becomes the
+     * latest version of that object and all object versions are preserved.
      */
     @Override
     public void revert(final Path file) throws BackgroundException {
@@ -174,12 +177,12 @@ public class S3VersioningFeature implements Versioning {
                     log.warn(String.format("Ignore failure %s", e));
                 }
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),
-                    containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
+                        containerService.getContainer(file).getName(), containerService.getKey(file), containerService.getContainer(file).getName(), destination, false);
                 if(file.getParent().attributes().getCustom().containsKey(S3VersionedObjectListService.KEY_DELETE_MARKER)) {
                     // revert placeholder
                     session.getClient().deleteVersionedObject(
-                        file.getParent().attributes().getVersionId(),
-                        containerService.getContainer(file).getName(), containerService.getKey(file.getParent()));
+                            file.getParent().attributes().getVersionId(),
+                            containerService.getContainer(file).getName(), containerService.getKey(file.getParent()));
                 }
             }
             catch(ServiceException e) {
@@ -196,24 +199,35 @@ public class S3VersioningFeature implements Versioning {
     /**
      * Prompt for MFA credentials
      *
-     * @param mfaSerial Serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
-     *                  a virtual device (such as arn:aws:iam::123456789012:mfa/user)
-     * @param callback  Prompt controller
+     * @param callback Prompt controller
      * @return MFA one time authentication password.
      * @throws ch.cyberduck.core.exception.ConnectionCanceledException Prompt dismissed
      */
-    @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
+    protected Credentials getToken(final PasswordCallback callback) throws ConnectionCanceledException {
         // Prompt for multi factor authentication credentials.
         return callback.prompt(
-            session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), mfaSerial),
-            new LoginOptions()
-                .icon(session.getHost().getProtocol().disk())
-                .password(true)
-                .user(false)
-                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                .keychain(false)
+                session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                new LoginOptions()
+                        .icon(session.getHost().getProtocol().disk())
+                        .password(true)
+                        .user(false)
+                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                        .keychain(false)
         );
+    }
+
+    @Override
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new S3VersionedObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
+            @Override
+            public boolean accept(final Path f) {
+                if(!StringUtils.equals(f.getName(), file.getName())) {
+                    // List with prefix will also return other keys
+                    return false;
+                }
+                return f.attributes().isDuplicate();
+            }
+        });
     }
 }

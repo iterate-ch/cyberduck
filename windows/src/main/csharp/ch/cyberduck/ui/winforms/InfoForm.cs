@@ -28,6 +28,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using String = System.String;
 using static Ch.Cyberduck.ImageHelper;
+using Ch.Cyberduck.Core.Refresh.Views;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -51,6 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             generalButton.Image = Images.TryGet(_ => _.Info);
             metadataButton.Image = Images.TryGet(_ => _.Pencil);
             permissionsButton.Image = Images.TryGet(_ => _.Permissions);
+            versionsButton.Image = Images.TryGet(_ => _.Multiple);
 
             Load += delegate
             {
@@ -87,21 +89,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(1000, Height + 30);
         }
 
-        /// <summary>
-        /// Activate Double-Buffering for _all_ controls on a form
-        /// </summary>
-        /// <see cref="http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/aaed00ce-4bc9-424e-8c05-c30213171c2c"/>
-        /// <see cref="http://social.msdn.microsoft.com/Forums/en-US/winforms/thread/afc667cd-d877-4e44-9c00-8501998865e2"/>
-        /// <see cref="http://stackoverflow.com/questions/3466003/winforms-controls-are-flickering-when-resizing-on-windows7-x64"/>
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000;
-                return cp;
-            }
-        }
 
         public override ToolStrip ToolStrip
         {
@@ -145,6 +132,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { metadataButton.Enabled = value; }
         }
 
+        public bool ToolbarVersionsEnabled
+        {
+            set { versionsButton.Enabled = value; }
+        }
+
         public InfoTab ActiveTab
         {
             get
@@ -152,6 +144,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (panelManager.SelectedPanel == managedGeneralPanel)
                 {
                     return InfoTab.General;
+                }
+                if (panelManager.SelectedPanel == managedVersionsPanel)
+                {
+                    return InfoTab.Versions;
                 }
                 if (panelManager.SelectedPanel == managedPermissionsPanel)
                 {
@@ -180,6 +176,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (value == InfoTab.General)
                 {
                     generalButton_Click(this, EventArgs.Empty);
+                }
+                if (value == InfoTab.Versions)
+                {
+                    versionsButton_Click(this, EventArgs.Empty);
                 }
                 if (value == InfoTab.Permissions || value == InfoTab.Acl)
                 {
@@ -953,6 +953,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public VersionsInfoTab Versions => versionsInfoTab;
+
         public event VoidHandler DistributionDefaultRootChanged = delegate { };
 
         private void InitMetadataGrid()
@@ -1345,6 +1347,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             Name,
             Value
+        }
+
+        private void versionsButton_Click(object sender, EventArgs e)
+        {
+            if (!versionsButton.Checked)
+            {
+                DisableAll();
+                versionsButton.Checked = true;
+                panelManager.SelectedPanel = managedVersionsPanel;
+            }
         }
     }
 }

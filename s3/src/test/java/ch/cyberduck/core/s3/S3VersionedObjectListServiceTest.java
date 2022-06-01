@@ -160,9 +160,9 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
                 }
         );
         assertEquals(2, list.size());
-        assertEquals(1, list.get(0).attributes().getVersions().size());
-        assertEquals(0, list.get(1).attributes().getVersions().size());
-        assertSame(list.get(0).attributes().getVersions().get(0), list.get(1));
+        final AttributedList<Path> versions = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).list(file, new DisabledListProgressListener());
+        assertEquals(1, versions.size());
+        assertEquals(versions.get(0), list.get(1));
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(
                 new Path(file).withAttributes(new PathAttributes().withVersionId("null")),
                 new Path(file).withAttributes(new DefaultAttributesFinderFeature(session).find(file)), bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());

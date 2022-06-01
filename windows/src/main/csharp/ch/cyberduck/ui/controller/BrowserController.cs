@@ -3087,9 +3087,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 return;
             }
 
-            StringBuilder alertText =
-                new StringBuilder(
-                    String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.Count));
+            if (DeletePathsPrompt(normalized))
+            {
+                DeletePathsImpl(normalized);
+            }
+        }
+
+        public bool DeletePathsPrompt(ICollection<Path> selected)
+        {
+            string alertText = String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.Count);
 
             StringBuilder content = new StringBuilder();
             int i = 0;
@@ -3106,12 +3112,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 content.Append("\n" + Character.toString('\u2022') + " ...)");
             }
-            TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
+            TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText,
                 content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (r.Button == 0)
-            {
-                DeletePathsImpl(normalized);
-            }
+            return r.Button == 0;
         }
 
         private void DeletePathsImpl(ICollection<Path> files)

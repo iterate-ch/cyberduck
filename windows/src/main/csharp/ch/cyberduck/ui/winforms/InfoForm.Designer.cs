@@ -33,6 +33,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.components = new System.ComponentModel.Container();
             this.toolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
+            this.versionsButton = new System.Windows.Forms.ToolStripButton();
             this.permissionsButton = new System.Windows.Forms.ToolStripButton();
             this.metadataButton = new System.Windows.Forms.ToolStripButton();
             this.distributionButton = new System.Windows.Forms.ToolStripButton();
@@ -112,6 +113,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.panelManager = new Ch.Cyberduck.Ui.Winforms.Controls.PanelManager();
             this.managedDistributionPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.managedVersionsPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.versionsViewHost = new System.Windows.Forms.Integration.ElementHost();
+            this.versionsInfoTab = new Ch.Cyberduck.Core.Refresh.Views.VersionsInfoTab();
             this.managedGeneralPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.managedMetadataPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.metadataTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -166,6 +170,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ((System.ComponentModel.ISupportInitialize)(this.s3Animation)).BeginInit();
             this.panelManager.SuspendLayout();
             this.managedDistributionPanel.SuspendLayout();
+            this.managedVersionsPanel.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
             this.managedMetadataPanel.SuspendLayout();
             this.metadataTableLayoutPanel.SuspendLayout();
@@ -191,6 +196,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generalButton,
+            this.versionsButton,
             this.permissionsButton,
             this.metadataButton,
             this.distributionButton,
@@ -212,6 +218,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.generalButton.Text = "General";
             this.generalButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.generalButton.Click += new System.EventHandler(this.generalButton_Click);
+            // 
+            // versionsButton
+            // 
+            this.versionsButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.versionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.versionsButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.versionsButton.Name = "versionsButton";
+            this.versionsButton.Size = new System.Drawing.Size(54, 56);
+            this.versionsButton.Text = "Versions";
+            this.versionsButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.versionsButton.Click += new System.EventHandler(this.versionsButton_Click);
             // 
             // permissionsButton
             // 
@@ -1262,6 +1279,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // panelManager
             // 
             this.panelManager.Controls.Add(this.managedDistributionPanel);
+            this.panelManager.Controls.Add(this.managedVersionsPanel);
             this.panelManager.Controls.Add(this.managedGeneralPanel);
             this.panelManager.Controls.Add(this.managedMetadataPanel);
             this.panelManager.Controls.Add(this.managedPermissionsPanel);
@@ -1281,6 +1299,24 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedDistributionPanel.Name = "managedDistributionPanel";
             this.managedDistributionPanel.Size = new System.Drawing.Size(500, 548);
             this.managedDistributionPanel.Text = "managedPanel1";
+            // 
+            // managedVersionsPanel
+            // 
+            this.managedVersionsPanel.Controls.Add(this.versionsViewHost);
+            this.managedVersionsPanel.Location = new System.Drawing.Point(0, 0);
+            this.managedVersionsPanel.Name = "managedVersionsPanel";
+            this.managedVersionsPanel.Size = new System.Drawing.Size(0, 0);
+            this.managedVersionsPanel.Text = "managedPanel1";
+            // 
+            // versionsViewHost
+            // 
+            this.versionsViewHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.versionsViewHost.Location = new System.Drawing.Point(0, 0);
+            this.versionsViewHost.Name = "versionsViewHost";
+            this.versionsViewHost.Size = new System.Drawing.Size(0, 0);
+            this.versionsViewHost.TabIndex = 0;
+            this.versionsViewHost.Text = "elementHost1";
+            this.versionsViewHost.Child = this.versionsInfoTab;
             // 
             // managedGeneralPanel
             // 
@@ -1756,7 +1792,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedS3Panel.Name = "managedS3Panel";
             this.managedS3Panel.Size = new System.Drawing.Size(500, 548);
             this.managedS3Panel.Text = "managedPanel1";
-            //
+            // 
             // InfoForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -1788,6 +1824,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.ResumeLayout(false);
             this.managedDistributionPanel.ResumeLayout(false);
             this.managedDistributionPanel.PerformLayout();
+            this.managedVersionsPanel.ResumeLayout(false);
             this.managedGeneralPanel.ResumeLayout(false);
             this.managedGeneralPanel.PerformLayout();
             this.managedMetadataPanel.ResumeLayout(false);
@@ -1941,5 +1978,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ComboBox encryptionComboBox;
         private System.Windows.Forms.CheckBox transferAccelerationCheckBox;
         private System.Windows.Forms.ComboBox bucketLoggingComboBox;
+        private System.Windows.Forms.ToolStripButton versionsButton;
+        private ManagedPanel managedVersionsPanel;
+        private System.Windows.Forms.Integration.ElementHost versionsViewHost;
+        private Cyberduck.Core.Refresh.Views.VersionsInfoTab versionsInfoTab;
     }
 }

@@ -82,9 +82,6 @@ public abstract class AbstractS3Test {
                 if("s3.listing.metadata.enable".equals(key)) {
                     return String.valueOf(false);
                 }
-                if("s3.versioning.references.enable".equals(key)) {
-                    return String.valueOf(true);
-                }
                 return super.getProperty(key);
             }
         };

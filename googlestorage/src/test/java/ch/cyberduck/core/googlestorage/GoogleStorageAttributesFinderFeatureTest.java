@@ -18,6 +18,7 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -73,17 +74,17 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
         final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new GoogleStorageAttributesFinderFeature(session).find(test).getVersions().isEmpty());
         final Path update = new Path(container, test.getName(), test.getType(),
                 new PathAttributes().withVersionId(String.valueOf(out.getStatus().getGeneration())));
-        final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session, true).find(update);
-        final AttributedList<Path> versions = attributes.getVersions();
+        final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session).find(update);
+        assertFalse(attributes.isDuplicate());
+        final AttributedList<Path> versions = new GoogleStorageVersioningFeature(session).list(update, new DisabledListProgressListener());
+        assertEquals(1, versions.size());
         assertFalse(versions.isEmpty());
         assertEquals(new Path(test).withAttributes(new PathAttributes(test.attributes()).withVersionId(versionId)), versions.get(0));
         for(Path version : versions) {
             assertTrue(version.attributes().isDuplicate());
         }
-        assertFalse(attributes.isDuplicate());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 

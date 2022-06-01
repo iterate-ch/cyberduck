@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -61,17 +62,18 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(initialVersion, test.attributes().getVersionId());
-        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(test);
-        assertFalse(updated.getVersions().isEmpty());
-        assertEquals(1, updated.getVersions().size());
-        assertEquals(new Path(test).withAttributes(initialAttributes), updated.getVersions().get(0));
-        assertTrue(new SDSFindFeature(session, nodeid).find(updated.getVersions().get(0)));
-        assertEquals(initialVersion, new SDSAttributesFinderFeature(session, nodeid).find(updated.getVersions().get(0)).getVersionId());
-        new SDSVersioningFeature(session, nodeid).revert(new Path(test).withAttributes(initialAttributes));
-        final Path reverted = new SDSListService(session, nodeid, true).list(room, new DisabledListProgressListener()).find(new DefaultPathPredicate(new Path(test).withAttributes(initialAttributes)));
+        final SDSVersioningFeature feature = new SDSVersioningFeature(session, nodeid);
+        final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
+        assertEquals(1, versions.size());
+        assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
+        assertTrue(new SDSFindFeature(session, nodeid).find(versions.get(0)));
+        assertEquals(initialVersion, new SDSAttributesFinderFeature(session, nodeid).find(versions.get(0)).getVersionId());
+        feature.revert(new Path(test).withAttributes(initialAttributes));
+        final Path reverted = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).find(new DefaultPathPredicate(new Path(test).withAttributes(initialAttributes)));
         assertEquals(initialVersion, reverted.attributes().getVersionId());
-        assertEquals(1, reverted.attributes().getVersions().size());
-        assertEquals(test, reverted.attributes().getVersions().get(0));
+        // Restored file is no longer in list of deleted items
+        assertEquals(1, feature.list(reverted, new DisabledListProgressListener()).size());
+        assertEquals(new Path(test).withAttributes(status.getResponse()), feature.list(reverted, new DisabledListProgressListener()).get(0));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

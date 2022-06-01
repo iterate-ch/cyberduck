@@ -25,7 +25,6 @@ import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,16 +48,16 @@ public class S3MultipleDeleteFeature implements Delete {
     private final S3Session session;
     private final PathContainerService containerService;
     private final S3MultipartService multipartService;
-    private final Versioning versioningService;
+    private final S3VersioningFeature versioningService;
 
     public S3MultipleDeleteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session));
+        this(session, new S3DefaultMultipartService(session), new S3VersioningFeature(session, new S3AccessControlListFeature(session)));
     }
 
-    public S3MultipleDeleteFeature(final S3Session session, final S3MultipartService multipartService) {
+    public S3MultipleDeleteFeature(final S3Session session, final S3MultipartService multipartService, final S3VersioningFeature versioningService) {
         this.session = session;
         this.multipartService = multipartService;
-        this.versioningService = session.getFeature(Versioning.class);
+        this.versioningService = versioningService;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -125,7 +124,7 @@ public class S3MultipleDeleteFeature implements Delete {
         try {
             if(versioningService != null
                     && versioningService.getConfiguration(bucket).isMultifactor()) {
-                final Credentials factor = versioningService.getToken(StringUtils.EMPTY, prompt);
+                final Credentials factor = versioningService.getToken(prompt);
                 final MultipleDeleteResult result = session.getClient().deleteMultipleObjectsWithMFA(bucket.getName(),
                         keys.toArray(new ObjectKeyAndVersion[keys.size()]),
                         factor.getUsername(),
