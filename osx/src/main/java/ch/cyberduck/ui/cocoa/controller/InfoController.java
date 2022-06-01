@@ -355,10 +355,10 @@ public class InfoController extends ToolbarWindowController {
             item = InfoToolbarItem.valueOf(identifier);
         }
         catch(IllegalArgumentException e) {
-            item = InfoToolbarItem.info;
+            item = InfoToolbarItem.general;
         }
         switch(item) {
-            case info:
+            case general:
                 this.initGeneral();
                 this.initPermissions();
                 break;
@@ -410,7 +410,7 @@ public class InfoController extends ToolbarWindowController {
             case metadata:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
                 break;
-            case info:
+            case general:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSInfo", 32));
                 break;
             case permissions:
@@ -488,18 +488,24 @@ public class InfoController extends ToolbarWindowController {
     @Override
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
-        views.put(new Label(InfoToolbarItem.info.name(), InfoToolbarItem.info.label()), panelGeneral);
-        views.put(new Label(InfoToolbarItem.versions.name(), InfoToolbarItem.versions.label()), panelVersions);
+        this.addPanel(views, InfoToolbarItem.general, panelGeneral);
+        this.addPanel(views, InfoToolbarItem.versions, panelVersions);
         if(session.getFeature(AclPermission.class) != null) {
-            views.put(new Label(InfoToolbarItem.acl.name(), InfoToolbarItem.acl.label()), panelAcl);
+            this.addPanel(views, InfoToolbarItem.acl, panelAcl);
         }
         else {
-            views.put(new Label(InfoToolbarItem.permissions.name(), InfoToolbarItem.permissions.label()), panelPermissions);
+            this.addPanel(views, InfoToolbarItem.permissions, panelPermissions);
         }
-        views.put(new Label(InfoToolbarItem.metadata.name(), InfoToolbarItem.metadata.label()), panelMetadata);
-        views.put(new Label(InfoToolbarItem.distribution.name(), InfoToolbarItem.distribution.label()), panelDistribution);
-        views.put(new Label(InfoToolbarItem.s3.name(), InfoToolbarItem.s3.label()), panelCloud);
+        this.addPanel(views, InfoToolbarItem.metadata, panelMetadata);
+        this.addPanel(views, InfoToolbarItem.distribution, panelDistribution);
+        this.addPanel(views, InfoToolbarItem.s3, panelCloud);
         return views;
+    }
+
+    private void addPanel(final Map<Label, NSView> views, final InfoToolbarItem item, final NSView panel) {
+        if(preferences.getBoolean(String.format("info.%s.enable", item.name()))) {
+            views.put(new Label(item.name(), item.label()), panel);
+        }
     }
 
     private String getName() {
@@ -2629,7 +2635,7 @@ public class InfoController extends ToolbarWindowController {
         /**
          * General
          */
-        info {
+        general {
             @Override
             public String label() {
                 return LocaleFactory.localizedString(StringUtils.capitalize("General"), "Info");

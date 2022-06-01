@@ -1188,6 +1188,13 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("preferences.update.enable", String.valueOf(true));
         this.setDefault("preferences.cryptomator.enable", String.valueOf(true));
 
+        this.setDefault("info.general.enable", String.valueOf(true));
+        this.setDefault("info.permissions.enable", String.valueOf(true));
+        this.setDefault("info.acl.enable", String.valueOf(true));
+        this.setDefault("info.distribution.enable", String.valueOf(true));
+        this.setDefault("info.s3.enable", String.valueOf(true));
+        this.setDefault("info.metadata.enable", String.valueOf(true));
+        this.setDefault("info.versions.enable", String.valueOf(true));
     }
 
     /**
