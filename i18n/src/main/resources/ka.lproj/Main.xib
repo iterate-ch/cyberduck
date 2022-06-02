@@ -254,6 +254,12 @@ CA
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Request files…" id="GnH-xE-vqc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="275"/>
                             <menuItem title="ბეჭდვა…" keyEquivalent="p" id="276">
                                 <connections>
