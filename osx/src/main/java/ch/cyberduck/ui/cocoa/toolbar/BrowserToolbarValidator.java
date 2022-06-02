@@ -294,6 +294,17 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             }
             return false;
         }
+        else if(action.equals(requestfiles.action())) {
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+                final Path selected = controller.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
+                return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
+                        controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.upload);
+            }
+            return false;
+        }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() > 0) {
                 for(Path selected : controller.getSelectedPaths()) {

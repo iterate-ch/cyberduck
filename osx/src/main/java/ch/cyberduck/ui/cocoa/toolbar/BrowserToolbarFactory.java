@@ -278,6 +278,17 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                 return Foundation.selector("shareFileButtonClicked:");
             }
         },
+        requestfiles {
+            @Override
+            public String tooltip() {
+                return LocaleFactory.localizedString("Request files…", "Main");
+            }
+
+            @Override
+            public Selector action() {
+                return Foundation.selector("requestFilesButtonClicked:");
+            }
+        },
         newfolder {
             @Override
             public String label() {
