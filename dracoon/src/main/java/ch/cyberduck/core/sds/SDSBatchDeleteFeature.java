@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeleteNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -44,22 +45,32 @@ public class SDSBatchDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final Map<Path, List<Long>> mapped = new HashMap<>();
+        final Map<Path, List<Long>> regular = new HashMap<>();
+        final Map<Path, List<Long>> trashed = new HashMap<>();
         for(Path file : files.keySet()) {
-            if(mapped.containsKey(file.getParent())) {
-                mapped.get(file.getParent()).add(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())));
+            final Map<Path, List<Long>> set = file.attributes().isDuplicate() ? trashed : regular;
+            if(set.containsKey(file.getParent())) {
+                set.get(file.getParent()).add(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())));
             }
             else {
                 final List<Long> nodes = new ArrayList<>();
                 nodes.add(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())));
-                mapped.put(file.getParent(), nodes);
+                set.put(file.getParent(), nodes);
             }
             callback.delete(file);
             nodeid.cache(file, null);
         }
-        for(List<Long> nodes : mapped.values()) {
+        for(List<Long> nodes : regular.values()) {
             try {
                 new NodesApi(session.getClient()).removeNodes(new DeleteNodesRequest().nodeIds(nodes), StringUtils.EMPTY);
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, files.keySet().iterator().next());
+            }
+        }
+        for(List<Long> nodes : trashed.values()) {
+            try {
+                new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(nodes), StringUtils.EMPTY);
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, files.keySet().iterator().next());

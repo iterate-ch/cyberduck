@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
@@ -74,6 +75,8 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         // Restored file is no longer in list of deleted items
         assertEquals(1, feature.list(reverted, new DisabledListProgressListener()).size());
         assertEquals(new Path(test).withAttributes(status.getResponse()), feature.list(reverted, new DisabledListProgressListener()).get(0));
+        // Permanently delete trashed version
+        new SDSDeleteFeature(session, nodeid).delete(feature.list(test, new DisabledListProgressListener()).toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
