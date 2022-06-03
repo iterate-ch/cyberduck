@@ -422,12 +422,12 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Открыть URL" id="95"/>
                 </menuItem>
-                <menuItem title="Share…" id="NBw-Mh-zlT">
+                <menuItem title="Разрешить доступ..." id="NBw-Mh-zlT">
                     <connections>
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Request files…" id="MMd-ej-pkb">
+                <menuItem title="Запросить файлы…" id="MMd-ej-pkb">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="requestFilesButtonClicked:" target="-1" id="z9T-Od-FNa"/>
