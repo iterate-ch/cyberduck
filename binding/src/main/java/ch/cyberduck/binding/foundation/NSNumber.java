@@ -199,7 +199,7 @@ public abstract class NSNumber extends NSValue {
      * Original signature : <code>BOOL boolValue()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:51</i>
      */
-    public abstract byte boolValue();
+    public abstract boolean boolValue();
 
     /**
      * Original signature : <code>NSInteger integerValue()</code><br>
