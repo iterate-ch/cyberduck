@@ -2542,7 +2542,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void shareFileButtonClicked(final ID sender) {
-        final Path file = this.getSelectedPath();
+        final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
                         new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
                             @Override
@@ -2586,7 +2586,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void requestFilesButtonClicked(final ID sender) {
-        final Path file = this.getSelectedPath();
+        final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
                         new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
                             @Override
