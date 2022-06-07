@@ -58,7 +58,7 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
     }
 
     @Test
-    public void testToDownloadUrlPasswortTooShort() throws Exception {
+    public void testToDownloadUrlPasswordTooShort() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         try {
             new NextcloudShareProvider(session).toDownloadUrl(home, null, new DisabledPasswordCallback() {
@@ -75,7 +75,7 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
     }
 
     @Test
-    public void testToDownloadUrlPasswort() throws Exception {
+    public void testToDownloadUrlPassword() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final DescriptiveUrl url = new NextcloudShareProvider(session).toDownloadUrl(home, null, new DisabledPasswordCallback() {
             @Override
@@ -116,7 +116,7 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
     }
 
     @Test
-    public void testToUploadUrlPasswortTooShort() throws Exception {
+    public void testToUploadUrlPasswordTooShort() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         try {
             new NextcloudShareProvider(session).toUploadUrl(home, null, new DisabledPasswordCallback() {
