@@ -111,4 +111,21 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
         });
         assertNotSame(DescriptiveUrl.EMPTY, url);
     }
+
+    @Test
+    public void testToUploadUrlPasswortTooShort() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        try {
+            new NextcloudShareProvider(session).toUploadUrl(home, null, new DisabledPasswordCallback() {
+                @Override
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                    return new Credentials(null, new AlphanumericRandomStringService(5).random());
+                }
+            });
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            assertEquals("Forbidden. Das Passwort muss mindestens 10 Zeichen lang sein. Please contact your web hosting service provider for assistance.", e.getDetail());
+        }
+    }
 }
