@@ -322,22 +322,19 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateRequestFiles()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsMounted())
             {
-                if (null == SelectedPath)
-                {
-                    return false;
-                }
-
+                var selected = SelectedPath ?? Workdir;
                 PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
-                return feature != null && feature.isSupported(SelectedPath, PromptUrlProvider.Type.upload);
+                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.upload);
             }
             return false;
         }
 
         private void View_RequestFiles()
         {
-            RequestFilesAction requestFiles = new RequestFilesAction(this, SelectedPath);
+            var selected = SelectedPath ?? Workdir;
+            RequestFilesAction requestFiles = new RequestFilesAction(this, selected);
             Background(requestFiles);
         }
 
@@ -370,21 +367,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CreateShareLink()
         {
-            ShareLinkAction share = new ShareLinkAction(this, SelectedPath);
+            var selected = SelectedPath ?? Workdir;
+            ShareLinkAction share = new ShareLinkAction(this, selected);
             Background(share);
         }
 
         private bool View_ValidateCreateShareLink()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsMounted())
             {
-                if (null == SelectedPath)
-                {
-                    return false;
-                }
-
+                var selected = SelectedPath ?? Workdir;
                 PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
-                return feature != null && feature.isSupported(SelectedPath, PromptUrlProvider.Type.download);
+                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.download);
             }
             return false;
         }
