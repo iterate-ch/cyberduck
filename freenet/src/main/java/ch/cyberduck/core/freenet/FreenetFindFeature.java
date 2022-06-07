@@ -15,27 +15,12 @@ package ch.cyberduck.core.freenet;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultFindFeature;
 
 public class FreenetFindFeature extends DAVFindFeature {
 
-    private final DAVSession session;
-
     public FreenetFindFeature(final DAVSession session) {
         super(session);
-        this.session = session;
-    }
-
-    @Override
-    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isDirectory()) {
-            return new DefaultFindFeature(session).find(file, listener);
-        }
-        return super.find(file, listener);
     }
 }
