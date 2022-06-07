@@ -116,7 +116,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         test.attributes().withFileId(id);
         assertTrue(new DriveFindFeature(session, fileid).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isHidden());
         // Files with duplicate flag (trashed) are filtered
         assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
         final Path upload = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());

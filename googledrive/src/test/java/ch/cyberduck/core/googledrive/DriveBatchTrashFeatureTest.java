@@ -54,7 +54,7 @@ public class DriveBatchTrashFeatureTest extends AbstractDriveTest {
         assertFalse(new DriveFindFeature(session, fileid).find(file));
         assertTrue(new DriveFindFeature(session, fileid).find(file.withAttributes(new PathAttributes().withFileId(fileId))));
         final PathAttributes attributesInTrash = new DriveAttributesFinderFeature(session, fileid).find(file.withAttributes(new PathAttributes().withFileId(fileId)));
-        assertTrue(attributesInTrash.isDuplicate());
+        assertTrue(attributesInTrash.isHidden());
         new DriveBatchTrashFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(attributesInTrash)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         assertFalse(new DriveFindFeature(session, fileid).find(file.withAttributes(attributesInTrash)));
     }
