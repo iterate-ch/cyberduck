@@ -1230,7 +1230,7 @@ public class InfoController extends ToolbarWindowController {
     public void versionsDeleteButtonClicked(ID sender) {
         if(this.toggleVersionsSettings(false)) {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            new DeleteController(this, session, PathCache.empty()).delete(Collections.singletonList(selected), new DeleteController.Callback() {
+            new DeleteController(this, session, PathCache.empty(), false).delete(Collections.singletonList(selected), new DeleteController.Callback() {
                 @Override
                 public void cancel() {
                     toggleVersionsSettings(true);

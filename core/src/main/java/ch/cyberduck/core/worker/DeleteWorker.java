@@ -76,6 +76,11 @@ public class DeleteWorker extends Worker<List<Path>> {
     }
 
     public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+                        final boolean trash) {
+        this(prompt, files, cache, listener, new NullFilter<>(), trash);
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
                         final Filter<Path> filter, final boolean trash) {
         this(prompt, files, cache, listener, filter, trash, new Delete.DisabledCallback());
     }
