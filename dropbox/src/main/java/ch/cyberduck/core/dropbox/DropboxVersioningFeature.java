@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.VersioningConfiguration;
@@ -86,8 +87,10 @@ public class DropboxVersioningFeature implements Versioning {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found revision %s", revision));
                 }
+                final PathAttributes attributes = attr.toAttributes(revision);
+                attributes.setDuplicate(true);
                 versions.add(new Path(file.getParent(), PathNormalizer.name(revision.getName()), file.getType(),
-                        attr.toAttributes(revision)));
+                        attributes));
             }
             return versions.filter(new NullFilter<Path>() {
                 @Override

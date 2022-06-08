@@ -45,4 +45,9 @@ public class DropboxThresholdDeleteFeature implements Delete {
     public boolean isRecursive() {
         return true;
     }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        return !file.attributes().isDuplicate();
+    }
 }
