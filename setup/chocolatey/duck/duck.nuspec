@@ -18,6 +18,7 @@
     <docsUrl>https://duck.sh</docsUrl>
     <bugTrackerUrl>https://trac.cyberduck.io</bugTrackerUrl>
     <mailingListUrl>https://lists.cyberduck.io</mailingListUrl>
+    <packageSourceUrl>https://github.com/iterate-ch/cyberduck</packageSourceUrl>
     <dependencies>
       <dependency id="dotnetfx" version="4.7.2.20210909" />
     </dependencies>
