@@ -100,6 +100,7 @@ import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.TouchWorker;
+import ch.cyberduck.core.worker.UploadShareWorker;
 import ch.cyberduck.ui.browser.BookmarkColumn;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -2541,14 +2542,58 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void shareFileButtonClicked(final ID sender) {
-        final Path file = this.getSelectedPath();
+        final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
                         new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
                             @Override
                             public void cleanup(final DescriptiveUrl url) {
                                 // Display
                                 if(!DescriptiveUrl.EMPTY.equals(url)) {
-                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
+                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
+                                            MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                                            LocaleFactory.localizedString("Continue", "Credentials"),
+                                            LocaleFactory.localizedString("Copy", "Main"),
+                                            null)) {
+                                        @Override
+                                        public void callback(final int returncode) {
+                                            switch(returncode) {
+                                                case SheetCallback.CANCEL_OPTION:
+                                                    final NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                                                    pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+                                                    if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
+                                                        log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                                    }
+                                            }
+                                        }
+
+                                        @Override
+                                        public NSView getAccessoryView(final NSAlert alert) {
+                                            final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+                                            field.setEditable(false);
+                                            field.setSelectable(true);
+                                            field.cell().setWraps(false);
+                                            field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                                            return field;
+                                        }
+                                    };
+                                    alert.beginSheet(BrowserController.this);
+                                }
+                            }
+                        }
+                )
+        );
+    }
+
+    @Action
+    public void requestFilesButtonClicked(final ID sender) {
+        final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
+        this.background(new WorkerBackgroundAction<>(this, pool,
+                        new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
+                            @Override
+                            public void cleanup(final DescriptiveUrl url) {
+                                // Display
+                                if(!DescriptiveUrl.EMPTY.equals(url)) {
+                                    final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
                                             MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
                                             LocaleFactory.localizedString("Continue", "Credentials"),
                                             LocaleFactory.localizedString("Copy", "Main"),

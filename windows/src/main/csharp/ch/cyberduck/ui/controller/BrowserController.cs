@@ -159,6 +159,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateOpenWebUrl += View_ValidateOpenWebUrl;
             View.CreateShareLink += View_CreateShareLink;
             View.ValidateCreateShareLink += View_ValidateCreateShareLink;
+            View.RequestFiles += View_RequestFiles;
+            View.ValidateRequestFiles += View_ValidateRequestFiles;
             View.ValidateEditWith += View_ValidateEditWith;
             View.ShowInspector += View_ShowInspector;
             View.ValidateShowInspector += View_ValidateShowInspector;
@@ -318,6 +320,24 @@ namespace Ch.Cyberduck.Ui.Controller
             SetNavigation(false);
         }
 
+        private bool View_ValidateRequestFiles()
+        {
+            if (IsMounted())
+            {
+                var selected = SelectedPath ?? Workdir;
+                PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
+                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.upload);
+            }
+            return false;
+        }
+
+        private void View_RequestFiles()
+        {
+            var selected = SelectedPath ?? Workdir;
+            RequestFilesAction requestFiles = new RequestFilesAction(this, selected);
+            Background(requestFiles);
+        }
+
         protected override void Invalidate()
         {
             foreach (KeyValuePair<Path, Editor> entry in _editors)
@@ -347,21 +367,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CreateShareLink()
         {
-            ShareLinkAction share = new ShareLinkAction(this, SelectedPath);
+            var selected = SelectedPath ?? Workdir;
+            ShareLinkAction share = new ShareLinkAction(this, selected);
             Background(share);
         }
 
         private bool View_ValidateCreateShareLink()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsMounted())
             {
-                if (null == SelectedPath)
-                {
-                    return false;
-                }
-
+                var selected = SelectedPath ?? Workdir;
                 PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
-                return feature != null && feature.isSupported(SelectedPath, PromptUrlProvider.Type.download);
+                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.download);
             }
             return false;
         }
@@ -3640,7 +3657,52 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Display
                     if (!DescriptiveUrl.EMPTY.@equals(url))
                     {
-                        string title = LocaleFactory.localizedString("Create Download Share", "Share");
+                        string title = LocaleFactory.localizedString("Share…", "Main");
+                        string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Copy", "Main"));
+                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
+                            commandButtons,
+                            false, null, TaskDialogIcon.Information,
+                            delegate (int option, System.Boolean verificationChecked)
+                            {
+                                switch (option)
+                                {
+                                    case 1:
+                                        Clipboard.SetText(url.getUrl());
+                                        break;
+                                }
+                            });
+                    }
+                }
+            }
+        }
+
+        private class RequestFilesAction : WorkerBackgroundAction
+        {
+            public RequestFilesAction(BrowserController controller, Path file)
+                : base(controller, controller.Session, new InnerUploadShareWorker(controller, file))
+            {
+            }
+
+            private class InnerUploadShareWorker : UploadShareWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _file;
+
+                public InnerUploadShareWorker(BrowserController controller, Path file)
+                    : base(file, null, PasswordCallbackFactory.get(controller))
+                {
+                    _controller = controller;
+                    _file = file;
+                }
+
+                public override void cleanup(object result)
+                {
+                    DescriptiveUrl url = (DescriptiveUrl)result;
+                    // Display
+                    if (!DescriptiveUrl.EMPTY.@equals(url))
+                    {
+                        string title = LocaleFactory.localizedString("Share…", "Main");
                         string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Copy", "Main"));
                         _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),

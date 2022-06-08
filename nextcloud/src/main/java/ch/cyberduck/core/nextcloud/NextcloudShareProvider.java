@@ -142,6 +142,20 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         try {
             return new DescriptiveUrl(session.getClient().execute(resource, new AbstractResponseHandler<URI>() {
                 @Override
+                public URI handleResponse(final HttpResponse response) throws HttpResponseException, IOException {
+                    final StatusLine statusLine = response.getStatusLine();
+                    final HttpEntity entity = response.getEntity();
+                    if(statusLine.getStatusCode() >= 300) {
+                        final StringAppender message = new StringAppender();
+                        message.append(statusLine.getReasonPhrase());
+                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
+                        message.append(error.meta.message);
+                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
+                    }
+                    return super.handleResponse(response);
+                }
+
+                @Override
                 public URI handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
                     ocs value = mapper.readValue(entity.getContent(), ocs.class);
