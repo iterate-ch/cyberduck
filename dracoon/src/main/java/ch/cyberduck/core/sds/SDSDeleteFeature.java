@@ -24,12 +24,14 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class SDSDeleteFeature implements Delete {
@@ -39,7 +41,7 @@ public class SDSDeleteFeature implements Delete {
     private final SDSNodeIdProvider nodeid;
 
     private final PathContainerService containerService
-        = new SDSPathContainerService();
+            = new SDSPathContainerService();
 
     public SDSDeleteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -51,8 +53,16 @@ public class SDSDeleteFeature implements Delete {
         for(Path file : files.keySet()) {
             callback.delete(file);
             try {
-                new NodesApi(session.getClient()).removeNode(
-                    Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY);
+                if(file.attributes().isDuplicate()) {
+                    // Already trashed
+                    log.warn(String.format("Delete file %s already in trash", file));
+                    new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
+                            Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())))), StringUtils.EMPTY);
+                }
+                else {
+                    new NodesApi(session.getClient()).removeNode(
+                            Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY);
+                }
                 nodeid.cache(file, null);
             }
             catch(ApiException e) {
@@ -67,7 +77,7 @@ public class SDSDeleteFeature implements Delete {
             if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
                 // Need the query permission on the parent data room if file itself is subroom
                 return new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
-                    SDSPermissionsFeature.MANAGE_ROLE);
+                        SDSPermissionsFeature.MANAGE_ROLE);
             }
             return false;
         }

@@ -42,4 +42,9 @@ public class SDSThresholdDeleteFeature implements Delete {
             new SDSBatchDeleteFeature(session, fileid).delete(files, prompt, callback);
         }
     }
+
+    @Override
+    public boolean isRecursive() {
+        return true;
+    }
 }

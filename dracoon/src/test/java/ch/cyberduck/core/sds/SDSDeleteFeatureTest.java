@@ -116,4 +116,10 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(room));
     }
+
+    @Test
+    public void testIsRecursive() {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        assertTrue(new SDSDeleteFeature(session, nodeid).isRecursive());
+    }
 }
