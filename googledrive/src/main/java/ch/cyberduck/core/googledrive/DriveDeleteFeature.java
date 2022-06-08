@@ -53,8 +53,17 @@ public class DriveDeleteFeature implements Delete {
                     session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    session.getClient().files().delete(fileid.getFileId(f, new DisabledListProgressListener()))
-                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                    if(f.attributes().isDuplicate()) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Delete file %s already in trash", f));
+                        }
+                        // Permanently deletes a file version
+                        session.getClient().revisions().delete(fileid.getFileId(f, new DisabledListProgressListener()), f.attributes().getVersionId()).execute();
+                    }
+                    else {
+                        session.getClient().files().delete(fileid.getFileId(f, new DisabledListProgressListener()))
+                                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                    }
                 }
                 fileid.cache(f, null);
             }

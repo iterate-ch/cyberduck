@@ -103,6 +103,7 @@ public class DriveVersioningFeature implements Versioning {
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
         // The ID of the revision
         attributes.setVersionId(f.getId());
+        attributes.setDuplicate(true);
         // The last user to modify this revision
         attributes.setOwner(f.getLastModifyingUser().getDisplayName());
         return attributes;

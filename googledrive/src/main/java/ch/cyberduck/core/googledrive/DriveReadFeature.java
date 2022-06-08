@@ -32,7 +32,6 @@ import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,7 +86,8 @@ public class DriveReadFeature implements Read {
                 // Disable compression
                 headers.setAcceptEncoding("identity");
             }
-            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            if(file.attributes().isDuplicate()) {
+                // Read previous version
                 try {
                     final Drive.Revisions.Get request = session.getClient().revisions().get(fileid.getFileId(file, new DisabledListProgressListener()), file.attributes().getVersionId());
                     request.setRequestHeaders(headers);
@@ -97,38 +97,40 @@ public class DriveReadFeature implements Read {
                     throw new DriveExceptionMappingService(fileid).map("Download {0} failed", e, file);
                 }
             }
-            try {
+            else {
                 try {
-                    final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file, new DisabledListProgressListener()));
-                    request.setRequestHeaders(headers);
-                    request.setSupportsTeamDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"));
-                    return request.executeMediaAsInputStream();
+                    try {
+                        final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file, new DisabledListProgressListener()));
+                        request.setRequestHeaders(headers);
+                        request.setSupportsTeamDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"));
+                        return request.executeMediaAsInputStream();
+                    }
+                    catch(IOException e) {
+                        throw new DriveExceptionMappingService(fileid).map("Download {0} failed", e, file);
+                    }
                 }
-                catch(IOException e) {
-                    throw new DriveExceptionMappingService(fileid).map("Download {0} failed", e, file);
+                catch(RetriableAccessDeniedException e) {
+                    throw e;
                 }
-            }
-            catch(RetriableAccessDeniedException e) {
-                throw e;
-            }
-            catch(AccessDeniedException e) {
-                if(!PreferencesFactory.get().getBoolean(String.format("connection.unsecure.download.%s", session.getHost().getHostname()))) {
-                    // Not previously dismissed
-                    callback.warn(session.getHost(),
-                            MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                            "Acknowledge the risk of downloading known malware or other abusive file.",
-                            LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
-                            String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
-                }
-                try {
-                    final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file, new DisabledListProgressListener()));
-                    request.setAcknowledgeAbuse(true);
-                    request.setRequestHeaders(headers);
-                    request.setSupportsTeamDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"));
-                    return request.executeMediaAsInputStream();
-                }
-                catch(IOException f) {
-                    throw new DriveExceptionMappingService(fileid).map("Download {0} failed", f, file);
+                catch(AccessDeniedException e) {
+                    if(!PreferencesFactory.get().getBoolean(String.format("connection.unsecure.download.%s", session.getHost().getHostname()))) {
+                        // Not previously dismissed
+                        callback.warn(session.getHost(),
+                                MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                "Acknowledge the risk of downloading known malware or other abusive file.",
+                                LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
+                                String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
+                    }
+                    try {
+                        final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file, new DisabledListProgressListener()));
+                        request.setAcknowledgeAbuse(true);
+                        request.setRequestHeaders(headers);
+                        request.setSupportsTeamDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"));
+                        return request.executeMediaAsInputStream();
+                    }
+                    catch(IOException f) {
+                        throw new DriveExceptionMappingService(fileid).map("Download {0} failed", f, file);
+                    }
                 }
             }
         }

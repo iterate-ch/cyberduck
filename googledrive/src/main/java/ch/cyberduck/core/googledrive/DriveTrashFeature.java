@@ -55,7 +55,7 @@ public class DriveTrashFeature implements Delete {
                     session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    if(f.attributes().isDuplicate()) {
+                    if(f.attributes().isHidden()) {
                         log.warn(String.format("Delete file %s already in trash", f));
                         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(f), prompt, callback);
                         continue;
