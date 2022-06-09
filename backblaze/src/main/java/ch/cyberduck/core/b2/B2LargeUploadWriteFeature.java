@@ -90,11 +90,6 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
         return new Append(false).withStatus(status);
     }
 
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
     private final class LargeUploadOutputStream extends OutputStream {
         final List<B2UploadPartResponse> completed = new ArrayList<>();
         private final Path file;

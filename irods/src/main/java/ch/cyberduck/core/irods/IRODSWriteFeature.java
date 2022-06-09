@@ -67,9 +67,4 @@ public class IRODSWriteFeature extends AppendWriteFeature<ObjStat> {
             throw new IRODSExceptionMappingService().map("Uploading {0} failed", e, file);
         }
     }
-
-    @Override
-    public boolean temporary() {
-        return false;
-    }
 }

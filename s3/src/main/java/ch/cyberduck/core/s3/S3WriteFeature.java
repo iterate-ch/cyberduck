@@ -167,11 +167,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

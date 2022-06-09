@@ -80,11 +80,6 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }

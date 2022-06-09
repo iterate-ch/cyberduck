@@ -84,11 +84,6 @@ public class GraphWriteFeature implements Write<Void> {
         return new Append(false).withStatus(status);
     }
 
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
     private final class ChunkedOutputStream extends OutputStream {
         private final UploadSession upload;
         private final Path file;

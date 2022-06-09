@@ -85,11 +85,6 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

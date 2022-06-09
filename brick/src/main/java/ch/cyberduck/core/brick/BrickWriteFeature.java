@@ -168,11 +168,6 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

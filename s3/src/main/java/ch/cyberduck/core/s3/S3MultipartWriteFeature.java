@@ -92,11 +92,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
         return new Append(false).withStatus(status);
     }
 
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
     private final class MultipartOutputStream extends OutputStream {
         /**
          * Completed parts

@@ -74,11 +74,6 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }
