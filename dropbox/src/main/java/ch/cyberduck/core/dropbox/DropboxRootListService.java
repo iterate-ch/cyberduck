@@ -48,9 +48,12 @@ public class DropboxRootListService implements ListService {
                 final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
                 switch(account.getAccountType()) {
                     case BUSINESS:
+                        if(log.isInfoEnabled()) {
+                            log.info("Connect to business account type");
+                        }
                         return new DropboxListService(session).list(
-                            directory.withAttributes(new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId())),
-                            new HomeNamespaceListProgressListener(listener, account));
+                                directory.withAttributes(new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId())),
+                                new HomeNamespaceListProgressListener(listener, account));
                 }
             }
             return new DropboxListService(session).list(directory, listener);
