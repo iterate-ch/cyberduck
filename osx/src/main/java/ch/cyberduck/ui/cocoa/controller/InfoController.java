@@ -1214,14 +1214,14 @@ public class InfoController extends ToolbarWindowController {
     public void versionsRevertButtonClicked(ID sender) {
         if(this.toggleVersionsSettings(false)) {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            new RevertController(this, session).revert(Collections.singletonList(selected), new RevertController.Callback() {
+            new RevertController(this, session).revert(Collections.singletonList(selected), new ReloadCallback() {
                 @Override
                 public void cancel() {
                     toggleVersionsSettings(true);
                 }
 
                 @Override
-                public void reverted(final List<Path> files) {
+                public void done(final List<Path> files) {
                     toggleVersionsSettings(true);
                     initVersions();
                 }
@@ -1233,14 +1233,14 @@ public class InfoController extends ToolbarWindowController {
     public void versionsDeleteButtonClicked(ID sender) {
         if(this.toggleVersionsSettings(false)) {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            new DeleteController(this, session, PathCache.empty(), false).delete(Collections.singletonList(selected), new DeleteController.Callback() {
+            new DeleteController(this, session, PathCache.empty(), false).delete(Collections.singletonList(selected), new ReloadCallback() {
                 @Override
                 public void cancel() {
                     toggleVersionsSettings(true);
                 }
 
                 @Override
-                public void deleted(final List<Path> deleted) {
+                public void done(final List<Path> files) {
                     toggleVersionsSettings(true);
                     initVersions();
                 }

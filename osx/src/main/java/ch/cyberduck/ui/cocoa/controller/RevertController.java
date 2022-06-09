@@ -34,22 +34,14 @@ public class RevertController extends ProxyController {
         this.pool = pool;
     }
 
-    public void revert(final List<Path> files, final Callback callback) {
+    public void revert(final List<Path> files, final ReloadCallback callback) {
         parent.background(new WorkerBackgroundAction<>(parent, pool,
                 new RevertWorker(files) {
                     @Override
                     public void cleanup(final List<Path> result) {
-                        callback.reverted(result);
+                        callback.done(result);
                     }
                 }
         ));
-    }
-
-    public interface Callback {
-        default void cancel() {
-            //
-        }
-
-        void reverted(final List<Path> files);
     }
 }

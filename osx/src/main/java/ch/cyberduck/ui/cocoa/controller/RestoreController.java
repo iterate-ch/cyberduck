@@ -35,22 +35,14 @@ public class RestoreController extends ProxyController {
         this.pool = pool;
     }
 
-    public void restore(final List<Path> files, final Callback callback) {
+    public void restore(final List<Path> files, final ReloadCallback callback) {
         parent.background(new WorkerBackgroundAction<>(parent, pool,
             new RestoreWorker(LoginCallbackFactory.get(parent), files) {
                 @Override
                 public void cleanup(final List<Path> result) {
-                    callback.restored(result);
+                    callback.done(result);
                 }
             }
         ));
-    }
-
-    public interface Callback {
-        default void cancel() {
-            //
-        }
-
-        void restored(final List<Path> files);
     }
 }

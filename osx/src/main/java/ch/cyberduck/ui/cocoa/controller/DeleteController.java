@@ -56,7 +56,7 @@ public class DeleteController extends ProxyController {
      *
      * @param selected The files selected in the browser to delete
      */
-    public void delete(final List<Path> selected, final Callback callback) {
+    public void delete(final List<Path> selected, final ReloadCallback callback) {
         final List<Path> normalized = PathNormalizer.normalize(selected);
         if(normalized.isEmpty()) {
             return;
@@ -91,13 +91,5 @@ public class DeleteController extends ProxyController {
                 }
             }
         });
-    }
-
-    public interface Callback {
-        default void cancel() {
-            //
-        }
-
-        void deleted(final List<Path> deleted);
     }
 }
