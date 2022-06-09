@@ -18,9 +18,8 @@ package ch.cyberduck.core.proxy;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSAppleScript;
 import ch.cyberduck.core.library.Native;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,8 +35,15 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
         Native.load("core");
     }
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
+    @Override
+    public void configure() {
+        final String script = "tell application \"System Preferences\"\n" +
+                "activate\n" +
+                "reveal anchor \"Proxies\" of pane \"com.apple.preference.network\"\n" +
+                "end tell";
+        final NSAppleScript open = NSAppleScript.createWithSource(script);
+        open.executeAndReturnError(null);
+    }
 
     @Override
     public Proxy find(final String target) {
@@ -55,7 +61,7 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
             try {
                 // User info is never populated. Would have to lookup in keychain but we are unaware of the username
                 return new Proxy(Proxy.Type.valueOf(StringUtils.upperCase(proxy.getScheme())),
-                    proxy.getHost(), proxy.getPort());
+                        proxy.getHost(), proxy.getPort());
             }
             catch(IllegalArgumentException e) {
                 log.warn(String.format("Unsupported scheme for proxy %s", proxy));

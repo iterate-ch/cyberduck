@@ -20,7 +20,6 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.ToolbarWindowController;
 import ch.cyberduck.binding.application.*;
-import ch.cyberduck.binding.foundation.NSAppleScript;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
@@ -44,6 +43,7 @@ import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
@@ -2395,12 +2395,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void configureProxiesButtonClicked(NSButton sender) {
-        final String script = "tell application \"System Preferences\"\n" +
-                "activate\n" +
-                "reveal anchor \"Proxies\" of pane \"com.apple.preference.network\"\n" +
-                "end tell";
-        NSAppleScript open = NSAppleScript.createWithSource(script);
-        open.executeAndReturnError(null);
+        ProxyFactory.get().configure();
     }
 
     @Outlet
