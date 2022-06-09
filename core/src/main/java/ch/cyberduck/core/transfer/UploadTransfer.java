@@ -157,7 +157,12 @@ public class UploadTransfer extends Transfer {
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
         if(options.temporary) {
-            options.withTemporary(source.getFeature(Write.class).temporary());
+            final Write write = source.getFeature(Write.class);
+            final boolean temporary = write.temporary();
+            if(!temporary) {
+                log.warn(String.format("Disable temporary upload option because of unsupported option with %s", write));
+                options.withTemporary(false);
+            }
         }
         final Find find = new CachingFindFeature(cache,
                 source.getFeature(Find.class, new DefaultFindFeature(source)));
