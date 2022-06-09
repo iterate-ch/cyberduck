@@ -1628,7 +1628,7 @@ public class InfoController extends ToolbarWindowController {
         this.panelGeneral = v;
     }
 
-    private void initGeneral() {
+    protected void initGeneral() {
         final int count = this.numberOfFiles();
         if(count > 0) {
             filenameField.setStringValue(this.getName());
@@ -1706,7 +1706,7 @@ public class InfoController extends ToolbarWindowController {
         this.initWebUrl();
     }
 
-    private void initWebUrl() {
+    protected void initWebUrl() {
         // Web URL
         if(this.numberOfFiles() > 1) {
             this.updateField(webUrlField, String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
@@ -1726,7 +1726,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      *
      */
-    private void initPermissions() {
+    protected void initPermissions() {
         permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
@@ -1780,7 +1780,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Read content distribution settings
      */
-    private void initDistribution() {
+    protected void initDistribution() {
         distributionStatusField.setStringValue(LocaleFactory.localizedString("Unknown"));
         distributionCnameField.cell().setPlaceholderString(LocaleFactory.localizedString("None"));
         distributionOriginField.setStringValue(LocaleFactory.localizedString("Unknown"));
@@ -1825,7 +1825,7 @@ public class InfoController extends ToolbarWindowController {
      * Updates the size field by iterating over all files and reading the cached size value in the attributes of the
      * path
      */
-    private void initSize() {
+    protected void initSize() {
         if(this.toggleSizeSettings(false)) {
             this.background(new WorkerBackgroundAction<>(controller, session,
                     new ReadSizeWorker(files) {
@@ -1845,7 +1845,7 @@ public class InfoController extends ToolbarWindowController {
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    private void initChecksum() {
+    protected void initChecksum() {
         if(this.numberOfFiles() > 1) {
             checksumField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
         }
@@ -1872,7 +1872,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleS3Settings(final boolean stop) {
+    protected boolean toggleS3Settings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
@@ -1920,7 +1920,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      *
      */
-    private void initS3() {
+    protected void initS3() {
         bucketLocationField.setStringValue(LocaleFactory.localizedString("Unknown"));
 
         bucketLoggingPopup.removeAllItems();
@@ -2106,7 +2106,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleAclSettings(final boolean stop) {
+    protected boolean toggleAclSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AclPermission.class) != null;
@@ -2129,7 +2129,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleMetadataSettings(final boolean stop) {
+    protected boolean toggleMetadataSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.getFeature(Metadata.class) != null;
@@ -2149,7 +2149,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Read custom metadata HTTP headers from cloud provider
      */
-    private void initMetadata() {
+    protected void initMetadata() {
         this.setMetadata(Collections.emptyList());
         if(this.toggleMetadataSettings(false)) {
             this.background(new WorkerBackgroundAction<>(controller, session, new ReadMetadataWorker(files) {
@@ -2174,7 +2174,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleVersionsSettings(final boolean stop) {
+    protected boolean toggleVersionsSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Versioning versioning = session.getFeature(Versioning.class);
         boolean enable = versioning != null;
@@ -2195,7 +2195,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Read file versions
      */
-    private void initVersions() {
+    protected void initVersions() {
         this.setVersions(AttributedList.emptyList());
         if(this.toggleVersionsSettings(false)) {
             final Path selected = this.getSelected();
@@ -2214,7 +2214,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Read grants in the background
      */
-    private void initAcl() {
+    protected void initAcl() {
         this.setAcl(Collections.emptyList());
         if(this.toggleAclSettings(false)) {
             final AclPermission feature = session.getFeature(AclPermission.class);
@@ -2347,7 +2347,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if controls are enabled for the given protocol in idle state
      */
-    private boolean togglePermissionSettings(final boolean stop) {
+    protected boolean togglePermissionSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class) != null;
@@ -2383,7 +2383,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if controls are enabled for the given protocol in idle state
      */
-    private boolean toggleDistributionSettings(final boolean stop) {
+    protected boolean toggleDistributionSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
@@ -2590,7 +2590,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleSizeSettings(final boolean stop) {
+    protected boolean toggleSizeSettings(final boolean stop) {
         this.window().endEditingFor(null);
         sizeButton.setEnabled(false);
         for(Path next : files) {
