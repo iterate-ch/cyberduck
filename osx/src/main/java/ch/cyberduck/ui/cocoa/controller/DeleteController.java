@@ -82,13 +82,7 @@ public class DeleteController extends ProxyController {
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     parent.background(new WorkerBackgroundAction<>(parent, pool,
-                            new DeleteWorker(LoginCallbackFactory.get(parent), normalized, cache, parent, trash) {
-                                @Override
-                                public void cleanup(final List<Path> deleted) {
-                                    super.cleanup(deleted);
-                                    callback.deleted(deleted);
-                                }
-                            }
+                                    new DeleteWorker(LoginCallbackFactory.get(parent), normalized, cache, parent, trash)
                             )
                     );
                 }
