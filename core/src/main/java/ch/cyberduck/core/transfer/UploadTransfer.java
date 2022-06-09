@@ -39,7 +39,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DelegateStreamListener;
@@ -156,14 +155,6 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        if(options.temporary) {
-            final Write write = source.getFeature(Write.class);
-            final boolean temporary = write.temporary();
-            if(!temporary) {
-                log.warn(String.format("Disable temporary upload option because of unsupported option with %s", write));
-                options.withTemporary(false);
-            }
-        }
         final Find find = new CachingFindFeature(cache,
                 source.getFeature(Find.class, new DefaultFindFeature(source)));
         final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,

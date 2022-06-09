@@ -94,11 +94,6 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public boolean temporary() {
-        return proxy.temporary();
-    }
-
-    @Override
     public boolean random() {
         return proxy.random();
     }
