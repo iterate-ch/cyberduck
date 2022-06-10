@@ -2544,7 +2544,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void deleteFileButtonClicked(final ID sender) {
         final List<Path> selected = this.getSelectedPaths();
-        new DeleteController(this, pool, cache).delete(selected, new ReloadCallback() {
+        new DeleteController(this, pool).delete(selected, new ReloadCallback() {
             @Override
             public void done(final List<Path> files) {
                 reload(workdir(), selected, Collections.emptyList());

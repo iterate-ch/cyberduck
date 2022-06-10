@@ -1204,6 +1204,18 @@ public class InfoController extends ToolbarWindowController {
         this.versionsRevertButton.setAction(Foundation.selector("versionsRevertButtonClicked:"));
     }
 
+    @Action
+    public void versionsRevertButtonClicked(final ID sender) {
+        this.versionsRevertButtonClicked(new VersionsReloadCallback());
+    }
+
+    protected void versionsRevertButtonClicked(final ReloadCallback callback) {
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = versions.get(versionsTable.selectedRow().intValue());
+            new RevertController(this, session).revert(Collections.singletonList(selected), callback);
+        }
+    }
+
     public void setVersionsDeleteButton(final NSButton b) {
         this.versionsDeleteButton = b;
         this.versionsDeleteButton.setTarget(this.id());
@@ -1211,40 +1223,14 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Action
-    public void versionsRevertButtonClicked(ID sender) {
-        if(this.toggleVersionsSettings(false)) {
-            final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            new RevertController(this, session).revert(Collections.singletonList(selected), new ReloadCallback() {
-                @Override
-                public void cancel() {
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public void done(final List<Path> files) {
-                    toggleVersionsSettings(true);
-                    initVersions();
-                }
-            });
-        }
+    public void versionsDeleteButtonClicked(final ID sender) {
+        this.versionsDeleteButtonClicked(new VersionsReloadCallback());
     }
 
-    @Action
-    public void versionsDeleteButtonClicked(ID sender) {
+    protected void versionsDeleteButtonClicked(final ReloadCallback callback) {
         if(this.toggleVersionsSettings(false)) {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            new DeleteController(this, session, PathCache.empty(), false).delete(Collections.singletonList(selected), new ReloadCallback() {
-                @Override
-                public void cancel() {
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public void done(final List<Path> files) {
-                    toggleVersionsSettings(true);
-                    initVersions();
-                }
-            });
+            new DeleteController(this, session, false).delete(Collections.singletonList(selected), callback);
         }
     }
 
@@ -2668,6 +2654,19 @@ public class InfoController extends ToolbarWindowController {
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");
+        }
+    }
+
+    public class VersionsReloadCallback implements ReloadCallback {
+        @Override
+        public void cancel() {
+            toggleVersionsSettings(true);
+        }
+
+        @Override
+        public void done(final List<Path> files) {
+            toggleVersionsSettings(true);
+            initVersions();
         }
     }
 }

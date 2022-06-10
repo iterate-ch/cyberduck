@@ -618,7 +618,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            new DeleteController(controller, controller.getSession(), cache).delete(pasteboard, new ReloadCallback() {
+            new DeleteController(controller, controller.getSession()).delete(pasteboard, new ReloadCallback() {
                 @Override
                 public void done(final List<Path> files) {
                     controller.reload(controller.workdir(), pasteboard, Collections.emptyList());
