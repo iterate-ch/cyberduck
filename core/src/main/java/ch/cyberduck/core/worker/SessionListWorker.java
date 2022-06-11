@@ -62,6 +62,9 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
             return service.list(directory, listener);
         }
         catch(ListCanceledException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Return partial directory listing for %s", directory));
+            }
             return e.getChunk();
         }
     }
