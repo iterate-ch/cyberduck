@@ -14,7 +14,7 @@ https://cyberduck.io/
 - [Bugfix] Register custom DNS resolver to handle IPv6 preference (#13399)
 - [Bugfix] Failure opening vault (Cryptomator, FTP) (#13375)
 - [Bugfix] Mismatch between SHA256 hash error when downloading files (Dropbox) (#13361)
-- [Bugfix] No such file error when uploading with tempoprary filename option (SFTP) (#13367)
+- [Bugfix] No such file error when uploading with temporary filename option (SFTP) (#13367)
 - [Bugfix] Transfer acceleration endpoints not used (S3) (#13359)
 - [Bugfix] Delete multiple files with batch request (DRACOON)
 - [Bugfix] RequestTimeTooSkewed error with computer date settings not using Gregorian calendar (S3) (#13454)
