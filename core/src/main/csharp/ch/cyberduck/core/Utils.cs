@@ -237,7 +237,7 @@ namespace Ch.Cyberduck.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <returns>A List<typeparamref name="T"/></returns>
-        public static ICollection<T> ConvertFromJavaList<T>(Collection collection)
+        public static IList<T> ConvertFromJavaList<T>(Collection collection)
         {
             return ConvertFromJavaList<T>(collection, null);
         }
