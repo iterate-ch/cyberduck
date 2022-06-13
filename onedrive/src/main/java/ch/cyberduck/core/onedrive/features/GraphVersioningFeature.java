@@ -19,7 +19,9 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
+
 import org.nuxeo.onedrive.client.Files;
+import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
@@ -34,7 +36,6 @@ public class GraphVersioningFeature implements Versioning {
     private final GraphAttributesFinderFeature attributes;
 
     public GraphVersioningFeature(final GraphSession session, final GraphFileIdProvider fileid) {
-
         this.session = session;
         this.fileid = fileid;
         this.attributes = new GraphAttributesFinderFeature(session, fileid);
@@ -52,12 +53,21 @@ public class GraphVersioningFeature implements Versioning {
 
     @Override
     public void revert(Path file) throws BackgroundException {
-        throw new UnsupportedException();
+        final DriveItem item = session.getItem(file);
+        try {
+            Files.restore(item, file.attributes().getVersionId());
+        }
+        catch(OneDriveAPIException e) {
+            throw new GraphExceptionMappingService(fileid).map("Cannot revert file", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot revert file", e, file);
+        }
     }
 
     @Override
     public boolean isRevertable(Path file) {
-        return false;
+        return true;
     }
 
     @Override
@@ -67,12 +77,14 @@ public class GraphVersioningFeature implements Versioning {
         try {
             final DriveItem.Metadata parentMetadata = item.getMetadata();
             final List<DriveItemVersion> versionList = Files.versions(item);
-            for (final DriveItemVersion version : versionList) {
+            for(final DriveItemVersion version : versionList) {
                 versions.add(new Path(file).withAttributes(attributes.toAttributes(parentMetadata, version)));
             }
-        } catch (OneDriveAPIException e) {
+        }
+        catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
-        } catch (IOException e) {
+        }
+        catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
         return versions;
