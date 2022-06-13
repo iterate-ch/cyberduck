@@ -61,4 +61,13 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
             caching.finish();
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CachingAttributesFinderFeature{");
+        sb.append("cache=").append(cache);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }
