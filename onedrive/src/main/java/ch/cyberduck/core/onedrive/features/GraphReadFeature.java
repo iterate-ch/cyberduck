@@ -80,14 +80,14 @@ public class GraphReadFeature implements Read {
                         log.debug(String.format("Add range header %s for file %s", header, file));
                     }
                     if(file.attributes().isDuplicate()) {
-                        return Files.download(target, file.attributes().getVersionId(), header);
+                        return Files.downloadVersion(target, file.attributes().getVersionId(), header);
                     }
                     else {
                         return Files.download(target, header);
                     }
                 }
                 if(file.attributes().isDuplicate()) {
-                    return Files.download(target, file.attributes().getVersionId());
+                    return Files.downloadVersion(target, file.attributes().getVersionId());
                 }
                 else {
                     return Files.download(target);
