@@ -93,14 +93,14 @@ public class OneDriveSession extends GraphSession {
                 return new Drive(user.asDirectoryObject()).getRoot();
             }
         }
-        final String versionId = fileid.getFileId(file, new DisabledListProgressListener());
-        if(StringUtils.isEmpty(versionId)) {
+        final String fileid = this.fileid.getFileId(file, new DisabledListProgressListener());
+        if(StringUtils.isEmpty(fileid)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
 
         // recursively find items …
 
-        final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
+        final String[] idParts = fileid.split(String.valueOf(Path.DELIMITER));
         final String driveId;
         final String itemId;
         if(idParts.length == 2 || !resolveLastItem) {
