@@ -52,9 +52,4 @@ public class MantaWriteFeature implements Write<Void> {
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
     }
-
-    @Override
-    public boolean temporary() {
-        return false;
-    }
 }

@@ -277,11 +277,6 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

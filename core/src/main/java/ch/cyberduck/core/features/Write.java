@@ -45,13 +45,6 @@ public interface Write<Reply> {
     Append append(Path file, TransferStatus status) throws BackgroundException;
 
     /**
-     * @return True if temporary upload filename can be used
-     */
-    default boolean temporary() {
-        return true;
-    }
-
-    /**
      * @return True if supporting random writes with arbitrary offset and length
      */
     default boolean random() {
