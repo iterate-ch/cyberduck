@@ -97,7 +97,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -144,7 +144,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -174,7 +174,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(fileRenamedInRenamedFolder));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         registry.clear();
     }
 
@@ -198,7 +198,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         worker.run(session);
         assertTrue(new SFTPFindFeature(session).find(cleartextFile));
         assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         registry.clear();
     }
 
@@ -225,7 +225,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         assertTrue(new SFTPFindFeature(session).find(cleartextFolder));
         assertTrue(new SFTPFindFeature(session).find(cleartextFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         registry.clear();
     }
 
@@ -252,7 +252,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         worker.run(session);
         assertTrue(new CryptoFindV6Feature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new SFTPFindFeature(session).find(cleartextFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
         registry.clear();
     }
 
@@ -280,7 +280,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(new SFTPFindFeature(session).find(cleartextFolder));
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new SFTPFindFeature(session).find(fileRenamed));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
         registry.clear();
     }
 }

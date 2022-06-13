@@ -94,7 +94,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(target));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -170,7 +170,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(fileRenamedInRenamedFolder));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -198,7 +198,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -225,7 +225,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(cleartextFolder));
         assertTrue(new S3FindFeature(session).find(cleartextFile));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -251,7 +251,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new S3FindFeature(session).find(cleartextFile));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -278,6 +278,6 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(new S3FindFeature(session).find(fileRenamed));
         registry.clear();
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
     }
 }
