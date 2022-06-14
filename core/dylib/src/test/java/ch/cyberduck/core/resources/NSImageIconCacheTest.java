@@ -250,4 +250,10 @@ public class NSImageIconCacheTest {
         final NSImageIconCache cache = new NSImageIconCache();
         assertNull(cache.iconNamed(null, 64));
     }
+
+    @Test
+    public void testSymbol() {
+        final NSImageIconCache cache = new NSImageIconCache();
+        assertNotNull(cache.iconNamed("bell.badge", 64));
+    }
 }
