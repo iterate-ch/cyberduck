@@ -180,13 +180,6 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar, final String itemIdentifier, final boolean flag) {
-        final NSToolbarItem item = super.toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(toolbar, itemIdentifier, flag);
-        item.setImage(IconCacheFactory.<NSImage>get().iconNamed(String.format("preferences-%s.pdf", itemIdentifier)));
-        return item;
-    }
-
-    @Override
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
         this.addPanel(views, new PreferencesLabel(PreferencesToolbarItem.general), panelGeneral);
@@ -229,7 +222,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     protected static class PreferencesLabel extends Label {
         public PreferencesLabel(final PreferencesToolbarItem item) {
-            super(item.name(), item.label());
+            super(item.name(), item.label(), item.image());
         }
     }
 
@@ -281,6 +274,10 @@ public class PreferencesController extends ToolbarWindowController {
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");
+        }
+
+        public String image() {
+            return String.format("preferences-%s.pdf", this.name());
         }
     }
 
