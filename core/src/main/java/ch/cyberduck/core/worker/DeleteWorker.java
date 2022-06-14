@@ -18,7 +18,6 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -35,7 +34,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.browser.PathReloadFinder;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,7 +55,6 @@ public class DeleteWorker extends Worker<List<Path>> {
      */
     private final List<Path> files;
     private final LoginCallback prompt;
-    private final Cache<Path> cache;
     private final ProgressListener listener;
     private final Filter<Path> filter;
     /**
@@ -66,30 +63,29 @@ public class DeleteWorker extends Worker<List<Path>> {
     private final boolean trash;
     private final Delete.Callback callback;
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
-        this(prompt, files, cache, listener, new NullFilter<>());
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
+        this(prompt, files, listener, new NullFilter<>());
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
                         final Filter<Path> filter) {
-        this(prompt, files, cache, listener, filter, PreferencesFactory.get().getBoolean("browser.delete.trash"));
+        this(prompt, files, listener, filter, PreferencesFactory.get().getBoolean("browser.delete.trash"));
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
                         final boolean trash) {
-        this(prompt, files, cache, listener, new NullFilter<>(), trash);
+        this(prompt, files, listener, new NullFilter<>(), trash);
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
                         final Filter<Path> filter, final boolean trash) {
-        this(prompt, files, cache, listener, filter, trash, new Delete.DisabledCallback());
+        this(prompt, files, listener, filter, trash, new Delete.DisabledCallback());
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener,
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
                         final Filter<Path> filter, final boolean trash, final Delete.Callback callback) {
         this.files = files;
         this.prompt = prompt;
-        this.cache = cache;
         this.listener = listener;
         this.filter = filter;
         this.trash = trash;
@@ -177,13 +173,6 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     protected String getLockId(final Path file) {
         return null;
-    }
-
-    @Override
-    public void cleanup(final List<Path> deleted) {
-        for(Path folder : new PathReloadFinder().find(new ArrayList<>(deleted))) {
-            cache.invalidate(folder);
-        }
     }
 
     @Override

@@ -73,7 +73,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
             new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -91,7 +91,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         worker.run(session);
         assertTrue(new S3FindFeature(session).find(sourceFile));
         assertTrue(new S3FindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -112,6 +112,6 @@ public class CopyWorkerTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(targetFile));
         assertTrue(new S3FindFeature(session).find(folder));
         assertTrue(new S3FindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
     }
 }

@@ -81,7 +81,7 @@ public class MoveWorkerTest extends AbstractS3Test {
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
             new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -107,6 +107,6 @@ public class MoveWorkerTest extends AbstractS3Test {
             assertFalse(new S3FindFeature(session).find(entry.getKey().withAttributes(PathAttributes.EMPTY)));
             assertTrue(new S3FindFeature(session).find(entry.getValue()));
         }
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), new DisabledProgressListener()).run(session);
     }
 }

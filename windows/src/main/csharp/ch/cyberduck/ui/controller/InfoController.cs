@@ -186,9 +186,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 viewModel = new VersionsViewModel(_controller, _controller.Session);
                 View.Versions.ViewModel = viewModel;
                 viewModel.PromptDelete.RegisterHandler(c => c.SetOutput(_controller.DeletePathsPrompt(c.Input)));
+                viewModel.Reverted += Versions_Reverted;
             }
             viewModel.Selection = SelectedPath;
             viewModel.Load.ExecuteIfPossible().Subscribe();
+        }
+
+        private void Versions_Reverted(IList<Path> files)
+        {
+            _controller.Reload(_controller.Workdir, files, new List<Path>());
         }
 
         private Map ConvertMetadataToMap()

@@ -2521,20 +2521,32 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void revertFileButtonClicked(final ID sender) {
-        new RevertController(this).revert(this.getSelectedPaths());
+        final List<Path> selected = this.getSelectedPaths();
+        new RevertController(this, pool).revert(selected, new ReloadCallback() {
+            @Override
+            public void done(final List<Path> files) {
+                reload(workdir(), selected, Collections.emptyList());
+            }
+        });
     }
 
     @Action
     public void restoreFileButtonClicked(final ID sender) {
-        new RestoreController(this).restore(this.getSelectedPaths());
+        final List<Path> selected = this.getSelectedPaths();
+        new RestoreController(this, pool).restore(selected, new ReloadCallback() {
+            @Override
+            public void done(final List<Path> files) {
+                reload(workdir(), selected, selected);
+            }
+        });
     }
 
     @Action
     public void deleteFileButtonClicked(final ID sender) {
         final List<Path> selected = this.getSelectedPaths();
-        new DeleteController(this, pool, cache).delete(selected, new DeleteController.Callback() {
+        new DeleteController(this, pool).delete(selected, new ReloadCallback() {
             @Override
-            public void deleted(final List<Path> deleted) {
+            public void done(final List<Path> files) {
                 reload(workdir(), selected, Collections.emptyList());
             }
         });
