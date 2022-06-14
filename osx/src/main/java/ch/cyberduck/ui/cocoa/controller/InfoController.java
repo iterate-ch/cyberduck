@@ -1003,7 +1003,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
+                validateAclActions(true);
             }
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell,
@@ -1073,8 +1073,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setAclRemoveButton(NSButton b) {
         this.aclRemoveButton = b;
-        // Only enable upon selection change
-        this.aclRemoveButton.setEnabled(false);
         this.aclRemoveButton.setAction(Foundation.selector("aclRemoveButtonClicked:"));
         this.aclRemoveButton.setTarget(this.id());
     }
@@ -1178,13 +1176,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                final Path version = versions.get(versionsTable.selectedRow().intValue());
-                versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && session.getFeature(Delete.class).isSupported(version));
-                versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && session.getFeature(Versioning.class).isRevertable(version));
-                versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && version.attributes().getPermission().isReadable());
+                validateVersionsActions(true);
                 if(quicklook.isOpen()) {
                     versionsQuicklookButtonClicked(null);
                 }
@@ -1353,7 +1345,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                metadataRemoveButton.setEnabled(metadataTable.numberOfSelectedRows().intValue() > 0);
+                validateMetadataActions(true);
             }
 
             @Override
@@ -1484,8 +1476,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setMetadataRemoveButton(NSButton b) {
         this.metadataRemoveButton = b;
-        // Only enable upon selection change
-        this.metadataRemoveButton.setEnabled(false);
         this.metadataRemoveButton.setAction(Foundation.selector("metadataRemoveButtonClicked:"));
         this.metadataRemoveButton.setTarget(this.id());
     }
@@ -2097,19 +2087,27 @@ public class InfoController extends ToolbarWindowController {
      */
     protected boolean toggleAclSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AclPermission.class) != null;
-        aclTable.setEnabled(stop && enable);
-        aclAddButton.setEnabled(stop && enable);
-        boolean selection = aclTable.selectedRowIndexes().count().intValue() > 0;
-        aclRemoveButton.setEnabled(stop && enable && selection);
+        final boolean enabled = this.validateAclActions(stop);
         if(stop) {
             aclProgress.stopAnimation(null);
         }
-        else if(enable) {
+        else if(enabled) {
             aclProgress.startAnimation(null);
         }
-        return enable;
+        return enabled;
+    }
+
+    /**
+     * @param enable True if actions should be enabled if current selection allows
+     * @return True if feature is supported
+     */
+    protected boolean validateAclActions(final boolean enable) {
+        final boolean feature = session.getFeature(AclPermission.class) != null;
+        aclTable.setEnabled(enable && feature);
+        aclAddButton.setEnabled(enable && feature);
+        boolean selection = aclTable.numberOfSelectedRows().intValue() > 0;
+        aclRemoveButton.setEnabled(enable && feature && selection);
+        return feature;
     }
 
     /**
@@ -2120,19 +2118,26 @@ public class InfoController extends ToolbarWindowController {
      */
     protected boolean toggleMetadataSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(Metadata.class) != null;
-        metadataTable.setEnabled(stop && enable);
-        metadataAddButton.setEnabled(stop && enable);
-        boolean selection = metadataTable.selectedRowIndexes().count().intValue() > 0;
-        metadataRemoveButton.setEnabled(stop && enable && selection);
+        final boolean feature = this.validateMetadataActions(stop);
         if(stop) {
             metadataProgress.stopAnimation(null);
         }
-        else if(enable) {
+        else if(feature) {
             metadataProgress.startAnimation(null);
         }
-        return enable;
+        return feature;
+    }
+
+    /**
+     * @param enable True if actions should be enabled if current selection allows
+     */
+    protected boolean validateMetadataActions(final boolean enable) {
+        boolean feature = session.getFeature(Metadata.class) != null;
+        metadataTable.setEnabled(enable && feature);
+        metadataAddButton.setEnabled(enable && feature);
+        boolean selection = metadataTable.numberOfSelectedRows().intValue() > 0;
+        metadataRemoveButton.setEnabled(enable && feature && selection);
+        return feature;
     }
 
     /**
@@ -2165,20 +2170,35 @@ public class InfoController extends ToolbarWindowController {
      */
     protected boolean toggleVersionsSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Versioning versioning = session.getFeature(Versioning.class);
-        boolean enable = versioning != null;
-        versionsTable.setEnabled(stop && enable);
-        boolean selection = versionsTable.selectedRowIndexes().count().intValue() == 1;
-        versionsRevertButton.setEnabled(stop && enable && selection && versioning.isRevertable(this.getSelected()));
-        versionsDeleteButton.setEnabled(stop && enable && selection);
-        versionsQuicklookButton.setEnabled(stop && enable && selection);
+        final boolean enabled = this.validateVersionsActions(stop);
         if(stop) {
             versionsProgress.stopAnimation(null);
         }
-        else if(enable) {
+        else if(enabled) {
             versionsProgress.startAnimation(null);
         }
-        return enable;
+        return enabled;
+    }
+
+    /**
+     * @param enable True if actions should be enabled if current selection allows
+     */
+    protected boolean validateVersionsActions(final boolean enable) {
+        boolean feature = session.getFeature(Versioning.class) != null;
+        versionsTable.setEnabled(enable && feature);
+        boolean selection = versionsTable.numberOfSelectedRows().intValue() == 1;
+        if(selection) {
+            final Path version = versions.get(versionsTable.selectedRow().intValue());
+            versionsDeleteButton.setEnabled(enable && feature && session.getFeature(Delete.class).isSupported(version));
+            versionsRevertButton.setEnabled(enable && feature && session.getFeature(Versioning.class).isRevertable(version));
+            versionsQuicklookButton.setEnabled(enable && feature && version.attributes().getPermission().isReadable());
+        }
+        else {
+            versionsDeleteButton.setEnabled(false);
+            versionsRevertButton.setEnabled(false);
+            versionsQuicklookButton.setEnabled(false);
+        }
+        return feature;
     }
 
     /**
