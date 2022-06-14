@@ -60,10 +60,23 @@ public class NSImageIconCache implements IconCache<NSImage> {
     }
 
     private NSImage load(final String name, final Integer size) {
-        final NSImage cached = NSImage.imageNamed(toName(name, size));
+        NSImage cached = NSImage.imageNamed(toName(name, size));
         if(null == cached) {
+            cached = NSImage.imageWithSymbol(name);
+            if(null == cached) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("No cached image for %s", name));
+                }
+            }
+            else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Loaded symbol image %s", cached));
+                }
+            }
+        }
+        else {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("No cached image for %s", name));
+                log.debug(String.format("Loaded image %s", cached));
             }
         }
         return cached;
@@ -79,7 +92,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
         NSImage image = this.load(extension, size);
         if(null == image) {
             return this.cache(extension,
-                this.convert(extension, workspace.iconForFileType(extension), size), size);
+                    this.convert(extension, workspace.iconForFileType(extension), size), size);
         }
         return image;
     }
@@ -127,9 +140,9 @@ public class NSImageIconCache implements IconCache<NSImage> {
         NSImage f = NSImage.imageWithSize(icon.size());
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
-            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
         badge.drawInRect(new NSRect(new NSPoint(0, 0), badge.size()),
-            NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
+                NSZeroRect, NSGraphics.NSCompositeSourceOver, 1.0f);
         f.unlockFocus();
         return f;
     }
@@ -154,11 +167,11 @@ public class NSImageIconCache implements IconCache<NSImage> {
             }
             else if(name.contains(PreferencesFactory.get().getProperty("local.delimiter"))) {
                 return this.cache(FilenameUtils.getName(name), this.convert(FilenameUtils.getName(name),
-                    NSImage.imageWithContentsOfFile(name), width, height), width);
+                        NSImage.imageWithContentsOfFile(name), width, height), width);
             }
             else {
                 return this.cache(name, this.convert(name,
-                    NSImage.imageNamed(name), width, height), width);
+                        NSImage.imageNamed(name), width, height), width);
             }
         }
         return image;
@@ -176,7 +189,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
             icon = this.load(file.getAbsolute(), size);
             if(null == icon) {
                 return this.cache(file.getName(),
-                    this.convert(file.getName(), workspace.iconForFile(file.getAbsolute()), size), size);
+                        this.convert(file.getName(), workspace.iconForFile(file.getAbsolute()), size), size);
             }
         }
         if(null == icon) {
@@ -198,7 +211,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
             // Null if the bundle cannot be found
             if(StringUtils.isNotBlank(path)) {
                 return this.cache(app.getIdentifier(),
-                    this.convert(app.getIdentifier(), workspace.iconForFile(path), size), size);
+                        this.convert(app.getIdentifier(), workspace.iconForFile(path), size), size);
             }
         }
         if(null == icon) {
