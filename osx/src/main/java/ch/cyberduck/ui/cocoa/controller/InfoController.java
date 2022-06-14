@@ -407,19 +407,6 @@ public class InfoController extends ToolbarWindowController {
                 item.setLabel(session.getHost().getProtocol().getName());
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().icon(), 32));
                 break;
-            case metadata:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-                break;
-            case general:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSInfo", 32));
-                break;
-            case permissions:
-            case acl:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSUserGroup", 32));
-                break;
-            case versions:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
-                break;
         }
         return item;
     }
@@ -504,7 +491,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void addPanel(final Map<Label, NSView> views, final InfoToolbarItem item, final NSView panel) {
         if(preferences.getBoolean(String.format("info.%s.enable", item.name()))) {
-            views.put(new Label(item.name(), item.label()), panel);
+            views.put(new Label(item.name(), item.label(), item.image()), panel);
         }
     }
 
@@ -2649,12 +2636,27 @@ public class InfoController extends ToolbarWindowController {
             public String label() {
                 return LocaleFactory.localizedString(StringUtils.capitalize("General"), "Info");
             }
+
+            @Override
+            public String image() {
+                return "NSInfo";
+            }
         },
-        permissions,
+        permissions {
+            @Override
+            public String image() {
+                return "NSUserGroup";
+            }
+        },
         acl {
             @Override
             public String label() {
                 return LocaleFactory.localizedString(StringUtils.capitalize("Permissions"), "Info");
+            }
+
+            @Override
+            public String image() {
+                return "NSUserGroup";
             }
         },
         distribution {
@@ -2669,11 +2671,25 @@ public class InfoController extends ToolbarWindowController {
                 return LocaleFactory.localizedString(StringUtils.capitalize("Amazon S3"), "Info");
             }
         },
-        metadata,
-        versions;
+        metadata {
+            @Override
+            public String image() {
+                return "pencil.tiff";
+            }
+        },
+        versions {
+            @Override
+            public String image() {
+                return "NSMultipleDocuments";
+            }
+        };
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");
+        }
+
+        public String image() {
+            return this.name();
         }
     }
 
