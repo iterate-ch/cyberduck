@@ -55,18 +55,21 @@
                         FontFamily="Segoe MDL2 Assets"
                         Height="23"
                         Margin="0,0,3.5,0"
+                        ToolTip="{xaml:Text 'Revert',Table=Info}"
                         Width="25" />
                 <Button x:Name="RemoveButton"
                         Content="&#xE738;"
                         FontFamily="Segoe MDL2 Assets"
                         Height="23"
                         Margin="3.5,0"
+                        ToolTip="{xaml:Text 'Delete',Table=Info}"
                         Width="25" />
                 <Button x:Name="OpenButton"
                         Content="&#xE890;"
                         FontFamily="Segoe MDL2 Assets"
                         Height="23"
                         Margin="3.5,0,0,0"
+                        ToolTip="{xaml:Text 'Open',Table=Localizable}"
                         Width="25" />
             </StackPanel>
         </Border>
