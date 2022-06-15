@@ -59,7 +59,6 @@ import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.importer.*;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
@@ -643,22 +642,14 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
-                    final Profile profile = ProfileReaderFactory.get().read(f);
-                    if(profile.isEnabled()) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Register profile %s", profile));
-                        }
-                        final ProtocolFactory protocols = ProtocolFactory.get();
-                        protocols.register(profile);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Register profile %s", f));
+                    }
+                    final Local copy = ProtocolFactory.get().register(f);
+                    if(copy != null) {
+                        final Profile profile = ProfileReaderFactory.get().read(copy);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         newDocument().addBookmark(host);
-                        // Register in application support
-                        final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                            preferences.getProperty("profiles.folder.name"));
-                        if(!profiles.exists()) {
-                            new DefaultLocalDirectoryFeature().mkdir(profiles);
-                        }
-                        f.copy(LocalFactory.get(profiles, f.getName()));
                     }
                 }
                 catch(AccessDeniedException e) {
