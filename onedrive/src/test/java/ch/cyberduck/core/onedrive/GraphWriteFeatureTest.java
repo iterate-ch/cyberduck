@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
@@ -37,6 +38,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -58,13 +60,14 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String id = new GraphTouchFeature(session, fileid).touch(file, new TransferStatus()).attributes().getFileId();
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[32 * 1024];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         in.close();
         out.close();
-        assertNull(out.getStatus());
+        assertNotNull(out.getStatus());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -75,7 +78,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         copy.attributes().setCustom(Collections.emptyMap());
         assertEquals(id, fileid.getFileId(copy, new DisabledListProgressListener()));
         // Overwrite
-        final StatusOutputStream<Void> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);
         overwrite.close();
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -89,7 +92,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -112,7 +115,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, String.format("%sä", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -135,7 +138,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -158,7 +161,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
@@ -181,7 +184,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final StatusOutputStream<DriveItem.Metadata> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final byte[] buffer = new byte[1 * 1024];
         try {

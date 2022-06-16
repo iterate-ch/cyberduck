@@ -49,6 +49,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -75,7 +76,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<Void>(session, new GraphWriteFeature(session, fileid), cryptomator);
+        final CryptoWriteFeature<DriveItem.Metadata> writer = new CryptoWriteFeature<>(session, new GraphWriteFeature(session, fileid), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
