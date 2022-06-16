@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -66,14 +67,44 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     private final S3Session session;
     private final PathContainerService containerService;
 
+    private final LRUCache<Path, Acl> cache
+            = LRUCache.build(10);
+
     public S3AccessControlListFeature(final S3Session session) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
-    public Acl getDefault(final Path file, final Local local) {
-        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
+        if(cache.contains(bucket)) {
+            return cache.get(bucket);
+        }
+        final OwnershipControlsConfig controls;
+        try {
+            controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            for(OwnershipControlsConfig.Rule rule : controls.getRules()) {
+                if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
+                    cache.put(bucket, Acl.EMPTY);
+                    return Acl.EMPTY;
+                }
+            }
+        }
+        catch(ServiceException e) {
+            try {
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
+            catch(NotfoundException n) {
+                // Ignore - for buckets created through the S3 console with object writer ownership we get a 404
+            }
+            catch(AccessDeniedException | InteroperabilityException l) {
+                log.warn(String.format("Missing permission to read bucket ownership configuration for %s %s", bucket.getName(), e.getMessage()));
+            }
+        }
+        final Acl preference = Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
+        cache.put(bucket, preference);
+        return preference;
     }
 
     @Override
@@ -88,26 +119,6 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 return Acl.EMPTY;
             }
             final Path bucket = containerService.getContainer(file);
-            final OwnershipControlsConfig ownershipControls;
-            try {
-                ownershipControls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
-                for(OwnershipControlsConfig.Rule rule : ownershipControls.getRules()) {
-                    if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-                        return Acl.EMPTY;
-                    }
-                }
-            }
-            catch(ServiceException e) {
-                try {
-                    throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                }
-                catch(NotfoundException n) {
-                    // Ignore - for buckets created through the S3 console with object writer ownership we get a 404
-                }
-                catch(AccessDeniedException | InteroperabilityException l) {
-                    log.warn(String.format("Missing permission to read bucket ownership configuration for %s %s", bucket.getName(), e.getMessage()));
-                }
-            }
             if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.

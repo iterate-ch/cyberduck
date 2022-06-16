@@ -43,11 +43,13 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = LogManager.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
     private final PathContainerService containerService;
 
-    public S3AttributesFinderFeature(final S3Session session) {
+    public S3AttributesFinderFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         if(file.getType().contains(Path.Type.upload)) {
-            final Write.Append append = new S3WriteFeature(session).append(file, new TransferStatus());
+            final Write.Append append = new S3WriteFeature(session, acl).append(file, new TransferStatus());
             if(append.append) {
                 return new PathAttributes().withSize(append.size);
             }
@@ -112,7 +114,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             if(file.isDirectory()) {
                 // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
                 try {
-                    new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
+                    new S3ObjectListService(session, acl).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                 }
                 catch(ListCanceledException l) {
                     // Found common prefix

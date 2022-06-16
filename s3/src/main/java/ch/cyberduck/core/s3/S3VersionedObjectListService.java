@@ -69,22 +69,23 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
      */
     private final boolean metadata;
 
-    public S3VersionedObjectListService(final S3Session session) {
-        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"));
+    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl) {
+        this(session, acl, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"));
     }
 
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency) {
-        this(session, concurrency, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
+    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency) {
+        this(session, acl, concurrency, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
     /**
      * @param session     Connection
+     * @param acl
      * @param concurrency Number of threads to handle prefixes
      */
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean metadata) {
+    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency, final boolean metadata) {
         super(session);
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session);
+        this.attributes = new S3AttributesFinderFeature(session, acl);
         this.concurrency = concurrency;
         this.containerService = session.getFeature(PathContainerService.class);
         this.metadata = metadata;

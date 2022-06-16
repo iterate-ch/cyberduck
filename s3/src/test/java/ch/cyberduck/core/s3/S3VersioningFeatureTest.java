@@ -69,8 +69,9 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     @Test
     public void testSetConfiguration() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(container, new TransferStatus());
-        final Versioning feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(container, new TransferStatus());
+        final Versioning feature = new S3VersioningFeature(session, acl);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -86,16 +87,16 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
     @Test
     public void testRevert() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(
                 bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
-        final Path test = new S3TouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path ignored = new S3TouchFeature(session).touch(new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path ignored = new S3TouchFeature(session, acl).touch(new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             // Make sure there is another versioned copy of a file not to be included when listing
             final byte[] content = RandomUtils.nextBytes(245);
             final TransferStatus status = new TransferStatus().withLength(content.length);
-            final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session);
+            final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session, acl);
             final HttpResponseOutputStream<StorageObject> out = writer.write(ignored, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         }
@@ -104,23 +105,23 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session);
+        final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session, acl);
         final HttpResponseOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final PathAttributes updated = new S3AttributesFinderFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+        final PathAttributes updated = new S3AttributesFinderFeature(session, acl).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, updated.getVersionId());
-        final S3VersioningFeature feature = new S3VersioningFeature(session, new S3AccessControlListFeature(session));
+        final S3VersioningFeature feature = new S3VersioningFeature(session, acl);
         {
             final AttributedList<Path> versions = feature.list(new Path(test).withAttributes(status.getResponse()), new DisabledListProgressListener());
             assertFalse(versions.isEmpty());
             assertEquals(1, versions.size());
             assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
-            assertTrue(new S3FindFeature(session).find(versions.get(0)));
-            assertEquals(initialVersion, new S3AttributesFinderFeature(session).find(versions.get(0)).getVersionId());
+            assertTrue(new S3FindFeature(session, acl).find(versions.get(0)));
+            assertEquals(initialVersion, new S3AttributesFinderFeature(session, acl).find(versions.get(0)).getVersionId());
         }
         feature.revert(new Path(test).withAttributes(initialAttributes));
-        final PathAttributes reverted = new S3AttributesFinderFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+        final PathAttributes reverted = new S3AttributesFinderFeature(session, acl).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, reverted.getVersionId());
         {
             final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());

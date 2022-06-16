@@ -54,12 +54,14 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
 
     private final PathContainerService containerService;
+    private final S3AccessControlListFeature acl;
     private final S3Session session;
 
-    public S3WriteFeature(final S3Session session) {
+    public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(new S3AttributesAdapter());
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
@@ -97,7 +99,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final Path file, final TransferStatus status) throws BackgroundException {
+    protected S3Object getDetails(final Path file, final TransferStatus status) {
         final S3Object object = new S3Object(containerService.getKey(file));
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
@@ -130,7 +132,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set canned ACL %s for %s", status.getAcl(), file));
                 }
-                object.setAcl(new S3AccessControlListFeature(session).toAcl(status.getAcl()));
+                object.setAcl(acl.toAcl(status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }

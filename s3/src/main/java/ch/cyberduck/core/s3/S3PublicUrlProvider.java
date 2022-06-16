@@ -28,9 +28,11 @@ import org.jets3t.service.acl.Permission;
 public class S3PublicUrlProvider implements PromptUrlProvider<Void, Void> {
 
     private final S3Session session;
+    private S3AccessControlListFeature acl;
 
-    public S3PublicUrlProvider(final S3Session session) {
+    public S3PublicUrlProvider(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
+        this.acl = acl;
     }
 
     @Override
@@ -44,7 +46,6 @@ public class S3PublicUrlProvider implements PromptUrlProvider<Void, Void> {
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
-        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Acl permission = acl.getPermission(file);
         final Acl.GroupUser everyone = new Acl.GroupUser(Acl.GroupUser.EVERYONE);
         final Acl.Role read = new Acl.Role(Permission.PERMISSION_READ.toString());

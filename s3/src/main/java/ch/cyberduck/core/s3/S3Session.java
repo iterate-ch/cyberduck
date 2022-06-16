@@ -87,8 +87,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
+    private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
     private final Versioning versioning
-            = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;
+            = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, acl) : null;
 
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
@@ -238,7 +239,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            final S3ListService proxy = new S3ListService(this);
+            final S3ListService proxy = new S3ListService(this, acl);
             return (T) new ListService() {
                 @Override
                 public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
@@ -256,18 +257,18 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == MultipartWrite.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3MultipartWriteFeature(this);
+                return (T) new S3MultipartWriteFeature(this, acl);
             }
-            return (T) new S3MultipartWriteFeature(this);
+            return (T) new S3MultipartWriteFeature(this, acl);
         }
         if(type == Write.class) {
-            return (T) new S3WriteFeature(this);
+            return (T) new S3WriteFeature(this, acl);
         }
         if(type == Upload.class) {
-            return (T) new S3ThresholdUploadService(this);
+            return (T) new S3ThresholdUploadService(this, acl);
         }
         if(type == Directory.class) {
-            final S3DirectoryFeature proxy = new S3DirectoryFeature(this, new S3WriteFeature(this));
+            final S3DirectoryFeature proxy = new S3DirectoryFeature(this, new S3WriteFeature(this, acl), acl);
             return (T) new Directory<StorageObject>() {
                 @Override
                 public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
@@ -291,31 +292,31 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             };
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this);
+            return (T) new S3MoveFeature(this, acl);
         }
         if(type == Copy.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new S3ThresholdCopyFeature(this);
             }
-            return (T) new S3CopyFeature(this);
+            return (T) new S3CopyFeature(this, acl);
         }
         if(type == Delete.class) {
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new S3ThresholdDeleteFeature(this);
+                return (T) new S3ThresholdDeleteFeature(this, acl);
             }
             return (T) new S3DefaultDeleteFeature(this);
         }
         if(type == AclPermission.class) {
-            return (T) new S3AccessControlListFeature(this);
+            return (T) acl;
         }
         if(type == Headers.class) {
-            return (T) new S3MetadataFeature(this, new S3AccessControlListFeature(this));
+            return (T) new S3MetadataFeature(this, acl);
         }
         if(type == Metadata.class) {
-            return (T) new S3MetadataFeature(this, new S3AccessControlListFeature(this));
+            return (T) new S3MetadataFeature(this, acl);
         }
         if(type == Touch.class) {
-            return (T) new S3TouchFeature(this);
+            return (T) new S3TouchFeature(this, acl);
         }
         if(type == Location.class) {
             if(this.isConnected()) {
@@ -335,12 +336,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(type == Encryption.class) {
             // Only for AWS
             if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new KMSEncryptionFeature(this, trust, key);
+                return (T) new KMSEncryptionFeature(this, acl, trust, key);
             }
             return null;
         }
         if(type == Redundancy.class) {
-            return (T) new S3StorageClassFeature(this);
+            return (T) new S3StorageClassFeature(this, acl);
         }
         if(type == DistributionConfiguration.class) {
             return (T) new WebsiteCloudFrontDistributionConfiguration(this, trust, key) {
@@ -362,13 +363,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3UrlProvider(this, distributions);
         }
         if(type == PromptUrlProvider.class) {
-            return (T) new S3PublicUrlProvider(this);
+            return (T) new S3PublicUrlProvider(this, acl);
         }
         if(type == Find.class) {
-            return (T) new S3FindFeature(this);
+            return (T) new S3FindFeature(this, acl);
         }
         if(type == AttributesFinder.class) {
-            final S3AttributesFinderFeature proxy = new S3AttributesFinderFeature(this);
+            final S3AttributesFinderFeature proxy = new S3AttributesFinderFeature(this, acl);
             return (T) new AttributesFinder() {
                 @Override
                 public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
@@ -398,7 +399,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new DisabledBulkFeature();
         }
         if(type == Search.class) {
-            return (T) new S3SearchFeature(this);
+            return (T) new S3SearchFeature(this, acl);
         }
         if(type == Scheduler.class) {
             return (T) new DelegatingSchedulerFeature(new CloudFrontDistributionConfigurationPreloader(this));

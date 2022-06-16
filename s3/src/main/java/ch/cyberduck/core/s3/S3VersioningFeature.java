@@ -50,14 +50,14 @@ public class S3VersioningFeature implements Versioning {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature accessControlListFeature;
+    private final S3AccessControlListFeature acl;
 
     private final LRUCache<Path, VersioningConfiguration> cache
             = LRUCache.build(10);
 
-    public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+    public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+        this.acl = acl;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -173,7 +173,7 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 try {
                     // Apply non standard ACL
-                    destination.setAcl(accessControlListFeature.toAcl(accessControlListFeature.getPermission(file)));
+                    destination.setAcl(acl.toAcl(acl.getPermission(file)));
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
@@ -221,7 +221,7 @@ public class S3VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new S3VersionedObjectListService(session).list(file, new ProxyListProgressListener(new IndexedListProgressListener() {
+        return new S3VersionedObjectListService(session, acl).list(file, new ProxyListProgressListener(new IndexedListProgressListener() {
             @Override
             public void message(final String message) {
                 listener.message(message);

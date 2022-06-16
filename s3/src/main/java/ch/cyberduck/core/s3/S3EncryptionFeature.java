@@ -39,10 +39,12 @@ public class S3EncryptionFeature implements Encryption {
 
     private final PathContainerService containerService;
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3EncryptionFeature(final S3Session session) {
+    public S3EncryptionFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
@@ -75,7 +77,7 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
-        return new S3AttributesFinderFeature(session).find(file).getEncryption();
+        return new S3AttributesFinderFeature(session, acl).find(file).getEncryption();
     }
 
     /**

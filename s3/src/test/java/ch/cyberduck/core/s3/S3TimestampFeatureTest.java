@@ -38,20 +38,21 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
     public void testFindTimesteamp() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
-        final Path test = new S3TouchFeature(session).touch(new Path(bucket,
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withTimestamp(1530305150672L));
         assertEquals(1530305150672L, status.getResponse().getModificationDate());
-        assertEquals(1530305150672L, new S3AttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(1530305150672L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
         final S3TimestampFeature feature = new S3TimestampFeature(session);
         feature.setTimestamp(test, 1630305150672L);
-        assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(1630305150672L, new S3AttributesFinderFeature(session, acl).find(test).getModificationDate());
         test.attributes().setModificationDate(1630305150672L);
-        final Path found = new S3ObjectListService(session, true).list(bucket, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
+        final Path found = new S3ObjectListService(session, acl, true).list(bucket, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
         assertEquals(1630305150672L, found.attributes().getModificationDate());
-        final Path moved = new S3MoveFeature(session).move(test, new Path(bucket,
+        final Path moved = new S3MoveFeature(session, acl).move(test, new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
-        assertEquals(1630305150672L, new S3AttributesFinderFeature(session).find(moved).getModificationDate());
+        assertEquals(1630305150672L, new S3AttributesFinderFeature(session, acl).find(moved).getModificationDate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -61,10 +61,6 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
      */
     private final Long partsize;
 
-    public S3MultipartCopyFeature(final S3Session session) {
-        this(session, new S3AccessControlListFeature(session));
-    }
-
     public S3MultipartCopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         super(session, acl);
         this.session = session;

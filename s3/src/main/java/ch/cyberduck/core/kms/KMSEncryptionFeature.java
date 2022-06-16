@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -58,12 +59,12 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private final ClientConfiguration configuration;
     private final Location locationFeature;
 
-    public KMSEncryptionFeature(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        super(session);
+    public KMSEncryptionFeature(final S3Session session, final S3AccessControlListFeature acl, final X509TrustManager trust, final X509KeyManager key) {
+        super(session, acl);
         this.session = session;
         final Host bookmark = session.getHost();
         this.configuration = new CustomClientConfiguration(bookmark,
-            new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
+                new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
         this.locationFeature = session.getFeature(Location.class);
         this.containerService = session.getFeature(PathContainerService.class);
     }
