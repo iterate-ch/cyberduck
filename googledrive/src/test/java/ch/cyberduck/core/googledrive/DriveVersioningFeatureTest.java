@@ -27,9 +27,11 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
@@ -40,6 +42,7 @@ import com.google.api.services.drive.model.File;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class DriveVersioningFeatureTest extends AbstractDriveTest {
 
     @Test
