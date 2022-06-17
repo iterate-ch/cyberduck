@@ -65,7 +65,13 @@ public class GraphWriteFeature implements Write<DriveItem.Metadata> {
                 throw new UnsupportedException("Content-Range with unknown file size is not supported");
             }
             final DriveItem folder = session.getItem(file.getParent());
-            final DriveItem item = new DriveItem(folder, URIEncoder.encode(file.getName()));
+            final DriveItem item;
+            if(status.isExists()) {
+                item = session.getItem(file);
+            }
+            else {
+                item = new DriveItem(folder, URIEncoder.encode(file.getName()));
+            }
             final UploadSession upload = Files.createUploadSession(item);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
