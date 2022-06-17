@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -219,13 +221,25 @@ public class S3VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new S3VersionedObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
+        return new S3VersionedObjectListService(session).list(file, new ProxyListProgressListener(new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                listener.message(message);
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path f) {
+                if(!StringUtils.equals(f.getName(), file.getName())) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip file %s", f));
+                    }
+                    // List with prefix will also return other keys
+                    list.remove(index);
+                }
+            }
+        }, listener)).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path f) {
-                if(!StringUtils.equals(f.getName(), file.getName())) {
-                    // List with prefix will also return other keys
-                    return false;
-                }
                 return f.attributes().isDuplicate();
             }
         });

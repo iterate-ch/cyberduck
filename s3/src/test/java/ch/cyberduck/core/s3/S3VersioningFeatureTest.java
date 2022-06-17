@@ -90,6 +90,15 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
                 bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
         final Path test = new S3TouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path ignored = new S3TouchFeature(session).touch(new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        {
+            // Make sure there is another versioned copy of a file not to be included when listing
+            final byte[] content = RandomUtils.nextBytes(245);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final S3MultipartWriteFeature writer = new S3MultipartWriteFeature(session);
+            final HttpResponseOutputStream<StorageObject> out = writer.write(ignored, status, new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        }
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -120,6 +129,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             assertEquals(test.attributes().getSize(), reverted.getSize());
             assertEquals(content.length, versions.get(0).attributes().getSize());
         }
-        new S3DefaultDeleteFeature(session).delete(Arrays.asList(directory, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Arrays.asList(directory, test, ignored), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
