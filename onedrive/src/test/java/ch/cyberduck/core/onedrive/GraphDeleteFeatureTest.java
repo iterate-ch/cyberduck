@@ -21,14 +21,17 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class GraphDeleteFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
