@@ -43,7 +43,20 @@ public abstract class AbstractListService<T> implements ListService {
         final Iterator<T> iterator = getIterator(directory);
         final boolean filtering = isFiltering(directory);
         try {
-            iterate(children, iterator, directory, filtering);
+            while(iterator.hasNext()) {
+                final T metadata;
+                try {
+                    metadata = iterator.next();
+                }
+                catch(Exception e) {
+                    log.warn(e.getMessage());
+                    continue;
+                }
+                if(filtering && !filter(metadata)) {
+                    continue;
+                }
+                children.add(toPath(metadata, directory));
+            }
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext in iterate()
             throw new GraphExceptionMappingService(fileid).map("Listing directory {0} failed", e.getCause(), directory);
@@ -52,23 +65,6 @@ public abstract class AbstractListService<T> implements ListService {
         postList(children);
         listener.chunk(directory, children);
         return children;
-    }
-
-    protected final void iterate(final AttributedList<Path> children, final Iterator<T> iterator, final Path directory, final boolean filtering) {
-        while(iterator.hasNext()) {
-            final T metadata;
-            try {
-                metadata = iterator.next();
-            }
-            catch(Exception e) {
-                log.warn(e.getMessage());
-                continue;
-            }
-            if (filtering && !filter(metadata)) {
-                continue;
-            }
-            children.add(toPath(metadata, directory));
-        }
     }
 
     protected abstract Iterator<T> getIterator(final Path directory) throws BackgroundException;

@@ -42,7 +42,11 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
 
     @Override
     protected Iterator<GroupItem.Metadata> getIterator(final Path directory) {
-        return Groups.getMemberOfGroups(User.getCurrent(session.getClient()));
+        final User user = User.getCurrent(session.getClient());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return groups for user %s", user));
+        }
+        return Groups.getMemberOfGroups(user);
     }
 
     @Override

@@ -58,9 +58,10 @@ public class SharepointSession extends AbstractSharepointSession {
             // finds:
             // Sites/<site name>
             final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
-            if (containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
+            if(containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
                 return new Drive(getSite(containerItem.getContainerPath().get()), driveId);
-            } else {
+            }
+            else {
                 return null;
             }
         }
