@@ -41,6 +41,9 @@ public class GraphItemListService extends AbstractItemListService {
     @Override
     protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
         final DriveItem folder = session.getItem(directory);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return files for folder %s", folder));
+        }
         return Files.getFiles(folder, new HostPreferences(session.getHost()).getInteger("onedrive.listing.chunksize"));
     }
 }
