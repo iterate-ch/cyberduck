@@ -124,29 +124,29 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-            assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(file).getSize());
-            final PathAttributes attr = new DefaultAttributesFinderFeature(session).find(file);
+            file.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
+            assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
+            final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
             assertEquals(content.length, attr.getSize());
-            assertNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
+            assertNull(new S3AttributesFinderFeature(session).find(file).getVersionId());
         }
+        assertNull(new S3AttributesFinderFeature(session).find(file).getVersionId());
         session.getFeature(Versioning.class).setConfiguration(bucket, new DisabledPasswordCallback(),
                 new VersioningConfiguration(true));
-        assertNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
         {
-            final byte[] content = RandomUtils.nextBytes(1024);
+            final byte[] content = RandomUtils.nextBytes(256);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
             final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-            out.close();
-            assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(file).getSize());
-            final PathAttributes attr = new DefaultAttributesFinderFeature(session).find(file);
+            file.withAttributes(new S3AttributesAdapter().toAttributes(out.getStatus()));
+            assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
+            final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
             assertEquals(content.length, attr.getSize());
             assertNotNull(attr.getVersionId());
         }
-        final AttributedList<Path> list = new S3VersionedObjectListService(session, 1, true).list(bucket, new DisabledListProgressListener()).filter(
+        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).filter(
                 new Filter<Path>() {
                     @Override
                     public boolean accept(final Path f) {
