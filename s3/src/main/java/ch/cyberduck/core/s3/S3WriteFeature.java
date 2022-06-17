@@ -147,7 +147,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(!new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
+        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
             try {
                 final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
                 final List<MultipartUpload> upload = multipartService.find(file);
