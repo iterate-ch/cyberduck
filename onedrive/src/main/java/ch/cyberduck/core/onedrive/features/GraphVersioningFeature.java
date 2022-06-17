@@ -13,7 +13,12 @@ package ch.cyberduck.core.onedrive.features;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
@@ -21,12 +26,13 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.nuxeo.onedrive.client.Files;
-import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class GraphVersioningFeature implements Versioning {
@@ -76,8 +82,15 @@ public class GraphVersioningFeature implements Versioning {
         final DriveItem item = session.getItem(file);
         try {
             final DriveItem.Metadata parentMetadata = item.getMetadata();
-            final List<DriveItemVersion> versionList = Files.versions(item);
-            for(final DriveItemVersion version : versionList) {
+            final List<DriveItemVersion> items = Files.versions(item);
+            // Versions are returned in descending order (newest to oldest)
+            Collections.reverse(items);
+            for(Iterator<DriveItemVersion> iter = items.iterator(); iter.hasNext(); ) {
+                final DriveItemVersion version = iter.next();
+                if(!iter.hasNext()) {
+                    // Do not include latest version
+                    continue;
+                }
                 versions.add(new Path(file).withAttributes(attributes.toAttributes(parentMetadata, version)));
             }
         }
