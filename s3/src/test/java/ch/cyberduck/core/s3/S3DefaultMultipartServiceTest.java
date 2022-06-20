@@ -63,23 +63,25 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
     @Test
     public void testFind() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
         assertTrue(service.find(directory).isEmpty());
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final S3Object object = new S3WriteFeature(session).getDetails(file, new TransferStatus());
+        final S3Object object = new S3WriteFeature(session, acl).getDetails(file, new TransferStatus());
         final MultipartUpload first = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(first);
         assertFalse(service.find(directory).isEmpty());
         assertTrue(service.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))).isEmpty());
         assertEquals(first.getUploadId(), service.find(directory).iterator().next().getUploadId());
-        assertFalse(new S3FindFeature(session).find(file));
-        final Path upload = new S3ListService(session).list(directory, new DisabledListProgressListener()).find(new SimplePathPredicate(file));
+        assertFalse(new S3FindFeature(session, acl).find(file));
+        final Path upload = new S3ListService(session, acl).list(directory, new DisabledListProgressListener()).find(new SimplePathPredicate(file));
         assertNotNull(upload);
+        assertTrue(new S3FindFeature(session, acl).find(upload));
         assertTrue(upload.getType().contains(Path.Type.upload));
-        assertTrue(new S3FindFeature(session).find(upload));
-        assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session).find(upload));
+        assertTrue(new S3FindFeature(session, acl).find(upload));
+        assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session, acl).find(upload));
         // Make sure timestamp is later.
         Thread.sleep(2000L);
         final MultipartUpload second = session.getClient().multipartStartUpload(container.getName(), object);

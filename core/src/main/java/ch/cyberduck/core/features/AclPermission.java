@@ -47,11 +47,11 @@ public interface AclPermission {
      * @param local File on local disk
      * @return Default ACL to set for file
      */
-    Acl getDefault(final Path file, Local local);
+    Acl getDefault(Path file, Local local) throws BackgroundException;
 
     /**
      * @param type File or folder
      * @return Default ACL for new file or folder
      */
-    Acl getDefault(EnumSet<Path.Type> type);
+    Acl getDefault(EnumSet<Path.Type> type) throws BackgroundException;
 }

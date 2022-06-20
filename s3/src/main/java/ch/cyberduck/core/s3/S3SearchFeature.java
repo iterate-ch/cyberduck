@@ -31,9 +31,11 @@ import java.util.Set;
 public class S3SearchFeature implements Search {
 
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3SearchFeature(final S3Session session) {
+    public S3SearchFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
+        this.acl = acl;
     }
 
     @Override
@@ -44,13 +46,13 @@ public class S3SearchFeature implements Search {
                 final AttributedList<Path> buckets = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(workdir, listener);
                 result.addAll(filter(regex, buckets));
                 for(Path bucket : buckets) {
-                    result.addAll(filter(regex, new S3ObjectListService(session).list(bucket, listener, null)));
+                    result.addAll(filter(regex, new S3ObjectListService(session, acl).list(bucket, listener, null)));
                 }
                 return result;
             }
         }
         try {
-            return filter(regex, new S3ObjectListService(session).list(workdir, listener, null));
+            return filter(regex, new S3ObjectListService(session, acl).list(workdir, listener, null));
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

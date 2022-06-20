@@ -31,8 +31,8 @@ public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
 
     private final S3Session session;
 
-    public S3TouchFeature(final S3Session session) {
-        super(new S3WriteFeature(session));
+    public S3TouchFeature(final S3Session session, final S3AccessControlListFeature acl) {
+        super(new S3WriteFeature(session, acl));
         this.session = session;
     }
 

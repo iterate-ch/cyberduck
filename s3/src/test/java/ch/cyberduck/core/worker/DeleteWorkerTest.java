@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -48,34 +49,36 @@ public class DeleteWorkerTest extends AbstractS3Test {
     @Test
     public void testDelete() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path folder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(folder));
-        final Path file = new S3TouchFeature(session).touch(
+        assertTrue(new S3FindFeature(session, acl).find(folder));
+        final Path file = new S3TouchFeature(session, acl).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNull(file.attributes().getVersionId());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
-        assertFalse(new S3FindFeature(session).find(file));
+        assertFalse(new S3FindFeature(session, acl).find(file));
     }
 
     @Test
     public void testDeleteVersioning() throws Exception {
         final Path home = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path folder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(folder));
-        final Path file = new S3TouchFeature(session).touch(
+        assertTrue(new S3FindFeature(session, acl).find(folder));
+        final Path file = new S3TouchFeature(session, acl).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
-        assertTrue(new S3FindFeature(session).find(file));
+        assertTrue(new S3FindFeature(session, acl).find(file));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
         // Find delete marker
-        assertTrue(new S3FindFeature(session).find(file));
-        assertTrue(new S3AttributesFinderFeature(session).find(file).isDuplicate());
-        assertFalse(new S3FindFeature(session).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
+        assertTrue(new S3FindFeature(session, acl).find(file));
+        assertTrue(new S3AttributesFinderFeature(session, acl).find(file).isDuplicate());
+        assertFalse(new S3FindFeature(session, acl).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
         assertTrue(new DefaultFindFeature(session).find(file));
         assertFalse(new DefaultFindFeature(session).find(new Path(file).withAttributes(PathAttributes.EMPTY)));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(folder));
+        new S3MultipleDeleteFeature(session, acl).delete(Arrays.asList(file, folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(folder));
     }
 }

@@ -53,7 +53,7 @@ public class S3DefaultDeleteFeature implements Delete {
     }
 
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final List<Path> containers = new ArrayList<Path>();
+        final List<Path> containers = new ArrayList<>();
         for(Path file : files.keySet()) {
             if(containerService.isContainer(file)) {
                 containers.add(file);

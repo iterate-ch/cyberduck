@@ -32,7 +32,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWrite() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -48,8 +48,8 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         out.close();
         assertNotNull(out.getStatus());
         assertEquals(content.length, out.getStatus().getContentLength());
-        assertTrue(new S3FindFeature(session).find(file));
-        final PathAttributes attr = new S3AttributesFinderFeature(session).find(file);
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(file));
+        final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(content.length, attr.getSize());
         final byte[] compare = new byte[content.length];
@@ -62,7 +62,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteZeroLength() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
@@ -84,7 +84,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteZeroLengthVersioning() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session));
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();

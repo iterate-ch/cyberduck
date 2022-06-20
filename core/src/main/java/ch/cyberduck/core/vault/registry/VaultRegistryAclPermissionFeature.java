@@ -59,12 +59,12 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Path file, final Local local) {
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
         return proxy.getDefault(file, local);
     }
 
     @Override
-    public Acl getDefault(final EnumSet<Path.Type> type) {
+    public Acl getDefault(final EnumSet<Path.Type> type) throws BackgroundException {
         return proxy.getDefault(type);
     }
 

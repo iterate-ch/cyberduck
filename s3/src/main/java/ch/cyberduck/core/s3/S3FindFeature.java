@@ -33,11 +33,13 @@ public class S3FindFeature implements Find {
 
     private final PathContainerService containerService;
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
     private final S3AttributesFinderFeature attributes;
 
-    public S3FindFeature(final S3Session session) {
+    public S3FindFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.attributes = new S3AttributesFinderFeature(session);
+        this.acl = acl;
+        this.attributes = new S3AttributesFinderFeature(session, acl);
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -62,7 +64,7 @@ public class S3FindFeature implements Find {
             else {
                 // Check for common prefix
                 try {
-                    new S3ObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
+                    new S3ObjectListService(session, acl).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
                     return true;
                 }
                 catch(ListCanceledException l) {

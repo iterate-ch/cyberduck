@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3MultipartUploadService;
@@ -80,18 +81,18 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(writeStatus.getResponse().getVersionId(), new S3AttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(writeStatus.getResponse().getVersionId(), new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getVersionId());
         assertEquals(writeStatus.getResponse().getVersionId(), new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -129,7 +130,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this), 5 * 1024L * 1024L, 5) {
+                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this, new S3AccessControlListFeature(this)), new S3AccessControlListFeature(this), 5 * 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                             if(failed.get()) {
@@ -169,7 +170,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         }.run(session));
         local.delete();
         assertTrue(t.isComplete());
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getSize());
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());

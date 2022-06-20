@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
@@ -55,13 +56,14 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     @Test
     public void testSetEncryptionKMSDefaultKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new S3TouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final S3EncryptionFeature feature = new S3EncryptionFeature(session);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final S3EncryptionFeature feature = new S3EncryptionFeature(session, acl);
         feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
         assertNotNull(value.key);
-        final PathAttributes attr = new S3AttributesFinderFeature(session).find(test);
+        final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(test);
         assertNotEquals(Checksum.NONE, attr.getChecksum());
         assertNotNull(attr.getETag());
         assertNotEquals(Checksum.NONE, Checksum.parse(attr.getETag()));
@@ -75,8 +77,8 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
     public void testSetEncryptionKMSCustomKeySignatureVersionV4() throws Exception {
         final Path container = new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
-        final S3EncryptionFeature feature = new S3EncryptionFeature(session);
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        final S3EncryptionFeature feature = new S3EncryptionFeature(session, new S3AccessControlListFeature(session));
         feature.setEncryption(test, new Encryption.Algorithm("aws:kms", "arn:aws:kms:eu-west-1:930717317329:key/015fa0af-f95e-483e-8fb6-abffb46fb783"));
         final Encryption.Algorithm value = feature.getEncryption(test);
         assertEquals("aws:kms", value.algorithm);
@@ -86,13 +88,13 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetKeys_eu_west_1() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(kms.getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback()).isEmpty());
     }
 
     @Test
     public void testGetKeys_ap_southeast_2() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Set<Encryption.Algorithm> keys = kms.getKeys(new Path("test-ap-southeast-2-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
         assertTrue(keys.contains(Encryption.Algorithm.NONE));
         assertTrue(keys.contains(S3EncryptionFeature.SSE_AES256));
@@ -109,6 +111,6 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
+        new KMSEncryptionFeature(session, new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
     }
 }

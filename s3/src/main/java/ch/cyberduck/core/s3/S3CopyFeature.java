@@ -45,15 +45,11 @@ public class S3CopyFeature implements Copy {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature accessControlListFeature;
+    private final S3AccessControlListFeature acl;
 
-    public S3CopyFeature(final S3Session session) {
-        this(session, new S3AccessControlListFeature(session));
-    }
-
-    public S3CopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+    public S3CopyFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+        this.acl = acl;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -61,26 +57,26 @@ public class S3CopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(null == status.getStorageClass()) {
             // Keep same storage class
-            status.setStorageClass(new S3StorageClassFeature(session).getClass(source));
+            status.setStorageClass(new S3StorageClassFeature(session, acl).getClass(source));
         }
         if(Encryption.Algorithm.NONE == status.getEncryption()) {
             // Keep encryption setting
-            status.setEncryption(new S3EncryptionFeature(session).getEncryption(source));
+            status.setEncryption(new S3EncryptionFeature(session, acl).getEncryption(source));
         }
         if(Acl.EMPTY == status.getAcl()) {
             // Apply non standard ACL
             try {
-                status.setAcl(accessControlListFeature.getPermission(source));
+                status.setAcl(acl.getPermission(source));
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure %s", e));
             }
         }
-        final S3Object destination = new S3WriteFeature(session).getDetails(target, status);
-        destination.setAcl(accessControlListFeature.toAcl(status.getAcl()));
+        final S3Object destination = new S3WriteFeature(session, acl).getDetails(target, status);
+        destination.setAcl(acl.toAcl(status.getAcl()));
         final Path bucket = containerService.getContainer(target);
         destination.setBucketName(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
-        destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, accessControlListFeature).getMetadata(source)));
+        destination.replaceAllMetadata(new HashMap<>(new S3MetadataFeature(session, acl).getMetadata(source)));
         final String versionId = this.copy(source, destination, status, listener);
         return target.withAttributes(new PathAttributes(source.attributes()).withVersionId(versionId));
     }

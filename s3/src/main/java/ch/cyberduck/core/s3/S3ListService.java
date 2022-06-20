@@ -39,9 +39,11 @@ public class S3ListService implements ListService {
     private static final Logger log = LogManager.getLogger(S3ListService.class);
 
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3ListService(final S3Session session) {
+    public S3ListService(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
+        this.acl = acl;
     }
 
     @Override
@@ -68,15 +70,15 @@ public class S3ListService implements ListService {
                 .getConfiguration(directory) : VersioningConfiguration.empty();
         if(versioning.isEnabled()) {
             try {
-                objects = new S3VersionedObjectListService(session).list(directory, listener);
+                objects = new S3VersionedObjectListService(session, acl).list(directory, listener);
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure listing versioned objects. %s", e));
-                objects = new S3ObjectListService(session).list(directory, listener);
+                objects = new S3ObjectListService(session, acl).list(directory, listener);
             }
         }
         else {
-            objects = new S3ObjectListService(session).list(directory, listener);
+            objects = new S3ObjectListService(session, acl).list(directory, listener);
         }
         if(new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
             try {

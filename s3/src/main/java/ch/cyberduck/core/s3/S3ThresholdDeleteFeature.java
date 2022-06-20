@@ -26,9 +26,11 @@ import java.util.Map;
 public class S3ThresholdDeleteFeature implements Delete {
 
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3ThresholdDeleteFeature(final S3Session session) {
+    public S3ThresholdDeleteFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
+        this.acl = acl;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class S3ThresholdDeleteFeature implements Delete {
             new S3DefaultDeleteFeature(session).delete(files, prompt, callback);
         }
         else {
-            new S3MultipleDeleteFeature(session).delete(files, prompt, callback);
+            new S3MultipleDeleteFeature(session, acl).delete(files, prompt, callback);
         }
     }
 }
