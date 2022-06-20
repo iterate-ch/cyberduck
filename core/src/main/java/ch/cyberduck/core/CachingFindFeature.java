@@ -57,4 +57,13 @@ public class CachingFindFeature implements Find {
         caching.cache();
         return found;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CachingFindFeature{");
+        sb.append("cache=").append(cache);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
+    }
 }
