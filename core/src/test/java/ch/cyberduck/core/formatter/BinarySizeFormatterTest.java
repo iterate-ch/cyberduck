@@ -17,5 +17,9 @@ public class BinarySizeFormatterTest {
         assertEquals("1.0 GiB", f.format(1073741824L));
         assertEquals("375.3 MiB", f.format(393495974L));
         assertEquals("4.0 GiB", f.format(4294967303L));
+        assertEquals("500.0 GiB", f.format(536870912000L));
+        assertEquals("1000.0 GiB", f.format(1073741824000L));
+        assertEquals("1.0 TiB", f.format(1099511627776L));
+        assertEquals("2.0 TiB", f.format(2147483648000L));
     }
 }

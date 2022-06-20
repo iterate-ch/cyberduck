@@ -28,11 +28,13 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
     private final Unit kilo;
     private final Unit mega;
     private final Unit giga;
+    private final Unit tera;
 
-    public AbstractSizeFormatter(final Unit kilo, final Unit mega, final Unit giga) {
+    public AbstractSizeFormatter(final Unit kilo, final Unit mega, final Unit giga, final Unit tera) {
         this.kilo = kilo;
         this.mega = mega;
         this.giga = giga;
+        this.tera = tera;
     }
 
     @Override
@@ -56,13 +58,18 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
         }
         else if(size < giga.multiple()) {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(mega.multiple()),
-                1,
-                RoundingMode.HALF_UP)).append(" ").append(mega.suffix());
+                    1,
+                    RoundingMode.HALF_UP)).append(" ").append(mega.suffix());
+        }
+        else if(size < tera.multiple()) {
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(giga.multiple()),
+                    1,
+                    RoundingMode.HALF_UP)).append(" ").append(giga.suffix());
         }
         else {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(giga.multiple()),
-                1,
-                RoundingMode.HALF_UP)).append(" ").append(giga.suffix());
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(tera.multiple()),
+                    1,
+                    RoundingMode.HALF_UP)).append(" ").append(tera.suffix());
         }
         if(plain) {
             formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
