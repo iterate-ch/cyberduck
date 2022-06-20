@@ -37,11 +37,10 @@
             <reference path="${build}/Cyberduck.Core.dll"/>
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
+                <include name="binding.jar" />
+                <include name="cglib.jar" />
+                <include name="importer.jar" />
+                <include name="rococoa-core.jar" />
             </fileset>
             <outputfilter>
                 <contains>IKVMC0109</contains>

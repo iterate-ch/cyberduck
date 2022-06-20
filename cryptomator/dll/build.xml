@@ -31,11 +31,13 @@
             <reference path="${build}/Cyberduck.Core.dll"/>
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
+                <include name="cryptolib.jar" />
+                <include name="cryptomator.jar" />
+                <include name="jackson-annotations.jar" />
+                <include name="jackson-core.jar" />
+                <include name="jackson-databind.jar" />
+                <include name="java-jwt.jar" />
+                <include name="siv-mode.jar" />
             </fileset>
             <outputfilter>
                 <contains>IKVMC0109</contains>

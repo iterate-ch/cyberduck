@@ -34,11 +34,22 @@
             <reference path="${build}/Cyberduck.Cryptomator.dll"/>
             <arg value="-skipDuplicates"/>
             <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
+                <include name="asm.jar" />
+                <include name="cli.jar" />
+                <include name="commons-cli.jar" />
+                <include name="dbus-java.jar" />
+                <include name="hkdf.jar" />
+                <include name="jansi.jar" />
+                <include name="java-utils.jar" />
+                <include name="jffi.jar" />
+                <include name="jnr-a64asm.jar" />
+                <include name="jnr-constants.jar" />
+                <include name="jnr-enxio.jar" />
+                <include name="jnr-ffi.jar" />
+                <include name="jnr-posix.jar" />
+                <include name="jnr-unixsocket.jar" />
+                <include name="jnr-x86asm.jar" />
+                <include name="secret-service.jar" />
             </fileset>
             <outputfilter>
                 <contains>IKVMC0109</contains>
