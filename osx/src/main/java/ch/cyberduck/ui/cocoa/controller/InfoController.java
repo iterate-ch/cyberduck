@@ -1938,7 +1938,10 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Redundancy.class) != null) {
                         for(final Path f : files) {
-                            selectedStorageClasses.add(session.getFeature(Redundancy.class).getClass(f));
+                            final String value = session.getFeature(Redundancy.class).getClass(f);
+                            if(StringUtils.isNotBlank(value)) {
+                                selectedStorageClasses.add(value);
+                            }
                         }
                     }
                     if(session.getFeature(Encryption.class) != null) {
@@ -1990,7 +1993,6 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setState(versioning.isMultifactor() ? NSCell.NSOnState : NSCell.NSOffState);
                     }
-
                     for(Encryption.Algorithm algorithm : managedEncryptionKeys) {
                         encryptionPopup.addItemWithTitle(LocaleFactory.localizedString(algorithm.getDescription(), "S3"));
                         encryptionPopup.lastItem().setRepresentedObject(algorithm.toString());
@@ -2009,7 +2011,6 @@ public class InfoController extends ToolbarWindowController {
                         encryptionPopup.itemAtIndex(encryptionPopup.indexOfItemWithRepresentedObject(algorithm.toString()))
                                 .setState(selectedEncryptionKeys.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
                     }
-
                     if(!selectedStorageClasses.isEmpty()) {
                         storageClassPopup.selectItemAtIndex(new NSInteger(-1));
                         if(-1 != storageClassPopup.indexOfItemWithTitle(LocaleFactory.localizedString("Unknown")).intValue()) {
@@ -2018,13 +2019,9 @@ public class InfoController extends ToolbarWindowController {
                     }
                     for(String storageClass : selectedStorageClasses) {
                         if(-1 != storageClassPopup.indexOfItemWithRepresentedObject(storageClass).intValue()) {
-                            storageClassPopup.selectItemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass));
-                        }
-                    }
-                    for(String storageClass : selectedStorageClasses) {
-                        if(-1 != storageClassPopup.indexOfItemWithRepresentedObject(storageClass).intValue()) {
-                            storageClassPopup.itemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass))
-                                    .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                            final NSInteger index = storageClassPopup.indexOfItemWithRepresentedObject(storageClass);
+                            storageClassPopup.itemAtIndex(index).setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                            storageClassPopup.selectItemAtIndex(index);
                         }
                     }
                     if(lifecycle != null) {
