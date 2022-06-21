@@ -41,9 +41,9 @@ public class CteraSessionTest {
 
     @Test
     public void testLoginRefreshCookie() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
-            StringUtils.EMPTY, StringUtils.EMPTY,
-            System.getProperties().getProperty("ctera.token")
+        final Host host = new Host(new CteraProtocol(), "alexdemo.ctera.me", new Credentials(
+                StringUtils.EMPTY, StringUtils.EMPTY,
+                System.getProperties().getProperty("ctera.token")
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
         final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -59,9 +59,9 @@ public class CteraSessionTest {
 
     @Test
     public void testLoginNonSAML() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "team.ctera.com", new Credentials(
-            System.getProperty("ctera.user"), System.getProperty("ctera.password"),
-            StringUtils.EMPTY
+        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
+                System.getProperty("ctera.user"), System.getProperty("ctera.password"),
+                StringUtils.EMPTY
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
         final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
