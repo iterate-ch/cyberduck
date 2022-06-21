@@ -135,8 +135,9 @@ public class UploadTransferTest {
                 if(folder.equals(root.getParent())) {
                     c.incrementAndGet();
                 }
-                listener.chunk(folder, AttributedList.emptyList());
-                return AttributedList.emptyList();
+                final AttributedList<Path> list = new AttributedList<>();
+                listener.chunk(folder, list);
+                return list;
             }
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
@@ -199,8 +200,9 @@ public class UploadTransferTest {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws ConnectionCanceledException {
                 c.incrementAndGet();
-                listener.chunk(folder, AttributedList.emptyList());
-                return AttributedList.emptyList();
+                final AttributedList<Path> list = new AttributedList<>();
+                listener.chunk(folder, list);
+                return list;
             }
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
