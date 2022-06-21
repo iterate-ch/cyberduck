@@ -17,6 +17,9 @@ package ch.cyberduck.core.formatter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+/**
+ * Format based on powers of 10 using standard prefixes (kilo, mega, giga) for display.
+ */
 public class DecimalSizeFormatter extends AbstractSizeFormatter {
 
     public static final Unit KILO = new Unit(1000L) {
@@ -36,9 +39,15 @@ public class DecimalSizeFormatter extends AbstractSizeFormatter {
         public String suffix() {
             return "GB";
         }
-    }; // 10^9
+    }; //10^9
+    public static final Unit TERA = new Unit(1000000000000L) {
+        @Override
+        public String suffix() {
+            return "TB";
+        }
+    }; //10^12
 
     public DecimalSizeFormatter() {
-        super(KILO, MEGA, GIGA);
+        super(KILO, MEGA, GIGA, TERA);
     }
 }

@@ -23,9 +23,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -45,8 +45,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class GraphWriteFeature implements Write<Void> {
+public class GraphWriteFeature implements Write<DriveItem.Metadata> {
     private static final Logger log = LogManager.getLogger(GraphWriteFeature.class);
 
     private final GraphSession session;
@@ -58,18 +59,29 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<DriveItem.Metadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                 throw new UnsupportedException("Content-Range with unknown file size is not supported");
             }
             final DriveItem folder = session.getItem(file.getParent());
-            final DriveItem item = new DriveItem(folder, URIEncoder.encode(file.getName()));
+            final DriveItem item;
+            if(status.isExists()) {
+                item = session.getItem(file);
+            }
+            else {
+                item = new DriveItem(folder, URIEncoder.encode(file.getName()));
+            }
             final UploadSession upload = Files.createUploadSession(item);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
                     * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
-            return new VoidStatusOutputStream(new MemorySegementingOutputStream(proxy, partsize));
+            return new HttpResponseOutputStream<DriveItem.Metadata>(new MemorySegementingOutputStream(proxy, partsize), new GraphAttributesFinderFeature(session, fileid), status) {
+                @Override
+                public DriveItem.Metadata getStatus() {
+                    return proxy.getStatus();
+                }
+            };
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Upload {0} failed", e, file);
@@ -84,16 +96,12 @@ public class GraphWriteFeature implements Write<Void> {
         return new Append(false).withStatus(status);
     }
 
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
     private final class ChunkedOutputStream extends OutputStream {
         private final UploadSession upload;
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<DriveItem.Metadata> response = new AtomicReference<>();
 
         private Long offset = 0L;
         private final Long length;
@@ -120,11 +128,14 @@ public class GraphWriteFeature implements Write<Void> {
                     @Override
                     public Void call() throws BackgroundException {
                         try {
-                            final OneDriveJsonObject response = upload.uploadFragment(header, content);
-                            if(response instanceof DriveItem.Metadata) {
-                                log.info(String.format("Completed upload for %s", file));
-                                final String id = session.getFileId(((DriveItem.Metadata) response));
+                            final OneDriveJsonObject reply = upload.uploadFragment(header, content);
+                            if(reply instanceof DriveItem.Metadata) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Completed upload for %s", file));
+                                }
+                                final String id = session.getFileId(((DriveItem.Metadata) reply));
                                 fileid.cache(file, id);
+                                response.set((DriveItem.Metadata) reply);
                             }
                             else {
                                 log.debug(String.format("Uploaded fragment %s for file %s", header, file));
@@ -166,6 +177,10 @@ public class GraphWriteFeature implements Write<Void> {
             finally {
                 close.set(true);
             }
+        }
+
+        public DriveItem.Metadata getStatus() {
+            return response.get();
         }
     }
 }

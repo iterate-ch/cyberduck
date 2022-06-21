@@ -15,14 +15,18 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.lang3.StringUtils;
 
 public class B2VersioningFeature implements Versioning {
 
@@ -59,10 +63,6 @@ public class B2VersioningFeature implements Versioning {
         return new B2ObjectListService(session, fileid).list(file, listener).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path f) {
-                if(!StringUtils.equals(f.getName(), f.getName())) {
-                    // List with prefix will also return other keys
-                    return false;
-                }
                 return f.attributes().isDuplicate();
             }
         });

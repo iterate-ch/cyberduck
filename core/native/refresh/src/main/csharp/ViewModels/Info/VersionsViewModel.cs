@@ -24,7 +24,9 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
     public class VersionsViewModel : ReactiveObject
     {
         private readonly ObservableAsPropertyHelper<VersionViewModel> selectedVersionProperty;
+
         private readonly SourceList<VersionModel> versions = new();
+
         private readonly IObservableCache<VersionViewModel, VersionModel> viewModelCache;
 
         public VersionsViewModel(Controller controller, SessionPool session)
@@ -76,7 +78,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                         new AsyncWorkerBackgroundAction(controller, session, result,
                             new DeleteWorker(
                                 LoginCallbackFactory.get(controller), norm,
-                                PathCache.empty(), new DisabledProgressListener(), false)));
+                                new DisabledProgressListener(), false)));
                     await result.Task;
                 }
                 finally
@@ -90,11 +92,14 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 try
                 {
                     Busy = true;
+                    var files = Collections.singletonList(SelectedVersionValue.Path);
+                    var native = Utils.ConvertFromJavaList<Path>(files);
                     TaskCompletionSource<object> result = new();
                     controller.background(
                         new AsyncWorkerBackgroundAction(controller, session, result,
-                            new RevertWorker(Collections.singletonList(SelectedVersionValue.Path))));
+                            new RevertWorker(files)));
                     await result.Task;
+                    Reverted?.Invoke(native);
                 }
                 finally
                 {
@@ -146,6 +151,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 }
             });
         }
+
+        public delegate void RevertedEventHandler(IList<Path> files);
+
+        public event RevertedEventHandler Reverted;
 
         [Reactive]
         public bool Busy { get; private set; }

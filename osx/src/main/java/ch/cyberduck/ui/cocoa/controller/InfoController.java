@@ -407,19 +407,6 @@ public class InfoController extends ToolbarWindowController {
                 item.setLabel(session.getHost().getProtocol().getName());
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().icon(), 32));
                 break;
-            case metadata:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
-                break;
-            case general:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSInfo", 32));
-                break;
-            case permissions:
-            case acl:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSUserGroup", 32));
-                break;
-            case versions:
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSMultipleDocuments", 32));
-                break;
         }
         return item;
     }
@@ -504,7 +491,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void addPanel(final Map<Label, NSView> views, final InfoToolbarItem item, final NSView panel) {
         if(preferences.getBoolean(String.format("info.%s.enable", item.name()))) {
-            views.put(new Label(item.name(), item.label()), panel);
+            views.put(new Label(item.name(), item.label(), item.image()), panel);
         }
     }
 
@@ -1003,7 +990,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
+                validateAclActions(true);
             }
 
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSCell cell,
@@ -1073,8 +1060,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setAclRemoveButton(NSButton b) {
         this.aclRemoveButton = b;
-        // Only enable upon selection change
-        this.aclRemoveButton.setEnabled(false);
         this.aclRemoveButton.setAction(Foundation.selector("aclRemoveButtonClicked:"));
         this.aclRemoveButton.setTarget(this.id());
     }
@@ -1178,13 +1163,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                final Path version = versions.get(versionsTable.selectedRow().intValue());
-                versionsDeleteButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && session.getFeature(Delete.class).isSupported(version));
-                versionsRevertButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && session.getFeature(Versioning.class).isRevertable(version));
-                versionsQuicklookButton.setEnabled(versionsTable.numberOfSelectedRows().intValue() == 1
-                        && version.attributes().getPermission().isReadable());
+                validateVersionsActions(true);
                 if(quicklook.isOpen()) {
                     versionsQuicklookButtonClicked(null);
                 }
@@ -1204,6 +1183,18 @@ public class InfoController extends ToolbarWindowController {
         this.versionsRevertButton.setAction(Foundation.selector("versionsRevertButtonClicked:"));
     }
 
+    @Action
+    public void versionsRevertButtonClicked(final ID sender) {
+        this.versionsRevertButtonClicked(new VersionsReloadCallback());
+    }
+
+    protected void versionsRevertButtonClicked(final ReloadCallback callback) {
+        if(this.toggleVersionsSettings(false)) {
+            final Path selected = versions.get(versionsTable.selectedRow().intValue());
+            new RevertController(this, session).revert(Collections.singletonList(selected), callback);
+        }
+    }
+
     public void setVersionsDeleteButton(final NSButton b) {
         this.versionsDeleteButton = b;
         this.versionsDeleteButton.setTarget(this.id());
@@ -1211,37 +1202,14 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Action
-    public void versionsRevertButtonClicked(ID sender) {
-        if(this.toggleVersionsSettings(false)) {
-            final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            this.background(new WorkerBackgroundAction<>(controller, session,
-                    new RevertWorker(Collections.singletonList(selected)) {
-                        @Override
-                        public void cleanup(final List<Path> deleted) {
-                            toggleVersionsSettings(true);
-                            initVersions();
-                        }
-                    }
-            ));
-        }
+    public void versionsDeleteButtonClicked(final ID sender) {
+        this.versionsDeleteButtonClicked(new VersionsReloadCallback());
     }
 
-    @Action
-    public void versionsDeleteButtonClicked(ID sender) {
+    protected void versionsDeleteButtonClicked(final ReloadCallback callback) {
         if(this.toggleVersionsSettings(false)) {
             final Path selected = versions.get(versionsTable.selectedRow().intValue());
-            new DeleteController(this, session, PathCache.empty(), false).delete(Collections.singletonList(selected), new DeleteController.Callback() {
-                @Override
-                public void cancel() {
-                    toggleVersionsSettings(true);
-                }
-
-                @Override
-                public void deleted(final List<Path> deleted) {
-                    toggleVersionsSettings(true);
-                    initVersions();
-                }
-            });
+            new DeleteController(this, session, false).delete(Collections.singletonList(selected), callback);
         }
     }
 
@@ -1364,7 +1332,7 @@ public class InfoController extends ToolbarWindowController {
 
             @Override
             public void selectionDidChange(final NSNotification notification) {
-                metadataRemoveButton.setEnabled(metadataTable.numberOfSelectedRows().intValue() > 0);
+                validateMetadataActions(true);
             }
 
             @Override
@@ -1495,8 +1463,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setMetadataRemoveButton(NSButton b) {
         this.metadataRemoveButton = b;
-        // Only enable upon selection change
-        this.metadataRemoveButton.setEnabled(false);
         this.metadataRemoveButton.setAction(Foundation.selector("metadataRemoveButtonClicked:"));
         this.metadataRemoveButton.setTarget(this.id());
     }
@@ -1628,7 +1594,7 @@ public class InfoController extends ToolbarWindowController {
         this.panelGeneral = v;
     }
 
-    private void initGeneral() {
+    protected void initGeneral() {
         final int count = this.numberOfFiles();
         if(count > 0) {
             filenameField.setStringValue(this.getName());
@@ -1706,7 +1672,7 @@ public class InfoController extends ToolbarWindowController {
         this.initWebUrl();
     }
 
-    private void initWebUrl() {
+    protected void initWebUrl() {
         // Web URL
         if(this.numberOfFiles() > 1) {
             this.updateField(webUrlField, String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
@@ -1726,7 +1692,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      *
      */
-    private void initPermissions() {
+    protected void initPermissions() {
         permissionsField.setStringValue(LocaleFactory.localizedString("Unknown"));
         // Disable Apply button and start progress indicator
         if(this.togglePermissionSettings(false)) {
@@ -1780,7 +1746,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Read content distribution settings
      */
-    private void initDistribution() {
+    protected void initDistribution() {
         distributionStatusField.setStringValue(LocaleFactory.localizedString("Unknown"));
         distributionCnameField.cell().setPlaceholderString(LocaleFactory.localizedString("None"));
         distributionOriginField.setStringValue(LocaleFactory.localizedString("Unknown"));
@@ -1825,7 +1791,7 @@ public class InfoController extends ToolbarWindowController {
      * Updates the size field by iterating over all files and reading the cached size value in the attributes of the
      * path
      */
-    private void initSize() {
+    protected void initSize() {
         if(this.toggleSizeSettings(false)) {
             this.background(new WorkerBackgroundAction<>(controller, session,
                     new ReadSizeWorker(files) {
@@ -1845,7 +1811,7 @@ public class InfoController extends ToolbarWindowController {
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
-    private void initChecksum() {
+    protected void initChecksum() {
         if(this.numberOfFiles() > 1) {
             checksumField.setStringValue(String.format("(%s)", LocaleFactory.localizedString("Multiple files")));
         }
@@ -1872,7 +1838,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleS3Settings(final boolean stop) {
+    protected boolean toggleS3Settings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = session.getHost().getProtocol().getType() == Protocol.Type.s3
@@ -1920,7 +1886,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      *
      */
-    private void initS3() {
+    protected void initS3() {
         bucketLocationField.setStringValue(LocaleFactory.localizedString("Unknown"));
 
         bucketLoggingPopup.removeAllItems();
@@ -2106,21 +2072,29 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleAclSettings(final boolean stop) {
+    protected boolean toggleAclSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(AclPermission.class) != null;
-        aclTable.setEnabled(stop && enable);
-        aclAddButton.setEnabled(stop && enable);
-        boolean selection = aclTable.selectedRowIndexes().count().intValue() > 0;
-        aclRemoveButton.setEnabled(stop && enable && selection);
+        final boolean enabled = this.validateAclActions(stop);
         if(stop) {
             aclProgress.stopAnimation(null);
         }
-        else if(enable) {
+        else if(enabled) {
             aclProgress.startAnimation(null);
         }
-        return enable;
+        return enabled;
+    }
+
+    /**
+     * @param enable True if actions should be enabled if current selection allows
+     * @return True if feature is supported
+     */
+    protected boolean validateAclActions(final boolean enable) {
+        final boolean feature = session.getFeature(AclPermission.class) != null;
+        aclTable.setEnabled(enable && feature);
+        aclAddButton.setEnabled(enable && feature);
+        boolean selection = aclTable.numberOfSelectedRows().intValue() > 0;
+        aclRemoveButton.setEnabled(enable && feature && selection);
+        return feature;
     }
 
     /**
@@ -2129,27 +2103,34 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleMetadataSettings(final boolean stop) {
+    protected boolean toggleMetadataSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Credentials credentials = session.getHost().getCredentials();
-        boolean enable = !credentials.isAnonymousLogin() && session.getFeature(Metadata.class) != null;
-        metadataTable.setEnabled(stop && enable);
-        metadataAddButton.setEnabled(stop && enable);
-        boolean selection = metadataTable.selectedRowIndexes().count().intValue() > 0;
-        metadataRemoveButton.setEnabled(stop && enable && selection);
+        final boolean feature = this.validateMetadataActions(stop);
         if(stop) {
             metadataProgress.stopAnimation(null);
         }
-        else if(enable) {
+        else if(feature) {
             metadataProgress.startAnimation(null);
         }
-        return enable;
+        return feature;
+    }
+
+    /**
+     * @param enable True if actions should be enabled if current selection allows
+     */
+    protected boolean validateMetadataActions(final boolean enable) {
+        boolean feature = session.getFeature(Metadata.class) != null;
+        metadataTable.setEnabled(enable && feature);
+        metadataAddButton.setEnabled(enable && feature);
+        boolean selection = metadataTable.numberOfSelectedRows().intValue() > 0;
+        metadataRemoveButton.setEnabled(enable && feature && selection);
+        return feature;
     }
 
     /**
      * Read custom metadata HTTP headers from cloud provider
      */
-    private void initMetadata() {
+    protected void initMetadata() {
         this.setMetadata(Collections.emptyList());
         if(this.toggleMetadataSettings(false)) {
             this.background(new WorkerBackgroundAction<>(controller, session, new ReadMetadataWorker(files) {
@@ -2174,28 +2155,43 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleVersionsSettings(final boolean stop) {
+    protected boolean toggleVersionsSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        final Versioning versioning = session.getFeature(Versioning.class);
-        boolean enable = versioning != null;
-        versionsTable.setEnabled(stop && enable);
-        boolean selection = versionsTable.selectedRowIndexes().count().intValue() == 1;
-        versionsRevertButton.setEnabled(stop && enable && selection && versioning.isRevertable(this.getSelected()));
-        versionsDeleteButton.setEnabled(stop && enable && selection);
-        versionsQuicklookButton.setEnabled(stop && enable && selection);
+        final boolean enabled = this.validateVersionsActions(stop);
         if(stop) {
             versionsProgress.stopAnimation(null);
         }
-        else if(enable) {
+        else if(enabled) {
             versionsProgress.startAnimation(null);
         }
-        return enable;
+        return enabled;
+    }
+
+    /**
+     * @param enable True if actions should be enabled if current selection allows
+     */
+    protected boolean validateVersionsActions(final boolean enable) {
+        boolean feature = session.getFeature(Versioning.class) != null;
+        versionsTable.setEnabled(enable && feature);
+        boolean selection = versionsTable.numberOfSelectedRows().intValue() == 1;
+        if(selection) {
+            final Path version = versions.get(versionsTable.selectedRow().intValue());
+            versionsDeleteButton.setEnabled(enable && feature && session.getFeature(Delete.class).isSupported(version));
+            versionsRevertButton.setEnabled(enable && feature && session.getFeature(Versioning.class).isRevertable(version));
+            versionsQuicklookButton.setEnabled(enable && feature && version.attributes().getPermission().isReadable());
+        }
+        else {
+            versionsDeleteButton.setEnabled(false);
+            versionsRevertButton.setEnabled(false);
+            versionsQuicklookButton.setEnabled(false);
+        }
+        return feature;
     }
 
     /**
      * Read file versions
      */
-    private void initVersions() {
+    protected void initVersions() {
         this.setVersions(AttributedList.emptyList());
         if(this.toggleVersionsSettings(false)) {
             final Path selected = this.getSelected();
@@ -2214,7 +2210,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Read grants in the background
      */
-    private void initAcl() {
+    protected void initAcl() {
         this.setAcl(Collections.emptyList());
         if(this.toggleAclSettings(false)) {
             final AclPermission feature = session.getFeature(AclPermission.class);
@@ -2347,7 +2343,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if controls are enabled for the given protocol in idle state
      */
-    private boolean togglePermissionSettings(final boolean stop) {
+    protected boolean togglePermissionSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.getFeature(UnixPermission.class) != null;
@@ -2383,7 +2379,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if controls are enabled for the given protocol in idle state
      */
-    private boolean toggleDistributionSettings(final boolean stop) {
+    protected boolean toggleDistributionSettings(final boolean stop) {
         this.window().endEditingFor(null);
         final Credentials credentials = session.getHost().getCredentials();
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
@@ -2590,7 +2586,7 @@ public class InfoController extends ToolbarWindowController {
      * @param stop Enable controls and stop progress spinner
      * @return True if progress animation has started and settings are toggled
      */
-    private boolean toggleSizeSettings(final boolean stop) {
+    protected boolean toggleSizeSettings(final boolean stop) {
         this.window().endEditingFor(null);
         sizeButton.setEnabled(false);
         for(Path next : files) {
@@ -2640,12 +2636,27 @@ public class InfoController extends ToolbarWindowController {
             public String label() {
                 return LocaleFactory.localizedString(StringUtils.capitalize("General"), "Info");
             }
+
+            @Override
+            public String image() {
+                return "NSInfo";
+            }
         },
-        permissions,
+        permissions {
+            @Override
+            public String image() {
+                return "NSUserGroup";
+            }
+        },
         acl {
             @Override
             public String label() {
                 return LocaleFactory.localizedString(StringUtils.capitalize("Permissions"), "Info");
+            }
+
+            @Override
+            public String image() {
+                return "NSUserGroup";
             }
         },
         distribution {
@@ -2660,11 +2671,38 @@ public class InfoController extends ToolbarWindowController {
                 return LocaleFactory.localizedString(StringUtils.capitalize("Amazon S3"), "Info");
             }
         },
-        metadata,
-        versions;
+        metadata {
+            @Override
+            public String image() {
+                return "pencil.tiff";
+            }
+        },
+        versions {
+            @Override
+            public String image() {
+                return "NSMultipleDocuments";
+            }
+        };
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");
+        }
+
+        public String image() {
+            return this.name();
+        }
+    }
+
+    public class VersionsReloadCallback implements ReloadCallback {
+        @Override
+        public void cancel() {
+            toggleVersionsSettings(true);
+        }
+
+        @Override
+        public void done(final List<Path> files) {
+            toggleVersionsSettings(true);
+            initVersions();
         }
     }
 }

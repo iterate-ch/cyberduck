@@ -44,15 +44,17 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
 
     private final PathContainerService containerService;
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3MultipartWriteFeature(final S3Session session) {
+    public S3MultipartWriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final S3Object object = new S3WriteFeature(session).getDetails(file, status);
+        final S3Object object = new S3WriteFeature(session, acl).getDetails(file, status);
         // ID for the initiated multipart upload.
         final MultipartUpload multipart;
         try {
@@ -90,11 +92,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
     }
 
     private final class MultipartOutputStream extends OutputStream {
@@ -143,7 +140,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<StorageObject> {
                                 break;
                         }
                         status.setSegment(true);
-                        final S3Object part = new S3WriteFeature(session).getDetails(file, status);
+                        final S3Object part = new S3WriteFeature(session, acl).getDetails(file, status);
                         try {
                             final Path bucket = containerService.getContainer(file);
                             session.getClient().putObjectWithRequestEntityImpl(

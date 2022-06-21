@@ -33,7 +33,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -50,7 +49,8 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertFalse(new DropboxFindFeature(session).find(file));
         assertTrue(new DropboxFindFeature(session).find(target));
         assertTrue(new DefaultFindFeature(session).find(target));
-        assertEquals(target.attributes(), file.attributes());
+        assertNotEquals(target.attributes().getVersionId(), file.attributes().getVersionId());
+        assertEquals(target.attributes().getModificationDate(), file.attributes().getModificationDate());
         assertEquals(target.attributes(), new DropboxAttributesFinderFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

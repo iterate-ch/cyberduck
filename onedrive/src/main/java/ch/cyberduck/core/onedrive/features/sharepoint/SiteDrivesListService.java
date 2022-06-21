@@ -21,12 +21,17 @@ import ch.cyberduck.core.onedrive.AbstractDriveListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.Site;
 
 import java.util.Iterator;
 
 public class SiteDrivesListService extends AbstractDriveListService {
+    private static final Logger log = LogManager.getLogger(SiteDrivesListService.class);
+
     private final AbstractSharepointSession session;
 
     public SiteDrivesListService(final AbstractSharepointSession session, final GraphFileIdProvider fileid) {
@@ -36,6 +41,10 @@ public class SiteDrivesListService extends AbstractDriveListService {
 
     @Override
     protected Iterator<Drive.Metadata> getIterator(final Path directory) throws BackgroundException {
-        return Drives.getDrives(session.getSite(directory.getParent()));
+        final Site site = session.getSite(directory.getParent());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return drives for site %s", site));
+        }
+        return Drives.getDrives(site);
     }
 }

@@ -76,6 +76,7 @@ import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
+import ch.cyberduck.ui.cocoa.controller.ReloadCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -617,9 +618,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            new DeleteController(controller, controller.getSession(), cache).delete(pasteboard, new DeleteController.Callback() {
+            new DeleteController(controller, controller.getSession()).delete(pasteboard, new ReloadCallback() {
                 @Override
-                public void deleted(final List<Path> deleted) {
+                public void done(final List<Path> files) {
                     controller.reload(controller.workdir(), pasteboard, Collections.emptyList());
                 }
             });

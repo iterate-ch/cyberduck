@@ -40,10 +40,10 @@ public class SharepointListService extends AbstractSharepointListService {
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
-    public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path DEFAULT_NAME = new Path(Path.DELIMITER + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
+    public static final Path DRIVES_NAME = new Path(Path.DELIMITER + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path GROUPS_NAME = new Path(Path.DELIMITER + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path SITES_NAME = new Path(Path.DELIMITER + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
 
     private final SharepointSession session;
     private final GraphFileIdProvider fileid;
@@ -72,7 +72,7 @@ public class SharepointListService extends AbstractSharepointListService {
     }
 
     @Override
-    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         getDefault(directory).ifPresent(list::add);
         addDefaultItems(list);
@@ -80,13 +80,13 @@ public class SharepointListService extends AbstractSharepointListService {
         return list;
     }
 
-    static void addDefaultItems(final AttributedList<Path> list) throws BackgroundException {
+    static void addDefaultItems(final AttributedList<Path> list) {
         list.add(GROUPS_NAME);
         list.add(SITES_NAME);
     }
 
     @Override
-    AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
         final GraphSession.ContainerItem container = session.getContainer(directory);
         if(container.isDrive()) {
             return AttributedList.emptyList();

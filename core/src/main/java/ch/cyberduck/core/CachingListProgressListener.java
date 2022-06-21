@@ -39,9 +39,15 @@ public class CachingListProgressListener extends DisabledListProgressListener {
     /**
      * Add enumerated contents to cache
      */
-    public void finish() {
+    public void cache() {
         for(Map.Entry<Path, AttributedList<Path>> entry : contents.entrySet()) {
-            cache.put(entry.getKey(), entry.getValue());
+            final AttributedList<Path> list = entry.getValue();
+            if(!(AttributedList.<Path>emptyList() == list)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Cache directory listing for %s", entry.getKey()));
+                }
+                cache.put(entry.getKey(), list);
+            }
         }
     }
 }

@@ -16,12 +16,13 @@ package ch.cyberduck.core.onedrive.features.onedrive;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.AbstractItemListService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.User;
@@ -29,6 +30,8 @@ import org.nuxeo.onedrive.client.types.User;
 import java.util.Iterator;
 
 public class SharedWithMeListService extends AbstractItemListService {
+    private static final Logger log = LogManager.getLogger(SharedWithMeListService.class);
+
     private final GraphSession session;
 
     public SharedWithMeListService(final GraphSession session, final GraphFileIdProvider fileid) {
@@ -37,7 +40,11 @@ public class SharedWithMeListService extends AbstractItemListService {
     }
 
     @Override
-    protected Iterator<DriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
-        return Files.getSharedWithMe(User.getCurrent(session.getClient()));
+    protected Iterator<DriveItem.Metadata> getIterator(final Path directory) {
+        final User user = User.getCurrent(session.getClient());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return shared items for user %s", user));
+        }
+        return Files.getSharedWithMe(user);
     }
 }

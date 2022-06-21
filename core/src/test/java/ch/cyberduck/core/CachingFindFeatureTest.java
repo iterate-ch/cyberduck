@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 
@@ -22,7 +23,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class CachingFindFeatureTest {
 
@@ -32,15 +34,14 @@ public class CachingFindFeatureTest {
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         final Path file = new Path(directory, "f", EnumSet.of(Path.Type.file));
         final CachingFindFeature feature = new CachingFindFeature(cache,
-                new DefaultFindFeature(new NullSession(new Host(new TestProtocol()))));
-        try {
-            feature.find(file, new DisabledListProgressListener());
-        }
-        catch(NotfoundException e) {
-            //
-        }
-        assertEquals(1, cache.size());
-        assertTrue(cache.isCached(directory));
-        assertFalse(cache.get(directory).contains(file));
+                new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
+                    @Override
+                    public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
+                        throw new NotfoundException(folder.getAbsolute());
+                    }
+                }));
+        feature.find(file, new DisabledListProgressListener());
+        assertEquals(0, cache.size());
+        assertFalse(cache.isCached(directory));
     }
 }

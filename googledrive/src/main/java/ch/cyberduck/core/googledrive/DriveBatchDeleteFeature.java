@@ -86,9 +86,15 @@ public class DriveBatchDeleteFeature implements Delete {
                     .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
         }
         else {
-            session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
+            if(file.attributes().isDuplicate()) {
+                session.getClient().revisions().delete(fileid.getFileId(file, new DisabledListProgressListener()), file.attributes().getVersionId())
+                        .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
+            }
+            else {
+                session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
+                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
+            }
         }
     }
 

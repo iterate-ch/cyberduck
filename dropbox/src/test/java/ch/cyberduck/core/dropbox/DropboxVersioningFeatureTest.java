@@ -53,6 +53,9 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DropboxAttributesFinderFeature f = new DropboxAttributesFinderFeature(session);
         final Path test = new DropboxTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(test.attributes().getVersionId(), new DropboxAttributesFinderFeature(session).find(test).getVersionId());
+        final DropboxVersioningFeature feature = new DropboxVersioningFeature(session);
+        assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -64,7 +67,6 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotEquals(initialVersion, new DropboxAttributesFinderFeature(session).toAttributes(out.getStatus()).getVersionId());
-        final DropboxVersioningFeature feature = new DropboxVersioningFeature(session);
         {
             final AttributedList<Path> versions = feature.list(test.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(out.getStatus())), new DisabledListProgressListener());
             assertEquals(1, versions.size());

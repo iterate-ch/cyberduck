@@ -72,11 +72,11 @@ public class S3TransferAccelerationServiceTest extends AbstractS3Test {
         final byte[] content = RandomUtils.nextBytes(502);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         status.setLength(content.length);
-        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session, new S3AccessControlListFeature(session)).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(b.get());
-        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

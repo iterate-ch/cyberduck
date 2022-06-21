@@ -39,7 +39,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DelegateStreamListener;
@@ -156,13 +155,20 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        if(options.temporary) {
-            options.withTemporary(source.getFeature(Write.class).temporary());
+        final Find find;
+        final AttributesFinder attributes;
+        if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
+            find = new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
+            attributes = new CachingAttributesFinderFeature(cache,
+                    source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
-        final Find find = new CachingFindFeature(cache,
-                source.getFeature(Find.class, new DefaultFindFeature(source)));
-        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
-                source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+        else {
+            find = new CachingFindFeature(cache, source.getFeature(Find.class));
+            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class));
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined features %s and %s", find, attributes));
+        }
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }

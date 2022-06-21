@@ -76,14 +76,14 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final AttributesFinder f = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator);
-        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session), new S3WriteFeature(session), cryptomator).touch(
+        final AttributesFinder f = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator);
+        final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, new S3AccessControlListFeature(session)), new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).touch(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
-        final Write<StorageObject> writer = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session), cryptomator);
+        final Write<StorageObject> writer = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session, new S3AccessControlListFeature(session)), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
@@ -91,7 +91,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final StatusOutputStream<StorageObject> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final PathAttributes updated = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+        final PathAttributes updated = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, updated.getVersionId());
         {
             final AttributedList<Path> versions = new CryptoVersioningFeature(session, new S3VersioningFeature(session, new S3AccessControlListFeature(session)), cryptomator)
@@ -99,11 +99,11 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             assertFalse(versions.isEmpty());
             assertEquals(1, versions.size());
             assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
-            assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(versions.get(0)));
-            assertEquals(initialVersion, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(versions.get(0)).getVersionId());
+            assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, new S3AccessControlListFeature(session)), cryptomator).find(versions.get(0)));
+            assertEquals(initialVersion, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator).find(versions.get(0)).getVersionId());
         }
         new CryptoVersioningFeature(session, new S3VersioningFeature(session, new S3AccessControlListFeature(session)), cryptomator).revert(new Path(test).withAttributes(initialAttributes));
-        final PathAttributes reverted = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(new Path(test).withAttributes(PathAttributes.EMPTY));
+        final PathAttributes reverted = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, reverted.getVersionId());
         {
             final AttributedList<Path> versions = new CryptoVersioningFeature(session, new S3VersioningFeature(session, new S3AccessControlListFeature(session)), cryptomator)

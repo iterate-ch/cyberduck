@@ -491,23 +491,14 @@ namespace Ch.Cyberduck.Ui.Controller
         void ICyberduck.RegisterProfile(string profilePath)
         {
             Local f = LocalFactory.get(profilePath);
-            Protocol profile = (Protocol)ProfileReaderFactory.get().read(f);
-            if (null == profile)
+            Local copy = ProtocolFactory.get().register(f);
+            if (null == copy)
             {
                 return;
             }
-            if (profile.isEnabled())
-            {
-                ProtocolFactory.get().register(profile);
-                Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                NewBrowser().AddBookmark(host);
-                // Register in application support
-                Local profiles =
-                    LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                        PreferencesFactory.get().getProperty("profiles.folder.name"));
-                profiles.mkdir();
-                f.copy(LocalFactory.get(profiles, f.getName()));
-            }
+            Protocol profile = (Protocol)ProfileReaderFactory.get().read(copy);
+            Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
+            NewBrowser().AddBookmark(host);
         }
 
         void ICyberduck.RegisterRegistration(string registrationPath)

@@ -2,18 +2,23 @@ Cyberduck
 https://cyberduck.io/
 
 8.4.0
-- [Feature] Delete and revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, S3, OneDrive)
-- [Feature] Windows 10 Build 14393/Windows Server 2016 or later required (Windows)
+- [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, S3, OneDrive, Microsoft Sharepoint)
+- [Feature] Delete previous file versions in Info panel (S3, Backblaze B2, Google Drive, Google Storage, S3)
+- [Feature] View previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, S3, OneDrive, Microsoft Sharepoint)
+- [Feature] View previous versions in browser by choosing View → Show Hidden (Google Drive)
 - [Feature] Support applications installed from Windows Store for editing files (#12802) (Windows)
 - [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
 - [Feature] Migrate OAuth out-of-band flow to an alternative method (#13360) (Google Drive, Google Storage)
+- [Feature] Add menu item to request files for protocols that support upload share links (#13426) (Box, Nextcloud, ownCloud)
 - [Bugfix] Do not attempt to set ACL on files uploaded to bucket with owner controls set that disallows ACLs (S3) (#13386)
 - [Bugfix] Register custom DNS resolver to handle IPv6 preference (#13399)
 - [Bugfix] Failure opening vault (Cryptomator, FTP) (#13375)
 - [Bugfix] Mismatch between SHA256 hash error when downloading files (Dropbox) (#13361)
-- [Bugfix] No such file error when uploading with tempoprary filename option (SFTP) (#13367)
+- [Bugfix] No such file error when uploading with temporary filename option (SFTP) (#13367)
 - [Bugfix] Transfer acceleration endpoints not used (S3) (#13359)
 - [Bugfix] Delete multiple files with batch request (DRACOON)
+- [Bugfix] RequestTimeTooSkewed error with computer date settings not using Gregorian calendar (S3) (#13454)
+- [Bugfix] Fix error reporting to display exact parser failure for unexpected response contents (S3) (#13383)
 
 8.3.3
 - [Bugfix] Failing transfers with multipe files (FTP) (#13322)

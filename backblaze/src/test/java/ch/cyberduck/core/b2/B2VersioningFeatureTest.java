@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,38 +46,47 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
 
     @Test
     public void testRevert() throws Exception {
-        final B2VersionIdProvider nodeid = new B2VersionIdProvider(session);
-        final Path room = new B2DirectoryFeature(session, nodeid).mkdir(
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final Path room = new B2DirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, nodeid);
-        final Path test = new B2TouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path ignored = new B2TouchFeature(session, fileid).touch(new Path(room, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        {
+            // Make sure there is another versioned copy of a file not to be included when listing
+            final byte[] content = RandomUtils.nextBytes(245);
+            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final B2WriteFeature writer = new B2WriteFeature(session, fileid);
+            final HttpResponseOutputStream<BaseB2Response> out = writer.write(ignored, status, new DisabledConnectionCallback());
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        }
+        assertTrue(new B2FindFeature(session, fileid).find(ignored));
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setExists(true);
-        final B2WriteFeature writer = new B2WriteFeature(session, nodeid);
+        final B2WriteFeature writer = new B2WriteFeature(session, fileid);
         final StatusOutputStream<BaseB2Response> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(initialVersion, test.attributes().getVersionId());
-        final B2VersioningFeature feature = new B2VersioningFeature(session, nodeid);
+        final B2VersioningFeature feature = new B2VersioningFeature(session, fileid);
         {
             final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
             assertEquals(1, versions.size());
             assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
-            assertTrue(new B2FindFeature(session, nodeid).find(versions.get(0)));
-            assertEquals(initialVersion, new B2AttributesFinderFeature(session, nodeid).find(versions.get(0)).getVersionId());
+            assertTrue(new B2FindFeature(session, fileid).find(versions.get(0)));
+            assertEquals(initialVersion, new B2AttributesFinderFeature(session, fileid).find(versions.get(0)).getVersionId());
         }
-        final PathAttributes updated = new B2AttributesFinderFeature(session, nodeid).find(test);
+        final PathAttributes updated = new B2AttributesFinderFeature(session, fileid).find(test);
         assertNotEquals(initialVersion, updated.getVersionId());
         feature.revert(new Path(test).withAttributes(initialAttributes));
         assertEquals(2, feature.list(test, new DisabledListProgressListener()).size());
-        for(Path version : new B2ListService(session, nodeid).list(room, new DisabledListProgressListener())) {
-            new B2DeleteFeature(session, nodeid).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        for(Path version : new B2ListService(session, fileid).list(room, new DisabledListProgressListener())) {
+            new B2DeleteFeature(session, fileid).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        new B2DeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

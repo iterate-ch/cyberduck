@@ -71,6 +71,10 @@ public abstract class NSImage extends NSObject implements NSCopying {
         return CLASS.imageNamed(name);
     }
 
+    public static NSImage imageWithSymbol(final String symbol) {
+        return CLASS.imageWithSystemSymbolName_accessibilityDescription(symbol, null);
+    }
+
     public static NSImage imageWithData(NSData data) {
         return CLASS.alloc().initWithData(data);
     }

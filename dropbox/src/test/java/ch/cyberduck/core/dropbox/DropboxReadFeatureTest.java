@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -143,10 +142,11 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         final DropboxWriteFeature writer = new DropboxWriteFeature(session);
         final HttpResponseOutputStream<Metadata> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        final Path versioned = new DropboxVersioningFeature(session).list(test, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
-        assertNotNull(versioned.attributes().getVersionId());
-        assertEquals(content.length,versioned.attributes().getSize());
-        assertArrayEquals(content, IOUtils.readFully(new DropboxReadFeature(session).read(versioned, new TransferStatus(), new DisabledConnectionCallback()), content.length));
+        test.withAttributes(status.getResponse());
+        assertNotNull(test.attributes().getVersionId());
+        // Only latest version
+        assertTrue(new DropboxVersioningFeature(session).list(test, new DisabledListProgressListener()).isEmpty());
+        assertArrayEquals(content, IOUtils.readFully(new DropboxReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), content.length));
         new DropboxDeleteFeature(session).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

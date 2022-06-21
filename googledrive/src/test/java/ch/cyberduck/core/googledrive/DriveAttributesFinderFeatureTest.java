@@ -91,6 +91,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getFileId());
+        assertNull(attributes.getVersionId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -109,14 +110,14 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         assertNotEquals(f.find(version1), f.find(version2));
         final AttributedList<Path> listBeforeDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listBeforeDelete.contains(version1));
-        assertFalse(listBeforeDelete.find(new DefaultPathPredicate(version1)).attributes().isDuplicate());
+        assertFalse(listBeforeDelete.find(new DefaultPathPredicate(version1)).attributes().isHidden());
         assertTrue(listBeforeDelete.contains(version2));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final AttributedList<Path> listAfterDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterDelete.contains(version1));
-        assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isDuplicate());
+        assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isHidden());
         assertTrue(listAfterDelete.contains(version2));
-        assertFalse(listAfterDelete.find(new DefaultPathPredicate(version2)).attributes().isDuplicate());
+        assertFalse(listAfterDelete.find(new DefaultPathPredicate(version2)).attributes().isHidden());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(version1, version2, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

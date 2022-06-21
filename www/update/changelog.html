@@ -61,11 +61,14 @@
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.4.0"><strong>Version 8.4.0</strong></a>
 </p>
 <ul>
-    <li><span class="label label-success">Feature</span> Delete and revert previous file versions in Info panel (S3,
-        Backblaze B2, Dropbox, Google Drive, Google Storage, S3, OneDrive)
+    <li><span class="label label-success">Feature</span> Revert previous file versions in Info panel (S3, Backblaze B2,
+        Dropbox, Google Storage, S3, OneDrive, Microsoft Sharepoint)
     </li>
-    <li><span class="label label-success">Feature</span> Windows 10 Build 14393/Windows Server 2016 or later required
-        (Windows)
+    <li><span class="label label-success">Feature</span> Delete previous file versions in Info panel (S3, Backblaze B2,
+        Google Drive, Google Storage, S3)
+    </li>
+    <li><span class="label label-success">Feature</span> View previous file versions in Info panel (S3, Backblaze B2,
+        Dropbox, Google Drive, Google Storage, S3, OneDrive, Microsoft Sharepoint)
     </li>
     <li><span class="label label-success">Feature</span> Support applications installed from Windows Store for editing
         files (<a
@@ -77,6 +80,9 @@
     </li>
     <li><span class="label label-success">Feature</span> Migrate OAuth out-of-band flow to an alternative method (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/13360">#13360</a>) (Google Drive, Google Storage)
+    </li>
+    <li><span class="label label-success">Feature</span> Add menu item to request files for protocols that support
+        upload share links (#13426) (Box, Nextcloud, ownCloud)
     </li>
     <li><span class="label label-warning">Bugfix</span> Do not attempt to set ACL on files uploaded to bucket with
         owner controls set that disallows ACLs (S3) (<a
@@ -92,7 +98,7 @@
         (Dropbox) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13361">#13361</a>)
     </li>
-    <li><span class="label label-warning">Bugfix</span> No such file error when uploading with tempoprary filename
+    <li><span class="label label-warning">Bugfix</span> No such file error when uploading with temporary filename
         option (SFTP) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13367">#13367</a>)
     </li>
@@ -100,6 +106,14 @@
             target="_blank" href="https://trac.cyberduck.io/ticket/13359">#13359</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Delete multiple files with batch request (DRACOON)</li>
+    <li><span class="label label-warning">Bugfix</span> RequestTimeTooSkewed error with computer date settings not using
+        Gregorian calendar (S3) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/13454">#13454</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Fix error reporting to display exact parser failure for
+        unexpected response contents (S3) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/13383">#13383</a>)
+    </li>
 </ul>
 
 <p>

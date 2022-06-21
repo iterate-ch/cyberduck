@@ -87,7 +87,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
     private static final class IgnoreTrashedComparator implements Comparator<Path> {
         @Override
         public int compare(final Path o1, final Path o2) {
-            return Boolean.compare(o1.attributes().isDuplicate(), o2.attributes().isDuplicate());
+            return Boolean.compare(o1.attributes().isHidden(), o2.attributes().isDuplicate());
         }
     }
 }

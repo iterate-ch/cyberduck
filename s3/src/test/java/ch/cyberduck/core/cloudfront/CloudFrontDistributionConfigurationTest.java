@@ -16,6 +16,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -154,6 +155,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
     }
 
     @Test
+    @Ignore
     public void testInvalidateWithWildcards() throws Exception {
         final CloudFrontDistributionConfiguration configuration
             = new CloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());

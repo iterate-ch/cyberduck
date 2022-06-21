@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -26,6 +27,7 @@ import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProxyListProgressListener;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -48,14 +50,14 @@ public class S3VersioningFeature implements Versioning {
 
     private final S3Session session;
     private final PathContainerService containerService;
-    private final S3AccessControlListFeature accessControlListFeature;
+    private final S3AccessControlListFeature acl;
 
     private final LRUCache<Path, VersioningConfiguration> cache
             = LRUCache.build(10);
 
-    public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+    public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+        this.acl = acl;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -171,7 +173,7 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 try {
                     // Apply non standard ACL
-                    destination.setAcl(accessControlListFeature.toAcl(accessControlListFeature.getPermission(file)));
+                    destination.setAcl(acl.toAcl(acl.getPermission(file)));
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
@@ -219,13 +221,25 @@ public class S3VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new S3VersionedObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
+        return new S3VersionedObjectListService(session, acl).list(file, new ProxyListProgressListener(new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                listener.message(message);
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path f) {
+                if(!StringUtils.equals(f.getName(), file.getName())) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip file %s", f));
+                    }
+                    // List with prefix will also return other keys
+                    list.remove(index);
+                }
+            }
+        }, listener)).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path f) {
-                if(!StringUtils.equals(f.getName(), file.getName())) {
-                    // List with prefix will also return other keys
-                    return false;
-                }
                 return f.attributes().isDuplicate();
             }
         });

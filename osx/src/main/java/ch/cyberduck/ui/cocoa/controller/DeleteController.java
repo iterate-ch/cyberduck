@@ -19,7 +19,6 @@ import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
@@ -37,17 +36,15 @@ public class DeleteController extends ProxyController {
 
     private final WindowController parent;
     private final SessionPool pool;
-    private final Cache<Path> cache;
     private final boolean trash;
 
-    public DeleteController(final WindowController parent, final SessionPool pool, final Cache<Path> cache) {
-        this(parent, pool, cache, PreferencesFactory.get().getBoolean("browser.delete.trash"));
+    public DeleteController(final WindowController parent, final SessionPool pool) {
+        this(parent, pool, PreferencesFactory.get().getBoolean("browser.delete.trash"));
     }
 
-    public DeleteController(final WindowController parent, final SessionPool pool, final Cache<Path> cache, final boolean trash) {
+    public DeleteController(final WindowController parent, final SessionPool pool, final boolean trash) {
         this.parent = parent;
         this.pool = pool;
-        this.cache = cache;
         this.trash = trash;
     }
 
@@ -56,7 +53,7 @@ public class DeleteController extends ProxyController {
      *
      * @param selected The files selected in the browser to delete
      */
-    public void delete(final List<Path> selected, final Callback callback) {
+    public void delete(final List<Path> selected, final ReloadCallback callback) {
         final List<Path> normalized = PathNormalizer.normalize(selected);
         if(normalized.isEmpty()) {
             return;
@@ -82,13 +79,12 @@ public class DeleteController extends ProxyController {
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     parent.background(new WorkerBackgroundAction<>(parent, pool,
-                            new DeleteWorker(LoginCallbackFactory.get(parent), normalized, cache, parent, trash) {
-                                @Override
-                                public void cleanup(final List<Path> deleted) {
-                                    super.cleanup(deleted);
-                                    callback.deleted(deleted);
-                                }
-                            }
+                                    new DeleteWorker(LoginCallbackFactory.get(parent), normalized, parent, trash) {
+                                        @Override
+                                        public void cleanup(final List<Path> deleted) {
+                                            callback.done(deleted);
+                                        }
+                                    }
                             )
                     );
                 }
@@ -97,13 +93,5 @@ public class DeleteController extends ProxyController {
                 }
             }
         });
-    }
-
-    public interface Callback {
-        default void cancel() {
-            //
-        }
-
-        void deleted(final List<Path> deleted);
     }
 }

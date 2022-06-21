@@ -63,11 +63,6 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     }
 
     @Override
-    public boolean temporary() {
-        return proxy.temporary();
-    }
-
-    @Override
     public boolean random() {
         return proxy.random();
     }

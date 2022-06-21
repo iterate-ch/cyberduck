@@ -16,7 +16,6 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
@@ -29,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,8 +94,8 @@ public class DropboxVersioningFeature implements Versioning {
             }
             return versions.filter(new NullFilter<Path>() {
                 @Override
-                public boolean accept(final Path f) {
-                    return !new DefaultPathPredicate(file).test(f);
+                public boolean accept(final Path test) {
+                    return !StringUtils.equals(test.attributes().getVersionId(), file.attributes().getVersionId());
                 }
             });
         }

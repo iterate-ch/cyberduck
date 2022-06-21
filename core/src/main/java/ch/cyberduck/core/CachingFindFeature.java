@@ -53,8 +53,17 @@ public class CachingFindFeature implements Find {
             return false;
         }
         final CachingListProgressListener caching = new CachingListProgressListener(cache);
-        final boolean found = delegate.find(file, caching);
-        caching.finish();
+        final boolean found = delegate.find(file, new ProxyListProgressListener(listener, caching));
+        caching.cache();
         return found;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CachingFindFeature{");
+        sb.append("cache=").append(cache);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

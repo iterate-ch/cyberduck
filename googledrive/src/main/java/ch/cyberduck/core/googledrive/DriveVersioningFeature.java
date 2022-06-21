@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import com.google.api.services.drive.model.Revision;
 import com.google.api.services.drive.model.RevisionList;
@@ -78,7 +79,14 @@ public class DriveVersioningFeature implements Versioning {
                         .setFields(DEFAULT_FIELDS)
                         .setPageSize(new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"))
                         .setPageToken(page).execute();
-                for(Revision revision : list.getRevisions()) {
+                for(Iterator<Revision> iter = list.getRevisions().iterator(); iter.hasNext(); ) {
+                    final Revision revision = iter.next();
+                    if(!iter.hasNext()) {
+                        // Skip latest revision equals current version
+                        if(revision.getMd5Checksum().equals(file.attributes().getChecksum().hash)) {
+                            continue;
+                        }
+                    }
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Found revision %s", revision));
                     }
@@ -103,6 +111,7 @@ public class DriveVersioningFeature implements Versioning {
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
         // The ID of the revision
         attributes.setVersionId(f.getId());
+        attributes.setDuplicate(true);
         // The last user to modify this revision
         attributes.setOwner(f.getLastModifyingUser().getDisplayName());
         return attributes;

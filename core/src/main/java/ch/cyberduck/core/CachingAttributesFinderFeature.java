@@ -55,10 +55,22 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
         }
         final CachingListProgressListener caching = new CachingListProgressListener(cache);
         try {
-            return delegate.find(file, caching);
+            final PathAttributes attr = delegate.find(file, new ProxyListProgressListener(listener, caching));
+            caching.cache();
+            return attr;
         }
-        finally {
-            caching.finish();
+        catch(NotfoundException e) {
+            caching.cache();
+            throw e;
         }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CachingAttributesFinderFeature{");
+        sb.append("cache=").append(cache);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

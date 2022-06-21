@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3ListService;
 
 public class SpectraListService extends S3ListService {
@@ -26,7 +27,7 @@ public class SpectraListService extends S3ListService {
     private final SpectraSession session;
 
     public SpectraListService(final SpectraSession session) {
-        super(session);
+        super(session, new S3AccessControlListFeature(session));
         this.session = session;
     }
 

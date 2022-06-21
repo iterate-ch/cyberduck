@@ -42,37 +42,33 @@ import org.nuxeo.onedrive.client.types.Site;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.Predicate;
 
 public abstract class AbstractSharepointSession extends GraphSession {
     private static final Logger log = LogManager.getLogger(SharepointSession.class);
 
     private final Path home;
-    private final Predicate<Path> homeComparer;
+
+    public AbstractSharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        super(host, trust, key);
+        if(StringUtils.isNotBlank(host.getDefaultPath())) {
+            this.home = PathNormalizer.compose(Home.ROOT, host.getDefaultPath());
+        }
+        else {
+            this.home = Home.ROOT;
+        }
+    }
 
     public Path getHome() {
         return home;
     }
 
     public boolean isHome(final Path home) {
-        return homeComparer.test(home);
-    }
-
-    public AbstractSharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
-
-        if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            home = PathNormalizer.compose(Home.ROOT, host.getDefaultPath());
-        }
-        else {
-            home = Home.ROOT;
-        }
-        homeComparer = new SimplePathPredicate(home);
+        return new SimplePathPredicate(home).test(home);
     }
 
     public abstract boolean isSingleSite();
 
-    public Site getSite(final Path file) throws BackgroundException{
+    public Site getSite(final Path file) throws BackgroundException {
         return Site.byId(client, fileid.getFileId(file, new DisabledListProgressListener()));
     }
 
@@ -83,7 +79,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
     @Override
     public String getFileId(final DriveItem.Metadata metadata) {
         final ItemReference parent = metadata.getParentReference();
-        if (StringUtils.isAllBlank(parent.getId(), parent.getPath())) {
+        if(StringUtils.isAllBlank(parent.getId(), parent.getPath())) {
             return parent.getDriveId();
         }
         return metadata.getId();

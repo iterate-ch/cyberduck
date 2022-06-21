@@ -169,6 +169,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                     status.getDisplayname().exists(status.isExists());
                     // Keep exist flag for subclasses to determine additional rename strategy
                 }
+                else {
+                    log.warn(String.format("Cannot use temporary filename for upload with missing rename support for %s", file));
+                }
             }
             status.withMime(new MappingMimeTypeService().getMime(file.getName()));
         }

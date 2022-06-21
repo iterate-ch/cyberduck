@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
@@ -53,7 +52,7 @@ public class DeleteWorkerTest extends AbstractDriveTest {
         final Path file = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
         assertFalse(new DriveFindFeature(session, fileid).find(file.withAttributes(PathAttributes.EMPTY)));

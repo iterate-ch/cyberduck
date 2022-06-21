@@ -17,6 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -31,7 +32,7 @@ import static org.junit.Assert.*;
 public class CachingAttributesFinderFeatureTest {
 
     @Test
-    public void findRoot() throws Exception {
+    public void testFindRoot() throws Exception {
         final PathCache cache = new PathCache(1);
         final Path root = new Path("/", EnumSet.of(Path.Type.directory));
         cache.put(root, AttributedList.emptyList());
@@ -51,7 +52,7 @@ public class CachingAttributesFinderFeatureTest {
     }
 
     @Test
-    public void find() throws Exception {
+    public void testFind() throws Exception {
         final PathCache cache = new PathCache(1);
         final CachingAttributesFinderFeature feature = new CachingAttributesFinderFeature(cache, new AttributesFinder() {
             @Override
@@ -69,17 +70,17 @@ public class CachingAttributesFinderFeatureTest {
     }
 
     @Test
-    public void findWithDefaultExist() throws Exception {
+    public void testFindWithDefaultExist() throws Exception {
         final PathCache cache = new PathCache(1);
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         final Path file = new Path(directory, "f", EnumSet.of(Path.Type.file));
         final CachingAttributesFinderFeature feature = new CachingAttributesFinderFeature(cache,
-            new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
-                @Override
-                public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws ConnectionCanceledException {
-                    final Path f = new Path(directory, "f", EnumSet.of(Path.Type.file));
-                    listener.chunk(directory, new AttributedList<>(Collections.singletonList(f)));
-                    return new AttributedList<>(Collections.singletonList(f));
+                new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
+                    @Override
+                    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws ConnectionCanceledException {
+                        final Path f = new Path(directory, "f", EnumSet.of(Path.Type.file));
+                        listener.chunk(directory, new AttributedList<>(Collections.singletonList(f)));
+                        return new AttributedList<>(Collections.singletonList(f));
                 }
             }));
         assertNotNull(feature.find(file, new DisabledListProgressListener()));
@@ -91,20 +92,49 @@ public class CachingAttributesFinderFeatureTest {
     }
 
     @Test
-    public void findNotfound() throws Exception {
+    public void testFindNotfound() throws Exception {
         final PathCache cache = new PathCache(1);
         final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         final Path file = new Path(directory, "f", EnumSet.of(Path.Type.file));
         final CachingAttributesFinderFeature feature = new CachingAttributesFinderFeature(cache,
-                new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol()))));
+                new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
+                    @Override
+                    public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
+                        throw new NotfoundException(folder.getAbsolute());
+                    }
+                }));
         try {
             feature.find(file, new DisabledListProgressListener());
+            fail();
         }
         catch(NotfoundException e) {
             //
         }
-        assertEquals(1, cache.size());
-        assertTrue(cache.isCached(directory));
-        assertFalse(cache.get(directory).contains(file));
+        assertEquals(0, cache.size());
+        assertFalse(cache.isCached(directory));
+    }
+
+    @Test
+    public void testFindErrorWhilePagingDirectoryListing() throws Exception {
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
+        final Path file = new Path(directory, "f", EnumSet.of(Path.Type.file));
+        final CachingAttributesFinderFeature feature = new CachingAttributesFinderFeature(cache,
+                new DefaultAttributesFinderFeature(new NullSession(new Host(new TestProtocol())) {
+                    @Override
+                    public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
+                        final AttributedList<Path> list = new AttributedList<>(Collections.singletonList(new Path(folder, "t", EnumSet.of(Path.Type.file))));
+                        listener.chunk(folder, list);
+                        throw new ConnectionTimeoutException(folder.getAbsolute());
+                    }
+                }));
+        try {
+            feature.find(file, new DisabledListProgressListener());
+            fail();
+        }
+        catch(ConnectionTimeoutException e) {
+            //
+        }
+        assertFalse(cache.isCached(directory));
     }
 }

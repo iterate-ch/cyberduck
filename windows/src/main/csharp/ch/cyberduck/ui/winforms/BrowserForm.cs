@@ -325,7 +325,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateOpenWebUrl;
         public event ValidateCommand ValidateEditWith;
         public event ValidateCommand ValidateCreateShareLink;
+        public event ValidateCommand ValidateRequestFiles;
         public event VoidHandler CreateShareLink;
+        public event VoidHandler RequestFiles;
         public event ValidateCommand ValidateDelete;
         public event ArchivesHandler GetArchives;
         public event CopyUrlHandler GetCopyUrls;
@@ -2141,6 +2143,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 new ToolStripItem[] { shareToolStripMenuItem, shareContextToolStripMenuItem },
                 new[] { shareMainMenuItem, shareBrowserContextMenuItem }, (sender, args) => CreateShareLink(),
                 () => ValidateCreateShareLink());
+            Commands.Add(
+                new ToolStripItem[] { requestFilesToolStripMenuItem, requestFilesContextToolStripMenuItem },
+                new[] { requestFilesMainMenuItem, requestFilesBrowserContextMenuItem }, (sender, args) => RequestFiles(),
+                () => ValidateRequestFiles());
             Commands.Add(new ToolStripItem[] {downloadToolStripMenuItem, downloadContextToolStripMenuItem, downloadToolStripButton},
                 new[] {downloadMainMenuItem, downloadBrowserContextMenuItem}, (sender, args) => Download(),
                 () => ValidateDownload());

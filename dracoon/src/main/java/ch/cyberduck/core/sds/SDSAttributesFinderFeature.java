@@ -65,15 +65,15 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         // Throw failure if looking up file fails
         final String id = nodeid.getVersionId(file, listener);
         try {
-            return this.findNode(file, id, listener);
+            return this.findNode(file, id);
         }
         catch(NotfoundException e) {
             // Try with reset cache after failure finding node id
-            return this.findNode(file, nodeid.getVersionId(file, listener), listener);
+            return this.findNode(file, nodeid.getVersionId(file, listener));
         }
     }
 
-    private PathAttributes findNode(final Path file, final String nodeId, final ListProgressListener listener) throws BackgroundException {
+    private PathAttributes findNode(final Path file, final String nodeId) throws BackgroundException {
         try {
             if(file.attributes().isDuplicate()) {
                 final DeletedNode node = new NodesApi(session.getClient()).requestDeletedNode(Long.parseLong(nodeId),

@@ -67,11 +67,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);

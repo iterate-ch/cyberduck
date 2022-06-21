@@ -9,7 +9,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
@@ -66,8 +65,8 @@ public class DeleteWorkerTest {
             }
         };
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
-            Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), PathCache.empty(),
-            new DisabledProgressListener());
+            Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
+                new DisabledProgressListener());
         assertEquals(4, worker.run(session).size());
     }
 
@@ -112,8 +111,8 @@ public class DeleteWorkerTest {
             }
         };
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
-            Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))), PathCache.empty(),
-            new DisabledProgressListener());
+            Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
+                new DisabledProgressListener());
         assertEquals(1, worker.run(session).size());
     }
 
@@ -164,8 +163,8 @@ public class DeleteWorkerTest {
                 new Path("/t/d", EnumSet.of(Path.Type.directory)),
                 new Path("/t/d", EnumSet.of(Path.Type.directory)),
                 new Path("/t/d/b", EnumSet.of(Path.Type.file))
-            ), PathCache.empty(),
-            new DisabledProgressListener());
+            ),
+                new DisabledProgressListener());
         assertEquals(1, worker.run(session).size());
     }
 
@@ -199,7 +198,7 @@ public class DeleteWorkerTest {
         };
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
             Collections.singletonList(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink))),
-            PathCache.empty(), new DisabledProgressListener());
+                new DisabledProgressListener());
         worker.run(session);
     }
 }

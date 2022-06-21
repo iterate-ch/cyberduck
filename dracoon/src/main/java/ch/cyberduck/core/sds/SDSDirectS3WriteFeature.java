@@ -110,11 +110,6 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

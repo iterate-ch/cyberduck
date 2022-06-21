@@ -50,8 +50,8 @@ public class S3MultipleDeleteFeature implements Delete {
     private final S3MultipartService multipartService;
     private final S3VersioningFeature versioningService;
 
-    public S3MultipleDeleteFeature(final S3Session session) {
-        this(session, new S3DefaultMultipartService(session), new S3VersioningFeature(session, new S3AccessControlListFeature(session)));
+    public S3MultipleDeleteFeature(final S3Session session, final S3AccessControlListFeature acl) {
+        this(session, new S3DefaultMultipartService(session), new S3VersioningFeature(session, acl));
     }
 
     public S3MultipleDeleteFeature(final S3Session session, final S3MultipartService multipartService, final S3VersioningFeature versioningService) {

@@ -70,11 +70,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }

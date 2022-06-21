@@ -34,7 +34,7 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 
-public class GraphTouchFeature implements Touch<Void> {
+public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -68,7 +68,7 @@ public class GraphTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public Touch<Void> withWriter(final Write writer) {
+    public Touch<DriveItem.Metadata> withWriter(final Write writer) {
         return this;
     }
 }

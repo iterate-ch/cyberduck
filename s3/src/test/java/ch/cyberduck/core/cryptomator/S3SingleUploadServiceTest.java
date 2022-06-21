@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -80,13 +81,13 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
         writeStatus.setLength(content.length);
         final BytecountStreamListener count = new BytecountStreamListener();
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-                new S3SingleUploadService(session, new S3WriteFeature(session)),
-                new S3WriteFeature(session), cryptomator);
+                new S3SingleUploadService(session, new S3WriteFeature(session, new S3AccessControlListFeature(session))),
+                new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, new S3AccessControlListFeature(session)), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());

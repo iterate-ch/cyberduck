@@ -36,7 +36,10 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.AbstractResponseHandler;
 
 import java.io.IOException;
@@ -45,10 +48,21 @@ import java.text.MessageFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class NextcloudShareProvider implements PromptUrlProvider {
 
     private final DAVSession session;
+
+    /**
+     * Public link
+     */
+    private static final int SHARE_TYPE_PUBLIC_LINK = 3;
+
+    /**
+     * File drop only
+     */
+    private static final int SHARE_PERMISSIONS_CREATE = 4;
 
     public NextcloudShareProvider(final DAVSession session) {
         this.session = session;
@@ -72,7 +86,7 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d",
                 bookmark.getHostname(),
                 URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
-                3 // Public link
+                SHARE_TYPE_PUBLIC_LINK // Public link
         ));
         try {
             request.append(String.format("&password=%s", callback.prompt(bookmark,
@@ -85,11 +99,11 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         }
         final HttpPost resource = new HttpPost(request.toString());
         resource.setHeader("OCS-APIRequest", "true");
-        resource.setHeader(HttpHeaders.ACCEPT, "application/xml");
+        resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
             return new DescriptiveUrl(session.getClient().execute(resource, new AbstractResponseHandler<URI>() {
                 @Override
-                public URI handleResponse(final HttpResponse response) throws HttpResponseException, IOException {
+                public URI handleResponse(final HttpResponse response) throws IOException {
                     final StatusLine statusLine = response.getStatusLine();
                     final HttpEntity entity = response.getEntity();
                     if(statusLine.getStatusCode() >= 300) {
@@ -105,7 +119,7 @@ public class NextcloudShareProvider implements PromptUrlProvider {
                 @Override
                 public URI handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
-                    ocs value = mapper.readValue(entity.getContent(), ocs.class);
+                    final ocs value = mapper.readValue(entity.getContent(), ocs.class);
                     return URI.create(value.data.url);
                 }
             }), DescriptiveUrl.Type.http);
@@ -122,10 +136,8 @@ public class NextcloudShareProvider implements PromptUrlProvider {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&publicUpload=true",
-                bookmark.getHostname(),
-                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
-                3 // Public link
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares",
+                bookmark.getHostname()
         ));
         try {
             request.append(String.format("&password=%s", callback.prompt(bookmark,
@@ -136,15 +148,44 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         catch(LoginCanceledException e) {
             // Ignore no password set
         }
-        final HttpPost resource = new HttpPost(request.toString());
-        resource.setHeader("OCS-APIRequest", "true");
-        resource.setHeader(HttpHeaders.ACCEPT, "application/xml");
+        final HttpPost post = new HttpPost(request.toString());
+        post.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format("{\"path\":\"%s\",\"shareType\":%d,\"permissions\":%d}",
+                URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
+                SHARE_TYPE_PUBLIC_LINK, // Public link
+                SHARE_PERMISSIONS_CREATE // Create
+        )).build());
+        post.setHeader("OCS-APIRequest", "true");
+        post.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
         try {
-            return new DescriptiveUrl(session.getClient().execute(resource, new AbstractResponseHandler<URI>() {
+            return new DescriptiveUrl(session.getClient().execute(post, new AbstractResponseHandler<URI>() {
+                @Override
+                public URI handleResponse(final HttpResponse response) throws IOException {
+                    final StatusLine statusLine = response.getStatusLine();
+                    final HttpEntity entity = response.getEntity();
+                    if(statusLine.getStatusCode() >= 300) {
+                        final StringAppender message = new StringAppender();
+                        message.append(statusLine.getReasonPhrase());
+                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
+                        message.append(error.meta.message);
+                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
+                    }
+                    return super.handleResponse(response);
+                }
+
                 @Override
                 public URI handleEntity(final HttpEntity entity) throws IOException {
                     final XmlMapper mapper = new XmlMapper();
-                    ocs value = mapper.readValue(entity.getContent(), ocs.class);
+                    final ocs value = mapper.readValue(entity.getContent(), ocs.class);
+                    // Additional request, because permissions are ignored in POST
+                    final HttpPut put = new HttpPut(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares/%d",
+                            bookmark.getHostname(),
+                            value.data.id
+                    ));
+                    put.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format(
+                            "{\"permissions\":\"%d\"}", SHARE_PERMISSIONS_CREATE)).build());
+                    put.setHeader("OCS-APIRequest", "true");
+                    put.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
+                    session.getClient().execute(put, new VoidResponseHandler());
                     return URI.create(value.data.url);
                 }
             }), DescriptiveUrl.Type.http);

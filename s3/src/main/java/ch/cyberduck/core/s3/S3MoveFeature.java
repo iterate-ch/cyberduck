@@ -49,13 +49,9 @@ public class S3MoveFeature implements Move {
     private final S3AccessControlListFeature accessControlListFeature;
     private final Delete delete;
 
-    public S3MoveFeature(final S3Session session) {
-        this(session, new S3AccessControlListFeature(session));
-    }
-
-    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+        this.accessControlListFeature = acl;
         this.delete = new S3DefaultDeleteFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
     }

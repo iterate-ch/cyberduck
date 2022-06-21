@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
 import ch.cyberduck.core.googlestorage.GoogleStorageAttributesFinderFeature;
@@ -55,7 +54,7 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
         // Find delete marker
         assertTrue(new GoogleStorageFindFeature(session).find(file));
         assertTrue(new GoogleStorageAttributesFinderFeature(session).find(file).isDuplicate());

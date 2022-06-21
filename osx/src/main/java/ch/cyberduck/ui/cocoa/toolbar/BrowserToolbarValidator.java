@@ -284,13 +284,18 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return false;
         }
         else if(action.equals(share.action())) {
-            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
-                final Path selected = controller.getSelectedPath();
-                if(null == selected) {
-                    return false;
-                }
+            if(this.isBrowser() && controller.isMounted()) {
+                final Path selected = null != controller.getSelectedPath() ? controller.getSelectedPath() : controller.workdir();
                 return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
                     controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.download);
+            }
+            return false;
+        }
+        else if(action.equals(requestfiles.action())) {
+            if(this.isBrowser() && controller.isMounted()) {
+                final Path selected = null != controller.getSelectedPath() ? controller.getSelectedPath() : controller.workdir();
+                return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
+                        controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.upload);
             }
             return false;
         }

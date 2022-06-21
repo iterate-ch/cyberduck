@@ -11,6 +11,8 @@ import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Sites;
 import org.nuxeo.onedrive.client.types.SharePointIds;
 import org.nuxeo.onedrive.client.types.Site;
@@ -26,6 +28,8 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class SitesListService extends AbstractListService<Site.Metadata> {
+    private static final Logger log = LogManager.getLogger(SitesListService.class);
+
     private final AbstractSharepointSession session;
 
     public SitesListService(final AbstractSharepointSession session, final GraphFileIdProvider fileid) {
@@ -35,6 +39,9 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
 
     @Override
     protected Iterator<Site.Metadata> getIterator(final Path directory) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return sites for %s", directory));
+        }
         if(!session.isSingleSite() && directory.getParent().isRoot()) {
             return Sites.getSites(session.getClient(), "*", Site.Select.SharepointIDs);
         }
