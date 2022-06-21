@@ -26,12 +26,15 @@ import ch.cyberduck.core.box.io.swagger.client.api.SharedLinksFilesApi;
 import ch.cyberduck.core.box.io.swagger.client.api.SharedLinksFoldersApi;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.FilesFileIdaddSharedLinkBody;
+import ch.cyberduck.core.box.io.swagger.client.model.FilesfileIdSharedLinkPermissions;
 import ch.cyberduck.core.box.io.swagger.client.model.FilesfileIdaddSharedLinkSharedLink;
 import ch.cyberduck.core.box.io.swagger.client.model.Folder;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersFolderIdaddSharedLinkBody;
 import ch.cyberduck.core.box.io.swagger.client.model.FoldersfolderIdaddSharedLinkSharedLink;
+import ch.cyberduck.core.box.io.swagger.client.model.FoldersfolderIdaddSharedLinkSharedLinkPermissions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import java.net.URI;
@@ -50,10 +53,10 @@ public class BoxShareFeature implements PromptUrlProvider {
     @Override
     public boolean isSupported(final Path file, final Type type) {
         switch(type) {
-            case upload:
-                return file.isDirectory();
+            case download:
+                return true;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class BoxShareFeature implements PromptUrlProvider {
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
-        return this.createFolderSharedLink(file, callback);
+        throw new UnsupportedException();
     }
 
     private DescriptiveUrl createFileSharedLink(final Path file, final PasswordCallback callback) throws BackgroundException {
@@ -75,8 +78,9 @@ public class BoxShareFeature implements PromptUrlProvider {
             final File link = new SharedLinksFilesApi(new BoxApiClient(session.getClient())).putFilesIdAddSharedLink(
                     "shared_link",
                     fileid.getFileId(file, new DisabledListProgressListener()),
-                    new FilesFileIdaddSharedLinkBody().sharedLink(new FilesfileIdaddSharedLinkSharedLink()
-                            .password(password)));
+                    new FilesFileIdaddSharedLinkBody()
+                            .sharedLink(new FilesfileIdaddSharedLinkSharedLink().permissions(new FilesfileIdSharedLinkPermissions().canDownload(true))
+                                    .password(password)));
             return new DescriptiveUrl(URI.create(link.getSharedLink().getDownloadUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
@@ -90,8 +94,9 @@ public class BoxShareFeature implements PromptUrlProvider {
             final Folder link = new SharedLinksFoldersApi(new BoxApiClient(session.getClient())).putFoldersIdAddSharedLink(
                     "shared_link",
                     fileid.getFileId(file, new DisabledListProgressListener()),
-                    new FoldersFolderIdaddSharedLinkBody().sharedLink(new FoldersfolderIdaddSharedLinkSharedLink()
-                            .password(password)));
+                    new FoldersFolderIdaddSharedLinkBody()
+                            .sharedLink(new FoldersfolderIdaddSharedLinkSharedLink().permissions(new FoldersfolderIdaddSharedLinkSharedLinkPermissions().canDownload(false))
+                                    .password(password)));
             return new DescriptiveUrl(URI.create(link.getSharedLink().getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {

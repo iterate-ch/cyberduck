@@ -42,7 +42,7 @@ public class BoxShareFeatureTest extends AbtractBoxTest {
                 EnumSet.of(Path.Type.directory)), new TransferStatus());
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(directory, PromptUrlProvider.Type.download));
-        assertTrue(feature.isSupported(directory, PromptUrlProvider.Type.upload));
+        assertFalse(feature.isSupported(directory, PromptUrlProvider.Type.upload));
         assertNotNull(feature.toUploadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
         assertNotNull(feature.toDownloadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
