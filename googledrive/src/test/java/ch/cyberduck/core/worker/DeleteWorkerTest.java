@@ -16,16 +16,19 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
+import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileIdProvider;
 import ch.cyberduck.core.googledrive.DriveFindFeature;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveTouchFeature;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -54,7 +57,9 @@ public class DeleteWorkerTest extends AbstractDriveTest {
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
         assertTrue(new DriveFindFeature(session, fileid).find(file));
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).isHidden());
         assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).isHidden());
         assertFalse(new DriveFindFeature(session, fileid).find(file.withAttributes(PathAttributes.EMPTY)));
         assertFalse(new DefaultFindFeature(session).find(file.withAttributes(PathAttributes.EMPTY)));
     }
