@@ -117,7 +117,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     @Test
     @Ignore
     public void testWriteMinio() throws Exception {
-        final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
+        final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
         final S3Session session = new S3Session(
