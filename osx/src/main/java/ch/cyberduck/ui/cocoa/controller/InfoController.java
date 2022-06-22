@@ -454,7 +454,7 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    public String getTitle(NSTabViewItem item) {
+    public String getWindowTitleForSelectedTab(final NSTabViewItem item) {
         return String.format("%s – %s", item.label(), this.getName());
     }
 
@@ -469,7 +469,7 @@ public class InfoController extends ToolbarWindowController {
         }
         this.files = files;
         this.initializePanel(this.getSelectedTab());
-        this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
+        this.setWindowTitle(this.getWindowTitleForSelectedTab(tabView.selectedTabViewItem()));
     }
 
     @Override
@@ -491,7 +491,14 @@ public class InfoController extends ToolbarWindowController {
 
     private void addPanel(final Map<Label, NSView> views, final InfoToolbarItem item, final NSView panel) {
         if(preferences.getBoolean(String.format("info.%s.enable", item.name()))) {
-            views.put(new Label(item.name(), item.label(), item.image()), panel);
+            switch(item) {
+                case s3:
+                    views.put(new Label(item.name(), session.getHost().getProtocol().getName(), item.image()), panel);
+                    break;
+                default:
+                    views.put(new Label(item.name(), item.label(), item.image()), panel);
+                    break;
+            }
         }
     }
 

@@ -57,7 +57,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     /**
      * Static window title
      */
-    private String title;
+    private String windowName;
 
     protected NSTabView tabView;
     private final NSToolbar toolbar = NSToolbar.toolbarWithIdentifier(this.getToolbarName());
@@ -119,9 +119,10 @@ public abstract class ToolbarWindowController extends WindowController implement
         // Insert all panels into tab view
         final Map<Label, NSView> panels = this.getPanels();
         for(Map.Entry<Label, NSView> tab : panels.entrySet()) {
-            final NSTabViewItem item = NSTabViewItem.itemWithIdentifier(tab.getKey().identifier);
+            final Label label = tab.getKey();
+            final NSTabViewItem item = NSTabViewItem.itemWithIdentifier(label.identifier);
             item.setView(tab.getValue());
-            item.setLabel(tab.getKey().label);
+            item.setLabel(label.label);
             tabView.addTabViewItem(item);
         }
         // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults
@@ -133,7 +134,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         // Change selection to last selected item in preferences
         final int index = preferences.getInteger(String.format("%s.selected", this.getToolbarName()));
         this.setSelectedPanel(index < panels.size() ? index : 0);
-        this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
+        this.setWindowTitle(this.getWindowTitleForSelectedTab(tabView.selectedTabViewItem()));
         super.awakeFromNib();
     }
 
@@ -183,7 +184,7 @@ public abstract class ToolbarWindowController extends WindowController implement
 
     @Override
     public void setWindow(final NSWindow window) {
-        this.title = window.title();
+        this.windowName = window.title();
         window.setShowsToolbarButton(false);
         super.setWindow(window);
     }
@@ -259,7 +260,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         return true;
     }
 
-    protected String getTitle(final NSTabViewItem item) {
+    protected String getWindowTitleForSelectedTab(final NSTabViewItem item) {
         return item.label();
     }
 
@@ -294,19 +295,19 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
         if(awaked) {
-            this.setTitle(this.getTitle(item));
+            this.setWindowTitle(this.getWindowTitleForSelectedTab(item));
             this.resize();
             preferences.setProperty(String.format("%s.selected", this.getToolbarName()), view.indexOfTabViewItem(item));
         }
     }
 
-    protected void setTitle(final String title) {
+    protected void setWindowTitle(final String title) {
         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-            window.setTitle(this.title);
+            window.setTitle(windowName);
             window.setSubtitle(title);
         }
         else {
-            window.setTitle(String.format("%s – %s", this.title, title));
+            window.setTitle(String.format("%s – %s", windowName, title));
         }
     }
 
