@@ -62,7 +62,8 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testWriteVirtualHost() throws Exception {
-        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(virtualhost);
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(virtualhost, acl);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -77,8 +78,8 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         out.close();
         assertNotNull(out.getStatus());
         assertEquals(content.length, out.getStatus().getContentLength());
-        assertTrue(new S3FindFeature(virtualhost).find(file));
-        final PathAttributes attr = new S3AttributesFinderFeature(virtualhost).find(file);
+        assertTrue(new S3FindFeature(virtualhost, acl).find(file));
+        final PathAttributes attr = new S3AttributesFinderFeature(virtualhost, acl).find(file);
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(content.length, attr.getSize());
         final byte[] compare = new byte[content.length];
