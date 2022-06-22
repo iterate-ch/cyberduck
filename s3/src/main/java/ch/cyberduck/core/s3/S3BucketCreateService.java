@@ -47,7 +47,7 @@ public class S3BucketCreateService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create bucket %s in region %s", bucket, region));
         }
-        if(!session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
+        if(!new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
                 throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
             }
@@ -62,11 +62,8 @@ public class S3BucketCreateService {
         try {
             if(StringUtils.isNotBlank(region)) {
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    final String endpoint = String.format("s3.dualstack.%s.amazonaws.com", region);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Set endpoint to %s matching region %s", endpoint, region));
-                    }
-                    session.getClient().getConfiguration().setProperty("s3service.s3-endpoint", endpoint);
+                    // Adjust default region to be used when searching for existing bucket will return 404
+                    session.getHost().setProperty("s3.location", region);
                 }
             }
             else {

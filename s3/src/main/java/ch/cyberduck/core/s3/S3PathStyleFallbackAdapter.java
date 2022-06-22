@@ -14,6 +14,7 @@ package ch.cyberduck.core.s3;/*
  */
 
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -24,11 +25,11 @@ import org.apache.logging.log4j.Logger;
 public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R> {
     private static final Logger log = LogManager.getLogger(S3PathStyleFallbackAdapter.class);
 
-    private final S3Session session;
+    private final Host host;
     private final BackgroundExceptionCallable<R> proxy;
 
-    public S3PathStyleFallbackAdapter(final S3Session session, final BackgroundExceptionCallable<R> proxy) {
-        this.session = session;
+    public S3PathStyleFallbackAdapter(final Host host, final BackgroundExceptionCallable<R> proxy) {
+        this.host = host;
         this.proxy = proxy;
     }
 
@@ -39,7 +40,7 @@ public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R
         }
         catch(ResolveFailedException e) {
             log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
-            session.getClient().getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
             return proxy.call();
         }
     }
