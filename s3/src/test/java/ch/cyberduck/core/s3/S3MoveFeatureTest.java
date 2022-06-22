@@ -167,4 +167,19 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session, acl).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testMoveBucketDisabledAcl() throws Exception {
+        final Path container = new Path("test-eu-central-1-acl-disabled", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3TouchFeature touch = new S3TouchFeature(session, acl);
+        touch.touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
+        final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
+        assertTrue(new S3FindFeature(session, acl).find(renamed));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
