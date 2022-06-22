@@ -108,4 +108,16 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFoundBucket() throws Exception {
+        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFoundBucketDnsNameCompatible() throws Exception {
+        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
