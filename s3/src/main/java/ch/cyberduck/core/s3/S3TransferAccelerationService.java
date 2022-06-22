@@ -23,28 +23,24 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.AccelerateConfig;
 
 public class S3TransferAccelerationService implements TransferAcceleration {
 
-    private final PathContainerService containerService;
+    private final Preferences preferences = PreferencesFactory.get();
+
     private final S3Session session;
+    private final PathContainerService containerService;
 
     public static final String S3_ACCELERATE_DUALSTACK_HOSTNAME = "s3-accelerate.dualstack.amazonaws.com";
 
-    private final String hostname;
-
     public S3TransferAccelerationService(final S3Session session) {
-        this(session, S3_ACCELERATE_DUALSTACK_HOSTNAME);
-    }
-
-    public S3TransferAccelerationService(final S3Session session, final String hostname) {
         this.session = session;
-        this.hostname = hostname;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -92,24 +88,17 @@ public class S3TransferAccelerationService implements TransferAcceleration {
 
     @Override
     public void configure(final boolean enable, final Path file) {
-        final Jets3tProperties options = session.getClient().getConfiguration();
+        final Host host = session.getHost();
+        // Set accelerated endpoint
+        host.setProperty("s3.transferacceleration.enable", String.valueOf(enable));
         if(enable) {
-            // Set accelerated endpoint
-            options.setProperty("s3service.s3-endpoint", hostname);
-            options.setProperty("s3service.disable-dns-buckets", String.valueOf(false));
-            options.setProperty("s3service.disable-expect-continue", String.valueOf(true));
+            host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(false));
+            host.setProperty("s3.upload.expect-continue", String.valueOf(false));
         }
         else {
             // Revert default configuration
-            options.loadAndReplaceProperties(session.getClient().getConfiguration(), this.toString());
+            host.setProperty("s3.bucket.virtualhost.disable", preferences.getProperty("s3.bucket.virtualhost.disable"));
+            host.setProperty("s3.upload.expect-continue", preferences.getProperty("s3.upload.expect-continue"));
         }
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("S3TransferAccelerationService{");
-        sb.append("hostname='").append(hostname).append('\'');
-        sb.append('}');
-        return sb.toString();
     }
 }
