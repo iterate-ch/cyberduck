@@ -53,6 +53,7 @@ import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -276,6 +277,9 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     }
                 }
             }
+        }
+        if(this.getProviderCredentials() instanceof AWSSessionCredentials) {
+            request.setHeader(Constants.AMZ_SECURITY_TOKEN, ((AWSSessionCredentials) getProviderCredentials()).getSessionToken());
         }
         return request;
     }
