@@ -73,7 +73,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             PathAttributes attr;
             final Path bucket = containerService.getContainer(file);
             try {
-                attr = new S3AttributesAdapter().toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
+                attr = new S3AttributesAdapter().toAttributes(session.getClient().getVersionedObjectDetails(
+                        file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
             catch(ServiceException e) {
                 switch(e.getResponseCode()) {
@@ -93,7 +94,8 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 // Determine if latest version
                 try {
                     // Duplicate if not latest version
-                    final String latest = new S3AttributesAdapter().toAttributes(session.getClient().getObjectDetails(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
+                    final String latest = new S3AttributesAdapter().toAttributes(session.getClient().getObjectDetails(
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file))).getVersionId();
                     if(null != latest) {
                         attr.setDuplicate(!latest.equals(attr.getVersionId()));
                     }
