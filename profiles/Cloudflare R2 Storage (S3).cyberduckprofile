@@ -10,7 +10,7 @@
         <string>https</string>
         <key>Description</key>
         <string>Cloudflare R2 Storage (S3)</string>
-        <key>Default Hostname</key>
+        <key>Hostname Placeholder</key>
         <string>&lt;accountid&gt;.r2.cloudflarestorage.com</string>
         <key>Hostname Configurable</key>
         <true/>
