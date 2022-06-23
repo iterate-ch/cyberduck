@@ -197,17 +197,20 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
+            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
             final Location.Name location = new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<Location.Name>() {
                 @Override
                 public Location.Name call() throws BackgroundException {
-                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache())
-                            .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache()).getLocation(home);
                 }
             }).call();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Retrieved region %s", location));
             }
             if(!Location.unknown.equals(location)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set default region to %s determined from %s", location, home));
+                }
                 host.setProperty("s3.location", location.getIdentifier());
             }
         }
