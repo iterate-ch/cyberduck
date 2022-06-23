@@ -119,7 +119,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
 
     @Test
     public void testAccessBucketNameInHostname() throws Exception {
-        assertEquals(new S3LocationFeature.S3Region("eu-west-3"), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(
+        assertEquals(new S3LocationFeature.S3Region("eu-west-3"), new S3LocationFeature(virtualhost, virtualhost.getClient().getRegionEndpointCache()).getLocation(
                 new Path("/", EnumSet.of(Path.Type.directory))
         ));
     }
@@ -133,7 +133,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     public void testEmptyThirdPartyProvider() {
         final Host host = new Host(new S3Protocol(), "mys3");
         final S3Session session = new S3Session(host);
-        assertTrue(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocations().isEmpty());
+        assertTrue(new S3LocationFeature(session).getLocations().isEmpty());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
                 new Local("../profiles/Wasabi (us-central-1).cyberduckprofile"));
         final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()));
-        final S3LocationFeature feature = new S3LocationFeature(session, session.getClient().getRegionEndpointCache());
+        final S3LocationFeature feature = new S3LocationFeature(session);
         assertFalse(feature.getLocations().isEmpty());
         assertTrue(feature.getLocations().contains(new Location.Name("us-central-1")));
     }
