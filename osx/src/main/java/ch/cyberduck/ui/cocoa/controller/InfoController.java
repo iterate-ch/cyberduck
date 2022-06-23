@@ -405,6 +405,7 @@ public class InfoController extends ToolbarWindowController {
             case s3:
                 // Set icon of cloud service provider
                 item.setLabel(session.getHost().getProtocol().getName());
+                item.setToolTip(session.getHost().getProtocol().getName());
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().icon(), 32));
                 break;
         }
