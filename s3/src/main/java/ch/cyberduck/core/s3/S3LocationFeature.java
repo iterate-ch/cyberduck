@@ -126,7 +126,17 @@ public class S3LocationFeature implements Location {
                         break;
                 }
             }
-            cache.putRegionForBucketName(bucketname, region.getIdentifier());
+            if(StringUtils.isBlank(bucketname)) {
+                if(StringUtils.isNotBlank(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                    cache.putRegionForBucketName(RequestEntityRestStorageService.findBucketInHostname(session.getHost()), region.getIdentifier());
+                }
+                else {
+                    cache.putRegionForBucketName(bucketname, region.getIdentifier());
+                }
+            }
+            else {
+                cache.putRegionForBucketName(bucketname, region.getIdentifier());
+            }
             return region;
         }
         catch(ServiceException e) {
