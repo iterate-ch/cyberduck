@@ -127,25 +127,25 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 return Acl.EMPTY;
             }
             final Path bucket = containerService.getContainer(file);
-            if(cache.contains(bucket)) {
-                return cache.get(bucket);
-            }
-            if(this.isBucketOwnerEnforced(bucket)) {
-                cache.put(bucket, Acl.EMPTY);
-                return Acl.EMPTY;
-            }
+            final Acl acl;
             if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                return this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
+                acl = this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
             }
             else if(file.isFile() || file.isPlaceholder()) {
-                return this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                acl = this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
-            return Acl.EMPTY;
+            else {
+                acl = Acl.EMPTY;
+            }
+            if(this.isBucketOwnerEnforced(bucket)) {
+                acl.setEditable(false);
+            }
+            return acl;
         }
         catch(ServiceException e) {
             final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);

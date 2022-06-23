@@ -91,6 +91,10 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
      * Canned ACL identifier
      */
     private final String canned;
+    /**
+     * Read only when false
+     */
+    private boolean editable = true;
 
     public Acl(final String canned) {
         this.canned = canned;
@@ -109,15 +113,24 @@ public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> implements Seria
     public Acl(final Acl other) {
         this.putAll(other);
         this.canned = other.canned;
+        this.editable = other.editable;
     }
 
     public boolean isCanned() {
         return CANNED_PRIVATE.equals(this)
-            || CANNED_PUBLIC_READ_WRITE.equals(this)
-            || CANNED_PUBLIC_READ.equals(this)
-            || CANNED_AUTHENTICATED_READ.equals(this)
-            || CANNED_BUCKET_OWNER_FULLCONTROL.equals(this)
-            || CANNED_BUCKET_OWNER_READ.equals(this);
+                || CANNED_PUBLIC_READ_WRITE.equals(this)
+                || CANNED_PUBLIC_READ.equals(this)
+                || CANNED_AUTHENTICATED_READ.equals(this)
+                || CANNED_BUCKET_OWNER_FULLCONTROL.equals(this)
+                || CANNED_BUCKET_OWNER_READ.equals(this);
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(final boolean editable) {
+        this.editable = editable;
     }
 
     public String getCannedString() {

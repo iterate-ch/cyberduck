@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.IndexedListProgressListener;
@@ -173,7 +174,10 @@ public class S3VersioningFeature implements Versioning {
                 destination.setServerSideEncryptionKmsKeyId(encryption.key);
                 try {
                     // Apply non standard ACL
-                    destination.setAcl(acl.toAcl(acl.getPermission(file)));
+                    final Acl list = acl.getPermission(file);
+                    if(list.isEditable()) {
+                        destination.setAcl(acl.toAcl(list));
+                    }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));
