@@ -28,7 +28,7 @@ import org.jets3t.service.acl.Permission;
 public class S3PublicUrlProvider implements PromptUrlProvider<Void, Void> {
 
     private final S3Session session;
-    private S3AccessControlListFeature acl;
+    private final S3AccessControlListFeature acl;
 
     public S3PublicUrlProvider(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
