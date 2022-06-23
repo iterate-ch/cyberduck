@@ -25,7 +25,6 @@ import ch.cyberduck.binding.ToolbarWindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSIndexSet;
-import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -2468,7 +2467,7 @@ public class InfoController extends ToolbarWindowController {
                     distributionEnableButton.setTitle(MessageFormat.format(LocaleFactory.localizedString("Enable {0} Distribution", "Status"),
                             distribution.getName()));
                     distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                    distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                    distributionStatusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 
                     distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
                     final List<Path> containers = distribution.getContainers();
