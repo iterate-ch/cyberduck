@@ -107,6 +107,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
+    public String getEndpoint() {
+        return session.getHost().getHostname();
+    }
+
+    @Override
     protected void initializeDefaults() {
         //
     }
