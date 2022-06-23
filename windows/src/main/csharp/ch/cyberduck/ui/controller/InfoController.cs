@@ -1516,8 +1516,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (Path file in _infoController.Files)
                     {
                         string storageClass = redundancyFeature.getClass(file);
-                        selectedClasses.Add(storageClass);
-                        _storageClass = storageClass;
+                        if (storageClass != null)
+                        {
+                            selectedClasses.Add(storageClass);
+                            _storageClass = storageClass;
+                        }
                     }
                     if (selectedClasses.Count > 1)
                     {

@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -35,8 +36,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3StorageClassFeatureTest extends AbstractS3Test {
@@ -58,9 +58,10 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetClassFile() throws Exception {
-        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        assertNull(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(container));
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);
         assertEquals(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, feature.getClass(test));
@@ -75,7 +76,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final TransferStatus status = new TransferStatus();
         status.setStorageClass("GLACIER");
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), status);
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final S3StorageClassFeature feature = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
         assertEquals(S3Object.STORAGE_CLASS_GLACIER, feature.getClass(test));
         try {
@@ -91,7 +92,7 @@ public class S3StorageClassFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session, acl);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);
