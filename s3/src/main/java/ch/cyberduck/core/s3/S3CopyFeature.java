@@ -66,7 +66,10 @@ public class S3CopyFeature implements Copy {
         if(Acl.EMPTY == status.getAcl()) {
             // Apply non standard ACL
             try {
-                status.setAcl(acl.getPermission(source));
+                final Acl list = acl.getPermission(source);
+                if(list.isEditable()) {
+                    status.setAcl(list);
+                }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure %s", e));

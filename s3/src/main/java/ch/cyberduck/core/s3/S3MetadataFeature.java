@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -77,7 +78,10 @@ public class S3MetadataFeature implements Headers {
                 }
                 try {
                     // Apply non standard ACL
-                    target.setAcl(acl.toAcl(acl.getPermission(file)));
+                    final Acl list = acl.getPermission(file);
+                    if(list.isEditable()) {
+                        target.setAcl(acl.toAcl(list));
+                    }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
                     log.warn(String.format("Ignore failure %s", e));

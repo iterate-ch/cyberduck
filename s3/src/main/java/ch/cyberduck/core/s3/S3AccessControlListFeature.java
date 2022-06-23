@@ -75,25 +75,19 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
-    @Override
-    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
-        final Path bucket = containerService.getContainer(file);
-        if(cache.contains(bucket)) {
-            return cache.get(bucket);
-        }
+    private boolean isBucketOwnerEnforced(final Path bucket) throws BackgroundException {
         final OwnershipControlsConfig controls;
         try {
             controls = session.getClient().getBucketOwnershipControls(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             for(OwnershipControlsConfig.Rule rule : controls.getRules()) {
                 if(rule.getOwnership() == OwnershipControlsConfig.ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-                    cache.put(bucket, Acl.EMPTY);
-                    return Acl.EMPTY;
+                    return true;
                 }
             }
         }
         catch(ServiceException e) {
             try {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(NotfoundException n) {
                 // Ignore - for buckets created through the S3 console with object writer ownership we get a 404
@@ -101,6 +95,19 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             catch(AccessDeniedException | InteroperabilityException l) {
                 log.warn(String.format("Missing permission to read bucket ownership configuration for %s %s", bucket.getName(), e.getMessage()));
             }
+        }
+        return false;
+    }
+
+    @Override
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
+        if(cache.contains(bucket)) {
+            return cache.get(bucket);
+        }
+        if(this.isBucketOwnerEnforced(bucket)) {
+            cache.put(bucket, Acl.EMPTY);
+            return Acl.EMPTY;
         }
         final Acl preference = Acl.toAcl(new HostPreferences(session.getHost()).getProperty("s3.acl.default"));
         cache.put(bucket, preference);
@@ -116,27 +123,35 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
             if(file.getType().contains(Path.Type.upload)) {
+                // Incomplete multipart upload has no ACL set
                 return Acl.EMPTY;
             }
             final Path bucket = containerService.getContainer(file);
+            final Acl acl;
             if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
                 // In general, you can only access the ACL of a bucket if the ACL already in place
                 // for that bucket (in S3) allows you to do so.
-                return this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
+                acl = this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
             }
             else if(file.isFile() || file.isPlaceholder()) {
-                return this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
+                acl = this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
             }
-            return Acl.EMPTY;
+            else {
+                acl = Acl.EMPTY;
+            }
+            if(this.isBucketOwnerEnforced(bucket)) {
+                acl.setEditable(false);
+            }
+            return acl;
         }
         catch(ServiceException e) {
             final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             if(file.isPlaceholder()) {
                 if(failure instanceof NotfoundException) {
-                    // No placeholder file may exist but we just have a common prefix
+                    // No placeholder file may exist, but we just have a common prefix
                     return Acl.EMPTY;
                 }
             }
