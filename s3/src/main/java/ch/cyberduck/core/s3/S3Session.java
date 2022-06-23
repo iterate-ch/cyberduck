@@ -211,7 +211,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set default region to %s determined from %s", location, home));
                 }
+                //
                 host.setProperty("s3.location", location.getIdentifier());
+                // Used when creating canonical string for signature
+                client.getConfiguration().setProperty("storage-service.default-region", location.getIdentifier());
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
