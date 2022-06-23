@@ -61,7 +61,11 @@ namespace Ch.Cyberduck.Core.CredentialManager
             using CredHandle handle = new();
             if (!CredRead(target, CRED_TYPE_GENERIC, 0, out handle.Handle))
             {
-                log.error($"Cannot get credential for \"{target}\"", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+                if (log.isDebugEnabled())
+                {
+                    var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+                    log.debug($"Cannot get credential for \"{target}\": {message.Message}");
+                }
                 return default;
             }
 
@@ -124,7 +128,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
         {
             if (!CredDelete(target, (uint)CRED_TYPE_GENERIC, 0))
             {
-                log.error($"Could not remove credentials \"{target}\"", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+                var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+                log.error($"Could not remove credentials \"{target}\": {message.Message}");
                 return false;
             }
             return true;
@@ -188,7 +193,8 @@ namespace Ch.Cyberduck.Core.CredentialManager
 
             if (!CredWrite(&cred, 0))
             {
-                log.error($"Failed saving credentials for \"{target}\"", Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error()));
+                var message = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+                log.error($"Failed saving credentials for \"{target}\": {message.Message}");
                 return false;
             }
             return true;
