@@ -18,8 +18,10 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -76,7 +78,11 @@ public class FolderController extends FileController {
             regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
-                regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
+                final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
+                item.setRepresentedObject(region.getIdentifier());
+                final NSMutableAttributedString description = NSMutableAttributedString.create(region.toString());
+                description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", region.getIdentifier()), MENU_HELP_FONT_ATTRIBUTES));
+                item.setAttributedTitle(description);
                 if(region.equals(defaultRegion)) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
