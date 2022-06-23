@@ -2,9 +2,9 @@ Cyberduck
 https://cyberduck.io/
 
 8.4.0
-- [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, S3, OneDrive, Microsoft Sharepoint)
-- [Feature] Delete previous file versions in Info panel (S3, Backblaze B2, Google Drive, Google Storage, S3)
-- [Feature] View previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, S3, OneDrive, Microsoft Sharepoint)
+- [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, OneDrive, Microsoft Sharepoint)
+- [Feature] Delete previous file versions in Info panel (S3, Backblaze B2, Google Drive, Google Storage)
+- [Feature] View previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, OneDrive, Microsoft Sharepoint)
 - [Feature] View previous versions in browser by choosing View → Show Hidden (Google Drive)
 - [Feature] Support applications installed from Windows Store for editing files (#12802) (Windows)
 - [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
