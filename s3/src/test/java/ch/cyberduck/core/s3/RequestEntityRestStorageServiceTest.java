@@ -26,16 +26,19 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.http.client.methods.HttpUriRequest;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@Category(IntegrationTest.class)
 public class RequestEntityRestStorageServiceTest extends AbstractS3Test {
 
     @Test
