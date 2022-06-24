@@ -25,7 +25,13 @@ public class LifecycleConfiguration {
         return new LifecycleConfiguration();
     }
 
+    /**
+     * Number of days until to transition file to different storage class
+     */
     private Integer transition;
+    /**
+     * Number of days until to permanently delete file
+     */
     private Integer expiration;
 
     public LifecycleConfiguration() {

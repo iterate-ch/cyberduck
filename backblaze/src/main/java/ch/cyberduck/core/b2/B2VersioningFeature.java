@@ -23,9 +23,9 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class B2VersioningFeature implements Versioning {
@@ -40,12 +40,21 @@ public class B2VersioningFeature implements Versioning {
 
     @Override
     public VersioningConfiguration getConfiguration(final Path container) throws BackgroundException {
+        final LifecycleConfiguration configuration = new B2LifecycleFeature(session, fileid).getConfiguration(container);
+        if(configuration.getTransition() == null && configuration.getExpiration() != null && configuration.getExpiration() == 1) {
+            return new VersioningConfiguration(false);
+        }
         return new VersioningConfiguration(true);
     }
 
     @Override
     public void setConfiguration(final Path container, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
-        throw new UnsupportedException();
+        if(configuration.isEnabled()) {
+            new B2LifecycleFeature(session, fileid).setConfiguration(container, LifecycleConfiguration.empty());
+        }
+        else {
+            new B2LifecycleFeature(session, fileid).setConfiguration(container, new LifecycleConfiguration(null, 1));
+        }
     }
 
     @Override
