@@ -143,6 +143,8 @@ public class InfoController extends ToolbarWindowController {
      */
     private final AttributedList<Path> versions = new AttributedList<>();
 
+    private final ReloadCallback reload;
+
     @Outlet
     private NSTextField filenameField;
     @Outlet
@@ -300,10 +302,11 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSView panelVersions;
 
-    public InfoController(final Controller controller, final SessionPool session, final List<Path> files) {
+    public InfoController(final Controller controller, final SessionPool session, final List<Path> files, final ReloadCallback reload) {
         this.controller = controller;
         this.session = session;
         this.files = files;
+        this.reload = new DelegatingReloadCallback(new InternalVersionsReloadCallback(), reload);
     }
 
     @Override
@@ -1192,7 +1195,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionsRevertButtonClicked(final ID sender) {
-        this.versionsRevertButtonClicked(new VersionsReloadCallback());
+        this.versionsRevertButtonClicked(reload);
     }
 
     protected void versionsRevertButtonClicked(final ReloadCallback callback) {
@@ -1210,7 +1213,7 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void versionsDeleteButtonClicked(final ID sender) {
-        this.versionsDeleteButtonClicked(new VersionsReloadCallback());
+        this.versionsDeleteButtonClicked(reload);
     }
 
     protected void versionsDeleteButtonClicked(final ReloadCallback callback) {
@@ -2697,7 +2700,7 @@ public class InfoController extends ToolbarWindowController {
         }
     }
 
-    public class VersionsReloadCallback implements ReloadCallback {
+    public class InternalVersionsReloadCallback implements ReloadCallback {
         @Override
         public void cancel() {
             toggleVersionsSettings(true);
