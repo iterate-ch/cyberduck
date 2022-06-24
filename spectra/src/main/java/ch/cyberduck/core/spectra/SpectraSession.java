@@ -37,6 +37,7 @@ public class SpectraSession extends S3Session {
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
     }
 
     @Override
@@ -44,7 +45,6 @@ public class SpectraSession extends S3Session {
         final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
         final Jets3tProperties configuration = client.getConfiguration();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
-        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         return client;
     }
 

@@ -197,17 +197,23 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
-            final Location.Name location = new S3PathStyleFallbackAdapter<>(this, new BackgroundExceptionCallable<Location.Name>() {
+            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
+            final Location.Name location = new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<Location.Name>() {
                 @Override
                 public Location.Name call() throws BackgroundException {
-                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache())
-                            .getLocation(new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find());
+                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache()).getLocation(home);
                 }
             }).call();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Retrieved region %s", location));
             }
             if(!Location.unknown.equals(location)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set default region to %s determined from %s", location, home));
+                }
+                //
+                host.setProperty("s3.location", location.getIdentifier());
+                // Used when creating canonical string for signature
                 client.getConfiguration().setProperty("storage-service.default-region", location.getIdentifier());
             }
         }
@@ -243,7 +249,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new ListService() {
                 @Override
                 public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(S3Session.this, new BackgroundExceptionCallable<AttributedList<Path>>() {
+                    return new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<AttributedList<Path>>() {
                         @Override
                         public AttributedList<Path> call() throws BackgroundException {
                             return proxy.list(directory, listener);
@@ -272,7 +278,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new Directory<StorageObject>() {
                 @Override
                 public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(S3Session.this, new BackgroundExceptionCallable<Path>() {
+                    return new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<Path>() {
                         @Override
                         public Path call() throws BackgroundException {
                             return proxy.mkdir(folder, status);
@@ -373,7 +379,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new AttributesFinder() {
                 @Override
                 public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-                    return new S3PathStyleFallbackAdapter<>(S3Session.this, new BackgroundExceptionCallable<PathAttributes>() {
+                    return new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<PathAttributes>() {
                         @Override
                         public PathAttributes call() throws BackgroundException {
                             return proxy.find(file, listener);

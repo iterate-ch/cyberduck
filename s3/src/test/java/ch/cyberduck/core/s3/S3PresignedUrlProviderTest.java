@@ -17,6 +17,8 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -100,11 +102,16 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
 
     @Test
     public void testDnsBucketNamingDisabled() {
+        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        final S3Session session = new S3Session(host);
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
-        session.getClient().getConfiguration().setProperty("s3service.disable-dns-buckets", "true");
+        session.getHost().setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final String url = new S3PresignedUrlProvider(session).create(System.getProperties().getProperty("s3.secret"),
-            "test-bucket", "region", "f", "GET", expiry.getTimeInMillis());
+                "test-bucket", "region", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);
         assertEquals("s3.amazonaws.com", URI.create(url).getHost());
         assertEquals("/test-bucket/f", URI.create(url).getPath());

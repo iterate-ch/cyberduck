@@ -72,7 +72,7 @@ public class S3UrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
+        if(new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
         }
         else {
