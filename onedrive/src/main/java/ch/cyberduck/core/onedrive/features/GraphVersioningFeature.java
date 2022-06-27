@@ -31,9 +31,8 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.DriveItemVersion;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GraphVersioningFeature implements Versioning {
 
@@ -84,13 +83,7 @@ public class GraphVersioningFeature implements Versioning {
             final DriveItem.Metadata parentMetadata = item.getMetadata();
             final List<DriveItemVersion> items = Files.versions(item);
             // Versions are returned in descending order (newest to oldest)
-            Collections.reverse(items);
-            for(Iterator<DriveItemVersion> iter = items.iterator(); iter.hasNext(); ) {
-                final DriveItemVersion version = iter.next();
-                if(!iter.hasNext()) {
-                    // Do not include latest version
-                    continue;
-                }
+            for(final DriveItemVersion version : items.stream().skip(1).collect(Collectors.toList())) {
                 versions.add(new Path(file).withAttributes(attributes.toAttributes(parentMetadata, version)));
             }
         }

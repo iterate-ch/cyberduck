@@ -83,7 +83,10 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
         final PathAttributes updated = new B2AttributesFinderFeature(session, fileid).find(test);
         assertNotEquals(initialVersion, updated.getVersionId());
         feature.revert(new Path(test).withAttributes(initialAttributes));
-        assertEquals(2, feature.list(test, new DisabledListProgressListener()).size());
+        final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
+        assertEquals(2, versions.size());
+        assertEquals(status.getResponse().getVersionId(), versions.get(0).attributes().getVersionId());
+        assertEquals(initialVersion, versions.get(1).attributes().getVersionId());
         for(Path version : new B2ListService(session, fileid).list(room, new DisabledListProgressListener())) {
             new B2DeleteFeature(session, fileid).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }

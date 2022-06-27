@@ -48,33 +48,53 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
     public void testRevert() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
-        final byte[] content = RandomUtils.nextBytes(32769);
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
-        status.setExists(true);
-        final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
-        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        assertNotNull(test.attributes().getVersionId());
-        assertNotEquals(initialVersion, test.attributes().getVersionId());
         final SDSVersioningFeature feature = new SDSVersioningFeature(session, nodeid);
-        final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
-        assertEquals(1, versions.size());
-        assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
-        assertTrue(new SDSFindFeature(session, nodeid).find(versions.get(0)));
-        assertEquals(initialVersion, new SDSAttributesFinderFeature(session, nodeid).find(versions.get(0)).getVersionId());
+        {
+            final byte[] content = RandomUtils.nextBytes(32769);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            status.setExists(true);
+            final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
+            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            assertNotNull(out);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            assertNotNull(test.attributes().getVersionId());
+            assertEquals(initialAttributes.getFileId(), test.attributes().getFileId());
+            assertNotEquals(initialVersion, test.attributes().getVersionId());
+            final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
+            assertEquals(1, versions.size());
+            assertEquals(new Path(test).withAttributes(initialAttributes), versions.get(0));
+            assertTrue(new SDSFindFeature(session, nodeid).find(versions.get(0)));
+            assertEquals(initialVersion, new SDSAttributesFinderFeature(session, nodeid).find(versions.get(0)).getVersionId());
+        }
+        {
+            final byte[] content = RandomUtils.nextBytes(2378);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
+            status.setExists(true);
+            final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
+            final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+            assertNotNull(out);
+            new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+            assertNotNull(test.attributes().getVersionId());
+            assertNotEquals(initialVersion, test.attributes().getVersionId());
+            final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
+            assertEquals(2, versions.size());
+            assertEquals(32769, versions.get(0).attributes().getSize());
+            assertEquals(0, versions.get(1).attributes().getSize());
+            assertEquals(initialVersion, new SDSAttributesFinderFeature(session, nodeid).find(versions.get(1)).getVersionId());
+            assertTrue(new SDSFindFeature(session, nodeid).find(versions.get(0)));
+            assertTrue(new SDSFindFeature(session, nodeid).find(versions.get(1)));
+        }
         feature.revert(new Path(test).withAttributes(initialAttributes));
         final Path reverted = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).find(new DefaultPathPredicate(new Path(test).withAttributes(initialAttributes)));
         assertEquals(initialVersion, reverted.attributes().getVersionId());
         // Restored file is no longer in list of deleted items
-        assertEquals(1, feature.list(reverted, new DisabledListProgressListener()).size());
-        assertEquals(new Path(test).withAttributes(status.getResponse()), feature.list(reverted, new DisabledListProgressListener()).get(0));
+        assertEquals(2, feature.list(reverted, new DisabledListProgressListener()).size());
         // Permanently delete trashed version
         new SDSDeleteFeature(session, nodeid).delete(feature.list(test, new DisabledListProgressListener()).toList(), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());

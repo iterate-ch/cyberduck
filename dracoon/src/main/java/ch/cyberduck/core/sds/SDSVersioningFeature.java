@@ -15,7 +15,12 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
@@ -25,6 +30,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeVersionsList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class SDSVersioningFeature implements Versioning {
@@ -78,7 +84,7 @@ public class SDSVersioningFeature implements Versioning {
             do {
                 nodes = new NodesApi(session.getClient()).requestDeletedNodeVersions(
                         Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())),
-                        file.isFile() ? "file" : "folder", file.getName(), StringUtils.EMPTY, null,
+                        file.isFile() ? "file" : "folder", file.getName(), StringUtils.EMPTY, "updatedAt:desc",
                         offset, chunksize, null);
                 for(DeletedNode item : nodes.getItems()) {
                     versions.add(new Path(file.getParent(), file.getName(), file.getType(),

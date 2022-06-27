@@ -81,18 +81,22 @@ public class SharepointVersioningFeatureTest extends AbstractSharepointTest {
         final StatusOutputStream<DriveItem.Metadata> out = writer.write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNull(new GraphAttributesFinderFeature(session, fileid).toAttributes(out.getStatus()).getVersionId());
-        final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
-        assertEquals(1, versions.size());
-        assertEquals(213, versions.get(0).attributes().getSize(), 0L);
-        final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(test);
-        assertNotEquals(initialAttributes.getETag(), updated.getETag());
-        feature.revert(versions.get(0));
-        assertEquals(2, feature.list(test, new DisabledListProgressListener()).size());
+        {
+            final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
+            assertEquals(1, versions.size());
+            assertEquals(213, versions.get(0).attributes().getSize(), 0L);
+            feature.revert(versions.get(0));
+        }
         // Delete versions permanently
-        final List<Path> files = feature.list(test, new DisabledListProgressListener()).toList();
-        for(Path f : files) {
-            assertEquals(test.attributes().getFileId(), f.attributes().getFileId());
-            assertFalse(new GraphDeleteFeature(session, fileid).isSupported(f));
+        {
+            final List<Path> versions = feature.list(test, new DisabledListProgressListener()).toList();
+            assertEquals(2, versions.size());
+            assertEquals(32769L, versions.get(0).attributes().getSize());
+            assertEquals(213L, versions.get(1).attributes().getSize(), 0L);
+            for(Path f : versions) {
+                assertEquals(test.attributes().getFileId(), f.attributes().getFileId());
+                assertFalse(new GraphDeleteFeature(session, fileid).isSupported(f));
+            }
         }
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
