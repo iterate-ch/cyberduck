@@ -18,8 +18,10 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -28,6 +30,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
@@ -76,7 +79,13 @@ public class FolderController extends FileController {
             regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
             regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
                 regionPopup.addItemWithTitle(region.toString());
-                regionPopup.itemWithTitle(region.toString()).setRepresentedObject(region.getIdentifier());
+                final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
+                item.setRepresentedObject(region.getIdentifier());
+                if(!StringUtils.equals(region.getIdentifier(), region.toString())) {
+                    final NSMutableAttributedString description = NSMutableAttributedString.create(item.title());
+                    description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", region.getIdentifier()), MENU_HELP_FONT_ATTRIBUTES));
+                    item.setAttributedTitle(description);
+                }
                 if(region.equals(defaultRegion)) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }

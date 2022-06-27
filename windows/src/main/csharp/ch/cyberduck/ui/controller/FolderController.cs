@@ -45,7 +45,16 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 view.RegionsEnabled = true;
                 IList<KeyValuePair<string, string>> r = regions.OrderBy(name => name.ToString())
-                    .Select(l => new KeyValuePair<string, string>(l.getIdentifier(), l.ToString())).ToList();
+                    .Select(l =>
+                    {
+                        var key = l.getIdentifier();
+                        var display = l.toString();
+                        if (!string.Equals(key, display))
+                        {
+                            return new(key, string.Format("{0} - {1}", display, key));
+                        }
+                        return new KeyValuePair<string, string>(key, display);
+                    }).ToList();
                 view.PopulateRegions(r);
 
                 if (regions.Contains(defaultRegion))
@@ -104,7 +113,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _controller.ShowHiddenFiles = true;
                     }
-                    List<Path> folders = new List<Path>() {_folder};
+                    List<Path> folders = new List<Path>() { _folder };
                     _controller.Reload(_controller.Workdir, folders, folders);
                 }
             }
