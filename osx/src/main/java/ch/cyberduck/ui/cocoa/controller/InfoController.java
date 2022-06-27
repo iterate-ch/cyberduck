@@ -1123,19 +1123,19 @@ public class InfoController extends ToolbarWindowController {
                     final String identifier = tableColumn.identifier();
                     if(identifier.equals(VersionsColumn.TIMESTAMP.name())) {
                         final String timestamp = UserDateFormatterFactory.get().getMediumFormat(versions.get(row.intValue()).attributes().getModificationDate());
-                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(timestamp) ? timestamp : StringUtils.EMPTY);
+                        return NSAttributedString.attributedStringWithAttributes(StringUtils.isNotEmpty(timestamp) ? timestamp : StringUtils.EMPTY, TRUNCATE_MIDDLE_ATTRIBUTES);
                     }
                     if(identifier.equals(VersionsColumn.CHECKSUM.name())) {
                         final Checksum checksum = versions.get(row.intValue()).attributes().getChecksum();
-                        return NSAttributedString.attributedString(!Checksum.NONE.equals(checksum) ? checksum.hash : LocaleFactory.localizedString("None"));
+                        return NSAttributedString.attributedStringWithAttributes(!Checksum.NONE.equals(checksum) ? checksum.hash : LocaleFactory.localizedString("None"), TRUNCATE_MIDDLE_ATTRIBUTES);
                     }
                     if(identifier.equals(VersionsColumn.SIZE.name())) {
                         final long size = versions.get(row.intValue()).attributes().getSize();
-                        return NSAttributedString.attributedString(SizeFormatterFactory.get().format(size));
+                        return NSAttributedString.attributedStringWithAttributes(SizeFormatterFactory.get().format(size), TRUNCATE_MIDDLE_ATTRIBUTES);
                     }
                     if(identifier.equals(VersionsColumn.OWNER.name())) {
                         final String owner = versions.get(row.intValue()).attributes().getOwner();
-                        return NSAttributedString.attributedString(StringUtils.isBlank(owner) ? LocaleFactory.localizedString("Unknown") : owner);
+                        return NSAttributedString.attributedStringWithAttributes(StringUtils.isBlank(owner) ? LocaleFactory.localizedString("Unknown") : owner, TRUNCATE_MIDDLE_ATTRIBUTES);
                     }
                 }
                 return null;
