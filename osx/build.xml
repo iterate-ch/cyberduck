@@ -100,98 +100,16 @@
     </target>
 
     <target name="notarize">
-        <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy"/>
-        <groovy>
-            <arg line="${env.NOTARIZATION_USER} ${env.NOTARIZATION_PW}"/>
-            <![CDATA[
-                    class PlistUtility {
-                        static parseXmlPlistText(String text) {
-                            def parser = new XmlParser(false, false, true)
-                            parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
-
-                            def xml = parser.parseText(text)
-
-                            assert xml.name() == "plist"
-
-                            def parseNode
-                            parseNode = { node ->
-                                def childNodes = node."*"
-                                switch (node.name()) {
-                                    case "dict":
-                                        def dict = [:]
-                                        for (int i = 0; i < childNodes.size(); i += 2) {
-                                            assert childNodes[i].name() == "key"
-                                            dict[childNodes[i].text().trim()] = parseNode(childNodes[i + 1])
-                                        }
-                                        return dict
-                                    case "array":
-                                        return childNodes.collect(parseNode)
-                                    case "string":
-                                        return node.text()
-                                    case "integer":
-                                        return Integer.parseInt(node.text())
-                                    case "date":
-                                        return Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", node.text())
-                                    case "false":
-                                        return false
-                                    case "true":
-                                        return true
-                                    default:
-                                        assert false
-                                }
-                            }
-                            return parseNode(xml."*"[0])
-                        }
-                    }
-
-                    ant.echo "Start notarizing"
-                    def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['notarize.archive.upload']} -t osx -u ${args[0]} -p ${args[1]}"
-                    ant.echo "$notarize"
-                    def nproc = notarize.execute()
-                    nproc.waitFor()
-                    if (nproc.exitValue() != 0) {
-                        ant.fail "Error notarizing (${nproc.exitValue()}) : ${nproc.err.text} - ${nproc.in.text}"
-                    }
-                    def plist = PlistUtility.parseXmlPlistText(nproc.in.text)
-                    def requestId = plist['notarization-upload']['RequestUUID']
-                    ant.echo "RequestUUID is ${requestId}"
-
-                    Thread.sleep(30000)
-                    ant.echo "Start polling status"
-                    def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
-                    ant.echo "$check"
-                    def exit = false
-                    def trials = 60
-                    def status
-                    while (!exit){
-                        def cproc = check.execute()
-                        cproc.waitFor()
-                        if (cproc.exitValue() != 0) {
-                            ant.fail "Error notarizing (${cproc.exitValue()}) : ${cproc.err.text} - ${cproc.in.text}"
-                        }
-                        plist = PlistUtility.parseXmlPlistText(cproc.in.text)
-                        status = plist['notarization-info']['Status']
-                        ant.echo "Current status is '${status}'"
-                        exit = status != 'in progress'
-                        if (--trials == 0) {
-                            ant.fail "Number of trials exceeded - failing."
-                        }
-                        Thread.sleep(10000)
-                    }
-                    if (status == 'success') {
-                        ant.echo "Staple ticket"
-                        def stapler = "/usr/bin/xcrun stapler staple -v ${properties['notarize.archive.staple']}"
-                        def sproc = stapler.execute()
-                        sproc.waitFor()
-                        if (sproc.exitValue() != 0) {
-                            ant.fail "Error stapling: ${sproc.err.text}"
-                        }
-                        ant.echo "Notarization done."
-                    } else {
-                        ant.fail "Notarization failed with status ${status}"
-                    }
-                ]]>
-        </groovy>
+        <echo message="Start notarizing '${notarize.archive.upload}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true"
+              resultproperty="exitcode_notarytool" output="result.plist" error="error.log">
+            <arg line="notarytool submit --apple-id '${env.NOTARIZATION_USER}' --password '${env.NOTARIZATION_PW}' --team-id G69SCX94XU --verbose '${notarize.archive.upload}' --wait --timeout 2h --output-format plist"/>
+        </exec>
+        <echo message="Start stapling '${notarize.archive.staple}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="stapler staple -v '${notarize.archive.staple}'"/>
+        </exec>
+        <echo message="Stapling was successful"/>
     </target>
 
     <target name="package" depends="version">
@@ -255,10 +173,10 @@
         </replace>
         <echo message="Building ${build.deploy}/${bundle.archive.pkg}"/>
         <echo
-            message="Code signing ${app.bundle} with certificate ${installer.certificate} from ${installer.keychain}"/>
+                message="Code signing ${app.bundle} with certificate ${installer.certificate} from ${installer.keychain}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
             <arg
-                line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>
+                    line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>
         </exec>
         <antcall target="notarize" unless:true="${skipNotarize}">
             <param name="notarize.archive.upload" value="${build.deploy}/${bundle.archive.pkg}"/>
