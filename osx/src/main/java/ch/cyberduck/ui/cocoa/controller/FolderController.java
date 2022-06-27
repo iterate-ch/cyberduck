@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
@@ -80,9 +81,11 @@ public class FolderController extends FileController {
                 regionPopup.addItemWithTitle(region.toString());
                 final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
                 item.setRepresentedObject(region.getIdentifier());
-                final NSMutableAttributedString description = NSMutableAttributedString.create(region.toString());
-                description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", region.getIdentifier()), MENU_HELP_FONT_ATTRIBUTES));
-                item.setAttributedTitle(description);
+                if(!StringUtils.equals(region.getIdentifier(), region.toString())) {
+                    final NSMutableAttributedString description = NSMutableAttributedString.create(item.title());
+                    description.appendAttributedString(NSMutableAttributedString.create(String.format("\n%s", region.getIdentifier()), MENU_HELP_FONT_ATTRIBUTES));
+                    item.setAttributedTitle(description);
+                }
                 if(region.equals(defaultRegion)) {
                     regionPopup.selectItem(regionPopup.lastItem());
                 }
