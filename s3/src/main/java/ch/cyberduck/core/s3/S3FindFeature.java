@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Find;
 
 import org.jets3t.service.ServiceException;
@@ -78,6 +79,10 @@ public class S3FindFeature implements Find {
         }
         catch(NotfoundException e) {
             return false;
+        }
+        catch(RetriableAccessDeniedException e) {
+            // Must fail with server error
+            throw e;
         }
         catch(AccessDeniedException e) {
             // Object is inaccessible to current user, but does exist.
