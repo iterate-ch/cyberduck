@@ -82,7 +82,11 @@
             target="_blank" href="https://trac.cyberduck.io/ticket/13360">#13360</a>) (Google Drive, Google Storage)
     </li>
     <li><span class="label label-success">Feature</span> Add menu item to request files for protocols that support
-        upload share links (#13426) (Box, Nextcloud, ownCloud)
+        upload share links (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/13426">#13426</a>) (Box, Nextcloud, ownCloud)
+    </li>
+    <li><span class="label label-success">Feature</span> Include region identifier in region selection when creating new
+        bucket (S3) (#13501)
     </li>
     <li><span class="label label-warning">Bugfix</span> Do not attempt to set ACL on files uploaded to bucket with
         owner controls set that disallows ACLs (S3) (<a
@@ -113,6 +117,17 @@
     <li><span class="label label-warning">Bugfix</span> Fix error reporting to display exact parser failure for
         unexpected response contents (S3) (<a
                 target="_blank" href="https://trac.cyberduck.io/ticket/13383">#13383</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Invalid hostname used when completing multipart upload when
+        connecting to single bucket (S3)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Unable to delete object version created prior enabling file
+        versioning for bucket (S3) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/13507">#13507</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Bucket versioning checkbox should reflect lifecycle
+        configuration (Backblaze B2) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/13505">#13505</a>)
     </li>
 </ul>
 

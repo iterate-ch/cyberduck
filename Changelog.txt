@@ -10,6 +10,7 @@ https://cyberduck.io/
 - [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
 - [Feature] Migrate OAuth out-of-band flow to an alternative method (#13360) (Google Drive, Google Storage)
 - [Feature] Add menu item to request files for protocols that support upload share links (#13426) (Box, Nextcloud, ownCloud)
+- [Feature] Include region identifier in region selection when creating new bucket (S3) (#13501)
 - [Bugfix] Do not attempt to set ACL on files uploaded to bucket with owner controls set that disallows ACLs (S3) (#13386)
 - [Bugfix] Register custom DNS resolver to handle IPv6 preference (#13399)
 - [Bugfix] Failure opening vault (Cryptomator, FTP) (#13375)
@@ -19,6 +20,9 @@ https://cyberduck.io/
 - [Bugfix] Delete multiple files with batch request (DRACOON)
 - [Bugfix] RequestTimeTooSkewed error with computer date settings not using Gregorian calendar (S3) (#13454)
 - [Bugfix] Fix error reporting to display exact parser failure for unexpected response contents (S3) (#13383)
+- [Bugfix] Invalid hostname used when completing multipart upload when connecting to single bucket (S3)
+- [Bugfix] Unable to delete object version created prior enabling file versioning for bucket (S3) (#13507)
+- [Bugfix] Bucket versioning checkbox should reflect lifecycle configuration (Backblaze B2) (#13505)
 
 8.3.3
 - [Bugfix] Failing transfers with multipe files (FTP) (#13322)
