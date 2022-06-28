@@ -61,6 +61,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
     public void testList() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        file.attributes().withVersionId("null");
         final AttributedList<Path> list = new S3VersionedObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
         final Path lookup = list.find(new DefaultPathPredicate(file));
         assertNotNull(lookup);
