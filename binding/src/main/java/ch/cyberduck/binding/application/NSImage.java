@@ -71,8 +71,16 @@ public abstract class NSImage extends NSObject implements NSCopying {
         return CLASS.imageNamed(name);
     }
 
-    public static NSImage imageWithSymbol(final String symbol) {
-        return CLASS.imageWithSystemSymbolName_accessibilityDescription(symbol, null);
+    /**
+     * Creates a symbol image with the system symbol name and accessibility description you specify.
+     * <p>
+     * macOS 11.0+
+     *
+     * @param symbolName The name of the system symbol image.
+     * @return A symbol image based on the name you specify; otherwise nil if the method couldn’t find a suitable image.
+     */
+    public static NSImage imageWithSymbol(final String symbolName) {
+        return CLASS.imageWithSystemSymbolName_accessibilityDescription(symbolName, null);
     }
 
     public static NSImage imageWithData(NSData data) {

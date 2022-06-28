@@ -20,6 +20,7 @@ package ch.cyberduck.core.resources;
 import ch.cyberduck.binding.application.NSGraphics;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -62,7 +63,9 @@ public class NSImageIconCache implements IconCache<NSImage> {
     private NSImage load(final String name, final Integer size) {
         NSImage cached = NSImage.imageNamed(toName(name, size));
         if(null == cached) {
-            cached = NSImage.imageWithSymbol(name);
+            if(!Factory.Platform.osversion.matches("10\\.(12|13|14|15).*")) {
+                cached = NSImage.imageWithSymbol(name);
+            }
             if(null == cached) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("No cached image for %s", name));
