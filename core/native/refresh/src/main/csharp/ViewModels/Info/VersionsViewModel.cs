@@ -8,7 +8,6 @@ using ch.cyberduck.core.worker;
 using ch.cyberduck.ui.quicklook;
 using Ch.Cyberduck.Core.Refresh.Models;
 using DynamicData;
-using DynamicData.Binding;
 using java.util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -25,7 +24,9 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
     public class VersionsViewModel : ReactiveObject
     {
         private readonly ObservableAsPropertyHelper<VersionViewModel> selectedVersionProperty;
+
         private readonly SourceList<VersionModel> versions = new();
+
         private readonly IObservableCache<VersionViewModel, VersionModel> viewModelCache;
 
         public VersionsViewModel(Controller controller, SessionPool session)
@@ -38,7 +39,6 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             viewModelCache = versions.Connect()
                 .AddKey(x => x)
                 .Transform(x => new VersionViewModel(x))
-                .SortBy(x => x.Model.Timestamp, SortDirection.Descending)
                 .Bind(Versions)
                 .AsObservableCache();
 

@@ -76,16 +76,18 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
         final PathAttributes updated = new DropboxAttributesFinderFeature(session).find(test.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(out.getStatus())));
         assertNotEquals(initialVersion, updated.getVersionId());
         feature.revert(new Path(test).withAttributes(initialAttributes));
-        assertEquals(2, feature.list(test, new DisabledListProgressListener()).size());
         // Delete versions permanently
         try {
-            final List<Path> files = feature.list(test, new DisabledListProgressListener()).toList();
-            for(Path d : files) {
+            final List<Path> versions = feature.list(new Path(test).withAttributes(new DropboxAttributesFinderFeature(session).find(test)), new DisabledListProgressListener()).toList();
+            assertEquals(2, versions.size());
+            assertEquals(status.getResponse().getVersionId(), versions.get(0).attributes().getVersionId());
+            assertEquals(initialVersion, versions.get(1).attributes().getVersionId());
+            for(Path d : versions) {
                 assertFalse(new DropboxThresholdDeleteFeature(session).isSupported(d));
                 assertFalse(new DropboxBatchDeleteFeature(session).isSupported(d));
                 assertFalse(new DropboxDeleteFeature(session).isSupported(d));
             }
-            new DropboxDeleteFeature(session).delete(files, new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            new DropboxDeleteFeature(session).delete(versions, new DisabledPasswordCallback(), new Delete.DisabledCallback());
             fail();
         }
         catch(InteroperabilityException e) {

@@ -123,12 +123,14 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         feature.revert(new Path(test).withAttributes(initialAttributes));
         final PathAttributes reverted = new S3AttributesFinderFeature(session, acl).find(new Path(test).withAttributes(PathAttributes.EMPTY));
         assertNotEquals(initialVersion, reverted.getVersionId());
+        assertEquals(test.attributes().getSize(), reverted.getSize());
         {
             final AttributedList<Path> versions = feature.list(test, new DisabledListProgressListener());
             assertFalse(versions.isEmpty());
             assertEquals(2, versions.size());
-            assertEquals(test.attributes().getSize(), reverted.getSize());
             assertEquals(content.length, versions.get(0).attributes().getSize());
+            assertEquals(updated.getVersionId(), versions.get(0).attributes().getVersionId());
+            assertEquals(initialVersion, versions.get(1).attributes().getVersionId());
         }
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(directory, test, ignored), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

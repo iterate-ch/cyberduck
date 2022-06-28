@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,7 +96,7 @@ public class DriveVersioningFeature implements Versioning {
                 page = list.getNextPageToken();
             }
             while(page != null);
-            return versions;
+            return versions.filter(new TimestampComparator(false));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);

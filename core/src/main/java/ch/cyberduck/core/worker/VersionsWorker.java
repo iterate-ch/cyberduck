@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +51,7 @@ public class VersionsWorker extends Worker<AttributedList<Path>> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
-        return feature.list(file, listener).filter(new TimestampComparator(false));
+        return feature.list(file, listener);
     }
 
     @Override

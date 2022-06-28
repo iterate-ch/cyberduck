@@ -60,11 +60,11 @@ public interface Versioning {
     boolean isRevertable(Path file);
 
     /**
-     * Find all versions for path
+     * Find all versions for path. Should not include latest version but only previous.
      *
      * @param file     File on server
      * @param listener Progress notification callback
-     * @return List of versions or singleton list if no other versions found on server
+     * @return List of versions or singleton list if no other versions found on server. List must be sorted with the newest version first
      * @throws BackgroundException Failure reading versions from server
      */
     AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
