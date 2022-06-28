@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.4.1
+- [Bugfix] Crash running on versions prior macOS 11 (#13521)
+
 8.4.0
 - [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, OneDrive, Microsoft Sharepoint)
 - [Feature] Delete previous file versions in Info panel (S3, Backblaze B2, Google Drive, Google Storage)
