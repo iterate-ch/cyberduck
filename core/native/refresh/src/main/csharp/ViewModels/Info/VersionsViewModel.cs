@@ -24,9 +24,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
     public class VersionsViewModel : ReactiveObject
     {
         private readonly ObservableAsPropertyHelper<VersionViewModel> selectedVersionProperty;
-
         private readonly SourceList<VersionModel> versions = new();
-
         private readonly IObservableCache<VersionViewModel, VersionModel> viewModelCache;
 
         public VersionsViewModel(Controller controller, SessionPool session)
@@ -37,9 +35,9 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 
             /* setup tracking */
             viewModelCache = versions.Connect()
-                .AddKey(x => x)
                 .Transform(x => new VersionViewModel(x))
                 .Bind(Versions)
+                .AddKey(x => x.Model)
                 .AsObservableCache();
 
             this.WhenAnyValue(x => x.SelectedVersionValue)
