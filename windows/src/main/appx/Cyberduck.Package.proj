@@ -18,6 +18,8 @@
     <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
     <VFS>$(PackageFiles)VFS/</VFS>
     <PackageLayout>$(PackageFiles)</PackageLayout>
+
+    <Version Condition=" '$(BuildVersion)'!='' ">$(BuildVersion).0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

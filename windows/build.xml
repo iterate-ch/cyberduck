@@ -60,7 +60,7 @@
             <property name="BuildProjectReferences" value="false" />
             <property name="Configuration" value="${msbuild.configuration}" />
             <property name="Copyright" value="${copyright}" />
-            <property name="Version" value="${version}.${revision}" />
+            <property name="Version" value="${normalized.version}.${revision}" />
         </msbuild>
     </target>
 
@@ -91,7 +91,8 @@
             <property name="Copyright" value="${copyright}" />
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="SignOutput" value="${msbuild.sign}" />
-            <property name="Version" value="${normalized.version}.${revision}" />
+            <property name="BuildVersion" value="${normalized.version}" />
+            <property name="Revision" value="${revision}" />
         </msbuild>
     </target>
 
