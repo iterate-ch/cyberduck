@@ -22,4 +22,8 @@
 
     <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(BasePath)../))" />
 
+    <PropertyGroup Condition=" '$(BuildVersion)'!='' And '$(Revision)'!='' ">
+        <Version>$(BuildVersion).$(Revision)</Version>
+    </PropertyGroup>
+
 </Project>
