@@ -19,14 +19,18 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -56,11 +60,43 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
     public void testList() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus());
-        final AttributedList<Path> list = new StoregateListService(session, nodeid).list(room, new DisabledListProgressListener());
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        status.setHidden(true);
+        final Path file = new StoregateTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        final AttributedList<Path> list = new StoregateListService(session, nodeid).list(folder, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertTrue(list.contains(file));
-        assertSame(room, list.get(file).getParent());
+        assertSame(folder, list.get(file).getParent());
+        assertTrue(list.get(file).attributes().isHidden());
+        assertSame(folder, list.get(file).getParent());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListWithHiddenFile() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus();
+        status.setHidden(true);
+        new StoregateTouchFeature(session, nodeid).touch(file, status);
+        final AttributedList<Path> list = new StoregateListService(session, nodeid).list(folder, new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path file) {
+                if(file.attributes().isHidden()) {
+                    list.remove(index);
+                }
+            }
+        });
+        assertNotSame(AttributedList.emptyList(), list);
+        assertTrue(list.isEmpty());
+        new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

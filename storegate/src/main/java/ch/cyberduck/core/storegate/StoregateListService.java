@@ -67,6 +67,7 @@ public class StoregateListService implements ListService {
                 final AttributedList<Path> children = new AttributedList<>();
                 final StoregateAttributesFinderFeature attributes = new StoregateAttributesFinderFeature(session, fileid);
                 int pageIndex = 0;
+                int fileCount = 0;
                 FileContents files;
                 do {
                     files = new FilesApi(this.session.getClient()).filesGet(URIEncoder.encode(fileid.getPrefixedPath(directory)),
@@ -81,14 +82,15 @@ public class StoregateListService implements ListService {
                     for(File f : files.getFiles()) {
                         final PathAttributes attrs = attributes.toAttributes(f);
                         final EnumSet<Path.Type> type = (f.getFlags() & 1) == 1 ?
-                            EnumSet.of(Path.Type.directory) :
-                            EnumSet.of(Path.Type.file);
+                                EnumSet.of(Path.Type.directory) :
+                                EnumSet.of(Path.Type.file);
                         children.add(new Path(directory, f.getName(), type, attrs));
                         listener.chunk(directory, children);
                     }
                     pageIndex++;
+                    fileCount += files.getFiles().size();
                 }
-                while(children.size() < files.getTotalRowCount());
+                while(fileCount < files.getTotalRowCount());
                 return children;
             }
             catch(ApiException e) {
