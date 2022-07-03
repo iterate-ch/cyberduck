@@ -36,6 +36,7 @@ import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.CustomActions;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
@@ -134,6 +135,9 @@ public class CteraSession extends DAVSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == Lock.class) {
             return null;
+        }
+        if(type == CustomActions.class) {
+            return (T) new CteraCustomActions(this);
         }
         return super._getFeature(type);
     }
