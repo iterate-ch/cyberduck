@@ -38,7 +38,7 @@
                 <DataGridTextColumn Header="{xaml:Text 'Size', Table=Info}"
                                     Binding="{Binding Size}"
                                     Width="*" />
-                <DataGridTextColumn Header="{xaml:Text 'Changed By', Table=Info}"
+                <DataGridTextColumn Header="{xaml:Text 'Owner', Table=Info}"
                                     Binding="{Binding Owner}"
                                     Width="*" />
             </DataGrid.Columns>
