@@ -16,6 +16,7 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.ApplescriptTerminalService;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainCertificateStore;
 import ch.cyberduck.core.KeychainPasswordStore;
@@ -45,6 +46,7 @@ import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
+import ch.cyberduck.core.urlhandler.WorkspaceSchemeHandler;
 import ch.cyberduck.core.webloc.WeblocFileWriter;
 
 public class ApplicationPreferences extends UserDefaultsPreferences {
@@ -84,7 +86,13 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.notification.class", NotificationCenter.class.getName());
         this.setDefault("factory.iconservice.class", WorkspaceIconService.class.getName());
         this.setDefault("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
-        this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
+        if(Factory.Platform.osversion.matches("10\\.(12|13|14|15|16).*")) {
+            this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
+        }
+        else {
+            // macOS 12 and later
+            this.setDefault("factory.schemehandler.class", WorkspaceSchemeHandler.class.getName());
+        }
         this.setDefault("factory.iconcache.class", NSImageIconCache.class.getName());
         this.setDefault("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
         if(Sandbox.get().isSandboxed()) {
