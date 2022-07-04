@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -77,6 +78,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
+        assertEquals(Checksum.NONE, attributes.getChecksum());
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertNotNull(attributes.getCustom().get(SDSAttributesFinderFeature.KEY_CLASSIFICATION));

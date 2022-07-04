@@ -23,7 +23,9 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.AbstractSDSTest;
@@ -63,7 +65,6 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class TripleCryptReadFeatureTest extends AbstractSDSTest {
 
-
     @Test
     public void testPartialRead() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
@@ -86,7 +87,9 @@ public class TripleCryptReadFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
+        final PathAttributes attr = new SDSAttributesFinderFeature(session, nodeid).find(test);
+        assertEquals(content.length, attr.getSize());
+        assertEquals(Checksum.NONE, attr.getChecksum());
         final byte[] compare = new byte[content.length - 1000];
         final InputStream stream = new TripleCryptReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new DisabledConnectionCallback() {
             @Override
