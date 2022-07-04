@@ -15,6 +15,7 @@ package ch.cyberduck.core.urlhandler;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
@@ -38,9 +39,9 @@ public class WorkspaceSchemeHandlerTest {
 
     @Test
     public void testSetDefaultHandler() {
-        final Application application = new Application("ch.sudo.cyberduck");
+        final Application application = new Application("com.apple.finder");
         final WorkspaceSchemeHandler handler = new WorkspaceSchemeHandler(new LaunchServicesApplicationFinder());
-        final String scheme = "com.googleusercontent.apps.996125414232-30v0nuldk4p54spra0k6gg3b8c8c9kib";
+        final String scheme = new AlphanumericRandomStringService().random();
         handler.setDefaultHandler(application, Collections.singletonList(scheme));
         assertTrue(handler.getAllHandlers(scheme).contains(application));
         assertEquals(application, handler.getDefaultHandler(scheme));
