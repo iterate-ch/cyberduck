@@ -86,7 +86,7 @@ public class SwiftObjectListService implements ListService {
                             continue;
                         }
                     }
-                    final EnumSet<Path.Type> types = "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                    final EnumSet<Path.Type> types = SwiftDirectoryFeature.DIRECTORY_MIME_TYPE.equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     attr.setOwner(container.attributes().getOwner());
                     attr.setRegion(container.attributes().getRegion());
                     children.add(new Path(directory, name, types, attr));

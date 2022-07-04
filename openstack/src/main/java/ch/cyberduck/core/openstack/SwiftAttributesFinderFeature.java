@@ -112,13 +112,15 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                 throw e;
             }
             if(file.isDirectory()) {
-                if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
-                    throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                if(!StringUtils.equals(SwiftDirectoryFeature.DIRECTORY_MIME_TYPE, metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("File %s has set MIME type %s but expected %s",
+                            file.getAbsolute(), metadata.getMimeType(), SwiftDirectoryFeature.DIRECTORY_MIME_TYPE));
                 }
             }
             if(file.isFile()) {
-                if(StringUtils.equals("application/directory", metadata.getMimeType())) {
-                    throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                if(StringUtils.equals(SwiftDirectoryFeature.DIRECTORY_MIME_TYPE, metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("File %s has set MIME type %s",
+                            file.getAbsolute(), metadata.getMimeType()));
                 }
             }
             return this.toAttributes(metadata);

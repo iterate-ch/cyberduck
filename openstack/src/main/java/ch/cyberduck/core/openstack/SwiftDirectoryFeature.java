@@ -36,6 +36,8 @@ import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftDirectoryFeature implements Directory<StorageObject> {
 
+    public static final String DIRECTORY_MIME_TYPE = "application/directory";
+
     private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;
     private final SwiftRegionService regionService;
@@ -66,7 +68,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).find(folder));
             }
             else {
-                status.setMime("application/directory");
+                status.setMime(DIRECTORY_MIME_TYPE);
                 status.setLength(0L);
                 new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
                 return folder.withAttributes(status.getResponse());

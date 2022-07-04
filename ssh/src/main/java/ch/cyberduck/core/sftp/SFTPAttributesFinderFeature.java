@@ -62,12 +62,14 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
                 case REGULAR:
                 case SYMLINK:
                     if(!file.getType().contains(Path.Type.file)) {
-                        throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                        throw new NotfoundException(String.format("File %s is of type %s but expected %s",
+                                file.getAbsolute(), stat.getType(), file.getType()));
                     }
                     break;
                 case DIRECTORY:
                     if(!file.getType().contains(Path.Type.directory)) {
-                        throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                        throw new NotfoundException(String.format("File %s is of type %s but expected %s",
+                                file.getAbsolute(), stat.getType(), file.getType()));
                     }
                     break;
             }

@@ -69,12 +69,14 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 for(final DavResource resource : this.list(file)) {
                     if(resource.isDirectory()) {
                         if(!file.getType().contains(Path.Type.directory)) {
-                            throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                            throw new NotfoundException(String.format("File %s has set MIME type %s",
+                                    file.getAbsolute(), DavResource.HTTPD_UNIX_DIRECTORY_CONTENT_TYPE));
                         }
                     }
                     else {
                         if(!file.getType().contains(Path.Type.file)) {
-                            throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                            throw new NotfoundException(String.format("File %s has set MIME type %s",
+                                    file.getAbsolute(), resource.getContentType()));
                         }
                     }
                     return this.toAttributes(resource);
@@ -89,7 +91,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                     // PROPFIND Method not allowed
                     log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
                     final Map<String, String> headers = session.getClient().execute(
-                        new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
+                            new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
                     final PathAttributes attributes = new PathAttributes();
                     try {
                         attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
@@ -145,7 +147,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                             if(server.equals(resource.getModified())) {
                                 // file not touched with a different client
                                 attributes.setModificationDate(
-                                    rfc1123.parse(value).getTime());
+                                        rfc1123.parse(value).getTime());
                             }
                             else {
                                 // file touched with a different client, use default modified date from server
@@ -165,7 +167,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                     }
                     else {
                         attributes.setModificationDate(
-                            rfc1123.parse(value).getTime());
+                                rfc1123.parse(value).getTime());
                     }
                 }
                 catch(InvalidDateException e) {

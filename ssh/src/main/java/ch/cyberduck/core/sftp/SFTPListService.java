@@ -65,14 +65,16 @@ public class SFTPListService implements ListService {
             })) {
                 final PathAttributes attr = attributes.toAttributes(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                if(f.getAttributes().getType().equals(FileMode.Type.DIRECTORY)) {
-                    type.add(Path.Type.directory);
-                }
-                if(f.getAttributes().getType().equals(FileMode.Type.REGULAR)) {
-                    type.add(Path.Type.file);
-                }
-                if(f.getAttributes().getType().equals(FileMode.Type.SYMLINK)) {
-                    type.add(Path.Type.symboliclink);
+                switch(f.getAttributes().getType()) {
+                    case DIRECTORY:
+                        type.add(Path.Type.directory);
+                        break;
+                    case SYMLINK:
+                        type.add(Path.Type.symboliclink);
+                        break;
+                    default:
+                        type.add(Path.Type.file);
+                        break;
                 }
                 final Path file = new Path(directory, f.getName(), type, attr);
                 if(this.post(file)) {
