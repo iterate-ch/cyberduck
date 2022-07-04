@@ -72,14 +72,14 @@ public class NSImageIconCache implements IconCache<NSImage> {
                 }
             }
             else {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Loaded symbol image %s", cached));
+                if(log.isTraceEnabled()) {
+                    log.trace(String.format("Loaded symbol image %s", cached));
                 }
             }
         }
         else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Loaded image %s", cached));
+            if(log.isTraceEnabled()) {
+                log.trace(String.format("Loaded image %s", cached));
             }
         }
         return cached;
@@ -298,7 +298,9 @@ public class NSImageIconCache implements IconCache<NSImage> {
             // are automatically marked as template images
         }
         if(null == width || null == height) {
-            log.debug(String.format("Return default size for %s", image.name()));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return default size for %s", image.name()));
+            }
             return image;
         }
         // Make a copy of original image. Otherwise might resize other references already displayed
