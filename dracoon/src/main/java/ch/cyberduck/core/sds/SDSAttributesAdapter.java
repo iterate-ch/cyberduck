@@ -47,7 +47,9 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
-        attributes.setChecksum(Checksum.parse(node.getHash()));
+        if(!node.isIsEncrypted()) {
+            attributes.setChecksum(Checksum.parse(node.getHash()));
+        }
         // Legacy
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
         // Override for >4.22
