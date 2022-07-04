@@ -62,7 +62,11 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
         if(url != null) {
             final NSBundle bundle = NSBundle.bundleWithPath(url.path());
             if(null == bundle) {
-                log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                log.warn(String.format("Failure loading bundle from path %s", url.path()));
+                return Application.notfound;
+            }
+            if(null == bundle.bundleIdentifier()) {
+                log.warn(String.format("Missing CFBundleIdentifier for bundle at path %s", url.path()));
                 return Application.notfound;
             }
             final Application application = finder.getDescription(bundle.bundleIdentifier());
@@ -84,6 +88,10 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
             final NSBundle bundle = NSBundle.bundleWithPath(url.path());
             if(null == bundle) {
                 log.warn(String.format("Failure loading bundle for path %s", url.path()));
+                continue;
+            }
+            if(null == bundle.bundleIdentifier()) {
+                log.warn(String.format("Missing CFBundleIdentifier for bundle at path %s", url.path()));
                 continue;
             }
             final Application application = finder.getDescription(bundle.bundleIdentifier());
