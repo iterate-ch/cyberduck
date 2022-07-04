@@ -16,6 +16,7 @@ package ch.cyberduck.core.urlhandler;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
@@ -25,11 +26,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class WorkspaceSchemeHandlerTest {
 
     @Test
     public void testGetAllHandlers() {
+        assumeTrue(Factory.Platform.osversion.matches("12\\..*"));
         final List<Application> list = new WorkspaceSchemeHandler(new LaunchServicesApplicationFinder()).getAllHandlers("http:/");
         assertFalse(list.isEmpty());
         for(Application application : list) {
@@ -39,6 +42,7 @@ public class WorkspaceSchemeHandlerTest {
 
     @Test
     public void testSetDefaultHandler() {
+        assumeTrue(Factory.Platform.osversion.matches("12\\..*"));
         final Application application = new Application("com.apple.finder");
         final WorkspaceSchemeHandler handler = new WorkspaceSchemeHandler(new LaunchServicesApplicationFinder());
         final String scheme = new AlphanumericRandomStringService().random();
