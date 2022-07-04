@@ -84,6 +84,7 @@ public abstract class AbstractPath {
         /**
          * File from encrypted data room
          */
+        @Deprecated
         triplecrypt {
             @Override
             public int legacy() {
