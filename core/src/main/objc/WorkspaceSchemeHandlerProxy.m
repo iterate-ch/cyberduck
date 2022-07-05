@@ -19,9 +19,13 @@
 
 - (void)setDefaultApplicationAtURL:(NSURL*) applicationURL toOpenURLsWithScheme:(NSString*) scheme completionHandler:(id <WorkspaceCompletionCallback>)callback
 {
-    [[NSWorkspace sharedWorkspace] setDefaultApplicationAtURL:applicationURL toOpenURLsWithScheme:scheme completionHandler:^(NSError * _Nullable error) {
-        [callback didFinishWithError:error];
-    }];
+    if (@available(macOS 12.0, *)) {
+        [[NSWorkspace sharedWorkspace] setDefaultApplicationAtURL:applicationURL toOpenURLsWithScheme:scheme completionHandler:^(NSError * _Nullable error) {
+            [callback didFinishWithError:error];
+        }];
+    } else {
+        // Unsupported
+    }
 }
 
 @end
