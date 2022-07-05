@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.Device;
-import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -46,6 +45,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -71,34 +72,33 @@ public class CteraCustomActionVersioning {
         final HttpPost post = new HttpPost(String.format("/ServicesPortal/api/devices/%s?format=jsonext", device));
         try {
             post.setEntity(new StringEntity(getSessionTokenPayloadAsString(), ContentType.APPLICATION_JSON));
-            final String token = session.getClient().execute(post, response -> EntityUtils.toString(response.getEntity()));
+            final String token = session.getClient().execute(post, response -> StringUtils.remove(EntityUtils.toString(response.getEntity()), "\""));
             final Local html = this.writeTemporaryHTML(token);
             if(html != null) {
                 BrowserLauncherFactory.get().open(html.toURL());
             }
         }
         catch(IOException e) {
-            log.error("Unable to redirect to the portal", e);
+            log.error(String.format("Unable to redirect to the portal for file %s", file), e);
             throw new BackgroundException(e);
         }
     }
 
     private Local writeTemporaryHTML(final String token) {
-        final String content =
-                String.format("<!doctype html>\n" +
-                                "<html> <head> <script>\n" +
-                                "function _onload(){document.getElementById(\"sForm\").submit();}\n" +
-                                "</script> </head> <body onload = \"_onload()\">\n" +
-                                "<form id=\"sForm\" method=\"POST\" action=\"%s/ServicesPortal/sso\">\n" +
-                                "<input type=\"hidden\" name=\"targeturi\" value=\"?GUI_openFmFolder=%s&GUI_fmVersions=true\"/>\n" +
-                                "<input type=\"hidden\" name=\"ctera_ticket\" value=\"%s\"/>\n" +
-                                "</form> </body> </html>",
-                        new HostUrlProvider().withUsername(false).get(session.getHost()),
-                        new DAVPathEncoder().encode(file),
-                        token);
-
-        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         try {
+            final String content =
+                    String.format("<!doctype html>\n" +
+                                    "<html> <head> <script>\n" +
+                                    "function _onload(){document.getElementById(\"sForm\").submit();}\n" +
+                                    "</script> </head> <body onload = \"_onload()\">\n" +
+                                    "<form id=\"sForm\" method=\"POST\" action=\"%s/ServicesPortal/sso\">\n" +
+                                    "<input type=\"hidden\" name=\"targeturi\" value=\"?GUI_openFmFolder=%s&GUI_fmVersions=true\"/>\n" +
+                                    "<input type=\"hidden\" name=\"ctera_ticket\" value=\"%s\"/>\n" +
+                                    "</form> </body> </html>",
+                            new HostUrlProvider().withUsername(false).get(session.getHost()),
+                            URLEncoder.encode(file.getAbsolute(), StandardCharsets.UTF_8.name()),
+                            token);
+            final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.html", new AlphanumericRandomStringService().random()));
             new DefaultLocalTouchFeature().touch(file);
             try (final OutputStream out = file.getOutputStream(false)) {
                 IOUtils.write(content, out);
@@ -112,7 +112,8 @@ public class CteraCustomActionVersioning {
     }
 
     private String getDeviceName() throws BackgroundException {
-        final String token = this.getToken();
+        final HostPasswordStore keychain = PasswordStoreFactory.get();
+        final String token = keychain.findLoginToken(session.getHost());
         try {
             if(StringUtils.isNotBlank(token)) {
                 final CteraTokens tokens = CteraTokens.parse(token);
@@ -137,12 +138,6 @@ public class CteraCustomActionVersioning {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
-    }
-
-    protected String getToken() {
-        final HostPasswordStore keychain = PasswordStoreFactory.get();
-        final String token = keychain.findLoginToken(session.getHost());
-        return token;
     }
 
     private String getSessionTokenPayloadAsString() throws JsonProcessingException {
