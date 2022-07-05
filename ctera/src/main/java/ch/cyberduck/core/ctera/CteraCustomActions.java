@@ -1,4 +1,6 @@
-package ch.cyberduck.core.ctera;/*
+package ch.cyberduck.core.ctera;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -33,6 +35,8 @@ public class CteraCustomActions implements CustomActions {
     public void run(final Action type, final Path file) throws BackgroundException {
         switch(CteraActions.valueOf(type.name())) {
             case versioning:
+                new CteraCustomActionVersioning(session, file).run();
+                break;
             case share:
         }
     }
