@@ -40,6 +40,8 @@
 		4724FA4526836D8A00CF289B /* preferences-openstack.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4426836D8A00CF289B /* preferences-openstack.pdf */; };
 		4724FA4726836D9000CF289B /* preferences-googlestorage.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4724FA4626836D9000CF289B /* preferences-googlestorage.pdf */; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
+		473A8DD6287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 473A8DD4287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h */; };
+		473A8DD7287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 473A8DD5287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.xib */; };
 		474163C206C4F64100AC0BD2 /* Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.xib */; };
@@ -654,6 +656,8 @@
 		4738A999287C21C600F4050A /* fr */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = fr; path = i18n/src/main/resources/fr.lproj/Profiles.xib; sourceTree = "<group>"; };
 		4738A99A287C21C600F4050A /* et */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = et; path = i18n/src/main/resources/et.lproj/Profiles.xib; sourceTree = "<group>"; };
 		4739EF730856981400405FD3 /* libcore.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcore.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		473A8DD4287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorkspaceSchemeHandlerProxy.h; path = core/src/main/objc/WorkspaceSchemeHandlerProxy.h; sourceTree = SOURCE_ROOT; };
+		473A8DD5287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WorkspaceSchemeHandlerProxy.m; path = core/src/main/objc/WorkspaceSchemeHandlerProxy.m; sourceTree = SOURCE_ROOT; };
 		473BF0851892968E0068B4C1 /* azure.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = azure.tiff; sourceTree = "<group>"; };
 		474163A406C4F64000AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Info.xib; sourceTree = "<group>"; };
 		474163A606C4F64100AC0BD2 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = en; path = i18n/src/main/resources/en.lproj/Browser.xib; sourceTree = "<group>"; };
@@ -1889,6 +1893,8 @@
 				4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */,
 				47820E3820B58426006D0501 /* CDReachabilityMonitor.h */,
 				47820E3720B58425006D0501 /* CDReachabilityMonitor.m */,
+				473A8DD4287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h */,
+				473A8DD5287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m */,
 			);
 			name = Core;
 			path = source;
@@ -2134,6 +2140,7 @@
 				47EEFDC72386ECD100A3CAB0 /* UnifiedSystemLogAppender.h in Headers */,
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
+				473A8DD6287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.h in Headers */,
 				4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */,
 				4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */,
 				4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */,
@@ -2570,6 +2577,7 @@
 				47820E3920B58426006D0501 /* CDReachabilityMonitor.m in Sources */,
 				4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */,
 				4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */,
+				473A8DD7287424CA00CD2E12 /* WorkspaceSchemeHandlerProxy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

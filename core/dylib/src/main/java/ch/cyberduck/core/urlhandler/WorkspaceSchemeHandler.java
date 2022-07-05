@@ -1,4 +1,6 @@
-package ch.cyberduck.core.urlhandler;/*
+package ch.cyberduck.core.urlhandler;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -14,6 +16,7 @@ package ch.cyberduck.core.urlhandler;/*
  */
 
 
+import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSBundle;
@@ -27,9 +30,13 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
     private static final Logger log = LogManager.getLogger(WorkspaceSchemeHandler.class);
@@ -47,11 +54,23 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
 
     @Override
     public void setDefaultHandler(final Application application, final List<String> schemes) {
+        final WorkspaceSchemeHandlerProxy proxy = WorkspaceSchemeHandlerProxy.create();
         for(String scheme : schemes) {
             final String path = workspace.absolutePathForAppBundleWithIdentifier(application.getIdentifier());
             if(null != path) {
-                workspace.setDefaultApplicationAtURL_toOpenURLsWithScheme_completionHandler(
-                        NSURL.fileURLWithPath(path), scheme, null);
+                final CountDownLatch lock = new CountDownLatch(1);
+                final Proxy callback = new Proxy(new WorkspaceSchemeHandlerProxy.CompletionHandler() {
+                    @Override
+                    public void didFinishWithError(final NSError error) {
+                        log.warn(String.format("Setting scheme handler returned with error %s", error));
+                        lock.countDown();
+                    }
+                });
+                proxy.setDefaultHandler(NSURL.fileURLWithPath(path), scheme, callback.id());
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Await result from %s", proxy));
+                }
+                Uninterruptibles.awaitUninterruptibly(lock);
             }
         }
     }
