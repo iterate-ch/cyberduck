@@ -16,6 +16,7 @@ package ch.cyberduck.core.ctera;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
@@ -24,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.Device;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -73,18 +73,15 @@ public class CteraCustomActionVersioning {
         try {
             post.setEntity(new StringEntity(getSessionTokenPayloadAsString(), ContentType.APPLICATION_JSON));
             final String token = session.getClient().execute(post, response -> StringUtils.remove(EntityUtils.toString(response.getEntity()), "\""));
-            final Local html = this.writeTemporaryHTML(token);
-            if(html != null) {
-                BrowserLauncherFactory.get().open(html.toURL());
-            }
+            final Local html = this.writeTemporaryHtml(token);
+            BrowserLauncherFactory.get().open(html.toURL());
         }
         catch(IOException e) {
-            log.error(String.format("Unable to redirect to the portal for file %s", file), e);
-            throw new BackgroundException(e);
+            throw new DefaultIOExceptionMappingService().map(String.format("Unable to redirect to the portal for file %s", file.getName()), e);
         }
     }
 
-    private Local writeTemporaryHTML(final String token) {
+    private Local writeTemporaryHtml(final String token) throws BackgroundException {
         try {
             final String content =
                     String.format("<!doctype html>\n" +
@@ -105,10 +102,9 @@ public class CteraCustomActionVersioning {
             }
             return file;
         }
-        catch(IOException | AccessDeniedException e) {
-            log.error("Error writing temporary file", e);
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Error writing temporary file", e);
         }
-        return null;
     }
 
     private String getDeviceName() throws BackgroundException {
