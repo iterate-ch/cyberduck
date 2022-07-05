@@ -101,7 +101,7 @@ public class CteraCustomActionVersioning {
             final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.html", new AlphanumericRandomStringService().random()));
             new DefaultLocalTouchFeature().touch(file);
             try (final OutputStream out = file.getOutputStream(false)) {
-                IOUtils.write(content, out);
+                IOUtils.write(content, out, StandardCharsets.UTF_8);
             }
             return file;
         }
