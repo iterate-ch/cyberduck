@@ -136,7 +136,7 @@ public class CteraCustomActionVersioning {
         }
     }
 
-    private String getSessionTokenPayloadAsString() throws JsonProcessingException {
+    private static String getSessionTokenPayloadAsString() throws JsonProcessingException {
         final Attachment attachment = new Attachment();
         final ArrayList<Attachment.Attribute> attributes = new ArrayList<>();
         final Attachment.Attribute type = new Attachment.Attribute();
