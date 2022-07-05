@@ -42,7 +42,7 @@ public class CteraCustomActions implements CustomActions {
     }
 
     @Override
-    public Set<Action> list(final Path file) {
+    public Set<Action> list() {
         return Collections.singleton(CteraActions.versioning);
     }
 
