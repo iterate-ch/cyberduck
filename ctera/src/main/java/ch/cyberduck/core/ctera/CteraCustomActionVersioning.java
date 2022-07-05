@@ -59,7 +59,7 @@ public class CteraCustomActionVersioning {
     private final CteraSession session;
     private final Path file;
 
-    public CteraCustomActionVersioning(final CteraSession session, Path file) {
+    public CteraCustomActionVersioning(final CteraSession session, final Path file) {
         this.session = session;
         this.file = file;
     }
