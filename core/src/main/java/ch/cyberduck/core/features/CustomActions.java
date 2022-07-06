@@ -31,9 +31,10 @@ public interface CustomActions {
     /**
      * List supported custom action types
      *
+     * @param file Selected file or folder
      * @return Set of supported actions for file or folder
      */
-    Set<Action> list();
+    Set<Action> list(Path file);
 
     interface Action {
         /**
