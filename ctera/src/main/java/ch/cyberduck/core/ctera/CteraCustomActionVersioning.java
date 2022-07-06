@@ -132,7 +132,10 @@ public class CteraCustomActionVersioning {
                     }
                 }
             }
-            throw new InteroperabilityException("No token or device found");
+            else {
+                throw new InteroperabilityException("No token found");
+            }
+            throw new InteroperabilityException(String.format("No device for token %s found", token));
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
