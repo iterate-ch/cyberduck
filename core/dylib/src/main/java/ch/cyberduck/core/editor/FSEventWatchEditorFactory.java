@@ -37,34 +37,18 @@ public class FSEventWatchEditorFactory extends EditorFactory {
 
     public FSEventWatchEditorFactory() {
         this.add(new Application("com.apple.TextEdit", "TextEdit"));
-        this.add(new Application("com.apple.Xcode", "Xcode"));
         this.add(new Application("com.apple.dt.Xcode", "Xcode"));
         this.add(new Application("de.codingmonkeys.SubEthaEdit", "SubEthaEdit"));
+        this.add(new Application("de.codingmonkeys.SubEthaEdit.MacFULL", "SubEthaEdit"));
         this.add(new Application("com.barebones.bbedit", "BBEdit"));
         this.add(new Application("com.barebones.textwrangler", "TextWrangler"));
-        this.add(new Application("com.macromates.textmate", "TextMate"));
+        this.add(new Application("com.macromates.TextMate", "TextMate"));
         this.add(new Application("com.macromates.TextMate.preview", "TextMate 2"));
         this.add(new Application("com.sublimetext.2", "Sublime Text 2"));
         this.add(new Application("com.sublimetext.3", "Sublime Text 3"));
+        this.add(new Application("com.sublimetext.4", "Sublime Text 4"));
         this.add(new Application("com.github.atom", "Atom"));
-        this.add(new Application("com.transtex.texeditplus", "Tex-Edit Plus"));
-        this.add(new Application("jp.co.artman21.JeditX", "Jedit X"));
-        this.add(new Application("net.mimikaki.mi", "mi"));
-        this.add(new Application("org.smultron.Smultron", "Smultron"));
-        this.add(new Application("org.fraise.Fraise", "Fraise"));
-        this.add(new Application("com.aynimac.CotEditor", "CotEditor"));
         this.add(new Application("com.coteditor.CotEditor", "CotEditor"));
-        this.add(new Application("com.macrabbit.cssedit", "CSSEdit"));
-        this.add(new Application("com.talacia.Tag", "Tag"));
-        this.add(new Application("org.skti.skEdit", "skEdit"));
-        this.add(new Application("com.cgerdes.ji", "JarInspector"));
-        this.add(new Application("com.optima.PageSpinner", "PageSpinner"));
-        this.add(new Application("com.hogbaysoftware.WriteRoom", "WriteRoom"));
-        this.add(new Application("org.vim.MacVim", "MacVim"));
-        this.add(new Application("com.forgedit.ForgEdit", "ForgEdit"));
-        this.add(new Application("com.tacosw.TacoHTMLEdit", "Taco HTML Edit"));
-        this.add(new Application("com.macrabbit.Espresso", "Espresso"));
-        this.add(new Application("net.experiya.ScinteX", "ScinteX"));
         this.add(new Application("com.microsoft.VSCode", "Visual Studio Code"));
         this.add(new Application("com.panic.Nova", "nova"));
         this.add(new Application("io.brackets.appshell", "Brackets"));
