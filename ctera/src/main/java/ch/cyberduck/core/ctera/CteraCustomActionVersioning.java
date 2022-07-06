@@ -86,7 +86,6 @@ public class CteraCustomActionVersioning {
                             URLEncoder.encode(file.getAbsolute(), StandardCharsets.UTF_8.name()),
                             token);
             final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.html", new AlphanumericRandomStringService().random()));
-            new DefaultLocalTouchFeature().touch(file);
             try (final OutputStream out = file.getOutputStream(false)) {
                 IOUtils.write(content, out, StandardCharsets.UTF_8);
             }
