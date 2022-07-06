@@ -126,22 +126,21 @@ public class OpenSshConfig {
     }
 
     public Map<String, Host> refresh() {
-        final long mtime = configuration.attributes().getModificationDate();
-        if(mtime != lastModified) {
-            try {
-                final InputStream in = configuration.getInputStream();
-                try {
-                    hosts = this.parse(in);
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                }
+        InputStream in = null;
+        try {
+            final long mtime = configuration.attributes().getModificationDate();
+            if(mtime != lastModified) {
+                in = configuration.getInputStream();
+                hosts = this.parse(in);
+                lastModified = mtime;
             }
-            catch(AccessDeniedException | IOException none) {
-                log.warn(String.format("Failure reading %s", configuration));
-                hosts = Collections.emptyMap();
-            }
-            lastModified = mtime;
+        }
+        catch(AccessDeniedException | IOException none) {
+            log.warn(String.format("Failure reading %s", configuration));
+            hosts = Collections.emptyMap();
+        }
+        finally {
+            IOUtils.closeQuietly(in);
         }
         return hosts;
     }
