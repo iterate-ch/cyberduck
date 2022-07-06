@@ -17,7 +17,6 @@ IObjectArray
 ITaskbarList
 ITaskbarList3
 IVirtualDesktopManager
-LoadLibrary
 LVM_FIRST
 LVM_GETCOLUMNORDERARRAY
 MA_ACTIVATE
