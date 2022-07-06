@@ -26,6 +26,7 @@ import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.Device;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
@@ -65,20 +66,9 @@ public class CteraCustomActionVersioning {
     }
 
     public void run() throws BackgroundException {
-        final String device = this.getDeviceName();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Using device %s to request a session token", device));
-        }
-        final HttpPost post = new HttpPost(String.format("/ServicesPortal/api/devices/%s?format=jsonext", device));
-        try {
-            post.setEntity(new StringEntity(getSessionTokenPayloadAsString(), ContentType.APPLICATION_JSON));
-            final String token = session.getClient().execute(post, response -> StringUtils.remove(EntityUtils.toString(response.getEntity()), "\""));
-            final Local html = this.writeTemporaryHtml(token);
-            BrowserLauncherFactory.get().open(html.toURL());
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(String.format("Unable to redirect to the portal for file %s", file.getName()), e);
-        }
+        final String token = this.getSessionToken();
+        final Local html = this.writeTemporaryHtml(token);
+        BrowserLauncherFactory.get().open(html.toURL());
     }
 
     private Local writeTemporaryHtml(final String token) throws BackgroundException {
@@ -107,9 +97,23 @@ public class CteraCustomActionVersioning {
         }
     }
 
+    protected String getSessionToken() throws BackgroundException {
+        try {
+            final String device = this.getDeviceName();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Using device %s to request a session token", device));
+            }
+            final HttpPost post = new HttpPost(String.format("/ServicesPortal/api/devices/%s?format=jsonext", device));
+            post.setEntity(new StringEntity(getSessionTokenPayloadAsString(), ContentType.APPLICATION_JSON));
+            return session.getClient().execute(post, response -> StringUtils.remove(EntityUtils.toString(response.getEntity()), "\""));
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(String.format("Unable to redirect to the portal for %s", file), e);
+        }
+    }
+
     private String getDeviceName() throws BackgroundException {
-        final HostPasswordStore keychain = PasswordStoreFactory.get();
-        final String token = keychain.findLoginToken(session.getHost());
+        final String token = this.getCteraTokens();
         try {
             if(StringUtils.isNotBlank(token)) {
                 final CteraTokens tokens = CteraTokens.parse(token);
@@ -128,12 +132,16 @@ public class CteraCustomActionVersioning {
                     }
                 }
             }
-            log.error("No token or device found");
-            return StringUtils.EMPTY;
+            throw new InteroperabilityException("No token or device found");
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);
         }
+    }
+
+    protected String getCteraTokens() {
+        final HostPasswordStore keychain = PasswordStoreFactory.get();
+        return keychain.findLoginToken(session.getHost());
     }
 
     private static String getSessionTokenPayloadAsString() throws JsonProcessingException {
