@@ -114,26 +114,24 @@ public class CteraCustomActionVersioning {
 
     private String getDeviceName() throws BackgroundException {
         final String token = this.getCteraTokens();
+        if(StringUtils.isBlank(token)) {
+            throw new InteroperabilityException("No token found");
+        }
         try {
-            if(StringUtils.isNotBlank(token)) {
-                final CteraTokens tokens = CteraTokens.parse(token);
-                final String id = tokens.getDeviceId();
-                final HttpGet request = new HttpGet("/ServicesPortal/api/devices?format=jsonext");
-                final Device[] devices = session.getClient().execute(request, new AbstractResponseHandler<Device[]>() {
-                    @Override
-                    public Device[] handleEntity(final HttpEntity entity) throws IOException {
-                        ObjectMapper mapper = new ObjectMapper();
-                        return mapper.readValue(entity.getContent(), Device[].class);
-                    }
-                });
-                for(Device device : devices) {
-                    if(device.uid.equals(id)) {
-                        return device.name;
-                    }
+            final CteraTokens tokens = CteraTokens.parse(token);
+            final String id = tokens.getDeviceId();
+            final HttpGet request = new HttpGet("/ServicesPortal/api/devices?format=jsonext");
+            final Device[] devices = session.getClient().execute(request, new AbstractResponseHandler<Device[]>() {
+                @Override
+                public Device[] handleEntity(final HttpEntity entity) throws IOException {
+                    ObjectMapper mapper = new ObjectMapper();
+                    return mapper.readValue(entity.getContent(), Device[].class);
                 }
-            }
-            else {
-                throw new InteroperabilityException("No token found");
+            });
+            for(Device device : devices) {
+                if(device.uid.equals(id)) {
+                    return device.name;
+                }
             }
             throw new InteroperabilityException(String.format("No device for token %s found", token));
         }
