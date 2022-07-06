@@ -19,7 +19,7 @@ public class DefaultTemporaryFileServiceTest {
     public void testExists() {
         final Local f = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
         assertFalse(f.exists());
-        assertFalse(f.getParent().exists());
+        assertTrue(f.getParent().exists());
         assertTrue(f.getParent().getParent().exists());
     }
 

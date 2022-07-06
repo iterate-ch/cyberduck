@@ -82,7 +82,6 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                                     // Read latest version
                                     .withVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback());
                             final Local temp = TemporaryFileServiceFactory.get().create(file.getName());
-                        new DefaultLocalTouchFeature().touch(temp);
                         final OutputStream out = temp.getOutputStream(false);
                         try {
                             IOUtils.copy(in, out);

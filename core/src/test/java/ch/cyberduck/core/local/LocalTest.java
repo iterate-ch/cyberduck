@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -22,6 +23,23 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 public class LocalTest {
+
+    @Test
+    public void testWriteNewFile() throws Exception {
+        final Local file = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
+        final OutputStream out = file.getOutputStream(false);
+        out.close();
+        file.delete();
+    }
+
+    @Test
+    public void testWriteExistingFile() throws Exception {
+        final Local file = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
+        new DefaultLocalTouchFeature().touch(file);
+        final OutputStream out = file.getOutputStream(false);
+        out.close();
+        file.delete();
+    }
 
     @Test
     public void testList() throws Exception {

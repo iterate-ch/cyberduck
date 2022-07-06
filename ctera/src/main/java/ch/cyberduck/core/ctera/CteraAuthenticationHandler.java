@@ -15,12 +15,14 @@ package ch.cyberduck.core.ctera;/*
 
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -73,6 +75,9 @@ public class CteraAuthenticationHandler implements ServiceUnavailableRetryStrate
                     return null;
                 }
             });
+        }
+        catch(HttpResponseException e) {
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e);

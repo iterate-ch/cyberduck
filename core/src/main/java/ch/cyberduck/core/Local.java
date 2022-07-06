@@ -373,8 +373,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             FileChannel in = null;
             FileChannel out = null;
             try {
-                in = this.getReadChannel(this.path);
-                out = copy.getWriteChannel(copy.path, options.append);
+                in = getReadChannel(this.path);
+                out = getWriteChannel(copy.path, options.append, !copy.exists());
                 out.transferFrom(in, out.size(), in.size());
             }
             catch(IOException e) {
@@ -440,7 +440,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    private FileChannel getReadChannel(final String path) throws LocalAccessDeniedException {
+    private static FileChannel getReadChannel(final String path) throws LocalAccessDeniedException {
         try {
             return FileChannel.open(Paths.get(path), StandardOpenOption.READ);
         }
@@ -450,18 +450,18 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     protected OutputStream getOutputStream(final String path, final boolean append) throws AccessDeniedException {
-        return Channels.newOutputStream(getWriteChannel(path, append));
+        return Channels.newOutputStream(getWriteChannel(path, append, !this.exists()));
     }
 
     public OutputStream getOutputStream(final boolean append) throws AccessDeniedException {
-        return Channels.newOutputStream(getWriteChannel(path, append));
+        return Channels.newOutputStream(getWriteChannel(path, append, !this.exists()));
     }
 
-    private FileChannel getWriteChannel(final String path, final boolean append) throws LocalAccessDeniedException {
+    private static FileChannel getWriteChannel(final String path, final boolean append, final boolean create) throws LocalAccessDeniedException {
         try {
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
-            if(!this.exists()) {
+            if(create) {
                 options.add(StandardOpenOption.CREATE);
             }
             if(append) {
