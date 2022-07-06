@@ -1,6 +1,6 @@
 ﻿using ch.cyberduck.core.cache;
 using ch.cyberduck.core.local;
-using Ch.Cyberduck.Core.i18n;
+using Ch.Cyberduck.Core.I18n;
 using java.util;
 using org.apache.commons.io;
 using org.apache.logging.log4j;

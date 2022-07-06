@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using Windows.Win32;
 using static Windows.Win32.CorePInvoke;
 
-namespace Ch.Cyberduck.Core.i18n
+namespace Ch.Cyberduck.Core.I18n
 {
     public class StringLoader : IDisposable
     {
