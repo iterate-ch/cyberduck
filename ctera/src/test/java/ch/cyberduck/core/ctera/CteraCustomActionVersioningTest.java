@@ -27,7 +27,6 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -43,7 +42,7 @@ public class CteraCustomActionVersioningTest {
     public void testSessionToken() throws Exception {
         final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
                 System.getProperty("ctera.user"), System.getProperty("ctera.password"),
-                StringUtils.EMPTY
+                System.getProperty("ctera.token")
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
         final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
