@@ -37,7 +37,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class CteraSessionTest {
+public class CteraSessionTest extends AbstractCteraTest {
 
     @Test
     public void testLoginRefreshCookie() throws Exception {
@@ -59,18 +59,6 @@ public class CteraSessionTest {
 
     @Test
     public void testLoginNonSAML() throws Exception {
-        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
-                System.getProperty("ctera.user"), System.getProperty("ctera.password"),
-                StringUtils.EMPTY
-        ));
-        host.setDefaultPath("/ServicesPortal/webdav");
-        final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals(System.getProperty("ctera.user"), host.getCredentials().getUsername());
-        new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        session.close();
+        new DAVListService(session).list(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 }
