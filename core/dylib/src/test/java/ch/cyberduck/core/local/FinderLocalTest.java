@@ -15,6 +15,7 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -25,12 +26,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 public class FinderLocalTest {
+
+    @Test
+    public void testWriteNewFile() throws Exception {
+        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final OutputStream out = file.getOutputStream(false);
+        out.close();
+        file.delete();
+    }
+
+    @Test
+    public void testWriteExistingFile() throws Exception {
+        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        new DefaultLocalTouchFeature().touch(file);
+        final OutputStream out = file.getOutputStream(false);
+        out.close();
+        file.delete();
+    }
 
     @Test
     public void testEqual() throws Exception {
