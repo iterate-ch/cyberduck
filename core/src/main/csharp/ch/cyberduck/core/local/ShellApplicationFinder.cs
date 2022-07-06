@@ -1,9 +1,12 @@
 ﻿using ch.cyberduck.core.cache;
 using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.I18n;
 using java.util;
+using org.apache.commons.io;
 using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -23,16 +26,50 @@ namespace Ch.Cyberduck.Core.Local
 {
     public class ShellApplicationFinder : ApplicationFinder
     {
+        private static readonly LRUCache assocHandlerCache = LRUCache.build(25);
+        private static readonly LRUCache assocHandlerListCache = LRUCache.build(25);
         private static readonly Logger Log = LogManager.getLogger(typeof(ShellApplicationFinder).FullName);
-
-        private readonly LRUCache assocHandlerCache = LRUCache.build(25);
-        private readonly LRUCache assocHandlerListCache = LRUCache.build(25);
 
         private interface IInvokeApplication
         {
             int IconIndex { get; }
 
             string IconPath { get; }
+        }
+
+        public static List findAll()
+        {
+            const string key = "enum.assoc.handler.all";
+            if (assocHandlerListCache.get(key) is not List<Application> map)
+            {
+                map = new List<Application>();
+                assocHandlerListCache.put(key, map);
+                map.Add(ShellOpenWithApplication.Instance);
+
+                HRESULT result;
+                if ((result = SHAssocEnumHandlers(string.Empty, ASSOC_FILTER.ASSOC_FILTER_NONE, out var enumHandlers)).Succeeded)
+                {
+                    IAssocHandler[] passocHandler = new IAssocHandler[1];
+                    ref IAssocHandler assocHandler = ref passocHandler[0];
+                    try
+                    {
+                        while (enumHandlers.Next(passocHandler) > 0)
+                        {
+                            map.Add(new ShellApplication(assocHandler));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.warn("findAll: Failure enumerating IEnumAssocHandler", e);
+                    }
+                }
+                else
+                {
+                    Log.warn("findAll: Failure getting IEnumAssocHandler", Marshal.GetExceptionForHR(result.Value));
+                }
+            }
+
+            return Utils.ConvertToJavaList(map);
         }
 
         /// <summary>
@@ -129,9 +166,50 @@ namespace Ch.Cyberduck.Core.Local
             return Utils.ConvertToJavaList(map);
         }
 
-        public Application getDescription(string filename) => string.Equals("shell:openfilewith", filename) ? ShellOpenWithApplication.Instance : Application.notfound;
+        public Application getDescription(string filename)
+        {
+            if (assocHandlerCache.get(filename) is Application app)
+            {
+                return app;
+            }
+            if (string.Equals(ShellOpenWithApplication.Key, filename))
+            {
+                return ShellOpenWithApplication.Instance;
+            }
+            foreach (Application item in findAll())
+            {
+                if (string.Equals(item.getIdentifier(), filename))
+                {
+                    assocHandlerCache.put(filename, item);
+                    return item;
+                }
+            }
+            if (!File.Exists(filename))
+            {
+                return Application.notfound;
+            }
 
-        public bool isInstalled(Application application) => application is IInvokeApplication;
+            if (FileVersionInfo.GetVersionInfo(filename) is FileVersionInfo info)
+            {
+                app = new(filename.ToLower(), info.FileDescription);
+            }
+            else
+            {
+                // Does not contain version information
+                app = new(filename.ToLower(), FilenameUtils.getName(filename));
+            }
+            assocHandlerCache.put(filename, app);
+            return app;
+        }
+
+        public bool isInstalled(Application application)
+        {
+            if (application is IInvokeApplication)
+            {
+                return true;
+            }
+            return application != Application.notfound && File.Exists(application.getIdentifier());
+        }
 
         public class ProgIdApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
@@ -203,9 +281,27 @@ namespace Ch.Cyberduck.Core.Local
 
         public class ShellOpenWithApplication : Application, IInvokeApplication, WindowsApplicationLauncher.IInvokeApplication
         {
-            public static readonly ShellOpenWithApplication Instance = new();
+            public const string Key = "shell:openfilewith";
+            public static readonly ShellOpenWithApplication Instance;
+            public static readonly string Name;
+            private static readonly Logger Log = LogManager.getLogger(typeof(ShellOpenWithApplication));
 
-            public ShellOpenWithApplication() : base(null, "Open With …")
+            static ShellOpenWithApplication()
+            {
+                try
+                {
+                    using var loader = new StringLoader();
+                    Name = loader.GetString(9016);
+                }
+                catch
+                {
+                    Log.warn("Unable to retrieve resource id 9016 from Shell32.dll, falling back.");
+                    Name = "Open With…";
+                }
+                Instance = new();
+            }
+
+            public ShellOpenWithApplication() : base(Key, Name)
             {
             }
 

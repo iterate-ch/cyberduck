@@ -25,6 +25,8 @@ IExtractIconW
 ILCreateFromPath
 IQueryAssociations
 IShellItem
+LoadLibrary
+LoadString
 MESSAGEBOX_RESULT
 PathParseIconLocation
 PBST_ERROR
