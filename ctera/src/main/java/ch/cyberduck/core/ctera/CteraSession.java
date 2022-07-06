@@ -98,34 +98,44 @@ public class CteraSession extends DAVSession {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = host.getCredentials();
         if(StringUtils.isBlank(credentials.getToken())) {
-            final AttachDeviceResponse response;
-            if(this.getPublicInfo().hasWebSSO) {
-                response = this.startWebSSOFlow(cancel, credentials);
-            }
-            else {
-                response = this.startDesktopFlow(prompt, credentials);
-            }
-            final CteraTokens tokens = new CteraTokens(response.deviceUID, response.sharedSecret);
-            authentication.setTokens(tokens);
-            authentication.authenticate();
+            final CteraTokens tokens = this.getTokens(credentials, prompt, cancel);
+            this.authenticateWithTokens(tokens);
             credentials.setToken(tokens.toString());
             credentials.setSaved(true);
         }
         else {
-            authentication.setTokens(CteraTokens.parse(credentials.getToken()));
             try {
-                authentication.authenticate();
+                this.authenticateWithTokens(CteraTokens.parse(credentials.getToken()));
             }
             catch(AccessDeniedException e) {
-                // Reset invalid token and retry
-                credentials.setToken(null);
-                this.login(proxy, prompt, cancel);
+                // Try to re-authenticate with new tokens
+                final CteraTokens tokens = this.getTokens(credentials, prompt, cancel);
+                this.authenticateWithTokens(tokens);
+                credentials.setToken(tokens.toString());
+                credentials.setSaved(true);
             }
         }
+
         if(StringUtils.isBlank(credentials.getUsername())) {
             credentials.setUsername(this.getCurrentSession().username);
             credentials.setSaved(true);
         }
+    }
+
+    private CteraTokens getTokens(final Credentials credentials, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final AttachDeviceResponse response;
+        if(this.getPublicInfo().hasWebSSO) {
+            response = this.startWebSSOFlow(cancel, credentials);
+        }
+        else {
+            response = this.startDesktopFlow(prompt, credentials);
+        }
+        return new CteraTokens(response.deviceUID, response.sharedSecret);
+    }
+
+    private void authenticateWithTokens(final CteraTokens tokens) throws BackgroundException {
+        authentication.setTokens(tokens);
+        authentication.authenticate();
     }
 
     @Override
