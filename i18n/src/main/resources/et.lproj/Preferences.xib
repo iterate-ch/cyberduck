@@ -126,7 +126,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1131"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1125"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1552,7 +1552,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
-                                <rect key="frame" x="139" y="13" width="189" height="32"/>
+                                <rect key="frame" x="147" y="13" width="172" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Kontrolli praegu uuendusi" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>

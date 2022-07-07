@@ -126,7 +126,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1131"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1800" height="1125"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -1122,7 +1122,7 @@
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <size key="minSize" width="468" height="74"/>
-                                                    <size key="maxSize" width="1087" height="10000000"/>
+                                                    <size key="maxSize" width="1085" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
                                             </subviews>
@@ -1181,7 +1181,7 @@
                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <size key="minSize" width="468" height="74"/>
-                                                    <size key="maxSize" width="795" height="10000000"/>
+                                                    <size key="maxSize" width="793" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
                                             </subviews>
@@ -1539,7 +1539,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
-                                <rect key="frame" x="10" y="56" width="266" height="18"/>
+                                <rect key="frame" x="10" y="56" width="235" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Procurar automaticamente atualizações" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1547,7 +1547,7 @@
                                 </buttonCell>
                             </button>
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="324">
-                                <rect key="frame" x="281" y="50" width="175" height="26"/>
+                                <rect key="frame" x="250" y="50" width="206" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -1556,7 +1556,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
-                                <rect key="frame" x="131" y="13" width="204" height="32"/>
+                                <rect key="frame" x="147" y="13" width="172" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="Procurar atualizações agora" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
