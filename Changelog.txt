@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+8.4.2
+- [Bugfix] Setting to always open default editor application set in Preferences (Windows) (#13546)
+- [Bugfix] Unable to complete OAuth flow with missing scheme handler registered when running in sandbox (Google Storage, Google Drive) (Mac App Store)
+
 8.4.1
 - [Bugfix] Crash running on versions prior macOS 11 (#13521)
 
