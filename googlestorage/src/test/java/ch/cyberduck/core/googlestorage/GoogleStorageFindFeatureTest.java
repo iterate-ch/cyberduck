@@ -16,6 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -27,11 +28,39 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageFindFeatureTest extends AbstractGoogleStorageTest {
+
+    @Test
+    public void testFindFileNotFound() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final GoogleStorageFindFeature f = new GoogleStorageFindFeature(session);
+        assertFalse(f.find(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+    }
+
+    @Test
+    public void testFindDirectory() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new GoogleStorageDirectoryFeature(session).mkdir(
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(folder));
+        assertFalse(new GoogleStorageFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFindFile() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new GoogleStorageTouchFeature(session).touch(file, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(file));
+        assertFalse(new GoogleStorageFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testDeleted() throws Exception {

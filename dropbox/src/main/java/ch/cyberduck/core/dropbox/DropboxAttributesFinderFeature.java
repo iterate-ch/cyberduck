@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -60,6 +61,16 @@ public class DropboxAttributesFinderFeature implements AttributesFinder, Attribu
                 return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
             }
             final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
+            if(metadata instanceof FileMetadata) {
+                if(file.isDirectory()) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+            }
+            if(metadata instanceof FolderMetadata) {
+                if(file.isFile()) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+            }
             return this.toAttributes(metadata);
         }
         catch(DbxException e) {

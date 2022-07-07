@@ -17,14 +17,14 @@ import static org.junit.Assert.assertTrue;
 public class DAVFindFeatureTest extends AbstractDAVTest {
 
     @Test
+    public void testFindNotFound() throws Exception {
+        assertFalse(new DAVFindFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))));
+        assertFalse(new DAVFindFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+    }
+
+    @Test
     public void testFind() throws Exception {
         assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session).find()));
-        assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))
-        ));
-        assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))
-        ));
     }
 
     @Test

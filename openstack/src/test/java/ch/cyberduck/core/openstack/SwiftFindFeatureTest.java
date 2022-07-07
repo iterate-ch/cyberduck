@@ -45,6 +45,7 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         }
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(file));
+        assertFalse(new SwiftFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
     }
 

@@ -26,6 +26,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UiFsModel;
 import ch.cyberduck.core.eue.io.swagger.client.model.UiWin32;
 import ch.cyberduck.core.eue.io.swagger.client.model.Uifs;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -70,6 +71,19 @@ public class EueAttributesFinderFeature implements AttributesFinder {
                             Collections.singletonList(OPTION_WIN_32_PROPS), null);
                     break;
             }
+            switch(response.getUifs().getResourceType()) {
+                case "aliascontainer":
+                case "container":
+                    if(file.isFile()) {
+                        throw new NotfoundException(file.getAbsolute());
+                    }
+                    break;
+                default:
+                    if(file.isDirectory()) {
+                        throw new NotfoundException(file.getAbsolute());
+                    }
+                    break;
+            }
             final PathAttributes attr = this.toAttributes(response.getUifs(), response.getUiwin32(),
                     EueShareFeature.findShareForResource(session.userShares(), resourceId));
             if(client.getResponseHeaders().containsKey(HttpHeaders.ETAG)) {
@@ -89,7 +103,8 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32, final ShareCreationResponseEntity share) {
+    protected PathAttributes toAttributes(final Uifs entity, final UiWin32 uiwin32,
+                                          final ShareCreationResponseEntity share) {
         final PathAttributes attr = new PathAttributes();
         attr.setDisplayname(entity.getName());
         // Matches ETag response header

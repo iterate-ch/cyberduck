@@ -57,6 +57,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
                 new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
                         new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),

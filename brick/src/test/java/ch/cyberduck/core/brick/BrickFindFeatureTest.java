@@ -1,12 +1,12 @@
-package ch.cyberduck.core.dropbox;
+package ch.cyberduck.core.brick;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -30,37 +29,36 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DropboxFindFeatureTest extends AbstractDropboxTest {
+public class BrickFindFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testFindNotFound() throws Exception {
-        assertFalse(new DropboxFindFeature(session).find(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+        assertFalse(new BrickFindFeature(session).find(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindHome() throws Exception {
-        assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find()));
+        assertTrue(new BrickFindFeature(session).find(new DefaultHomeFinderService(session).find()));
     }
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path folder = new DropboxDirectoryFeature(session).mkdir(
+        final Path folder = new BrickDirectoryFeature(session).mkdir(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new DropboxFindFeature(session).find(folder));
-        assertFalse(new DropboxFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new BrickFindFeature(session).find(folder));
+        assertFalse(new BrickFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new DropboxFindFeature(session).find(file));
-        assertFalse(new DropboxFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new BrickTouchFeature(session).touch(file, new TransferStatus());
+        assertTrue(new BrickFindFeature(session).find(file));
+        assertFalse(new BrickFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
