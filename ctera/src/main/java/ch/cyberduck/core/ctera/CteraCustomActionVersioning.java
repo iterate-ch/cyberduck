@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.Attachment;
 import ch.cyberduck.core.ctera.model.Device;
@@ -29,7 +30,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -83,7 +83,8 @@ public class CteraCustomActionVersioning {
                                     "<input type=\"hidden\" name=\"ctera_ticket\" value=\"%s\"/>\n" +
                                     "</form> </body> </html>",
                             new HostUrlProvider().withUsername(false).get(session.getHost()),
-                            URLEncoder.encode(file.getAbsolute(), StandardCharsets.UTF_8.name()),
+                            URLEncoder.encode(String.format("/%s",
+                                    PathRelativizer.relativize(session.getHost().getProtocol().getDefaultPath(), file.getAbsolute())), StandardCharsets.UTF_8.name()),
                             token);
             final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.html", new AlphanumericRandomStringService().random()));
             try (final OutputStream out = file.getOutputStream(false)) {
