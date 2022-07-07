@@ -16,10 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-// Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
-// 
-
 using System;
 using System.Globalization;
 using System.Net;
