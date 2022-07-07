@@ -58,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
                     false, Utils.IsNotBlank(preference) ? LocaleFactory.localizedString("Don't show again", "Credentials") : null, TaskDialogIcon.Question,
-                    ProviderHelpServiceFactory.get().help(bookmark.getProtocol().getScheme()),
+                    ProviderHelpServiceFactory.get().help(bookmark.getProtocol()),
                     delegate (int option, Boolean verificationChecked)
                     {
                         if (verificationChecked)
