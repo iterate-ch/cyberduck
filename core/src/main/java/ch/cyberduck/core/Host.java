@@ -679,6 +679,7 @@ public class Host implements Serializable, Comparable<Host> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Host{");
         sb.append("protocol=").append(protocol);
+        sb.append(", region='").append(region).append('\'');
         sb.append(", port=").append(port);
         sb.append(", hostname='").append(hostname).append('\'');
         sb.append(", credentials=").append(credentials);
@@ -686,6 +687,7 @@ public class Host implements Serializable, Comparable<Host> {
         sb.append(", nickname='").append(nickname).append('\'');
         sb.append(", defaultpath='").append(defaultpath).append('\'');
         sb.append(", workdir=").append(workdir);
+        sb.append(", custom=").append(custom);
         sb.append(", labels=").append(labels);
         sb.append('}');
         return sb.toString();
