@@ -27,10 +27,13 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.AccelerateConfig;
 
 public class S3TransferAccelerationService implements TransferAcceleration {
+    private static final Logger log = LogManager.getLogger(S3TransferAccelerationService.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -89,6 +92,9 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     @Override
     public void configure(final boolean enable, final Path file) {
         final Host host = session.getHost();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set S3 transfer acceleration to %s", enable));
+        }
         // Set accelerated endpoint
         host.setProperty("s3.transferacceleration.enable", String.valueOf(enable));
         if(enable) {
