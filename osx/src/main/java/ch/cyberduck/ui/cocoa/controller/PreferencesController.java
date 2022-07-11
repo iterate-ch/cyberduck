@@ -270,7 +270,12 @@ public class PreferencesController extends ToolbarWindowController {
         cryptomator,
         update,
         language,
-        profiles;
+        profiles {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Profiles");
+            }
+        };
 
         public String label() {
             return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");
