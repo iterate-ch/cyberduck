@@ -125,7 +125,7 @@ public class CteraSession extends DAVSession {
     private CteraTokens getTokens(final Credentials credentials, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final AttachDeviceResponse response;
         if(this.getPublicInfo().hasWebSSO) {
-            response = this.startWebSSOFlow(cancel, credentials);
+            response = this.startWebSSOFlow(cancel);
         }
         else {
             response = this.startDesktopFlow(prompt, credentials);
@@ -160,7 +160,7 @@ public class CteraSession extends DAVSession {
         return super._getFeature(type);
     }
 
-    private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel, final Credentials credentials) throws BackgroundException {
+    private AttachDeviceResponse startWebSSOFlow(final CancelCallback cancel) throws BackgroundException {
         final String url = String.format("%s/ServicesPortal/activate?scheme=%s",
                 new HostUrlProvider().withUsername(false).withPath(false).get(host), CteraProtocol.CTERA_REDIRECT_URI
         );
