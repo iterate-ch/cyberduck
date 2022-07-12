@@ -52,6 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             passphraseTextBox.Location = new Point(84, 70);
             passphraseTextBox.Name = "passphraseTextBox";
             passphraseTextBox.Size = new Size(121, 23);
+            passphraseTextBox.Margin = new Padding(6);
             passphraseTextBox.UseSystemPasswordChar = true;
             passphraseTextBox.TabIndex = 4;
             passphraseTextBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
@@ -71,6 +72,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             strengthIndicator = new PasswordStrengthIndicator();
             strengthIndicator.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
+            strengthIndicator.Margin = new Padding(6);
             tableLayoutPanel.RowCount++;
             tableLayoutPanel.RowStyles.Insert(3 + offset, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.Controls.Add(strengthIndicator, 1, 3 + offset);
@@ -81,6 +83,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             passphraseConfirmTextBox.Location = new Point(84, 70);
             passphraseConfirmTextBox.Name = "passphraseConfirmTextBox";
             passphraseConfirmTextBox.Size = new Size(121, 23);
+            passphraseConfirmTextBox.Margin = new Padding(6);
             passphraseConfirmTextBox.UseSystemPasswordChar = true;
             passphraseConfirmTextBox.TabIndex = 4;
             passphraseConfirmTextBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
