@@ -65,7 +65,7 @@ public class S3FindFeature implements Find {
             else {
                 // Check for common prefix
                 try {
-                    new S3ObjectListService(session, acl).list(file, new CancellingListProgressListener(), containerService.getKey(file), 1);
+                    new S3ObjectListService(session, acl).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1);
                     return true;
                 }
                 catch(ListCanceledException l) {
