@@ -23,9 +23,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVListService;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +52,12 @@ public class CteraSessionTest extends AbstractCteraTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new CancelCallback() {
+            @Override
+            public void verify() throws ConnectionCanceledException {
+                fail("OAuth tokens need to be refreshed");
+            }
+        });
         assertEquals("mountainduck@cterasendbox1.onmicrosoft.com", host.getCredentials().getUsername());
         assertTrue(host.getCredentials().isSaved());
         new DAVListService(session).list(new Path(host.getDefaultPath(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
