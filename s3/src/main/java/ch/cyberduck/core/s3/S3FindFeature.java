@@ -55,6 +55,9 @@ public class S3FindFeature implements Find {
         try {
             if(containerService.isContainer(file)) {
                 try {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Test if bucket %s is accessible", file));
+                    }
                     return session.getClient().isBucketAccessible(containerService.getContainer(file).getName());
                 }
                 catch(ServiceException e) {
