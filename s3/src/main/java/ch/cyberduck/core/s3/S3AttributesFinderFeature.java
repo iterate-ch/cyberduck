@@ -114,6 +114,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
         catch(NotfoundException e) {
             if(file.isDirectory()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Search for common prefix %s", file));
+                }
                 // File may be marked as placeholder but no placeholder file exists. Check for common prefix returned.
                 try {
                     new S3ObjectListService(session, acl).list(file, new CancellingListProgressListener(), String.valueOf(Path.DELIMITER), 1);
