@@ -2,9 +2,11 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -61,14 +63,18 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
-            new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
-                new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(new SwiftObjectListService(session).list(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
-            new DisabledListProgressListener()).contains(test));
+                new DisabledListProgressListener()).contains(test));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(test));
         assertFalse(new SwiftFindFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
+        final PathCache cache = new PathCache(1);
+        final Path directory = new Path(container, prefix, EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+        assertFalse(new CachingFindFeature(cache, new SwiftFindFeature(session)).find(directory));
+        assertFalse(cache.isCached(directory));
     }
 }

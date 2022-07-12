@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -96,7 +98,11 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                 if(file.isDirectory()) {
                     // Directory placeholder file may be missing. Still return empty attributes when we find children
                     try {
-                        new SwiftObjectListService(session).list(file, listener, containerService.getKey(file));
+                        new SwiftObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file));
+                    }
+                    catch(ListCanceledException l) {
+                        // Found common prefix
+                        return PathAttributes.EMPTY;
                     }
                     catch(NotfoundException n) {
                         throw e;

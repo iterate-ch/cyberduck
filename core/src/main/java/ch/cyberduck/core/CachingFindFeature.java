@@ -54,7 +54,9 @@ public class CachingFindFeature implements Find {
         }
         final CachingListProgressListener caching = new CachingListProgressListener(cache);
         final boolean found = delegate.find(file, new ProxyListProgressListener(listener, caching));
-        caching.cache();
+        if(found) {
+            caching.cache();
+        }
         return found;
     }
 
