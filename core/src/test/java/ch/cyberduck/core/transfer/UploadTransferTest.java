@@ -97,7 +97,8 @@ public class UploadTransferTest {
 
     @Test
     public void testCacheResume() throws Exception {
-        final AtomicInteger c = new AtomicInteger();
+        final AtomicInteger c1 = new AtomicInteger();
+        final AtomicInteger c2 = new AtomicInteger();
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
@@ -124,6 +125,16 @@ public class UploadTransferTest {
             }
 
             @Override
+            public boolean isFile() {
+                return false;
+            }
+
+            @Override
+            public boolean isDirectory() {
+                return true;
+            }
+
+            @Override
             public boolean exists() {
                 return true;
             }
@@ -132,15 +143,20 @@ public class UploadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws ConnectionCanceledException {
-                if(folder.equals(root.getParent())) {
-                    c.incrementAndGet();
-                }
                 final AttributedList<Path> list = new AttributedList<>();
+                if(folder.equals(root.getParent())) {
+                    c1.incrementAndGet();
+                    list.add(root);
+                }
+                if(folder.equals(root)) {
+                    c2.incrementAndGet();
+                }
                 listener.chunk(folder, list);
                 return list;
             }
         };
-        Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
+        final PathCache cache = new PathCache(2);
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
@@ -148,7 +164,7 @@ public class UploadTransferTest {
                                  final ProgressListener listener, final StreamListener streamListener) {
                 assertTrue(options.resumeRequested);
             }
-        };
+        }.withCache(cache);
         final TransferOptions options = new TransferOptions();
         options.resumeRequested = true;
         new SingleTransferWorker(session, null, t, options, new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -159,12 +175,16 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
-        assertEquals(1, c.get());
+        assertEquals(1, c1.get());
+        assertEquals(1, c2.get());
+        assertTrue(cache.isCached(root.getParent()));
+        assertTrue(cache.isCached(root));
     }
 
     @Test
     public void testCacheRename() throws Exception {
-        final AtomicInteger c = new AtomicInteger();
+        final AtomicInteger c1 = new AtomicInteger();
+        final AtomicInteger c2 = new AtomicInteger();
         final NullLocal local = new NullLocal("t") {
             @Override
             public AttributedList<Local> list() {
@@ -191,6 +211,16 @@ public class UploadTransferTest {
             }
 
             @Override
+            public boolean isFile() {
+                return false;
+            }
+
+            @Override
+            public boolean isDirectory() {
+                return true;
+            }
+
+            @Override
             public boolean exists() {
                 return true;
             }
@@ -199,13 +229,20 @@ public class UploadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws ConnectionCanceledException {
-                c.incrementAndGet();
                 final AttributedList<Path> list = new AttributedList<>();
+                if(folder.equals(root.getParent())) {
+                    c1.incrementAndGet();
+                    list.add(root);
+                }
+                if(folder.equals(root)) {
+                    c2.incrementAndGet();
+                }
                 listener.chunk(folder, list);
                 return list;
             }
         };
-        Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
+        final PathCache cache = new PathCache(2);
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus overall, final TransferStatus segment,
@@ -213,7 +250,7 @@ public class UploadTransferTest {
                                  final ProgressListener listener, final StreamListener streamListener) {
                 //
             }
-        };
+        }.withCache(cache);
         new SingleTransferWorker(session, null, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
@@ -221,7 +258,10 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
-        assertEquals(1, c.get());
+        assertEquals(1, c1.get());
+        assertEquals(0, c2.get());
+        assertTrue(cache.isCached(root.getParent()));
+        assertFalse(cache.isCached(root));
     }
 
     @Test
