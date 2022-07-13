@@ -95,7 +95,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
                 headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
             }
         }
-        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
+        if(session.getFeature(Lock.class) != null && status.getLockId() != null &&
+                !new HostPreferences(session.getHost()).getBoolean("fs.lock.implementation.pseudo")) {
             // Indicate that the client has knowledge of that state token
             headers.add(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
         }

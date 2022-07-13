@@ -97,9 +97,10 @@ public class DAVMetadataFeature implements Headers {
                 element.setTextContent(entry.getValue());
                 props.add(element);
             }
-            if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
+            if(session.getFeature(Lock.class) != null && status.getLockId() != null &&
+                    !new HostPreferences(session.getHost()).getBoolean("fs.lock.implementation.pseudo")) {
                 session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList(),
-                    Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
             }
             else {
                 session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList());
