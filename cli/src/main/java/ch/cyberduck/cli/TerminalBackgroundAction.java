@@ -18,7 +18,10 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.threading.BackgroundActionListener;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.Worker;
 
@@ -28,5 +31,20 @@ public class TerminalBackgroundAction<T> extends WorkerBackgroundAction<T> {
                                     final SessionPool session,
                                     final Worker<T> worker) {
         super(controller, session, worker);
+    }
+
+    public TerminalBackgroundAction(final TerminalController controller,
+                                    final SessionPool session,
+                                    final Worker<T> worker,
+                                    final ProgressListener progress) {
+        super(controller, session, worker, progress);
+    }
+
+    public TerminalBackgroundAction(final BackgroundActionListener listener,
+                                    final SessionPool session,
+                                    final Worker<T> worker,
+                                    final ProgressListener progress,
+                                    final AlertCallback alert) {
+        super(listener, session, worker, progress, alert);
     }
 }
