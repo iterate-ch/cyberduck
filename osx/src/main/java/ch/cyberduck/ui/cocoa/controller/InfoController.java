@@ -2690,6 +2690,11 @@ public class InfoController extends ToolbarWindowController {
         },
         versions {
             @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Versions"), "Info");
+            }
+
+            @Override
             public String image() {
                 return "NSMultipleDocuments";
             }
