@@ -62,6 +62,7 @@ import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
 import ch.cyberduck.core.storegate.StoregateProtocol;
+import ch.cyberduck.core.threading.DisabledAlertCallback;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -316,7 +317,8 @@ public class Terminal {
                 else {
                     try {
                         // Set remote file attributes of existing file on server
-                        remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(cache, remote))));
+                        remote.withAttributes(this.execute(new TerminalBackgroundAction<>(controller, source, new AttributesWorker(cache, remote),
+                                controller, new DisabledAlertCallback())));
                     }
                     catch(TerminalBackgroundException e) {
                         if(e.getCause() instanceof NotfoundException) {
@@ -327,6 +329,7 @@ public class Terminal {
                                 case synchronize:
                                 case delete:
                                     // We expect file on server to exist
+                                    alert.print(e);
                                     throw e;
                                 default:
                                     // Try to find parent instead
