@@ -581,7 +581,6 @@ public class Terminal {
         try {
             final T result = controller.background(action).get();
             if(action.hasFailed()) {
-                alert.print(action.getFailure());
                 throw new TerminalBackgroundException(action.getFailure());
             }
             return result;
