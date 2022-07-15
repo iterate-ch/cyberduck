@@ -97,10 +97,26 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         }
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test
     public void testListNotFoundFolder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final String name = new AlphanumericRandomStringService().random();
+        try {
+            new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, String.format("%s-", name), EnumSet.of(Path.Type.file)), new TransferStatus());
+        try {
+            new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Ignore
