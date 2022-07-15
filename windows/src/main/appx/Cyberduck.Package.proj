@@ -200,11 +200,14 @@
       <PackagePath>$(PackageLayout)\Splat.dll</PackagePath>
     </LayoutFile>
 
+    <LayoutFile Include="$(OutputPath)\System.Reactive.dll">
+      <PackagePath>$(PackageLayout)\System.Reactive.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\System.Buffers.dll">
       <PackagePath>$(PackageLayout)\System.Buffers.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\System.Memory.dll">
-       <PackagePath>$(PackageLayout)\System.Memory.dll</PackagePath>
+      <PackagePath>$(PackageLayout)\System.Memory.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\System.Numerics.Vectors.dll">
       <PackagePath>$(PackageLayout)\System.Numerics.Vectors.dll</PackagePath>
