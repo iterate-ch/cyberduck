@@ -119,6 +119,21 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test
+    public void testListFile() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final String name = new AlphanumericRandomStringService().random();
+        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        try {
+            new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path(container, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
     @Ignore
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolderMinio() throws Exception {
