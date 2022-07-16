@@ -47,10 +47,11 @@ public class DAVDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
-        for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
+        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             boolean skip = false;
+            final Path file = entry.getKey();
             for(Path d : deleted) {
-                if(file.getKey().isChild(d)) {
+                if(file.isChild(d)) {
                     skip = true;
                     break;
                 }
@@ -58,23 +59,24 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            deleted.add(file.getKey());
-            callback.delete(file.getKey());
+            deleted.add(file);
+            callback.delete(file);
             try {
-                if(session.getFeature(Lock.class) != null && file.getValue().getLockId() != null) {
+                final TransferStatus status = entry.getValue();
+                if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
                     // Indicate that the client has knowledge of that state token
-                    session.getClient().delete(new DAVPathEncoder().encode(file.getKey()),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", file.getValue().getLockId())));
+                    session.getClient().delete(new DAVPathEncoder().encode(file),
+                            Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
                 }
                 else {
-                    session.getClient().delete(new DAVPathEncoder().encode(file.getKey()));
+                    session.getClient().delete(new DAVPathEncoder().encode(file));
                 }
             }
             catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file.getKey());
+                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
-                throw new HttpExceptionMappingService().map(e, file.getKey());
+                throw new HttpExceptionMappingService().map(e, file);
             }
         }
     }
