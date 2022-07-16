@@ -20,5 +20,5 @@
 @end
 
 @interface WorkspaceSchemeHandlerProxy : NSObject
-- (void)setDefaultApplicationAtURL:(NSURL* _Nonnull) applicationURL toOpenURLsWithScheme:(NSString* _Nonnull) scheme completionHandler:(id <WorkspaceCompletionCallback> _Nonnull)callback;
+- (void)setDefaultApplicationAtURL:(NSURL* _Nonnull) applicationURL toOpenURLsWithScheme:(NSString* _Nonnull) scheme completionHandler:(id <WorkspaceCompletionCallback> _Nonnull)callback API_AVAILABLE(macosx(12.0));
 @end
