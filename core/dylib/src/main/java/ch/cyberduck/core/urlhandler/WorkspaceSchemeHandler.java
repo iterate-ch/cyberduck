@@ -62,7 +62,9 @@ public class WorkspaceSchemeHandler extends AbstractSchemeHandler {
                 final Proxy callback = new Proxy(new WorkspaceSchemeHandlerProxy.CompletionHandler() {
                     @Override
                     public void didFinishWithError(final NSError error) {
-                        log.warn(String.format("Setting scheme handler returned with error %s", error));
+                        if(error != null) {
+                            log.warn(String.format("Setting scheme handler returned with error %s", error));
+                        }
                         lock.countDown();
                     }
                 });
