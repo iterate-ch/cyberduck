@@ -107,5 +107,9 @@
         <exec executable="/usr/sbin/pkgutil" failonerror="true">
             <arg line="--check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
+        <antcall target="notarize" unless:true="${skipNotarize}">
+            <param name="notarize.archive.upload" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
+            <param name="notarize.archive.staple" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
+        </antcall>
     </target>
 </project>
