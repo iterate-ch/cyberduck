@@ -13,7 +13,7 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<project name="Cyberduck CLI Mac" basedir=".">
+<project name="Cyberduck CLI Mac" basedir="." xmlns:unless="ant:unless">
 
     <import file="../../build.xml"/>
 
@@ -107,5 +107,9 @@
         <exec executable="/usr/sbin/pkgutil" failonerror="true">
             <arg line="--check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
+        <antcall target="notarize" unless:true="${skipNotarize}">
+            <param name="notarize.archive.upload" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
+            <param name="notarize.archive.staple" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
+        </antcall>
     </target>
 </project>

@@ -156,4 +156,17 @@
             <srcfile/>
         </apply>
     </target>
+
+    <target name="notarize">
+        <echo message="Start notarizing '${notarize.archive.upload}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true"
+              resultproperty="exitcode_notarytool" output="result.plist" error="error.log">
+            <arg line="notarytool submit --apple-id '${env.NOTARIZATION_USER}' --password '${env.NOTARIZATION_PW}' --team-id G69SCX94XU --verbose '${notarize.archive.upload}' --wait --timeout 2h --output-format plist"/>
+        </exec>
+        <echo message="Start stapling '${notarize.archive.staple}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="stapler staple -v '${notarize.archive.staple}'"/>
+        </exec>
+        <echo message="Stapling was successful"/>
+    </target>
 </project>
