@@ -13,7 +13,7 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<project name="Cyberduck CLI Mac" basedir=".">
+<project name="Cyberduck CLI Mac" basedir="." xmlns:unless="ant:unless">
 
     <import file="../../build.xml"/>
 
