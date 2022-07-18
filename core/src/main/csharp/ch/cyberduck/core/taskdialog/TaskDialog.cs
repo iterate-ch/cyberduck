@@ -331,6 +331,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
         public TaskDialog VerificationText(in string verificationText, bool verificationChecked)
         {
+            hasVerification = true;
             config.pszVerificationText = verificationText;
             if (verificationChecked)
             {
