@@ -98,7 +98,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
                 if(file.isDirectory()) {
                     // Directory placeholder file may be missing. Still return empty attributes when we find children
                     try {
-                        new SwiftObjectListService(session).list(file, new CancellingListProgressListener(), containerService.getKey(file));
+                        new SwiftObjectListService(session).list(file, new CancellingListProgressListener());
                     }
                     catch(ListCanceledException l) {
                         // Found common prefix

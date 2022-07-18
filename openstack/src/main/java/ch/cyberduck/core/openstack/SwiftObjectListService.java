@@ -74,7 +74,7 @@ public class SwiftObjectListService implements ListService {
             final Path container = containerService.getContainer(directory);
             do {
                 list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
-                    prefix, null, limit, marker, Path.DELIMITER);
+                        prefix, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final PathAttributes attr = attributes.toAttributes(object);
                     String name = StringUtils.removeStart(object.getName(), prefix);
@@ -98,8 +98,11 @@ public class SwiftObjectListService implements ListService {
             if(!containerService.isContainer(directory)) {
                 if(children.isEmpty()) {
                     try {
-                        if(0 == session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
-                            containerService.getKey(directory), null, 1, null, Path.DELIMITER).size()) {
+                        // Do not throw failure if placeholder is found
+                        final List<StorageObject> chunk = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
+                                containerService.getKey(directory), null, 1, null, Path.DELIMITER);
+                        if(chunk.stream().filter(object -> SwiftDirectoryFeature.DIRECTORY_MIME_TYPE.equals(object.getMimeType()))
+                                .map(StorageObject::getName).noneMatch(key -> key.equals(containerService.getKey(directory)))) {
                             throw new NotfoundException(directory.getAbsolute());
                         }
                     }
