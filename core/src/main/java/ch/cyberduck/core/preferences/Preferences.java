@@ -931,6 +931,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("webdav.microsoftiis.header.translate", String.valueOf(true));
 
         this.setDefault("webdav.list.handler.sax", String.valueOf(true));
+        this.setDefault("webdav.lock.enable", String.valueOf(true));
 
         /*
          * Session pool
