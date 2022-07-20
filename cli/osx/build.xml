@@ -100,12 +100,12 @@
             <replacefilter token="${SOURCE}"
                            value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
         </replace>
-        <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
-            <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="pkgbuild --component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
         <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5"/>
-        <exec executable="/usr/sbin/pkgutil" failonerror="true">
-            <arg line="--check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
+        <exec executable="/usr/bin/xcrun" failonerror="true">
+            <arg line="pkgutil --check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
         <antcall target="notarize" unless:true="${skipNotarize}">
             <param name="notarize.archive.upload" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
