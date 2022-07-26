@@ -43,4 +43,18 @@
         </Reference>
     </ItemGroup>
 
+    <PropertyGroup>
+        <!-- Treat SDK 6.0.301 as last known to work. -->
+        <NETSDKBeforeFeature>$([MSBuild]::VersionLessThanOrEquals('$(NETCoreSdkVersion)', '6.0.301'))</NETSDKBeforeFeature>
+    </PropertyGroup>
+
+    <Target Name="SDKFix_RemoveDuplicateAnalyzers" BeforeTargets="CoreCompile" Condition="!$(NETSDKBeforeFeature)">
+        <ItemGroup>
+            <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
+            <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+            <Analyzer Remove="@(Analyzer)" />
+            <Analyzer Include="@(FilteredAnalyzer)" />
+        </ItemGroup>
+    </Target>
+
 </Project>
