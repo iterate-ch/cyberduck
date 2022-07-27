@@ -96,10 +96,11 @@ public class SessionPoolFactory {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
+                final HostPreferences preferences = new HostPreferences(bookmark);
                 return new DefaultSessionPool(connect, trust, key, registry, transcript, bookmark)
-                        .withMinIdle(new HostPreferences(bookmark).getInteger("connection.pool.minidle"))
-                        .withMaxIdle(new HostPreferences(bookmark).getInteger("connection.pool.maxidle"))
-                        .withMaxTotal(new HostPreferences(bookmark).getInteger("connection.pool.maxtotal"));
+                        .withMinIdle(preferences.getInteger("connection.pool.minidle"))
+                        .withMaxIdle(preferences.getInteger("connection.pool.maxidle"))
+                        .withMaxTotal(preferences.getInteger("connection.pool.maxtotal"));
             default:
                 // Stateless protocol
                 if(log.isInfoEnabled()) {
