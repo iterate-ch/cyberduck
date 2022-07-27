@@ -1,8 +1,4 @@
 {
-  "sdk": {
-    "version": "6.0.301",
-    "rollForward": "disable"
-  },
   "msbuild-sdks": {
     "Microsoft.Build.NoTargets": "3.3.0",
     "Microsoft.Build.Traversal": "3.1.6"
