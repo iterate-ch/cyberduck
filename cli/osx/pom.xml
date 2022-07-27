@@ -170,7 +170,7 @@
             </properties>
         </profile>
         <profile>
-            <id>sign</id>
+            <id>installer</id>
             <activation>
                 <os>
                     <family>Mac</family>

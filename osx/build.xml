@@ -159,11 +159,9 @@
             <replacefilter token="${MACOSX_DEPLOYMENT_TARGET}" value="${app.runtime.system.min}"/>
         </replace>
         <echo message="Building ${build.deploy}/${bundle.archive.pkg}"/>
-        <echo
-                message="Code signing ${app.bundle} with certificate ${installer.certificate} from ${installer.keychain}"/>
-        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
-            <arg
-                    line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>
+        <echo message="Code signing ${app.bundle} with certificate ${installer.certificate} from ${installer.keychain}"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="productbuild --component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>
         </exec>
         <antcall target="notarize" unless:true="${skipNotarize}">
             <param name="notarize.archive.upload" value="${build.deploy}/${bundle.archive.pkg}"/>
