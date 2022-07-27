@@ -19,7 +19,7 @@ import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -97,9 +97,9 @@ public class SessionPoolFactory {
                     log.info(String.format("Create new pooled connection pool for %s", bookmark));
                 }
                 return new DefaultSessionPool(connect, trust, key, registry, transcript, bookmark)
-                        .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
-                        .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
-                        .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+                        .withMinIdle(new HostPreferences(bookmark).getInteger("connection.pool.minidle"))
+                        .withMaxIdle(new HostPreferences(bookmark).getInteger("connection.pool.maxidle"))
+                        .withMaxTotal(new HostPreferences(bookmark).getInteger("connection.pool.maxtotal"));
             default:
                 // Stateless protocol
                 if(log.isInfoEnabled()) {
