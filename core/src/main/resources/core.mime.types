@@ -1153,7 +1153,7 @@ application/zip					zip
 # audio/32kadpcm
 # audio/3gpp
 # audio/3gpp2
-# audio/ac3
+audio/ac3           ac3
 audio/adpcm					adp
 # audio/amr
 # audio/amr-wb
@@ -1175,7 +1175,7 @@ audio/basic					au snd
 # audio/dsr-es202212
 # audio/dv
 # audio/dvi4
-# audio/eac3
+audio/eac3          eac3
 # audio/evrc
 # audio/evrc-qcp
 # audio/evrc0
