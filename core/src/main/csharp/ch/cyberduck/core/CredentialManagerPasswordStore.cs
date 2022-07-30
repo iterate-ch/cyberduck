@@ -121,9 +121,9 @@ namespace Ch.Cyberduck.Core
             var target = ToUri(bookmark);
             var cred = WinCredentialManager.GetCredentials(target.AbsoluteUri);
             if (cred.Attributes is Dictionary<string, string> attrs
-                && attrs.TryGetValue("OAuth Access Token", out var accessToken)
-                && attrs.TryGetValue("OAuth Refresh Token", out var refreshToken))
+                && attrs.TryGetValue("OAuth Access Token", out var accessToken))
             {
+                attrs.TryGetValue("OAuth Refresh Token", out var refreshToken);
                 long expiry = default;
                 if (attrs.TryGetValue("OAuth Expiry", out var expiryValue))
                 {
