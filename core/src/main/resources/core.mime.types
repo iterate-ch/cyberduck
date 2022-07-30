@@ -1222,7 +1222,7 @@ audio/mpeg					mpga mp2 mp2a mp3 m2a m3a
 # audio/mpeg4-generic
 # audio/musepack
 audio/ogg					oga ogg spx
-# audio/opus
+audio/opus        opus
 # audio/parityfec
 # audio/pcma
 # audio/pcma-wb
