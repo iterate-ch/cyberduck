@@ -1247,6 +1247,7 @@ audio/silk					sil
 # audio/tone
 # audio/uemclip
 # audio/ulpfec
+audio/usac        usac
 # audio/vdvi
 # audio/vmr-wb
 # audio/vnd.3gpp.iufp
