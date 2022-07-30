@@ -1310,6 +1310,11 @@ chemical/x-cml					cml
 chemical/x-csml					csml
 # chemical/x-pdb
 chemical/x-xyz					xyz
+font/otf          otf
+font/sfnt         sfnt
+font/ttf          ttf
+font/woff         woff
+font/woff2        woff2
 image/bmp					bmp
 image/cgm					cgm
 # image/example
