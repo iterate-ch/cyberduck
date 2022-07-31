@@ -1,9 +1,21 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledCertificateIdentityCallback;
+import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
@@ -25,7 +37,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.utils.SignatureUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -46,9 +57,9 @@ public class S3SessionTest extends AbstractS3Test {
     public void testHttpProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (HTTP).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         assertFalse(host.getProtocol().isSecure());
         final S3Session session = new S3Session(host, new X509TrustManager() {
@@ -229,25 +240,6 @@ public class S3SessionTest extends AbstractS3Test {
         assertFalse(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
                 .getDisableDnsBuckets());
         session.login(new DisabledProxyFinder().find(host.getHostname()), new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
-
-    @Test(expected = LoginFailureException.class)
-    @Ignore
-    public void testTemporaryAccessToken() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Temporary Credentials).cyberduckprofile"));
-        assertTrue(profile.validate(new Credentials(), new LoginOptions(profile)));
-        final Host host = new Host(profile);
-        final S3Session s = new S3Session(host);
-        s.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        try {
-            s.login(new DisabledProxyFinder().find(host.getHostname()), new DisabledLoginCallback(), new DisabledCancelCallback());
-        }
-        catch(LoginFailureException e) {
-            assertEquals(ConnectionTimeoutException.class, e.getCause().getClass());
-            throw e;
-        }
     }
 
     @Test

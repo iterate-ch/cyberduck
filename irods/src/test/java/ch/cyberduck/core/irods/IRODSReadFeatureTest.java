@@ -63,7 +63,7 @@ public class IRODSReadFeatureTest {
     public void testRead() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
@@ -99,7 +99,7 @@ public class IRODSReadFeatureTest {
     public void testReadNotFound() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
@@ -119,7 +119,7 @@ public class IRODSReadFeatureTest {
     public void testReadRange() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));

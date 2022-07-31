@@ -25,7 +25,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
@@ -140,7 +139,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     public void testNonEmptyProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/Wasabi (us-central-1).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Wasabi (us-central-1).cyberduckprofile"));
         final S3Session session = new S3Session(new Host(profile, profile.getDefaultHostname()));
         final S3LocationFeature feature = new S3LocationFeature(session);
         assertFalse(feature.getLocations().isEmpty());

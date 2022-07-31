@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>wasabisys-ca-central-1</string>
+        <string>wasabisys-us-central-1</string>
         <key>Description</key>
-        <string>Wasabi CA Central 1 (Toronto)</string>
+        <string>Wasabi US Central 1 (Texas)</string>
         <key>Default Hostname</key>
-        <string>s3.ca-central-1.wasabisys.com</string>
+        <string>s3.us-central-1.wasabisys.com</string>
         <key>Hostname Configurable</key>
         <false/>
         <key>Default Port</key>
@@ -38,10 +38,10 @@
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
         <key>Region</key>
-        <string>ca-central-1</string>
+        <string>us-central-1</string>
         <key>Regions</key>
         <array>
-            <string>ca-central-1</string>
+            <string>us-central-1</string>
         </array>
         <key>Properties</key>
         <array>

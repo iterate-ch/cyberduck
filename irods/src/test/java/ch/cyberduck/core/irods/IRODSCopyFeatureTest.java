@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -52,9 +51,9 @@ public class IRODSCopyFeatureTest {
     public void testCopy() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
