@@ -44,6 +44,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.UUID;
 
 public abstract class AbstractMantaTest {
@@ -54,8 +55,9 @@ public abstract class AbstractMantaTest {
 
     @Before
     public void setup() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new MantaProtocol()))).read(
-            new Local("../profiles/Joyent Triton Object Storage (us-east).cyberduckprofile"));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new MantaProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/Joyent Triton Object Storage (us-east).cyberduckprofile"));
 
         final String hostname;
         final Local file;
