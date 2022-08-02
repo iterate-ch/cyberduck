@@ -49,10 +49,10 @@ public final class ProtocolFactory {
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    public static final Predicate<Protocol> PROTOCOL_PREDICATE
+    public static final Predicate<Protocol> DEFAULT_PROTOCOL_PREDICATE
             = protocol -> !protocol.isEnabled() && !protocol.isBundled();
 
-    public static final Predicate<Protocol> DEFAULT_PROFILE_PREDICATE
+    public static final Predicate<Protocol> BUNDLED_PROFILE_PREDICATE
             = protocol -> protocol.isEnabled() && protocol.isBundled();
 
     public static ProtocolFactory get() {
@@ -103,9 +103,9 @@ public final class ProtocolFactory {
      */
     public void load() {
         // Return default registered protocol specification as parent but not other profile
-        this.load(new LocalProfilesFinder(this, bundle, PROTOCOL_PREDICATE));
+        this.load(new LocalProfilesFinder(this, bundle, DEFAULT_PROTOCOL_PREDICATE));
         // Load thirdparty protocols
-        this.load(new LocalProfilesFinder(this, profiles, DEFAULT_PROFILE_PREDICATE));
+        this.load(new LocalProfilesFinder(this, profiles, BUNDLED_PROFILE_PREDICATE));
     }
 
     /**
@@ -133,7 +133,7 @@ public final class ProtocolFactory {
      */
     public Local register(final Local file) {
         try {
-            final Profile profile = new ProfilePlistReader(this, DEFAULT_PROFILE_PREDICATE).read(file);
+            final Profile profile = new ProfilePlistReader(this, BUNDLED_PROFILE_PREDICATE).read(file);
             if(null == profile) {
                 log.error("Attempt to register unknown protocol");
                 return null;

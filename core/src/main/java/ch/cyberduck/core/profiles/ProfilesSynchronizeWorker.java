@@ -64,7 +64,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
     @Override
     public Set<ProfileDescription> initialize() {
         try {
-            return new LocalProfilesFinder(registry, directory).find();
+            return new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE).find();
         }
         catch(BackgroundException e) {
             return Collections.emptySet();
@@ -75,7 +75,7 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
     public Set<ProfileDescription> run(final Session<?> session) throws BackgroundException {
         final Set<ProfileDescription> returned = new HashSet<>();
         // Find all locally installed profiles
-        final Set<ProfileDescription> installed = new LocalProfilesFinder(registry, directory).find();
+        final Set<ProfileDescription> installed = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE).find();
         // Find all profiles from repository
         final Set<ProfileDescription> remote = new RemoteProfilesFinder(registry, session).find();
         final ProfileMatcher matcher = new ChecksumProfileMatcher(remote);

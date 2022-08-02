@@ -38,8 +38,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.profiles.LocalProfileDescription;
 import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
@@ -72,7 +70,6 @@ public class ProfilesPreferencesController extends BundleController {
     private final ProtocolFactory protocols = ProtocolFactory.get();
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
-    private final Preferences preferences = PreferencesFactory.get();
 
     /**
      * Synchronized ist of available profiles

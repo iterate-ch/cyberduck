@@ -64,18 +64,13 @@ public class ProfileDictionary<T> {
         final Deserializer<T> dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
-            final Protocol parent = protocols.forName(protocols.find(new Predicate<Protocol>() {
-                @Override
-                public boolean test(final Protocol protocol) {
-                    // Return default registered protocol specification as parent but not other profile
-                    return !(protocol.isEnabled() || protocol.isBundled());
-                }
-            }), protocol, null);
-            if(null == parent) {
+            // Return default registered protocol specification as parent
+            final Protocol found = protocols.forName(protocols.find(parent), protocol, null);
+            if(null == found) {
                 log.error(String.format("Unknown protocol %s in profile", protocol));
                 return null;
             }
-            return new Profile(parent, dict);
+            return new Profile(found, dict);
         }
         log.error("Missing protocol in profile");
         return null;
