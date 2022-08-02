@@ -54,9 +54,8 @@ public class SFTPListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        try {
-            final AttributedList<Path> children = new AttributedList<Path>();
-            final RemoteDirectory handle = session.sftp().openDir(directory.getAbsolute());
+        final AttributedList<Path> children = new AttributedList<Path>();
+        try (RemoteDirectory handle = session.sftp().openDir(directory.getAbsolute())) {
             for(RemoteResourceInfo f : handle.scan(new RemoteResourceFilter() {
                 @Override
                 public boolean accept(RemoteResourceInfo remoteResourceInfo) {
@@ -82,7 +81,6 @@ public class SFTPListService implements ListService {
                     listener.chunk(directory, children);
                 }
             }
-            handle.close();
             return children;
         }
         catch(IOException e) {
