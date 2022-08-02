@@ -24,7 +24,6 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -95,20 +94,21 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                                         final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
                                         if(!status.getChecksum().equals(etag)) {
                                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                                MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                                    etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
+                                                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                                            etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
                                         }
                                     }
                                     return null;
                                 }
                                 else {
-                                    log.error(String.format("Missing ETag in response %s", response));
-                                    throw new InteroperabilityException(response.getStatusLine().getReasonPhrase());
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("No ETag header in response available");
+                                    }
                                 }
                             default:
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
                     finally {
@@ -148,7 +148,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                     super.close();
                     try {
                         new BrickUploadFeature(session, BrickWriteFeature.this)
-                            .completeUpload(file, ref, status, Collections.singletonList(status));
+                                .completeUpload(file, ref, status, Collections.singletonList(status));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e.getMessage(), e);
