@@ -101,7 +101,9 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
                                     return null;
                                 }
                                 else {
-                                    log.debug("No ETag header in response available");
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("No ETag header in response available");
+                                    }
                                 }
                             default:
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
