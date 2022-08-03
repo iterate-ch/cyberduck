@@ -25,6 +25,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
 
@@ -39,8 +41,11 @@ public class GraphLockFeature implements Lock<String> {
 
     @Override
     public String lock(final Path file) throws BackgroundException {
+        final Publication publication;
         try {
-            Files.checkout(session.getItem(file));
+            final DriveItem item = session.getItem(file);
+            Files.checkout(item);
+            publication = Files.publication(item);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to checkout file {0}", e, file);
@@ -48,7 +53,7 @@ public class GraphLockFeature implements Lock<String> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
         }
-        return new AsciiRandomStringService().random();
+        return publication.getVersionId();
     }
 
     @Override
