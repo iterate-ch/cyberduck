@@ -17,31 +17,34 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             var images = IconCache.Filter<Image>(((object key, string classifier, int) f) => Equals(key, f.key) && Equals(classifier, f.classifier));
             if (!images.Any())
             {
-                bool isDefault = !IconCache.TryGetIcon<Image>(key, out _, classifier);
-                Stream stream = default;
-                bool dispose = true;
-                try
+                using (IconCache.WriteLock())
                 {
-                    stream = GetStream(path);
-                    images = GetImages(stream, (c, s) => c.TryGetIcon<Image>(key, out _, classifier), (c, s, i) =>
+                    bool isDefault = !IconCache.TryGetIcon<Image>(key, out _, classifier);
+                    Stream stream = default;
+                    bool dispose = true;
+                    try
                     {
-                        if (isDefault)
+                        stream = GetStream(path);
+                        images = GetImages(stream, (c, s) => c.TryGetIcon<Image>(key, out _, classifier), (c, s, i) =>
                         {
-                            isDefault = false;
-                            if (returnDefault)
+                            if (isDefault)
                             {
-                                image = i;
+                                isDefault = false;
+                                if (returnDefault)
+                                {
+                                    image = i;
+                                }
+                                IconCache.CacheIcon<Image>(key, s, classifier);
                             }
-                            IconCache.CacheIcon<Image>(key, s, classifier);
-                        }
-                        IconCache.CacheIcon(key, s, i, classifier);
-                    }, out dispose);
-                }
-                finally
-                {
-                    if (dispose && stream != null)
+                            IconCache.CacheIcon(key, s, i, classifier);
+                        }, out dispose);
+                    }
+                    finally
                     {
-                        stream.Dispose();
+                        if (dispose && stream != null)
+                        {
+                            stream.Dispose();
+                        }
                     }
                 }
             }

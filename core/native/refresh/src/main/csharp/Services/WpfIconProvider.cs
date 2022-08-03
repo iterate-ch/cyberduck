@@ -147,10 +147,10 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             var images = IconCache.Filter<BitmapSource>(((object key, string classifier, int) f) => Equals(key, f.key) && Equals(classifier, f.classifier));
             if (!images.Any())
             {
-                bool isDefault = !IconCache.TryGetIcon<BitmapSource>(key, out _, classifier);
-                using Stream stream = GetStream(path);
                 using (IconCache.WriteLock())
                 {
+                    bool isDefault = !IconCache.TryGetIcon<BitmapSource>(key, out _, classifier);
+                    using Stream stream = GetStream(path);
                     images = GetImages(stream, (c, s) => c.TryGetIcon<BitmapSource>(key, s, out _, classifier), (c, s, i) =>
                     {
                         if (isDefault)
@@ -164,7 +164,6 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                         }
                         IconCache.CacheIcon(key, s, i, classifier);
                     });
-
                 }
             }
             @default = image;
