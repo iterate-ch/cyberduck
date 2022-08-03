@@ -18,20 +18,14 @@ namespace Ch.Cyberduck.Core.Refresh.Services
         public void CacheIcon<T>(object key, int size, string classifier = default)
         {
             var e = (key, classifier, true, 0);
-            if (!cache.TryGetValue(e, out var list))
-            {
-                cache[e] = list = new Hashtable();
-            }
+            Hashtable list = GetCache(e);
             list[typeof(T)] = size;
         }
 
         public void CacheIcon<T>(object key, int size, T image, string classifier = default)
         {
             var e = (key, classifier, false, size);
-            if (!cache.TryGetValue(e, out var list))
-            {
-                cache[e] = list = new Hashtable();
-            }
+            Hashtable list = GetCache(e);
             list[typeof(T)] = image;
         }
 
@@ -44,6 +38,30 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                     .Select(x => x.Value)
                     .Select(x => (T)x[typeof(T)])
                     .Where(x => x is not null).ToList();
+            }
+        }
+
+        public Hashtable GetCache(in (object, string, bool, int) key)
+        {
+            using (UpgradeableReadLock())
+            {
+                if (!cache.TryGetValue(key, out var list))
+                {
+                    list = GetCacheExclusive(key);
+                }
+                return list;
+            }
+        }
+
+        public Hashtable GetCacheExclusive(in (object, string, bool, int) key)
+        {
+            using (WriteLock())
+            {
+                if (!cache.TryGetValue(key, out var list))
+                {
+                    cache[key] = list = new();
+                }
+                return list;
             }
         }
 
