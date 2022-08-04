@@ -53,10 +53,21 @@ public class GraphFileIdProvider extends CachingFileIdProvider implements FileId
             return cached;
         }
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
-        final Path found = list.find(new SimplePathPredicate(file));
+        final Path found = list.find(new SymlinkUnawarePathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
         return this.cache(file, found.attributes().getFileId());
+    }
+
+    private final static class SymlinkUnawarePathPredicate extends SimplePathPredicate {
+        public SymlinkUnawarePathPredicate(final Path file) {
+            super(file.isFile() ? Path.Type.file : Path.Type.directory, file.getAbsolute());
+        }
+
+        @Override
+        public boolean test(final Path test) {
+            return this.equals(new SymlinkUnawarePathPredicate(test));
+        }
     }
 }

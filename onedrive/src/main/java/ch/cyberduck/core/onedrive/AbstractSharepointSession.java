@@ -62,8 +62,8 @@ public abstract class AbstractSharepointSession extends GraphSession {
         return home;
     }
 
-    public boolean isHome(final Path home) {
-        return new SimplePathPredicate(home).test(home);
+    public boolean isHome(final Path file) {
+        return new SimplePathPredicate(home).test(file);
     }
 
     public abstract boolean isSingleSite();
