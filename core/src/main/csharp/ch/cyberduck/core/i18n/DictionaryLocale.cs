@@ -1,25 +1,29 @@
-﻿//
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2022 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-//
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//
+// 
+// Bug fixes, suggestions and comments should be sent to:
+// feedback@cyberduck.io
+// 
+
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 //
 
-using ch.cyberduck.core.i18n;
-using org.apache.logging.log4j;
 using System;
 using System.Resources;
+using ch.cyberduck.core.i18n;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.I18n
 {
@@ -37,7 +41,9 @@ namespace Ch.Cyberduck.Core.I18n
         {
             preferences = PreferencesFactory.get();
             _enabled = preferences.getBoolean("application.localization.enable");
-            resourceManager = new Lazy<ResourceManager>(() => new ResourceManager("i18n." + preferences.getProperty("application.language"), typeof(DictionaryLocale).Assembly));
+            resourceManager = new Lazy<ResourceManager>(() =>
+                new ResourceManager("i18n." + preferences.getProperty("application.language"),
+                    typeof(DictionaryLocale).Assembly));
         }
 
         public string localize(string key, string table)
@@ -46,6 +52,7 @@ namespace Ch.Cyberduck.Core.I18n
             {
                 return key;
             }
+
             var resources = resourceManager.Value;
             string value;
             try
@@ -57,11 +64,17 @@ namespace Ch.Cyberduck.Core.I18n
                 Log.warn(string.Format("Key '{0}' in bundle '{1}' not found", key, table), e);
                 return key;
             }
+
             if (string.IsNullOrEmpty(value))
             {
-                Log.warn(string.Format("Key '{0}' in bundle '{1}' not found", key, table));
+                if (Log.isTraceEnabled())
+                {
+                    Log.trace(string.Format("Key '{0}' in bundle '{1}' not found", key, table));
+                }
+
                 return key;
             }
+
             return value;
         }
 
