@@ -7,7 +7,6 @@ import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.JSON;
 import ch.cyberduck.core.eue.io.swagger.client.Pair;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -20,8 +19,13 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class EueApiClient extends ApiClient {
+
+	static {
+		Logger.getLogger("org.glassfish.jersey.client.ClientExecutorProvidersConfigurator").setLevel(java.util.logging.Level.SEVERE);
+	}
 
 	public EueApiClient(final EueSession session) {
 		this.setHttpClient(ClientBuilder.newClient(new ClientConfig().register(new InputStreamProvider())

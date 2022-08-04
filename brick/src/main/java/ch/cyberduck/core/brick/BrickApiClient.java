@@ -22,7 +22,6 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.JSON;
 import ch.cyberduck.core.brick.io.swagger.client.Pair;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -35,16 +34,21 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class BrickApiClient extends ApiClient {
 
+    static {
+        Logger.getLogger("org.glassfish.jersey.client.ClientExecutorProvidersConfigurator").setLevel(java.util.logging.Level.SEVERE);
+    }
+
     public BrickApiClient(final BrickSession session) {
         this.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-            .register(new InputStreamProvider())
-            .register(MultiPartFeature.class)
-            .register(new JSON())
-            .register(JacksonFeature.class)
-            .connectorProvider(new HttpComponentsProvider(session.getClient())))
+                .register(new InputStreamProvider())
+                .register(MultiPartFeature.class)
+                .register(new JSON())
+                .register(JacksonFeature.class)
+                .connectorProvider(new HttpComponentsProvider(session.getClient())))
         );
         final int timeout = ConnectionTimeoutFactory.get().getTimeout() * 1000;
         this.setConnectTimeout(timeout);
