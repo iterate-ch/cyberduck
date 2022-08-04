@@ -134,8 +134,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         private BitmapSource Get(object key, string path, int size, string classifier, bool returnDefault)
         {
-            var images = Get(key, path, classifier, returnDefault, out var image);
-            return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+            using (IconCache.UpgradeableReadLock())
+            {
+                var images = Get(key, path, classifier, returnDefault, out var image);
+                return image ?? FindNearestFit(images, size, (c, s, i) => c.CacheIcon(key, s, i, classifier));
+            }
         }
 
         private IEnumerable<BitmapSource> Get(object key, string path, string classifier, bool returnDefault, out BitmapSource @default)
@@ -144,21 +147,24 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             var images = IconCache.Filter<BitmapSource>(((object key, string classifier, int) f) => Equals(key, f.key) && Equals(classifier, f.classifier));
             if (!images.Any())
             {
-                bool isDefault = !IconCache.TryGetIcon<BitmapSource>(key, out _, classifier);
-                using Stream stream = GetStream(path);
-                images = GetImages(stream, (c, s) => c.TryGetIcon<BitmapSource>(key, s, out _, classifier), (c, s, i) =>
+                using (IconCache.WriteLock())
                 {
-                    if (isDefault)
+                    bool isDefault = !IconCache.TryGetIcon<BitmapSource>(key, out _, classifier);
+                    using Stream stream = GetStream(path);
+                    images = GetImages(stream, (c, s) => c.TryGetIcon<BitmapSource>(key, s, out _, classifier), (c, s, i) =>
                     {
-                        isDefault = false;
-                        if (returnDefault)
+                        if (isDefault)
                         {
-                            image = i;
+                            isDefault = false;
+                            if (returnDefault)
+                            {
+                                image = i;
+                            }
+                            IconCache.CacheIcon<BitmapSource>(key, s, classifier);
                         }
-                        IconCache.CacheIcon<BitmapSource>(key, s, classifier);
-                    }
-                    IconCache.CacheIcon(key, s, i, classifier);
-                });
+                        IconCache.CacheIcon(key, s, i, classifier);
+                    });
+                }
             }
             @default = image;
 
