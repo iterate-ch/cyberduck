@@ -28,11 +28,14 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.onedrive.client.ODataQuery;
+import org.nuxeo.onedrive.client.types.BaseItem;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.ItemReference;
 import org.nuxeo.onedrive.client.types.User;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public class OneDriveSession extends GraphSession {
@@ -74,6 +77,15 @@ public class OneDriveSession extends GraphSession {
         else {
             return String.join(String.valueOf(Path.DELIMITER), parent.getDriveId(), metadata.getId());
         }
+    }
+
+    @Override
+    public DriveItem.Metadata getMetadata(final DriveItem item, ODataQuery query) throws IOException {
+        if (query == null) {
+            query = new ODataQuery();
+        }
+        query.select(BaseItem.Property.ParentReference, DriveItem.Property.RemoteItem);
+        return super.getMetadata(item, query);
     }
 
     /**

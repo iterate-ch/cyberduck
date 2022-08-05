@@ -32,6 +32,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
@@ -115,7 +116,8 @@ public abstract class AbstractSharepointSession extends GraphSession {
         }
         if(resolveLastItem) {
             try {
-                final DriveItem.Metadata metadata = ownItem.getMetadata();
+                // Query metadata, including RemoteItem metadata
+                final DriveItem.Metadata metadata = getMetadata(ownItem, new ODataQuery().select(DriveItem.Property.RemoteItem));
                 final DriveItem.Metadata remoteMetadata = metadata.getRemoteItem();
                 if(null != remoteMetadata) {
                     return (DriveItem) remoteMetadata.getItem();

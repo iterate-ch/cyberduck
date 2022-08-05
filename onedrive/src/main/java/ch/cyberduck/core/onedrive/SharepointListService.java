@@ -57,7 +57,7 @@ public class SharepointListService extends AbstractSharepointListService {
     private Optional<Path> getDefault(final Path directory) {
         try {
             final Site site = Site.byId(session.getClient(), "root");
-            final Site.Metadata metadata = site.getMetadata();
+            final Site.Metadata metadata = site.getMetadata(null); // query: null: Default return set.
             final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
             final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().withFileId(metadata.getId()));
             path.setSymlinkTarget(

@@ -80,7 +80,7 @@ public class GraphVersioningFeature implements Versioning {
         final AttributedList<Path> versions = new AttributedList<>();
         final DriveItem item = session.getItem(file);
         try {
-            final DriveItem.Metadata parentMetadata = item.getMetadata();
+            final DriveItem.Metadata parentMetadata = session.getMetadata(item, null);
             final List<DriveItemVersion> items = Files.versions(item);
             // Versions are returned in descending order (newest to oldest)
             for(final DriveItemVersion version : items.stream().skip(1).collect(Collectors.toList())) {

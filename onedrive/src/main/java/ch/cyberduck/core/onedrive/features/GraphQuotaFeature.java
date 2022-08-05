@@ -23,6 +23,7 @@ import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
+import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.Drive;
 import org.nuxeo.onedrive.client.types.DriveItem;
@@ -51,7 +52,7 @@ public class GraphQuotaFeature implements Quota {
             // retrieve OneDriveItem from home
             final DriveItem item = session.getItem(home, true);
             // returns drive, which can then query metadata.
-            metadata = item.getDrive().getMetadata();
+            metadata = item.getDrive().getMetadata(new ODataQuery().select(Drive.Property.Quota));
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, home);
