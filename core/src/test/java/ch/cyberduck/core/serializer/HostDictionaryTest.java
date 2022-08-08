@@ -32,6 +32,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 
+import com.dd.plist.NSDictionary;
+
 import static org.junit.Assert.assertEquals;
 
 public class HostDictionaryTest {
@@ -48,19 +50,19 @@ public class HostDictionaryTest {
         final Path container = new Path("/container", EnumSet.of(Path.Type.directory));
         container.attributes().setRegion("r");
         h.setWorkdir(container);
-        final Host deserialized = new HostDictionary(new DeserializerFactory()).deserialize(h.serialize(SerializerFactory.get()));
+        final Host deserialized = new HostDictionary<>(new DeserializerFactory<>()).deserialize(h.serialize(SerializerFactory.get()));
         assertEquals(h, deserialized);
         assertEquals("r", deserialized.getWorkdir().attributes().getRegion());
     }
 
     @Test
     public void testDeserialize() {
-        final Serializer dict = SerializerFactory.get();
+        final Serializer<NSDictionary> dict = SerializerFactory.get();
         dict.setStringForKey("test", "Protocol");
         dict.setStringForKey("unknown provider", "Provider");
         dict.setStringForKey("h", "Hostname");
         dict.setStringListForKey(Arrays.asList("a", "b"), "Labels");
-        final Host host = new HostDictionary(new DeserializerFactory()).deserialize(dict.getSerialized());
+        final Host host = new HostDictionary<>(new DeserializerFactory<>()).deserialize(dict.getSerialized());
         assertEquals(new TestProtocol(), host.getProtocol());
         assertEquals(new HashSet<>(Arrays.asList("a", "b")), host.getLabels());
     }

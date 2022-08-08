@@ -413,7 +413,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 List<Host> duplicates = new ArrayList<Host>();
                 for(Host bookmark : pasteboard) {
-                    final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
+                    final Host duplicate = new HostDictionary<>().deserialize(bookmark.serialize(SerializerFactory.get()));
                     // Make sure a new UUID is assigned for duplicate
                     duplicate.setUuid(null);
                     source.add(row.intValue(), duplicate);

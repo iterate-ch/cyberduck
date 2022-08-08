@@ -39,7 +39,7 @@ public class WorkdirHomeFeature extends AbstractHomeFeature {
     @Override
     public Path find() throws BackgroundException {
         if(host.getWorkdir() != null) {
-            return new PathDictionary().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
+            return new PathDictionary<>().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("No workdir set for bookmark %s", host));

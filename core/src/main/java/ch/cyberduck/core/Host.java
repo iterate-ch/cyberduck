@@ -23,8 +23,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Date;
@@ -34,7 +32,6 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
-    private static final Logger log = LogManager.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN
@@ -88,13 +85,13 @@ public class Host implements Serializable, Comparable<Host> {
      * The connect mode to use if FTP
      */
     private FTPConnectMode connectMode
-        = FTPConnectMode.unknown;
+            = FTPConnectMode.unknown;
 
     /**
      * The maximum number of concurrent sessions to this host
      */
     private TransferType transfer
-        = TransferType.unknown;
+            = TransferType.unknown;
 
     /**
      * The custom download folder
@@ -238,7 +235,7 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(protocol.getIdentifier(), "Protocol");
         if(StringUtils.isNotBlank(protocol.getProvider())) {
             if(!StringUtils.equals(protocol.getProvider(), protocol.getIdentifier())) {

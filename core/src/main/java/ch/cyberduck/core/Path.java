@@ -105,7 +105,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(String.valueOf(type), "Type");
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(symlink != null) {

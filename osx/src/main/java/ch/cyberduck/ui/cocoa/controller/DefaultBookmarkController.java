@@ -149,9 +149,28 @@ public class DefaultBookmarkController extends BookmarkController {
     public void setPasswordField(final NSSecureTextField f) {
         super.setPasswordField(f);
         this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("passwordFieldTextDidEndEditing:"),
-            NSControl.NSControlTextDidEndEditingNotification,
-            f.id());
+                Foundation.selector("passwordFieldTextDidEndEditing:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                f.id());
+        f.removeFromSuperview();
+    }
+
+    @Override
+    public void setPasswordLabel(final NSTextField l) {
+        super.setPasswordLabel(l);
+        l.removeFromSuperview();
+    }
+
+    @Override
+    public void setUsernameField(final NSTextField f) {
+        super.setUsernameField(f);
+        f.removeFromSuperview();
+    }
+
+    @Override
+    public void setUsernameLabel(final NSTextField l) {
+        super.setUsernameLabel(l);
+        l.removeFromSuperview();
     }
 
     @Action
@@ -189,7 +208,7 @@ public class DefaultBookmarkController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                certificatePopup.setEnabled(options.certificate);
+                certificatePopup.setHidden(!options.certificate);
                 certificatePopup.removeAllItems();
                 certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
                 if(options.certificate) {
@@ -239,7 +258,7 @@ public class DefaultBookmarkController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                timezonePopup.setEnabled(!bookmark.getProtocol().isUTCTimezone());
+                timezonePopup.setHidden(bookmark.getProtocol().isUTCTimezone());
                 if(null == bookmark.getTimezone()) {
                     if(bookmark.getProtocol().isUTCTimezone()) {
                         timezonePopup.setTitle(UTC.getID());
@@ -284,7 +303,7 @@ public class DefaultBookmarkController extends BookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                encodingPopup.setEnabled(bookmark.getProtocol().isEncodingConfigurable());
+                encodingPopup.setHidden(!bookmark.getProtocol().isEncodingConfigurable());
                 if(!bookmark.getProtocol().isEncodingConfigurable()) {
                     encodingPopup.selectItemWithTitle(DEFAULT);
                 }

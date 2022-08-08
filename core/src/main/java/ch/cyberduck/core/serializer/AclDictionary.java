@@ -20,19 +20,19 @@ import ch.cyberduck.core.DeserializerFactory;
 
 import java.util.List;
 
-public class AclDictionary {
+public class AclDictionary<T> {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<T> deserializer;
 
     public AclDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this.deserializer = new DeserializerFactory<>();
     }
 
-    public AclDictionary(final DeserializerFactory deserializer) {
+    public AclDictionary(final DeserializerFactory<T> deserializer) {
         this.deserializer = deserializer;
     }
 
-    public <T> Acl deserialize(T serialized) {
+    public Acl deserialize(T serialized) {
         final Deserializer<?> dict = deserializer.create(serialized);
         final Acl acl = new Acl();
         final List<String> keys = dict.keys();

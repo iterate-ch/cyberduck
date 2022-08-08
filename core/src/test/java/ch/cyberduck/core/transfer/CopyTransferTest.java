@@ -49,7 +49,7 @@ public class CopyTransferTest {
                 new Host(new TestProtocol()), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.roots, serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());

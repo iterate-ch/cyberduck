@@ -80,7 +80,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getAbbreviatedPath(), "Path");
         dict.setStringForKey(this.getBookmark(), "Bookmark");
         return dict.getSerialized();

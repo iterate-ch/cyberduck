@@ -18,7 +18,6 @@ package ch.cyberduck.core.serializer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -26,12 +25,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import java.io.InputStream;
 
 public interface Reader<S extends Serializable> {
-
-    /**
-     * @param file Serialized file
-     * @return Deserialized content
-     */
-    Collection<S> readCollection(Local file) throws AccessDeniedException;
 
     /**
      * Read the serialized item from the given file

@@ -190,7 +190,7 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         if(size != -1) {
             dict.setStringForKey(String.valueOf(size), "Size");
         }

@@ -31,28 +31,28 @@ public class PathTest {
     @Test
     public void testDictionaryDirectory() {
         Path path = new Path("/path", EnumSet.of(Path.Type.directory));
-        assertEquals(path, new PathDictionary().deserialize(path.serialize(SerializerFactory.get())));
+        assertEquals(path, new PathDictionary<>().deserialize(path.serialize(SerializerFactory.get())));
     }
 
     @Test
     public void testDictionaryFile() {
         Path path = new Path("/path", EnumSet.of(Path.Type.file));
-        assertEquals(path, new PathDictionary().deserialize((path.serialize(SerializerFactory.get()))));
+        assertEquals(path, new PathDictionary<>().deserialize((path.serialize(SerializerFactory.get()))));
     }
 
     @Test
     public void testDictionaryFileSymbolicLink() {
         Path path = new Path("/path", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
-        assertEquals(path, new PathDictionary().deserialize(path.serialize(SerializerFactory.get())));
+        assertEquals(path, new PathDictionary<>().deserialize(path.serialize(SerializerFactory.get())));
         assertEquals(EnumSet.of(Path.Type.file, Path.Type.symboliclink),
-                new PathDictionary().deserialize(path.serialize(SerializerFactory.get())).getType());
+                new PathDictionary<>().deserialize(path.serialize(SerializerFactory.get())).getType());
     }
 
     @Test
     public void testDictionaryRegion() {
         Path path = new Path("/path/f", EnumSet.of(Path.Type.file));
         path.attributes().setRegion("r");
-        final Path deserialized = new PathDictionary().deserialize(path.serialize(SerializerFactory.get()));
+        final Path deserialized = new PathDictionary<>().deserialize(path.serialize(SerializerFactory.get()));
         assertEquals(path, deserialized);
         assertEquals("r", deserialized.attributes().getRegion());
         assertEquals("r", deserialized.getParent().attributes().getRegion());
@@ -77,7 +77,7 @@ public class PathTest {
     public void testDictionaryRegionParentOnly() {
         Path path = new Path("/root/path", EnumSet.of(Path.Type.file));
         path.getParent().attributes().setRegion("r");
-        assertEquals(path, new PathDictionary().deserialize(path.serialize(SerializerFactory.get())));
+        assertEquals(path, new PathDictionary<>().deserialize(path.serialize(SerializerFactory.get())));
     }
 
     @Test
