@@ -47,7 +47,6 @@ import ch.cyberduck.core.profiles.ProfilesSynchronizeWorker;
 import ch.cyberduck.core.profiles.ProfilesWorkerBackgroundAction;
 import ch.cyberduck.core.profiles.SearchProfilePredicate;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -164,7 +163,6 @@ public class ProfilesPreferencesController extends BundleController {
     public void awakeFromNib() {
         try {
             progressIndicator.startAnimation(null);
-            final ProfilePlistReader reader = new ProfilePlistReader(protocols);
             this.background(new ProfilesWorkerBackgroundAction(this,
                 new ProfilesSynchronizeWorker(protocols, ProfilesFinder.Visitor.Prefetch) {
                     @Override
