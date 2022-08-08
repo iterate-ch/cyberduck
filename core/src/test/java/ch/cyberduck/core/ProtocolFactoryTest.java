@@ -259,12 +259,17 @@ public class ProtocolFactoryTest {
 
             @Override
             public boolean isEnabled() {
-                return false;
+                return true;
+            }
+
+            @Override
+            public boolean isBundled() {
+                return true;
             }
         }).collect(Collectors.toSet()));
         final ProfilePlistReader reader = new ProfilePlistReader(factory);
         final Local file = new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile");
-        Profile profile = reader.read(file);
+        final Profile profile = reader.read(file);
         factory.register(file);
         assertTrue(profile.isEnabled());
         factory.unregister(profile);

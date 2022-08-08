@@ -187,7 +187,7 @@ public class Profile implements Protocol {
     public boolean isBundled() {
         final String v = this.value("Bundled");
         if(StringUtils.isBlank(v)) {
-            return parent.isBundled();
+            return false;
         }
         return Boolean.parseBoolean(v);
     }

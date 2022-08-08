@@ -186,6 +186,7 @@ public class ProfilePlistReaderTest {
         assertEquals(profile, reader.read(
             new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         ));
+        assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
@@ -220,6 +221,7 @@ public class ProfilePlistReaderTest {
         assertEquals(profile, reader.read(
             new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         ));
+        assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
