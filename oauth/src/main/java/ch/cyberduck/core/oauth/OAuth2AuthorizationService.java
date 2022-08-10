@@ -16,6 +16,7 @@ package ch.cyberduck.core.oauth;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -220,7 +221,7 @@ public class OAuth2AuthorizationService {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Await callback from custom scheme %s and state %s", redirectUri, state));
             }
-            prompt.await(signal, bookmark, LocaleFactory.localizedString("Login", "Login"),
+            prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
                     LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
             if(StringUtils.isBlank(authenticationCode.get())) {
                 throw new LoginCanceledException();
@@ -231,7 +232,7 @@ public class OAuth2AuthorizationService {
                 log.debug(String.format("Prompt for authentication code for state %s", state));
             }
             final Credentials input = prompt.prompt(bookmark,
-                    LocaleFactory.localizedString("Login", "Login"),
+                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
                     LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
                     new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
                             .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
