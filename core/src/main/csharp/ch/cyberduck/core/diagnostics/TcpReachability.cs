@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
         public bool isReachable(Host h)
         {
-            switch ((Scheme.__Enum) h.getProtocol().getScheme().ordinal())
+            switch ((Scheme.__Enum)h.getProtocol().getScheme().ordinal())
             {
                 case Scheme.__Enum.file:
                     return true;
@@ -72,8 +72,13 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
                         switch (e.Status)
                         {
+                            // TLS version not supported on .NET Framework/Windows-Kernel
+                            case WebExceptionStatus.SecureChannelFailure:
+                            // HTTP returned error
                             case WebExceptionStatus.ProtocolError:
+                            //Certificate not trusted
                             case WebExceptionStatus.TrustFailure:
+                            // not an exception?
                             case WebExceptionStatus.Success:
                                 return true;
                         }
