@@ -439,7 +439,8 @@ public class ProfilesPreferencesController extends BundleController {
             if(enabled) {
                 final Optional<Local> file = description.getFile();
                 // Update with last version from repository
-                file.ifPresent(local -> repository.put(new LocalProfileDescription(protocols.register(local)), profile));
+                file.ifPresent(local -> repository.put(new LocalProfileDescription(protocols, ProtocolFactory.BUNDLED_PROFILE_PREDICATE,
+                        protocols.register(local)), profile));
             }
             else {
                 final Optional<Profile> profile = description.getProfile();
