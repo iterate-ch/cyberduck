@@ -80,7 +80,7 @@ public class PathAttributesTest {
         final Map<String, String> custom = new HashMap<>(attributes.getCustom());
         custom.put("key", "value");
         attributes.setCustom(custom);
-        final PathAttributes deserialized = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
+        final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes.getSize(), deserialized.getSize());
         assertEquals(attributes.getModificationDate(), deserialized.getModificationDate());
         assertEquals(attributes.getPermission(), deserialized.getPermission());

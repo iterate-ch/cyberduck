@@ -24,23 +24,23 @@ import ch.cyberduck.core.LocalFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class LocalDictionary {
+public class LocalDictionary<T> {
 
-    private final DeserializerFactory factory;
+    private final DeserializerFactory<T> factory;
 
     public LocalDictionary() {
-        this.factory = new DeserializerFactory();
+        this.factory = new DeserializerFactory<>();
     }
 
-    public LocalDictionary(final DeserializerFactory factory) {
+    public LocalDictionary(final DeserializerFactory<T> factory) {
         this.factory = factory;
     }
 
-    public <T> Local deserialize(T serialized) {
+    public Local deserialize(T serialized) {
         return this.deserialize(factory.create(serialized));
     }
 
-    public <T> Local deserialize(Deserializer<T> dict) {
+    public Local deserialize(final Deserializer<T> dict) {
         final String path = dict.stringForKey("Path");
         if(StringUtils.isBlank(path)) {
             return null;

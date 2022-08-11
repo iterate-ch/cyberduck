@@ -16,6 +16,7 @@ package ch.cyberduck.core.profiles;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
@@ -26,16 +27,27 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 
+import java.util.function.Predicate;
+
 public final class LocalProfileDescription extends ProfileDescription {
 
     private final Local file;
 
-    public LocalProfileDescription(final Local file) {
-        this(ProtocolFactory.get(), file);
+    /**
+     * @param protocols Registered protocols
+     * @param file      File on disk
+     */
+    public LocalProfileDescription(final ProtocolFactory protocols, final Local file) {
+        this(protocols, protocol -> true, file);
     }
 
-    public LocalProfileDescription(final ProtocolFactory protocols, final Local file) {
-        super(protocols,
+    /**
+     * @param protocols Registered protocols
+     * @param parent    Filter to apply for parent protocol reference in registered protocols
+     * @param file      File on disk
+     */
+    public LocalProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> parent, final Local file) {
+        super(protocols, parent,
                 new LazyInitializer<Checksum>() {
                     @Override
                     protected Checksum initialize() throws ConcurrentException {

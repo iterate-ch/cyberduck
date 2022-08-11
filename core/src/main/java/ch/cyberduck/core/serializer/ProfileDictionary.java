@@ -29,10 +29,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.function.Predicate;
 
-public class ProfileDictionary {
+/**
+ * @param <T> Serialized object type
+ */
+public class ProfileDictionary<T> {
     private static final Logger log = LogManager.getLogger(ProfileDictionary.class);
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<T> deserializer;
     private final ProtocolFactory protocols;
 
     public ProfileDictionary() {
@@ -40,34 +43,34 @@ public class ProfileDictionary {
     }
 
     public ProfileDictionary(final ProtocolFactory protocols) {
-        this(protocols, new DeserializerFactory());
+        this(protocols, new DeserializerFactory<>());
     }
 
-    public ProfileDictionary(final DeserializerFactory deserializer) {
+    public ProfileDictionary(final DeserializerFactory<T> deserializer) {
         this(ProtocolFactory.get(), deserializer);
     }
 
-    public ProfileDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
+    public ProfileDictionary(final ProtocolFactory protocols, final DeserializerFactory<T> deserializer) {
         this.protocols = protocols;
         this.deserializer = deserializer;
     }
 
-    public Profile deserialize(Object serialized) {
-        final Deserializer<String> dict = deserializer.create(serialized);
+    /**
+     * @param serialized Serialized bookmark
+     * @param parent     Filter for parent protocol reference
+     * @return Null if deserialization fails
+     */
+    public Profile deserialize(final T serialized, final Predicate<Protocol> parent) {
+        final Deserializer<T> dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
-            final Protocol parent = protocols.forName(protocols.find(new Predicate<Protocol>() {
-                @Override
-                public boolean test(final Protocol protocol) {
-                    // Return default registered protocol specification as parent but not other profile
-                    return !(protocol.isEnabled() || protocol.isBundled());
-                }
-            }), protocol, null);
-            if(null == parent) {
+            // Return default registered protocol specification as parent
+            final Protocol found = protocols.forName(protocols.find(parent), protocol, null);
+            if(null == found) {
                 log.error(String.format("Unknown protocol %s in profile", protocol));
                 return null;
             }
-            return new Profile(parent, dict);
+            return new Profile(found, dict);
         }
         log.error("Missing protocol in profile");
         return null;

@@ -18,7 +18,6 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
@@ -41,7 +40,7 @@ public class HostPlistReaderTest {
 
     @Test(expected = LocalAccessDeniedException.class)
     public void testDeserializeNoSuchFile() throws Exception {
-        final HostPlistReader reader = new HostPlistReader(new DeserializerFactory());
+        final HostPlistReader reader = new HostPlistReader();
         reader.read(new Local("test"));
     }
 

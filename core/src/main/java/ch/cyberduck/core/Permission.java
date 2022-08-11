@@ -145,7 +145,7 @@ public class Permission implements Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getSymbol(), "Mask");
         return dict.getSerialized();
     }

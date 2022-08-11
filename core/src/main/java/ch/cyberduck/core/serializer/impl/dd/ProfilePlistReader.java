@@ -20,35 +20,35 @@ package ch.cyberduck.core.serializer.impl.dd;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.ProfileDictionary;
+
+import java.util.function.Predicate;
 
 import com.dd.plist.NSDictionary;
 
 public class ProfilePlistReader extends PlistReader<Profile> {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<NSDictionary> deserializer = new DeserializerFactory<>();
     private final ProtocolFactory protocols;
+    private final Predicate<Protocol> filter;
 
     public ProfilePlistReader() {
-        this(new DeserializerFactory());
-    }
-
-    public ProfilePlistReader(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.get(), deserializer);
+        this(ProtocolFactory.get());
     }
 
     public ProfilePlistReader(final ProtocolFactory protocols) {
-        this(protocols, new DeserializerFactory());
+        this(protocols, protocol -> true);
     }
 
-    public ProfilePlistReader(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
-        this.deserializer = deserializer;
+    public ProfilePlistReader(final ProtocolFactory protocols, final Predicate<Protocol> parent) {
         this.protocols = protocols;
+        this.filter = parent;
     }
 
     @Override
     public Profile deserialize(final NSDictionary dict) {
-        return new ProfileDictionary(protocols, deserializer).deserialize(dict);
+        return new ProfileDictionary<>(protocols, deserializer).deserialize(dict, filter);
     }
 }

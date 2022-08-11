@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -46,7 +45,7 @@ import java.util.stream.Collectors;
 public class Profile implements Protocol {
     private static final Logger log = LogManager.getLogger(Profile.class);
 
-    private final Deserializer<String> dict;
+    private final Deserializer<?> dict;
     /**
      * The actual protocol implementation registered
      */
@@ -55,7 +54,7 @@ public class Profile implements Protocol {
     private Local disk;
     private Local icon;
 
-    public Profile(final Protocol parent, final Deserializer<String> dict) {
+    public Profile(final Protocol parent, final Deserializer<?> dict) {
         this.parent = parent;
         this.dict = dict;
         this.disk = this.write(this.value("Disk"));
@@ -63,7 +62,7 @@ public class Profile implements Protocol {
     }
 
     @Override
-    public <T> T serialize(final Serializer serializer) {
+    public <T> T serialize(final Serializer<T> serializer) {
         for(String key : dict.keys()) {
             serializer.setStringForKey(dict.stringForKey(key), key);
         }
@@ -187,7 +186,7 @@ public class Profile implements Protocol {
     public boolean isBundled() {
         final String v = this.value("Bundled");
         if(StringUtils.isBlank(v)) {
-            return parent.isBundled();
+            return false;
         }
         return Boolean.parseBoolean(v);
     }

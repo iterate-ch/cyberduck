@@ -32,8 +32,7 @@ public class PathAttributesDictionaryTest {
     @Test
     public void testSerialize() {
         PathAttributes attributes = new PathAttributes();
-        PathAttributes clone = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
-
+        PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
     }
@@ -45,7 +44,7 @@ public class PathAttributesDictionaryTest {
         attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
         attributes.setModificationDate(5343L);
         attributes.setLink(new DescriptiveUrl(URI.create("https://cyberduck.io/"), DescriptiveUrl.Type.signed));
-        final PathAttributes deserialized = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
+        final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes, deserialized);
         assertEquals(attributes.hashCode(), deserialized.hashCode());
         assertEquals(attributes.getLink(), deserialized.getLink());
@@ -60,7 +59,7 @@ public class PathAttributesDictionaryTest {
         attributes.setVersionId("v-1");
         attributes.setFileId("myUniqueId");
         attributes.setModificationDate(System.currentTimeMillis());
-        assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
-        assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
+        assertEquals(attributes, new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 }

@@ -17,6 +17,7 @@ package ch.cyberduck.core.profiles;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
@@ -29,6 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
  * Profile metadata
@@ -40,8 +42,23 @@ public class ProfileDescription {
     private final LazyInitializer<Local> local;
     private final LazyInitializer<Profile> profile;
 
+    /**
+     * @param protocols Registered protocols
+     * @param checksum  Checksum of connection profile
+     * @param local     File on disk
+     */
     public ProfileDescription(final ProtocolFactory protocols, final Checksum checksum, final Local local) {
-        this(protocols, new LazyInitializer<Checksum>() {
+        this(protocols, protocol -> true, checksum, local);
+    }
+
+    /**
+     * @param protocols Registered protocols
+     * @param parent    Filter to apply for parent protocol reference in registered protocols
+     * @param checksum  Checksum of connection profile
+     * @param local     File on disk
+     */
+    public ProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> parent, final Checksum checksum, final Local local) {
+        this(protocols, parent, new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
                 return checksum;
@@ -54,14 +71,15 @@ public class ProfileDescription {
         });
     }
 
-    public ProfileDescription(final ProtocolFactory protocols, final LazyInitializer<Checksum> checksum, final LazyInitializer<Local> local) {
+    public ProfileDescription(final ProtocolFactory protocols, final Predicate<Protocol> parent,
+                              final LazyInitializer<Checksum> checksum, final LazyInitializer<Local> local) {
         this.checksum = checksum;
         this.local = local;
         this.profile = new LazyInitializer<Profile>() {
             @Override
             protected Profile initialize() throws ConcurrentException {
                 try {
-                    return new ProfilePlistReader(protocols).read(local.get());
+                    return new ProfilePlistReader(protocols, parent).read(local.get());
                 }
                 catch(AccessDeniedException e) {
                     log.warn(String.format("Failure %s reading profile %s", e, e));

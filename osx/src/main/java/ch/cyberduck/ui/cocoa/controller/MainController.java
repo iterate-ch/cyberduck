@@ -1113,7 +1113,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(browser.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
                     final Host serialized
-                        = new HostDictionary().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
+                            = new HostDictionary<>().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
                     serialized.setWorkdir(browser.workdir());
                     sessions.add(serialized);
                     browser.window().saveFrameUsingName(serialized.getUuid());

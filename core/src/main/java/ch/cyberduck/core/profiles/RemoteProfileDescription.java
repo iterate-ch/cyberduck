@@ -25,12 +25,13 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 public final class RemoteProfileDescription extends ProfileDescription {
     private final Path file;
 
-    public RemoteProfileDescription(final Path file, final LazyInitializer<Local> profile) {
-        this(ProtocolFactory.get(), file, profile);
-    }
-
+    /**
+     * @param protocols Registered protocols
+     * @param file      Connection profile
+     * @param profile   Read connection profile to file on local disk
+     */
     public RemoteProfileDescription(final ProtocolFactory protocols, final Path file, final LazyInitializer<Local> profile) {
-        super(protocols, new LazyInitializer<Checksum>() {
+        super(protocols, ProtocolFactory.BUNDLED_PROFILE_PREDICATE, new LazyInitializer<Checksum>() {
             @Override
             protected Checksum initialize() {
                 return file.attributes().getChecksum();

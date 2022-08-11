@@ -25,5 +25,5 @@ public interface Serializable {
     /**
      * @param dict @return Native dictionary format
      */
-    <T> T serialize(Serializer dict);
+    <T> T serialize(Serializer<T> dict);
 }

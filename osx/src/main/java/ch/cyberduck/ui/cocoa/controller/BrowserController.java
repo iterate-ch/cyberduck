@@ -720,7 +720,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public boolean performDragOperation(final NSDraggingInfo sender) {
         for(Host bookmark : HostPasteboard.getPasteboard()) {
-            final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
+            final Host duplicate = new HostDictionary<>().deserialize(bookmark.serialize(SerializerFactory.get()));
             // Make sure a new UUID is assigned for duplicate
             duplicate.setUuid(null);
             bookmarks.add(0, duplicate);
@@ -1878,7 +1878,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void duplicateBookmarkButtonClicked(final ID sender) {
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
         this.selectBookmarks(BookmarkSwitchSegement.bookmarks);
-        final Host duplicate = new HostDictionary().deserialize(selected.serialize(SerializerFactory.get()));
+        final Host duplicate = new HostDictionary<>().deserialize(selected.serialize(SerializerFactory.get()));
         // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
@@ -1900,7 +1900,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(null == selected || !selected.isDirectory()) {
                 selected = workdir;
             }
-            bookmark = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
+            bookmark = new HostDictionary<>().deserialize(pool.getHost().serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
             bookmark.setUuid(null);
             bookmark.setDefaultPath(selected.getAbsolute());
@@ -2280,7 +2280,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             selected = workdir;
         }
         final BrowserController c = MainController.newDocument(true);
-        final Host duplicate = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
+        final Host duplicate = new HostDictionary<>().deserialize(pool.getHost().serialize(SerializerFactory.get()));
         // Make sure a new UUID is assigned for duplicate
         duplicate.setUuid(null);
         duplicate.setDefaultPath(selected.getAbsolute());

@@ -52,7 +52,7 @@ public class ProfilePlistReaderTest {
                 return false;
             }
         }))).read(
-            new Local("src/test/resources/Test Dropbox.cyberduckprofile")
+                new Local("src/test/resources/Test Dropbox.cyberduckprofile")
         );
         assertNotNull(profile);
     }
@@ -70,7 +70,7 @@ public class ProfilePlistReaderTest {
                 return false;
             }
         }))).read(
-            new Local("src/test/resources/Unknown.cyberduckprofile")
+                new Local("src/test/resources/Unknown.cyberduckprofile")
         );
     }
 
@@ -82,7 +82,7 @@ public class ProfilePlistReaderTest {
                 return false;
             }
         }))).read(
-            new Local("src/test/resources/Custom Regions S3.cyberduckprofile")
+                new Local("src/test/resources/Custom Regions S3.cyberduckprofile")
         );
         assertNotNull(profile);
         final Set<Location.Name> regions = profile.getRegions();
@@ -105,11 +105,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
+                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
+                new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
@@ -132,11 +132,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile https = reader.read(
-            new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
+                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
         assertNotNull(https);
         final Profile http = reader.read(
-            new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
+                new Local("src/test/resources/Openstack Swift (Swauth HTTP).cyberduckprofile")
         );
         assertNotNull(http);
         assertNotEquals(https, http);
@@ -156,11 +156,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile keystone = reader.read(
-            new Local("src/test/resources/Openstack Swift (Keystone).cyberduckprofile")
+                new Local("src/test/resources/Openstack Swift (Keystone).cyberduckprofile")
         );
         assertNotNull(keystone);
         final Profile swauth = reader.read(
-            new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
+                new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
         );
         assertNotNull(swauth);
         assertNotEquals(keystone, swauth);
@@ -180,12 +180,13 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
+                new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
+                new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         ));
+        assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
@@ -214,12 +215,13 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
+                new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
+                new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         ));
+        assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());

@@ -18,6 +18,7 @@ package ch.cyberduck.core.profiles;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -34,10 +36,25 @@ public class LocalProfilesFinder implements ProfilesFinder {
 
     private final ProtocolFactory protocols;
     private final Local directory;
+    private final Predicate<Protocol> parent;
 
+    /**
+     * @param protocols Registered protocols
+     * @param directory Folder to search for connection profiles
+     */
     public LocalProfilesFinder(final ProtocolFactory protocols, final Local directory) {
+        this(protocols, directory, protocol -> true);
+    }
+
+    /**
+     * @param protocols Registered protocols
+     * @param directory Folder to search for connection profiles
+     * @param parent    Filter to apply for parent protocol reference in registered protocols
+     */
+    public LocalProfilesFinder(final ProtocolFactory protocols, final Local directory, final Predicate<Protocol> parent) {
         this.protocols = protocols;
         this.directory = directory;
+        this.parent = parent;
     }
 
     @Override
@@ -47,7 +64,7 @@ public class LocalProfilesFinder implements ProfilesFinder {
                 log.debug(String.format("Load profiles from %s", directory));
             }
             return directory.list().filter(new ProfileFilter()).toList().stream()
-                .map(file -> visitor.visit(new LocalProfileDescription(protocols, file))).collect(Collectors.toSet());
+                    .map(file -> visitor.visit(new LocalProfileDescription(protocols, parent, file))).collect(Collectors.toSet());
         }
         return Collections.emptySet();
     }

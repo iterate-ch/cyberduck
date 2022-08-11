@@ -27,28 +27,19 @@ import com.dd.plist.NSDictionary;
 
 public class TransferPlistReader extends PlistReader<Transfer> {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<NSDictionary> deserializer = new DeserializerFactory<>();
     private final ProtocolFactory protocols;
 
     public TransferPlistReader() {
-        this(new DeserializerFactory());
-    }
-
-    public TransferPlistReader(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.get(), deserializer);
+        this(ProtocolFactory.get());
     }
 
     public TransferPlistReader(final ProtocolFactory protocols) {
-        this(protocols, new DeserializerFactory());
-    }
-
-    public TransferPlistReader(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
-        this.deserializer = deserializer;
         this.protocols = protocols;
     }
 
     @Override
     public Transfer deserialize(final NSDictionary dict) {
-        return new TransferDictionary(protocols, deserializer).deserialize(dict);
+        return new TransferDictionary<>(protocols, deserializer).deserialize(dict);
     }
 }

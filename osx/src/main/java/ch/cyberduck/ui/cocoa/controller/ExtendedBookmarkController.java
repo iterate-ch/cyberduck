@@ -23,11 +23,13 @@ import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
+import ch.cyberduck.binding.application.NSPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.application.NSTextView;
+import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSNotification;
@@ -53,6 +55,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 public class ExtendedBookmarkController extends DefaultBookmarkController {
 
@@ -83,6 +86,13 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void awakeFromNib() {
         super.awakeFromNib();
         this.setState(toggleOptionsButton, preferences.getBoolean("bookmark.toggle.options"));
+    }
+
+    @Override
+    public void setWindow(final NSWindow window) {
+        window.setStyleMask(new NSUInteger(NSPanel.NSUtilityWindowMask | NSWindow.NSTitledWindowMask |
+                NSWindow.NSClosableWindowMask | NSWindow.NSResizableWindowMask));
+        super.setWindow(window);
     }
 
     @Override
@@ -131,7 +141,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(Host bookmark) {
-                connectmodePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
+                connectmodePopup.setHidden(bookmark.getProtocol().getType() != Protocol.Type.ftp);
                 connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
             }
         });

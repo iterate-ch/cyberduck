@@ -28,20 +28,20 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
-public class PathAttributesDictionary {
+public class PathAttributesDictionary<T> {
 
-    private final DeserializerFactory factory;
+    private final DeserializerFactory<T> factory;
 
     public PathAttributesDictionary() {
-        this.factory = new DeserializerFactory();
+        this.factory = new DeserializerFactory<>();
     }
 
-    public PathAttributesDictionary(final DeserializerFactory factory) {
+    public PathAttributesDictionary(final DeserializerFactory<T> factory) {
         this.factory = factory;
     }
 
-    public <T> PathAttributes deserialize(T serialized) {
-        final Deserializer dict = factory.create(serialized);
+    public PathAttributes deserialize(final T serialized) {
+        final Deserializer<T> dict = factory.create(serialized);
         final PathAttributes attributes = new PathAttributes();
         final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
@@ -69,11 +69,11 @@ public class PathAttributesDictionary {
         }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
-            attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
+            attributes.setPermission(new PermissionDictionary<>().deserialize(permissionObj));
         }
         final Object aclObj = dict.objectForKey("Acl");
         if(aclObj != null) {
-            attributes.setAcl(new AclDictionary().deserialize(aclObj));
+            attributes.setAcl(new AclDictionary<>().deserialize(aclObj));
         }
         if(dict.mapForKey("Link") != null) {
             final Map<String, String> link = dict.mapForKey("Link");
@@ -106,9 +106,9 @@ public class PathAttributesDictionary {
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
-        final Object vaultObj = dict.objectForKey("Vault");
+        final T vaultObj = dict.objectForKey("Vault");
         if(vaultObj != null) {
-            attributes.setVault(new PathDictionary(factory).deserialize(vaultObj));
+            attributes.setVault(new PathDictionary<>(factory).deserialize(vaultObj));
         }
         final Map<String, String> customObj = dict.mapForKey("Custom");
         if(customObj != null) {

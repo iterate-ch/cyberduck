@@ -38,8 +38,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.profiles.LocalProfileDescription;
 import ch.cyberduck.core.profiles.ProfileDescription;
 import ch.cyberduck.core.profiles.ProfilesFinder;
@@ -47,7 +45,6 @@ import ch.cyberduck.core.profiles.ProfilesSynchronizeWorker;
 import ch.cyberduck.core.profiles.ProfilesWorkerBackgroundAction;
 import ch.cyberduck.core.profiles.SearchProfilePredicate;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -73,7 +70,6 @@ public class ProfilesPreferencesController extends BundleController {
     private final ProtocolFactory protocols = ProtocolFactory.get();
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
-    private final Preferences preferences = PreferencesFactory.get();
 
     /**
      * Synchronized ist of available profiles
@@ -164,7 +160,6 @@ public class ProfilesPreferencesController extends BundleController {
     public void awakeFromNib() {
         try {
             progressIndicator.startAnimation(null);
-            final ProfilePlistReader reader = new ProfilePlistReader(protocols);
             this.background(new ProfilesWorkerBackgroundAction(this,
                 new ProfilesSynchronizeWorker(protocols, ProfilesFinder.Visitor.Prefetch) {
                     @Override
@@ -444,7 +439,8 @@ public class ProfilesPreferencesController extends BundleController {
             if(enabled) {
                 final Optional<Local> file = description.getFile();
                 // Update with last version from repository
-                file.ifPresent(local -> repository.put(new LocalProfileDescription(protocols.register(local)), profile));
+                file.ifPresent(local -> repository.put(new LocalProfileDescription(protocols, ProtocolFactory.BUNDLED_PROFILE_PREDICATE,
+                        protocols.register(local)), profile));
             }
             else {
                 final Optional<Profile> profile = description.getProfile();

@@ -207,7 +207,7 @@ public class CryptoVaultTest {
             }
         }, new DisabledPasswordStore()).getHome());
         assertEquals(Vault.State.open, vault.getState());
-        assertEquals(home, new PathDictionary().deserialize(home.serialize(SerializerFactory.get())));
+        assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
     }
 

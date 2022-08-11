@@ -25,7 +25,6 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
 
@@ -70,7 +69,6 @@ public class RemoteProfilesFinderTest {
                 return false;
             }
         })));
-        final ProfilePlistReader reader = new ProfilePlistReader(protocols);
         final TestProtocol protocol = new TestProtocol() {
             @Override
             public String getIdentifier() {

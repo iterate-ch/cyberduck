@@ -28,7 +28,7 @@ public class AclDictionaryTest {
     @Test
     public void testSerialize() {
         Acl attributes = new Acl(new Acl.UserAndRole(new Acl.CanonicalUser(""), new Acl.Role("w")));
-        Acl clone = new AclDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
+        Acl clone = new AclDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes.get(new Acl.CanonicalUser()), clone.get(new Acl.CanonicalUser()));
         assertNotEquals(attributes, new Acl(new Acl.UserAndRole(new Acl.CanonicalUser("t"), new Acl.Role("w"))));
         assertEquals(attributes.get(new Acl.CanonicalUser()), clone.get(new Acl.CanonicalUser()));

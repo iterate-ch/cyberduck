@@ -31,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import com.dd.plist.NSArray;
-import com.dd.plist.NSDictionary;
 
 public class PlistWriter<S extends Serializable> implements Writer<S> {
 
@@ -40,7 +39,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         final NSArray list = new NSArray(collection.size());
         int i = 0;
         for(S bookmark : collection) {
-            list.setValue(i, bookmark.<NSDictionary>serialize(new PlistSerializer()));
+            list.setValue(i, bookmark.serialize(new PlistSerializer()));
             i++;
         }
         final String content = list.toXMLPropertyList();
@@ -54,7 +53,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
 
     @Override
     public void write(final S item, final Local file) throws AccessDeniedException {
-        final String content = item.<NSDictionary>serialize(new PlistSerializer()).toXMLPropertyList();
+        final String content = item.serialize(new PlistSerializer()).toXMLPropertyList();
         try (final OutputStream out = file.getOutputStream(false)) {
             IOUtils.write(content, out, StandardCharsets.UTF_8);
         }

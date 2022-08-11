@@ -85,7 +85,7 @@ public class CommandLinePathParserTest {
     @Test
     public void testParseProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
-        final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory());
+        final ProfilePlistReader reader = new ProfilePlistReader(factory);
         final Profile profile = reader.read(
             this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile")
         );
