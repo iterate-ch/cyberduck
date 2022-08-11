@@ -64,14 +64,13 @@ public class OpenSSHPrivateKeyConfigurator {
                 final KeyFormat format;
                 try {
                     format = KeyProviderUtil.detectKeyFileFormat(
-                        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), true);
+                            new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), true);
                 }
                 catch(AccessDeniedException | IOException e) {
                     log.debug(String.format("Ignore file %s with unknown format. %s", file, e.getMessage()));
                     continue;
                 }
                 switch(format) {
-                    case PKCS5:
                     case PKCS8:
                     case OpenSSH:
                     case OpenSSHv1:
