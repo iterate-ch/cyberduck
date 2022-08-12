@@ -17,9 +17,9 @@ package ch.cyberduck.binding.foundation;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.platform.mac.CoreFoundation;
 
-public class CFStringRef extends PointerByReference {
+public class CFStringRef extends CoreFoundation.CFTypeRef {
 
     public static CFStringRef toCFString(String s) {
         final char[] chars = s.toCharArray();
