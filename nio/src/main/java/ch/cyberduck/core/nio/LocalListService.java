@@ -28,9 +28,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.DosFileAttributes;
-import java.nio.file.attribute.PosixFileAttributes;
 import java.util.EnumSet;
 
 public class LocalListService implements ListService {
@@ -48,7 +45,6 @@ public class LocalListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<ch.cyberduck.core.Path> paths = new AttributedList<>();
         try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(session.toPath(directory))) {
-            final Class<? extends BasicFileAttributes> provider = session.isPosixFilesystem() ? PosixFileAttributes.class : DosFileAttributes.class;
             for(java.nio.file.Path n : stream) {
                 if(null == n.getFileName()) {
                     continue;
