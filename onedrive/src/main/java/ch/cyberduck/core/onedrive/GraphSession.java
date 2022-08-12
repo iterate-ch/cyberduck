@@ -44,11 +44,13 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.onedrive.client.ODataQuery;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.RequestExecutor;
 import org.nuxeo.onedrive.client.RequestHeader;
 import org.nuxeo.onedrive.client.Users;
+import org.nuxeo.onedrive.client.types.BaseItem;
 import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.User;
 
@@ -74,8 +76,37 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract String getFileId(final DriveItem.Metadata metadata);
 
+    public ODataQuery getQuery(ODataQuery query) {
+        if(query == null) {
+            query = new ODataQuery();
+        }
+        query.select(
+                // Base item properties
+                BaseItem.Property.CreatedDateTime /*Usage: Fallback for FileSystemInfo.Created */,
+                BaseItem.Property.ETag /*Usage: ETag. */,
+                BaseItem.Property.Id /*Usage: File Id */,
+                BaseItem.Property.LastModifiedDateTime /*Usage: Fallback for FileSystemInfo.Modified */,
+                BaseItem.Property.Name /*Usage: Display */,
+                BaseItem.Property.ParentReference /*Usage: In Id provider*/,
+                BaseItem.Property.WebUrl /*Usage: Open Url */,
+
+                // Drive Item properties
+                DriveItem.Property.File, /*Usage: Determines File */
+                DriveItem.Property.FileSystemInfo, /*Usage: FileSystemInfo like Created and Modified */
+                DriveItem.Property.Folder, /*Usage: Determines Folder */
+                DriveItem.Property.Package, /*Usage: Determines OneNote */
+                DriveItem.Property.Publication, /*Usage: Sharepoint Server, provides Checkout-state */
+                DriveItem.Property.Size /*Usage: Downloads of files, display sizes */);
+
+        return query;
+    }
+
     public DriveItem getItem(final Path currentPath) throws BackgroundException {
         return this.getItem(currentPath, true);
+    }
+
+    public DriveItem.Metadata getMetadata(final DriveItem item, ODataQuery query) throws IOException {
+        return item.getMetadata(getQuery(query));
     }
 
     public abstract DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
@@ -153,7 +184,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
         try {
-            user = Users.get(User.getCurrent(client), User.Select.CreationType, User.Select.UserPrincipalName);
+            user = Users.get(User.getCurrent(client), new ODataQuery().select(User.Select.values()));
             final String account = user.getUserPrincipalName();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
@@ -248,6 +279,12 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         private final Path containerPath;
         private final boolean isDrive;
 
+        public ContainerItem(final Path containerPath, final Path collectionPath, final boolean isDrive) {
+            this.containerPath = containerPath;
+            this.collectionPath = collectionPath;
+            this.isDrive = isDrive;
+        }
+
         public boolean isDrive() {
             return isDrive;
         }
@@ -278,12 +315,6 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             }
 
             return collectionPath.isChild(containerPath);
-        }
-
-        public ContainerItem(final Path containerPath, final Path collectionPath, final boolean isDrive) {
-            this.containerPath = containerPath;
-            this.collectionPath = collectionPath;
-            this.isDrive = isDrive;
         }
 
         public boolean equals(final ContainerItem other) {

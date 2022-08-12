@@ -37,9 +37,9 @@ public class SharepointSiteFileIdProvider extends GraphFileIdProvider {
     private Site.Metadata getSite(final Path file) throws IOException {
         final Site hostSite = Site.byHostname(session.getClient(), session.getHost().getHostname());
         if(file.isRoot()) {
-            return hostSite.getMetadata();
+            return hostSite.getMetadata(null); // query: null: Default return set.
         }
-        return Site.byPath(hostSite, file.getAbsolute()).getMetadata();
+        return Site.byPath(hostSite, file.getAbsolute()).getMetadata(null); // query: null: Default return set.
     }
 
     @Override
