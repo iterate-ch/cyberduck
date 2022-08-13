@@ -126,6 +126,10 @@ public class ProfilesPreferencesController extends BundleController {
 
     @Action
     public void searchFieldTextDidEndEditing(final NSNotification notification) {
+        this.reload();
+    }
+
+    private void reload() {
         final String input = searchField.stringValue();
         if(StringUtils.isBlank(input)) {
             this.profilesTableDataSource.withSource(toSorted(repository.keySet()));
@@ -169,8 +173,7 @@ public class ProfilesPreferencesController extends BundleController {
                                         repository.put(description, description.getProfile().get());
                                     }
                                 }
-                                profilesTableDataSource.withSource(toSorted(repository.keySet()));
-                                profilesTableView.reloadData();
+                                reload();
                                 progressIndicator.stopAnimation(null);
                             }
                         })
