@@ -57,20 +57,23 @@ public class ProfileDictionary<T> {
 
     /**
      * @param serialized Serialized bookmark
-     * @param parent     Filter for parent protocol reference
+     * @param filter     Filter for parent protocol reference
      * @return Null if deserialization fails
      */
-    public Profile deserialize(final T serialized, final Predicate<Protocol> parent) {
+    public Profile deserialize(final T serialized, final Predicate<Protocol> filter) {
         final Deserializer<T> dict = deserializer.create(serialized);
         final String protocol = dict.stringForKey("Protocol");
         if(StringUtils.isNotBlank(protocol)) {
             // Return default registered protocol specification as parent
-            final Protocol found = protocols.forName(protocols.find(parent), protocol, null);
-            if(null == found) {
-                log.error(String.format("Unknown protocol %s in profile", protocol));
+            Protocol parent = protocols.forName(protocols.find(filter), protocol, null);
+            if(null == parent) {
+                log.error(String.format("Unknown protocol %s in profile. Try fallback with no predicate in lookup", protocol));
+                parent = protocols.forName(protocols.find(p -> true), protocol, null);
+            }
+            if(null == parent) {
                 return null;
             }
-            return new Profile(found, dict);
+            return new Profile(parent, dict);
         }
         log.error("Missing protocol in profile");
         return null;
