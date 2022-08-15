@@ -76,23 +76,23 @@
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/xcrun" failonerror="false"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
                 line="codesign ${codesign.options} --entitlements ${setup}/app/org.sparkle-project.Downloader.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
-                <include name="Sparkle.framework/Versions/*/XPCServices/org.sparkle-project.Downloader.xpc"/>
+                <include name="Sparkle.framework/Versions/*/XPCServices/Downloader.xpc"/>
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/xcrun" failonerror="false"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
                 line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
-                <include name="Sparkle.framework/Versions/*/XPCServices/org.sparkle-project.InstallerLauncher.xpc"/>
+                <include name="Sparkle.framework/Versions/*/XPCServices/Installer.xpc"/>
                 <include name="Sparkle.framework/Versions/*/Autoupdate"/>
                 <include name="Sparkle.framework/Versions/*/*.app"/>
             </fileset>
