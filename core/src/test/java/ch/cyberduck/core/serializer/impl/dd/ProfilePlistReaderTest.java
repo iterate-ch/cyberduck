@@ -41,7 +41,7 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testDeserializeDropbox() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final TestProtocol parent = new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.dropbox;
@@ -51,10 +51,16 @@ public class ProfilePlistReaderTest {
             public boolean isEnabled() {
                 return false;
             }
-        }))).read(
+        };
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent))).read(
                 new Local("src/test/resources/Test Dropbox.cyberduckprofile")
         );
         assertNotNull(profile);
+        assertSame(parent, profile.getProtocol());
+        // Lookup with fallback
+        assertNotNull(new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)), ProtocolFactory.BUNDLED_PROFILE_PREDICATE).read(
+                new Local("src/test/resources/Test Dropbox.cyberduckprofile")
+        ));
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -93,7 +99,7 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testEquals() throws Exception {
-        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final TestProtocol parent = new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
@@ -103,7 +109,8 @@ public class ProfilePlistReaderTest {
             public boolean isEnabled() {
                 return false;
             }
-        })));
+        };
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)));
         final Profile profile = reader.read(
                 new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         );
@@ -112,9 +119,9 @@ public class ProfilePlistReaderTest {
                 new Local("src/test/resources/Eucalyptus Walrus S3.cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(new TestProtocol(), profile.getProtocol());
-        assertNotSame(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertEquals(new TestProtocol().getScheme(), profile.getScheme());
+        assertSame(parent, profile.getProtocol());
+        assertNotSame(parent.getDefaultHostname(), profile.getDefaultHostname());
+        assertEquals(parent.getScheme(), profile.getScheme());
         assertEquals("eucalyptus", profile.getProvider());
     }
 
@@ -168,7 +175,7 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testProviderProfileS3HTTP() throws Exception {
-        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final TestProtocol parent = new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
@@ -178,7 +185,8 @@ public class ProfilePlistReaderTest {
             public boolean isEnabled() {
                 return false;
             }
-        })));
+        };
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)));
         final Profile profile = reader.read(
                 new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         );
@@ -188,7 +196,7 @@ public class ProfilePlistReaderTest {
         ));
         assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(new TestProtocol(), profile.getProtocol());
+        assertSame(parent, profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertEquals(Scheme.http, profile.getScheme());
@@ -203,7 +211,7 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testProviderProfileS3HTTPS() throws Exception {
-        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        final TestProtocol parent = new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.s3;
@@ -213,7 +221,8 @@ public class ProfilePlistReaderTest {
             public boolean isEnabled() {
                 return false;
             }
-        })));
+        };
+        final ProfilePlistReader reader = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent)));
         final Profile profile = reader.read(
                 new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         );
@@ -223,7 +232,7 @@ public class ProfilePlistReaderTest {
         ));
         assertFalse(profile.isBundled());
         assertEquals(Protocol.Type.s3, profile.getType());
-        assertEquals(new TestProtocol(), profile.getProtocol());
+        assertSame(parent, profile.getProtocol());
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertEquals(Scheme.https, profile.getScheme());
@@ -231,8 +240,8 @@ public class ProfilePlistReaderTest {
         assertEquals(profile.disk(), profile.disk());
         assertEquals(profile.icon(), profile.disk());
         assertEquals(443, profile.getDefaultPort());
-        assertEquals(new TestProtocol().getDefaultHostname(), profile.getDefaultHostname());
-        assertEquals(profile.disk(), new TestProtocol().disk());
+        assertEquals(parent.getDefaultHostname(), profile.getDefaultHostname());
+        assertEquals(profile.disk(), parent.disk());
         assertNotNull(profile.getProvider());
         final Map<String, String> properties = profile.getProperties();
         assertTrue(properties.containsKey("s3service.disable-dns-buckets"));
