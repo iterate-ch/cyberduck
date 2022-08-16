@@ -28,6 +28,8 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
     private final Unit giga;
     private final Unit tera;
 
+    private static final String UNKNOWN = "--";
+
     public AbstractSizeFormatter(final Unit kilo, final Unit mega, final Unit giga, final Unit tera) {
         this.kilo = kilo;
         this.mega = mega;
@@ -43,7 +45,7 @@ public abstract class AbstractSizeFormatter implements SizeFormatter {
     @Override
     public String format(final long size, final boolean plain) {
         if(size < 0) {
-            return "--";
+            return UNKNOWN;
         }
         if(size < kilo.multiple()) {
             return String.format("%d B", size);
