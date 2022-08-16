@@ -151,4 +151,12 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
     public boolean random() {
         return true;
     }
+
+    @Override
+    public Append append(final Path file, final TransferStatus status) throws BackgroundException {
+        if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
+            return new Append(false).withStatus(status);
+        }
+        return super.append(file, status);
+    }
 }
