@@ -240,7 +240,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 updateField(hostField, bookmark.getHostname());
-                hostField.setHidden(!bookmark.getProtocol().isHostnameConfigurable());
+                hostField.setEnabled(bookmark.getProtocol().isHostnameConfigurable());
                 hostField.cell().setPlaceholderString(bookmark.getProtocol().getHostnamePlaceholder());
             }
         });
@@ -320,7 +320,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 updateField(portField, String.valueOf(bookmark.getPort()));
-                portField.setHidden(!bookmark.getProtocol().isPortConfigurable());
+                portField.setEnabled(bookmark.getProtocol().isPortConfigurable());
             }
         });
     }
@@ -346,7 +346,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 updateField(pathField, bookmark.getDefaultPath());
-                pathField.setHidden(!bookmark.getProtocol().isPathConfigurable());
+                pathField.setEnabled(bookmark.getProtocol().isPathConfigurable());
             }
         });
     }
@@ -380,7 +380,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 updateField(usernameField, bookmark.getCredentials().getUsername());
                 usernameField.cell().setPlaceholderString(bookmark.getProtocol().getUsernamePlaceholder());
-                usernameField.setHidden(!options.user && !bookmark.getCredentials().isAnonymousLogin());
+                usernameField.setEnabled(options.user && !bookmark.getCredentials().isAnonymousLogin());
             }
         });
     }
@@ -411,7 +411,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                anonymousCheckbox.setHidden(!options.anonymous);
+                anonymousCheckbox.setEnabled(options.anonymous);
                 anonymousCheckbox.setState(bookmark.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
             }
         });
@@ -442,7 +442,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-                passwordField.setHidden(!options.password || !bookmark.getCredentials().isAnonymousLogin());
+                passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
                 if(options.keychain && options.password) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
@@ -546,7 +546,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                privateKeyPopup.setHidden(!options.publickey);
+                privateKeyPopup.setEnabled(options.publickey);
                 if(bookmark.getCredentials().isPublicKeyAuthentication()) {
                     privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getIdentity().getAbsolute()));
                 }
