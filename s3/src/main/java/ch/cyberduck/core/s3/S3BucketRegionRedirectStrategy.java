@@ -49,6 +49,9 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
     public HttpUriRequest getRedirect(final HttpRequest request, final HttpResponse response, final HttpContext context) throws ProtocolException {
         if(response.containsHeader("x-amz-bucket-region")) {
             if(new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Virtual host style requests are disabled but received redirect response %s with x-amz-bucket-region %s", response, response.getFirstHeader("x-amz-bucket-region")));
+                }
                 throw new RedirectException(response.getFirstHeader("x-amz-bucket-region").getValue());
             }
             final Header header = response.getFirstHeader("x-amz-bucket-region");
