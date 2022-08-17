@@ -65,6 +65,9 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
                 authorizer.authorizeHttpRequest(redirect, context, null);
             }
             catch(ServiceException e) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Failure %s authorizing request %s", e, request));
+                }
                 throw new RedirectException(e.getMessage(), e);
             }
             // Update cache with new region
