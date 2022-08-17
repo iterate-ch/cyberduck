@@ -851,13 +851,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 _updater = PeriodicUpdateCheckerFactory.get();
                 if (_updater.hasUpdatePrivileges())
                 {
-                    DateTime lastCheck = new DateTime(PreferencesFactory.get().getLong("update.check.last"));
-                    TimeSpan span = DateTime.Now.Subtract(lastCheck);
-                    _updater.register();
-                    if (span.TotalSeconds >= PreferencesFactory.get().getLong("update.check.interval"))
+                    long next = PreferencesFactory.get().getLong("update.check.timestamp") + PreferencesFactory.get().getLong("update.check.interval") * 1000;
+                    if(next < DateTimeOffset.Now.ToUnixTimeMilliseconds())
                     {
                         _updater.check(true);
                     }
+                    _updater.register();
                 }
             }
             if (PreferencesFactory.get().getBoolean("profiles.discovery.updater.enable"))

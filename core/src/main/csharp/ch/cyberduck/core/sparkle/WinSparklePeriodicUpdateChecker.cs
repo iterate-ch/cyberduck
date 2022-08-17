@@ -70,7 +70,6 @@ namespace Ch.Cyberduck.Core.Sparkle
             {
                 WinSparkle.CheckUpdateWithUi();
             }
-            _preferences.setProperty("update.check.last", DateTime.Now.Ticks);
         }
 
         public unsafe override bool hasUpdatePrivileges()

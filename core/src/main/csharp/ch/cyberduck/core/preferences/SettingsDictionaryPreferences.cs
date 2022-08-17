@@ -227,7 +227,6 @@ namespace Ch.Cyberduck.Core.Preferences
             //disable reminder for protocol handler registration
             this.setDefault("defaulthandler.reminder", false.ToString());
 
-            this.setDefault("update.check.last", "0");
             this.setDefault("update.check.privilege", true.ToString());
 
             this.setDefault("queue.download.folder", DefaultDownloadPath);

@@ -1063,11 +1063,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.UpdateEnabled = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             View.AutomaticUpdateCheck = PreferencesFactory.get().getBoolean("update.check");
-            long lastCheck = PreferencesFactory.get().getLong("update.check.last");
+            long lastCheck = PreferencesFactory.get().getLong("update.check.timestamp");
             View.LastUpdateCheck = 0 == lastCheck
                 ? String.Empty
-                : UserDefaultsDateFormatter.GetLongFormat(
-                    new DateTime(PreferencesFactory.get().getLong("update.check.last")));
+                : UserDateFormatterFactory.get().getLongFormat(lastCheck);
             PopulateFeeds();
             View.UpdateFeed = PreferencesFactory.get().getProperty("update.feed");
 
