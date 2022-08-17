@@ -97,8 +97,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
         this.properties = this.getJetS3tProperties();
         // Client configuration
         final RequestEntityRestStorageService authorizer = this;
-        configuration.setRetryHandler(new S3HttpRequestRetryHandler(authorizer, new HostPreferences(session.getHost()).getInteger("http.connections.retry")));
-        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session, authorizer));
+        configuration.setRetryHandler(new S3HttpRequestRetryHandler(session.getHost(), authorizer, new HostPreferences(session.getHost()).getInteger("http.connections.retry")));
+        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session.getHost(), authorizer));
         this.setHttpClient(configuration.build());
     }
 
@@ -146,7 +146,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
                     log.debug(String.format("Apply default region %s to endpoint", host.getRegion()));
                 }
                 // Apply default region
-                endpoint = this.createRegionSpecificEndpoint(host.getRegion());
+                endpoint = createRegionSpecificEndpoint(host, host.getRegion());
             }
             else {
                 // Only for AWS set endpoint to region specific
@@ -175,13 +175,13 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                         if(log.isDebugEnabled()) {
                                             log.debug(String.format("Determined region %s for bucket %s", region, bucketName));
                                         }
-                                        endpoint = this.createRegionSpecificEndpoint(region.getIdentifier());
+                                        endpoint = createRegionSpecificEndpoint(host, region.getIdentifier());
                                     }
                                 }
                                 catch(BackgroundException e) {
                                     // Ignore failure reading location for bucket
                                     log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
-                                    endpoint = this.createRegionSpecificEndpoint(preferences.getProperty("s3.location"));
+                                    endpoint = createRegionSpecificEndpoint(host, preferences.getProperty("s3.location"));
                                 }
                             }
                         }
@@ -289,8 +289,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
         return request;
     }
 
-    protected String createRegionSpecificEndpoint(final String region) {
-        final PreferencesReader preferences = new HostPreferences(session.getHost());
+    protected static String createRegionSpecificEndpoint(final Host host, final String region) {
+        final PreferencesReader preferences = new HostPreferences(host);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Apply region %s to endpoint", region));
         }
@@ -400,7 +400,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
-    public void authorizeHttpRequest(final HttpUriRequest httpMethod, final HttpContext context,
+    public void authorizeHttpRequest(final String bucketName, final HttpUriRequest httpMethod, final HttpContext context,
                                      final String forceRequestSignatureVersion) throws ServiceException {
         if(forceRequestSignatureVersion != null) {
             final S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
@@ -408,7 +408,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
-        super.authorizeHttpRequest(httpMethod, context, forceRequestSignatureVersion);
+        super.authorizeHttpRequest(bucketName, httpMethod, context, forceRequestSignatureVersion);
     }
 
     @Override

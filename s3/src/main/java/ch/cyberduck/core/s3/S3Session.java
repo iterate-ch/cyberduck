@@ -97,15 +97,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
-    private final RegionEndpointCache regions = new RegionEndpointCache() {
-        @Override
-        public String putRegionForBucketName(final String bucketName, final String region) {
-            if(StringUtils.isBlank(bucketName)) {
-                return null;
-            }
-            return super.putRegionForBucketName(bucketName, region);
-        }
-    };
+    private final RegionEndpointCache regions = new RegionEndpointCache();
 
     public S3Session(final Host host) {
         super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());

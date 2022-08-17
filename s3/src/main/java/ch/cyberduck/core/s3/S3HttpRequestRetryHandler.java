@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.ExtendedHttpRequestRetryHandler;
 
 import org.apache.http.client.methods.HttpUriRequest;
@@ -28,6 +29,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
+import org.jets3t.service.utils.ServiceUtils;
+import org.jets3t.service.utils.SignatureUtils;
 
 import java.io.IOException;
 
@@ -36,10 +39,12 @@ public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
 
     private static final int MAX_RETRIES = 1;
 
+    private final Host host;
     private final JetS3tRequestAuthorizer authorizer;
 
-    public S3HttpRequestRetryHandler(final JetS3tRequestAuthorizer authorizer, final int retryCount) {
+    public S3HttpRequestRetryHandler(final Host host, final JetS3tRequestAuthorizer authorizer, final int retryCount) {
         super(retryCount);
+        this.host = host;
         this.authorizer = authorizer;
     }
 
@@ -49,11 +54,22 @@ public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
             if(super.retryRequest(exception, executionCount, context)) {
                 final Object attribute = context.getAttribute(HttpCoreContext.HTTP_REQUEST);
                 if(attribute instanceof HttpUriRequest) {
-                    final HttpUriRequest method = (HttpUriRequest) attribute;
-                    log.warn(String.format("Retrying request %s", method));
+                    final HttpUriRequest request = (HttpUriRequest) attribute;
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Retrying request %s", request));
+                    }
                     try {
+                        final String region = SignatureUtils.awsRegionForRequest(request.getURI());
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Determined region %s from URI %s", region, request.getURI()));
+                        }
+                        final String bucketName = ServiceUtils.findBucketNameInHostOrPath(request.getURI(),
+                                RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
+                        }
                         // Build the authorization string for the method.
-                        authorizer.authorizeHttpRequest(method, context, null);
+                        authorizer.authorizeHttpRequest(bucketName, request, context, null);
                         return true;
                     }
                     catch(ServiceException e) {
