@@ -230,7 +230,7 @@ public class STSCredentialsConfigurator {
                 final Map<String, String> profileProperties = basicProfile.getProperties();
                 if(profileProperties.containsKey("sso_start_url")) {
                     // Read cached SSO credentials
-                    final CachedCredential cached = this.fetchSsoCredentials(credentials, profileProperties, awsDirectory);
+                    final CachedCredential cached = this.fetchSsoCredentials(profileProperties, awsDirectory);
                     credentials.setUsername(cached.accessKey);
                     credentials.setPassword(cached.secretKey);
                     credentials.setToken(cached.sessionToken);
@@ -291,7 +291,7 @@ public class STSCredentialsConfigurator {
      * @throws LoginFailureException Error reading from file
      * @throws ExpiredTokenException Expired SSO credentials in cache
      */
-    private CachedCredential fetchSsoCredentials(final Credentials credentials, final Map<String, String> properties, final Local awsDirectory)
+    private CachedCredential fetchSsoCredentials(final Map<String, String> properties, final Local awsDirectory)
             throws LoginFailureException {
         // See https://github.com/boto/botocore/blob/23ee17f5446c78167ff442302471f9928c3b4b7c/botocore/credentials.py#L2004
         try {
