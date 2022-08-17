@@ -31,6 +31,7 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -335,4 +336,20 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(session, acl).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testDetermineCorrectRegionFrom400Reply() throws Exception {
+        final Path bucket = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl);
+        feature.mkdir(bucket, new TransferStatus().withRegion("eu-central-1"));
+        // Populate incorrect region in cache
+        final RegionEndpointCache cache = session.getClient().getRegionEndpointCache();
+        assertEquals("eu-central-1", cache.getRegionForBucketName(bucket.getName()));
+        cache.putRegionForBucketName(bucket.getName(), "eu-west-1");
+        assertNotSame(AttributedList.emptyList(), new S3ObjectListService(session, acl).list(bucket, new DisabledListProgressListener()));
+        assertEquals("eu-central-1", cache.getRegionForBucketName(bucket.getName()));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
 }
