@@ -72,6 +72,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
@@ -95,6 +96,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+
+    private final RegionEndpointCache regions = new RegionEndpointCache();
 
     public S3Session(final Host host) {
         super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -155,7 +158,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
         }
-        return new RequestEntityRestStorageService(this, configuration);
+        final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
+        client.setRegionEndpointCache(regions);
+        return client;
     }
 
     @Override
@@ -201,7 +206,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             final Location.Name location = new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<Location.Name>() {
                 @Override
                 public Location.Name call() throws BackgroundException {
-                    return new S3LocationFeature(S3Session.this, client.getRegionEndpointCache()).getLocation(home);
+                    return new S3LocationFeature(S3Session.this, regions).getLocation(home);
                 }
             }).call();
             if(log.isDebugEnabled()) {
@@ -325,10 +330,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3TouchFeature(this, acl);
         }
         if(type == Location.class) {
-            if(this.isConnected()) {
-                return (T) new S3LocationFeature(this, client.getRegionEndpointCache());
-            }
-            return (T) new S3LocationFeature(this);
+            return (T) new S3LocationFeature(this, regions);
         }
         if(type == Versioning.class) {
             return (T) versioning;

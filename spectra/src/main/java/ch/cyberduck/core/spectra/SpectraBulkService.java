@@ -364,7 +364,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             final RequestEntityRestStorageService client = session.getClient();
             final HttpPut request = new HttpPut(String.format("%s://%s:%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(),
                 session.getHost().getHostname(), session.getHost().getPort()));
-            client.authorizeHttpRequest(request, null, null);
+            client.authorizeHttpRequest(null, request, null, null);
             final HttpResponse response = client.getHttpClient().execute(request);
             if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
                 throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
