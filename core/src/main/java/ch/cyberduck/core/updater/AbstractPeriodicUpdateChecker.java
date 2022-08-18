@@ -64,7 +64,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Check for new updates after %s", delay));
                     }
-                    PreferencesFactory.get().setProperty("update.check.timestamp", System.currentTimeMillis());
+                    preferences.setProperty("update.check.timestamp", System.currentTimeMillis());
                     controller.invoke(new DefaultMainAction() {
                         @Override
                         public void run() {
