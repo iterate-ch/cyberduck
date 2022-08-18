@@ -4,6 +4,8 @@ https://cyberduck.io/
 8.4.3
 - [Bugfix] Repeated prompt to verify server fingerprint (SFTP, Windows) (#13638)
 - [Bugfix] OAuth token not saved in credentials manager (Dropbox, Windows) (#13613)
+- [Bugfix] Malformed authorization header with wrong region when browsing buckets in multiple regions (S3)
+- [Bugfix] Lower memory footprint regardless of available memory on system (macOS)
 
 8.4.2
 - [Bugfix] Setting to always open default editor application set in Preferences (Windows) (#13546)
