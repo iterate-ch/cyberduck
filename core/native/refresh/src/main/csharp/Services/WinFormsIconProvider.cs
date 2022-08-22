@@ -38,22 +38,11 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
         public Image DefaultBrowser()
         {
-            if (IconCache.TryGetIcon("app:defaultbrowser", out Image image))
-            {
-                return image;
-            }
-
             if (Utils.GetSystemDefaultBrowser() is not ShellApplicationFinder.ProgIdApplication app)
             {
                 return default;
             }
-
-            uint result = ExtractIconEx(app.IconPath, app.IconIndex, out var largeIcon, out var smallIcon, 1);
-            using (smallIcon)
-            using (largeIcon)
-            {
-                return Get(largeIcon.DangerousGetHandle(), (c, s, i) => c.CacheIcon("app:defaultbrowser", s, i));
-            }
+            return GetApplication(app, 32);
         }
 
         public override Image GetDisk(Protocol protocol, int size)
