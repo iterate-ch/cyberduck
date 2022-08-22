@@ -69,6 +69,14 @@ namespace Ch.Cyberduck.Core.TaskDialog
         private bool mainIconConfigured = false;
         private bool radioButtonsConfigured = false;
 
+        private static readonly PFTASKDIALOGCALLBACK s_callbackProcDelegate;
+
+        static TaskDialog()
+        {
+            s_callbackProcDelegate = (hwnd, msg, wParam, lParam, lpRefData) =>
+            ((TaskDialog)GCHandle.FromIntPtr(lpRefData).Target).Handler(hwnd, msg, wParam, lParam);
+        }
+
         private TaskDialog()
         {
             config.cbSize = (uint)SizeOf<TASKDIALOGCONFIG>();
@@ -285,29 +293,31 @@ namespace Ch.Cyberduck.Core.TaskDialog
             int buttonCount = buttons.Count;
             int radioButtonCount = radioButtons.Count;
             using var buttonMemory = MemoryPool<TASKDIALOG_BUTTON>.Shared.Rent(buttonCount + radioButtonCount);
+            registry.Register(buttonMemory.Memory.Pin());
             CopyButtons(ref buttonMemory.Memory.Span[0], buttons, out config.pButtons);
             CopyButtons(ref buttonMemory.Memory.Span[buttonCount], radioButtons, out config.pRadioButtons);
 
+            GCHandle handle = default;
             try
             {
                 Showing?.Invoke(this, EventArgs.Empty);
-                using (this)
-                {
-                    PFTASKDIALOGCALLBACK callback = default;
-                    if (this.callback is not null)
-                    {
-                        callback = new(Handler);
-                    }
+                TASKDIALOGCONFIG copy = config;
+                config = default;
+                copy.pfCallback = s_callbackProcDelegate;
 
-                    TASKDIALOGCONFIG copy = config;
-                    config = default;
-                    copy.pfCallback = callback;
-                    result = TaskDialogIndirect(copy, &button, &radioButton, &verificationChecked);
-                }
+                handle = GCHandle.Alloc(this, GCHandleType.Normal);
+                copy.lpCallbackData = GCHandle.ToIntPtr(handle);
+
+                result = TaskDialogIndirect(copy, &button, &radioButton, &verificationChecked);
             }
             finally
             {
+                if (handle.IsAllocated)
+                {
+                    handle.Free();
+                }
                 Closed?.Invoke(this, EventArgs.Empty);
+                this.Dispose();
             }
             if (button == 0)
                 Marshal.ThrowExceptionForHR(result);
@@ -357,10 +367,24 @@ namespace Ch.Cyberduck.Core.TaskDialog
             where TIn : class
             where TOut : unmanaged
         {
+            PinValue(out void* temp, value, registry);
+            ptr = (TOut*)temp;
+        }
+
+        private static unsafe void PinValue<TIn>(out nint ptr, TIn value, in GCRegistry registry)
+            where TIn : class
+        {
+            PinValue(out void* temp, value, registry);
+            ptr = (nint)temp;
+        }
+
+        private static unsafe void PinValue<TIn>(out void* ptr, TIn value, in GCRegistry registry)
+            where TIn : class
+        {
             var alloc = GCHandle.Alloc(value, GCHandleType.Pinned);
             var handle = new MemoryHandle((void*)alloc.AddrOfPinnedObject(), alloc);
             registry.Register(handle);
-            ptr = (TOut*)handle.Pointer;
+            ptr = handle.Pointer;
         }
 
         private static PCWSTR ToIcon(TaskDialogIcon icon) => icon switch
@@ -384,12 +408,12 @@ namespace Ch.Cyberduck.Core.TaskDialog
 
         private void DoButtons(Action<AddButtonCallback> configure, in int defaultButton, out uint count) => DoButtons(buttons, configure, defaultButton, out count);
 
-        private void DoButtons(List<TASKDIALOG_BUTTON> target, Action<AddButtonCallback> configure, in int defaultButton, out uint count)
+        private unsafe void DoButtons(List<TASKDIALOG_BUTTON> target, Action<AddButtonCallback> configure, in int defaultButton, out uint count)
         {
             MESSAGEBOX_RESULT? value = default;
             configure((MESSAGEBOX_RESULT id, in string title, bool @default) =>
             {
-                PinValue(out var pinned, title, registry);
+                PinValue(out char* pinned, title, registry);
                 target.Add(new() { nButtonID = (int)id, pszButtonText = pinned });
                 if (value.HasValue)
                 {
@@ -407,7 +431,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
             }
         }
 
-        private unsafe HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, nint lpRefData)
+        private unsafe HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
         {
             var notification = (TASKDIALOG_NOTIFICATIONS)msg;
 
@@ -426,7 +450,7 @@ namespace Ch.Cyberduck.Core.TaskDialog
                 TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(hwnd, wParam.Value != 0),
                 _ => default
             };
-            return callback(this, args) ? S_FALSE : S_OK;
+            return callback?.Invoke(this, args) == true ? S_FALSE : S_OK;
         }
 
         private struct GCRegistry : IDisposable
