@@ -22,6 +22,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.ExtendedHttpRequestRetryHandler;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
@@ -58,22 +59,28 @@ public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("Retrying request %s", request));
                     }
-                    try {
-                        final String region = SignatureUtils.awsRegionForRequest(request.getURI());
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Determined region %s from URI %s", region, request.getURI()));
-                        }
-                        final String bucketName = ServiceUtils.findBucketNameInHostOrPath(request.getURI(),
-                                RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
-                        }
-                        // Build the authorization string for the method.
-                        authorizer.authorizeHttpRequest(bucketName, request, context, null);
+                    if(StringUtils.isBlank(request.getURI().getHost())) {
+                        log.warn(String.format("Missing hostname in URI %s", request.getURI()));
                         return true;
                     }
-                    catch(ServiceException e) {
-                        log.warn("Unable to generate updated authorization string for retried request", e);
+                    else {
+                        try {
+                            final String region = SignatureUtils.awsRegionForRequest(request.getURI());
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Determined region %s from URI %s", region, request.getURI()));
+                            }
+                            final String bucketName = ServiceUtils.findBucketNameInHostOrPath(request.getURI(),
+                                    RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
+                            }
+                            // Build the authorization string for the method.
+                            authorizer.authorizeHttpRequest(bucketName, request, context, null);
+                            return true;
+                        }
+                        catch(ServiceException e) {
+                            log.warn("Unable to generate updated authorization string for retried request", e);
+                        }
                     }
                 }
             }
