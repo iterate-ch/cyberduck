@@ -22,7 +22,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.ExtendedHttpRequestRetryHandler;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
@@ -34,6 +34,7 @@ import org.jets3t.service.utils.ServiceUtils;
 import org.jets3t.service.utils.SignatureUtils;
 
 import java.io.IOException;
+import java.net.URI;
 
 public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
     private static final Logger log = LogManager.getLogger(S3HttpRequestRetryHandler.class);
@@ -59,28 +60,39 @@ public class S3HttpRequestRetryHandler extends ExtendedHttpRequestRetryHandler {
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("Retrying request %s", request));
                     }
-                    if(StringUtils.isBlank(request.getURI().getHost())) {
-                        log.warn(String.format("Missing hostname in URI %s", request.getURI()));
+                    try {
+                        final URI uri = URI.create(((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).toURI());
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Lookup region for URI %s", uri));
+                        }
+                        final String region = SignatureUtils.awsRegionForRequest(uri);
+                        if(null == region) {
+                            log.warn(String.format("Failure to determine region in URI %s", uri));
+                            return false;
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Determined region %s from URI %s", region, uri));
+                        }
+                        final String bucketName = ServiceUtils.findBucketNameInHostOrPath(uri,
+                                RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
+                        if(null == bucketName) {
+                            return false;
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Determined bucket %s from URI %s", bucketName, uri));
+                        }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Authorize request %s", request));
+                        }
+                        // Build the authorization string for the method.
+                        authorizer.authorizeHttpRequest(bucketName, request, context, null);
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Retrying request %s", request));
+                        }
                         return true;
                     }
-                    else {
-                        try {
-                            final String region = SignatureUtils.awsRegionForRequest(request.getURI());
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Determined region %s from URI %s", region, request.getURI()));
-                            }
-                            final String bucketName = ServiceUtils.findBucketNameInHostOrPath(request.getURI(),
-                                    RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
-                            }
-                            // Build the authorization string for the method.
-                            authorizer.authorizeHttpRequest(bucketName, request, context, null);
-                            return true;
-                        }
-                        catch(ServiceException e) {
-                            log.warn("Unable to generate updated authorization string for retried request", e);
-                        }
+                    catch(ServiceException e) {
+                        log.warn("Unable to generate updated authorization string for retried request", e);
                     }
                 }
             }
