@@ -96,9 +96,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         this.session = session;
         this.properties = this.getJetS3tProperties();
         // Client configuration
-        final RequestEntityRestStorageService authorizer = this;
-        configuration.setRetryHandler(new S3HttpRequestRetryHandler(session.getHost(), authorizer, new HostPreferences(session.getHost()).getInteger("http.connections.retry")));
-        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session.getHost(), authorizer));
+        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session.getHost(), this));
         this.setHttpClient(configuration.build());
     }
 
