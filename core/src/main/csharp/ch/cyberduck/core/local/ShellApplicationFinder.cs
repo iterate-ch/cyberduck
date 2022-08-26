@@ -131,7 +131,7 @@ namespace Ch.Cyberduck.Core.Local
                 {
                     return Application.notfound;
                 }
-                if (!qa.GetString(ASSOCSTR_DEFAULTICON, "open", out var defaultIcon))
+                if (!qa.GetString(ASSOCSTR_APPICONREFERENCE, "open", out var defaultIcon))
                 {
                     return Application.notfound;
                 }
