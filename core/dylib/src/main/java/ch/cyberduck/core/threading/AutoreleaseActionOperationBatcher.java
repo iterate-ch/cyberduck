@@ -32,6 +32,7 @@ public final class AutoreleaseActionOperationBatcher implements ActionOperationB
         impl = AutoreleaseBatcher.forThread(batchsize);
     }
 
+    @Override
     public void operate() {
         // Drain and create new autorelease pool
         impl.operate();
