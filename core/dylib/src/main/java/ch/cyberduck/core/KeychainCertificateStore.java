@@ -86,7 +86,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                 return true;
             default:
                 if(log.isDebugEnabled()) {
-                    log.debug("Evaluated recoverable trust result failure " + trustResultType.getValue());
+                    log.debug(String.format("Evaluated recoverable trust result failure %d", trustResultType.getValue()));
                 }
                 try {
                     prompt.prompt(hostname, certificates);
@@ -159,7 +159,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                 certs.addObject(certificateRef);
             }
             catch(CertificateEncodingException e) {
-                log.error(String.format("Failure %s retrieving encoded  certificate", e));
+                log.error(String.format("Failure %s retrieving encoded certificate", e));
             }
         }
         return certs;
