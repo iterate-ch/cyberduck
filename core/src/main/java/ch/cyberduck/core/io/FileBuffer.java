@@ -20,7 +20,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -35,15 +34,13 @@ import java.nio.file.Paths;
 public class FileBuffer implements Buffer {
     private static final Logger log = LogManager.getLogger(FileBuffer.class);
 
-    private static final TemporaryFileService temp = TemporaryFileServiceFactory.get();
-
     private final Local temporary;
 
     private RandomAccessFile file;
     private Long length = 0L;
 
     public FileBuffer() {
-        this(temp.create(new AlphanumericRandomStringService().random()));
+        this(TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random()));
     }
 
     public FileBuffer(final Local temporary) {
