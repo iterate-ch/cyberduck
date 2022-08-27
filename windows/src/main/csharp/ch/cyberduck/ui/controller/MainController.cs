@@ -561,10 +561,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private static void InitializeProtocolHandler()
         {
             var self = new Application(System.Windows.Forms.Application.ExecutablePath);
-            var handler = SchemeHandlerFactory.get();
             if (PreferencesFactory.get().getBoolean("defaulthandler.reminder") &&
                             PreferencesFactory.get().getInteger("uses") > 0)
             {
+                var handler = SchemeHandlerFactory.get();
                 if (
                     !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()), self))
                 {
@@ -594,12 +594,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         });
                 }
             }
-            // Register OAuth handler
-            var protocols = ProtocolFactory.get();
-            handler.setDefaultHandler(self, Arrays.asList(
-                PreferencesFactory.get().getProperty("oauth.handler.scheme"),
-                new Uri(protocols.forType(Protocol.Type.googlestorage).getOAuthRedirectUrl()).Scheme,
-                new Uri(protocols.forType(Protocol.Type.googledrive).getOAuthRedirectUrl()).Scheme));
         }
 
         private static void InitJumpList()

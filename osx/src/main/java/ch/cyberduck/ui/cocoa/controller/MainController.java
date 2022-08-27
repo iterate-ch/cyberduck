@@ -975,10 +975,10 @@ public class MainController extends BundleController implements NSApplication.De
         });
         final Rendezvous bonjour = RendezvousFactory.instance();
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
-        final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
         if(preferences.getBoolean("defaulthandler.reminder")
             && preferences.getInteger("uses") > 0) {
-            if(!SchemeHandlerFactory.get().isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
+            final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
+            if(!schemeHandler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                 new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
@@ -1050,17 +1050,6 @@ public class MainController extends BundleController implements NSApplication.De
         if(preferences.getBoolean("profiles.discovery.updater.enable")) {
             // Synchronize and register timer
             profiles.register();
-        }
-        // Register OAuth handler
-        final ProtocolFactory protocols = ProtocolFactory.get();
-        for(String handler : Arrays.asList(preferences.getProperty("oauth.handler.scheme"),
-                StringUtils.substringBefore(protocols.forType(Protocol.Type.googlestorage).getOAuthRedirectUrl(), ':'),
-                StringUtils.substringBefore(protocols.forType(Protocol.Type.googledrive).getOAuthRedirectUrl(), ':'))) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Register OAuth handler %s", handler));
-            }
-            schemeHandler.setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
-                    Collections.singletonList(handler));
         }
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
                 this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
