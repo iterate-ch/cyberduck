@@ -41,7 +41,9 @@ public final class SessionFactory {
         }
         final Protocol protocol = host.getProtocol();
         final String prefix = protocol.getPrefix();
-
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Load class with prefix %s", prefix));
+        }
         try {
             final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
