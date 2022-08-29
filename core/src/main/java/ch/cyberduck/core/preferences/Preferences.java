@@ -1381,6 +1381,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
         this.setDefault("factory.quicklook.class", ApplicationLauncherQuicklook.class.getName());
         this.setDefault("factory.connectiontimeout.class", DefaultConnectionTimeout.class.getName());
+        this.setDefault("factory.authorizationcodeprovider.class", "ch.cyberduck.core.oauth.BrowserOAuth2AuthorizationCodeProvider");
     }
 
     /**
