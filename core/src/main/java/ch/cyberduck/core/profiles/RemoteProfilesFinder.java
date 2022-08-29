@@ -27,7 +27,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.local.DefaultLocalTouchFeature;
+import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = LogManager.getLogger(RemoteProfilesFinder.class);
 
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
     private final ProtocolFactory protocols;
     private final Session<?> session;
 
@@ -68,7 +69,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         }
         final ProfileFilter filter = new ProfileFilter();
         final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
-            new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
+                new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
         return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(protocols, file,
                 new LazyInitializer<Local>() {
                     @Override
@@ -81,22 +82,22 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                             final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
                                     // Read latest version
                                     .withVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback());
-                            final Local temp = TemporaryFileServiceFactory.get().create(file.getName());
-                        final OutputStream out = temp.getOutputStream(false);
-                        try {
-                            IOUtils.copy(in, out);
+                            final Local local = temp.create(file.getName());
+                            final OutputStream out = local.getOutputStream(false);
+                            try {
+                                IOUtils.copy(in, out);
+                            }
+                            finally {
+                                in.close();
+                                out.close();
+                            }
+                            return local;
                         }
-                        finally {
-                            in.close();
-                            out.close();
+                        catch(BackgroundException | IOException e) {
+                            throw new ConcurrentException(e);
                         }
-                        return temp;
-                    }
-                    catch(BackgroundException | IOException e) {
-                        throw new ConcurrentException(e);
                     }
                 }
-            }
         ))).collect(Collectors.toSet());
     }
 
@@ -113,5 +114,10 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         public Pattern toPattern() {
             return Pattern.compile(".*\\.cyberduckprofile");
         }
+    }
+
+    @Override
+    public void cleanup() {
+        temp.shutdown();
     }
 }

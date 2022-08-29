@@ -75,9 +75,11 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
     public Set<ProfileDescription> run(final Session<?> session) throws BackgroundException {
         final Set<ProfileDescription> returned = new HashSet<>();
         // Find all locally installed profiles
-        final Set<ProfileDescription> installed = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE).find();
+        final LocalProfilesFinder localProfilesFinder = new LocalProfilesFinder(registry, directory, ProtocolFactory.BUNDLED_PROFILE_PREDICATE);
+        final Set<ProfileDescription> installed = localProfilesFinder.find();
         // Find all profiles from repository
-        final Set<ProfileDescription> remote = new RemoteProfilesFinder(registry, session).find();
+        final RemoteProfilesFinder remoteProfilesFinder = new RemoteProfilesFinder(registry, session);
+        final Set<ProfileDescription> remote = remoteProfilesFinder.find();
         final ProfileMatcher matcher = new ChecksumProfileMatcher(remote);
         // Iterate over every installed profile and find match in repository
         installed.forEach(local -> {
@@ -122,6 +124,8 @@ public class ProfilesSynchronizeWorker extends Worker<Set<ProfileDescription>> {
                 }
             }
         });
+        localProfilesFinder.cleanup();
+        remoteProfilesFinder.cleanup();
         return returned;
     }
 }
