@@ -32,10 +32,12 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -43,6 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -202,6 +205,12 @@ public class OAuth2AuthorizationService {
         }
         final AtomicReference<String> authenticationCode = new AtomicReference<>();
         if(StringUtils.endsWith(redirectUri, ":oauth")) {
+            final String handler = StringUtils.substringBefore(redirectUri, ':');
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register OAuth handler %s", handler));
+            }
+            SchemeHandlerFactory.get().setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
+                    Collections.singletonList(handler));
             // Assume scheme handler is registered
             final CountDownLatch signal = new CountDownLatch(1);
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
