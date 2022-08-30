@@ -44,7 +44,7 @@ public class SFTPAgentAuthenticationTest {
     @Test
     public void filterIdentitiesMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user").withIdentity(new Local("/mykey") {
+        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user").withIdentity(new Local("mykey") {
             @Override
             public boolean exists() {
                 return true;
@@ -53,9 +53,9 @@ public class SFTPAgentAuthenticationTest {
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
-        when(nomatch.getComment()).thenReturn(StringUtils.getBytes("/mykey2", StandardCharsets.UTF_8));
+        when(nomatch.getComment()).thenReturn(StringUtils.getBytes("mykey2", StandardCharsets.UTF_8));
         final Identity match = mock(Identity.class);
-        when(match.getComment()).thenReturn(StringUtils.getBytes("/mykey", StandardCharsets.UTF_8));
+        when(match.getComment()).thenReturn(StringUtils.getBytes("mykey", StandardCharsets.UTF_8));
 
         identities.add(nomatch);
         identities.add(match);
@@ -68,7 +68,7 @@ public class SFTPAgentAuthenticationTest {
     @Test
     public void filterIdentitiesNoMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user").withIdentity(new Local("/mykey") {
+        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user").withIdentity(new Local("mykey") {
             @Override
             public boolean exists() {
                 return true;
