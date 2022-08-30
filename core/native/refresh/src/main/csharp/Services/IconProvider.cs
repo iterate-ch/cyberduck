@@ -1,6 +1,7 @@
 ﻿using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using Ch.Cyberduck.Core.Local;
+using org.apache.logging.log4j;
 using System;
 using System.IO;
 using Windows.Win32;
@@ -38,6 +39,8 @@ namespace Ch.Cyberduck.Core.Refresh.Services
 
     public abstract class IconProvider<T> : IconProvider
     {
+        protected static readonly Logger Log = LogManager.getLogger(typeof(T));
+
         protected IconProvider(IconCache iconCache, IIconProviderImageSource imageSource) : base(iconCache, imageSource)
         {
         }
@@ -51,7 +54,7 @@ namespace Ch.Cyberduck.Core.Refresh.Services
             string key = "app:" + application.getIdentifier();
             if (!IconCache.TryGetIcon(key, size, out T image))
             {
-                string iconPath;
+                string iconPath, realIconPath;
                 int iconIndex;
                 switch (application)
                 {
@@ -68,15 +71,23 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                     default:
                         return default;
                 }
+                realIconPath = iconPath;
                 iconPath = SHLoadIndirectString(iconPath);
 
                 SHCreateFileExtractIcon(iconPath, 0, out IExtractIconW icon);
                 using HICON_Handle largeIcon = new();
                 using HICON_Handle smallIcon = new();
-                icon.Extract(iconPath, (uint)iconIndex, largeIcon.Ref, smallIcon.Ref, 0);
-                Get(largeIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
-                Get(smallIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
-                image = Get(key, size);
+                try
+                {
+                    icon.Extract(iconPath, (uint)iconIndex, largeIcon.Ref, smallIcon.Ref, 0);
+                    Get(largeIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
+                    Get(smallIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
+                    image = Get(key, size);
+                }
+                catch (Exception genericException)
+                {
+                    Log.error(string.Format("Failure extracting icon for {0}. Icon path: {1} (Index: {2}, Indirect: \"{3}\")", application, iconPath, iconIndex, realIconPath), genericException);
+                }
             }
             return image;
         }
