@@ -281,7 +281,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 launcher.bounce(local);
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(options.icon) {
-                    icon.set(local, status);
                     icon.remove(local);
                 }
                 if(options.quarantine || options.wherefrom) {
