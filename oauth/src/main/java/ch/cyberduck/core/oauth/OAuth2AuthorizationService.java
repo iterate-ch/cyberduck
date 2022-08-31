@@ -136,7 +136,7 @@ public class OAuth2AuthorizationService {
         final TokenResponse response;
         switch(type) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(bookmark, prompt, cancel, credentials);
+                response = this.authorizeWithCode(bookmark, prompt);
                 break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(credentials);
@@ -153,8 +153,7 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel,
-                                            final Credentials credentials) throws BackgroundException {
+    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
