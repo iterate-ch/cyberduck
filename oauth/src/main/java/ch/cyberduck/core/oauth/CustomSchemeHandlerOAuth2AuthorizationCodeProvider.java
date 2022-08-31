@@ -40,13 +40,13 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
 
     @Override
     public String prompt(final Host bookmark, final LoginCallback prompt, final String authorizationCodeUrl, final String redirectUri, final String state) throws BackgroundException {
-        this.open(authorizationCodeUrl);
         final String handler = StringUtils.substringBefore(redirectUri, ':');
         if(log.isInfoEnabled()) {
             log.info(String.format("Register OAuth handler %s", handler));
         }
         schemeHandler.setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
                 Collections.singletonList(handler));
+        this.open(authorizationCodeUrl);
         // Assume scheme handler is registered
         final CountDownLatch signal = new CountDownLatch(1);
         final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
