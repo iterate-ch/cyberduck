@@ -24,7 +24,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface IconService {
     /**
      * @param file     File
-     * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
+     * @param progress Transfer status with transferred bytes set in offset
      * @return True if icon is set
      */
     boolean set(Local file, TransferStatus progress);

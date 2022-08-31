@@ -49,7 +49,7 @@ public class IconUpdateStreamListener extends BytecountStreamListener {
         final BigDecimal fraction = new BigDecimal(this.getSent()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
         if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
             // Another 10 percent of the file has been transferred
-            icon.set(file, status);
+            icon.set(file, new TransferStatus(status).withOffset(this.getSent()));
             step++;
         }
     }
