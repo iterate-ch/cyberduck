@@ -308,7 +308,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
         defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
-        if(host.getCredentials().isPasswordAuthentication()) {
+        if(credentials.isPasswordAuthentication()) {
             defaultMethods.add(0, new SFTPPasswordAuthentication(client));
         }
         else {
