@@ -308,7 +308,12 @@ public class SFTPSession extends Session<SSHClient> {
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
         defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
-        defaultMethods.add(new SFTPPasswordAuthentication(client));
+        if(credentials.isPasswordAuthentication()) {
+            defaultMethods.add(0, new SFTPPasswordAuthentication(client));
+        }
+        else {
+            defaultMethods.add(new SFTPPasswordAuthentication(client));
+        }
         final LinkedHashMap<String, List<AuthenticationProvider<Boolean>>> methodsMap = new LinkedHashMap<>();
         defaultMethods.forEach(m -> methodsMap.computeIfAbsent(m.getMethod(), k -> new ArrayList<>()).add(m));
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
