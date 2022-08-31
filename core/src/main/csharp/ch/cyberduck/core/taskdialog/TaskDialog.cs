@@ -25,6 +25,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
 using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
 using static Windows.Win32.UI.Controls.TASKDIALOG_FLAGS;
@@ -294,8 +295,8 @@ namespace Ch.Cyberduck.Core.TaskDialog
             int radioButtonCount = radioButtons.Count;
             using var buttonMemory = MemoryPool<TASKDIALOG_BUTTON>.Shared.Rent(buttonCount + radioButtonCount);
             registry.Register(buttonMemory.Memory.Pin());
-            CopyButtons(ref buttonMemory.Memory.Span[0], buttons, out config.pButtons);
-            CopyButtons(ref buttonMemory.Memory.Span[buttonCount], radioButtons, out config.pRadioButtons);
+            CopyButtons(ref GetReference(buttonMemory.Memory.Slice(0, buttonCount).Span), buttons, out config.pButtons);
+            CopyButtons(ref GetReference(buttonMemory.Memory.Slice(buttonCount, radioButtonCount).Span), radioButtons, out config.pRadioButtons);
 
             GCHandle handle = default;
             try
