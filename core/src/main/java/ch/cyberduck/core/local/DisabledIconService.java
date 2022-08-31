@@ -23,11 +23,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 public final class DisabledIconService implements IconService {
     @Override
-    public boolean set(final Local file, final String image) {
-        return false;
-    }
-
-    @Override
     public boolean set(final Local file, final TransferStatus progress) {
         return false;
     }
