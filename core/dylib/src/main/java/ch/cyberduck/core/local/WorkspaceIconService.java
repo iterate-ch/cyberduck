@@ -31,11 +31,6 @@ public final class WorkspaceIconService implements IconService {
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
-    @Override
-    public boolean set(final Local file, final String image) {
-        return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(image));
-    }
-
     protected boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
             // Specify 0 if you want to generate icons in all available icon representation formats
@@ -55,10 +50,10 @@ public final class WorkspaceIconService implements IconService {
         else {
             if(status.getLength() > 0) {
                 int fraction = (int) (status.getOffset() / (status.getOffset() + status.getLength()) * 10);
-                return this.set(file, String.format("download%d.icns", ++fraction));
+                return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", ++fraction)));
             }
             else {
-                return this.set(file, String.format("download%d.icns", 0));
+                return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", 0)));
             }
         }
     }
