@@ -302,7 +302,7 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            download.download(file, local, bandwidth, this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
+            download.download(file, local, bandwidth, this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") ?
                     new IconUpdateStreamListener(streamListener, segment, local) : streamListener, segment, connectionCallback);
         }
     }
