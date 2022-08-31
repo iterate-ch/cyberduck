@@ -28,7 +28,7 @@ public class FinderProgressIconService implements IconService {
     public boolean set(final Local file, final TransferProgress status) {
         NSProgress progress = NSProgress.currentProgress();
         if(null == progress) {
-            progress = NSProgress.discreteProgressWithTotalUnitCount(status.getSize());
+            progress = NSProgress.progressWithTotalUnitCount(status.getSize());
             progress.setKind(NSProgress.NSProgressKindFile);
             progress.setCancellable(false);
             progress.setPausable(false);
