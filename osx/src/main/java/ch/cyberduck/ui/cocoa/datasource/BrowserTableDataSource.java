@@ -69,6 +69,7 @@ import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
@@ -648,7 +649,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         try {
                             LocalTouchFactory.get().touch(file);
                             if(options.icon) {
-                                IconServiceFactory.get().set(file, new TransferStatus().withLength(0L));
+                                IconServiceFactory.get().set(file, new TransferProgress(0L, 0L));
                             }
                         }
                         catch(AccessDeniedException e) {

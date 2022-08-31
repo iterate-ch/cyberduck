@@ -17,6 +17,8 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 public final class TransferProgress {
 
     private final Long size;
@@ -24,6 +26,13 @@ public final class TransferProgress {
 
     private final String progress;
     private final Double speed;
+
+    public TransferProgress(final Long size, final Long transferred) {
+        this.size = size;
+        this.transferred = transferred;
+        this.progress = StringUtils.EMPTY;
+        this.speed = -1d;
+    }
 
     public TransferProgress(final Long size, final Long transferred, final String progress, final Double speed) {
         this.size = size;
