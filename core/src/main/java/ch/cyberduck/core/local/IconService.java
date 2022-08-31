@@ -19,7 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.TransferProgress;
 
 public interface IconService {
     /**
@@ -27,7 +27,7 @@ public interface IconService {
      * @param progress Transfer status with transferred bytes set in offset
      * @return True if icon is set
      */
-    boolean set(Local file, TransferStatus progress);
+    boolean set(Local file, TransferProgress progress);
 
     /**
      * Remove custom icon

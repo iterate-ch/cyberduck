@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.math.BigDecimal;
@@ -49,7 +50,7 @@ public class IconUpdateStreamListener extends BytecountStreamListener {
         final BigDecimal fraction = new BigDecimal(this.getSent()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
         if(fraction.multiply(BigDecimal.TEN).intValue() >= step) {
             // Another 10 percent of the file has been transferred
-            icon.set(file, new TransferStatus(status).withOffset(this.getSent()));
+            icon.set(file, new TransferProgress(status.getLength(), this.getSent()));
             step++;
         }
     }
