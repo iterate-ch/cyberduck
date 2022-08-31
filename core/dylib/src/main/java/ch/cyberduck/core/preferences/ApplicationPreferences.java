@@ -31,6 +31,7 @@ import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerTrashFeature;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.FinderProgressIconService;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesFileDescriptor;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
@@ -38,7 +39,6 @@ import ch.cyberduck.core.local.SecurityScopedFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.WorkspaceApplicationBadgeLabeler;
 import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceBrowserLauncher;
-import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
@@ -100,7 +100,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.watchservice.class", FSEventWatchService.class.getName());
         this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
         this.setDefault("factory.notification.class", NotificationCenter.class.getName());
-        this.setDefault("factory.iconservice.class", WorkspaceIconService.class.getName());
+        this.setDefault("factory.iconservice.class", FinderProgressIconService.class.getName());
         this.setDefault("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
         if(Factory.Platform.osversion.matches("(10|11)\\..*")) {
             this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
