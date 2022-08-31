@@ -24,11 +24,17 @@ public class NotfoundException extends BackgroundException {
     private static final long serialVersionUID = -5634899621865307418L;
 
     public NotfoundException(final String detail) {
-        super(LocaleFactory.localizedString("File not found", "Error"), detail);
+        super("File not found", detail);
     }
 
     public NotfoundException(final String detail, final Throwable cause) {
-        super(LocaleFactory.localizedString("File not found", "Error"), detail, cause);
+        super("File not found", detail, cause);
+    }
+
+    @Override
+    public String getMessage() {
+        return null == super.getMessage() ? LocaleFactory.localizedString("Unknown") :
+                LocaleFactory.localizedString(super.getMessage(), "Error");
     }
 
     @Override
