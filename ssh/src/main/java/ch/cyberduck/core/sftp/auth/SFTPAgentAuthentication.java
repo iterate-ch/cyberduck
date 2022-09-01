@@ -28,7 +28,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -84,16 +83,17 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
     protected Collection<Identity> filterIdentities(final Host bookmark, final Collection<Identity> identities) {
         if(bookmark.getCredentials().isPublicKeyAuthentication()) {
             final Local selected = bookmark.getCredentials().getIdentity();
-            final Collection<Identity> candidates = new ArrayList<>();
             for(Identity identity : identities) {
                 if(identity.getComment() != null) {
-                    if(selected.getAbsolute().equals(new String(identity.getComment(), StandardCharsets.UTF_8))) {
+                    final String candidate = new String(identity.getComment(), StandardCharsets.UTF_8);
+                    if(selected.getAbsolute().equals(candidate)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Matching identity %s found", candidate));
+                        }
                         return Collections.singletonList(identity);
                     }
                 }
-                candidates.add(identity);
             }
-            return candidates;
         }
         return identities;
     }
