@@ -20,6 +20,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -41,6 +42,7 @@ public class WorkspaceSchemeHandlerTest {
     }
 
     @Test
+    @Ignore
     public void testSetDefaultHandler() {
         assumeTrue(Factory.Platform.osversion.matches("12\\..*"));
         final Application application = new Application("com.apple.finder");
