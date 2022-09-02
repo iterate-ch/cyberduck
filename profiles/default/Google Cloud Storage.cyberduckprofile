@@ -34,11 +34,9 @@
             <string>https://www.googleapis.com/auth/devstorage.full_control</string>
         </array>
         <key>OAuth Client ID</key>
-        <string>996125414232-30v0nuldk4p54spra0k6gg3b8c8c9kib.apps.googleusercontent.com</string>
-        <key>OAuth Client Secret</key>
-        <string>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</string>
+        <string>996125414232-s922bvdt21nceeh5dq1gb6av8plpj7hr.apps.googleusercontent.com</string>
         <key>OAuth Redirect Url</key>
-        <string>com.googleusercontent.apps.996125414232-30v0nuldk4p54spra0k6gg3b8c8c9kib:oauth</string>
+        <string>io.cyberduck:oauth</string>
         <key>Password Configurable</key>
         <false/>
     </dict>

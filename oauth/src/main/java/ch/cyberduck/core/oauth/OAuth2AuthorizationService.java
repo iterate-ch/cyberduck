@@ -16,13 +16,11 @@ package ch.cyberduck.core.oauth;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.StringAppender;
@@ -32,12 +30,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
-import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.BrowserLauncher;
-import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
-import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -45,12 +39,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -83,9 +74,6 @@ public class OAuth2AuthorizationService {
 
     private final String clientid;
     private final String clientsecret;
-
-    public final BrowserLauncher browser
-            = BrowserLauncherFactory.get();
 
     private final List<String> scopes;
 
@@ -148,7 +136,7 @@ public class OAuth2AuthorizationService {
         final TokenResponse response;
         switch(type) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(bookmark, prompt, cancel, credentials);
+                response = this.authorizeWithCode(bookmark, prompt);
                 break;
             case PasswordGrant:
                 response = this.authorizeWithPassword(credentials);
@@ -165,8 +153,7 @@ public class OAuth2AuthorizationService {
         return tokens;
     }
 
-    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel,
-                                            final Credentials credentials) throws BackgroundException {
+    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -188,76 +175,29 @@ public class OAuth2AuthorizationService {
                 .setScopes(scopes)
                 .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                 .build();
-        final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
-        authorizationCodeRequestUrl.setRedirectUri(redirectUri);
+        final AuthorizationCodeRequestUrl authorizationCodeUrlBuilder = flow.newAuthorizationUrl();
+        authorizationCodeUrlBuilder.setRedirectUri(redirectUri);
         final String state = new AlphanumericRandomStringService().random();
-        authorizationCodeRequestUrl.setState(state);
+        authorizationCodeUrlBuilder.setState(state);
         for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
-            authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
+            authorizationCodeUrlBuilder.set(values.getKey(), values.getValue());
         }
         // Direct the user to an authorization page to grant access to their protected data.
-        final String url = authorizationCodeRequestUrl.build();
+        final String authorizationCodeUrl = authorizationCodeUrlBuilder.build();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Open browser with URL %s", url));
+            log.debug(String.format("Open browser with URL %s", authorizationCodeUrl));
         }
-        if(!browser.open(url)) {
-            log.warn(String.format("Failed to launch web browser for %s", url));
-        }
-        final AtomicReference<String> authenticationCode = new AtomicReference<>();
-        if(StringUtils.endsWith(redirectUri, ":oauth")) {
-            final String handler = StringUtils.substringBefore(redirectUri, ':');
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Register OAuth handler %s", handler));
-            }
-            SchemeHandlerFactory.get().setDefaultHandler(new Application(PreferencesFactory.get().getProperty("application.identifier")),
-                    Collections.singletonList(handler));
-            // Assume scheme handler is registered
-            final CountDownLatch signal = new CountDownLatch(1);
-            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-            registry.register(state, new OAuth2TokenListener() {
-                @Override
-                public void callback(final String code) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Callback with code %s", code));
-                    }
-                    if(!StringUtils.isBlank(code)) {
-                        credentials.setSaved(PreferencesFactory.get().getBoolean("connection.login.keychain"));
-                        authenticationCode.set(code);
-                    }
-                    signal.countDown();
-                }
-            });
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Await callback from custom scheme %s and state %s", redirectUri, state));
-            }
-            prompt.await(signal, bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
-                    LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"));
-            if(StringUtils.isBlank(authenticationCode.get())) {
-                throw new LoginCanceledException();
-            }
-        }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Prompt for authentication code for state %s", state));
-            }
-            final Credentials input = prompt.prompt(bookmark,
-                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), BookmarkNameProvider.toString(bookmark, true)),
-                    LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-                    new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
-                            .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
-            );
-            credentials.setSaved(input.isSaved());
-            authenticationCode.set(input.getPassword());
+        final String authorizationCode = OAuth2AuthorizationCodeProviderFactory.get().prompt(
+                bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+        if(StringUtils.isBlank(authorizationCode)) {
+            throw new LoginCanceledException();
         }
         try {
-            if(StringUtils.isBlank(authenticationCode.get())) {
-                throw new LoginCanceledException();
-            }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Request tokens for authentication code %s", authenticationCode.get()));
+                log.debug(String.format("Request tokens for authentication code %s", authorizationCode));
             }
             // Swap the given authorization token for access/refresh tokens
-            return flow.newTokenRequest(authenticationCode.get())
+            return flow.newTokenRequest(authorizationCode)
                     .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
         }

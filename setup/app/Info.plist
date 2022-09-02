@@ -246,7 +246,7 @@
                 <string>Google OAuth Redirect</string>
                 <key>CFBundleURLSchemes</key>
                 <array>
-                    <string>com.googleusercontent.apps.996125414232-30v0nuldk4p54spra0k6gg3b8c8c9kib</string>
+                    <string>io.cyberduck</string>
                 </array>
             </dict>
         </array>
