@@ -3615,6 +3615,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         archiveMenu.setDelegate(null);
         editMenu.setDelegate(null);
 
+        InfoControllerFactory.remove(this);
+        ConnectionControllerFactory.remove(this);
+
         super.invalidate();
     }
 

@@ -67,4 +67,8 @@ public final class InfoControllerFactory {
     public static InfoController get(final BrowserController controller) {
         return open.get(controller);
     }
+
+    public static void remove(final BrowserController controller) {
+        open.remove(controller);
+    }
 }
