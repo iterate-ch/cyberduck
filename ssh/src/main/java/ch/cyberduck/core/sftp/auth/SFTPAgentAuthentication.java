@@ -18,6 +18,7 @@ package ch.cyberduck.core.sftp.auth;
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
@@ -25,6 +26,10 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.sshj.AuthAgent;
@@ -46,11 +51,11 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
 
     @Override
     public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-        throws BackgroundException {
+            throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s for %s", agent, bookmark));
         }
-        for(Identity identity : agent.getIdentities()) {
+        for(Identity identity : this.filterIdentities(bookmark, agent.getIdentities())) {
             try {
                 client.auth(bookmark.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
                 // Successfully authenticated
@@ -73,5 +78,23 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
     @Override
     public String getMethod() {
         return "publickey";
+    }
+
+    protected Collection<Identity> filterIdentities(final Host bookmark, final Collection<Identity> identities) {
+        if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+            final Local selected = bookmark.getCredentials().getIdentity();
+            for(Identity identity : identities) {
+                if(identity.getComment() != null) {
+                    final String candidate = new String(identity.getComment(), StandardCharsets.UTF_8);
+                    if(selected.getAbsolute().equals(candidate)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Matching identity %s found", candidate));
+                        }
+                        return Collections.singletonList(identity);
+                    }
+                }
+            }
+        }
+        return identities;
     }
 }
