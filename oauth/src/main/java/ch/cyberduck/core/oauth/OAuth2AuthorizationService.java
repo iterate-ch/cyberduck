@@ -116,7 +116,7 @@ public class OAuth2AuthorizationService {
                 // Refresh expired access key
                 try {
                     credentials.setSaved(true);
-                    return this.refresh(saved);
+                    return credentials.withOauth(this.refresh(saved)).getOauth();
                 }
                 catch(LoginFailureException | InteroperabilityException e) {
                     log.warn(String.format("Failure refreshing tokens from %s for %s", saved, bookmark));
@@ -145,12 +145,10 @@ public class OAuth2AuthorizationService {
                 throw new LoginCanceledException();
         }
         // Save access key and refresh key
-        final OAuthTokens tokens = new OAuthTokens(
+        return credentials.withOauth(new OAuthTokens(
                 response.getAccessToken(), response.getRefreshToken(),
                 null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
-        credentials.setOauth(tokens);
-        return tokens;
+                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).getOauth();
     }
 
     private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {

@@ -152,16 +152,16 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(log.isInfoEnabled()) {
             log.info(String.format("Fetching OAuth tokens from keychain for %s", bookmark));
         }
-        final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
         final String prefix = this.getOAuthPrefix(bookmark);
         final String hostname = this.getOAuthHostname(bookmark);
         try {
-            return new OAuthTokens(
+            final String expiry = this.getPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
+            return (new OAuthTokens(
                     this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
                             String.format("%s OAuth2 Access Token", prefix)),
                     this.getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(), hostname,
                             String.format("%s OAuth2 Refresh Token", prefix)),
-                    expiry);
+                    expiry != null ? Long.parseLong(expiry) : -1L));
         }
         catch(LocalAccessDeniedException e) {
             log.warn(String.format("Failure %s searching in keychain", e));
@@ -229,7 +229,8 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                preferences.setProperty(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()), credentials.getOauth().getExpiryInMilliseconds());
+                this.addPassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix),
+                        String.valueOf(credentials.getOauth().getExpiryInMilliseconds()));
             }
         }
     }
@@ -269,7 +270,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                preferences.setProperty(String.format("%s.oauth.expiry", protocol.getIdentifier()), credentials.getOauth().getExpiryInMilliseconds());
+                this.deletePassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
             }
         }
     }
