@@ -24,6 +24,10 @@
         <true/>
         <key>Anonymous Configurable</key>
         <false/>
+        <key>Username Configurable</key>
+        <true/>
+        <key>Password Configurable</key>
+        <true/>
         <key>Path Configurable</key>
         <false/>
         <key>Certificate Configurable</key>
