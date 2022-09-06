@@ -39,15 +39,11 @@ public class LocalFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(Files.isSymbolicLink(session.toPath(file))) {
-            // Do not follow symbolic link to test for file
-            return Files.exists(session.toPath(file), LinkOption.NOFOLLOW_LINKS);
-        }
-        // The Files.exists method has noticeably poor performance in JDK 8, and can slow an
-        // application significantly when used to check files that don't actually exist.
-        // https://rules.sonarsource.com/java/tag/performance/RSPEC-3725
-        final boolean exists = session.toPath(file).toFile().exists();
+        final boolean exists = Files.exists(session.toPath(file), LinkOption.NOFOLLOW_LINKS);
         if(exists) {
+            if(Files.isSymbolicLink(session.toPath(file))) {
+                return true;
+            }
             if(!file.isRoot()) {
                 try {
                     if(!StringUtils.equals(session.toPath(file).toFile().getCanonicalFile().getName(), file.getName())) {
