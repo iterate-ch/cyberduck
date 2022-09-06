@@ -269,7 +269,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             }
             // Save expiry
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
-                preferences.setProperty(String.format("%s.oauth.expiry", protocol.getIdentifier()), credentials.getOauth().getExpiryInMilliseconds());
+                preferences.deleteProperty(String.format("%s.oauth.expiry", protocol.getIdentifier()));
             }
         }
     }
