@@ -24,7 +24,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
             case ftps:
             case sftp:
                 final String ftp_proxy = System.getenv("ftp_proxy");
-                if(StringUtils.isNoneBlank(ftp_proxy)) {
+                if(StringUtils.isNotBlank(ftp_proxy)) {
                     try {
                         final URI uri = new URI(ftp_proxy);
                         return new Proxy(Proxy.Type.SOCKS, uri.getHost(), uri.getPort());
@@ -36,7 +36,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                 break;
             case http:
                 final String http_proxy = System.getenv("http_proxy");
-                if(StringUtils.isNoneBlank(http_proxy)) {
+                if(StringUtils.isNotBlank(http_proxy)) {
                     try {
                         final URI uri = new URI(http_proxy);
                         return new Proxy(Proxy.Type.HTTP, uri.getHost(), uri.getPort());
@@ -48,7 +48,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                 break;
             case https:
                 final String https_proxy = System.getenv("https_proxy");
-                if(StringUtils.isNoneBlank(https_proxy)) {
+                if(StringUtils.isNotBlank(https_proxy)) {
                     try {
                         final URI uri = new URI(https_proxy);
                         return new Proxy(Proxy.Type.HTTP, uri.getHost(), uri.getPort());
