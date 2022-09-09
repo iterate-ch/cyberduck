@@ -75,10 +75,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
                 @Override
                 public void init(final Resource resource, final String name, final String instruction) {
-                    if(StringUtils.isNoneBlank(instruction)) {
+                    if(StringUtils.isNotBlank(instruction)) {
                         this.instruction = instruction;
                     }
-                    if(StringUtils.isNoneBlank(name)) {
+                    if(StringUtils.isNotBlank(name)) {
                         this.name = name;
                     }
                 }
