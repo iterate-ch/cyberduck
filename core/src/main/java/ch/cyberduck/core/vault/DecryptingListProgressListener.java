@@ -56,6 +56,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
         super.chunk(folder, list);
         delegate.chunk(folder, list);
+        super.chunk(folder, list);
     }
 
     @Override
