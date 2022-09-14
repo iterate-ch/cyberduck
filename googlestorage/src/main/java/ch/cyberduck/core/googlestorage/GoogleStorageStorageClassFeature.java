@@ -62,9 +62,12 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
         try {
             if(containerService.isContainer(file)) {
                 // Changing the default storage class of a bucket
-                session.getClient().buckets().patch(containerService.getContainer(file).getName(),
-                        new Bucket().setStorageClass(redundancy)
-                ).execute();
+                final Storage.Buckets.Patch request = session.getClient().buckets().patch(containerService.getContainer(file).getName(),
+                        new Bucket().setStorageClass(redundancy));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
             else {
                 final Storage.Objects.Rewrite request = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),

@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
@@ -70,12 +71,16 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
         final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(),
             session.getHost().getProtocol().getDefaultHostname()));
         try {
-            final Bucket configuration = session.getClient().buckets().get(container.getName()).execute();
+            final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket configuration = request.execute();
             final Bucket.Website website = configuration.getWebsite();
             final Distribution distribution = new Distribution(method, this.getName(), origin, website != null);
             if(website != null) {
                 distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(),
-                    session.getHost().getProtocol().getDefaultHostname())));
+                        session.getHost().getProtocol().getDefaultHostname())));
                 distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
                 distribution.setIndexDocument(website.getMainPageSuffix());
             }
@@ -102,13 +107,17 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                 suffix = PathNormalizer.name(distribution.getIndexDocument());
             }
             // Enable website endpoint
-            session.getClient().buckets().patch(container.getName(), new Bucket()
-                .setLogging(new Bucket.Logging()
-                    .setLogObjectPrefix(distribution.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
-                    .setLogBucket(StringUtils.isNotBlank(distribution.getLoggingContainer()) ? distribution.getLoggingContainer() : container.getName()))
-                .setWebsite(
-                    distribution.isEnabled() ? new Bucket.Website().setMainPageSuffix(suffix) : null
-                )).execute();
+            final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(), new Bucket()
+                    .setLogging(new Bucket.Logging()
+                            .setLogObjectPrefix(distribution.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
+                            .setLogBucket(StringUtils.isNotBlank(distribution.getLoggingContainer()) ? distribution.getLoggingContainer() : container.getName()))
+                    .setWebsite(
+                            distribution.isEnabled() ? new Bucket.Website().setMainPageSuffix(suffix) : null
+                    ));
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            request.execute();
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot write website configuration", e);

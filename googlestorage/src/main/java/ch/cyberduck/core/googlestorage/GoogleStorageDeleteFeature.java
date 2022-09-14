@@ -49,7 +49,11 @@ public class GoogleStorageDeleteFeature implements Delete {
             try {
                 callback.delete(file);
                 if(containerService.isContainer(file)) {
-                    session.getClient().buckets().delete(file.getName()).execute();
+                    final Storage.Buckets.Delete request = session.getClient().buckets().delete(file.getName());
+                    if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                        request.setUserProject(session.getHost().getCredentials().getUsername());
+                    }
+                    request.execute();
                 }
                 if(file.isFile() || file.isPlaceholder()) {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));

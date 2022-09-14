@@ -54,8 +54,11 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
         }
         try {
             if(containerService.isContainer(file)) {
-                return this.toAttributes(session.getClient().buckets().get(
-                        containerService.getContainer(file).getName()).execute());
+                final Storage.Buckets.Get request = session.getClient().buckets().get(containerService.getContainer(file).getName());
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                return this.toAttributes(request.execute());
             }
             else {
                 final Storage.Objects.Get get = session.getClient().objects().get(
