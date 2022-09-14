@@ -46,16 +46,17 @@
     <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">
         <!-- Treat SDK 6.0.301 as last known to work. -->
         <NETSDKBeforeFeature>$([MSBuild]::VersionLessThanOrEquals('$(NETCoreSdkVersion)', '6.0.301'))</NETSDKBeforeFeature>
-        <CoreCompileDependsOn Condition="!$(NETSDKBeforeFeature)">SDKFix_RemoveDuplicateAnalyzers;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+        <NETSDKAfterFix>$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '6.0.401'))</NETSDKAfterFix>
+        <CoreCompileDependsOn Condition="!($(NETSDKBeforeFeature) or $(NETSDKAfterFix))">SDKFix_RemoveDuplicateAnalyzers;$(CoreCompileDependsOn)</CoreCompileDependsOn>
     </PropertyGroup>
 
     <Target Name="SDKFix_RemoveDuplicateAnalyzers">
         <ItemGroup>
-            <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
-            <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
-            <Analyzer Remove="@(Analyzer)" />
-            <Analyzer Include="@(FilteredAnalyzer)" />
-        </ItemGroup>
-    </Target>
+          <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+          <Analyzer Remove="@(Analyzer)" />
+          <Analyzer Include="@(FilteredAnalyzer)" />
+          <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
+      </ItemGroup>
+  </Target>
 
 </Project>
