@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.BucketAccessControls;
@@ -175,8 +176,12 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
             }
             else {
                 final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(acl);
-                session.getClient().objects().update(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setAcl(objectAccessControls)).execute();
+                final Storage.Objects.Update request = session.getClient().objects().update(containerService.getContainer(file).getName(), containerService.getKey(file),
+                        new StorageObject().setAcl(objectAccessControls));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
         }
         catch(IOException e) {

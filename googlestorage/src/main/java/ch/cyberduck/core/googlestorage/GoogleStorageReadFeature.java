@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.http.HttpRange;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -54,9 +55,12 @@ public class GoogleStorageReadFeature implements Read {
                 return new NullInputStream(0L);
             }
             final Storage.Objects.Get request = session.getClient().objects().get(
-                containerService.getContainer(file).getName(), containerService.getKey(file));
+                    containerService.getContainer(file).getName(), containerService.getKey(file));
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
             final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                containerService.getContainer(file)
+                    containerService.getContainer(file)
             ) : VersioningConfiguration.empty();
             if(versioning.isEnabled()) {
                 if(StringUtils.isNotBlank(file.attributes().getVersionId())) {

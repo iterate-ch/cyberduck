@@ -777,6 +777,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("googlestorage.lifecycle.transition.class", "ARCHIVE");
         this.setDefault("googlestorage.acl.default", "private");
         this.setDefault("googlestorage.location", "us");
+        this.setDefault("googlestorage.bucket.requesterpays", String.valueOf(true));
 
         this.setDefault("onedrive.listing.chunksize", String.valueOf(1000));
         /*
