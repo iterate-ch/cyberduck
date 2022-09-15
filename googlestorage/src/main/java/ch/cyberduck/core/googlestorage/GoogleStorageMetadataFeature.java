@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageMetadataFeature implements Headers {
@@ -73,8 +74,12 @@ public class GoogleStorageMetadataFeature implements Headers {
                 log.debug(String.format("Write metadata %s for file %s", status, file));
             }
             try {
-                session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setMetadata(status.getMetadata())).execute();
+                final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
+                        new StorageObject().setMetadata(status.getMetadata()));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
             catch(IOException e) {
                 final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);

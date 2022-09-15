@@ -27,10 +27,9 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -39,7 +38,6 @@ import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAttributesFinderFeature implements AttributesFinder, AttributesAdapter<StorageObject> {
-    private static final Logger log = LogManager.getLogger(GoogleStorageAttributesFinderFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -56,27 +54,37 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
         }
         try {
             if(containerService.isContainer(file)) {
-                return this.toAttributes(session.getClient().buckets().get(
-                        containerService.getContainer(file).getName()).execute());
+                final Storage.Buckets.Get request = session.getClient().buckets().get(containerService.getContainer(file).getName());
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                return this.toAttributes(request.execute());
             }
             else {
-                final Storage.Objects.Get request = session.getClient().objects().get(
+                final Storage.Objects.Get get = session.getClient().objects().get(
                         containerService.getContainer(file).getName(), containerService.getKey(file));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    get.setUserProject(session.getHost().getCredentials().getUsername());
+                }
                 final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                         containerService.getContainer(file)
                 ) : VersioningConfiguration.empty();
                 if(versioning.isEnabled()) {
                     if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                        request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                        get.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                     }
                 }
-                final PathAttributes attributes = this.toAttributes(request.execute());
+                final PathAttributes attributes = this.toAttributes(get.execute());
                 if(versioning.isEnabled()) {
                     // Determine if latest version
                     try {
                         // Duplicate if not latest version
-                        final String latest = this.toAttributes(session.getClient().objects().get(
-                                containerService.getContainer(file).getName(), containerService.getKey(file)).execute()).getVersionId();
+                        final Storage.Objects.Get request = session.getClient().objects().get(
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
+                        if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                            request.setUserProject(session.getHost().getCredentials().getUsername());
+                        }
+                        final String latest = this.toAttributes(request.execute()).getVersionId();
                         if(null != latest) {
                             attributes.setDuplicate(!latest.equals(attributes.getVersionId()));
                         }

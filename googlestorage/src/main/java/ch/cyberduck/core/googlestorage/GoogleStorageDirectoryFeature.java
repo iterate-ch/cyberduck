@@ -22,11 +22,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
@@ -49,11 +51,15 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
+                final Storage.Buckets.Insert request = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
                         new Bucket()
                                 .setLocation(status.getRegion())
                                 .setStorageClass(status.getStorageClass())
-                                .setName(containerService.getContainer(folder).getName())).execute();
+                                .setName(containerService.getContainer(folder).getName()));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                final Bucket bucket = request.execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
                 return folder.withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));

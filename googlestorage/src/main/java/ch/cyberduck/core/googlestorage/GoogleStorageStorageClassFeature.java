@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
@@ -61,15 +62,22 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
         try {
             if(containerService.isContainer(file)) {
                 // Changing the default storage class of a bucket
-                session.getClient().buckets().patch(containerService.getContainer(file).getName(),
-                        new Bucket().setStorageClass(redundancy)
-                ).execute();
+                final Storage.Buckets.Patch request = session.getClient().buckets().patch(containerService.getContainer(file).getName(),
+                        new Bucket().setStorageClass(redundancy));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
             else {
-                final RewriteResponse response = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
+                final Storage.Objects.Rewrite request = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
                         containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
                         new StorageObject().setStorageClass(redundancy)
-                ).execute();
+                );
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                final RewriteResponse response = request.execute();
                 file.attributes().setVersionId(String.valueOf(response.getResource().getGeneration()));
             }
         }

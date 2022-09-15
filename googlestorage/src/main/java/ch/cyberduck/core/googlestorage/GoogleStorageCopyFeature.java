@@ -21,11 +21,10 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -34,7 +33,6 @@ import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageCopyFeature implements Copy {
-    private static final Logger log = LogManager.getLogger(GoogleStorageMoveFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -48,12 +46,18 @@ public class GoogleStorageCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final Storage.Objects.Get request = session.getClient().objects().get(containerService.getContainer(source).getName(), containerService.getKey(source));
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
             if(StringUtils.isNotBlank(source.attributes().getVersionId())) {
                 request.setGeneration(Long.parseLong(source.attributes().getVersionId()));
             }
             final StorageObject storageObject = request.execute();
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
                     containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                rewrite.setUserProject(session.getHost().getCredentials().getUsername());
+            }
             RewriteResponse response;
             do {
                 response = rewrite.execute();

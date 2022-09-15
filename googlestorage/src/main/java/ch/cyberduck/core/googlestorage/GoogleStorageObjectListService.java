@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Objects;
 import com.google.api.services.storage.model.StorageObject;
 import com.google.common.base.Throwables;
@@ -94,13 +95,17 @@ public class GoogleStorageObjectListService implements ListService {
             String page = null;
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
-                response = session.getClient().objects().list(bucket.getName())
+                final Storage.Objects.List request = session.getClient().objects().list(bucket.getName())
                         .setPageToken(page)
                         // lists all versions of an object as distinct results. The default is false
                         .setVersions(versioning.isEnabled())
                         .setMaxResults((long) chunksize)
                         .setDelimiter(delimiter)
-                        .setPrefix(this.createPrefix(directory))
+                        .setPrefix(this.createPrefix(directory));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                response = request
                         .execute();
                 if(response.getItems() != null) {
                     for(StorageObject object : response.getItems()) {
@@ -198,10 +203,14 @@ public class GoogleStorageObjectListService implements ListService {
                 final Path prefix = new Path(directory, PathNormalizer.name(common),
                         EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                 try {
-                    final Objects versions = session.getClient().objects().list(bucket.getName())
+                    final Storage.Objects.List list = session.getClient().objects().list(bucket.getName())
                             .setVersions(true)
                             .setMaxResults(1L)
-                            .setPrefix(common)
+                            .setPrefix(common);
+                    if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                        list.setUserProject(session.getHost().getCredentials().getUsername());
+                    }
+                    final Objects versions = list
                             .execute();
                     if(null != versions.getItems() && versions.getItems().size() == 1) {
                         final StorageObject version = versions.getItems().get(0);
@@ -209,11 +218,14 @@ public class GoogleStorageObjectListService implements ListService {
                             attr.setVersionId(String.valueOf(version.getGeneration()));
                         }
                         // Check if all of them are deleted
-                        final Objects unversioned = session.getClient().objects().list(bucket.getName())
+                        final Storage.Objects.List request = session.getClient().objects().list(bucket.getName())
                                 .setVersions(false)
                                 .setMaxResults(1L)
-                                .setPrefix(common)
-                                .execute();
+                                .setPrefix(common);
+                        if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                            request.setUserProject(session.getHost().getCredentials().getUsername());
+                        }
+                        final Objects unversioned = request.execute();
                         if(null == unversioned.getItems() || unversioned.getItems().size() == 0) {
                             attr.setDuplicate(true);
                         }

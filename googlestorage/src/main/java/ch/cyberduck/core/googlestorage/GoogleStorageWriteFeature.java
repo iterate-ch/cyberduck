@@ -29,6 +29,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +78,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
                     // POST /upload/storage/v1/b/myBucket/o
                     final StringBuilder uri = new StringBuilder(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",
                             session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
+                    if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                        uri.append(String.format("&userProject=%s", session.getHost().getCredentials().getUsername()));
+                    }
                     if(!Acl.EMPTY.equals(status.getAcl())) {
                         if(status.getAcl().isCanned()) {
                             uri.append("&predefinedAcl=");

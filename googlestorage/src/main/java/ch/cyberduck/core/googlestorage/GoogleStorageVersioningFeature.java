@@ -25,10 +25,12 @@ import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageVersioningFeature implements Versioning {
@@ -52,7 +54,11 @@ public class GoogleStorageVersioningFeature implements Versioning {
             return cache.get(container);
         }
         try {
-            final Bucket.Versioning versioning = session.getClient().buckets().get(container.getName()).execute().getVersioning();
+            final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket.Versioning versioning = request.execute().getVersioning();
             final VersioningConfiguration configuration = new VersioningConfiguration(versioning != null && versioning.getEnabled());
             cache.put(container, configuration);
             return configuration;
@@ -66,8 +72,12 @@ public class GoogleStorageVersioningFeature implements Versioning {
     public void setConfiguration(final Path file, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         try {
-            session.getClient().buckets().patch(container.getName(),
-                new Bucket().setVersioning(new Bucket.Versioning().setEnabled(configuration.isEnabled()))).execute();
+            final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(),
+                    new Bucket().setVersioning(new Bucket.Versioning().setEnabled(configuration.isEnabled())));
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            request.execute();
             cache.remove(container);
         }
         catch(IOException e) {

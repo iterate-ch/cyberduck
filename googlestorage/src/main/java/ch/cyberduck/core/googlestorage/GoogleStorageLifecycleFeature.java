@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageLifecycleFeature implements Lifecycle {
@@ -67,12 +68,21 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
                             .setAction(new Bucket.Lifecycle.Rule.Action()
                                     .setType("Delete")));
                 }
-                session.getClient().buckets().patch(container.getName(), new Bucket().setLifecycle(
-                        config.setRule(rules))).execute();
+                final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(),
+                        new Bucket().setLifecycle(config.setRule(rules)));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
             else {
                 // Empty lifecycle configuration
-                session.getClient().buckets().patch(container.getName(), new Bucket().setLifecycle(new Bucket.Lifecycle().setRule(Collections.emptyList()))).execute();
+                final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(), new Bucket()
+                        .setLifecycle(new Bucket.Lifecycle().setRule(Collections.emptyList())));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
         }
         catch(IOException e) {
@@ -88,7 +98,11 @@ public class GoogleStorageLifecycleFeature implements Lifecycle {
             return LifecycleConfiguration.empty();
         }
         try {
-            final Bucket.Lifecycle status = session.getClient().buckets().get(container.getName()).execute().getLifecycle();
+            final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket.Lifecycle status = request.execute().getLifecycle();
             if(null != status) {
                 Integer transition = null;
                 Integer expiration = null;

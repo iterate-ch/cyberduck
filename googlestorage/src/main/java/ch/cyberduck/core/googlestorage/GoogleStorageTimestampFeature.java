@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 import com.google.api.client.util.DateTime;
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
@@ -47,8 +49,12 @@ public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
             try {
                 // The Custom-Time metadata is a user-specified date and time represented in the RFC 3339
                 // format YYYY-MM-DD'T'HH:MM:SS.SS'Z' or YYYY-MM-DD'T'HH:MM:SS'Z' when milliseconds are zero.
-                session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setCustomTime(new DateTime(status.getTimestamp()))).execute();
+                final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
+                        new StorageObject().setCustomTime(new DateTime(status.getTimestamp())));
+                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
             catch(IOException e) {
                 final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
