@@ -73,10 +73,14 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     }
 
     @Override
-    public Acl getDefault(final Path file, final Local local) {
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
         try {
             final Path bucket = containerService.getContainer(file);
-            final Bucket configuration = session.getClient().buckets().get(bucket.getName()).execute();
+            final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
+            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket configuration = request.execute();
             if(null != configuration.getIamConfiguration()) {
                 if(configuration.getIamConfiguration().getUniformBucketLevelAccess().getEnabled()) {
                     return Acl.EMPTY;
@@ -85,11 +89,11 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
             else {
                 log.warn(String.format("Missing IAM configuration for bucket %s", bucket));
             }
+            return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
         }
         catch(IOException e) {
-            log.warn("Failure reading bucket IAM configuration");
+            throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
     }
 
     @Override
