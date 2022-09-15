@@ -19,6 +19,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 
@@ -31,9 +32,9 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
 
     public final BrowserLauncher browser = BrowserLauncherFactory.get();
 
-    protected void open(final String authorizationCodeRequestUrl) throws LocalAccessDeniedException {
+    protected void open(final String authorizationCodeRequestUrl) throws LoginCanceledException {
         if(!browser.open(authorizationCodeRequestUrl)) {
-            throw new LocalAccessDeniedException(String.format("Failed to launch web browser for %s", authorizationCodeRequestUrl));
+            throw new LoginCanceledException(new LocalAccessDeniedException(String.format("Failed to launch web browser for %s", authorizationCodeRequestUrl)));
         }
     }
 
