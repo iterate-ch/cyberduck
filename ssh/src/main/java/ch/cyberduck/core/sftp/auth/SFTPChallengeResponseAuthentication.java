@@ -120,9 +120,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         // be able to display at least 30 characters for the name and prompts.
                         final Credentials additional;
                         try {
-                            final StringAppender title = new StringAppender().append(name).append(
-                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
-                            );
+                            final StringAppender title = new StringAppender().append(
+                                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
+                            ).append(name);
                             additional = callback.prompt(bookmark, title.toString(),
                                 message.toString(), new LoginOptions()
                                     .icon(bookmark.getProtocol().disk())
