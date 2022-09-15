@@ -27,6 +27,7 @@ public class BufferOutputStream extends ProxyOutputStream {
     private static final Logger log = LogManager.getLogger(BufferOutputStream.class.getName());
 
     private final Buffer buffer;
+
     private Long offset;
 
     public BufferOutputStream(final Buffer buffer) {
@@ -64,15 +65,5 @@ public class BufferOutputStream extends ProxyOutputStream {
     @Override
     protected void afterWrite(final int n) {
         offset += n;
-    }
-
-    @Override
-    public void close() throws IOException {
-        try {
-            super.close();
-        }
-        finally {
-            buffer.close();
-        }
     }
 }
