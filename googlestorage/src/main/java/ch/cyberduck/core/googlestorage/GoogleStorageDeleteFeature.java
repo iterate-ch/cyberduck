@@ -23,7 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -50,14 +49,14 @@ public class GoogleStorageDeleteFeature implements Delete {
                 callback.delete(file);
                 if(containerService.isContainer(file)) {
                     final Storage.Buckets.Delete request = session.getClient().buckets().delete(file.getName());
-                    if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                         request.setUserProject(session.getHost().getCredentials().getUsername());
                     }
                     request.execute();
                 }
                 if(file.isFile() || file.isPlaceholder()) {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
-                    if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                         request.setUserProject(session.getHost().getCredentials().getUsername());
                     }
                     final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(

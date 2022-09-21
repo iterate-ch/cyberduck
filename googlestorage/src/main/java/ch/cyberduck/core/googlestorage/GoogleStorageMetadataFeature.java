@@ -76,7 +76,7 @@ public class GoogleStorageMetadataFeature implements Headers {
             try {
                 final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
                         new StorageObject().setMetadata(status.getMetadata()));
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
                 request.execute();

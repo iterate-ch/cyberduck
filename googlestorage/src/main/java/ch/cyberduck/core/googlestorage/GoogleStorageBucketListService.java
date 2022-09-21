@@ -50,9 +50,6 @@ public class GoogleStorageBucketListService implements ListService {
                 final Storage.Buckets.List request = session.getClient().buckets().list(session.getHost().getCredentials().getUsername())
                         .setMaxResults(new HostPreferences(session.getHost()).getLong("googlestorage.listing.chunksize"))
                         .setPageToken(page);
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
-                    request.setUserProject(session.getHost().getCredentials().getUsername());
-                }
                 response = request.execute();
                 if(null != response.getItems()) {
                     for(Bucket item : response.getItems()) {

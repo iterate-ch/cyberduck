@@ -72,7 +72,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
             session.getHost().getProtocol().getDefaultHostname()));
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             final Bucket configuration = request.execute();
@@ -114,7 +114,7 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
                     .setWebsite(
                             distribution.isEnabled() ? new Bucket.Website().setMainPageSuffix(suffix) : null
                     ));
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             request.execute();

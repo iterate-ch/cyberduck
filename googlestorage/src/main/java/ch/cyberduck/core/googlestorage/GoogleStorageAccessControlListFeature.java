@@ -77,7 +77,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
         try {
             final Path bucket = containerService.getContainer(file);
             final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             final Bucket configuration = request.execute();
@@ -173,16 +173,17 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
+            final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(acl);
-                session.getClient().buckets().update(containerService.getContainer(file).getName(),
-                    new Bucket().setAcl(bucketAccessControls)).execute();
+                session.getClient().buckets().update(bucket.getName(),
+                        new Bucket().setAcl(bucketAccessControls)).execute();
             }
             else {
                 final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(acl);
-                final Storage.Objects.Update request = session.getClient().objects().update(containerService.getContainer(file).getName(), containerService.getKey(file),
+                final Storage.Objects.Update request = session.getClient().objects().update(bucket.getName(), containerService.getKey(file),
                         new StorageObject().setAcl(objectAccessControls));
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
                 request.execute();

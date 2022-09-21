@@ -27,11 +27,11 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
@@ -41,6 +41,8 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
+
+    public static final String KEY_REQUESTER_PAYS = "requester_pays";
 
     public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session) {
         this.session = session;
@@ -55,7 +57,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
         try {
             if(containerService.isContainer(file)) {
                 final Storage.Buckets.Get request = session.getClient().buckets().get(containerService.getContainer(file).getName());
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
                 return this.toAttributes(request.execute());
@@ -63,7 +65,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
             else {
                 final Storage.Objects.Get get = session.getClient().objects().get(
                         containerService.getContainer(file).getName(), containerService.getKey(file));
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     get.setUserProject(session.getHost().getCredentials().getUsername());
                 }
                 final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
@@ -81,7 +83,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
                         // Duplicate if not latest version
                         final Storage.Objects.Get request = session.getClient().objects().get(
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
-                        if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                        if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                             request.setUserProject(session.getHost().getCredentials().getUsername());
                         }
                         final String latest = this.toAttributes(request.execute()).getVersionId();
@@ -119,6 +121,9 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
             attributes.setEncryption(new Encryption.Algorithm("AES256", bucket.getEncryption().getDefaultKmsKeyName()));
         }
         attributes.setRegion(bucket.getLocation());
+        if(bucket.getBilling() != null) {
+            attributes.setCustom(Collections.singletonMap("KEY_REQUESTER_PAYS", String.valueOf(true)));
+        }
         return attributes;
     }
 
