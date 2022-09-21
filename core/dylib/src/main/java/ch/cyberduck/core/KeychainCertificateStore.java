@@ -139,14 +139,6 @@ public final class KeychainCertificateStore implements CertificateStore {
     }
 
     public static NSArray toDEREncodedCertificates(final List<X509Certificate> certificates) {
-        // Prepare the certificate chain
-        try {
-            final Object[] encoded = new DEREncoder().encode(certificates);
-        }
-        catch(CertificateException e) {
-            log.error(String.format("Failure %s DER encoding certificates %s", e, certificates));
-            return NSArray.array();
-        }
         final NSMutableArray certs = NSMutableArray.arrayWithCapacity(new NSUInteger(certificates.size()));
         for(X509Certificate certificate : certificates) {
             try {
