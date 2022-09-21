@@ -4,7 +4,7 @@ https://cyberduck.io/
 8.4.4
 - [Bugfix] Prioritise password authentication if password is available (SFTP) (#13442)
 - [Bugfix] Filter identities in SSH agent based on private key selection in bookmark (SFTP) (#13680)
-- [Bugfix] Switch OAuth registration with redirect URIs shorter than the allowed maximum of 32 characters in Windows Store (Google Storage, Google Drive) (#13695).
+- [Bugfix] Switch OAuth registration with redirect URIs shorter than the allowed maximum of 32 characters in Windows Store (Google Storage, Google Drive) (#13695)
 - [Bugfix] Save OAuth expiry in keychain instead of preferences (#13710)
 
 8.4.3
