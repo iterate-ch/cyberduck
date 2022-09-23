@@ -25,7 +25,6 @@ import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -55,7 +54,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
         }
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             final Bucket.Versioning versioning = request.execute().getVersioning();
@@ -74,7 +73,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
         try {
             final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(),
                     new Bucket().setVersioning(new Bucket.Versioning().setEnabled(configuration.isEnabled())));
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             request.execute();

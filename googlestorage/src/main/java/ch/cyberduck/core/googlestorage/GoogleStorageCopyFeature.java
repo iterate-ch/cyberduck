@@ -21,7 +21,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +45,7 @@ public class GoogleStorageCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final Storage.Objects.Get request = session.getClient().objects().get(containerService.getContainer(source).getName(), containerService.getKey(source));
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(containerService.getContainer(source)).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             if(StringUtils.isNotBlank(source.attributes().getVersionId())) {
@@ -55,7 +54,7 @@ public class GoogleStorageCopyFeature implements Copy {
             final StorageObject storageObject = request.execute();
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
                     containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(source).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 rewrite.setUserProject(session.getHost().getCredentials().getUsername());
             }
             RewriteResponse response;

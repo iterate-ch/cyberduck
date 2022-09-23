@@ -102,7 +102,7 @@ public class GoogleStorageObjectListService implements ListService {
                         .setMaxResults((long) chunksize)
                         .setDelimiter(delimiter)
                         .setPrefix(this.createPrefix(directory));
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
                 response = request
@@ -207,7 +207,7 @@ public class GoogleStorageObjectListService implements ListService {
                             .setVersions(true)
                             .setMaxResults(1L)
                             .setPrefix(common);
-                    if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                    if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                         list.setUserProject(session.getHost().getCredentials().getUsername());
                     }
                     final Objects versions = list
@@ -222,7 +222,7 @@ public class GoogleStorageObjectListService implements ListService {
                                 .setVersions(false)
                                 .setMaxResults(1L)
                                 .setPrefix(common);
-                        if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+                        if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                             request.setUserProject(session.getHost().getCredentials().getUsername());
                         }
                         final Objects unversioned = request.execute();

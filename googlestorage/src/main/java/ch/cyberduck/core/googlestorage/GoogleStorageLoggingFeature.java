@@ -55,7 +55,7 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
         }
         try {
             final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             final Bucket.Logging status = request.execute().getLogging();
@@ -86,20 +86,21 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
     }
 
     @Override
-    public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final LoggingConfiguration configuration) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
         try {
-            final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(),
+            final Storage.Buckets.Patch request = session.getClient().buckets().patch(bucket.getName(),
                     new Bucket().setLogging(new Bucket.Logging()
                             .setLogObjectPrefix(configuration.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
-                            .setLogBucket(StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName()))
+                            .setLogBucket(StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName()))
             );
-            if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
+            if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
             request.execute();
         }
         catch(IOException e) {
-            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, container);
+            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }

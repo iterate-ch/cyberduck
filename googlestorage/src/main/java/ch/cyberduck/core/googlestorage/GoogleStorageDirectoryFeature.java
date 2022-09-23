@@ -22,7 +22,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -56,9 +55,6 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
                                 .setLocation(status.getRegion())
                                 .setStorageClass(status.getStorageClass())
                                 .setName(containerService.getContainer(folder).getName()));
-                if(new HostPreferences(session.getHost()).getBoolean("googlestorage.bucket.requesterpays")) {
-                    request.setUserProject(session.getHost().getCredentials().getUsername());
-                }
                 final Bucket bucket = request.execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
