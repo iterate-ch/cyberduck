@@ -65,7 +65,7 @@ public class AbstractB2Test {
         session = new B2Session(
             new Host(profile, profile.getDefaultHostname(),
                 new Credentials(
-                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
+                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.password")
                 )), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override

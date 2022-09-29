@@ -52,7 +52,7 @@ public class AbstractSDSTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
-        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(System.getProperties().getProperty("sds.user")));
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(System.getProperties().getProperty("dracoon.user")));
         session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -68,10 +68,10 @@ public class AbstractSDSTest {
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
             if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("sds.accesstoken");
+                return System.getProperties().getProperty("dracoon.accesstoken");
             }
             if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("sds.refreshtoken");
+                return System.getProperties().getProperty("dracoon.refreshtoken");
             }
             return null;
         }

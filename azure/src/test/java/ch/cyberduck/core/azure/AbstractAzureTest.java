@@ -61,7 +61,7 @@ public class AbstractAzureTest {
     @Before
     public void setupSharedAccessSignature() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+                System.getProperties().getProperty("azure.user"), System.getProperties().getProperty("azure.key")
         ));
         session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -81,7 +81,7 @@ public class AbstractAzureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
         final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), null, System.getProperties().getProperty("azure.sas")
+                System.getProperties().getProperty("azure.user"), null, System.getProperties().getProperty("azure.sas")
         ));
         sas = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {

@@ -55,7 +55,7 @@ AbstractGoogleStorageTest {
         final Profile profile = new ProfilePlistReader(factory).read(
             this.getClass().getResourceAsStream("/Google Cloud Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
+                System.getProperties().getProperty("googlestorage.user"), null
         ));
         session = new GoogleStorageSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -69,10 +69,10 @@ AbstractGoogleStorageTest {
                 @Override
                 public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                        return System.getProperties().getProperty("google.accesstoken");
+                        return System.getProperties().getProperty("googlestorage.accesstoken");
                     }
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("google.refreshtoken");
+                        return System.getProperties().getProperty("googlestorage.refreshtoken");
                     }
                     return null;
                 }
