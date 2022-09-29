@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = LogManager.getLogger(RemoteProfilesFinder.class);
 
-    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
     private final ProtocolFactory protocols;
     private final Session<?> session;
 
@@ -114,10 +114,5 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         public Pattern toPattern() {
             return Pattern.compile(".*\\.cyberduckprofile");
         }
-    }
-
-    @Override
-    public void cleanup() {
-        temp.shutdown();
     }
 }
