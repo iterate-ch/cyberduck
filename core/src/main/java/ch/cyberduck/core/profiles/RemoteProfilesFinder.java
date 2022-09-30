@@ -18,7 +18,9 @@ package ch.cyberduck.core.profiles;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
@@ -26,12 +28,17 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.download.CompareFilter;
+import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -49,7 +56,7 @@ import java.util.stream.Collectors;
 public class RemoteProfilesFinder implements ProfilesFinder {
     private static final Logger log = LogManager.getLogger(RemoteProfilesFinder.class);
 
-    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
+    private final TemporaryFileService temp = TemporaryFileServiceFactory.get();
     private final ProtocolFactory protocols;
     private final Session<?> session;
 
@@ -75,21 +82,31 @@ public class RemoteProfilesFinder implements ProfilesFinder {
                     @Override
                     protected Local initialize() throws ConcurrentException {
                         try {
-                            final Read read = session.getFeature(Read.class);
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Download profile %s", file));
-                            }
-                            final InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
-                                    // Read latest version
-                                    .withVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback());
-                            final Local local = temp.create(file.getName());
-                            final OutputStream out = local.getOutputStream(false);
-                            try {
-                                IOUtils.copy(in, out);
-                            }
-                            finally {
-                                in.close();
-                                out.close();
+                            final Local local = temp.create("profiles", file);
+                            final TransferPathFilter filter = new CompareFilter(new DisabledDownloadSymlinkResolver(), session, new DisabledProgressListener())
+                                    .withFinder(new Find() {
+                                        @Override
+                                        public boolean find(final Path file, final ListProgressListener listener) {
+                                            return true;
+                                        }
+                                    })
+                                    .withAttributes(new AttributesFinder() {
+                                        @Override
+                                        public PathAttributes find(final Path file, final ListProgressListener listener) {
+                                            return file.attributes();
+                                        }
+                                    });
+                            if(filter.accept(file, local, new TransferStatus().exists(true))) {
+                                final Read read = session.getFeature(Read.class);
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Download profile %s", file));
+                                }
+                                // Read latest version
+                                try (InputStream in = read.read(file.withAttributes(new PathAttributes(file.attributes())
+                                        // Read latest version
+                                        .withVersionId(null)), new TransferStatus().withLength(TransferStatus.UNKNOWN_LENGTH), new DisabledConnectionCallback()); OutputStream out = local.getOutputStream(false)) {
+                                    IOUtils.copy(in, out);
+                                }
                             }
                             return local;
                         }
@@ -114,10 +131,5 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         public Pattern toPattern() {
             return Pattern.compile(".*\\.cyberduckprofile");
         }
-    }
-
-    @Override
-    public void cleanup() {
-        temp.shutdown();
     }
 }
