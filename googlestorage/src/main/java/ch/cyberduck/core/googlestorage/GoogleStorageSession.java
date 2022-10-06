@@ -65,7 +65,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-        this.transport = new ApacheHttpTransport(configuration.build());
+        transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
         return new Storage.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))
             .setApplicationName(ua.get())

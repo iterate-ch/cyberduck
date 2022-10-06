@@ -78,7 +78,7 @@ public class DriveSession extends HttpSession<Drive> {
         configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
                 new HostPreferences(host).getInteger("googledrive.limit.requests.second")
         )));
-        this.transport = new ApacheHttpTransport(configuration.build());
+        transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
         return new Drive.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))
                 .setApplicationName(ua.get())
