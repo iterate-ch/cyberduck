@@ -197,14 +197,6 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>objectlistview</groupId>
-                    <artifactId>objectlistview</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
-                    <version>2.5.1.35588</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
                     <groupId>com.github.vslavik</groupId>
                     <artifactId>winsparkle</artifactId>
                     <classifier>x86_64</classifier>
