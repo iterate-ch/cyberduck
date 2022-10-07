@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Rectangle r = CalculateAlignedRectangle(g, Bounds);
 
             // Did they hit a check box?
-            int width = CalculateCheckBoxWidth(g);
+            int width = CalculateCheckBoxSize(g).Width;
             Rectangle r2 = r;
             r2.Width = width;
             if (r2.Contains(x, y))
@@ -107,7 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Did they hit the text?
             r.X += width;
             r.Width -= width;
-            width = CalculateTextWidth(g, GetText());
+            width = CalculateTextWidth(g, GetText(), r.Width);
             r2 = r;
             r2.Width = width;
             if (r2.Contains(x, y))
@@ -155,25 +155,17 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </remarks>
         public AspectGetterDelegate DescriptionAspectGetter { get; set; }
 
-        protected override string GetDescription()
-        {
-            if (null != DescriptionAspectGetter)
-            {
-                return (string) DescriptionAspectGetter(RowObject);
-            }
-            return base.GetDescription();
-        }
-
-        protected override void DrawDescribedTask(Graphics g, Rectangle r, string title, string description, Image image)
+        protected override void DrawDescribedTask(Graphics g, Rectangle r, string title, string description, object imageSelector)
         {
             Rectangle cellBounds = r;
             cellBounds.Inflate(-CellPadding.Value.Width, -CellPadding.Value.Height);
             Rectangle textBounds = cellBounds;
 
-            if (image != null)
+            
+            if (imageSelector != null)
             {
-                g.DrawImage(image, cellBounds.Location);
-                int gapToText = image.Width + ImageTextSpace;
+                var width = DrawImage(g, cellBounds, imageSelector);
+                int gapToText = width + ImageTextSpace;
                 textBounds.X += gapToText;
                 textBounds.Width -= gapToText;
             }
@@ -181,7 +173,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Color the background if the row is selected and we're not using a translucent selection
             if (IsItemSelected && !ListView.UseTranslucentSelection)
             {
-                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                using (SolidBrush b = new SolidBrush(GetBackgroundColor()))
                 {
                     g.FillRectangle(b, textBounds);
                 }
@@ -428,7 +420,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Color the background if the row is selected and we're not using a translucent selection
             if (IsItemSelected && !ListView.UseTranslucentSelection)
             {
-                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                using (SolidBrush b = new SolidBrush(GetBackgroundColor()))
                 {
                     g.FillRectangle(b, textBounds);
                 }
@@ -742,7 +734,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Color the background if the row is selected and we're not using a translucent selection
             if (IsItemSelected && !ListView.UseTranslucentSelection)
             {
-                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                using (SolidBrush b = new SolidBrush(GetBackgroundColor()))
                 {
                     g.FillRectangle(b, textBounds);
                 }
@@ -784,7 +776,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Color the background if the row is selected and we're not using a translucent selection
             if (IsItemSelected && !ListView.UseTranslucentSelection)
             {
-                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                using (SolidBrush b = new SolidBrush(GetBackgroundColor()))
                 {
                     g.FillRectangle(b, textBounds);
                 }
@@ -871,7 +863,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Color the background if the row is selected and we're not using a translucent selection
             if (IsItemSelected && !ListView.UseTranslucentSelection)
             {
-                using (SolidBrush b = new SolidBrush(GetTextBackgroundColor()))
+                using (SolidBrush b = new SolidBrush(GetBackgroundColor()))
                 {
                     g.FillRectangle(b, textBounds);
                 }

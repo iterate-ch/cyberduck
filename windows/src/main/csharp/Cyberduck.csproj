@@ -48,9 +48,6 @@
     <Reference Include="CustomOpenFileFolderDialog">
       <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
     </Reference>
-    <Reference Include="ObjectListView">
-      <HintPath>$(TargetBuildDir)ObjectListView.dll</HintPath>
-    </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
@@ -63,6 +60,7 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
     <PackageReference Include="Microsoft.Windows.CsWin32" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
+    <PackageReference Include="ObjectListView.Official" />
     <PackageReference Include="ReactiveUI.Fody" />
     <PackageReference Include="ReactiveUI.WPF" />
     <PackageReference Include="StructureMap" />
