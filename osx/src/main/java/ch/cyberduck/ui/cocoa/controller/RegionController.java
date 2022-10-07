@@ -66,6 +66,7 @@ public class RegionController extends AlertController {
         regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
         regionPopup.setFrameOrigin(new NSPoint(0, 0));
         for(Location.Name region : regions) {
+            regionPopup.addItemWithTitle(region.toString());
             final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
             item.setRepresentedObject(region.getIdentifier());
             if(!StringUtils.equals(region.getIdentifier(), region.toString())) {
