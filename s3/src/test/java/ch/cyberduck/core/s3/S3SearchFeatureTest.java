@@ -66,7 +66,10 @@ public class S3SearchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3SearchFeature feature = new S3SearchFeature(session, acl);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+        assertTrue(feature.search(workdir, new SearchFilter(StringUtils.upperCase(name)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
+        // Glob pattern
+        assertTrue(feature.search(workdir, new SearchFilter(String.format("*%s", StringUtils.substring(name, 2))), new DisabledListProgressListener()).contains(file));
         {
             final AttributedList<Path> result = feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener());
             assertTrue(result.contains(file));

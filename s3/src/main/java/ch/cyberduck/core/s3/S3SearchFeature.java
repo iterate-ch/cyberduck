@@ -62,7 +62,7 @@ public class S3SearchFeature implements Search {
     private static AttributedList<Path> filter(final Filter<Path> regex, final AttributedList<Path> objects) {
         final Set<Path> removal = new HashSet<>();
         for(final Path f : objects) {
-            if(!f.getName().contains(regex.toPattern().pattern())) {
+            if(!regex.accept(f)) {
                 removal.add(f);
             }
         }
