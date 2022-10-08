@@ -32,10 +32,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.nio.file.FileSystems;
-import java.nio.file.InvalidPathException;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,18 +47,11 @@ public class GlobTransferItemFinder implements TransferItemFinder {
             if(StringUtils.containsAny(path, '*', '?')) {
                 final Local directory = LocalFactory.get(FilenameUtils.getFullPath(path));
                 if(directory.isDirectory()) {
-                    final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", PathNormalizer.name(path)));
                     final Set<TransferItem> items = new HashSet<TransferItem>();
                     for(Local file : directory.list(new NullFilter<String>() {
                         @Override
                         public boolean accept(final String file) {
-                            try {
-                                return matcher.matches(Paths.get(file));
-                            }
-                            catch(InvalidPathException e) {
-                                log.warn(String.format("Failure obtaining path for file %s", file));
-                            }
-                            return false;
+                            return FilenameUtils.wildcardMatch(file, PathNormalizer.name(path));
                         }
                     })) {
                         items.add(new TransferItem(new Path(remote, file.getName(), EnumSet.of(Path.Type.file)), file));
