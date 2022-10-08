@@ -39,10 +39,10 @@ public class GoogleStorageSearchFeature implements Search {
         if(workdir.isRoot()) {
             final AttributedList<Path> result = new AttributedList<>();
             final AttributedList<Path> buckets = new GoogleStorageBucketListService(session).list(workdir, listener);
-            result.addAll(filter(regex, buckets));
             for(Path bucket : buckets) {
                 result.addAll(filter(regex, new GoogleStorageObjectListService(session).list(bucket, listener, null)));
             }
+            result.addAll(filter(regex, buckets));
             return result;
         }
         try {
