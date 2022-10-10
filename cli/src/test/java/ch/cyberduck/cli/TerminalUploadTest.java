@@ -53,8 +53,8 @@ public class TerminalUploadTest {
         IOUtils.write(RandomUtils.nextBytes(256), local.getOutputStream(false));
         final CommandLine input = parser.parse(options, new String[]{
                 "--assumeyes",
-                "--username", System.getProperties().getProperty("sds.user"),
-                "--password", System.getProperties().getProperty("sds.key"),
+                "--username", System.getProperties().getProperty("dracoon.user"),
+                "--password", System.getProperties().getProperty("dracoon.key"),
                 "--upload", String.format("dracoon-cli://duck.dracoon.com/test/%s", new AlphanumericRandomStringService().random()),
                 local.getAbsolute()});
         final LinuxTerminalPreferences preferences = new LinuxTerminalPreferences();
