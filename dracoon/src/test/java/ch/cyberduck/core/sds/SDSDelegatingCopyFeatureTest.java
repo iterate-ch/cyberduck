@@ -272,7 +272,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
-        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("dracoon.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
@@ -329,7 +329,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
-        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
+        room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("dracoon.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
