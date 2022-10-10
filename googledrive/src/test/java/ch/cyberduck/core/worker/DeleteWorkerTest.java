@@ -55,7 +55,7 @@ public class DeleteWorkerTest extends AbstractDriveTest {
         final Path file = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener(), true).run(session);
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         assertTrue(new DriveAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).isHidden());
         assertTrue(new DefaultFindFeature(session).find(file));
