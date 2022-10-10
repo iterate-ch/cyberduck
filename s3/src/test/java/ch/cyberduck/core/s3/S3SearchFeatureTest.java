@@ -43,12 +43,14 @@ public class S3SearchFeatureTest extends AbstractS3Test {
     @Test
     public void testSearchInBucket() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path root = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path(root, "test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3SearchFeature feature = new S3SearchFeature(session, new S3AccessControlListFeature(session));
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        assertNotNull(feature.search(root, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path subdir = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -64,7 +66,10 @@ public class S3SearchFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final S3SearchFeature feature = new S3SearchFeature(session, acl);
         assertTrue(feature.search(workdir, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+        assertTrue(feature.search(workdir, new SearchFilter(StringUtils.upperCase(name)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
+        // Glob pattern
+        assertTrue(feature.search(workdir, new SearchFilter(String.format("*%s", StringUtils.substring(name, 2))), new DisabledListProgressListener()).contains(file));
         {
             final AttributedList<Path> result = feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener());
             assertTrue(result.contains(file));

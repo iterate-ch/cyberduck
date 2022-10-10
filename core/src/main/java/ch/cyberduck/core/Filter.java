@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 public interface Filter<E> {
     /**
-     * @param file
+     * @param file Input
      * @return False if file is filtered
      */
     boolean accept(E file);

@@ -44,10 +44,10 @@ public class S3SearchFeature implements Search {
             if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
                 final AttributedList<Path> result = new AttributedList<>();
                 final AttributedList<Path> buckets = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(workdir, listener);
-                result.addAll(filter(regex, buckets));
                 for(Path bucket : buckets) {
                     result.addAll(filter(regex, new S3ObjectListService(session, acl).list(bucket, listener, null)));
                 }
+                result.addAll(filter(regex, buckets));
                 return result;
             }
         }
@@ -62,7 +62,7 @@ public class S3SearchFeature implements Search {
     private static AttributedList<Path> filter(final Filter<Path> regex, final AttributedList<Path> objects) {
         final Set<Path> removal = new HashSet<>();
         for(final Path f : objects) {
-            if(!f.getName().contains(regex.toPattern().pattern())) {
+            if(!regex.accept(f)) {
                 removal.add(f);
             }
         }
