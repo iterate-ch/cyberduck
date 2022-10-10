@@ -55,10 +55,10 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 @Override
                 public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                        return System.getProperties().getProperty("google.accesstoken");
+                        return System.getProperties().getProperty("googlestorage.accesstoken");
                     }
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("google.refreshtoken");
+                        return System.getProperties().getProperty("googlestorage.refreshtoken");
                     }
                     return null;
                 }
@@ -95,7 +95,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                         return "a";
                     }
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("google.refreshtoken");
+                        return System.getProperties().getProperty("googlestorage.refreshtoken");
                     }
                     return null;
                 }
@@ -114,10 +114,10 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
                 @Override
                 public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                        return System.getProperties().getProperty("google.accesstoken");
+                        return System.getProperties().getProperty("googlestorage.accesstoken");
                     }
                     if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("google.refreshtoken");
+                        return System.getProperties().getProperty("googlestorage.refreshtoken");
                     }
                     return null;
                 }
