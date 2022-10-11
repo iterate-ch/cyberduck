@@ -2,7 +2,7 @@ package ch.cyberduck.core.onedrive.features.sharepoint;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class SitesListService extends AbstractListService<Site.Metadata> {
     private static final Logger log = LogManager.getLogger(SitesListService.class);
@@ -132,15 +131,10 @@ public class SitesListService extends AbstractListService<Site.Metadata> {
         final Map<String, Set<Integer>> duplicates = new HashMap<>();
         for(int i = 0; i < list.size(); i++) {
             final Path file = list.get(i);
-            final AttributedList<Path> result = list.filter(new Filter<Path>() {
+            final AttributedList<Path> result = list.filter(new NullFilter<Path>() {
                 @Override
                 public boolean accept(Path test) {
                     return file != test && file.getName().equals(test.getName());
-                }
-
-                @Override
-                public Pattern toPattern() {
-                    return null;
                 }
             });
             if(result.size() > 0) {
