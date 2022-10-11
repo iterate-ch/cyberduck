@@ -57,8 +57,8 @@ public class DropboxSearchFeature implements Search {
         try {
             final AttributedList<Path> list = new AttributedList<>();
             long start = 0;
-            SearchV2Result result = new DbxUserFilesRequests(session.getClient(workdir)).searchV2Builder(regex.toPattern().pattern())
-                .withOptions(SearchOptions.newBuilder().withPath(containerService.getKey(workdir)).build()).start();
+            SearchV2Result result = new DbxUserFilesRequests(session.getClient(workdir)).searchV2Builder(regex.toString())
+                    .withOptions(SearchOptions.newBuilder().withPath(containerService.getKey(workdir)).build()).start();
             this.parse(workdir, listener, list, result);
             while(result.getHasMore()) {
                 this.parse(workdir, listener, list, result = new DbxUserFilesRequests(session.getClient(workdir)).searchContinueV2(result.getCursor()));

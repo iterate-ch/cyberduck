@@ -136,10 +136,10 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     }
 
     private static final class RecursiveSearchFilter implements Filter<Path> {
-        private final Filter<Path> filter;
+        private final Filter<Path> proxy;
 
-        public RecursiveSearchFilter(final Filter<Path> filter) {
-            this.filter = filter;
+        public RecursiveSearchFilter(final Filter<Path> proxy) {
+            this.proxy = proxy;
         }
 
         @Override
@@ -147,23 +147,28 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
             if(file.isDirectory()) {
                 return true;
             }
-            return filter.accept(file);
+            return proxy.accept(file);
         }
 
         @Override
         public Pattern toPattern() {
-            return filter.toPattern();
+            return proxy.toPattern();
+        }
+
+        @Override
+        public String toString() {
+            return proxy.toString();
         }
 
         @Override
         public int hashCode() {
-            return filter.hashCode();
+            return proxy.hashCode();
         }
 
         @Override
         public boolean equals(final Object obj) {
             if(obj instanceof Filter) {
-                return filter.equals(obj);
+                return proxy.equals(obj);
             }
             return false;
         }

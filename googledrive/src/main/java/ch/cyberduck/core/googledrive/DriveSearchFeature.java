@@ -36,7 +36,7 @@ public class DriveSearchFeature implements Search {
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
         try {
-            return new DriveSearchListService(session, fileid, regex.toPattern().pattern()).list(workdir, listener);
+            return new DriveSearchListService(session, fileid, regex.toString()).list(workdir, listener);
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

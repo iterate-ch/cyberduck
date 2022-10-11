@@ -60,6 +60,11 @@ public class SearchFilter implements Filter<Path> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return input;
+    }
+
     /**
      * Compile glob to regular expression
      */
@@ -93,11 +98,4 @@ public class SearchFilter implements Filter<Path> {
         }
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("SearchFilter{");
-        sb.append("input='").append(input).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }

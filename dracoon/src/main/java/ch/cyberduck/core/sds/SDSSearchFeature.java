@@ -54,7 +54,7 @@ public class SDSSearchFeature implements Search {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).searchNodes(
-                        String.format("*%s*", regex.toPattern().pattern()),
+                        String.format("*%s*", regex.toString()),
                         StringUtils.EMPTY,
                         -1,
                         Long.valueOf(nodeid.getVersionId(workdir, listener)),
