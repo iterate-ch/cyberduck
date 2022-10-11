@@ -4,6 +4,7 @@ https://cyberduck.io/
 8.4.5
 - [Bugfix] Failure enabling connection profile from Preferences (#13739)
 - [Bugfix] Only set userProject parameter in requests for buckets with requester pays option enabled (Google Storage) (#13745)
+- [Bugfix] Allow glob pattern when searching for files in browser (#13781)
 
 8.4.4
 - [Bugfix] Prioritise password authentication if password is available (SFTP) (#13442)
