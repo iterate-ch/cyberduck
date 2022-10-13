@@ -27,22 +27,9 @@ import com.dropbox.core.v2.common.PathRoot;
 public class DropboxPathContainerService extends DefaultPathContainerService {
 
     private final DropboxSession session;
-    private boolean useNamespace = false;
 
     public DropboxPathContainerService(final DropboxSession session) {
         this.session = session;
-    }
-
-    /**
-     * Note that this syntax of using a namespace ID in the path parameter is only supported for namespaces that are
-     * mounted under the root. That means it can't be used to access the the team space itself, for members on teams
-     * using team space and member folders.
-     *
-     * @param useNamespace Include namespace id in path
-     */
-    public DropboxPathContainerService withNamespace(final boolean useNamespace) {
-        this.useNamespace = useNamespace;
-        return this;
     }
 
     @Override
