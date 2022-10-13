@@ -20,10 +20,13 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -62,6 +65,15 @@ public class NextcloudSession extends DAVSession {
         }
         if(type == PromptUrlProvider.class) {
             return (T) new NextcloudShareProvider(this);
+        }
+        if(type == Versioning.class) {
+            return (T) new NextcloudVersioningFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new NextcloudDeleteFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new NextcloudReadFeature(this);
         }
         return super._getFeature(type);
     }

@@ -79,13 +79,13 @@ public class DAVClient extends SardineImpl {
     }
 
     @Override
-    protected List<DavResource> propfind(final String url, final int depth, final Propfind body) throws IOException {
+    public List<DavResource> propfind(final String url, final int depth, final Propfind body) throws IOException {
         HttpPropFind entity = new HttpPropFind(url);
         entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
         entity.setEntity(new StringEntity(SardineUtil.toXml(body), StandardCharsets.UTF_8));
         Multistatus multistatus = this.execute(entity, PreferencesFactory.get().getBoolean("webdav.list.handler.sax") ? new SaxPropFindResponseHandler() : new MultiStatusResponseHandler());
         List<Response> responses = multistatus.getResponse();
-        List<DavResource> resources = new ArrayList<DavResource>(responses.size());
+        List<DavResource> resources = new ArrayList<>(responses.size());
         for(Response response : responses) {
             try {
                 resources.add(new DavResource(response));

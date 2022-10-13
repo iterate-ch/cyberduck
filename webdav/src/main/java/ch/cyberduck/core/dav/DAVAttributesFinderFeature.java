@@ -90,28 +90,11 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 catch(InteroperabilityException i) {
                     // PROPFIND Method not allowed
                     log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
-                    final Map<String, String> headers = session.getClient().execute(
-                            new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
-                    final PathAttributes attributes = new PathAttributes();
-                    try {
-                        attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+                    final PathAttributes attr = this.head(file);
+                    if(PathAttributes.EMPTY == attr) {
+                        throw i;
                     }
-                    catch(InvalidDateException p) {
-                        log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
-                    }
-                    if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
-                        // Set size unless response is compressed
-                        attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
-                    }
-                    if(headers.containsKey(HttpHeaders.ETAG)) {
-                        attributes.setETag(headers.get(HttpHeaders.ETAG));
-                        // Setting checksum is disabled. See #8798
-                        // attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
-                    }
-                    if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
-                        attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
-                    }
-                    return attributes;
+                    return attr;
                 }
             }
         }
@@ -121,6 +104,31 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, file);
         }
+    }
+
+    protected PathAttributes head(final Path file) throws IOException {
+        final Map<String, String> headers = session.getClient().execute(
+                new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
+        final PathAttributes attributes = new PathAttributes();
+        try {
+            attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+        }
+        catch(InvalidDateException p) {
+            log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
+        }
+        if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
+            // Set size unless response is compressed
+            attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
+        }
+        if(headers.containsKey(HttpHeaders.ETAG)) {
+            attributes.setETag(headers.get(HttpHeaders.ETAG));
+            // Setting checksum is disabled. See #8798
+            // attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
+        }
+        if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
+            attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
+        }
+        return attributes;
     }
 
     protected List<DavResource> list(final Path file) throws IOException {

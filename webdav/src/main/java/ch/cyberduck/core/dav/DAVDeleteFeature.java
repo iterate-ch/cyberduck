@@ -27,14 +27,16 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class DAVDeleteFeature implements Delete {
 
@@ -63,14 +65,7 @@ public class DAVDeleteFeature implements Delete {
             callback.delete(file);
             try {
                 final TransferStatus status = entry.getValue();
-                if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
-                    // Indicate that the client has knowledge of that state token
-                    session.getClient().delete(new DAVPathEncoder().encode(file),
-                            Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
-                }
-                else {
-                    session.getClient().delete(new DAVPathEncoder().encode(file));
-                }
+                session.getClient().execute(this.toRequest(file, status), new VoidResponseHandler());
             }
             catch(SardineException e) {
                 throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
@@ -79,6 +74,15 @@ public class DAVDeleteFeature implements Delete {
                 throw new HttpExceptionMappingService().map(e, file);
             }
         }
+    }
+
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+        final HttpDelete request = new HttpDelete(new DAVPathEncoder().encode(file));
+        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
+            // Indicate that the client has knowledge of that state token
+            request.setHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
+        }
+        return request;
     }
 
     @Override

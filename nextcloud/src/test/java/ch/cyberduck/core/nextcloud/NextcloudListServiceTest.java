@@ -47,7 +47,8 @@ public class NextcloudListServiceTest extends AbstractNextcloudTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
-        new NextcloudListService(session).list(new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        new NextcloudListService(session).list(new Path(new DefaultHomeFinderService(session).find(),
+                        new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());
     }
 

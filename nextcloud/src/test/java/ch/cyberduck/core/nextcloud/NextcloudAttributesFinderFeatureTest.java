@@ -40,13 +40,14 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(),
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final NextcloudAttributesFinderFeature f = new NextcloudAttributesFinderFeature(session);
         try {
             f.find(test);
         }
         catch(NotfoundException e) {
-            assertEquals("Unexpected response (404 OK). Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Unexpected response (404 Not Found). Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
     }

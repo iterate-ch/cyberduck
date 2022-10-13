@@ -15,14 +15,15 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
+import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -34,7 +35,6 @@ import java.util.stream.Stream;
 import com.github.sardine.DavResource;
 
 public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature {
-    private static final Logger log = LogManager.getLogger(NextcloudAttributesFinderFeature.class);
 
     public static final String CUSTOM_NAMESPACE_PREFIX = "oc";
     public static final String CUSTOM_NAMESPACE_URI = "http://owncloud.org/ns";
@@ -48,13 +48,35 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
         this.session = session;
     }
 
+    @Override
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        final PathAttributes attr = super.find(file, listener);
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            return attr.withVersionId(file.attributes().getVersionId()).withFileId(file.attributes().getFileId());
+        }
+        return attr;
+    }
+
+    @Override
+    protected PathAttributes head(final Path file) {
+        return PathAttributes.EMPTY;
+    }
+
+    @Override
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 0,
-                Stream.of(
-                                FILEID_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                        collect(Collectors.toSet()));
+        final String url;
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            url = String.format("%sversions/%s/%s",
+                    new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions)),
+                    file.attributes().getFileId(), file.attributes().getVersionId());
+        }
+        else {
+            url = new DAVPathEncoder().encode(file);
+        }
+        return session.getClient().list(url, 0,
+                Stream.of(FILEID_CUSTOM_NAMESPACE,
+                        DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
     }
 
     @Override

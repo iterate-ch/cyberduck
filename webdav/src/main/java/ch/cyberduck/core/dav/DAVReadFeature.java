@@ -32,6 +32,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -76,20 +77,7 @@ public class DAVReadFeature implements Read {
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
-            final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
-            if(!status.getParameters().isEmpty()) {
-                resource.append("?");
-            }
-            for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
-                if(!resource.toString().endsWith("?")) {
-                    resource.append("&");
-                }
-                resource.append(URIEncoder.encode(parameter.getKey()))
-                        .append("=")
-                        .append(URIEncoder.encode(parameter.getValue()));
-
-            }
-            final HttpGet request = new HttpGet(resource.toString());
+            final HttpRequestBase request = this.toRequest(file, status);
             for(Header header : headers) {
                 request.addHeader(header);
             }
@@ -124,6 +112,23 @@ public class DAVReadFeature implements Read {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+        final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
+        if(!status.getParameters().isEmpty()) {
+            resource.append("?");
+        }
+        for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
+            if(!resource.toString().endsWith("?")) {
+                resource.append("&");
+            }
+            resource.append(URIEncoder.encode(parameter.getKey()))
+                    .append("=")
+                    .append(URIEncoder.encode(parameter.getValue()));
+
+        }
+        return new HttpGet(resource.toString());
     }
 
     public Set<Header> headers() {

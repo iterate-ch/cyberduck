@@ -53,7 +53,7 @@ public class AbstractNextcloudTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new NextcloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Nextcloud.cyberduckprofile"));
-        final Host host = new Host(profile, System.getProperties().getProperty("nextcloud.host"), 443, System.getProperties().getProperty("nextcloud.path"),
+        final Host host = new Host(profile, System.getProperties().getProperty("nextcloud.hostname"), 443, System.getProperties().getProperty("nextcloud.path"),
                 new Credentials(System.getProperties().getProperty("nextcloud.user"), System.getProperties().getProperty("nextcloud.password")));
         session = new NextcloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
