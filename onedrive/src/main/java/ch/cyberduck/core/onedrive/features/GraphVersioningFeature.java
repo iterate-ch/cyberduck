@@ -72,7 +72,7 @@ public class GraphVersioningFeature implements Versioning {
 
     @Override
     public boolean isRevertable(Path file) {
-        return true;
+        return file.attributes().isDuplicate();
     }
 
     @Override

@@ -71,7 +71,7 @@ public class SDSVersioningFeature implements Versioning {
 
     @Override
     public boolean isRevertable(final Path file) {
-        return true;
+        return file.attributes().isDuplicate();
     }
 
     @Override
