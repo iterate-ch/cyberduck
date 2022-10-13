@@ -56,7 +56,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     private static final Logger log = LogManager.getLogger(DropboxSession.class);
 
     private final UseragentProvider useragent
-        = new PreferencesUseragentProvider();
+            = new PreferencesUseragentProvider();
 
     private OAuth2RequestInterceptor authorizationService;
     private Lock<String> locking = null;
@@ -69,14 +69,14 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     protected CustomDbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         final CloseableHttpClient client = configuration.build();
         return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
-            .withAutoRetryDisabled()
-            .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(),
-            DbxHost.DEFAULT, null, null);
+                .withAutoRetryDisabled()
+                .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(),
+                DbxHost.DEFAULT, null, null);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     public <T> T _getFeature(Class<T> type) {
         if(type == ListService.class) {
             return new HostPreferences(host).getBoolean("dropbox.business.enable") ?
-                (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
+                    (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
         }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
@@ -175,10 +175,12 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     public CustomDbxRawClientV2 getClient(final Path file) {
-        return this.getClient(new DropboxPathContainerService(this).getNamespace(file));
+        return this.getClient(new DropboxPathContainerService(this).getNamespace(file.getParent()));
     }
 
     /**
+     * The Dropbox API Path Root is the folder that an API request operates relative to.
+     *
      * @param root The Dropbox-API-Path-Root header can be used to perform actions relative to a namespace without
      *             including the namespace as part of the path variable for every request.
      */

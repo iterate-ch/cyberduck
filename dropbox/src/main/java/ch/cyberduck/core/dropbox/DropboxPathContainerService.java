@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,23 +59,16 @@ public class DropboxPathContainerService extends DefaultPathContainerService {
     @Override
     public String getKey(final Path file) {
         if(new HostPreferences(session.getHost()).getBoolean("dropbox.business.enable")) {
-            final Path container = this.getContainer(file);
-            final String namespace = container.attributes().getFileId();
-            if(StringUtils.isNotBlank(namespace)) {
-                if(file.isRoot()) {
-                    // Root
-                    if(useNamespace) {
-                        return String.format("ns:%s", namespace);
-                    }
-                    return StringUtils.EMPTY;
-                }
-                // Return path relative to the namespace root
-                final String key = this.isContainer(file) ? StringUtils.EMPTY : Path.DELIMITER + super.getKey(file);
-                if(useNamespace) {
-                    return String.format("ns:%s%s", namespace, key);
-                }
-                return key;
+            if(file.isRoot()) {
+                // Root
+                return StringUtils.EMPTY;
             }
+            if(this.isContainer(file)) {
+                // Return path relative to parent namespace
+                return Path.DELIMITER + PathRelativizer.relativize(this.getContainer(file.getParent()).getAbsolute(), file.getAbsolute());
+            }
+            // Return path relative to this namespace
+            return Path.DELIMITER + super.getKey(file);
         }
         return file.isRoot() ? StringUtils.EMPTY : file.getAbsolute();
     }

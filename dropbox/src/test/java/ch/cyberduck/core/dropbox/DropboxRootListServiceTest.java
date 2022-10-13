@@ -25,6 +25,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 @Category(IntegrationTest.class)
@@ -34,5 +35,8 @@ public class DropboxRootListServiceTest extends AbstractDropboxTest {
     public void testList() throws Exception {
         final AttributedList<Path> list = new DropboxRootListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
+        for(Path f : list) {
+            assertEquals(f.attributes(), new DropboxAttributesFinderFeature(session).find(f));
+        }
     }
 }
