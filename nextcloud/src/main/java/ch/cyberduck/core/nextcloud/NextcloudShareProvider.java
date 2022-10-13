@@ -140,7 +140,7 @@ public class NextcloudShareProvider implements PromptUrlProvider {
                 bookmark.getHostname()
         ));
         try {
-            request.append(String.format("&password=%s", callback.prompt(bookmark,
+            request.append(String.format("?password=%s", callback.prompt(bookmark,
                     LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                     MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
                     new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
