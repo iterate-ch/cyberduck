@@ -45,7 +45,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import com.dropbox.core.v2.files.Metadata;
 
@@ -120,8 +119,8 @@ public class DropboxReadFeatureTest extends AbstractDropboxTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path directory = new DropboxDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DropboxWriteFeature writer = new DropboxWriteFeature(session);
         final HttpResponseOutputStream<Metadata> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
