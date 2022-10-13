@@ -16,15 +16,12 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,45 +49,13 @@ public class DropboxRootListService implements ListService {
                             log.info("Connect to business account type");
                         }
                         return new DropboxListService(session).list(
-                                directory.withAttributes(new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId())),
-                                new HomeNamespaceListProgressListener(listener, account));
+                                directory.withAttributes(new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId())), listener);
                 }
             }
             return new DropboxListService(session).list(directory, listener);
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Listing directory {0} failed", e, directory);
-        }
-    }
-
-    private static final class HomeNamespaceListProgressListener extends IndexedListProgressListener {
-        private final ListProgressListener listener;
-        private final FullAccount account;
-
-        public HomeNamespaceListProgressListener(final ListProgressListener listener, final FullAccount account) {
-            this.listener = listener;
-            this.account = account;
-        }
-
-        @Override
-        public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
-            super.chunk(folder, list);
-            listener.chunk(folder, list);
-        }
-
-        @Override
-        public void visit(final AttributedList<Path> list, final int index, final Path file) {
-            if(StringUtils.isBlank(file.attributes().getFileId())) {
-                if(file.isVolume()) {
-                    // User home folder does not have a id set
-                    file.attributes().setFileId(account.getRootInfo().getHomeNamespaceId());
-                }
-            }
-        }
-
-        @Override
-        public void message(final String message) {
-            listener.message(message);
         }
     }
 }
