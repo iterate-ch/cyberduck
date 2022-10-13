@@ -24,7 +24,7 @@
     <artifactId>dropbox</artifactId>
     <properties>
         <!-- Dependency upgrade blocked by compiler target of later versions-->
-        <dropbox-core-sdk-version>5.0.0</dropbox-core-sdk-version>
+        <dropbox-core-sdk-version>5.4.2</dropbox-core-sdk-version>
     </properties>
     <dependencies>
         <dependency>
