@@ -45,6 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
@@ -142,7 +143,13 @@ public class BrickPairingSchedulerFeature {
             }
             if(json.has("server")) {
                 if(new HostPreferences(session.getHost()).getBoolean("brick.pairing.hostname.configure")) {
-                    host.setHostname(URI.create(json.getAsJsonPrimitive("server").getAsString()).getHost());
+                    final String server = json.getAsJsonPrimitive("server").getAsString();
+                    try {
+                        host.setHostname(new URI(server).getHost());
+                    }
+                    catch(URISyntaxException e) {
+                        log.warn(String.format("Failure%s to parse server value %s as URI", e, server));
+                    }
                 }
             }
             callback.close(credentials.getUsername());
