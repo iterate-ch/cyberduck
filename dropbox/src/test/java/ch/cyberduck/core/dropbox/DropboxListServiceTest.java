@@ -41,6 +41,9 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
     public void testListHome() throws Exception {
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
+        for(Path f : list) {
+            assertEquals(f.attributes(), new DropboxAttributesFinderFeature(session).find(f));
+        }
     }
 
     @Test
