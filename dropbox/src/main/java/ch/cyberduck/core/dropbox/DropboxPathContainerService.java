@@ -1,7 +1,7 @@
 package ch.cyberduck.core.dropbox;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,12 +17,8 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathRelativizer;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.dropbox.core.v2.common.PathRoot;
 
 public class DropboxPathContainerService extends DefaultPathContainerService {
 
@@ -33,41 +29,7 @@ public class DropboxPathContainerService extends DefaultPathContainerService {
     }
 
     @Override
-    public boolean isContainer(final Path file) {
-        if(file.isRoot()) {
-            return true;
-        }
-        if(super.isContainer(file)) {
-            return file.getType().contains(Path.Type.volume);
-        }
-        return false;
-    }
-
-    @Override
     public String getKey(final Path file) {
-        if(new HostPreferences(session.getHost()).getBoolean("dropbox.business.enable")) {
-            if(file.isRoot()) {
-                // Root
-                return StringUtils.EMPTY;
-            }
-            if(this.isContainer(file)) {
-                // Return path relative to parent namespace
-                return Path.DELIMITER + PathRelativizer.relativize(this.getContainer(file.getParent()).getAbsolute(), file.getAbsolute());
-            }
-            // Return path relative to this namespace
-            return Path.DELIMITER + super.getKey(file);
-        }
         return file.isRoot() ? StringUtils.EMPTY : file.getAbsolute();
-    }
-
-    protected PathRoot getNamespace(final Path file) {
-        if(new HostPreferences(session.getHost()).getBoolean("dropbox.business.enable")) {
-            final Path container = this.getContainer(file);
-            if(StringUtils.isNotBlank(container.attributes().getFileId())) {
-                // List relative to the namespace id
-                return PathRoot.namespaceId(container.attributes().getFileId());
-            }
-        }
-        return PathRoot.HOME;
     }
 }

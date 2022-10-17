@@ -63,6 +63,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     private OAuth2RequestInterceptor authorizationService;
     private Lock<String> locking = null;
+    private PathRoot root = PathRoot.HOME;
 
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -100,6 +101,12 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 case BUSINESS:
                     locking = new DropboxLockFeature(this);
             }
+            // The Dropbox API Path Root is the folder that an API request operates relative to.
+            final PathRoot root = PathRoot.root(account.getRootInfo().getRootNamespaceId());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set path root to %s", root));
+            }
+            this.root = root;
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
@@ -120,8 +127,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
         if(type == ListService.class) {
-            return new HostPreferences(host).getBoolean("dropbox.business.enable") ?
-                    (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
+            return (T) new DropboxListService(this);
         }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
@@ -177,28 +183,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         return super._getFeature(type);
     }
 
-    @Override
-    public CustomDbxRawClientV2 getClient() {
-        log.warn(String.format("Dropbox-API-Path-Root not set for client %s", client));
-        return super.getClient();
-    }
-
     public CustomDbxRawClientV2 getClient(final Path file) {
-        return this.getClient(new DropboxPathContainerService(this).getNamespace(file.getParent()));
-    }
-
-    /**
-     * The Dropbox API Path Root is the folder that an API request operates relative to.
-     *
-     * @param root The Dropbox-API-Path-Root header can be used to perform actions relative to a namespace without
-     *             including the namespace as part of the path variable for every request.
-     */
-    protected CustomDbxRawClientV2 getClient(final PathRoot root) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Set path root to %s", root));
-        }
-        // Syntax of using a namespace ID in the path parameter is only supported for namespaces that are mounted
-        // under the root. That means it can't be used to access the team space itself. Must still set Dropbox-API-Path-Root header
         return client.withPathRoot(root);
     }
 }
