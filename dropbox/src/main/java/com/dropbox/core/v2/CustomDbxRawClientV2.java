@@ -46,12 +46,12 @@ public final class CustomDbxRawClientV2 extends DbxRawClientV2 {
     }
 
     @Override
-    protected boolean canRefreshAccessToken() {
+    boolean canRefreshAccessToken() {
         return false;
     }
 
     @Override
-    protected boolean needsRefreshAccessToken() {
+    boolean needsRefreshAccessToken() {
         return false;
     }
 
