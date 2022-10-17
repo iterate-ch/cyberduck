@@ -900,6 +900,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
         this.setDefault("dropbox.business.enable", String.valueOf(true));
         this.setDefault("dropbox.delete.poll.interval.ms", String.valueOf(500L));
+        this.setDefault("dropbox.limit.requests.second", String.valueOf(100));
 
         /*
           NTLM Windows Domain
