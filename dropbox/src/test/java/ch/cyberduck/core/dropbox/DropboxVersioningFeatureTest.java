@@ -49,10 +49,10 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testRevert() throws Exception {
-        final Path room = new DropboxDirectoryFeature(session).mkdir(
+        final Path directory = new DropboxDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DropboxAttributesFinderFeature f = new DropboxAttributesFinderFeature(session);
-        final Path test = new DropboxTouchFeature(session).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new DropboxTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(test.attributes().getVersionId(), new DropboxAttributesFinderFeature(session).find(test).getVersionId());
         final DropboxVersioningFeature feature = new DropboxVersioningFeature(session);
         assertEquals(0, feature.list(test, new DisabledListProgressListener()).size());
@@ -93,9 +93,9 @@ public class DropboxVersioningFeatureTest extends AbstractDropboxTest {
         catch(InteroperabilityException e) {
             // Expected
         }
-        for(Path version : new DropboxListService(session).list(room, new DisabledListProgressListener())) {
+        for(Path version : new DropboxListService(session).list(directory, new DisabledListProgressListener())) {
             new DropboxDeleteFeature(session).delete(Collections.singletonList(version), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
