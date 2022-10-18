@@ -16,15 +16,27 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.nextcloud.NextcloudAttributesFinderFeature;
+import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
+import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
+import ch.cyberduck.core.nextcloud.NextcloudListService;
+import ch.cyberduck.core.nextcloud.NextcloudReadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudShareProvider;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
+import ch.cyberduck.core.nextcloud.NextcloudVersioningFeature;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -38,6 +50,15 @@ public class OwncloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Home.class) {
+            return (T) new NextcloudHomeFeature(host);
+        }
+        if(type == ListService.class) {
+            return (T) new NextcloudListService(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new NextcloudAttributesFinderFeature(this);
+        }
         if(type == Lock.class) {
             // https://github.com/nextcloud/server/issues/1308
             return null;
@@ -53,6 +74,15 @@ public class OwncloudSession extends DAVSession {
         }
         if(type == PromptUrlProvider.class) {
             return (T) new NextcloudShareProvider(this);
+        }
+        if(type == Versioning.class) {
+            return (T) new NextcloudVersioningFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new NextcloudDeleteFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new NextcloudReadFeature(this);
         }
         return super._getFeature(type);
     }

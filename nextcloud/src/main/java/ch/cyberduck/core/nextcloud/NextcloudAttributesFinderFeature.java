@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -41,9 +42,9 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
 
     public static final QName FILEID_CUSTOM_NAMESPACE = new QName(CUSTOM_NAMESPACE_URI, "fileid", CUSTOM_NAMESPACE_PREFIX);
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudAttributesFinderFeature(NextcloudSession session) {
+    public NextcloudAttributesFinderFeature(DAVSession session) {
         super(session);
         this.session = session;
     }

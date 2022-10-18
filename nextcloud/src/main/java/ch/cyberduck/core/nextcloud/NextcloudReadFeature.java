@@ -18,6 +18,7 @@ package ch.cyberduck.core.nextcloud;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVReadFeature;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +28,9 @@ import java.net.URI;
 
 public class NextcloudReadFeature extends DAVReadFeature {
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudReadFeature(final NextcloudSession session) {
+    public NextcloudReadFeature(final DAVSession session) {
         super(session);
         this.session = session;
     }

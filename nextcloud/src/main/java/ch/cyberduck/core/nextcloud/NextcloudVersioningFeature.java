@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.dav.DAVExceptionMappingService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -48,9 +49,9 @@ import com.github.sardine.util.SardineUtil;
 
 public class NextcloudVersioningFeature implements Versioning {
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudVersioningFeature(final NextcloudSession session) {
+    public NextcloudVersioningFeature(final DAVSession session) {
         this.session = session;
     }
 

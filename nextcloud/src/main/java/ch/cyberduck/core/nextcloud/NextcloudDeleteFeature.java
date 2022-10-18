@@ -17,12 +17,13 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVSession;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class NextcloudDeleteFeature extends DAVDeleteFeature {
 
-    public NextcloudDeleteFeature(final NextcloudSession session) {
+    public NextcloudDeleteFeature(final DAVSession session) {
         super(session);
     }
 

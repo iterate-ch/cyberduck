@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 
 import java.io.IOException;
@@ -30,13 +31,13 @@ import com.github.sardine.DavResource;
 
 public class NextcloudListService extends DAVListService {
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudListService(final NextcloudSession session) {
+    public NextcloudListService(final DAVSession session) {
         this(session, new NextcloudAttributesFinderFeature(session));
     }
 
-    public NextcloudListService(final NextcloudSession session, final DAVAttributesFinderFeature attributes) {
+    public NextcloudListService(final DAVSession session, final DAVAttributesFinderFeature attributes) {
         super(session, attributes);
         this.session = session;
     }
