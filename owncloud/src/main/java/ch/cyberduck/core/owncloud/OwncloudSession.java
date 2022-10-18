@@ -29,14 +29,11 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.nextcloud.NextcloudAttributesFinderFeature;
 import ch.cyberduck.core.nextcloud.NextcloudDeleteFeature;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 import ch.cyberduck.core.nextcloud.NextcloudListService;
-import ch.cyberduck.core.nextcloud.NextcloudReadFeature;
 import ch.cyberduck.core.nextcloud.NextcloudShareProvider;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
-import ch.cyberduck.core.nextcloud.NextcloudVersioningFeature;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -57,7 +54,7 @@ public class OwncloudSession extends DAVSession {
             return (T) new NextcloudListService(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new NextcloudAttributesFinderFeature(this);
+            return (T) new OwncloudAttributesFinderFeature(this);
         }
         if(type == Lock.class) {
             // https://github.com/nextcloud/server/issues/1308
@@ -76,13 +73,13 @@ public class OwncloudSession extends DAVSession {
             return (T) new NextcloudShareProvider(this);
         }
         if(type == Versioning.class) {
-            return (T) new NextcloudVersioningFeature(this);
+            return (T) new OwncloudVersioningFeature(this);
         }
         if(type == Delete.class) {
             return (T) new NextcloudDeleteFeature(this);
         }
         if(type == Read.class) {
-            return (T) new NextcloudReadFeature(this);
+            return (T) new OwncloudReadFeature(this);
         }
         return super._getFeature(type);
     }

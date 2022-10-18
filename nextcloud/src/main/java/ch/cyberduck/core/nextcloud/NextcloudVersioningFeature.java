@@ -107,15 +107,9 @@ public class NextcloudVersioningFeature implements Versioning {
                 any.add(element);
             }
             body.setProp(prop);
-            final List<DavResource> list = session.getClient().propfind(String.format("%sversions/%s",
-                    new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions)),
-                    file.attributes().getFileId()), 1, body);
+            final List<DavResource> list = this.propfind(file, body);
             for(DavResource resource : list) {
-                if(resource.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-                    continue;
-                }
-                if(StringUtils.equals(file.attributes().getFileId(), PathNormalizer.name(resource.getHref().getPath()))) {
-                    // No version
+                if(!this.filter(file, resource)) {
                     continue;
                 }
                 final PathAttributes attributes = new NextcloudAttributesFinderFeature(session).toAttributes(resource);
@@ -132,5 +126,22 @@ public class NextcloudVersioningFeature implements Versioning {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, file);
         }
+    }
+
+    protected boolean filter(final Path file, final DavResource resource) {
+        if(resource.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            return false;
+        }
+        if(StringUtils.equals(file.attributes().getFileId(), PathNormalizer.name(resource.getHref().getPath()))) {
+            // No version
+            return false;
+        }
+        return true;
+    }
+
+    protected List<DavResource> propfind(final Path file, final Propfind body) throws IOException {
+        return session.getClient().propfind(String.format("%sversions/%s",
+                new DAVPathEncoder().encode(new NextcloudHomeFeature(session.getHost()).find(NextcloudHomeFeature.Context.versions)),
+                file.attributes().getFileId()), 1, body);
     }
 }
