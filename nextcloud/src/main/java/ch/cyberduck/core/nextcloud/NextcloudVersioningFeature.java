@@ -84,7 +84,7 @@ public class NextcloudVersioningFeature implements Versioning {
 
     @Override
     public boolean isRevertable(final Path file) {
-        return file.isFile();
+        return StringUtils.isNotBlank(file.attributes().getVersionId());
     }
 
     @Override
