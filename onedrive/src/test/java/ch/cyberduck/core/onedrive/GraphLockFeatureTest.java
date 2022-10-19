@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -47,12 +48,20 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
         final Path drive = drives.get(0);
         final Path file = new GraphTouchFeature(session, fileid).touch(new Path(drive,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final long modified = new GraphAttributesFinderFeature(session, fileid).find(file).getModificationDate();
+        final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
         final GraphLockFeature feature = new GraphLockFeature(session, fileid);
         final String token = feature.lock(file);
-        assertEquals(modified, new GraphAttributesFinderFeature(session, fileid).find(file).getModificationDate());
+        {
+            final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
+            assertEquals(attr.getModificationDate(), latest.getModificationDate());
+            assertEquals(attr.getETag(), latest.getETag());
+        }
         feature.unlock(file, token);
-        assertEquals(modified, new GraphAttributesFinderFeature(session, fileid).find(file).getModificationDate());
+        {
+            final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
+            assertEquals(attr.getModificationDate(), latest.getModificationDate());
+            assertEquals(attr.getETag(), latest.getETag());
+        }
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
