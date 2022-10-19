@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -80,6 +81,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         assertNotNull(overwrite);
         assertEquals(content.length, IOUtils.copyLarge(new ByteArrayInputStream(content), overwrite));
         overwrite.close();
+        assertEquals(new GraphAttributesFinderFeature(session, fileid).toAttributes(overwrite.getStatus()), new GraphAttributesFinderFeature(session, fileid).find(file));
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
