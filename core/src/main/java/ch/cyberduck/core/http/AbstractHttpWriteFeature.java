@@ -20,7 +20,9 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -30,19 +32,13 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> implements HttpWriteFeature<R> {
-    private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
 
     private final AttributesAdapter<R> attributes;
 
@@ -70,7 +66,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
     @Override
     public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<R> command) throws BackgroundException {
-        return this.write(file, status, command, new DelayedHttpEntity(status) {
+        return this.write(file, status, command, new DelayedHttpEntity() {
             @Override
             public long getContentLength() {
                 return command.getContentLength();
@@ -112,12 +108,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
         final Thread t = factory.newThread(target);
         t.start();
         // Wait for output stream to become available
-        while(!Uninterruptibles.awaitUninterruptibly(entry, 1L, TimeUnit.SECONDS)) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Await for %s", entry));
-            }
-            status.validate();
-        }
+        Interruptibles.await(entry, ConnectionCanceledException.class);
         if(null != target.getException()) {
             if(target.getException() instanceof BackgroundException) {
                 throw (BackgroundException) target.getException();
@@ -140,12 +131,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public R getStatus() throws BackgroundException {
                 status.validate();
                 // Block the calling thread until after the full response from the server has been consumed.
-                while(!Uninterruptibles.awaitUninterruptibly(exit, 1L, TimeUnit.SECONDS)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Await for %s", exit));
-                    }
-                    status.validate();
-                }
+                Interruptibles.await(exit, ConnectionCanceledException.class);
                 if(null != target.getException()) {
                     if(target.getException() instanceof BackgroundException) {
                         throw (BackgroundException) target.getException();

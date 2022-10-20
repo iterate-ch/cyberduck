@@ -23,7 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -93,12 +92,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
                              final ConnectionCallback callback, final Digest digest) throws IOException, BackgroundException {
         // Wrap with digest stream if available
         final InputStream in = this.decorate(local.getInputStream(), digest);
-        final StatusOutputStream<Reply> out = writer.write(file, new TransferStatus(status) {
-            @Override
-            public void validate() throws ConnectionCanceledException {
-                cancel.validate();
-            }
-        }, callback);
+        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
         new StreamCopier(cancel, progress)
                 .withOffset(status.getOffset())
                 .withLimit(status.getLength())

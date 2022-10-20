@@ -23,6 +23,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.concurrency.Interruptibles;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
@@ -238,9 +240,9 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      *
      * @return True if complete
      */
-    public boolean await() {
+    public boolean await() throws ConnectionCanceledException {
         // Lock until complete
-        Uninterruptibles.awaitUninterruptibly(done);
+        Interruptibles.await(done, ConnectionCanceledException.class);
         return complete.get();
     }
 
