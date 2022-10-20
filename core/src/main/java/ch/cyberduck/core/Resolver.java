@@ -32,10 +32,10 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.util.concurrent.Uninterruptibles;
@@ -92,7 +92,7 @@ public final class Resolver {
         resolver.start();
         log.debug(String.format("Waiting for resolving of %s", hostname));
         // Wait for #run to finish
-        while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
+        while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
             try {
                 callback.verify();
             }
