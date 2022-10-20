@@ -41,12 +41,6 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
     }
 
     @Override
-    protected void reset() throws BackgroundException {
-        worker.reset();
-        super.reset();
-    }
-
-    @Override
     public T run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));
