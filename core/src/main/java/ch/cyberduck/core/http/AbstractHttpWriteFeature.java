@@ -77,8 +77,8 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
         });
     }
 
-    public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
-                                             final DelayedHttpEntityCallable<R> command, final DelayedHttpEntity entity) throws BackgroundException {
+    protected HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
+                                                final DelayedHttpEntityCallable<R> command, final DelayedHttpEntity entity) throws BackgroundException {
         // Signal on enter streaming
         final CountDownLatch entry = entity.getEntry();
         final CountDownLatch exit = new CountDownLatch(1);
