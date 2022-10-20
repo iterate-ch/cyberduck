@@ -43,17 +43,12 @@ public class DropboxDeleteFeature implements Delete {
             try {
                 callback.delete(file);
                 // Delete the file or folder at a given path. If the path is a folder, all its contents will be deleted too.
-                if(containerService.isContainer(file)) {
-                    new DbxUserFilesRequests(session.getClient(file.getParent())).deleteV2(file.getAbsolute());
+                if(file.attributes().isDuplicate()) {
+                    new DbxUserFilesRequests(session.getClient(file)).permanentlyDelete(containerService.getKey(file),
+                            file.attributes().getVersionId());
                 }
                 else {
-                    if(file.attributes().isDuplicate()) {
-                        new DbxUserFilesRequests(session.getClient(file)).permanentlyDelete(containerService.getKey(file),
-                                file.attributes().getVersionId());
-                    }
-                    else {
-                        new DbxUserFilesRequests(session.getClient(file)).deleteV2(containerService.getKey(file));
-                    }
+                    new DbxUserFilesRequests(session.getClient(file)).deleteV2(containerService.getKey(file));
                 }
             }
             catch(DbxException e) {

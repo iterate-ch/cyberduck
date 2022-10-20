@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -30,7 +31,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -41,13 +41,16 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
     public void testListHome() throws Exception {
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
+        for(Path f : list) {
+            assertEquals(f.attributes(), new DropboxAttributesFinderFeature(session).find(f));
+        }
     }
 
     @Test
     public void testFilenameColon() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
-        final Path file = new DropboxTouchFeature(session).touch(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(new Path(home, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(home, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new DropboxListService(session).list(home, new DisabledListProgressListener());
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());

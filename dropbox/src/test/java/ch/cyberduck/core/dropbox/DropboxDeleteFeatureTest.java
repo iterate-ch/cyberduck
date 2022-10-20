@@ -31,6 +31,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
+
 @Category(IntegrationTest.class)
 public class DropboxDeleteFeatureTest extends AbstractDropboxTest {
 
@@ -54,5 +56,6 @@ public class DropboxDeleteFeatureTest extends AbstractDropboxTest {
         final Path file = new DropboxTouchFeature(session).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DropboxFindFeature(session).find(file));
     }
 }

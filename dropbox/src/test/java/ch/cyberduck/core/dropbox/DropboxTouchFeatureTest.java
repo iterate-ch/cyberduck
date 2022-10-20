@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -30,7 +31,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -41,14 +41,14 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
     @Test(expected = AccessDeniedException.class)
     public void testDisallowedName() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("~%s.tmp", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("~%s.tmp", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         assertFalse(touch.isSupported(new DefaultHomeFinderService(session).find(), file.getName()));
         touch.touch(file, new TransferStatus());
     }
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
