@@ -279,7 +279,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      *
      */
     @Override
-    public void validate() throws TransferStatusCanceledException {
+    public void validate() throws ConnectionCanceledException {
         for(TransferStatus segment : segments) {
             segment.validate();
         }

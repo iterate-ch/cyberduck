@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
@@ -80,7 +81,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             final BytecountStreamListener count = new BytecountStreamListener();
             final TransferStatus status = new TransferStatus() {
                 @Override
-                public void validate() throws TransferStatusCanceledException {
+                public void validate() throws ConnectionCanceledException {
                     if(count.getSent() >= 32768) {
                         throw new TransferStatusCanceledException();
                     }

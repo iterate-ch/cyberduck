@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
@@ -186,7 +187,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final BytecountStreamListener listener = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
-            public void validate() throws TransferStatusCanceledException {
+            public void validate() throws ConnectionCanceledException {
                 if(listener.getSent() >= 32768) {
                     throw new TransferStatusCanceledException();
                 }
