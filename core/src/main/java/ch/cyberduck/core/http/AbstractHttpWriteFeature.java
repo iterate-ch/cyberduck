@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -69,7 +70,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
     @Override
     public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
                                              final DelayedHttpEntityCallable<R> command) throws BackgroundException {
-        return this.write(file, status, command, new DelayedHttpEntity() {
+        return this.write(file, status, command, new DelayedHttpEntity(status) {
             @Override
             public long getContentLength() {
                 return command.getContentLength();
@@ -107,11 +108,16 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             }
         };
         final ThreadFactory factory
-            = new NamedThreadFactory(String.format("http-%s", file.getName()));
+                = new NamedThreadFactory(String.format("http-%s", file.getName()));
         final Thread t = factory.newThread(target);
         t.start();
         // Wait for output stream to become available
-        Uninterruptibles.awaitUninterruptibly(entry);
+        while(!Uninterruptibles.awaitUninterruptibly(entry, 1L, TimeUnit.SECONDS)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Await for %s", entry));
+            }
+            status.validate();
+        }
         if(null != target.getException()) {
             if(target.getException() instanceof BackgroundException) {
                 throw (BackgroundException) target.getException();
@@ -133,9 +139,13 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             @Override
             public R getStatus() throws BackgroundException {
                 status.validate();
-                // Block the calling thread until after the full response from the server
-                // has been consumed.
-                Uninterruptibles.awaitUninterruptibly(exit);
+                // Block the calling thread until after the full response from the server has been consumed.
+                while(!Uninterruptibles.awaitUninterruptibly(exit, 1L, TimeUnit.SECONDS)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Await for %s", exit));
+                    }
+                    status.validate();
+                }
                 if(null != target.getException()) {
                     if(target.getException() instanceof BackgroundException) {
                         throw (BackgroundException) target.getException();

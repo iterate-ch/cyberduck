@@ -19,6 +19,9 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.io.StreamCancelation;
+
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.logging.log4j.LogManager;
@@ -28,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
@@ -35,17 +39,28 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private static final Logger log = LogManager.getLogger(DelayedHttpEntity.class);
 
     private final CountDownLatch entry;
+    private final StreamCancelation status;
     private final CountDownLatch exit = new CountDownLatch(1);
 
     public DelayedHttpEntity() {
         this(new CountDownLatch(1));
     }
 
-    /**
-     * @param entry Signal when stream is ready
-     */
     public DelayedHttpEntity(final CountDownLatch entry) {
+        this(entry, StreamCancelation.noop);
+    }
+
+    public DelayedHttpEntity(final StreamCancelation status) {
+        this(new CountDownLatch(1), status);
+    }
+
+    /**
+     * @param entry  Signal when stream is ready
+     * @param status Transfer status
+     */
+    public DelayedHttpEntity(final CountDownLatch entry, final StreamCancelation status) {
         this.entry = entry;
+        this.status = status;
     }
 
     /**
@@ -112,7 +127,18 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
             entry.countDown();
         }
         // Wait for signal when content has been written to the pipe
-        Uninterruptibles.awaitUninterruptibly(exit);
+        while(!Uninterruptibles.awaitUninterruptibly(exit, 1L, TimeUnit.SECONDS)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Await for %s", exit));
+            }
+            try {
+                status.validate();
+            }
+            catch(ConnectionCanceledException e) {
+                log.warn(String.format("Break waiting for %s with %s", exit, e));
+                return;
+            }
+        }
         // Entity written to server
         consumed = true;
     }
