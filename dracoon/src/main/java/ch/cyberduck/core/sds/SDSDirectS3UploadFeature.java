@@ -28,6 +28,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Buffer;
 import ch.cyberduck.core.io.BufferOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -266,14 +267,14 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setFilekey(overall.getFilekey());
-                SDSDirectS3UploadFeature.super.upload(
+                final Node node = SDSDirectS3UploadFeature.super.upload(
                         file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response for part number %d", partNumber));
                 }
                 // Delete temporary file if any
                 buffer.close();
-                return status;
+                return status.withChecksum(Checksum.parse(node.getHash()));
             }
         }, overall, counter));
     }
