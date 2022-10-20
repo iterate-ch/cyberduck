@@ -75,7 +75,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
             final Digest digest = this.digest();
-            final Reply response = transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
+            final Reply response = this.transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
             this.post(file, digest, response);
             return response;
         }
@@ -87,9 +87,9 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         }
     }
 
-    public Reply transfer(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
-                          final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
-                          final ConnectionCallback callback, final Digest digest) throws IOException, BackgroundException {
+    protected Reply transfer(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                             final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
+                             final ConnectionCallback callback, final Digest digest) throws IOException, BackgroundException {
         // Wrap with digest stream if available
         final InputStream in = this.decorate(local.getInputStream(), digest);
         final StatusOutputStream<Reply> out = writer.write(file, status, callback);
