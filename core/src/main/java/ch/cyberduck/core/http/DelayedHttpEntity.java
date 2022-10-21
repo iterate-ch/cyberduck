@@ -39,19 +39,25 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
      * Count down when stream to server has been opened
      */
     private final CountDownLatch streamOpen;
+
     /**
      * Count down when stream is closed writing entity to server
      */
     private final CountDownLatch streamClosed = new CountDownLatch(1);
 
     public DelayedHttpEntity() {
-        this(new CountDownLatch(1));
+        this(Thread.currentThread(), new CountDownLatch(1));
     }
 
     /**
      * @param streamOpen Signal when stream is ready
      */
     public DelayedHttpEntity(final CountDownLatch streamOpen) {
+        this(Thread.currentThread(), streamOpen);
+    }
+
+    public DelayedHttpEntity(final Thread parentThread, final CountDownLatch streamOpen) {
+        this.parentThread = parentThread;
         this.streamOpen = streamOpen;
     }
 
@@ -64,6 +70,11 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
      * Entity written to server
      */
     private boolean entityWritten = false;
+
+    /**
+     * Parent thread to check if still alive
+     */
+    private final Thread parentThread;
 
     public boolean isRepeatable() {
         return true;
@@ -108,7 +119,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
             streamOpen.countDown();
         }
         // Wait for signal when content has been written to the pipe
-        Interruptibles.await(streamClosed, IOException.class);
+        Interruptibles.await(streamClosed, IOException.class, new Interruptibles.ThreadAliveCancelCallback(parentThread));
         // Entity written to server
         entityWritten = true;
     }
