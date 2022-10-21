@@ -30,4 +30,12 @@ public class TransferCancelCallback implements CancelCallback {
     public void verify() throws ConnectionCanceledException {
         cancel.validate();
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TransferCancelCallback{");
+        sb.append("cancel=").append(cancel);
+        sb.append('}');
+        return sb.toString();
+    }
 }
