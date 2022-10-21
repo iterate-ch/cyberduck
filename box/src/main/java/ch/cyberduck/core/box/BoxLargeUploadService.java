@@ -23,7 +23,9 @@ import ch.cyberduck.core.box.io.swagger.client.model.File;
 import ch.cyberduck.core.box.io.swagger.client.model.Files;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -34,9 +36,9 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,12 +48,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest> {
     private static final Logger log = LogManager.getLogger(BoxLargeUploadService.class);
@@ -98,14 +96,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             // Checksums for uploaded segments
             final List<File> chunks = new ArrayList<>();
             for(Future<File> f : parts) {
-                try {
-                    chunks.add(Uninterruptibles.getUninterruptibly(f));
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                }
+                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
             }
             final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
                     chunks.stream().map(f -> new UploadPart().sha1(f.getSha1())).collect(Collectors.toList()));

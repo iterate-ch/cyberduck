@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.threading.DefaultThreadPool;
@@ -129,9 +130,9 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             }
 
             @Override
-            public OutputStream getOutputStream() {
+            public OutputStream getOutputStream() throws IOException {
                 // Await execution of HTTP request to make stream available
-                Uninterruptibles.awaitUninterruptibly(entry);
+                Interruptibles.await(entry, IOException.class);
                 return entity.getStream();
             }
         };

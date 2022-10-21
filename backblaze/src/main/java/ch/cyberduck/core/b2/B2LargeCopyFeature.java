@@ -21,7 +21,9 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
@@ -31,8 +33,8 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,11 +45,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2StartLargeFileResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
@@ -113,15 +112,8 @@ public class B2LargeCopyFeature implements Copy {
                 remaining -= length;
                 offset += length;
             }
-            try {
-                for(Future<B2UploadPartResponse> f : parts) {
-                    completed.add(Uninterruptibles.getUninterruptibly(f));
-                }
-            }
-            catch(ExecutionException e) {
-                log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+            for(Future<B2UploadPartResponse> f : parts) {
+                completed.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override

@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
+import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -108,7 +109,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
         final Thread t = factory.newThread(target);
         t.start();
         // Wait for output stream to become available
-        Interruptibles.await(entry, ConnectionCanceledException.class);
+        Interruptibles.await(entry, ConnectionCanceledException.class, new TransferCancelCallback(status));
         if(null != target.getException()) {
             if(target.getException() instanceof BackgroundException) {
                 throw (BackgroundException) target.getException();
@@ -131,7 +132,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public R getStatus() throws BackgroundException {
                 status.validate();
                 // Block the calling thread until after the full response from the server has been consumed.
-                Interruptibles.await(exit, ConnectionCanceledException.class);
+                Interruptibles.await(exit, ConnectionCanceledException.class, new TransferCancelCallback(status));
                 if(null != target.getException()) {
                     if(target.getException() instanceof BackgroundException) {
                         throw (BackgroundException) target.getException();
@@ -144,5 +145,5 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
     }
 
     @Override
-    public abstract HttpResponseOutputStream<R> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
+    public abstract HttpResponseOutputStream<R> write(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 }

@@ -171,6 +171,7 @@ public class OAuth2AuthorizationService {
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
+                .enablePKCE()
                 .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                 .build();
         final AuthorizationCodeRequestUrl authorizationCodeUrlBuilder = flow.newAuthorizationUrl();
