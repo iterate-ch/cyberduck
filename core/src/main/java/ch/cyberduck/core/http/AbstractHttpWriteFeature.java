@@ -108,7 +108,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             }
         };
         final ThreadFactory factory
-                = new NamedThreadFactory(String.format("http-%s", file.getName()));
+                = new NamedThreadFactory(String.format("httpwriter-%s", file.getName()));
         final Thread t = factory.newThread(target);
         t.start();
         if(log.isDebugEnabled()) {
