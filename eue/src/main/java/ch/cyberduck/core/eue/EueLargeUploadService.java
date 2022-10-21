@@ -26,7 +26,6 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEnt
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -107,7 +106,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 offset += length;
             }
             // Checksums for uploaded segments
-            final List<EueWriteFeature.Chunk> chunks = Interruptibles.awaitAll(parts, ConnectionCanceledException.class);
+            final List<EueWriteFeature.Chunk> chunks = Interruptibles.awaitAll(parts);
             // Full size of file
             final long size = status.getOffset() + status.getLength();
             final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");

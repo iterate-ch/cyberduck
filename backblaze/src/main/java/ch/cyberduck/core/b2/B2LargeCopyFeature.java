@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
@@ -112,7 +111,7 @@ public class B2LargeCopyFeature implements Copy {
                 offset += length;
             }
             for(Future<B2UploadPartResponse> f : parts) {
-                final B2UploadPartResponse part = Interruptibles.await(f, ConnectionCanceledException.class);
+                final B2UploadPartResponse part = Interruptibles.await(f);
                 completed.add(part);
                 listener.sent(part.getContentLength());
             }

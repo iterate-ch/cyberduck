@@ -28,7 +28,6 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -105,7 +104,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 offset += length;
                 ref = uploadPartEntity.getRef();
             }
-            final List<TransferStatus> checksums = Interruptibles.awaitAll(parts, ConnectionCanceledException.class);
+            final List<TransferStatus> checksums = Interruptibles.awaitAll(parts);
             final FileEntity entity = this.completeUpload(file, ref, status, checksums);
             // Mark parent status as complete
             status.withResponse(new BrickAttributesFinderFeature(session).toAttributes(entity)).setComplete();

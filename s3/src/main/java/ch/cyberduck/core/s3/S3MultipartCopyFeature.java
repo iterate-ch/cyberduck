@@ -21,7 +21,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -90,7 +89,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 offset += length;
             }
             for(Future<MultipartPart> f : parts) {
-                final MultipartPart part = Interruptibles.await(f, ConnectionCanceledException.class);
+                final MultipartPart part = Interruptibles.await(f);
                 completed.add(part);
                 listener.sent(part.getSize());
             }

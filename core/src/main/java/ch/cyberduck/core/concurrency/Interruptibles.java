@@ -73,11 +73,11 @@ public class Interruptibles {
         }
     }
 
-    public static <T, E extends BackgroundException> T await(final Future<T> future, final Class<E> throwable) throws BackgroundException {
-        return await(future, throwable, CancelCallback.noop);
+    public static <T, E extends BackgroundException> T await(final Future<T> future) throws BackgroundException {
+        return await(future, CancelCallback.noop);
     }
 
-    public static <T, E extends BackgroundException> T await(final Future<T> future, final Class<E> throwable,
+    public static <T, E extends BackgroundException> T await(final Future<T> future,
                                                              final CancelCallback cancel) throws BackgroundException {
         try {
             while(true) {
@@ -102,21 +102,21 @@ public class Interruptibles {
                 log.warn(String.format("Interrupted %s while waiting for %s", thread, future));
             }
             thread.interrupt();
-            throw ExceptionUtils.throwableOfType(e, throwable);
+            throw ExceptionUtils.throwableOfType(e, ConnectionCanceledException.class);
         }
     }
 
-    public static <T, E extends BackgroundException> List<T> awaitAll(final List<Future<T>> futures, final Class<E> throwable) throws BackgroundException {
-        return awaitAll(futures, throwable, CancelCallback.noop);
+    public static <T, E extends BackgroundException> List<T> awaitAll(final List<Future<T>> futures) throws BackgroundException {
+        return awaitAll(futures, CancelCallback.noop);
     }
 
-    public static <T, E extends BackgroundException> List<T> awaitAll(final List<Future<T>> futures, final Class<E> throwable,
+    public static <T, E extends BackgroundException> List<T> awaitAll(final List<Future<T>> futures,
                                                                       final CancelCallback cancel) throws BackgroundException {
         final List<T> results = new ArrayList<>();
         final AtomicReference<ConnectionCanceledException> canceled = new AtomicReference<>();
         for(Future<T> f : futures) {
             try {
-                results.add(await(f, throwable, cancel));
+                results.add(await(f, cancel));
             }
             catch(ConnectionCanceledException e) {
                 canceled.set(e);

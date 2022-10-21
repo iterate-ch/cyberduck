@@ -25,7 +25,6 @@ import ch.cyberduck.core.box.io.swagger.client.model.UploadPart;
 import ch.cyberduck.core.box.io.swagger.client.model.UploadSession;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -93,7 +92,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 offset += length;
             }
             // Checksums for uploaded segments
-            final List<File> chunks = Interruptibles.awaitAll(parts, ConnectionCanceledException.class);
+            final List<File> chunks = Interruptibles.awaitAll(parts);
             final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
                     chunks.stream().map(f -> new UploadPart().sha1(f.getSha1())).collect(Collectors.toList()));
             if(files.getEntries().stream().findFirst().isPresent()) {

@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -168,7 +167,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                     offset += length;
                 }
             }
-            completed.addAll(Interruptibles.awaitAll(parts, ConnectionCanceledException.class));
+            completed.addAll(Interruptibles.awaitAll(parts));
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override
                 public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
