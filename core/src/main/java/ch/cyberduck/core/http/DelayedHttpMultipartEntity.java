@@ -149,7 +149,7 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
             stream.write(header);
         }
         finally {
-            final CountDownLatch entry = this.getEntry();
+            final CountDownLatch entry = this.getStreamOpen();
             // Signal stream is ready for writing
             entry.countDown();
         }
