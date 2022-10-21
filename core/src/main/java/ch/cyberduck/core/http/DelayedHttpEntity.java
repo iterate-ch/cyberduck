@@ -77,35 +77,23 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
 
     public void writeTo(final OutputStream out) throws IOException {
         try {
-            stream = new OutputStream() {
-                @Override
-                public void write(final byte[] b, final int off, final int len) throws IOException {
-                    out.write(b, off, len);
-                }
-
-                @Override
-                public void write(final int b) throws IOException {
-                    out.write(b);
-                }
-
-                @Override
-                public void write(final byte[] b) throws IOException {
-                    out.write(b);
-                }
-
+            // Signal when finished writing to stream
+            stream = new ProxyOutputStream(out) {
                 @Override
                 public void close() throws IOException {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        // Signal finished writing to stream
-                        exit.countDown();
-                    }
+                    super.close();
+                    exit.countDown();
+                }
+
+                @Override
+                protected void handleIOException(final IOException e) throws IOException {
+                    exit.countDown();
+                    throw e;
                 }
             };
         }
         finally {
+            // Signal stream is ready for writing
             entry.countDown();
         }
         Interruptibles.await(exit, IOException.class);
