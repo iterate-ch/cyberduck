@@ -100,7 +100,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             }
         };
         request.setEntity(entity);
-        final DefaultThreadPool executor = new DefaultThreadPool(String.format("http-%s", url), 1);
+        final DefaultThreadPool executor = new DefaultThreadPool(String.format("httpexecutor-%s", url), 1);
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
