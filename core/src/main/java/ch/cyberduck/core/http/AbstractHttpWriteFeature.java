@@ -33,6 +33,8 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,6 +42,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
 public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> implements HttpWriteFeature<R> {
+    private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
 
     private final AttributesAdapter<R> attributes;
 
@@ -97,7 +100,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
                     exception = e;
                 }
                 finally {
-                    // For zero byte files #writeTo is never called and the entry latch not triggered
+                    // For zero byte files DelayedHttpEntity#writeTo is never called and the entry latch not triggered.
                     entry.countDown();
                     // Continue reading the response
                     exit.countDown();
@@ -108,6 +111,9 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
                 = new NamedThreadFactory(String.format("http-%s", file.getName()));
         final Thread t = factory.newThread(target);
         t.start();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Wait for response of %s", command));
+        }
         // Wait for output stream to become available
         Interruptibles.await(entry, ConnectionCanceledException.class, new TransferCancelCallback(status));
         if(null != target.getException()) {
