@@ -52,7 +52,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     /**
      *
      */
-    private boolean consumed = false;
+    private boolean entityWritten = false;
 
     public boolean isRepeatable() {
         return true;
@@ -110,11 +110,11 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
         }
         Interruptibles.await(exit, IOException.class);
         // Entity written to server
-        consumed = true;
+        entityWritten = true;
     }
 
     public boolean isStreaming() {
-        return !consumed;
+        return !entityWritten;
     }
 
     /**
