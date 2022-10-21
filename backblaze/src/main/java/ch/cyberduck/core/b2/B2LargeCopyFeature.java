@@ -112,7 +112,9 @@ public class B2LargeCopyFeature implements Copy {
                 offset += length;
             }
             for(Future<B2UploadPartResponse> f : parts) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
+                final B2UploadPartResponse part = Interruptibles.await(f, ConnectionCanceledException.class);
+                completed.add(part);
+                listener.sent(part.getContentLength());
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override

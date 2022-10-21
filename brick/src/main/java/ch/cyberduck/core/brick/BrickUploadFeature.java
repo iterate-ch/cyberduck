@@ -87,7 +87,6 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
             // Full size of file
             final long size = status.getLength() + status.getOffset();
             final List<Future<TransferStatus>> parts = new ArrayList<>();
-            final List<TransferStatus> checksums = new ArrayList<>();
             long offset = 0;
             long remaining = status.getLength();
             String ref = null;
@@ -106,9 +105,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 offset += length;
                 ref = uploadPartEntity.getRef();
             }
-            for(Future<TransferStatus> f : parts) {
-                checksums.add(Interruptibles.await(f, ConnectionCanceledException.class));
-            }
+            final List<TransferStatus> checksums = Interruptibles.awaitAll(parts, ConnectionCanceledException.class);
             final FileEntity entity = this.completeUpload(file, ref, status, checksums);
             // Mark parent status as complete
             status.withResponse(new BrickAttributesFinderFeature(session).toAttributes(entity)).setComplete();

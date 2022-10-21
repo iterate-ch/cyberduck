@@ -107,10 +107,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
                 offset += length;
             }
             // Checksums for uploaded segments
-            final List<EueWriteFeature.Chunk> chunks = new ArrayList<>();
-            for(Future<EueWriteFeature.Chunk> f : parts) {
-                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class));
-            }
+            final List<EueWriteFeature.Chunk> chunks = Interruptibles.awaitAll(parts, ConnectionCanceledException.class);
             // Full size of file
             final long size = status.getOffset() + status.getLength();
             final MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");

@@ -93,10 +93,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
                 offset += length;
             }
             // Checksums for uploaded segments
-            final List<File> chunks = new ArrayList<>();
-            for(Future<File> f : parts) {
-                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class));
-            }
+            final List<File> chunks = Interruptibles.awaitAll(parts, ConnectionCanceledException.class);
             final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
                     chunks.stream().map(f -> new UploadPart().sha1(f.getSha1())).collect(Collectors.toList()));
             if(files.getEntries().stream().findFirst().isPresent()) {

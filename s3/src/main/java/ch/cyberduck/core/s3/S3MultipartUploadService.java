@@ -161,9 +161,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     offset += length;
                 }
             }
-            for(Future<MultipartPart> f : parts) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
-            }
+            completed.addAll(Interruptibles.awaitAll(parts, ConnectionCanceledException.class));
             // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response
             // has been sent, it is important that you check the response body to determine whether the request succeeded.

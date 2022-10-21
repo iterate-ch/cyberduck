@@ -53,7 +53,6 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -167,10 +166,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             finally {
                 in.close();
             }
-            for(Future<TransferStatus> f : parts) {
-                final TransferStatus part = Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status));
-                etags.put(part.getPart(), part);
-            }
+            Interruptibles.awaitAll(parts, ConnectionCanceledException.class)
+                    .forEach(part -> etags.put(part.getPart(), part));
             final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE);

@@ -168,9 +168,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                     offset += length;
                 }
             }
-            for(Future<B2UploadPartResponse> f : parts) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
-            }
+            completed.addAll(Interruptibles.awaitAll(parts, ConnectionCanceledException.class));
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override
                 public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {

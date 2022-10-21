@@ -144,9 +144,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
         }
         try {
-            for(Future<StorageObject> f : segments) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
-            }
+            completed.addAll(Interruptibles.awaitAll(segments, ConnectionCanceledException.class));
         }
         finally {
             pool.shutdown(false);
