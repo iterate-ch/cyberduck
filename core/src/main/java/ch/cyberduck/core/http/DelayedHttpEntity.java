@@ -22,7 +22,10 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.concurrency.Interruptibles;
 
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,25 +33,33 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
 public abstract class DelayedHttpEntity extends AbstractHttpEntity {
+    private static final Logger log = LogManager.getLogger(DelayedHttpEntity.class);
 
-    private final CountDownLatch entry;
-    private final CountDownLatch exit = new CountDownLatch(1);
+    /**
+     * Count down when stream to server has been opened
+     */
+    private final CountDownLatch streamOpen;
+    /**
+     * Count down when stream is closed writing entity to server
+     */
+    private final CountDownLatch streamClosed = new CountDownLatch(1);
 
     public DelayedHttpEntity() {
         this(new CountDownLatch(1));
     }
 
     /**
-     * @param entry Signal when stream is ready
+     * @param streamOpen Signal when stream is ready
      */
-    public DelayedHttpEntity(final CountDownLatch entry) {
-        this.entry = entry;
+    public DelayedHttpEntity(final CountDownLatch streamOpen) {
+        this.streamOpen = streamOpen;
     }
 
     /**
      * HTTP stream to write to
      */
     private OutputStream stream;
+
     /**
      * Entity written to server
      */
@@ -82,21 +93,22 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
                 @Override
                 public void close() throws IOException {
                     super.close();
-                    exit.countDown();
+                    streamClosed.countDown();
                 }
 
                 @Override
                 protected void handleIOException(final IOException e) throws IOException {
-                    exit.countDown();
+                    streamClosed.countDown();
                     throw e;
                 }
             };
         }
         finally {
             // Signal stream is ready for writing
-            entry.countDown();
+            streamOpen.countDown();
         }
-        Interruptibles.await(exit, IOException.class);
+        // Wait for signal when content has been written to the pipe
+        Interruptibles.await(streamClosed, IOException.class);
         // Entity written to server
         entityWritten = true;
     }
@@ -108,7 +120,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     /**
      * @return Set when output stream is ready
      */
-    public CountDownLatch getEntry() {
-        return entry;
+    public CountDownLatch getStreamOpen() {
+        return streamOpen;
     }
 }
