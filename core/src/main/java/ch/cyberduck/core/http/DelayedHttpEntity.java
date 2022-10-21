@@ -50,7 +50,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
      */
     private OutputStream stream;
     /**
-     *
+     * Entity written to server
      */
     private boolean entityWritten = false;
 
