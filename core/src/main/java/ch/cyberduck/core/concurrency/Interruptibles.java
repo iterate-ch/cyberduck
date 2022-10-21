@@ -54,12 +54,17 @@ public class Interruptibles {
 
     public static <E extends Throwable> void await(final CountDownLatch latch, Class<E> throwable, final CancelCallback cancel) throws E {
         try {
-            while(!latch.await(1, TimeUnit.SECONDS)) {
-                try {
-                    cancel.verify();
-                }
-                catch(ConnectionCanceledException e) {
-                    throw ExceptionUtils.throwableOfType(e, throwable);
+            if(cancel == CancelCallback.noop) {
+                latch.await();
+            }
+            else {
+                while(!latch.await(1, TimeUnit.SECONDS)) {
+                    try {
+                        cancel.verify();
+                    }
+                    catch(ConnectionCanceledException e) {
+                        throw ExceptionUtils.throwableOfType(e, throwable);
+                    }
                 }
             }
         }
@@ -73,19 +78,24 @@ public class Interruptibles {
         }
     }
 
-    public static <T, E extends BackgroundException> T await(final Future<T> future) throws BackgroundException {
+    public static <T> T await(final Future<T> future) throws BackgroundException {
         return await(future, CancelCallback.noop);
     }
 
-    public static <T, E extends BackgroundException> T await(final Future<T> future,
-                                                             final CancelCallback cancel) throws BackgroundException {
+    public static <T> T await(final Future<T> future,
+                              final CancelCallback cancel) throws BackgroundException {
         try {
-            while(true) {
-                try {
-                    return future.get(1L, TimeUnit.SECONDS);
-                }
-                catch(TimeoutException e) {
-                    cancel.verify();
+            if(cancel == CancelCallback.noop) {
+                return future.get();
+            }
+            else {
+                while(true) {
+                    try {
+                        return future.get(1L, TimeUnit.SECONDS);
+                    }
+                    catch(TimeoutException e) {
+                        cancel.verify();
+                    }
                 }
             }
         }
@@ -106,12 +116,12 @@ public class Interruptibles {
         }
     }
 
-    public static <T, E extends BackgroundException> List<T> awaitAll(final List<Future<T>> futures) throws BackgroundException {
+    public static <T> List<T> awaitAll(final List<Future<T>> futures) throws BackgroundException {
         return awaitAll(futures, CancelCallback.noop);
     }
 
-    public static <T, E extends BackgroundException> List<T> awaitAll(final List<Future<T>> futures,
-                                                                      final CancelCallback cancel) throws BackgroundException {
+    public static <T> List<T> awaitAll(final List<Future<T>> futures,
+                                       final CancelCallback cancel) throws BackgroundException {
         final List<T> results = new ArrayList<>();
         final AtomicReference<ConnectionCanceledException> canceled = new AtomicReference<>();
         for(Future<T> f : futures) {
