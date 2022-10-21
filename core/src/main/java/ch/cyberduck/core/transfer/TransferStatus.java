@@ -39,11 +39,10 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(TransferStatus.class);
@@ -675,24 +674,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             return false;
         }
         final TransferStatus that = (TransferStatus) o;
-        if(append != that.append) {
-            return false;
-        }
-        if(exists != that.exists) {
-            return false;
-        }
-        if(length != that.length) {
-            return false;
-        }
-        return true;
+        return length == that.length && Objects.equals(offset.longValue(), that.offset.longValue()) && Objects.equals(part, that.part);
     }
 
     @Override
     public int hashCode() {
-        int result = (exists ? 1 : 0);
-        result = 31 * result + (append ? 1 : 0);
-        result = 31 * result + (int) (length ^ (length >>> 32));
-        return result;
+        return Objects.hash(offset.longValue(), length, part);
     }
 
     @Override
