@@ -1,7 +1,7 @@
-package ch.cyberduck.core.nextcloud;
+package ch.cyberduck.core.owncloud;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,9 +39,9 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractNextcloudTest {
+public class AbstractOwncloudTest {
 
-    protected NextcloudSession session;
+    protected OwncloudSession session;
 
     @After
     public void disconnect() throws Exception {
@@ -50,12 +50,12 @@ public class AbstractNextcloudTest {
 
     @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new NextcloudProtocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OwncloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/Nextcloud.cyberduckprofile"));
-        final Host host = new Host(profile, System.getProperties().getProperty("nextcloud.hostname"), 443, System.getProperties().getProperty("nextcloud.path"),
-                new Credentials(System.getProperties().getProperty("nextcloud.user"), System.getProperties().getProperty("nextcloud.password")));
-        session = new NextcloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+                this.getClass().getResourceAsStream("/ownCloud.cyberduckprofile"));
+        final Host host = new Host(profile, System.getProperties().getProperty("owncloud.hostname"), 443, System.getProperties().getProperty("owncloud.path"),
+                new Credentials(System.getProperties().getProperty("owncloud.user"), System.getProperties().getProperty("owncloud.password")));
+        session = new OwncloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
