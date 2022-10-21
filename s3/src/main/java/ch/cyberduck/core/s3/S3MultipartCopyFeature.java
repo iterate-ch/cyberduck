@@ -27,7 +27,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -91,7 +90,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 offset += length;
             }
             for(Future<MultipartPart> f : parts) {
-                final MultipartPart part = Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status));
+                final MultipartPart part = Interruptibles.await(f, ConnectionCanceledException.class);
                 completed.add(part);
                 listener.sent(part.getSize());
             }

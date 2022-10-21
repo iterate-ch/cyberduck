@@ -40,7 +40,6 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -163,7 +162,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             for(Future<MultipartPart> f : parts) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
             // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response

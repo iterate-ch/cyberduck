@@ -39,7 +39,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -146,7 +145,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         }
         try {
             for(Future<StorageObject> f : segments) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
         }
         finally {

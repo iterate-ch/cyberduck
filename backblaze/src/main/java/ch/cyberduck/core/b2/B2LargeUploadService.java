@@ -35,7 +35,6 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -170,7 +169,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
             }
             for(Future<B2UploadPartResponse> f : parts) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override

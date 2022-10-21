@@ -33,7 +33,6 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -113,7 +112,7 @@ public class B2LargeCopyFeature implements Copy {
                 offset += length;
             }
             for(Future<B2UploadPartResponse> f : parts) {
-                completed.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                completed.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override

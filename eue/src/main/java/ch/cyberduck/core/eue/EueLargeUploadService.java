@@ -36,7 +36,6 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -110,7 +109,7 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             // Checksums for uploaded segments
             final List<EueWriteFeature.Chunk> chunks = new ArrayList<>();
             for(Future<EueWriteFeature.Chunk> f : parts) {
-                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
             // Full size of file
             final long size = status.getOffset() + status.getLength();

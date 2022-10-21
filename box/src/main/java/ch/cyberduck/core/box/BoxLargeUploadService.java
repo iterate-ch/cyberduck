@@ -36,7 +36,6 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -96,7 +95,7 @@ public class BoxLargeUploadService extends HttpUploadFeature<File, MessageDigest
             // Checksums for uploaded segments
             final List<File> chunks = new ArrayList<>();
             for(Future<File> f : parts) {
-                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                chunks.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
             final Files files = helper.commitUploadSession(file, uploadSession.getId(), status,
                     chunks.stream().map(f -> new UploadPart().sha1(f.getSha1())).collect(Collectors.toList()));

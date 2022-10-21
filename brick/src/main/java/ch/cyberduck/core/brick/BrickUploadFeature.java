@@ -38,7 +38,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
-import ch.cyberduck.core.threading.TransferCancelCallback;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -108,7 +107,7 @@ public class BrickUploadFeature extends HttpUploadFeature<FileEntity, MessageDig
                 ref = uploadPartEntity.getRef();
             }
             for(Future<TransferStatus> f : parts) {
-                checksums.add(Interruptibles.await(f, ConnectionCanceledException.class, new TransferCancelCallback(status)));
+                checksums.add(Interruptibles.await(f, ConnectionCanceledException.class));
             }
             final FileEntity entity = this.completeUpload(file, ref, status, checksums);
             // Mark parent status as complete
