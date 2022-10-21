@@ -183,6 +183,7 @@ public class SFTPSession extends Session<SSHClient> {
     private SSHClient toClient(final HostKeyCallback key, final Config configuration) {
         final SSHClient connection = new SSHClient(configuration);
         final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
+        connection.getTransport().setTimeoutMs(timeout);
         connection.setTimeout(timeout);
         connection.setSocketFactory(new ProxySocketFactory(host));
         connection.addHostKeyVerifier(new HostKeyVerifier() {

@@ -55,7 +55,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
 
     @Override
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.write(file, status, new DelayedHttpEntityCallable<Node>() {
+        return this.write(file, status, new DelayedHttpEntityCallable<Node>(file) {
             @Override
             public Node call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {

@@ -76,7 +76,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
 
     @Override
     public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>() {
+        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>(file) {
             @Override
             public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {

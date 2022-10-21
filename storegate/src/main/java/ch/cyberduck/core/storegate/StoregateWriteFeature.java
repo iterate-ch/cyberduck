@@ -80,7 +80,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
 
     @Override
     public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>() {
+        final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>(file) {
             @Override
             public FileMetadata call(final AbstractHttpEntity entity) throws BackgroundException {
                 // Initiate a resumable upload
