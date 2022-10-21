@@ -124,11 +124,6 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
         }
         final OutputStream stream = entity.getStream();
         return new HttpResponseOutputStream<R>(stream, attributes, status) {
-            @Override
-            public void flush() throws IOException {
-                stream.flush();
-            }
-
             /**
              * Only available after this stream is closed.
              *
