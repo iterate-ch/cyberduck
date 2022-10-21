@@ -36,7 +36,6 @@ import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
@@ -81,8 +80,8 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
     protected HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
                                                 final DelayedHttpEntityCallable<R> command, final DelayedHttpEntity entity) throws BackgroundException {
         // Signal on enter streaming
-        final CountDownLatch entry = entity.getEntry();
-        final CountDownLatch exit = new CountDownLatch(1);
+        final CountDownLatch streamOpen = entity.getStreamOpen();
+        final CountDownLatch responseReceived = new CountDownLatch(1);
         if(StringUtils.isNotBlank(status.getMime())) {
             entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
         }
@@ -94,16 +93,16 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public void run() {
                 try {
                     status.validate();
-                    response = command.call(entity);
+                    this.response = command.call(entity);
                 }
                 catch(Exception e) {
-                    exception = e;
+                    this.exception = e;
                 }
                 finally {
                     // For zero byte files DelayedHttpEntity#writeTo is never called and the entry latch not triggered.
-                    entry.countDown();
+                    streamOpen.countDown();
                     // Continue reading the response
-                    exit.countDown();
+                    responseReceived.countDown();
                 }
             }
         };
@@ -115,7 +114,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             log.debug(String.format("Wait for response of %s", command));
         }
         // Wait for output stream to become available
-        Interruptibles.await(entry, ConnectionCanceledException.class, new TransferCancelCallback(status));
+        Interruptibles.await(streamOpen, ConnectionCanceledException.class, new TransferCancelCallback(status));
         if(null != target.getException()) {
             if(target.getException() instanceof BackgroundException) {
                 throw (BackgroundException) target.getException();
@@ -133,7 +132,7 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public R getStatus() throws BackgroundException {
                 status.validate();
                 // Block the calling thread until after the full response from the server has been consumed.
-                Interruptibles.await(exit, ConnectionCanceledException.class, new TransferCancelCallback(status));
+                Interruptibles.await(responseReceived, ConnectionCanceledException.class, new TransferCancelCallback(status));
                 if(null != target.getException()) {
                     if(target.getException() instanceof BackgroundException) {
                         throw (BackgroundException) target.getException();
