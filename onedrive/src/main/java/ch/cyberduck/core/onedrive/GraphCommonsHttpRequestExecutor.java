@@ -86,8 +86,8 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             }
             request.addHeader(new BasicHeader(header.getKey(), header.getValue()));
         }
-        final CountDownLatch entry = new CountDownLatch(1);
-        final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
+        final CountDownLatch requestExecuted = new CountDownLatch(1);
+        final DelayedHttpEntity entity = new DelayedHttpEntity(requestExecuted) {
             @Override
             public long getContentLength() {
                 for(RequestHeader header : headers) {
@@ -108,7 +108,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
                     return client.execute(request);
                 }
                 finally {
-                    entry.countDown();
+                    requestExecuted.countDown();
                 }
             }
         });
@@ -132,7 +132,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             @Override
             public OutputStream getOutputStream() throws IOException {
                 // Await execution of HTTP request to make stream available
-                Interruptibles.await(entry, IOException.class);
+                Interruptibles.await(requestExecuted, IOException.class);
                 return entity.getStream();
             }
         };
