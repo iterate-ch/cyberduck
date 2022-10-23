@@ -18,12 +18,11 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
+import ch.cyberduck.core.text.NaturalOrderCollator;
+import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,7 +35,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
-    private static final Logger log = LogManager.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
         // Empty
@@ -61,8 +59,8 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(final Host o1, final Host o2) {
-                return new DefaultLexicographicOrderComparator().compare(BookmarkNameProvider.toString(o1),
-                    BookmarkNameProvider.toString(o2));
+                return new NaturalOrderComparator().compare(BookmarkNameProvider.toString(o1),
+                        BookmarkNameProvider.toString(o2));
             }
         });
     }
@@ -72,7 +70,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     public Map<String, List<Host>> groups(final HostFilter filter) {
-        return this.groups(Host::getLabels, filter);
+        return this.groups(HostGroups.LABELS, filter);
     }
 
     /**
@@ -138,9 +136,9 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public Optional<Host> find(final Host input) {
         // Iterate over all bookmarks trying exact match
         return Optional.ofNullable(this.find(new HostComparePredicate(input))
-            .orElse(this.find(new DefaultPathPredicate(input))
-                .orElse(this.find(new ProfilePredicate(input))
-                    .orElse(this.find(new ProtocolIdentifierPredicate(input)).orElse(null)))));
+                .orElse(this.find(new DefaultPathPredicate(input))
+                        .orElse(this.find(new ProfilePredicate(input))
+                                .orElse(this.find(new ProtocolIdentifierPredicate(input)).orElse(null)))));
     }
 
     public Optional<Host> find(final Predicate<Host> predicate) {
@@ -189,8 +187,8 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         @Override
         public boolean test(final Host h) {
             return super.test(h) &&
-                StringUtils.isNotBlank(input.getDefaultPath()) &&
-                StringUtils.startsWith(input.getDefaultPath(), h.getDefaultPath());
+                    StringUtils.isNotBlank(input.getDefaultPath()) &&
+                    StringUtils.startsWith(input.getDefaultPath(), h.getDefaultPath());
         }
     }
 

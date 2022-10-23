@@ -26,6 +26,7 @@ import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
+import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,8 +40,8 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     public static final Comparator<Host> SORT_BY_NICKNAME = new Comparator<Host>() {
         @Override
         public int compare(Host o1, Host o2) {
-            return new DefaultLexicographicOrderComparator().compare(
-                BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
+            return new NaturalOrderComparator().compare(
+                    BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
             );
         }
     };
