@@ -99,6 +99,10 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * @return Map of bookmarks grouped by labels
      */
     public Map<String, List<Host>> groups(final HostGroups groups, final HostFilter filter) {
+        return this.groups(groups, filter, SORT_BY_NICKNAME);
+    }
+
+    public Map<String, List<Host>> groups(final HostGroups groups, final HostFilter filter, final Comparator<Host> comparator) {
         final Map<String, List<Host>> labels = new HashMap<>();
         for(Host host : this.stream().filter(filter::accept).collect(Collectors.toList())) {
             if(groups.groups(host).isEmpty()) {
@@ -114,6 +118,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
                 }
             }
         }
+        labels.forEach((s, hosts) -> hosts.sort(comparator));
         labels.entrySet().stream().sorted((o1, o2) -> new NaturalOrderCollator().compare(o1.getKey(), o2.getKey()));
         return labels;
     }
