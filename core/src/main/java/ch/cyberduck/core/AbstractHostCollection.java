@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 import ch.cyberduck.core.text.NaturalOrderCollator;
 import ch.cyberduck.core.text.NaturalOrderComparator;
 
@@ -35,6 +36,29 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
+
+    public static final Comparator<Host> SORT_BY_NICKNAME = new Comparator<Host>() {
+        @Override
+        public int compare(Host o1, Host o2) {
+            return new NaturalOrderComparator().compare(
+                    BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
+            );
+        }
+    };
+
+    public static final Comparator<Host> SORT_BY_HOSTNAME = new Comparator<Host>() {
+        @Override
+        public int compare(Host o1, Host o2) {
+            return new DefaultLexicographicOrderComparator().compare(o1.getHostname(), o2.getHostname());
+        }
+    };
+
+    public static final Comparator<Host> SORT_BY_PROTOCOL = new Comparator<Host>() {
+        @Override
+        public int compare(Host o1, Host o2) {
+            return new DefaultLexicographicOrderComparator().compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
+        }
+    };
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
         // Empty
@@ -56,13 +80,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * Default ordering using natural order of bookmark name
      */
     public void sort() {
-        this.sort(new Comparator<Host>() {
-            @Override
-            public int compare(final Host o1, final Host o2) {
-                return new NaturalOrderComparator().compare(BookmarkNameProvider.toString(o1),
-                        BookmarkNameProvider.toString(o2));
-            }
-        });
+        this.sort(SORT_BY_NICKNAME);
     }
 
     public Map<String, List<Host>> groups() {
