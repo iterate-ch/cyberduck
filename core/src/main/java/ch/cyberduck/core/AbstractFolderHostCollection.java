@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
@@ -60,8 +58,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             return new DefaultLexicographicOrderComparator().compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
         }
     };
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     private final Writer<Host> writer = HostWriterFactory.get();
     private final Reader<Host> reader = HostReaderFactory.get();
