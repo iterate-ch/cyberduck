@@ -1,4 +1,4 @@
-package ch.cyberduck.core.exception;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -15,22 +15,20 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-/**
- * Skip of file when preparing transfer status
- */
-public class TransferStatusCanceledException extends ConnectionCanceledException {
-    public TransferStatusCanceledException() {
+import ch.cyberduck.core.exception.BackgroundException;
+
+public class SynchronizedTransferErrorCallback implements TransferErrorCallback {
+
+    private final TransferErrorCallback proxy;
+
+    public SynchronizedTransferErrorCallback(final TransferErrorCallback proxy) {
+        this.proxy = proxy;
     }
 
-    public TransferStatusCanceledException(final String detail) {
-        super(detail);
-    }
-
-    public TransferStatusCanceledException(final Throwable cause) {
-        super(cause);
-    }
-
-    public TransferStatusCanceledException(final String detail, final Throwable cause) {
-        super(detail, cause);
+    @Override
+    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
+        synchronized(proxy) {
+            return proxy.prompt(item, status, failure, pending);
+        }
     }
 }

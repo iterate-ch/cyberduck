@@ -55,7 +55,7 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
 
     @Override
     public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.write(file, status, new DelayedHttpEntityCallable<Node>() {
+        return this.write(file, status, new DelayedHttpEntityCallable<Node>(file) {
             @Override
             public Node call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
@@ -72,8 +72,9 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
                                     if(log.isInfoEnabled()) {
                                         log.info(String.format("Received response %s for part number %d", response, status.getPart()));
                                     }
-                                    status.setChecksum(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')));
-                                    return null;
+                                    return new Node()
+                                            .type(Node.TypeEnum.FILE)
+                                            .hash(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')).hash);
                                 }
                                 else {
                                     log.error(String.format("Missing ETag in response %s", response));

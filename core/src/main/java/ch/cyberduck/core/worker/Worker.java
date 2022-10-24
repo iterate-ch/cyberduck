@@ -96,10 +96,6 @@ public abstract class Worker<T> {
         };
     }
 
-    public void reset() {
-        //
-    }
-
     public interface RecursiveCallback<T> {
         /**
          * @return True to descend into directories

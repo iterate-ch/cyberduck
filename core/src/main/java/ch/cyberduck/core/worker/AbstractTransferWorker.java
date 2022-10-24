@@ -160,17 +160,12 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     }
 
     @Override
-    public void reset() {
+    public void cancel() {
         for(TransferStatus status : table.values()) {
             for(TransferStatus segment : status.getSegments()) {
                 segment.setCanceled();
             }
         }
-    }
-
-    @Override
-    public void cancel() {
-        this.reset();
         super.cancel();
     }
 

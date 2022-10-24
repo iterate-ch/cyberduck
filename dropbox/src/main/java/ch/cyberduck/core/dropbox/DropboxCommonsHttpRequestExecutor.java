@@ -99,8 +99,8 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             }
             request.addHeader(new BasicHeader(header.getKey(), header.getValue()));
         }
-        final CountDownLatch entry = new CountDownLatch(1);
-        final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
+        final CountDownLatch requestExecuted = new CountDownLatch(1);
+        final DelayedHttpEntity entity = new DelayedHttpEntity(requestExecuted) {
             @Override
             public long getContentLength() {
                 for(Header header : headers) {
@@ -113,7 +113,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             }
         };
         request.setEntity(entity);
-        final DefaultThreadPool executor = new DefaultThreadPool(String.format("http-%s", url), 1);
+        final DefaultThreadPool executor = new DefaultThreadPool(String.format("httpexecutor-%s", url), 1);
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
@@ -121,7 +121,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                     return client.execute(request);
                 }
                 finally {
-                    entry.countDown();
+                    requestExecuted.countDown();
                 }
             }
         });
@@ -129,7 +129,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             @Override
             public OutputStream getBody() {
                 // Await execution of HTTP request to make stream available
-                Uninterruptibles.awaitUninterruptibly(entry);
+                Uninterruptibles.awaitUninterruptibly(requestExecuted);
                 return entity.getStream();
             }
 

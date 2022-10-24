@@ -67,9 +67,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -182,7 +182,7 @@ public class CteraSession extends DAVSession {
             }
             signal.countDown();
         });
-        while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
+        while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
             cancel.verify();
         }
         return this.attachDeviceWithActivationCode(activationCode.get());

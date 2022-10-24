@@ -22,12 +22,14 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Buffer;
 import ch.cyberduck.core.io.BufferOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.StreamListener;
@@ -52,7 +54,6 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +67,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -76,8 +76,6 @@ import com.dracoon.sdk.crypto.error.InvalidKeyPairException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDigest> {
     private static final Logger log = LogManager.getLogger(SDSDirectS3UploadFeature.class);
@@ -167,17 +165,8 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             finally {
                 in.close();
             }
-            for(Future<TransferStatus> f : parts) {
-                try {
-                    final TransferStatus part = Uninterruptibles.getUninterruptibly(f);
-                    etags.put(part.getPart(), part);
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                }
-            }
+            Interruptibles.awaitAll(parts)
+                    .forEach(part -> etags.put(part.getPart(), part));
             final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .resolutionStrategy(CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE);
@@ -197,8 +186,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             }
             new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
             // Polling
-            new SDSUploadService(session, nodeid).await(file, status, createFileUploadResponse.getUploadId());
-            return null;
+            return new SDSUploadService(session, nodeid).await(file, status, createFileUploadResponse.getUploadId()).getNode();
         }
         catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException | UnknownVersionException e) {
             throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
@@ -267,14 +255,14 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setFilekey(overall.getFilekey());
-                SDSDirectS3UploadFeature.super.upload(
+                final Node node = SDSDirectS3UploadFeature.super.upload(
                         file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response for part number %d", partNumber));
                 }
                 // Delete temporary file if any
                 buffer.close();
-                return status;
+                return status.withChecksum(Checksum.parse(node.getHash()));
             }
         }, overall, counter));
     }

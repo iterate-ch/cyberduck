@@ -104,7 +104,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<Void> implements W
 
     private HttpResponseOutputStream<Void> write(final Path file, final List<Header> headers, final TransferStatus status) throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
+        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
             /**
              * @return The ETag returned by the server for the uploaded object
              */

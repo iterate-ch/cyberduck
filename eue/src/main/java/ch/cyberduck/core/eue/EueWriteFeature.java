@@ -89,7 +89,7 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
             resourceId = status.getParameters().get(RESOURCE_ID);
         }
         final HttpResponseOutputStream<Chunk> stream = this.write(file, status,
-                new DelayedHttpEntityCallable<Chunk>() {
+                new DelayedHttpEntityCallable<Chunk>(file) {
                     @Override
                     public Chunk call(final AbstractHttpEntity entity) throws BackgroundException {
                         try {

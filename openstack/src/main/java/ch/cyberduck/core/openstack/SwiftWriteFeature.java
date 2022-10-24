@@ -65,7 +65,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store run to background thread
-        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             /**
              * @return The ETag returned by the server for the uploaded object
              */

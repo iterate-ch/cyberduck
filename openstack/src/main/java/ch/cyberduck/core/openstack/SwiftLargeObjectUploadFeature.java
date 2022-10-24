@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
@@ -39,7 +40,6 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,13 +49,10 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = LogManager.getLogger(SwiftLargeObjectUploadFeature.class);
@@ -73,7 +70,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
         this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), writer,
-            segmentSize, concurrency);
+                segmentSize, concurrency);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
@@ -139,21 +136,14 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length, callback));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
-                        segment, length, offset));
+                            segment, length, offset));
                 }
                 remaining -= length;
                 offset += length;
             }
         }
         try {
-            for(Future<StorageObject> f : segments) {
-                completed.add(Uninterruptibles.getUninterruptibly(f));
-            }
-        }
-        catch(ExecutionException e) {
-            log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-            throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+            completed.addAll(Interruptibles.awaitAll(segments));
         }
         finally {
             pool.shutdown(false);
@@ -200,13 +190,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             public StorageObject call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .withLength(length)
-                    .withOffset(offset);
+                        .withLength(length)
+                        .withOffset(offset);
                 status.setHeader(overall.getHeader());
                 status.setChecksum(writer.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.super.upload(
-                    segment, local, throttle, counter, status, overall, status, callback);
+                        segment, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

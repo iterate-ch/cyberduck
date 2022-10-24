@@ -20,7 +20,9 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.threading.NamedThreadFactory;
@@ -33,12 +35,9 @@ import org.apache.http.protocol.HTTP;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
-
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> implements HttpWriteFeature<R> {
     private static final Logger log = LogManager.getLogger(AbstractHttpWriteFeature.class);
@@ -77,11 +76,11 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
         });
     }
 
-    public HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
-                                             final DelayedHttpEntityCallable<R> command, final DelayedHttpEntity entity) throws BackgroundException {
+    protected HttpResponseOutputStream<R> write(final Path file, final TransferStatus status,
+                                                final DelayedHttpEntityCallable<R> command, final DelayedHttpEntity entity) throws BackgroundException {
         // Signal on enter streaming
-        final CountDownLatch entry = entity.getEntry();
-        final CountDownLatch exit = new CountDownLatch(1);
+        final CountDownLatch streamOpen = entity.getStreamOpen();
+        final CountDownLatch responseReceived = new CountDownLatch(1);
         if(StringUtils.isNotBlank(status.getMime())) {
             entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
         }
@@ -93,25 +92,28 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             public void run() {
                 try {
                     status.validate();
-                    response = command.call(entity);
+                    this.response = command.call(entity);
                 }
                 catch(Exception e) {
-                    exception = e;
+                    this.exception = e;
                 }
                 finally {
-                    // For zero byte files #writeTo is never called and the entry latch not triggered
-                    entry.countDown();
+                    // For zero byte files DelayedHttpEntity#writeTo is never called and the entry latch not triggered.
+                    streamOpen.countDown();
                     // Continue reading the response
-                    exit.countDown();
+                    responseReceived.countDown();
                 }
             }
         };
         final ThreadFactory factory
-            = new NamedThreadFactory(String.format("http-%s", file.getName()));
+                = new NamedThreadFactory(String.format("httpwriter-%s", file.getName()));
         final Thread t = factory.newThread(target);
         t.start();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Wait for response of %s", command));
+        }
         // Wait for output stream to become available
-        Uninterruptibles.awaitUninterruptibly(entry);
+        Interruptibles.await(streamOpen, ConnectionCanceledException.class);
         if(null != target.getException()) {
             if(target.getException() instanceof BackgroundException) {
                 throw (BackgroundException) target.getException();
@@ -120,11 +122,6 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
         }
         final OutputStream stream = entity.getStream();
         return new HttpResponseOutputStream<R>(stream, attributes, status) {
-            @Override
-            public void flush() throws IOException {
-                stream.flush();
-            }
-
             /**
              * Only available after this stream is closed.
              *
@@ -133,9 +130,8 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
             @Override
             public R getStatus() throws BackgroundException {
                 status.validate();
-                // Block the calling thread until after the full response from the server
-                // has been consumed.
-                Uninterruptibles.awaitUninterruptibly(exit);
+                // Block the calling thread until after the full response from the server has been consumed.
+                Interruptibles.await(responseReceived, ConnectionCanceledException.class);
                 if(null != target.getException()) {
                     if(target.getException() instanceof BackgroundException) {
                         throw (BackgroundException) target.getException();
@@ -148,5 +144,5 @@ public abstract class AbstractHttpWriteFeature<R> extends AppendWriteFeature<R> 
     }
 
     @Override
-    public abstract HttpResponseOutputStream<R> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
+    public abstract HttpResponseOutputStream<R> write(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 }

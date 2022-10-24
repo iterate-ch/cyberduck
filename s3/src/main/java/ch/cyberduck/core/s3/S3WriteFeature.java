@@ -67,7 +67,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Object object = this.getDetails(file, status);
-        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {

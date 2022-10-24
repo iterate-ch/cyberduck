@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.StreamListener;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -42,11 +42,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3MultipartCopyFeature extends S3CopyFeature {
     private static final Logger log = LogManager.getLogger(S3MultipartCopyFeature.class);
@@ -75,10 +71,10 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             final List<MultipartPart> completed = new ArrayList<>();
             // ID for the initiated multipart upload.
             final MultipartUpload multipart = session.getClient().multipartStartUpload(
-                destination.getBucketName(), destination);
+                    destination.getBucketName(), destination);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Multipart upload started for %s with ID %s",
-                    multipart.getObjectKey(), multipart.getUploadId()));
+                        multipart.getObjectKey(), multipart.getUploadId()));
             }
             final long size = status.getLength();
             long remaining = size;
@@ -93,16 +89,9 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                 offset += length;
             }
             for(Future<MultipartPart> f : parts) {
-                try {
-                    final MultipartPart part = Uninterruptibles.getUninterruptibly(f);
-                    completed.add(part);
-                    listener.sent(part.getSize());
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                }
+                final MultipartPart part = Interruptibles.await(f);
+                completed.add(part);
+                listener.sent(part.getSize());
             }
             // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response
@@ -110,7 +99,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Completed multipart upload for %s with checksum %s",
-                    complete.getObjectKey(), complete.getEtag()));
+                        complete.getObjectKey(), complete.getEtag()));
             }
             return complete.getVersionId();
         }
@@ -142,9 +131,9 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
                     }
                     // Populate part with response data that is accessible via the object's metadata
                     return new MultipartPart(partNumber,
-                        null == part.getLastModified() ? new Date(System.currentTimeMillis()) : part.getLastModified(),
-                        null == part.getEtag() ? StringUtils.EMPTY : part.getEtag(),
-                        part.getSize());
+                            null == part.getLastModified() ? new Date(System.currentTimeMillis()) : part.getLastModified(),
+                            null == part.getEtag() ? StringUtils.EMPTY : part.getEtag(),
+                            part.getSize());
                 }
                 catch(S3ServiceException e) {
                     throw new S3ExceptionMappingService().map("Cannot copy {0}", e, source);

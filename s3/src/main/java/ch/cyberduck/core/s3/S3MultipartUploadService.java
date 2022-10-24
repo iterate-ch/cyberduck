@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -40,7 +41,6 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -59,11 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import com.google.common.base.Throwables;
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = LogManager.getLogger(S3MultipartUploadService.class);
@@ -164,23 +160,14 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     offset += length;
                 }
             }
-            for(Future<MultipartPart> f : parts) {
-                try {
-                    completed.add(Uninterruptibles.getUninterruptibly(f));
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                }
-            }
+            completed.addAll(Interruptibles.awaitAll(parts));
             // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
             // could take several minutes to complete. Because a request could fail after the initial 200 OK response
             // has been sent, it is important that you check the response body to determine whether the request succeeded.
             final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
             if(log.isInfoEnabled()) {
                 log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
-                    complete.getObjectKey(), completed.size(), complete.getEtag()));
+                        complete.getObjectKey(), completed.size(), complete.getEtag()));
             }
             if(file.getType().contains(Path.Type.encrypted)) {
                 log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
@@ -234,8 +221,8 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             public MultipartPart call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .withLength(length)
-                    .withOffset(offset);
+                        .withLength(length)
+                        .withOffset(offset);
                 final Map<String, String> requestParameters = new HashMap<>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
@@ -249,15 +236,15 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
                 status.setSegment(true);
                 final StorageObject part = S3MultipartUploadService.super.upload(
-                    file, local, throttle, counter, status, overall, status, callback);
+                        file, local, throttle, counter, status, overall, status, callback);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Received response %s for part number %d", part, partNumber));
                 }
                 // Populate part with response data that is accessible via the object's metadata
                 return new MultipartPart(partNumber,
-                    null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
-                    null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
-                    part.getContentLength());
+                        null == part.getLastModifiedDate() ? new Date(System.currentTimeMillis()) : part.getLastModifiedDate(),
+                        null == part.getETag() ? StringUtils.EMPTY : part.getETag(),
+                        part.getContentLength());
 
             }
         }, overall, counter));

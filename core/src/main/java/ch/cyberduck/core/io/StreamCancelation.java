@@ -25,7 +25,7 @@ public interface StreamCancelation {
 
     StreamCancelation noop = new StreamCancelation() {
         @Override
-        public void validate() throws ConnectionCanceledException {
+        public void validate() {
             //
         }
     };

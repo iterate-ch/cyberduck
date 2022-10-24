@@ -70,7 +70,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageO
 
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {

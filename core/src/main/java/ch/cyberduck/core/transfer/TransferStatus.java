@@ -23,6 +23,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.concurrency.Interruptibles;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
@@ -37,11 +39,10 @@ import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-
-import com.google.common.util.concurrent.Uninterruptibles;
 
 public class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(TransferStatus.class);
@@ -238,9 +239,9 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      *
      * @return True if complete
      */
-    public boolean await() {
+    public boolean await() throws ConnectionCanceledException {
         // Lock until complete
-        Uninterruptibles.awaitUninterruptibly(done);
+        Interruptibles.await(done, ConnectionCanceledException.class);
         return complete.get();
     }
 
@@ -279,7 +280,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      *
      */
     @Override
-    public void validate() throws TransferStatusCanceledException {
+    public void validate() throws ConnectionCanceledException {
         for(TransferStatus segment : segments) {
             segment.validate();
         }
@@ -673,24 +674,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             return false;
         }
         final TransferStatus that = (TransferStatus) o;
-        if(append != that.append) {
-            return false;
-        }
-        if(exists != that.exists) {
-            return false;
-        }
-        if(length != that.length) {
-            return false;
-        }
-        return true;
+        return length == that.length && Objects.equals(offset.longValue(), that.offset.longValue()) && Objects.equals(part, that.part);
     }
 
     @Override
     public int hashCode() {
-        int result = (exists ? 1 : 0);
-        result = 31 * result + (append ? 1 : 0);
-        result = 31 * result + (int) (length ^ (length >>> 32));
-        return result;
+        return Objects.hash(offset.longValue(), length, part);
     }
 
     @Override

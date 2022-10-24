@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
@@ -157,7 +158,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final BytecountStreamListener count = new BytecountStreamListener();
         final TransferStatus status = new TransferStatus() {
             @Override
-            public void validate() throws TransferStatusCanceledException {
+            public void validate() throws ConnectionCanceledException {
                 if(count.getSent() >= 32768) {
                     throw new TransferStatusCanceledException();
                 }

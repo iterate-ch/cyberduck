@@ -1,4 +1,4 @@
-package ch.cyberduck.core.http;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -15,30 +15,26 @@ package ch.cyberduck.core.http;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.io.StreamCancelation;
 
-import org.apache.http.entity.AbstractHttpEntity;
+public class TransferCancelCallback implements CancelCallback {
 
-public abstract class DelayedHttpEntityCallable<T> {
+    private final StreamCancelation cancel;
 
-    private final Path file;
-
-    public DelayedHttpEntityCallable(final Path file) {
-        this.file = file;
+    public TransferCancelCallback(final StreamCancelation cancel) {
+        this.cancel = cancel;
     }
 
-    public abstract T call(AbstractHttpEntity entity) throws BackgroundException;
-
-    /**
-     * @return -1 for chunked transfer
-     */
-    public abstract long getContentLength();
+    @Override
+    public void verify() throws ConnectionCanceledException {
+        cancel.validate();
+    }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("DelayedHttpEntityCallable{");
-        sb.append("file=").append(file);
+        final StringBuilder sb = new StringBuilder("TransferCancelCallback{");
+        sb.append("cancel=").append(cancel);
         sb.append('}');
         return sb.toString();
     }

@@ -71,7 +71,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     @Override
     public HttpResponseOutputStream<BaseB2Response> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<BaseB2Response> command = new DelayedHttpEntityCallable<BaseB2Response>() {
+        final DelayedHttpEntityCallable<BaseB2Response> command = new DelayedHttpEntityCallable<BaseB2Response>(file) {
             /**
              * @return The SHA-1 returned by the server for the uploaded object
              */

@@ -73,7 +73,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
         else {
             uploadUri = status.getUrl();
         }
-        final HttpResponseOutputStream<FileEntity> stream = this.write(file, status, new DelayedHttpEntityCallable<FileEntity>() {
+        final HttpResponseOutputStream<FileEntity> stream = this.write(file, status, new DelayedHttpEntityCallable<FileEntity>(file) {
             @Override
             public FileEntity call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
