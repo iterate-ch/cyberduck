@@ -36,6 +36,20 @@ public final class HostParser {
     private static final Preferences preferences = PreferencesFactory.get();
 
     /**
+     * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
+     *
+     * @param url URL
+     * @return Bookmark
+     */
+    public static Host parse(final String url) throws HostParserException {
+        final Host parsed = new HostParser().get(url);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", url, parsed));
+        }
+        return parsed;
+    }
+
+    /**
      * Default scheme if not in URI
      */
     private final Protocol defaultScheme;
@@ -56,29 +70,6 @@ public final class HostParser {
         this.defaultScheme = defaultScheme;
     }
 
-    public Host get(final String url) throws HostParserException {
-        final Host parsed = HostParser.parse(factory, defaultScheme, url);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Parsed %s as %s", url, parsed));
-        }
-        return parsed;
-    }
-
-    /**
-     * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
-     *
-     * @param url URL
-     * @return Bookmark
-     */
-    public static Host parse(final String url) throws HostParserException {
-        final Host parsed = new HostParser(ProtocolFactory.get(), ProtocolFactory.get().forName(
-            preferences.getProperty("connection.protocol.default"))).get(url);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Parsed %s as %s", url, parsed));
-        }
-        return parsed;
-    }
-
     private static <T> T decorate(final T t, final Consumer<T> decorator) {
         if(decorator != null) {
             decorator.accept(t);
@@ -86,7 +77,7 @@ public final class HostParser {
         return t;
     }
 
-    private static Host parse(final ProtocolFactory factory, final Protocol defaultScheme, final String url) throws HostParserException {
+    public Host get(final String url) throws HostParserException {
         final StringReader reader = new StringReader(url);
         final Protocol parsedProtocol, protocol;
         if((parsedProtocol = findProtocol(reader, factory)) != null) {
@@ -119,6 +110,9 @@ public final class HostParser {
         }
         else if(uriType == URITypes.Absolute) {
             parseAbsolute(reader, host, parsedProtocolDecorator);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", url, host));
         }
         return host;
     }
