@@ -19,12 +19,13 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
 
 public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
     private final BackgroundActionRegistry global
-        = BackgroundActionRegistry.global();
+            = BackgroundActionRegistry.global();
 
     public RegistryBackgroundAction(final Controller controller,
                                     final SessionPool session) {
@@ -45,7 +46,7 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
     }
 
     @Override
-    public void init() {
+    public void init() throws BackgroundException {
         // Add to the registry, so it will be displayed in the activity window.
         global.add(this);
         super.init();

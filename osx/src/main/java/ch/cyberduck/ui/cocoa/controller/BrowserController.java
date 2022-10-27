@@ -45,6 +45,7 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
@@ -3301,7 +3302,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         }
                 ) {
                     @Override
-                    public void init() {
+                    public void init() throws BackgroundException {
                         super.init();
                         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
                             window.setTitle(BookmarkNameProvider.toString(bookmark, false));

@@ -38,7 +38,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     protected final Set<BackgroundActionListener> listeners = new CopyOnWriteArraySet<>();
 
     @Override
-    public void init() {
+    public void init() throws BackgroundException {
         //
     }
 
@@ -110,6 +110,8 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         }
         return this.run();
     }
+
+    protected abstract T run() throws BackgroundException;
 
     @Override
     public void cleanup() {

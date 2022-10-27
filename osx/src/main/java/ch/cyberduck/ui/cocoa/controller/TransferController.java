@@ -39,6 +39,7 @@ import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
@@ -603,7 +604,7 @@ public final class TransferController extends WindowController implements Transf
             null == destination ? SessionPool.DISCONNECTED : SessionPoolFactory.create(this, destination, progress),
             this, progress, transfer, options) {
             @Override
-            public void init() {
+            public void init() throws BackgroundException {
                 super.init();
                 if(preferences.getBoolean("queue.window.open.transfer.start")) {
                     window.makeKeyAndOrderFront(null);

@@ -16,6 +16,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
@@ -69,7 +70,13 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         }
         // Add action to registry of controller. Will be removed automatically when stopped
         registry.add(action);
-        action.init();
+        try {
+            action.init();
+        }
+        catch(BackgroundException e) {
+            action.alert(e);
+            return ConcurrentUtils.constantFuture(null);
+        }
         // Start background task
         final Callable<T> command = new BackgroundCallable<>(action, controller);
         try {

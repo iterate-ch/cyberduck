@@ -25,27 +25,20 @@ public interface BackgroundAction<T> extends BackgroundActionState {
     /**
      * Called before synchronized with other pending actions
      */
-    void init();
+    void init() throws BackgroundException;
 
     /**
      * Called just before #run.
-     *
-     * @see #run()
      */
     void prepare();
 
-    T run() throws BackgroundException;
-
     /**
      * Called form a worker thread not blocking the user interface
-     *
      */
     T call() throws BackgroundException;
 
     /**
      * Called after #run but still on the working thread
-     *
-     * @see #run
      */
     void finish();
 
