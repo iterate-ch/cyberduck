@@ -29,8 +29,12 @@ public interface BackgroundAction<T> extends BackgroundActionState {
 
     /**
      * Called just before #run.
+     *
+     * @see #run()
      */
     void prepare();
+
+    T run() throws BackgroundException;
 
     /**
      * Called form a worker thread not blocking the user interface
@@ -39,6 +43,8 @@ public interface BackgroundAction<T> extends BackgroundActionState {
 
     /**
      * Called after #run but still on the working thread
+     *
+     * @see #run
      */
     void finish();
 

@@ -111,8 +111,6 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         return this.run();
     }
 
-    protected abstract T run() throws BackgroundException;
-
     @Override
     public void cleanup() {
         //
