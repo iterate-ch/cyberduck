@@ -51,8 +51,9 @@ public class AbstractSDSTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
-        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(System.getProperties().getProperty("dracoon.user")));
+                this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
+                System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")));
         session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
