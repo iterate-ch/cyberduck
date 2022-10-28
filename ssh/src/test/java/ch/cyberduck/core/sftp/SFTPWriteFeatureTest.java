@@ -10,6 +10,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -30,6 +31,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+
+import net.schmizz.sshj.sftp.FileAttributes;
 
 import static org.junit.Assert.*;
 
@@ -78,11 +81,12 @@ public class SFTPWriteFeatureTest extends AbstractSFTPTest {
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
         status.setExists(true);
-        final OutputStream out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<FileAttributes> out = new SFTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         out.write(content);
         out.close();
         assertTrue(new SFTPFindFeature(session).find(test));
+        assertEquals(new SFTPAttributesFinderFeature(session).toAttributes(out.getStatus()), new SFTPAttributesFinderFeature(session).find(test));
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

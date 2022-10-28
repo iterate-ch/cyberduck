@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
@@ -67,6 +66,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.schmizz.sshj.sftp.FileAttributes;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -86,13 +87,13 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
         final SFTPSession session = new SFTPSession(this.session.getHost(), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SFTPWriteFeature write = new SFTPWriteFeature(this) {
                 @Override
-                public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                    final StatusOutputStream<Void> proxy = super.write(file, status, callback);
+                public StatusOutputStream<FileAttributes> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                    final StatusOutputStream<FileAttributes> proxy = super.write(file, status, callback);
                     if(failed.get()) {
                         // Second attempt successful
                         return proxy;
                     }
-                    return new VoidStatusOutputStream(new CountingOutputStream(proxy) {
+                    return new StatusOutputStream<FileAttributes>(new CountingOutputStream(proxy) {
                         @Override
                         protected void afterWrite(final int n) throws IOException {
                             super.afterWrite(n);
@@ -105,7 +106,7 @@ public class SFTPSingleTransferWorkerTest extends AbstractSFTPTest {
                         }
                     }) {
                         @Override
-                        public Void getStatus() throws BackgroundException {
+                        public FileAttributes getStatus() throws BackgroundException {
                             return proxy.getStatus();
                         }
                     };

@@ -58,17 +58,17 @@ public class DefaultUploadFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2);
-            new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DefaultUploadFeature<>(new SFTPWriteFeature(session)).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
-            new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DefaultUploadFeature<>(new SFTPWriteFeature(session)).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);

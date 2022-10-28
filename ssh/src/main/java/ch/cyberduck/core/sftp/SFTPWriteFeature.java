@@ -21,7 +21,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -34,11 +33,13 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
+import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.OpenMode;
 import net.schmizz.sshj.sftp.RemoteFile;
 
-public class SFTPWriteFeature extends AppendWriteFeature<Void> {
+public class SFTPWriteFeature extends AppendWriteFeature<FileAttributes> {
     private static final Logger log = LogManager.getLogger(SFTPWriteFeature.class);
 
     private final SFTPSession session;
@@ -50,7 +51,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<FileAttributes> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final EnumSet<OpenMode> flags;
             if(status.isAppend()) {
@@ -88,7 +89,7 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
                 log.info(String.format("Skipping %d bytes", status.getOffset()));
             }
             // Open stream at offset
-            return new VoidStatusOutputStream(new ChunkedOutputStream(handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
+            return new StatusOutputStream<FileAttributes>(new ChunkedOutputStream(handle.new RemoteFileOutputStream(status.getOffset(), maxUnconfirmedWrites) {
                 private final AtomicBoolean close = new AtomicBoolean();
 
                 @Override
@@ -105,7 +106,20 @@ public class SFTPWriteFeature extends AppendWriteFeature<Void> {
                         close.set(true);
                     }
                 }
-            }, preferences.getInteger("sftp.write.chunksize")));
+            }, preferences.getInteger("sftp.write.chunksize"))) {
+                final AtomicReference<FileAttributes> stat = new AtomicReference<>();
+
+                @Override
+                public void close() throws IOException {
+                    stat.set(handle.fetchAttributes());
+                    super.close();
+                }
+
+                @Override
+                public FileAttributes getStatus() {
+                    return stat.get();
+                }
+            };
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Upload {0} failed", e, file);
