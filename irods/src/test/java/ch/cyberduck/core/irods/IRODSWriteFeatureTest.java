@@ -269,6 +269,7 @@ public class IRODSWriteFeatureTest {
 
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
+            assertEquals(new IRODSAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
 
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer = new byte[newcontent.length];

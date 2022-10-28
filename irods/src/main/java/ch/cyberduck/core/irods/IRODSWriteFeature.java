@@ -50,9 +50,14 @@ public class IRODSWriteFeature extends AppendWriteFeature<ObjStat> {
                         file.getAbsolute(), status.isAppend() ? DataObjInp.OpenFlags.READ_WRITE : DataObjInp.OpenFlags.WRITE_TRUNCATE);
                 return new StatusOutputStream<ObjStat>(new PackingIrodsOutputStream(out)) {
                     @Override
-                    public ObjStat getStatus() {
+                    public ObjStat getStatus() throws BackgroundException {
                         // No remote attributes from server returned after upload
-                        return null;
+                        try {
+                            return fs.getObjStat(file.getAbsolute());
+                        }
+                        catch(JargonException e) {
+                            throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                        }
                     }
                 };
             }
