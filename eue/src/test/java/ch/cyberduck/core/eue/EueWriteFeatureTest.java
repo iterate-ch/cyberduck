@@ -71,7 +71,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = TransferCanceledException.class)
+    @Test(expected = TransferStatusCanceledException.class)
     public void testWriteCancel() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature writer = new EueWriteFeature(session, fileid);
