@@ -21,7 +21,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -160,55 +159,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     public void testListNotfoundBucket() throws Exception {
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener());
-    }
-
-    @Test
-    public void testListBuckenameAnonymous() throws Exception {
-        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final S3Session session = new S3Session(host);
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
-        final AttributedList<Path> list
-                = new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new Path("/", EnumSet.of(Path.Type.directory)),
-                new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        assertTrue(list.contains(new Path("/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        assertTrue(list.contains(new Path("/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-    }
-
-    @Test
-    public void testListDefaultPath() throws Exception {
-        final Host host = new Host(new S3Protocol(), "s3.amazonaws.com", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        host.setDefaultPath("/dist.springframework.org/release");
-        final S3Session session = new S3Session(host);
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
-        assertTrue(new SimplePathPredicate(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory)))
-                .test(new DefaultHomeFinderService(session).find()));
-        final AttributedList<Path> list
-                = new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        assertNotNull(list.find(new SimplePathPredicate(new Path("/dist.springframework.org/release/SWF", EnumSet.of(Path.Type.directory, Path.Type.placeholder)))));
-        session.close();
     }
 
     @Test
