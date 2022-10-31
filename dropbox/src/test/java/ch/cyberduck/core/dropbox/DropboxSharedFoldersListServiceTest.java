@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,6 +30,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertNotSame;
 
 @Category(IntegrationTest.class)
+@Ignore
 public class DropboxSharedFoldersListServiceTest extends AbstractDropboxTest {
 
     @Test
