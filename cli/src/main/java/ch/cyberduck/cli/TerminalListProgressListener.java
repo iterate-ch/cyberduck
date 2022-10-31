@@ -26,6 +26,8 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
+import ch.cyberduck.core.formatter.SizeFormatter;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.fusesource.jansi.Ansi;
@@ -34,8 +36,11 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
 
     private final Console console = new Console();
 
-    private final AbstractUserDateFormatter formatter
-        = UserDateFormatterFactory.get();
+    private final AbstractUserDateFormatter dateFormatter
+            = UserDateFormatterFactory.get();
+
+    private final SizeFormatter sizeFormatter
+            = SizeFormatterFactory.get();
 
     private final boolean verbose;
     private final ProgressListener listener;
@@ -62,25 +67,25 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
     public void visit(final AttributedList<Path> list, final int index, final Path file) {
         if(verbose) {
             if(file.isSymbolicLink()) {
-                console.printf("%n%sl%s\t%s\t%s -> %s%s",
-                    Ansi.ansi().bold(),
-                    file.attributes().getPermission().getSymbol(),
-                    formatter.getMediumFormat(
-                        file.attributes().getModificationDate()),
-                    file.getName(), file.getSymlinkTarget().getAbsolute(),
-                    Ansi.ansi().reset());
+                console.printf("%n%sl%s\t%s\t%s\t%s -> %s%s",
+                        Ansi.ansi().bold(),
+                        file.attributes().getPermission().getSymbol(),
+                        sizeFormatter.format(file.attributes().getSize()),
+                        dateFormatter.getMediumFormat(file.attributes().getModificationDate()),
+                        file.getName(), file.getSymlinkTarget().getAbsolute(),
+                        Ansi.ansi().reset());
             }
             else {
-                console.printf("%n%s%s%s\t%s\t%s\t%s%s",
-                    Ansi.ansi().bold(),
-                    file.isDirectory() ? "d" : "-",
-                    file.attributes().getPermission().getSymbol(),
-                    formatter.getMediumFormat(
-                        file.attributes().getModificationDate()),
-                    StringUtils.isNotBlank(file.attributes().getRegion())
-                        ? file.attributes().getRegion() : StringUtils.EMPTY,
-                    file.getName(),
-                    Ansi.ansi().reset());
+                console.printf("%n%s%s%s\t%s\t%s\t%s\t%s%s",
+                        Ansi.ansi().bold(),
+                        file.isDirectory() ? "d" : "-",
+                        file.attributes().getPermission().getSymbol(),
+                        sizeFormatter.format(file.attributes().getSize()),
+                        dateFormatter.getMediumFormat(file.attributes().getModificationDate()),
+                        StringUtils.isNotBlank(file.attributes().getRegion())
+                                ? file.attributes().getRegion() : StringUtils.EMPTY,
+                        file.getName(),
+                        Ansi.ansi().reset());
             }
         }
         else {
