@@ -68,4 +68,9 @@ public class StoregateProtocol extends AbstractProtocol {
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
     }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
 }
