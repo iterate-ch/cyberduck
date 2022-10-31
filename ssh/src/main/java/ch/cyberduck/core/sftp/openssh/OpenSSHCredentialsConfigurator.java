@@ -43,8 +43,8 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials credentials = new Credentials(host.getCredentials());
         if(StringUtils.isNotBlank(host.getHostname())) {
+            final Credentials credentials = new Credentials(host.getCredentials());
             configuration.refresh();
             // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
             final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
@@ -85,8 +85,9 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                     }
                 }
             }
+            return credentials;
         }
-        return credentials;
+        return host.getCredentials();
     }
 
     @Override

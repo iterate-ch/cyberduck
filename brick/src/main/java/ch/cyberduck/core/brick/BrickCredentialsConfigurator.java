@@ -26,15 +26,12 @@ public class BrickCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials credentials = new Credentials(host.getCredentials());
-        return this.configure(credentials);
-    }
-
-    public Credentials configure(final Credentials credentials) {
-        if(StringUtils.isBlank(credentials.getToken())) {
+        if(StringUtils.isBlank(host.getCredentials().getToken())) {
+            final Credentials credentials = new Credentials(host.getCredentials());
             credentials.setToken(new AlphanumericRandomStringService().random());
+            return credentials;
         }
-        return credentials;
+        return host.getCredentials();
     }
 
     @Override
