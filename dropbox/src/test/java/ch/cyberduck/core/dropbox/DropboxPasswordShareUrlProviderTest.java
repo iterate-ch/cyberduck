@@ -106,4 +106,18 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         }));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testRequestFiles() throws Exception {
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
+        assertNotEquals(DescriptiveUrl.EMPTY, provider.toUploadUrl(folder, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                throw new LoginCanceledException();
+            }
+        }));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

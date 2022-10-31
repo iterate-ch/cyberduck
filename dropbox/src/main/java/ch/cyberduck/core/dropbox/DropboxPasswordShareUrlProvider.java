@@ -35,6 +35,8 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.filerequests.DbxUserFileRequestsRequests;
+import com.dropbox.core.v2.filerequests.FileRequest;
 import com.dropbox.core.v2.sharing.DbxUserSharingRequests;
 import com.dropbox.core.v2.sharing.RequestedVisibility;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
@@ -107,7 +109,14 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
-        return DescriptiveUrl.EMPTY;
+        try {
+            final FileRequest request = new DbxUserFileRequestsRequests(session.getClient())
+                    .create(file.getName(), containerService.getKey(file));
+            return new DescriptiveUrl(URI.create(request.getUrl()), DescriptiveUrl.Type.signed);
+        }
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
     }
 
     @Override
@@ -115,6 +124,8 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
         switch(type) {
             case download:
                 return true;
+            case upload:
+                return file.isDirectory();
         }
         return false;
     }
