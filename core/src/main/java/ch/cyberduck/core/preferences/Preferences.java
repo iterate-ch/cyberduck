@@ -838,6 +838,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("googledrive.list.limit", String.valueOf(1000));
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
         // Limit the number of requests to 10 per second which is equal the user quota
+        this.setDefault("googledrive.limit.requests.enable", String.valueOf(true));
         this.setDefault("googledrive.limit.requests.second", String.valueOf(100));
         this.setDefault("googledrive.delete.multiple.partition", String.valueOf(50));
 
@@ -900,6 +901,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
         this.setDefault("dropbox.business.enable", String.valueOf(true));
         this.setDefault("dropbox.delete.poll.interval.ms", String.valueOf(500L));
+        this.setDefault("dropbox.limit.requests.enable", String.valueOf(false));
         this.setDefault("dropbox.limit.requests.second", String.valueOf(100));
 
         /*
@@ -1166,6 +1168,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("eue.share.readable", String.valueOf(true));
         this.setDefault("eue.share.notification.enable", String.valueOf(false));
         this.setDefault("eue.limit.hint.second", String.valueOf(2));
+        this.setDefault("eue.limit.requests.enable", String.valueOf(true));
         this.setDefault("eue.limit.requests.second", String.valueOf(3)); // 168 requests per minute by default allowed by server
         this.setDefault("eue.shares.ttl", String.valueOf(600000)); // 10 minutes
         this.setDefault("eue.delete.multiple.partition", String.valueOf(100));

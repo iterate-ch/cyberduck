@@ -75,9 +75,11 @@ public class DriveSession extends HttpSession<Drive> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-        configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                new HostPreferences(host).getInteger("googledrive.limit.requests.second")
-        )));
+        if(new HostPreferences(host).getBoolean("googledrive.limit.requests.enable")) {
+            configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
+                    new HostPreferences(host).getInteger("googledrive.limit.requests.second")
+            )));
+        }
         transport = new ApacheHttpTransport(configuration.build());
         final UseragentProvider ua = new PreferencesUseragentProvider();
         return new Drive.Builder(transport, new GsonFactory(), new UserAgentHttpRequestInitializer(ua))

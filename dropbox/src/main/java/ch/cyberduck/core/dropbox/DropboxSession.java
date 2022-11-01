@@ -76,9 +76,11 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-        configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                new HostPreferences(host).getInteger("dropbox.limit.requests.second")
-        )));
+        if(new HostPreferences(host).getBoolean("dropbox.limit.requests.enable")) {
+            configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
+                    new HostPreferences(host).getInteger("dropbox.limit.requests.second")
+            )));
+        }
         final CloseableHttpClient client = configuration.build();
         return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
                 .withAutoRetryDisabled()

@@ -162,9 +162,11 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
                 }
             }
         });
-        configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
-                new HostPreferences(host).getInteger("eue.limit.requests.second")
-        )));
+        if(new HostPreferences(host).getBoolean("eue.limit.requests.enable")) {
+            configuration.addInterceptorLast(new RateLimitingHttpRequestInterceptor(new DefaultHttpRateLimiter(
+                    new HostPreferences(host).getInteger("eue.limit.requests.second")
+            )));
+        }
         return configuration.build();
     }
 
