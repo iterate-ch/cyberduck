@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.0
+- [Feature] Allow to view and revert previous versions of files (ownCloud, Nextcloud) (#10560)
+- [Feature] Allow to request files with upload share link (Dropbox) (#13832)
+- [Bugfix] Try keyboard-interactive authentication always before password for interoperability with 2FA configurations (SFTP)
+- [Bugfix] Connect to custom hostname from pairing response (Files.com)
+- [Bugfix] Failure creating upload link to request files (Nextcloud) (#13791)
+
 8.4.5
 - [Bugfix] Failure enabling connection profile from Preferences (#13739)
 - [Bugfix] Only set userProject parameter in requests for buckets with requester pays option enabled (Google Storage) (#13745)
