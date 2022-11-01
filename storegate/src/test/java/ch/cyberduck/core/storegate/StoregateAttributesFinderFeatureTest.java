@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -57,6 +58,8 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
                 new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(test);
+        assertEquals(attr, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(test.getParent(), StringUtils.upperCase(test.getName()), test.getType())));
+        assertEquals(attr, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(test.getParent(), StringUtils.lowerCase(test.getName()), test.getType())));
         assertNotEquals(0L, attr.getModificationDate());
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
