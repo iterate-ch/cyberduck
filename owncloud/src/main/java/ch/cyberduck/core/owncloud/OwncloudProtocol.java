@@ -16,7 +16,9 @@ package ch.cyberduck.core.owncloud;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 
 public class OwncloudProtocol extends AbstractProtocol {
@@ -49,5 +51,10 @@ public class OwncloudProtocol extends AbstractProtocol {
     @Override
     public String icon() {
         return new DAVSSLProtocol().icon();
+    }
+
+    @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return new WindowsIntegratedCredentialsConfigurator();
     }
 }
