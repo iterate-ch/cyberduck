@@ -7,7 +7,7 @@
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
     <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
-      <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
+      <![CDATA[VersionNT >= 1000 AND WindowsBuild >= 14393]]>
     </Condition>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
