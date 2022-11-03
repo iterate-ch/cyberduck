@@ -34,7 +34,7 @@
               value="-client --add-opens=java.base/sun.security.ssl=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -DLog4jContextSelector=org.apache.logging.log4j.core.selector.BasicContextSelector -XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:+UseStringDeduplication"/>
 
     <property name="build.xcodeoptions.default"
-              value="JVM_RUNTIME_ARGS='${app.runtime.args}' JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+              value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JVM_RUNTIME_ARGS='${app.runtime.args}' JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <condition property="build.xcodeoptions"
                value="${build.xcodeoptions.default} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' INFOPLIST_PREPROCESSOR_DEFINITIONS=SPARKLE_BUILD"
