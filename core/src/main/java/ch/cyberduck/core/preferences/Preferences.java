@@ -75,11 +75,17 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.action.DeleteAction;
+import org.apache.logging.log4j.core.appender.rolling.action.IfAccumulatedFileCount;
+import org.apache.logging.log4j.core.appender.rolling.action.IfFileName;
+import org.apache.logging.log4j.core.appender.rolling.action.PathCondition;
+import org.apache.logging.log4j.core.appender.rolling.action.PathSortByModificationTime;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.apache.logging.log4j.core.config.NullConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -1268,15 +1274,23 @@ public abstract class Preferences implements Locales, PreferencesReader {
         final String logfolder = LogDirectoryFinderFactory.get().find().getAbsolute();
         final String appname = StringUtils.replaceChars(StringUtils.lowerCase(this.getProperty("application.name")), StringUtils.SPACE, StringUtils.EMPTY);
         final Local active = LocalFactory.get(logfolder, String.format("%s.log", appname));
-        final Local archives = LocalFactory.get(logfolder, String.format("%s-%%i.log.zip", appname));
+        final Local archives = LocalFactory.get(logfolder, String.format("%s-%%d{yyyy-MM-dd'T'HHmmss}.log.zip", appname));
         final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         final Configuration config = ctx.getConfiguration();
+        final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
+                PathSortByModificationTime.createSorter(true),
+                new PathCondition[]{
+                        IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(5))
+                },
+                null, new NullConfiguration());
         final Appender appender = RollingFileAppender.newBuilder()
                 .setName(RollingFileAppender.class.getName())
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-                .withStrategy(DefaultRolloverStrategy.newBuilder().withMin("1").withMax("5").withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).build())
+                .withStrategy(DefaultRolloverStrategy.newBuilder().
+                        withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                        withCustomActions(new DeleteAction[]{deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
         appender.start();
