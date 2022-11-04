@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
@@ -24,7 +25,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.logging.log4j.LogManager;
@@ -59,26 +59,26 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
             try {
                 final Host bookmark = session.getHost();
                 final SharedLinkSettings.Builder settings = SharedLinkSettings.newBuilder();
-                try {
-                    settings.withLinkPassword(callback.prompt(bookmark,
+                final Credentials password = callback.prompt(bookmark,
                         LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                         MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                        new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
+                        new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
+                if(password.isPasswordAuthentication()) {
+                    settings.withLinkPassword(password.getPassword());
                     settings.withRequestedVisibility(RequestedVisibility.PASSWORD);
                 }
-                catch(LoginCanceledException e) {
-                    // Ignore no password set
+                else {
                     settings.withRequestedVisibility(RequestedVisibility.PUBLIC);
                 }
                 final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file))
-                    .createSharedLinkWithSettings(containerService.getKey(file),
-                        settings.build());
+                        .createSharedLinkWithSettings(containerService.getKey(file),
+                                settings.build());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Created shared link %s", share));
                 }
                 return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                        LocaleFactory.localizedString("Password Share", "Dropbox"))
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                                LocaleFactory.localizedString("Password Share", "Dropbox"))
                 );
             }
             catch(DbxException e) {
@@ -89,14 +89,14 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
             // Shared link already exists
             try {
                 final List<SharedLinkMetadata> links = new DbxUserSharingRequests(session.getClient(file))
-                    .listSharedLinksBuilder().withDirectOnly(true).withPath(containerService.getKey(file)).start().getLinks();
+                        .listSharedLinksBuilder().withDirectOnly(true).withPath(containerService.getKey(file)).start().getLinks();
                 for(SharedLinkMetadata share : links) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Return existing shared link %s", share));
                     }
                     return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                            LocaleFactory.localizedString("Password Share", "Dropbox"))
+                            MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                                    LocaleFactory.localizedString("Password Share", "Dropbox"))
                     );
                 }
                 throw e;

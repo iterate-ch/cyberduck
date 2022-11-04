@@ -15,6 +15,7 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
@@ -104,17 +105,14 @@ public class BoxShareFeature implements PromptUrlProvider {
         }
     }
 
-    private String prompt(final Path file, final PasswordCallback callback) {
-        String password = null;
-        try {
-            password = callback.prompt(session.getHost(),
-                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                    new LoginOptions().keychain(false).icon(session.getHost().getProtocol().disk())).getPassword();
+    private String prompt(final Path file, final PasswordCallback callback) throws LoginCanceledException {
+        final Credentials password = callback.prompt(session.getHost(),
+                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                new LoginOptions().anonymous(true).keychain(false).icon(session.getHost().getProtocol().disk()));
+        if(password.isPasswordAuthentication()) {
+            return password.getPassword();
         }
-        catch(LoginCanceledException e) {
-            // Ignore no password set
-        }
-        return password;
+        return null;
     }
 }
