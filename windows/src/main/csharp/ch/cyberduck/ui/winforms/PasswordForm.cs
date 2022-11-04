@@ -37,12 +37,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                 Anchor = (((AnchorStyles.Left | AnchorStyles.Right))),
                 Text = "Save Password"
             };
-            tableLayoutPanel.RowCount++;
             tableLayoutPanel.RowStyles.Insert(2, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.SetRow(okButton, 3);
             tableLayoutPanel.SetRow(cancelButton, 3);
+            tableLayoutPanel.SetRow(skipButton, 3);
             tableLayoutPanel.Controls.Add(saveCheckBox, 1, 2);
             tableLayoutPanel.SetColumnSpan(saveCheckBox, 3);
+        }
+
+        public bool CanSkip
+        {
+            set => skipButton.Visible = value;
         }
 
         public string Title
@@ -69,6 +74,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool SavePasswordEnabled
         {
             set { saveCheckBox.Enabled = value; }
+        }
+
+        public string SkipButtonText
+        {
+            set => skipButton.Text = value;
         }
     }
 }

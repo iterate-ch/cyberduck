@@ -77,7 +77,9 @@ public class PasswordController extends AlertController {
         alert.setInformativeText(new StringAppender().append(reason).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
-        alert.setShowsSuppressionButton(false);
+        alert.setShowsSuppressionButton(options.anonymous);
+        alert.suppressionButton().setState(options.password ? NSCell.NSOnState : NSCell.NSOffState);
+        alert.suppressionButton().setTitle(LocaleFactory.localizedString("Require Password", "Keychain"));
         this.loadBundle(alert);
     }
 
@@ -95,6 +97,14 @@ public class PasswordController extends AlertController {
     @Action
     public void passwordFieldTextDidChange(final NSNotification notification) {
         credentials.setPassword(StringUtils.trim(inputField.stringValue()));
+    }
+
+    @Override
+    public void suppressionButtonClicked(final NSButton sender) {
+        inputField.setEnabled(sender.state() == NSCell.NSOnState);
+        if(sender.state() == NSCell.NSOffState) {
+            inputField.setStringValue(StringUtils.EMPTY);
+        }
     }
 
     @Override
@@ -135,6 +145,9 @@ public class PasswordController extends AlertController {
 
     @Override
     public boolean validate() {
+        if(options.anonymous) {
+            return true;
+        }
         return StringUtils.isNotBlank(inputField.stringValue());
     }
 
