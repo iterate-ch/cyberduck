@@ -103,6 +103,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.zip.Deflater;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -1287,7 +1288,9 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 .withFileName(active.getAbsolute())
                 .withFilePattern(archives.getAbsolute())
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
-                .withStrategy(DefaultRolloverStrategy.newBuilder().withCustomActions(new DeleteAction[]{deleteAction}).build())
+                .withStrategy(DefaultRolloverStrategy.newBuilder().
+                        withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
+                        withCustomActions(new DeleteAction[]{deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
         appender.start();
