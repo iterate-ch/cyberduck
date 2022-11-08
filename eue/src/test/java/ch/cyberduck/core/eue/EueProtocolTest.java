@@ -26,6 +26,6 @@ public class EueProtocolTest {
     @Test
     public void testFeatures() {
         assertEquals(Protocol.Case.insensitive, new EueProtocol().getCaseSensitivity());
-        assertEquals(Protocol.DirectoryTimestamp.explicit, new EueProtocol().getDirectoryTimestamp());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, new EueProtocol().getDirectoryTimestamp());
     }
 }
