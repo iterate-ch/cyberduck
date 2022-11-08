@@ -75,6 +75,8 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.appender.rolling.action.AbstractAction;
+import org.apache.logging.log4j.core.appender.rolling.action.Action;
 import org.apache.logging.log4j.core.appender.rolling.action.DeleteAction;
 import org.apache.logging.log4j.core.appender.rolling.action.IfAccumulatedFileCount;
 import org.apache.logging.log4j.core.appender.rolling.action.IfFileName;
@@ -1290,7 +1292,15 @@ public abstract class Preferences implements Locales, PreferencesReader {
                 .withPolicy(Level.DEBUG.toString().equals(level) ? SizeBasedTriggeringPolicy.createPolicy("100MB") : SizeBasedTriggeringPolicy.createPolicy("10MB"))
                 .withStrategy(DefaultRolloverStrategy.newBuilder().
                         withCompressionLevelStr(String.valueOf(Deflater.BEST_COMPRESSION)).
-                        withCustomActions(new DeleteAction[]{deleteAction}).build())
+                        withCustomActions(new Action[]{new AbstractAction() {
+                            @Override
+                            public boolean execute() {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Running version %s", getVersion()));
+                                }
+                                return true;
+                            }
+                        }, deleteAction}).build())
                 .setLayout(PatternLayout.newBuilder().withConfiguration(config).withPattern("%d [%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build())
                 .build();
         appender.start();
@@ -1446,5 +1456,12 @@ public abstract class Preferences implements Locales, PreferencesReader {
             l = new java.util.Locale(locale);
         }
         return StringUtils.capitalize(l.getDisplayName(l));
+    }
+
+    public String getVersion() {
+        return String.format("%s.%s (%s)",
+                this.getProperty("application.version"),
+                this.getProperty("application.revision"),
+                this.getProperty("application.hash"));
     }
 }
