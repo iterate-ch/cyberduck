@@ -50,6 +50,11 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         // Will get new pairing key if missing credentials
         return true;

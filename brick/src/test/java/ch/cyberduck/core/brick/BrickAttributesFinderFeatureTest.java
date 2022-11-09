@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,13 +62,13 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
         final Path folder = new BrickDirectoryFeature(session).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final BrickAttributesFinderFeature f = new BrickAttributesFinderFeature(session);
-        final long ts = f.find(folder).getModificationDate();
+        final long folderTimestamp = f.find(folder).getModificationDate();
         final Path test = new BrickTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotEquals(ts, f.find(folder).getModificationDate());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, session.getHost().getProtocol().getDirectoryTimestamp());
+        assertNotEquals(folderTimestamp, f.find(folder).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         // Test wrong type
@@ -90,7 +91,6 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertTrue(attributes.getPermission().isExecutable());
