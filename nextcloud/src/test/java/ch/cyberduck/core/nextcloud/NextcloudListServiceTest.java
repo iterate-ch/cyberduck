@@ -22,7 +22,10 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVTouchFeature;
@@ -39,8 +42,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class NextcloudListServiceTest extends AbstractNextcloudTest {
@@ -69,8 +71,14 @@ public class NextcloudListServiceTest extends AbstractNextcloudTest {
     public void testList() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path directory = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final PathAttributes directoryAttributes = new DAVAttributesFinderFeature(session).find(directory);
+        final String folderEtag = directoryAttributes.getETag();
+        final long folderTimestamp = directoryAttributes.getModificationDate();
         final Path test = new DAVTouchFeature(session).touch(new Path(directory,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, session.getHost().getProtocol().getDirectoryTimestamp());
+        assertNotEquals(folderTimestamp, new DAVAttributesFinderFeature(session).find(directory).getModificationDate());
+        assertNotEquals(folderEtag, new DAVAttributesFinderFeature(session).find(directory).getETag());
         try {
             final AttributedList<Path> list = new NextcloudListService(session).list(directory,
                     new DisabledListProgressListener());

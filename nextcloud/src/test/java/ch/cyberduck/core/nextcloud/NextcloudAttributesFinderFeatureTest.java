@@ -86,7 +86,7 @@ public class NextcloudAttributesFinderFeatureTest extends AbstractNextcloudTest 
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path("/trunk", EnumSet.of(Path.Type.file)));
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
