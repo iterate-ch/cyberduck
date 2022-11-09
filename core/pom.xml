@@ -41,6 +41,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>defaults</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ch.iterate.s3</groupId>
             <artifactId>jets3t</artifactId>
         </dependency>
