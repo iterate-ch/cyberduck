@@ -47,7 +47,7 @@ public class AbstractCteraTest {
                 System.getProperty("ctera.user"), System.getProperty("ctera.password"),
                 System.getProperty("ctera.token")
         ));
-        host.setDefaultPath("/ServicesPortal/webdav");
+        host.setDefaultPath("/ServicesPortal/webdav/My Files");
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Proxy proxy = new DisabledProxyFinder().find(new HostUrlProvider().get(host));
         assertNotNull(session.open(proxy, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
