@@ -23,7 +23,6 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
-import java.util.Objects;
 
 public class Path extends AbstractPath implements Referenceable, Serializable {
 
@@ -281,27 +280,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(final Path directory) {
-        if(directory.isFile()) {
-            // If a file we don't have any children at all
-            return false;
-        }
-        if(this.isRoot()) {
-            // Root cannot be a child of any other path
-            return false;
-        }
-        if(directory.isRoot()) {
-            // Any other path is a child
-            return true;
-        }
-        if(Objects.equals(this.getParent(), directory.getParent())) {
-            // Cannot be a child if the same parent
-            return false;
-        }
-        for(Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(new SimplePathPredicate(parent).test(directory)) {
-                return true;
-            }
-        }
-        return false;
+        return new SimplePathPredicate(this).isChild(new SimplePathPredicate(directory));
     }
 }
