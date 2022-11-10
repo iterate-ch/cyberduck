@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
@@ -57,15 +56,14 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final String rootEtag = f.find(root).getETag();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotEquals(rootTimestamp, f.find(root).getModificationDate());
+        assertEquals(rootTimestamp, f.find(root).getModificationDate());
         assertNotEquals(rootEtag, f.find(root).getETag());
         final long folderTimestamp = f.find(folder).getModificationDate();
         final String folderEtag = f.find(folder).getETag();
         final Path test = new DAVTouchFeature(session).touch(new Path(folder,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(Protocol.DirectoryTimestamp.explicit, session.getHost().getProtocol().getDirectoryTimestamp());
-        assertEquals(folderEtag, f.find(folder).getETag());
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
+        assertNotEquals(folderEtag, f.find(folder).getETag());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());

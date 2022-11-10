@@ -9,6 +9,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVListService;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
@@ -30,7 +31,7 @@ import org.junit.experimental.categories.Category;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -40,6 +41,11 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testReadWrite() throws Exception {
+        final Path root = new DefaultHomeFinderService(session).find();
+        final String rootEtag = new DAVAttributesFinderFeature(session).find(root).getETag();
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(root,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final String folderEtag = new DAVAttributesFinderFeature(session).find(folder).getETag();
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
@@ -47,7 +53,7 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         IOUtils.write(content, out);
         out.close();
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
@@ -68,13 +74,18 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
             System.arraycopy(content, 1, reference, 0, content.length - 1);
             assertArrayEquals(reference, buffer);
         }
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertNotEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
+        assertNotEquals(rootEtag, new DAVAttributesFinderFeature(session).find(root).getETag());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testReplaceContent() throws Exception {
+        final Path root = new DefaultHomeFinderService(session).find();
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(root,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         {
             final byte[] content = RandomUtils.nextBytes(100);
@@ -101,6 +112,6 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
         assertEquals(101L, attr2.getSize());
         assertNotEquals(attr1.getETag(), attr2.getETag());
         assertNotEquals(attr1.getModificationDate(), attr2.getModificationDate());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
