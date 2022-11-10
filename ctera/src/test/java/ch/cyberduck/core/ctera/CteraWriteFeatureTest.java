@@ -43,9 +43,11 @@ public class CteraWriteFeatureTest extends AbstractCteraTest {
     public void testReadWrite() throws Exception {
         final Path root = new DefaultHomeFinderService(session).find();
         final String rootEtag = new DAVAttributesFinderFeature(session).find(root).getETag();
+        assertEquals(rootEtag, new DAVAttributesFinderFeature(session).find(root).getETag());
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(root,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String folderEtag = new DAVAttributesFinderFeature(session).find(folder).getETag();
+        assertEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
