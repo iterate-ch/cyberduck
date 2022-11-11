@@ -280,6 +280,10 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(final Path directory) {
+        if(directory.isFile()) {
+            // If a file we don't have any children at all
+            return false;
+        }
         return new SimplePathPredicate(this).isChild(new SimplePathPredicate(directory));
     }
 }
