@@ -24,6 +24,7 @@ import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -63,7 +64,7 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                 try {
                     proxy.delete(Collections.singletonList(encrypt), prompt, callback);
                 }
-                catch(NotfoundException e) {
+                catch(NotfoundException | LocalAccessDeniedException e) {
                     if(f.isDirectory()) {
                         log.error(String.format("Failure %s deleting directory %s", e, encrypt));
                     }
