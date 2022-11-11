@@ -97,6 +97,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -249,24 +250,34 @@ public abstract class Preferences implements Locales, PreferencesReader {
         }
     }
 
+    private void loadDefaults(final String name) {
+        try {
+            final Enumeration<URL> systemResources = ClassLoader.getSystemResources(name);
+            while(systemResources.hasMoreElements()) {
+                final InputStream in = systemResources.nextElement().openStream();
+                try {
+                    final Properties properties = new Properties();
+                    properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+                    this.setDefaults(properties);
+                }
+                catch(IOException e) {
+                    //
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                }
+            }
+        }
+        catch(IOException e) {
+            //
+        }
+    }
+
     /**
      * setting the default prefs values
      */
     protected void setDefaults() {
-        final Properties properties = new Properties();
-        InputStream in = Preferences.class.getResourceAsStream(String.format("/%s", "default.properties"));
-        if(in != null) {
-            try {
-                properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-                this.setDefaults(properties);
-            }
-            catch(IOException e) {
-                //
-            }
-            finally {
-                IOUtils.closeQuietly(in);
-            }
-        }
+        this.loadDefaults("default.properties");
 
         final Version version = new Version();
         this.setDefault("application.version", StringUtils.substringBeforeLast(version.getSpecification(), "."));
