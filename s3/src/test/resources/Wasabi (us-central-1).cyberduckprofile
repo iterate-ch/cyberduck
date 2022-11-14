@@ -46,6 +46,7 @@
         <key>Properties</key>
         <array>
             <string>s3.storage.class.options=STANDARD</string>
+            <string>s3.storage.class.options=STANDARD</string>
         </array>
         <key>Help</key>
         <string>https://help.cyberduck.io/wasabi</string>
