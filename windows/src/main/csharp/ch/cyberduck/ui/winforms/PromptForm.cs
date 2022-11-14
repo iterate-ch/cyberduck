@@ -52,6 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
             };
             MinimumSize = new Size(400, 150);
+            skipButton.Visible = ValidateSkip();
         }
 
         protected override bool EnableAutoSizePosition => false;
@@ -76,5 +77,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             inputTextBox.Focus();
             inputTextBox.SelectAll();
         }
+
+        protected virtual bool ValidateSkip() => false;
     }
 }

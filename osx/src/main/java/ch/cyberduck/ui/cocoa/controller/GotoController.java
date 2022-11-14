@@ -109,7 +109,7 @@ public class GotoController extends AlertController {
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(final int option) {
         return StringUtils.isNotBlank(folderCombobox.stringValue());
     }
 

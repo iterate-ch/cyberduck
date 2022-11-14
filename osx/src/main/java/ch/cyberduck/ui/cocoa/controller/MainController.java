@@ -791,7 +791,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
 
             @Override
-            public boolean validate() {
+            public boolean validate(final int option) {
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };

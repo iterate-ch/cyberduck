@@ -15,6 +15,7 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Host;
@@ -27,7 +28,6 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
@@ -88,14 +88,12 @@ public class NextcloudShareProvider implements PromptUrlProvider {
                 URIEncoder.encode(PathRelativizer.relativize(new NextcloudHomeFeature(bookmark).find().getAbsolute(), file.getAbsolute())),
                 SHARE_TYPE_PUBLIC_LINK // Public link
         ));
-        try {
-            request.append(String.format("&password=%s", callback.prompt(bookmark,
-                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
-        }
-        catch(LoginCanceledException e) {
-            // Ignore no password set
+        final Credentials password = callback.prompt(bookmark,
+                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
+        if(password.isPasswordAuthentication()) {
+            request.append(String.format("&password=%s", password.getPassword()));
         }
         final HttpPost resource = new HttpPost(request.toString());
         resource.setHeader("OCS-APIRequest", "true");
@@ -139,14 +137,12 @@ public class NextcloudShareProvider implements PromptUrlProvider {
         final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares",
                 bookmark.getHostname()
         ));
-        try {
-            request.append(String.format("?password=%s", callback.prompt(bookmark,
-                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
-                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
-        }
-        catch(LoginCanceledException e) {
-            // Ignore no password set
+        final Credentials password = callback.prompt(bookmark,
+                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                new LoginOptions().anonymous(true).keychain(false).icon(bookmark.getProtocol().disk()));
+        if(password.isPasswordAuthentication()) {
+            request.append(String.format("?password=%s", password.getPassword()));
         }
         final HttpPost post = new HttpPost(request.toString());
         post.setEntity(EntityBuilder.create().setContentType(ContentType.APPLICATION_JSON).setText(String.format("{\"path\":\"%s\",\"shareType\":%d,\"permissions\":%d}",

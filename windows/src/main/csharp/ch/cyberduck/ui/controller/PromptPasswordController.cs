@@ -50,16 +50,26 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Title = title;
                 View.Reason = new StringAppender().append(reason).toString();
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
+                View.SkipButtonText = LocaleFactory.localizedString("Skip", "Transfer");
                 View.IconView = Images.Get(options.icon()).Size(64);
                 View.SavePasswordEnabled = options.keychain();
                 View.SavePasswordState = credentials.isSaved();
+                View.CanSkip = options.anonymous();
 
                 View.ValidateInput += ValidateInputEventHandler;
-                if (DialogResult.Cancel == View.ShowDialog(_browser.View))
+                switch (View.ShowDialog(_browser.View))
                 {
-                    throw new LoginCanceledException();
+                    case DialogResult.Cancel:
+                        throw new LoginCanceledException();
+
+                    case DialogResult.Ignore:
+                        credentials.setPassword(string.Empty);
+                        break;
+
+                    default:
+                        credentials.setPassword(View.InputText.Trim());
+                        break;
                 }
-                credentials.setPassword(View.InputText.Trim());
                 credentials.setSaved(View.SavePasswordState);
             };
             _browser.Invoke(d);

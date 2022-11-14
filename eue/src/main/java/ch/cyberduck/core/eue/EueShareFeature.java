@@ -98,30 +98,26 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
         final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
         try {
             final ShareCreationRequestModel shareCreationRequestEntries = null != shareCreationRequestModel ? shareCreationRequestModel : this.createShareCreationRequestModel(file, callback);
-            for(ShareCreationRequestEntry shareCreationRequestEntry : shareCreationRequestEntries) {
-                final String shareName = shareCreationRequestEntry.getName();
-                final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(resourceId, shareCreationRequestEntries, null, null);
-                if(!shareCreationResponseModel.containsKey(GUEST_E_MAIL)) {
-                    throw new NotfoundException(GUEST_E_MAIL);
-                }
-                final ShareCreationResponseEntry shareCreationResponseEntry = shareCreationResponseModel.get(GUEST_E_MAIL);
-                switch(shareCreationResponseEntry.getStatusCode()) {
-                    case HttpStatus.SC_OK:
-                    case HttpStatus.SC_CREATED:
-                        shareCreationResponseEntry.getEntity().setResourceURI(resourceId);
-                        session.userShares().add(shareCreationResponseEntry.getEntity());
-                        return shareCreationResponseEntry.getEntity();
-                    default:
-                        log.warn(String.format("Failure %s creating share for %s", shareCreationResponseEntry, file));
-                        if(null == shareCreationResponseEntry.getEntity()) {
-                            throw new EueExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getReason(),
-                                    null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
-                        }
-                        throw new EueExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getEntity().getError(),
-                                null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
-                }
+            final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(resourceId, shareCreationRequestEntries, null, null);
+            if(!shareCreationResponseModel.containsKey(GUEST_E_MAIL)) {
+                throw new NotfoundException(GUEST_E_MAIL);
             }
-            return null;
+            final ShareCreationResponseEntry shareCreationResponseEntry = shareCreationResponseModel.get(GUEST_E_MAIL);
+            switch(shareCreationResponseEntry.getStatusCode()) {
+                case HttpStatus.SC_OK:
+                case HttpStatus.SC_CREATED:
+                    shareCreationResponseEntry.getEntity().setResourceURI(resourceId);
+                    session.userShares().add(shareCreationResponseEntry.getEntity());
+                    return shareCreationResponseEntry.getEntity();
+                default:
+                    log.warn(String.format("Failure %s creating share for %s", shareCreationResponseEntry, file));
+                    if(null == shareCreationResponseEntry.getEntity()) {
+                        throw new EueExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getReason(),
+                                null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+                    }
+                    throw new EueExceptionMappingService().map(new ApiException(shareCreationResponseEntry.getEntity().getError(),
+                            null, shareCreationResponseEntry.getStatusCode(), client.getResponseHeaders()));
+            }
         }
         catch(ApiException e) {
             throw new EueExceptionMappingService().map(e);

@@ -70,19 +70,9 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         final Path file = new DropboxTouchFeature(session).touch(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        });
+        final DescriptiveUrl url = provider.toDownloadUrl(file, null, new DisabledLoginCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        }));
+        assertEquals(url, provider.toDownloadUrl(file, null, new DisabledLoginCallback()));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -91,19 +81,9 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(folder, null, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        });
+        final DescriptiveUrl url = provider.toDownloadUrl(folder, null, new DisabledLoginCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(folder, null, new DisabledPasswordCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
-            }
-        }));
+        assertEquals(url, provider.toDownloadUrl(folder, null, new DisabledLoginCallback()));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

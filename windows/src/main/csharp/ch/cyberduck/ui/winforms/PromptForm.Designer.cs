@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PromptForm));
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.label = new System.Windows.Forms.Label();
             this.inputTextBox = new System.Windows.Forms.TextBox();
+            this.skipButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
@@ -44,7 +44,7 @@
             this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.okButton.AutoSize = true;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(251, 77);
+            this.okButton.Location = new System.Drawing.Point(198, 103);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(87, 27);
             this.okButton.TabIndex = 0;
@@ -56,7 +56,7 @@
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cancelButton.AutoSize = true;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(344, 77);
+            this.cancelButton.Location = new System.Drawing.Point(372, 103);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(87, 27);
             this.cancelButton.TabIndex = 1;
@@ -67,35 +67,37 @@
             // 
             this.tableLayoutPanel.AutoScroll = true;
             this.tableLayoutPanel.AutoSize = true;
-            this.tableLayoutPanel.ColumnCount = 4;
+            this.tableLayoutPanel.ColumnCount = 5;
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.Controls.Add(this.pictureBox, 0, 0);
             this.tableLayoutPanel.Controls.Add(this.label, 1, 0);
-            this.tableLayoutPanel.Controls.Add(this.cancelButton, 3, 2);
+            this.tableLayoutPanel.Controls.Add(this.cancelButton, 4, 2);
             this.tableLayoutPanel.Controls.Add(this.inputTextBox, 1, 1);
             this.tableLayoutPanel.Controls.Add(this.okButton, 2, 2);
+            this.tableLayoutPanel.Controls.Add(this.skipButton, 3, 2);
             this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(6);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 3;
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(434, 107);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(462, 133);
             this.tableLayoutPanel.TabIndex = 4;
             // 
             // pictureBox
             // 
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pictureBox.Location = new System.Drawing.Point(6, 225);
-            this.pictureBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.pictureBox.Location = new System.Drawing.Point(6, 6);
+            this.pictureBox.Margin = new System.Windows.Forms.Padding(6);
             this.pictureBox.Name = "pictureBox";
             this.tableLayoutPanel.SetRowSpan(this.pictureBox, 2);
-            this.pictureBox.Size = new System.Drawing.Size(75, 61);
+            this.pictureBox.Size = new System.Drawing.Size(75, 55);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
@@ -104,8 +106,8 @@
             // 
             this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label.AutoSize = true;
-            this.tableLayoutPanel.SetColumnSpan(this.label, 3);
-            this.label.Location = new System.Drawing.Point(84, 20);
+            this.tableLayoutPanel.SetColumnSpan(this.label, 4);
+            this.label.Location = new System.Drawing.Point(90, 20);
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(184, 15);
             this.label.TabIndex = 1;
@@ -114,12 +116,24 @@
             // inputTextBox
             // 
             this.inputTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel.SetColumnSpan(this.inputTextBox, 3);
-            this.inputTextBox.Location = new System.Drawing.Point(93, 238);
-            this.inputTextBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
+            this.tableLayoutPanel.SetColumnSpan(this.inputTextBox, 4);
+            this.inputTextBox.Location = new System.Drawing.Point(93, 41);
+            this.inputTextBox.Margin = new System.Windows.Forms.Padding(6);
             this.inputTextBox.Name = "inputTextBox";
-            this.inputTextBox.Size = new System.Drawing.Size(759, 39);
+            this.inputTextBox.Size = new System.Drawing.Size(363, 23);
             this.inputTextBox.TabIndex = 2;
+            // 
+            // skipButton
+            // 
+            this.skipButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.skipButton.AutoSize = true;
+            this.skipButton.DialogResult = System.Windows.Forms.DialogResult.Ignore;
+            this.skipButton.Location = new System.Drawing.Point(291, 103);
+            this.skipButton.Name = "skipButton";
+            this.skipButton.Size = new System.Drawing.Size(75, 27);
+            this.skipButton.TabIndex = 3;
+            this.skipButton.Text = "Skip";
+            this.skipButton.UseVisualStyleBackColor = true;
             // 
             // PromptForm
             // 
@@ -154,5 +168,6 @@
         protected System.Windows.Forms.Button okButton;
         protected System.Windows.Forms.Button cancelButton;
         protected System.Windows.Forms.TableLayoutPanel tableLayoutPanel;
+        protected System.Windows.Forms.Button skipButton;
     }
 }
