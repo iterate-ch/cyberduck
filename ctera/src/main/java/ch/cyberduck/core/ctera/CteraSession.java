@@ -38,7 +38,10 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.CustomActions;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -151,6 +154,15 @@ public class CteraSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Touch.class) {
+            return (T) new CteraTouchFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new CteraDirectoryFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new CteraMoveFeature(this);
+        }
         if(type == Lock.class) {
             return null;
         }
