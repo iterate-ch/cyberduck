@@ -254,11 +254,17 @@ public class FTPSession extends SSLSession<FTPClient> {
                 read.configure(client.hasFeature("REST", "STREAM") ?
                         EnumSet.of(Read.Flags.offset) : EnumSet.noneOf(Read.Flags.class));
                 list.configure(system);
+                // Selects timestamp parser based on server features
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                     timestamp = new FTPMFMTTimestampFeature(this);
                 }
                 else {
-                    timestamp = new FTPUTIMETimestampFeature(this);
+                    if(client.hasFeature(FTPCmd.SITE.getCommand(), "UTIME")) {
+                        timestamp = new FTPUTIMETimestampFeature(this);
+                    }
+                    else if(client.hasFeature(FTPCmd.MDTM.getCommand())) {
+                        timestamp = new FTPMDTMTimestampFeature(this);
+                    }
                 }
                 if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
                     permission = null;
@@ -266,7 +272,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 else {
                     permission = new FTPUnixPermissionFeature(this);
                 }
-                if(client.hasFeature("SITE", "SYMLINK")) {
+                if(client.hasFeature(FTPCmd.SITE.getCommand(), "SYMLINK")) {
                     symlink = new FTPSymlinkFeature(this);
                 }
             }
