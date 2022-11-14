@@ -207,7 +207,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             final X509Certificate selected;
-            final String hostname = socket.getInetAddress().getHostName();
             try {
                 final String alias = bookmark.getCredentials().getCertificate();
                 if(StringUtils.isNotBlank(alias)) {
