@@ -534,7 +534,7 @@ public class Profile implements Protocol {
         if(properties.isEmpty()) {
             return parent.getProperties();
         }
-        return properties.stream().collect(Collectors.toMap(
+        return properties.stream().distinct().collect(Collectors.toMap(
                 property -> StringUtils.contains(property, '=') ? StringUtils.substringBefore(property, '=') : property,
                 property -> StringUtils.contains(property, '=') ? StringUtils.substringAfter(property, '=') : StringUtils.EMPTY));
     }
