@@ -80,7 +80,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Load default store of type %s", type));
                 }
-                if(null == type) {
+                if(StringUtils.isBlank(type)) {
                     type = KeyStore.getDefaultType();
                 }
                 final String provider = preferences.getProperty("connection.ssl.keystore.provider");

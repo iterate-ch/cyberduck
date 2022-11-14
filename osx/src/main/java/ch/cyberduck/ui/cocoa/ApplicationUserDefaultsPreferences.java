@@ -82,6 +82,7 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         else {
             this.setDefault("queue.download.folder", "~/Desktop");
         }
+        this.setDefault("editor.bundleIdentifier", "com.apple.TextEdit");
     }
 
     @Override

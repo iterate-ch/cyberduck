@@ -9,6 +9,7 @@
     <version>8.5.1-SNAPSHOT</version>
 
     <modules>
+        <module>defaults</module>
         <!-- Core components -->
         <module>binding</module>
         <module>core</module>
