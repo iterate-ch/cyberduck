@@ -105,7 +105,7 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(final int option) {
         final Host host;
         try {
             host = HostParser.parse(urlField.stringValue());

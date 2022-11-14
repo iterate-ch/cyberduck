@@ -66,7 +66,7 @@ public abstract class FileController extends AlertController {
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(final int option) {
         if(StringUtils.contains(inputField.stringValue(), Path.DELIMITER)) {
             return false;
         }

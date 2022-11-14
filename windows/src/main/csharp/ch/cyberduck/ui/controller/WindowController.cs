@@ -99,7 +99,7 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return false; }
         }
 
-        public bool validate()
+        public bool validate(int option)
         {
             return true;
         }
@@ -124,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual bool ViewShouldClose()
         {
-            return !Singleton || _validator.validate();
+            return !Singleton || _validator.validate(0);
         }
 
         public override void invoke(MainAction mainAction, bool wait)
@@ -141,7 +141,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
@@ -154,7 +154,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
@@ -170,7 +170,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
@@ -188,7 +188,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
@@ -206,7 +206,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
@@ -226,7 +226,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
@@ -249,6 +249,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
     public class DisabledInputValidator : InputValidator
     {
-        public bool validate() => true;
+        public bool validate(int option) => true;
     }
 }
