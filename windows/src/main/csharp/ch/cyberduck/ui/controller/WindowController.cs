@@ -99,7 +99,7 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return false; }
         }
 
-        public bool validate()
+        public bool validate(int option)
         {
             return true;
         }
