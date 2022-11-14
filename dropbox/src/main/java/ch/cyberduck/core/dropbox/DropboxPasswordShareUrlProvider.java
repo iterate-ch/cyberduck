@@ -111,7 +111,7 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             final FileRequest request = new DbxUserFileRequestsRequests(session.getClient())
-                    .create(file.getName(), containerService.getKey(file));
+                    .create(file.getName(), file.isRoot() ? file.getAbsolute() : containerService.getKey(file));
             return new DescriptiveUrl(URI.create(request.getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(DbxException e) {
@@ -125,6 +125,9 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
             case download:
                 return true;
             case upload:
+                if(file.isRoot()) {
+                    return false;
+                }
                 return file.isDirectory();
         }
         return false;

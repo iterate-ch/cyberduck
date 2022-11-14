@@ -26,6 +26,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -37,8 +38,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
@@ -109,8 +109,10 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
 
     @Test
     public void testRequestFiles() throws Exception {
+        final Path root = new DefaultHomeFinderService(session).find();
+        assertFalse(new DropboxPasswordShareUrlProvider(session).isSupported(root, PromptUrlProvider.Type.upload));
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(root, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
         assertNotEquals(DescriptiveUrl.EMPTY, provider.toUploadUrl(folder, null, new DisabledPasswordCallback() {
             @Override
