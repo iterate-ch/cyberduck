@@ -31,8 +31,6 @@ import java.util.Set;
 public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
     private static final Logger log = LogManager.getLogger(BackgroundActionRegistry.class);
 
-    private static final long serialVersionUID = 1721336643608575003L;
-
     private static BackgroundActionRegistry global = null;
 
     private static final Object lock = new Object();
