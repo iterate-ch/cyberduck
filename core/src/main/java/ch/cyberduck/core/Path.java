@@ -270,7 +270,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         final StringBuilder sb = new StringBuilder("Path{");
         sb.append("path='").append(path).append('\'');
         sb.append(", type=").append(type);
-        sb.append(", attributes=").append(attributes);
         sb.append('}');
         return sb.toString();
     }
