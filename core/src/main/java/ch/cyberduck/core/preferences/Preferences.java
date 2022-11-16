@@ -251,25 +251,19 @@ public abstract class Preferences implements Locales, PreferencesReader {
     }
 
     private void loadDefaults(final String name) {
-        try {
-            final Enumeration<URL> systemResources = ClassLoader.getSystemResources(name);
-            while(systemResources.hasMoreElements()) {
-                final InputStream in = systemResources.nextElement().openStream();
-                try {
-                    final Properties properties = new Properties();
-                    properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
-                    this.setDefaults(properties);
-                }
-                catch(IOException e) {
-                    //
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                }
+        final InputStream in = Preferences.class.getResourceAsStream(String.format("/%s", name));
+        if(in != null) {
+            try {
+                final Properties properties = new Properties();
+                properties.load(new InputStreamReader(in, StandardCharsets.UTF_8));
+                this.setDefaults(properties);
             }
-        }
-        catch(IOException e) {
-            //
+            catch(IOException e) {
+                //
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+            }
         }
     }
 
