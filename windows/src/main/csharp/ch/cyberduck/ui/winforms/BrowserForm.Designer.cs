@@ -2566,6 +2566,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AllColumns.Add(this.treeColumnChecksum);
             this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.browser.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+            this.browser.CellEditUseWholeCell = true;
             this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.treeColumnName,
             this.treeColumnSize,
