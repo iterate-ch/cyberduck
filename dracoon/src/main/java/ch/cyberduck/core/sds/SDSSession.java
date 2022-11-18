@@ -55,6 +55,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
@@ -595,6 +596,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Encryptor.class) {
             return (T) new SDSTripleCryptEncryptorFeature(this, nodeid);
+        }
+        if(type == Pairing.class) {
+            return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature(this));
         }
         return super._getFeature(type);
     }
