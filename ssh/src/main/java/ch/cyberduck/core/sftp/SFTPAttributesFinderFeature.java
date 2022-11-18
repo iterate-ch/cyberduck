@@ -36,9 +36,11 @@ import net.schmizz.sshj.sftp.FileAttributes;
 public class SFTPAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileAttributes> {
 
     private final SFTPSession session;
+    private final boolean permissionsAvailable;
 
     public SFTPAttributesFinderFeature(final SFTPSession session) {
         this.session = session;
+        permissionsAvailable = !isServerBlacklisted();
     }
 
     @Override
@@ -88,20 +90,14 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
             case UNKNOWN:
                 attributes.setSize(stat.getSize());
         }
-        if(0 != stat.getMode().getPermissionsMask()) {
-            if(this.isServerBlacklisted()) {
-                attributes.setPermission(Permission.EMPTY);
-            }
-            else {
+        if (permissionsAvailable) {
+            if (0 != stat.getMode().getPermissionsMask()){
                 attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
             }
-        }
-        if(0 != stat.getUID()) {
             attributes.setOwner(String.valueOf(stat.getUID()));
-        }
-        if(0 != stat.getGID()) {
             attributes.setGroup(String.valueOf(stat.getGID()));
         }
+
         if(0 != stat.getMtime()) {
             attributes.setModificationDate(stat.getMtime() * 1000L);
         }
