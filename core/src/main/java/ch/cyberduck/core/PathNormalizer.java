@@ -200,7 +200,7 @@ public final class PathNormalizer {
                 // Relative path
                 normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), false);
             }
-            return new Path(String.format("%s%s%s", root.getAbsolute(), Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
+            return new Path(String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
         }
     }
 }
