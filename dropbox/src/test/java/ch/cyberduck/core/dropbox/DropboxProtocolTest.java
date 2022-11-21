@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -48,5 +49,6 @@ public class DropboxProtocolTest {
         assertFalse(profile.isPortConfigurable());
         assertFalse(profile.isUsernameConfigurable());
         assertFalse(profile.isPasswordConfigurable());
+        assertEquals(Protocol.DirectoryTimestamp.explicit, profile.getDirectoryTimestamp());
     }
 }

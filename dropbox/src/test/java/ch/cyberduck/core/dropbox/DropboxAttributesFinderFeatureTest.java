@@ -31,18 +31,23 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DropboxAttributesFinderFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path root = new DefaultHomeFinderService(session).find();
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(new Path(root,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
+        final DropboxAttributesFinderFeature f = new DropboxAttributesFinderFeature(session);
+        assertEquals(-1L, f.find(folder).getModificationDate());
+        final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        final PathAttributes attr = new DropboxAttributesFinderFeature(session).find(file);
+        final PathAttributes attr = f.find(file);
         assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", attr.getChecksum().hash);
+        assertNotEquals(-1L, attr.getModificationDate());
         assertNotNull(attr.getVersionId());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
