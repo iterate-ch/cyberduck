@@ -212,6 +212,12 @@ public class PathAttributes extends Attributes implements Serializable {
         if(permission != Permission.EMPTY) {
             dict.setObjectForKey(permission, "Permission");
         }
+        if(owner != null) {
+            dict.setStringForKey(owner, "Owner");
+        }
+        if(group != null) {
+            dict.setStringForKey(group, "Group");
+        }
         if(acl != Acl.EMPTY) {
             dict.setObjectForKey(acl, "Acl");
         }

@@ -71,6 +71,8 @@ public class PathAttributesDictionary<T> {
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary<>().deserialize(permissionObj));
         }
+        attributes.setOwner(dict.stringForKey("Owner"));
+        attributes.setGroup(dict.stringForKey("Group"));
         final Object aclObj = dict.objectForKey("Acl");
         if(aclObj != null) {
             attributes.setAcl(new AclDictionary<>().deserialize(aclObj));
