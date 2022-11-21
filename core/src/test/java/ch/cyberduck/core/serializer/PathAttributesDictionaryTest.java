@@ -32,9 +32,15 @@ public class PathAttributesDictionaryTest {
     @Test
     public void testSerialize() {
         PathAttributes attributes = new PathAttributes();
+        attributes.setOwner("u");
+        attributes.setGroup("g");
+        attributes.setModificationDate(System.currentTimeMillis());
+        attributes.setPermission(new Permission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
         PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
+        assertEquals("u", clone.getOwner());
+        assertEquals("g", clone.getGroup());
     }
 
     @Test
