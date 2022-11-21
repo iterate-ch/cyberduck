@@ -63,7 +63,7 @@ public class CteraAttributesFinderFeatureTest extends AbstractCteraTest {
         final Path test = new DAVTouchFeature(session).touch(new Path(folder,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(folderTimestamp, f.find(folder).getModificationDate());
-        assertNotEquals(folderEtag, f.find(folder).getETag());
+        assertEquals(folderEtag, f.find(folder).getETag());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
