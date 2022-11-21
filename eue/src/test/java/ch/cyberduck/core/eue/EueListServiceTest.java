@@ -28,6 +28,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ShareCreationResponseEntry;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.unicode.NFDNormalizer;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -119,11 +120,14 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         assertTrue(new EueListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
         final Path file = new EueTouchFeature(session, fileid)
-                .touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+                .touch(new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final AttributedList<Path> list = new EueListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertNotNull(list.find(new DefaultPathPredicate(file)));
+        // Preserving Unicode normalization
+        assertEquals(filename, list.find(new DefaultPathPredicate(file)).getName());
         assertEquals(file.attributes().getFileId(), list.get(file).attributes().getFileId());
         assertSame(folder, list.get(file).getParent());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
