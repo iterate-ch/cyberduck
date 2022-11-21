@@ -46,7 +46,7 @@ public class TripleCryptKeyPair {
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
     public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, BackgroundException {
-        final String passphrase = keychain.getPassword(this.toServiceName(bookmark, keypair.getUserPublicKey().getVersion()), this.toAccountName(bookmark));
+        final String passphrase = keychain.getPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()), toAccountName(bookmark));
         return this.unlock(callback, bookmark, keypair, passphrase);
     }
 
@@ -77,8 +77,8 @@ public class TripleCryptKeyPair {
                     log.info(String.format("Save encryption password for %s", bookmark));
                 }
                 try {
-                    keychain.addPassword(this.toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
-                            this.toAccountName(bookmark), credentials.getPassword());
+                    keychain.addPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
+                            toAccountName(bookmark), credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
                     log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
@@ -88,11 +88,11 @@ public class TripleCryptKeyPair {
         }
     }
 
-    protected String toServiceName(final Host bookmark, final UserKeyPair.Version version) {
+    protected static String toServiceName(final Host bookmark, final UserKeyPair.Version version) {
         return String.format("Triple-Crypt Encryption Password (%s) - Version (%s)", bookmark.getCredentials().getUsername(), version.getValue());
     }
 
-    protected String toAccountName(final Host bookmark) {
+    protected static String toAccountName(final Host bookmark) {
         return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl();
     }
 

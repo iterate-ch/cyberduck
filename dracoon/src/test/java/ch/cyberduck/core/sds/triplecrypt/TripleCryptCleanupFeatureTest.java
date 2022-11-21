@@ -26,6 +26,6 @@ public class TripleCryptCleanupFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testDelete() throws Exception {
-        new TripleCryptCleanupFeature(session).delete(session.getHost());
+        new TripleCryptCleanupFeature().delete(session.getHost());
     }
 }

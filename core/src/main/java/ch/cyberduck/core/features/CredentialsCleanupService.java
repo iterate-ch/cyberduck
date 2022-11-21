@@ -20,12 +20,19 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class CredentialsCleanupService implements Pairing {
+    private static final Logger log = LogManager.getLogger(CredentialsCleanupService.class);
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Delete credentials for %s in keychain %s", bookmark, keychain));
+        }
         keychain.delete(bookmark);
     }
 }

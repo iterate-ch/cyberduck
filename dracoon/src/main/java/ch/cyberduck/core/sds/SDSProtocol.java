@@ -15,7 +15,11 @@ package ch.cyberduck.core.sds;/*
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.CredentialsCleanupService;
+import ch.cyberduck.core.features.DelegatingPairingFeature;
+import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Scheduler;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,6 +110,9 @@ public class SDSProtocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == Scheduler.class) {
             return (T) new SDSMissingFileKeysSchedulerFeature();
+        }
+        if(type == Pairing.class) {
+            return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature());
         }
         return super.getFeature(type);
     }

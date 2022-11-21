@@ -20,33 +20,32 @@ import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Pairing;
-import ch.cyberduck.core.sds.SDSSession;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.dracoon.sdk.crypto.error.UnknownVersionException;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptCleanupFeature implements Pairing {
     private static final Logger log = LogManager.getLogger(TripleCryptCleanupFeature.class);
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
-    private final SDSSession session;
-
-    public TripleCryptCleanupFeature(final SDSSession session) {
-        this.session = session;
-    }
-
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
-        try {
-            final TripleCryptKeyPair triplecrypt = new TripleCryptKeyPair();
-            keychain.deletePassword(triplecrypt.toServiceName(bookmark, TripleCryptConverter.toCryptoUserKeyPair(session.keyPair()).getUserPublicKey().getVersion()),
-                    triplecrypt.toAccountName(bookmark));
+        {
+            final String account = TripleCryptKeyPair.toServiceName(bookmark, UserKeyPair.Version.RSA2048);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Delete credentials for %s in keychain %s", account, keychain));
+            }
+            keychain.deletePassword(account, TripleCryptKeyPair.toAccountName(bookmark));
         }
-        catch(UnknownVersionException e) {
-            log.warn(String.format("Ignore failure reading required key pair algorithm. %s", new TripleCryptExceptionMappingService().map(e)));
+        {
+            final String account = TripleCryptKeyPair.toServiceName(bookmark, UserKeyPair.Version.RSA4096);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Delete credentials for %s in keychain %s", account, keychain));
+            }
+            keychain.deletePassword(account, TripleCryptKeyPair.toAccountName(bookmark));
         }
     }
 }
