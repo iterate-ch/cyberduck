@@ -36,6 +36,11 @@ public final class IRODSProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public Statefulness getStatefulness() {
         return Statefulness.stateful;
     }

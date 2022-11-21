@@ -71,9 +71,14 @@ public class IRODSAttributesFinderFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path folder = new IRODSDirectoryFeature(session).mkdir(new Path(
+                new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final IRODSAttributesFinderFeature f = new IRODSAttributesFinderFeature(session);
+        final long folderTimestamp = f.find(folder).getModificationDate();
+        final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(test, new TransferStatus());
-        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
+        assertEquals(folderTimestamp, f.find(folder).getModificationDate());
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("iterate", attributes.getOwner());
         assertEquals("iplant", attributes.getGroup());
