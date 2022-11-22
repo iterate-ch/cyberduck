@@ -111,4 +111,9 @@ public class LocalProtocol extends AbstractProtocol {
     public Case getCaseSensitivity() {
         return IOCase.SYSTEM.isCaseSensitive() ? Case.sensitive : Case.insensitive;
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
 }

@@ -60,6 +60,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final long ts = new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(4128);
         final TransferStatus status = new TransferStatus().withLength(content.length);
@@ -69,6 +70,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+        assertNotEquals(ts, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
         final AttributedList<Path> list = new EueListService(session, fileid).list(file.getParent(), new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(file)));
         final String metaEtag = list.find(new SimplePathPredicate(file)).attributes().getETag();
@@ -86,9 +88,9 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
     @Test
     public void testChangeETagPropagatingToRoot() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
-        final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final String rootEtag = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag();
         assertNotNull(rootEtag);
+        final long rootModificationDate = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate();
         final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String firstLevelEtag = new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag();
         assertNotNull(firstLevelEtag);
@@ -102,6 +104,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         assertNotEquals(secondLevelEtag, new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
         assertNotEquals(firstLevelEtag, new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
         assertNotEquals(rootEtag, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
+        assertNotEquals(rootModificationDate, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate());
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

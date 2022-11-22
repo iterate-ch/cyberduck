@@ -73,6 +73,11 @@ public class CteraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public String getTokenPlaceholder() {
         return "CTERA Token";
     }

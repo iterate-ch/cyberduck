@@ -70,6 +70,11 @@ public class B2Protocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public Comparator<String> getListComparator() {
         return new DefaultLexicographicOrderComparator();
     }

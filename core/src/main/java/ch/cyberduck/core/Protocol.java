@@ -56,6 +56,9 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
      */
     Case getCaseSensitivity();
 
+    /**
+     * @return Server support for implicit timestamp update on parent directory when modifying contents
+     */
     DirectoryTimestamp getDirectoryTimestamp();
 
     /**

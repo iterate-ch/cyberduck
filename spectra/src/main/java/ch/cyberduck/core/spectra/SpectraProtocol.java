@@ -58,6 +58,11 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }

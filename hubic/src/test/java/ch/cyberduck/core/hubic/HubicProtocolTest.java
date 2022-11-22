@@ -16,6 +16,7 @@ package ch.cyberduck.core.hubic;
  */
 
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -28,6 +29,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class HubicProtocolTest {
+
+    @Test
+    public void testFeatures() {
+        assertEquals(Protocol.Case.sensitive, new HubicProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.explicit, new HubicProtocol().getDirectoryTimestamp());
+    }
 
     @Test
     public void testPrefix() {

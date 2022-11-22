@@ -27,6 +27,11 @@ public class SharepointProtocol extends GraphProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public String getName() {
         return "Sharepoint";
     }

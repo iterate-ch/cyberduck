@@ -50,6 +50,6 @@ public class EueProtocol extends AbstractProtocol {
 
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
-        return DirectoryTimestamp.explicit;
+        return DirectoryTimestamp.implicit;
     }
 }

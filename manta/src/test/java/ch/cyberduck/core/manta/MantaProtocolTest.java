@@ -19,6 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -30,6 +31,12 @@ import java.util.HashSet;
 import static org.junit.Assert.*;
 
 public class MantaProtocolTest {
+
+    @Test
+    public void testFeatures() {
+        assertEquals(Protocol.Case.sensitive, new MantaProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.explicit, new MantaProtocol().getDirectoryTimestamp());
+    }
 
     @Test
     public void testPrefix() {

@@ -27,10 +27,12 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @Category(IntegrationTest.class)
 public class DAVTimestampFeatureTest extends AbstractDAVTest {
@@ -42,5 +44,18 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testSetTimestampFolderExplicitImplicit() throws Exception {
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        new DAVTimestampFeature(session).setTimestamp(folder, 5000L);
+        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(folder).getModificationDate());
+        assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(folder).getModificationDate());
+        Thread.sleep(1000L);
+        final Path file = new DAVTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotEquals(5000L, new DAVAttributesFinderFeature(session).find(folder).getModificationDate());
+        assertNotEquals(5000L, new DefaultAttributesFinderFeature(session).find(folder).getModificationDate());
+        new DAVDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

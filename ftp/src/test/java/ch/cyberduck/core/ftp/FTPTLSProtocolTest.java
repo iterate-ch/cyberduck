@@ -1,7 +1,7 @@
-package ch.cyberduck.core.eue;
+package ch.cyberduck.core.ftp;
 
 /*
- * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class EueProtocolTest {
+public class FTPTLSProtocolTest {
 
     @Test
     public void testFeatures() {
-        assertEquals(Protocol.Case.insensitive, new EueProtocol().getCaseSensitivity());
-        assertEquals(Protocol.DirectoryTimestamp.implicit, new EueProtocol().getDirectoryTimestamp());
+        assertEquals(Protocol.Case.sensitive, new FTPTLSProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, new FTPTLSProtocol().getDirectoryTimestamp());
     }
 }

@@ -27,8 +27,13 @@ import static org.junit.Assert.*;
 public class FTPProtocolTest {
 
     @Test
+    public void testFeatures() {
+        assertEquals(Protocol.Case.sensitive, new FTPProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, new FTPProtocol().getDirectoryTimestamp());
+    }
+
+    @Test
     public void testEquals() {
-        assertNotSame(new FTPProtocol(), new FTPTLSProtocol());
         assertEquals(new FTPProtocol(), new FTPProtocol());
     }
 

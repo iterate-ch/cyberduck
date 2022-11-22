@@ -31,6 +31,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -42,6 +43,7 @@ import static org.junit.Assert.*;
 public class CteraSessionTest extends AbstractCteraTest {
 
     @Test
+    @Ignore
     public void testLoginRefreshCookie() throws Exception {
         final Host host = new Host(new CteraProtocol(), "alexdemo.ctera.me", new Credentials(
                 StringUtils.EMPTY, StringUtils.EMPTY,

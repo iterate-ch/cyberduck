@@ -79,4 +79,9 @@ public class DAVSSLProtocol extends AbstractProtocol {
     public CredentialsConfigurator getCredentialsFinder() {
         return new WindowsIntegratedCredentialsConfigurator();
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
 }

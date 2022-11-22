@@ -73,6 +73,11 @@ public class HubicProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public boolean isUsernameConfigurable() {
         return false;
     }

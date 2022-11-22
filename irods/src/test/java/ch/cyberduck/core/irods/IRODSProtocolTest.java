@@ -16,6 +16,7 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.serializer.Deserializer;
 
 import org.junit.Test;
@@ -26,6 +27,12 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 public class IRODSProtocolTest {
+
+    @Test
+    public void testFeatures() {
+        assertEquals(Protocol.Case.sensitive, new IRODSProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.explicit, new IRODSProtocol().getDirectoryTimestamp());
+    }
 
     @Test
     public void testGetPrefix() {

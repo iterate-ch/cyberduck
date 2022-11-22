@@ -22,6 +22,11 @@ import ch.cyberduck.core.WebUrlProvider;
 public class FreenetProtocol extends AbstractProtocol {
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
     public Type getType() {
         return Type.freenet;
     }
