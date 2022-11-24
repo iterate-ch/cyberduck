@@ -161,7 +161,9 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertEquals(status.getResponse().getVersionId(), updated.getVersionId());
         assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getModificationDate());
         // Branch version is changing with background task only
-        // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getRevision());
+        assertEquals(previous.getChecksum(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getChecksum());
+        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getModificationDate());
+        assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
