@@ -93,6 +93,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final long rootModificationDate = new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate();
         final Path firstlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String firstLevelEtag = new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag();
+        final Long firstLevelModificationDate = new EueAttributesFinderFeature(session, fileid).find(firstlevel).getModificationDate();
         assertNotNull(firstLevelEtag);
         final Path secondlevel = new EueDirectoryFeature(session, fileid).mkdir(new Path(firstlevel, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String secondLevelEtag = new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag();
@@ -103,6 +104,7 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final String secondLevelSiblingEtag = new EueAttributesFinderFeature(session, fileid).find(secondlevelSibling).getETag();
         assertNotEquals(secondLevelEtag, new EueAttributesFinderFeature(session, fileid).find(secondlevel).getETag());
         assertNotEquals(firstLevelEtag, new EueAttributesFinderFeature(session, fileid).find(firstlevel).getETag());
+        assertEquals(firstLevelModificationDate, new EueAttributesFinderFeature(session, fileid).find(firstlevel).getModificationDate(), 0L);
         assertNotEquals(rootEtag, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getETag());
         assertNotEquals(rootModificationDate, new EueAttributesFinderFeature(session, fileid).find(new Path("/", EnumSet.of(Path.Type.directory))).getModificationDate());
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(firstlevel, secondlevel), new DisabledLoginCallback(), new Delete.DisabledCallback());
