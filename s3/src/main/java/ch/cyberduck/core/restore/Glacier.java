@@ -1,4 +1,6 @@
-package ch.cyberduck.core.restore;/*
+package ch.cyberduck.core.restore;
+
+/*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
