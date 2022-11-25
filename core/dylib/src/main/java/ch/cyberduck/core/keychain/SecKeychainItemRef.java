@@ -1,4 +1,6 @@
-package ch.cyberduck.core.keychain;/*
+package ch.cyberduck.core.keychain;
+
+/*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
