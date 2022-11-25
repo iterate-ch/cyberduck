@@ -21,9 +21,13 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.EnumSet;
 
 public class NextcloudHomeFeature extends AbstractHomeFeature {
+    private static final Logger log = LogManager.getLogger(NextcloudHomeFeature.class);
 
     private final Host bookmark;
 
@@ -37,8 +41,12 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     }
 
     public Path find(final Context files) {
-        return new Path(new Path(String.format("/remote.php/dav/%s", files.name()), EnumSet.of(Path.Type.directory)),
+        final Path workdir = new Path(new Path(String.format("/remote.php/dav/%s", files.name()), EnumSet.of(Path.Type.directory)),
                 URIEncoder.encode(bookmark.getCredentials().getUsername()), EnumSet.of(Path.Type.directory));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Use home directory %s", workdir));
+        }
+        return workdir;
     }
 
     public enum Context {

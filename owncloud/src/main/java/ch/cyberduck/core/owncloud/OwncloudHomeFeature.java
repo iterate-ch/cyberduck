@@ -19,9 +19,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.nextcloud.NextcloudHomeFeature;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.EnumSet;
 
 public class OwncloudHomeFeature extends NextcloudHomeFeature {
+    private static final Logger log = LogManager.getLogger(OwncloudHomeFeature.class);
 
     public OwncloudHomeFeature(final Host bookmark) {
         super(bookmark);
@@ -30,7 +34,11 @@ public class OwncloudHomeFeature extends NextcloudHomeFeature {
     public Path find(final Context context) {
         switch(context) {
             case versions:
-                return new Path("/remote.php/dav/meta", EnumSet.of(Path.Type.directory));
+                final Path workdir = new Path("/remote.php/dav/meta", EnumSet.of(Path.Type.directory));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Use home directory %s", workdir));
+                }
+                return workdir;
         }
         return super.find(context);
     }
