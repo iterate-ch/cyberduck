@@ -1,4 +1,6 @@
-package ch.cyberduck.core.sftp.openssh;/*
+package ch.cyberduck.core.sftp.openssh;
+
+/*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
