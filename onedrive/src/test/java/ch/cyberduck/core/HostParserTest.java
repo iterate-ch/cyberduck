@@ -1,4 +1,6 @@
-package ch.cyberduck.core;/*
+package ch.cyberduck.core;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -15,8 +17,6 @@ package ch.cyberduck.core;/*
 
 
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
-import ch.cyberduck.core.onedrive.SharepointProtocol;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
 

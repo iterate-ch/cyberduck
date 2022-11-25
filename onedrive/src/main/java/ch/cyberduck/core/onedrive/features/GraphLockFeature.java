@@ -1,4 +1,6 @@
-package ch.cyberduck.core.onedrive.features;/*
+package ch.cyberduck.core.onedrive.features;
+
+/*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -14,7 +16,6 @@ package ch.cyberduck.core.onedrive.features;/*
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;

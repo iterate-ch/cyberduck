@@ -1,4 +1,6 @@
-package ch.cyberduck.core.onedrive.features;/*
+package ch.cyberduck.core.onedrive.features;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
