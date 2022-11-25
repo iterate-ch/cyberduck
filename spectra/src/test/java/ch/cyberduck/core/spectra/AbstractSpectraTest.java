@@ -1,4 +1,6 @@
-package ch.cyberduck.core.spectra;/*
+package ch.cyberduck.core.spectra;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
