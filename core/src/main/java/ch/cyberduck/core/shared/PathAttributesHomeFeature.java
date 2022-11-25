@@ -1,4 +1,6 @@
-package ch.cyberduck.core.shared;/*
+package ch.cyberduck.core.shared;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -47,21 +49,31 @@ public class PathAttributesHomeFeature implements Home {
     public Path find() throws BackgroundException {
         final Path home = proxy.find();
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Read attributes for %s", home));
+            }
             // Set correct type from protocol and current attributes from server
             return home.withAttributes(attributes.find(home)).withType(container.isContainer(home) ? EnumSet.of(Path.Type.volume, Path.Type.directory) : home.getType());
         }
         catch(NotfoundException e) {
             switch(session.getHost().getProtocol().getType()) {
                 case ftp:
-                    log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Ignore failure %s retrieving attributes for %s", e, home));
+                    }
                     // Ignore 550 Directory Not Found for FTP
                     return home;
                 default:
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+                    }
                     throw e;
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Failure %s retrieving attributes for %s", e, home));
+            }
             return home;
         }
     }
