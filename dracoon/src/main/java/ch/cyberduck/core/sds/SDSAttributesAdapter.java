@@ -1,4 +1,6 @@
-package ch.cyberduck.core.sds;/*
+package ch.cyberduck.core.sds;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -12,7 +14,6 @@ package ch.cyberduck.core.sds;/*
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
-
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
