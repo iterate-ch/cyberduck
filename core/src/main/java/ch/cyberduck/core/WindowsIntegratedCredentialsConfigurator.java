@@ -1,4 +1,6 @@
-package ch.cyberduck.core;/*
+package ch.cyberduck.core;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
