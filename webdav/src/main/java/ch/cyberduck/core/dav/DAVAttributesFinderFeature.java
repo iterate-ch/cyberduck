@@ -89,7 +89,9 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 }
                 catch(InteroperabilityException i) {
                     // PROPFIND Method not allowed
-                    log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
+                    }
                     final PathAttributes attr = this.head(file);
                     if(PathAttributes.EMPTY == attr) {
                         throw i;

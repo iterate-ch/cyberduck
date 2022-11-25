@@ -48,6 +48,7 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -180,7 +181,9 @@ public class DAVSession extends HttpSession<DAVClient> {
             client.disablePreemptiveAuthentication();
         }
         if(host.getCredentials().isPassed()) {
-            log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Skip verifying credentials with previous successful authentication event for %s", this));
+            }
             return;
         }
         try {
@@ -192,14 +195,18 @@ public class DAVSession extends HttpSession<DAVClient> {
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
                     case HttpStatus.SC_NOT_FOUND:
-                        log.warn(String.format("Ignore failure %s", e));
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Ignore failure %s", e));
+                        }
                         break;
                     case HttpStatus.SC_NOT_IMPLEMENTED:
                     case HttpStatus.SC_FORBIDDEN:
                     case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
                     case HttpStatus.SC_METHOD_NOT_ALLOWED:
-                        log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
-                                host, e.getResponsePhrase()));
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Failed HEAD request to %s with %s. Retry with PROPFIND.",
+                                    host, e.getResponsePhrase()));
+                        }
                         cancel.verify();
                         // Possibly only HEAD requests are not allowed
                         list.list(home, new DisabledListProgressListener() {
@@ -216,8 +223,10 @@ public class DAVSession extends HttpSession<DAVClient> {
                         break;
                     case HttpStatus.SC_BAD_REQUEST:
                         if(preferences.getBoolean("webdav.basic.preemptive")) {
-                            log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
-                                host, e.getResponsePhrase()));
+                            if(log.isWarnEnabled()) {
+                                log.warn(String.format("Disable preemptive authentication for %s due to failure %s",
+                                        host, e.getResponsePhrase()));
+                            }
                             cancel.verify();
                             client.disablePreemptiveAuthentication();
                             client.execute(head, new MicrosoftIISFeaturesResponseHandler());
@@ -356,8 +365,8 @@ public class DAVSession extends HttpSession<DAVClient> {
         public Void handleResponse(final HttpResponse response) throws IOException {
             if(Arrays.stream(response.getAllHeaders()).anyMatch(header ->
                     HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"))) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Microsoft-IIS backend detected");
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Microsoft-IIS backend detected in response %s", response));
                 }
                 list = new MicrosoftIISDAVListService(DAVSession.this, new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this));
                 timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
