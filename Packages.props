@@ -24,10 +24,10 @@
     <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
     <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
-    <PackageReference Update="nunit" Version="3.13.2" />
-    <PackageReference Update="NUnit.Console" Version="3.15.0" />
-    <PackageReference Update="NUnit.ConsoleRunner" GeneratePathProperty="true" />
-    <PackageReference Update="NUnit3TestAdapter" Version="4.2.1" />
+    <PackageReference Update="NUnit" Version="3.13.3" />
+    <PackageReference Update="NUnit.Console" Version="3.16.0" />
+    <PackageReference Update="NUnit.ConsoleRunner" Version="3.16.0" GeneratePathProperty="true" />
+    <PackageReference Update="NUnit3TestAdapter" Version="4.3.1" />
     <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
     <PackageReference Update="ReactiveUI.Fody" Version="17.1.50" />
     <PackageReference Update="ReactiveUI.WPF" Version="17.1.50" />
