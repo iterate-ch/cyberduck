@@ -109,8 +109,15 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         attr.setDisplayname(entity.getName());
         // Matches ETag response header
         attr.setETag(StringUtils.remove(entity.getMetaETag(), '"'));
-        if(entity.getVersion() != null) {
-            attr.setRevision(Long.valueOf(entity.getVersion()));
+        switch(entity.getResourceType()) {
+            case "aliascontainer":
+            case "container":
+                break;
+            default:
+                if(entity.getVersion() != null) {
+                    attr.setRevision(Long.valueOf(entity.getVersion()));
+                }
+                break;
         }
         attr.setSize(entity.getSize());
         final String resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(entity.getResourceURI());
