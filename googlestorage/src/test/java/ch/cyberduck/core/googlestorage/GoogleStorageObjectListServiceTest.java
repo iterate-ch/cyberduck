@@ -27,6 +27,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -55,14 +56,19 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
     public void testListLexicographicSortOrderAssumption() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(
-            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
-        final List<String> files = Arrays.asList(
-            "aa", "0a", "a", "AAA", "B", "~$a", ".c"
-        );
+        final List<String> files = new ArrayList<>(Arrays.asList(
+                "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+        ));
         for(String f : files) {
             new GoogleStorageTouchFeature(session).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
+        final List<String> folders = Arrays.asList("b", "BB");
+        for(String f : folders) {
+            new GoogleStorageDirectoryFeature(session).mkdir(new Path(directory, f, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        }
+        files.addAll(folders);
         files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {

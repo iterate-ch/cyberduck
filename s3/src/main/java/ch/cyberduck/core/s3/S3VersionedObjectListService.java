@@ -97,8 +97,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         try {
             final String prefix = this.createPrefix(directory);
             final Path bucket = containerService.getContainer(directory);
-            final AttributedList<Path> children = new AttributedList<>();
-            final List<Future<Path>> folders = new ArrayList<>();
+            final AttributedList<Path> objects = new AttributedList<>();
             String priorLastKey = null;
             String priorLastVersionId = null;
             long revision = 0L;
@@ -153,10 +152,11 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     if(metadata) {
                         f.withAttributes(attributes.find(f));
                     }
-                    children.add(f);
+                    objects.add(f);
                     lastKey = key;
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
+                final List<Future<Path>> folders = new ArrayList<>();
                 for(String common : prefixes) {
                     if(String.valueOf(Path.DELIMITER).equals(common)) {
                         log.warn(String.format("Skipping prefix %s", common));
@@ -168,23 +168,22 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                     folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(common)));
                 }
+                for(Future<Path> f : folders) {
+                    try {
+                        objects.add(Uninterruptibles.getUninterruptibly(f));
+                    }
+                    catch(ExecutionException e) {
+                        log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
+                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+                    }
+                }
                 priorLastKey = null != chunk.getNextKeyMarker() ? URIEncoder.decode(chunk.getNextKeyMarker()) : null;
                 priorLastVersionId = chunk.getNextVersionIdMarker();
-                listener.chunk(directory, children);
+                listener.chunk(directory, objects);
             }
             while(priorLastKey != null);
-            for(Future<Path> f : folders) {
-                try {
-                    children.add(Uninterruptibles.getUninterruptibly(f));
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                }
-            }
-            listener.chunk(directory, children);
-            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+            if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
@@ -202,7 +201,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                 }
             }
-            return children;
+            return objects;
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
