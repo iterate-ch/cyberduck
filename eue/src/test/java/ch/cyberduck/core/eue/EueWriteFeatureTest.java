@@ -116,7 +116,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final EueWriteFeature feature = new EueWriteFeature(session, fileid);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        final long containerModification = new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate();
+        long containerModification = new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         String resourceId;
         {
@@ -146,6 +146,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             stream.close();
             assertArrayEquals(content, compare);
         }
+        containerModification = new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate();
         // Override
         {
             final PathAttributes previous = new EueAttributesFinderFeature(session, fileid).find(file);
@@ -165,6 +166,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertEquals(checksum, out.getStatus().getChecksum());
             assertEquals(resourceId, out.getStatus().getResourceId());
             assertTrue(new EueFindFeature(session, fileid).find(file));
+            assertNotEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
             assertNotEquals(previous, attributes);
             assertNotEquals(previous.getETag(), attributes.getETag());
