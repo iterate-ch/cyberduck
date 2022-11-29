@@ -88,7 +88,6 @@ public class GoogleStorageObjectListService implements ListService {
                     containerService.getContainer(directory)
             ) : VersioningConfiguration.empty();
             final AttributedList<Path> objects = new AttributedList<>();
-            final List<Future<Path>> folders = new ArrayList<>();
             Objects response;
             long revision = 0L;
             String lastKey = null;
@@ -127,7 +126,9 @@ public class GoogleStorageObjectListService implements ListService {
                                 ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                         final Path file;
                         final PathAttributes attr = attributes.toAttributes(object);
-                        attr.setRevision(++revision);
+                        if(types.contains(Path.Type.file)) {
+                            attr.setRevision(++revision);
+                        }
                         // Copy bucket location
                         attr.setRegion(bucket.attributes().getRegion());
                         if(null == delimiter) {
@@ -142,6 +143,7 @@ public class GoogleStorageObjectListService implements ListService {
                     }
                 }
                 if(response.getPrefixes() != null) {
+                    final List<Future<Path>> folders = new ArrayList<>();
                     for(String prefix : response.getPrefixes()) {
                         if(String.valueOf(Path.DELIMITER).equals(prefix)) {
                             log.warn(String.format("Skipping prefix %s", prefix));
@@ -168,26 +170,25 @@ public class GoogleStorageObjectListService implements ListService {
                             folders.add(ConcurrentUtils.constantFuture(file));
                         }
                     }
+                    for(Future<Path> f : folders) {
+                        try {
+                            objects.add(Uninterruptibles.getUninterruptibly(f));
+                        }
+                        catch(ExecutionException e) {
+                            log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
+                            Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                            throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+                        }
+                    }
                 }
                 page = response.getNextPageToken();
-                listener.chunk(directory, objects);
+                listener.chunk(directory, objects.filter((o1, o2) -> session.getHost().getProtocol().getListComparator().compare(o1.getName(), o2.getName())));
             }
             while(page != null);
-            for(Future<Path> f : folders) {
-                try {
-                    objects.add(Uninterruptibles.getUninterruptibly(f));
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
-                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
-                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
-                }
-            }
-            listener.chunk(directory, objects);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 throw new NotfoundException(directory.getAbsolute());
             }
-            return objects;
+            return objects.filter((o1, o2) -> session.getHost().getProtocol().getListComparator().compare(o1.getName(), o2.getName()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Listing directory {0} failed", e, directory);
