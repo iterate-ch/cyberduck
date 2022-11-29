@@ -17,8 +17,10 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
@@ -26,20 +28,22 @@ import java.util.Map;
 public class SDSThresholdDeleteFeature implements Delete {
 
     private final SDSSession session;
-    private final SDSNodeIdProvider fileid;
+    private final SDSNodeIdProvider nodeid;
+    private final PathContainerService containerService
+            = new SDSPathContainerService();
 
-    public SDSThresholdDeleteFeature(final SDSSession session, final SDSNodeIdProvider fileid) {
+    public SDSThresholdDeleteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
-        this.fileid = fileid;
+        this.nodeid = nodeid;
     }
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
-            new SDSDeleteFeature(session, fileid).delete(files, prompt, callback);
+            new SDSDeleteFeature(session, nodeid).delete(files, prompt, callback);
         }
         else {
-            new SDSBatchDeleteFeature(session, fileid).delete(files, prompt, callback);
+            new SDSBatchDeleteFeature(session, nodeid).delete(files, prompt, callback);
         }
     }
 
@@ -47,4 +51,18 @@ public class SDSThresholdDeleteFeature implements Delete {
     public boolean isRecursive() {
         return true;
     }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        if(containerService.isContainer(file)) {
+            if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
+                // Need the query permission on the parent data room if file itself is subroom
+                return new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
+                        SDSPermissionsFeature.MANAGE_ROLE);
+            }
+            return false;
+        }
+        return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DELETE_ROLE);
+    }
+
 }

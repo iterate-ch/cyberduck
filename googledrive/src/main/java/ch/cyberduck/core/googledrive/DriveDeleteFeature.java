@@ -74,15 +74,6 @@ public class DriveDeleteFeature implements Delete {
     }
 
     @Override
-    public boolean isSupported(final Path file) {
-        if(file.isPlaceholder()) {
-            // Disable for application/vnd.google-apps
-            return false;
-        }
-        return !file.getType().contains(Path.Type.shared);
-    }
-
-    @Override
     public boolean isRecursive() {
         return true;
     }

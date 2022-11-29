@@ -47,4 +47,13 @@ public class DriveThresholdDeleteFeature implements Delete {
     public boolean isRecursive() {
         return true;
     }
+
+    @Override
+    public boolean isSupported(final Path file) {
+        if(file.isPlaceholder()) {
+            // Disable for application/vnd.google-apps
+            return false;
+        }
+        return !file.getType().contains(Path.Type.shared);
+    }
 }
