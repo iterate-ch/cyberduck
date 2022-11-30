@@ -529,6 +529,14 @@ public class Profile implements Protocol {
     }
 
     @Override
+    public boolean isOAuthPKCE() {
+        if(StringUtils.isBlank(this.value("OAuth PKCE"))) {
+            return parent.isPathConfigurable();
+        }
+        return this.bool("OAuth PKCE");
+    }
+
+    @Override
     public Map<String, String> getProperties() {
         final List<String> properties = this.list("Properties");
         if(properties.isEmpty()) {

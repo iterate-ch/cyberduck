@@ -279,6 +279,11 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
     String getOAuthClientSecret();
 
     /**
+     * @return Allow use of Proof Key for Code Exchange (PKCE) for the OAuth2 Athorization Code Flow
+     */
+    boolean isOAuthPKCE();
+
+    /**
      * @return Custom connection protocol properties
      */
     Map<String, String> getProperties();

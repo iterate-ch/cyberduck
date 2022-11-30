@@ -48,7 +48,8 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private OAuthTokens tokens = OAuthTokens.EMPTY;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Protocol protocol) {
-        this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(), protocol.getOAuthClientSecret(), protocol.getOAuthScopes());
+        this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(),
+                protocol.getOAuthClientSecret(), protocol.getOAuthScopes(), protocol.isOAuthPKCE());
     }
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
@@ -59,15 +60,18 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
                 host.getProtocol().getOAuthClientId(),
                 host.getProtocol().getOAuthClientSecret(),
-                host.getProtocol().getOAuthScopes());
+                host.getProtocol().getOAuthScopes(),
+                host.getProtocol().isOAuthPKCE());
     }
 
-    public OAuth2RequestInterceptor(final HttpClient client, final String tokenServerUrl, final String authorizationServerUrl, final String clientid, final String clientsecret, final List<String> scopes) {
-        super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+    public OAuth2RequestInterceptor(final HttpClient client, final String tokenServerUrl, final String authorizationServerUrl,
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
+        super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
     }
 
-    public OAuth2RequestInterceptor(final HttpTransport transport, final String tokenServerUrl, final String authorizationServerUrl, final String clientid, final String clientsecret, final List<String> scopes) {
-        super(transport, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+    public OAuth2RequestInterceptor(final HttpTransport transport, final String tokenServerUrl, final String authorizationServerUrl,
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
+        super(transport, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
     }
 
     public void setTokens(final OAuthTokens tokens) {

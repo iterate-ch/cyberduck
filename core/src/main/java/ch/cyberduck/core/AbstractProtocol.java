@@ -204,6 +204,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isOAuthPKCE() {
+        return true;
+    }
+
+    @Override
     public String getDefaultHostname() {
         // Blank by default
         return PreferencesFactory.get().getProperty("connection.hostname.default");

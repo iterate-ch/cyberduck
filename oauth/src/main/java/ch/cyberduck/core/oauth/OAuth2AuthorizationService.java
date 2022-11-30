@@ -76,6 +76,7 @@ public class OAuth2AuthorizationService {
     private final String clientsecret;
 
     private final List<String> scopes;
+    private final boolean pkce;
 
     private final Map<String, String> additionalParameters
             = new HashMap<>();
@@ -89,20 +90,21 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService(final HttpClient client,
                                       final String tokenServerUrl, final String authorizationServerUrl,
-                                      final String clientid, final String clientsecret, final List<String> scopes) {
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
         this(new ApacheHttpTransport(client),
-                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+                tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
     }
 
     public OAuth2AuthorizationService(final HttpTransport transport,
                                       final String tokenServerUrl, final String authorizationServerUrl,
-                                      final String clientid, final String clientsecret, final List<String> scopes) {
+                                      final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
         this.transport = transport;
         this.tokenServerUrl = tokenServerUrl;
         this.authorizationServerUrl = authorizationServerUrl;
         this.clientid = clientid;
         this.clientsecret = clientsecret;
         this.scopes = scopes;
+        this.pkce = pkce;
     }
 
     public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel,
@@ -163,7 +165,7 @@ public class OAuth2AuthorizationService {
             );
         }
         // Start OAuth2 flow within browser
-        final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
+        final AuthorizationCodeFlow.Builder flowBuilder = new AuthorizationCodeFlow.Builder(
                 method,
                 transport, json,
                 new GenericUrl(tokenServerUrl),
@@ -171,9 +173,11 @@ public class OAuth2AuthorizationService {
                 clientid,
                 authorizationServerUrl)
                 .setScopes(scopes)
-                .enablePKCE()
-                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                .build();
+                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()));
+        if(pkce) {
+            flowBuilder.enablePKCE();
+        }
+        final AuthorizationCodeFlow flow = flowBuilder.build();
         final AuthorizationCodeRequestUrl authorizationCodeUrlBuilder = flow.newAuthorizationUrl();
         authorizationCodeUrlBuilder.setRedirectUri(redirectUri);
         final String state = new AlphanumericRandomStringService().random();
