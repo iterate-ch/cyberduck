@@ -4,6 +4,7 @@ https://cyberduck.io/
 8.5.1
 - [Feature] Skip button to allow creating share with no passphrase (Dropbox, Box, ownCloud, Nextcloud) (#13846)
 - [Feature] Redirect to application without requiring to copy authentication code when opening new connection (Dropbox)
+- [Feature] Allow configuration of client certificate (ownCloud, Nextcloud)
 
 8.5.0
 - [Feature] Allow to view and revert previous versions of files (ownCloud, Nextcloud) (#10560)
