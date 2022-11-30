@@ -22,6 +22,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,8 +60,11 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
                 new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(test);
+        assertNotEquals(Permission.EMPTY, attr.getPermission());
         assertEquals(attr, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(test.getParent(), StringUtils.upperCase(test.getName()), test.getType())));
         assertEquals(attr, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(test.getParent(), StringUtils.lowerCase(test.getName()), test.getType())));
+        assertEquals(attr, new StoregateListService(session, nodeid).list(room, new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes());
+        assertEquals(PathAttributes.EMPTY, attr);
         assertNotEquals(0L, attr.getModificationDate());
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
