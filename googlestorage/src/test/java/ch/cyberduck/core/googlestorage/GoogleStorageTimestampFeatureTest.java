@@ -16,9 +16,7 @@ package ch.cyberduck.core.googlestorage;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -45,8 +43,6 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         final GoogleStorageTimestampFeature feature = new GoogleStorageTimestampFeature(session);
         feature.setTimestamp(test, 1630305150672L);
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
-        final Path found = new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
-        assertEquals(1630305150672L, found.attributes().getModificationDate());
         final Path moved = new GoogleStorageMoveFeature(session).move(test, new Path(bucket,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
