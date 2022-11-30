@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
 import ch.cyberduck.core.io.MD5ChecksumCompute;
@@ -89,6 +90,9 @@ public class FreenetSession extends DAVSession {
             return (T) new FreenetFindFeature(this);
         }
         if(type == Timestamp.class) {
+            return null;
+        }
+        if(type == Metadata.class) {
             return null;
         }
         return super.getFeature(type);
