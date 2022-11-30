@@ -149,4 +149,9 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
     }
+
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
 }
