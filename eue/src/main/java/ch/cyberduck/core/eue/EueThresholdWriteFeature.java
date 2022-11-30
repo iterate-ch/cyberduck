@@ -58,4 +58,9 @@ public class EueThresholdWriteFeature implements Write<EueWriteFeature.Chunk> {
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
     }
+
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
 }
