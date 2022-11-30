@@ -40,7 +40,9 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.CustomActions;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.PreferencesRedirectCallback;
@@ -164,6 +166,12 @@ public class CteraSession extends DAVSession {
             return (T) new CteraMoveFeature(this);
         }
         if(type == Lock.class) {
+            return null;
+        }
+        if(type == Timestamp.class) {
+            return null;
+        }
+        if(type == Metadata.class) {
             return null;
         }
         if(type == CustomActions.class) {
