@@ -22,14 +22,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
-public class StoregateTouchFeature implements Touch<FileMetadata> {
+public class StoregateTouchFeature implements Touch<Void> {
 
-    private Write<FileMetadata> writer;
+    private Write<Void> writer;
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.writer = new StoregateWriteFeature(session, fileid);
@@ -38,7 +37,7 @@ public class StoregateTouchFeature implements Touch<FileMetadata> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final StatusOutputStream<FileMetadata> out = writer.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Void> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
             return file.withAttributes(status.getResponse());
         }
@@ -48,7 +47,7 @@ public class StoregateTouchFeature implements Touch<FileMetadata> {
     }
 
     @Override
-    public Touch<FileMetadata> withWriter(final Write<FileMetadata> writer) {
+    public Touch<Void> withWriter(final Write<Void> writer) {
         this.writer = writer;
         return this;
     }

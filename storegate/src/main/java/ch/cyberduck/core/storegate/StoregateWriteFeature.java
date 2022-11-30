@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -56,14 +57,14 @@ import java.util.Collections;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata> {
+public class StoregateWriteFeature extends AbstractHttpWriteFeature<Void> {
     private static final Logger log = LogManager.getLogger(StoregateWriteFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
 
     public StoregateWriteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
-        super(new StoregateAttributesFinderFeature(session, fileid));
+        super(new VoidAttributesAdapter());
         this.session = session;
         this.fileid = fileid;
     }
@@ -79,10 +80,10 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
     }
 
     @Override
-    public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<FileMetadata> command = new DelayedHttpEntityCallable<FileMetadata>(file) {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>(file) {
             @Override
-            public FileMetadata call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
                 // Initiate a resumable upload
                 String location;
                 try {
@@ -117,7 +118,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<FileMetadata
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                         FileMetadata.class);
                                 fileid.cache(file, result.getId());
-                                return result;
+                                return null;
                             default:
                                 throw new StoregateExceptionMappingService(fileid).map(new ApiException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                         EntityUtils.toString(putResponse.getEntity())));
