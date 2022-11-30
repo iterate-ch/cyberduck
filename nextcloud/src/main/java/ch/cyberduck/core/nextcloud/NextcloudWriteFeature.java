@@ -40,4 +40,9 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
         }
         return headers;
     }
+
+    @Override
+    public boolean timestamp() {
+        return true;
+    }
 }
