@@ -531,7 +531,7 @@ public class Profile implements Protocol {
     @Override
     public boolean isOAuthPKCE() {
         if(StringUtils.isBlank(this.value("OAuth PKCE"))) {
-            return parent.isPathConfigurable();
+            return parent.isOAuthPKCE();
         }
         return this.bool("OAuth PKCE");
     }
