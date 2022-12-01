@@ -31,6 +31,8 @@ import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -48,11 +50,14 @@ import com.google.api.services.storage.Storage;
 
 public class GoogleStorageSession extends HttpSession<Storage> {
 
+    private final PreferencesReader preferences
+            = new HostPreferences(host);
+
     private ApacheHttpTransport transport;
     private OAuth2RequestInterceptor authorizationService;
 
-    private final Versioning versioning
-            = new GoogleStorageVersioningFeature(this);
+    private final Versioning versioning =
+            preferences.getBoolean("s3.versioning.enable") ? new GoogleStorageVersioningFeature(this) : null;
 
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
