@@ -66,7 +66,8 @@ public class S3ListService implements ListService {
             // If bucket is specified in hostname, try to connect to this particular bucket only.
         }
         AttributedList<Path> objects;
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class)
+        final VersioningConfiguration versioning = new HostPreferences(session.getHost()).getBoolean("s3.listing.versioning.enable")
+                && null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class)
                 .getConfiguration(directory) : VersioningConfiguration.empty();
         if(versioning.isEnabled()) {
             try {

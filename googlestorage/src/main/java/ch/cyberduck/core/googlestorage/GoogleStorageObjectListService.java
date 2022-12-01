@@ -84,7 +84,8 @@ public class GoogleStorageObjectListService implements ListService {
         final ThreadPool pool = ThreadPoolFactory.get("list", concurrency);
         try {
             final Path bucket = containerService.getContainer(directory);
-            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+            final VersioningConfiguration versioning = new HostPreferences(session.getHost()).getBoolean("googlestorage.listing.versioning.enable")
+                    && null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                     containerService.getContainer(directory)
             ) : VersioningConfiguration.empty();
             final AttributedList<Path> objects = new AttributedList<>();
