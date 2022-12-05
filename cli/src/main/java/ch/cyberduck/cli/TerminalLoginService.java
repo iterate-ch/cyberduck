@@ -43,7 +43,7 @@ public class TerminalLoginService extends KeychainLoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         final Credentials credentials = bookmark.getCredentials();
         if(input.hasOption(TerminalOptionsBuilder.Params.anonymous.name())) {
             credentials.setUsername(PreferencesFactory.get().getProperty("connection.login.anon.name"));
@@ -60,6 +60,6 @@ public class TerminalLoginService extends KeychainLoginService {
         if(StringUtils.isNotBlank(credentials.getUsername()) && StringUtils.isNotBlank(credentials.getPassword())) {
             return;
         }
-        super.validate(bookmark, message, prompt, options);
+        super.validate(bookmark, prompt, options);
     }
 }

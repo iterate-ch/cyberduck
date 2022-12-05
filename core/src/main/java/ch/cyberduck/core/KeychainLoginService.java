@@ -40,8 +40,7 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginCallback prompt,
-                         final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
@@ -103,10 +102,17 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            final StringAppender details = new StringAppender();
-            details.append(message);
-            details.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-            this.prompt(bookmark, details.toString(), prompt, options);
+            final StringAppender message = new StringAppender();
+            if(options.password) {
+                message.append(MessageFormat.format(LocaleFactory.localizedString(
+                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)));
+            }
+            if(options.publickey) {
+                message.append(LocaleFactory.localizedString(
+                        "Select the private key in PEM or PuTTY format", "Credentials"));
+            }
+            message.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+            this.prompt(bookmark, message.toString(), prompt, options);
         }
     }
 
