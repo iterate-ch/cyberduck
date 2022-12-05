@@ -48,7 +48,6 @@ import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
@@ -68,11 +67,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.auth.win.WindowsCredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
-import org.apache.http.impl.client.WinHttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -90,7 +86,7 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     private final RedirectCallback redirect;
     private final PreferencesReader preferences
-        = new HostPreferences(host);
+            = new HostPreferences(host);
 
     private ListService list = new DAVListService(this, new DAVAttributesFinderFeature(this));
     private Read read = new DAVReadFeature(this);
@@ -128,39 +124,25 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final CredentialsProvider provider = new BasicCredentialsProvider();
-        if(preferences.getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable()) {
-            provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
-                new WindowsCredentialsProvider(new BasicCredentialsProvider()).getCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM))
-            );
-            provider.setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
-                new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(
-                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO))
-            );
-        }
-        else {
-            provider.setCredentials(
+        provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
                 new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
-            );
-            provider.setCredentials(
+                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+        );
+        provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
                 new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
-            );
-        }
+                        preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+        );
         provider.setCredentials(
-            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
-            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
+                new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         provider.setCredentials(
-            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
-            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
+                new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         provider.setCredentials(
-            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
-            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
+                new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
         client.setCredentials(provider);
         if(preferences.getBoolean("webdav.basic.preemptive")) {
             switch(proxy.getType()) {
@@ -168,9 +150,9 @@ public class DAVSession extends HttpSession<DAVClient> {
                 case SOCKS:
                     // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
                     client.enablePreemptiveAuthentication(host.getHostname(),
-                        host.getPort(),
-                        host.getPort(),
-                        Charset.forName(preferences.getProperty("http.credentials.charset"))
+                            host.getPort(),
+                            host.getPort(),
+                            Charset.forName(preferences.getProperty("http.credentials.charset"))
                     );
                     break;
                 default:
@@ -273,12 +255,12 @@ public class DAVSession extends HttpSession<DAVClient> {
                     if(StringUtils.equals(Scheme.https.name(), url.getProtocol())) {
                         try {
                             callback.warn(host,
-                                MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
-                                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
-                                    new DAVSSLProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                                LocaleFactory.localizedString("Continue", "Credentials"),
-                                LocaleFactory.localizedString("Change", "Credentials"),
-                                String.format("connection.unsecure.%s", host.getHostname()));
+                                    MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
+                                    MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"),
+                                            new DAVSSLProtocol().getName()), LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                                    LocaleFactory.localizedString("Continue", "Credentials"),
+                                    LocaleFactory.localizedString("Change", "Credentials"),
+                                    String.format("connection.unsecure.%s", host.getHostname()));
                             // Continue chosen. Login using plain FTP.
                         }
                         catch(LoginCanceledException e) {
