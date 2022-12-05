@@ -106,6 +106,13 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
+            final CredentialsConfigurator configurator = bookmark.getProtocol().getCredentialsFinder();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Auto configure credentials with %s", configurator));
+            }
+            configurator.configure(bookmark);
+        }
+        if(!credentials.validate(bookmark.getProtocol(), options)) {
             final StringAppender message = new StringAppender();
             if(options.password) {
                 message.append(MessageFormat.format(LocaleFactory.localizedString(
