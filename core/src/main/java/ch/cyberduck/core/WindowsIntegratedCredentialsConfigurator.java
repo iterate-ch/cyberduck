@@ -19,16 +19,23 @@ import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
 import org.apache.http.impl.client.WinHttpClients;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WindowsIntegratedCredentialsConfigurator implements CredentialsConfigurator {
+    private static final Logger log = LogManager.getLogger(WindowsIntegratedCredentialsConfigurator.class);
 
     @Override
     public Credentials configure(final Host host) {
         if(new HostPreferences(host).getBoolean("webdav.ntlm.windows.authentication.enable")) {
             if(WinHttpClients.isWinAuthAvailable()) {
                 if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+                    final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Configure %s with username %s", host, nameSamCompatible));
+                    }
                     return new Credentials(host.getCredentials())
-                            .withUsername(CurrentWindowsCredentials.INSTANCE.getName())
+                            .withUsername(nameSamCompatible)
                             .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
                 }
             }
