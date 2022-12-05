@@ -148,21 +148,17 @@ public class SFTPSession extends Session<SSHClient> {
                 log.info(String.format("Connect using jump host configuration %s", proxy));
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
-                proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
+                final Credentials proxyCredentials = new OpenSSHCredentialsConfigurator().configure(proxy);
+                proxy.setCredentials(proxyCredentials);
+                final KeychainLoginService service = new KeychainLoginService();
+                service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Authenticated with jump host %s", proxy));
                 }
-                if(proxy.getCredentials().isSaved()) {
-                    // Write credentials to keychain
-                    try {
-                        PasswordStoreFactory.get().save(proxy);
-                    }
-                    catch(LocalAccessDeniedException e) {
-                        log.error(String.format("Failure saving credentials for %s in keychain. %s", proxy, e));
-                    }
-                }
+                // Write credentials to keychain
+                service.save(proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
                         new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
                 // Connect to internal host

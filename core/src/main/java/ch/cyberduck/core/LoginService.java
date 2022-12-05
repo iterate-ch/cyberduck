@@ -28,11 +28,10 @@ public interface LoginService {
      * Obtain password from keychain or prompt panel
      *
      * @param bookmark Credentials
-     * @param message  Prompt message
      * @param pompt    Login prompt
      * @param options  Login mechanism features
      */
-    void validate(Host bookmark, String message, LoginCallback pompt, LoginOptions options) throws LoginCanceledException, LoginFailureException;
+    void validate(Host bookmark, LoginCallback pompt, LoginOptions options) throws LoginCanceledException, LoginFailureException;
 
     /**
      * Login and prompt on failure
