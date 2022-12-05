@@ -21,6 +21,7 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,6 +42,12 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     }
 
     public Path find(final Context files) {
+        if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Missing username for %s", bookmark));
+            }
+            return null;
+        }
         final Path workdir = new Path(new Path(String.format("/remote.php/dav/%s", files.name()), EnumSet.of(Path.Type.directory)),
                 URIEncoder.encode(bookmark.getCredentials().getUsername()), EnumSet.of(Path.Type.directory));
         if(log.isDebugEnabled()) {
