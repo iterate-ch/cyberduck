@@ -25,7 +25,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
@@ -41,7 +40,6 @@ import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHIdentitiesOnlyConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
@@ -277,30 +275,25 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-            if(new OpenSSHIdentitiesOnlyConfigurator().isIdentitiesOnly(host.getHostname())) {
-                log.warn("Skip reading keys from SSH agent with IdentitiesOnly configuration");
-            }
-            else {
-                switch(Factory.Platform.getDefault()) {
-                    case windows:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
-                        try {
-                            defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
-                        }
-                        catch(AgentProxyException e) {
-                            log.warn(String.format("Agent proxy failed with %s", e));
-                        }
-                        break;
-                    default:
-                        try {
-                            defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(
-                                    new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname()))));
-                        }
-                        catch(AgentProxyException e) {
-                            log.warn(String.format("Agent proxy failed with %s", e));
-                        }
-                        break;
-                }
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                    try {
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
+                    }
+                    catch(AgentProxyException e) {
+                        log.warn(String.format("Agent proxy failed with %s", e));
+                    }
+                    break;
+                default:
+                    try {
+                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(
+                                new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname()))));
+                    }
+                    catch(AgentProxyException e) {
+                        log.warn(String.format("Agent proxy failed with %s", e));
+                    }
+                    break;
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
