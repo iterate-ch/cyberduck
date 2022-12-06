@@ -25,15 +25,27 @@ import com.jcraft.jsch.agentproxy.USocketFactory;
 import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 
 public class WindowsOpenSSHAgentAuthenticator extends OpenSSHAgentAuthenticator {
+    private final static String SSH_AGENT_PIPE = "\\\\.\\pipe\\openssh-ssh-agent";
 
-    public WindowsOpenSSHAgentAuthenticator() throws AgentProxyException {
-        super(new AgentProxy(new SSHAgentConnector(new RandomAccessFileSocketFactory(), "\\\\.\\pipe\\openssh-ssh-agent")));
+    public WindowsOpenSSHAgentAuthenticator(final String socketPath) throws AgentProxyException {
+        super(new AgentProxy(new SSHAgentConnector(new RandomAccessFileSocketFactory(), fixupSocketPath(socketPath))));
+    }
+
+    static String fixupSocketPath(final String path) {
+        if(path == null) {
+            return SSH_AGENT_PIPE;
+        }
+        return path;
     }
 
     /**
      * Implements a wrapper around RandomAccessFile for use with jsch's SSH connector to support Windows' OpenSSH fork.
      */
     private static class RandomAccessFileSocketFactory implements USocketFactory {
+        public Socket open(String path) throws IOException {
+            return new WindowsSocket(path);
+        }
+
         static class WindowsSocket extends Socket {
             private final RandomAccessFile raf;
 
@@ -58,10 +70,6 @@ public class WindowsOpenSSHAgentAuthenticator extends OpenSSHAgentAuthenticator 
             public void close() throws IOException {
                 raf.close();
             }
-        }
-
-        public Socket open(String path) throws IOException {
-            return new WindowsSocket(path);
         }
     }
 }

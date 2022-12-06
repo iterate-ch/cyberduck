@@ -281,11 +281,13 @@ public class SFTPSession extends Session<SSHClient> {
                 log.warn("Skip reading keys from SSH agent with IdentitiesOnly configuration");
             }
             else {
+                final String identityAgent = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
                 switch(Factory.Platform.getDefault()) {
                     case windows:
                         defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                         try {
-                            defaultMethods.add(new SFTPAgentAuthentication(client, new WindowsOpenSSHAgentAuthenticator()));
+                            defaultMethods.add(new SFTPAgentAuthentication(client,
+                                    new WindowsOpenSSHAgentAuthenticator(identityAgent)));
                         }
                         catch(AgentProxyException e) {
                             log.warn(String.format("Agent proxy failed with %s", e));
@@ -293,8 +295,8 @@ public class SFTPSession extends Session<SSHClient> {
                         break;
                     default:
                         try {
-                            defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator(
-                                    new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname()))));
+                            defaultMethods.add(new SFTPAgentAuthentication(client,
+                                    new OpenSSHAgentAuthenticator(identityAgent)));
                         }
                         catch(AgentProxyException e) {
                             log.warn(String.format("Agent proxy failed with %s", e));
