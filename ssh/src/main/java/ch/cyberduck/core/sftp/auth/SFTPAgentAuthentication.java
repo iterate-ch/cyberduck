@@ -16,6 +16,7 @@ package ch.cyberduck.core.sftp.auth;
  */
 
 import ch.cyberduck.core.AuthenticationProvider;
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -55,7 +56,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s for %s", agent, bookmark));
         }
-        for(Identity identity : this.filterIdentities(bookmark, agent.getIdentities())) {
+        for(Identity identity : this.filter(bookmark.getCredentials(), agent.getIdentities())) {
             try {
                 client.auth(bookmark.getCredentials().getUsername(), new AuthAgent(agent.getProxy(), identity));
                 // Successfully authenticated
@@ -80,9 +81,9 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         return "publickey";
     }
 
-    protected Collection<Identity> filterIdentities(final Host bookmark, final Collection<Identity> identities) {
-        if(bookmark.getCredentials().isPublicKeyAuthentication()) {
-            final Local selected = bookmark.getCredentials().getIdentity();
+    protected Collection<Identity> filter(final Credentials credentials, final Collection<Identity> identities) {
+        if(credentials.isPublicKeyAuthentication()) {
+            final Local selected = credentials.getIdentity();
             for(Identity identity : identities) {
                 if(identity.getComment() != null) {
                     final String candidate = new String(identity.getComment(), StandardCharsets.UTF_8);
