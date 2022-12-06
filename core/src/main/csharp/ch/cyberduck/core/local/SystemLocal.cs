@@ -177,9 +177,12 @@ namespace Ch.Cyberduck.Core.Local
                     char c = (char)reader.Read();
                     if (c == Path.AltDirectorySeparatorChar || c == Path.DirectorySeparatorChar)
                     {
-                        writer.Write(segmentBuilder.ToString().Trim());
-                        writer.Write(Path.DirectorySeparatorChar);
-                        segmentBuilder.Clear();
+                        if (segmentBuilder.Length > 0)
+                        {
+                            writer.Write(segmentBuilder.ToString().Trim());
+                            writer.Write(Path.DirectorySeparatorChar);
+                            segmentBuilder.Clear();
+                        }
                     }
                     else if (Array.IndexOf(invalid, c) != -1)
                     {
