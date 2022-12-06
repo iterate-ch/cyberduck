@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.jcraft.jsch.agentproxy.CustomIdentity;
 import com.jcraft.jsch.agentproxy.Identity;
 import com.jcraft.jsch.agentproxy.sshj.AuthAgent;
 import net.schmizz.sshj.SSHClient;
@@ -73,7 +74,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
                     final InputStream in = identity.getInputStream();
                     final ByteArrayOutputStream out = IOUtils.readFully(in);
                     final byte[] blob = out.toByteArray();
-                    identities = Collections.singletonList(new Identity(blob, blob));
+                    identities = Collections.singletonList(new CustomIdentity(blob));
                 }
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
