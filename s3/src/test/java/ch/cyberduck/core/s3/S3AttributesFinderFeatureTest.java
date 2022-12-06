@@ -72,6 +72,9 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(-1L, attributes.getSize());
         assertNotNull(attributes.getRegion());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
+        final PathAttributes listAttributes = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
+                container.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(container)).attributes();
+        assertEquals(attributes, listAttributes);
     }
 
     @Test(expected = NotfoundException.class)

@@ -21,6 +21,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -58,28 +59,34 @@ public class S3BucketListService implements RootListService {
             final AttributedList<Path> buckets = new AttributedList<>();
             // List all buckets owned
             for(StorageBucket b : session.getClient().listAllBuckets()) {
-                final Path bucket = new Path(PathNormalizer.normalize(b.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                final PathAttributes attr = new PathAttributes();
+                final Path bucket = new Path(PathNormalizer.normalize(b.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory), attr);
                 if(b.getOwner() != null) {
                     // Null if the owner is not available
-                    bucket.attributes().setOwner(b.getOwner().getId());
+                    attr.setOwner(b.getOwner().getId());
                 }
-                bucket.attributes().setCreationDate(b.getCreationDate().getTime());
+                attr.setCreationDate(b.getCreationDate().getTime());
                 if(b.isLocationKnown()) {
-                    bucket.attributes().setRegion(b.getLocation());
+                    attr.setRegion(b.getLocation());
                 }
-                if(region.getIdentifier() != null) {
-                    final String location;
-                    if(!b.isLocationKnown()) {
-                        location = session.getFeature(Location.class).getLocation(bucket).getIdentifier();
+                else {
+                    if(region.getIdentifier() != null) {
+                        final String location;
+                        if(!b.isLocationKnown()) {
+                            location = session.getFeature(Location.class).getLocation(bucket).getIdentifier();
+                        }
+                        else {
+                            location = b.getLocation();
+                        }
+                        if(!StringUtils.equals(location, region.getIdentifier())) {
+                            log.warn(String.format("Skip bucket %s in region %s", bucket, location));
+                            continue;
+                        }
+                        attr.setRegion(location);
                     }
                     else {
-                        location = b.getLocation();
+                        attr.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(bucket).getIdentifier());
                     }
-                    if(!StringUtils.equals(location, region.getIdentifier())) {
-                        log.warn(String.format("Skip bucket %s in region %s", bucket, location));
-                        continue;
-                    }
-                    bucket.attributes().setRegion(location);
                 }
                 buckets.add(bucket);
                 listener.chunk(directory, buckets);
