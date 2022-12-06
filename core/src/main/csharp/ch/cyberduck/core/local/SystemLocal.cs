@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using System.Text;
 using ch.cyberduck.core;
+using java.nio.file;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.logging.log4j;
@@ -32,19 +33,17 @@ namespace Ch.Cyberduck.Core.Local
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
 
         public SystemLocal(string parent, string name)
-            : base(parent, MakeValidFilename(name))
+            : base(parent, name)
         {
         }
 
         public SystemLocal(ch.cyberduck.core.Local parent, string name)
-            : base(parent, MakeValidFilename(name))
+            : base(parent, name)
         {
         }
 
         public SystemLocal(string path)
-            : base(
-                Path.Combine(FilenameUtils.getPrefix(path), MakeValidPath(FilenameUtils.getPath(path))) +
-                MakeValidFilename(FilenameUtils.getName(path)))
+            : base(Sanitize(path))
         {
         }
 
@@ -83,62 +82,119 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
-        private static string MakeValidPath(string path)
+        private static string Sanitize(string name)
         {
-            if (Utils.IsNotBlank(path))
+            if (name is null)
             {
-                path = FilenameUtils.separatorsToSystem(path);
-                string prefix = FilenameUtils.getPrefix(path);
-                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                {
-                    path = path + Path.DirectorySeparatorChar;
-                }
+                return null;
+            }
+            using StringWriter writer = new();
+            using StringReader reader = new(name);
 
-                path = FilenameUtils.getPath(path);
-                StringBuilder sb = new StringBuilder();
-                if (Utils.IsNotBlank(prefix))
-                {
-                    sb.Append(prefix);
-                }
+            char c = default;
+            if (reader.Read() is int p && p == -1)
+            {
+                return null;
+            }
+            c = (char)p;
 
-                path = FilenameUtils.separatorsToSystem(path);
-                string[] parts = path.Split(Path.DirectorySeparatorChar);
-                foreach (string part in parts)
+            if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
+            {
+                if (reader.Peek() == -1)
                 {
-                    string cleanpart = part.Trim();
-                    char[] invalidChars = Path.GetInvalidFileNameChars();
-                    if (StringUtils.containsAny(cleanpart, invalidChars))
+                    // this is "\" or "/", not supported.
+                    return null;
+                }
+                writer.Write(Path.DirectorySeparatorChar);
+                c = (char)reader.Read();
+                if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
+                {
+                    using StringWriter hostBuffer = new();
+                    // UNC-path continue.
+                    while (reader.Peek() != -1)
                     {
-                        foreach (char c in invalidChars)
+                        c = (char)reader.Peek();
+                        if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
                         {
-                            cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c.ToString()));
+                            break;
                         }
+                        hostBuffer.Write((char)reader.Read());
                     }
-
-                    sb.Append(cleanpart);
-                    if (!parts[parts.Length - 1].Equals(part))
+                    if (hostBuffer.GetStringBuilder().Length == 0)
                     {
-                        sb.Append(Path.DirectorySeparatorChar);
+                        // what is this? "\\\"
+                        return null;
+                    }
+                    writer.Write(Path.DirectorySeparatorChar);
+                    // allow everything. This _may_ be bad, _but_ Local uses `Paths.get()` thus we don't need to do any more sanitization here.
+                    writer.Write(hostBuffer.ToString());
+                }
+                else
+                {
+                    // this is something different than "\\" and "//", ignore as not supported
+                    return null;
+                }
+            }
+            else
+            {
+                /// <see cref="System.Char.IsLetter(char)" />
+                var letter = (c | 0x20) - 'a';
+                if (letter < 0 || letter > 25)
+                {
+                    // letter is not in range A to Z.
+                    return null;
+                }
+                // change lowercase letter to uppercase
+                writer.Write((char)(c & ~0x20));
+                if (reader.Peek() != Path.VolumeSeparatorChar)
+                {
+                    // this is something like C\, CX, C/, 
+                    return null;
+                }
+                writer.Write((char)reader.Read());
+                // at X:, following is only a path, thus pass on to shared implementation
+            }
+            SanitizePath(reader, writer);
+
+            return writer.ToString();
+
+            static void ApplyRoot(StringReader reader, StringWriter writer)
+            {
+                if (reader.Peek() is int p && (p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar))
+                {
+                    reader.Read();
+                }
+                writer.Write(Path.DirectorySeparatorChar);
+            }
+
+            static void SanitizePath(StringReader reader, StringWriter writer)
+            {
+                var invalid = Path.GetInvalidFileNameChars();
+                ApplyRoot(reader, writer);
+                StringBuilder segmentBuilder = new();
+                while (reader.Peek() != -1)
+                {
+                    char c = (char)reader.Read();
+                    if (c == Path.AltDirectorySeparatorChar || c == Path.DirectorySeparatorChar)
+                    {
+                        writer.Write(segmentBuilder.ToString().Trim());
+                        writer.Write(Path.DirectorySeparatorChar);
+                        segmentBuilder.Clear();
+                    }
+                    else if (Array.IndexOf(invalid, c) != -1)
+                    {
+                        segmentBuilder.Append('_');
+                    }
+                    else
+                    {
+                        segmentBuilder.Append(c);
                     }
                 }
-
-                return sb.ToString();
-            }
-
-            return path;
-        }
-
-        private static string MakeValidFilename(string name)
-        {
-            if (Utils.IsNotBlank(name))
-            {
-                foreach (char c in Path.GetInvalidFileNameChars())
+                if (segmentBuilder.Length != 0)
                 {
-                    name = name.Replace(c.ToString(), "_");
+                    writer.Write(segmentBuilder.ToString().Trim());
                 }
             }
-
-            return name.Trim();
         }
     }
 }
