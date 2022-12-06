@@ -105,8 +105,7 @@ public class GoogleStorageObjectListService implements ListService {
                 if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                     request.setUserProject(session.getHost().getCredentials().getUsername());
                 }
-                response = request
-                        .execute();
+                response = request.execute();
                 if(response.getItems() != null) {
                     for(StorageObject object : response.getItems()) {
                         final String key = PathNormalizer.normalize(object.getName());
@@ -189,7 +188,7 @@ public class GoogleStorageObjectListService implements ListService {
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 throw new NotfoundException(directory.getAbsolute());
             }
-            return objects.filter((o1, o2) -> session.getHost().getProtocol().getListComparator().compare(o1.getName(), o2.getName()));
+            return objects;
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Listing directory {0} failed", e, directory);
