@@ -110,7 +110,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Auto configure credentials with %s", configurator));
             }
-            configurator.configure(bookmark);
+            bookmark.setCredentials(configurator.configure(bookmark));
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
             final StringAppender message = new StringAppender();
