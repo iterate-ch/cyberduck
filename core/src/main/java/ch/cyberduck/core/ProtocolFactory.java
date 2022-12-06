@@ -106,6 +106,9 @@ public final class ProtocolFactory {
         this.load(new LocalProfilesFinder(this, bundle, DEFAULT_PROTOCOL_PREDICATE));
         // Load thirdparty protocols
         this.load(new LocalProfilesFinder(this, profiles, BUNDLED_PROFILE_PREDICATE));
+        if(registered.isEmpty()) {
+            log.error(String.format("No connection profiles in %s or %s", bundle, profiles));
+        }
     }
 
     /**
