@@ -25,6 +25,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
@@ -35,6 +36,8 @@ public class GoogleStorageBucketListServiceTest extends AbstractGoogleStorageTes
         final Path container = new Path("/", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> list = new GoogleStorageBucketListService(session).list(container, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        for(Path bucket : list) {
+            assertEquals(bucket.attributes(), new GoogleStorageAttributesFinderFeature(session).find(bucket, new DisabledListProgressListener()));
+        }
     }
-
 }
