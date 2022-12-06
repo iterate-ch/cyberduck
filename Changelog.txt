@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.2
+- [Bugfix] Invalid syntax in Open in Terminal command (SFTP, macOS)
+- [Bugfix] Passwords for ProxyJump hosts in .ssh/config are not saved (SFTP) (#13936)
+
 8.5.1
 - [Feature] Skip button to allow creating share with no passphrase (Dropbox, Box, ownCloud, Nextcloud) (#13846)
 - [Feature] Redirect to application without requiring to copy authentication code when opening new connection (Dropbox)
