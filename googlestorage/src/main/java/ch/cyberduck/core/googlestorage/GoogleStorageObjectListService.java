@@ -182,7 +182,8 @@ public class GoogleStorageObjectListService implements ListService {
                     }
                 }
                 page = response.getNextPageToken();
-                listener.chunk(directory, objects.filter((o1, o2) -> session.getHost().getProtocol().getListComparator().compare(o1.getName(), o2.getName())));
+                objects.filter(objects, (o1, o2) -> session.getHost().getProtocol().getListComparator().compare(o1.getName(), o2.getName()), null);
+                listener.chunk(directory, objects);
             }
             while(page != null);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
