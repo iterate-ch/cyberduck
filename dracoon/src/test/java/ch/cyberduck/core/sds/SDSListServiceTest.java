@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultPathPredicate;
@@ -36,6 +37,20 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SDSListServiceTest extends AbstractSDSTest {
+
+    @Test
+    public void testListRoot() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path directory = new Path("/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new SDSListService(session, nodeid).list(
+                directory, new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        for(Path f : list) {
+            assertSame(directory, f.getParent());
+            assertEquals(f.attributes(), new SDSAttributesFinderFeature(session, nodeid).find(f));
+        }
+    }
 
     @Test
     public void testList() throws Exception {
