@@ -65,7 +65,8 @@ public class StoregateIdProvider extends CachingFileIdProvider implements FileId
     }
 
     /**
-     * Mapping of path "/Home/mduck" to "My files" Mapping of path "/Common" to "Common files"
+     * Mapping of path "/Home/mduck" to "My files"
+     * Mapping of path "/Common" to "Common files"
      */
     protected String getPrefixedPath(final Path file) {
         final PathContainerService service = new DefaultPathContainerService();
