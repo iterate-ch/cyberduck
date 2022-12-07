@@ -1,34 +1,32 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
+using ch.cyberduck.core;
+using org.apache.logging.log4j;
 using System;
 using System.IO;
 using System.Text;
-using ch.cyberduck.core;
-using java.nio.file;
-using org.apache.commons.io;
-using org.apache.commons.lang3;
-using org.apache.logging.log4j;
+using CoreLocal = ch.cyberduck.core.Local;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public class SystemLocal : ch.cyberduck.core.Local
+    public class SystemLocal : CoreLocal
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
 
@@ -37,7 +35,7 @@ namespace Ch.Cyberduck.Core.Local
         {
         }
 
-        public SystemLocal(ch.cyberduck.core.Local parent, string name)
+        public SystemLocal(CoreLocal parent, string name)
             : base(parent, name)
         {
         }
@@ -45,21 +43,6 @@ namespace Ch.Cyberduck.Core.Local
         public SystemLocal(string path)
             : base(Sanitize(path))
         {
-        }
-
-        public override char getDelimiter()
-        {
-            return '\\';
-        }
-
-        public override bool isRoot()
-        {
-            return getAbsolute().Equals(Directory.GetDirectoryRoot(getAbsolute()));
-        }
-
-        public override String getAbbreviatedPath()
-        {
-            return getAbsolute();
         }
 
         public override bool exists()
@@ -76,6 +59,20 @@ namespace Ch.Cyberduck.Core.Local
             }
             return false;
         }
+
+        public override String getAbbreviatedPath()
+        {
+            return getAbsolute();
+        }
+
+        public override char getDelimiter()
+        {
+            return '\\';
+        }
+
+        public override CoreLocal getVolume() => LocalFactory.get(Path.GetPathRoot(getAbsolute()));
+
+        public override bool isRoot() => getAbsolute().Equals(Path.GetPathRoot(getAbsolute()));
 
         public override bool isSymbolicLink()
         {
@@ -148,7 +145,7 @@ namespace Ch.Cyberduck.Core.Local
                 writer.Write((char)(c & ~0x20));
                 if (reader.Peek() != Path.VolumeSeparatorChar)
                 {
-                    // this is something like C\, CX, C/, 
+                    // this is something like C\, CX, C/,
                     return null;
                 }
                 writer.Write((char)reader.Read());
