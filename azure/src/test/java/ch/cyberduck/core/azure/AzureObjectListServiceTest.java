@@ -4,6 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -69,13 +70,23 @@ public class AzureObjectListServiceTest extends AbstractAzureTest {
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
-                "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+                "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         );
         for(String f : files) {
             new AzureTouchFeature(session, null).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         files.sort(session.getHost().getProtocol().getListComparator());
-        final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener());
+        final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path file) {
+                assertEquals(files.get(index), file.getName());
+            }
+        });
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
             new AzureDeleteFeature(session, null).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -21,6 +21,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -182,14 +183,24 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Path directory = new SwiftDirectoryFeature(session, regionService).mkdir(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
-                "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+                "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         );
+        files.sort(session.getHost().getProtocol().getListComparator());
+        assertTrue(new SwiftObjectListService(session, regionService).list(directory, new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path file) {
+                assertEquals(files.get(index), file.getName());
+            }
+        }).isEmpty());
         for(String f : files) {
             new SwiftTouchFeature(session, regionService).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
-        files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
