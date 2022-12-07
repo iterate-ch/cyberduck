@@ -54,13 +54,13 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     };
 
     private final List<E> impl
-        = new CopyOnWriteArrayList<>();
+            = new CopyOnWriteArrayList<>();
 
     /**
      * Metadata of file listing
      */
     private final AttributedListAttributes<E> attributes
-        = new AttributedListAttributes<E>().withTimestamp(System.currentTimeMillis());
+            = new AttributedListAttributes<E>().withTimestamp(System.currentTimeMillis());
 
     /**
      * Initialize an attributed list with default attributes
@@ -129,32 +129,21 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     }
 
     /**
-     * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
-     * makes use of it. Provide our own implementation here to circumvent.
+     * Return filtered list
      *
-     * @param copy       The list copy to sort
-     * @param comparator The comparator to use
-     * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
-     * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
-     */
-    private void doSort(final List<E> copy, final Comparator<E> comparator) {
-        if(null == comparator) {
-            return;
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Sort list %s with comparator %s", this, comparator));
-        }
-        copy.sort(comparator);
-    }
-
-    /**
      * @param filter Filter
-     * @return Unsorted filtered list
+     * @return Unsorted filtered list. Does not modify this list but returns a copy instead.
      */
     public AttributedList<E> filter(final Filter<E> filter) {
         return this.filter(null, filter);
     }
 
+    /**
+     * Return sorted list
+     *
+     * @param comparator Sorting comparator
+     * @return Does not modify this list but returns a copy instead.
+     */
     public AttributedList<E> filter(final Comparator<E> comparator) {
         return this.filter(comparator, null);
     }
@@ -162,12 +151,24 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
     /**
      * @param comparator The comparator to use
      * @param filter     Filter
-     * @return Filtered list sorted with comparator
+     * @return Filtered list sorted with comparator. Does not modify this list but returns a copy instead.
      */
     public AttributedList<E> filter(final Comparator<E> comparator, final Filter<E> filter) {
-        final AttributedList<E> filtered = new AttributedList<>(impl);
+        return this.filter(new AttributedList<>(impl), comparator, filter);
+    }
+
+    /**
+     * @param filtered   Result set
+     * @param comparator The comparator to use
+     * @param filter     Filter
+     * @return Filtered list
+     */
+    public AttributedList<E> filter(final AttributedList<E> filtered, final Comparator<E> comparator, final Filter<E> filter) {
         if(null != comparator) {
-            this.doSort(filtered.impl, comparator);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Sort list %s with comparator %s", this, comparator));
+            }
+            filtered.impl.sort(comparator);
         }
         if(null != filter) {
             if(log.isDebugEnabled()) {
