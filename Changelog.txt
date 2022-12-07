@@ -4,6 +4,7 @@ https://cyberduck.io/
 8.5.2
 - [Bugfix] Invalid syntax in Open in Terminal command (SFTP, macOS)
 - [Bugfix] Passwords for ProxyJump hosts in .ssh/config are not saved (SFTP) (#13936)
+- [Bugfix] Files in vault not decrypted (Cryptomator, Google Storage) (#13949)
 
 8.5.1
 - [Feature] Skip button to allow creating share with no passphrase (Dropbox, Box, ownCloud, Nextcloud) (#13846)
