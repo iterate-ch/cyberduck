@@ -21,12 +21,16 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
+import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
+
+import java.util.Optional;
 
 public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileMetadata> {
 
@@ -41,6 +45,15 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
+            if(!file.isRoot()) {
+                if(file.getParent().isRoot()) {
+                    final Optional<RootFolder> root = session.roots().stream().filter(rootFolder -> rootFolder.getName().equals(file.getName())).findFirst();
+                    if(root.isPresent()) {
+                        return this.toAttributes(root.get());
+                    }
+                    throw new NotfoundException(file.getAbsolute());
+                }
+            }
             final FilesApi files = new FilesApi(session.getClient());
             return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));
         }
@@ -103,6 +116,33 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
             attrs.setCreationDate(f.getCreated().getMillis());
         }
         attrs.setSize(f.getFileSize());
+        if((f.getFlags() & 4) == 4) {
+            // This item is locked by some user
+            attrs.setLockId(Boolean.TRUE.toString());
+        }
+        if((f.getFlags() & 512) == 512) {
+            // This item is hidden
+            attrs.setHidden(true);
+        }
+        attrs.setFileId(f.getId());
+        return attrs;
+    }
+
+    public PathAttributes toAttributes(final RootFolder f) {
+        final PathAttributes attrs = new PathAttributes();
+        if(0 != f.getModified().getMillis()) {
+            attrs.setModificationDate(f.getModified().getMillis());
+        }
+        else {
+            attrs.setModificationDate(f.getUploaded().getMillis());
+        }
+        if(0 != f.getCreated().getMillis()) {
+            attrs.setCreationDate(f.getCreated().getMillis());
+        }
+        else {
+            attrs.setCreationDate(f.getUploaded().getMillis());
+        }
+        attrs.setSize(f.getSize());
         if((f.getFlags() & 4) == 4) {
             // This item is locked by some user
             attrs.setLockId(Boolean.TRUE.toString());
