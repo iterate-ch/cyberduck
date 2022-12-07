@@ -194,7 +194,13 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             else {
                 if(file.isFile()) {
                     // Free space on disk
-                    long space = Paths.get(local.getParent().getAbsolute()).toFile().getUsableSpace();
+                    long space = 0L;
+                    try {
+                        space = Paths.get(local.getParent().getAbsolute()).toFile().getUsableSpace();
+                    }
+                    catch(RuntimeException re) {
+                        log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
+                    }
                     long threshold = preferences.getLong("queue.download.segments.threshold");
                     if(status.getLength() * 2 > space) {
                         log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
