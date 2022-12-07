@@ -38,6 +38,8 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     public static final String EXTENSION_REGULAR = ".c9r";
     public static final String FILENAME_DIRECTORYID = "dir";
     public static final String DIRECTORY_METADATAFILE = String.format("%s%s", FILENAME_DIRECTORYID, EXTENSION_REGULAR);
+    public static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
+    public static final String BACKUP_DIRECTORY_METADATAFILE = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, EXTENSION_REGULAR);
 
     private final CryptoVault cryptomator;
 
