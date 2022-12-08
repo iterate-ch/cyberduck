@@ -19,13 +19,17 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.DisabledAttributesComparison;
+import ch.cyberduck.core.comparison.ETagAttributesComparison;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class CteraProtocol extends AbstractProtocol {
 
     public static final String CTERA_REDIRECT_URI = String.format("%s:websso",
-        PreferencesFactory.get().getProperty("oauth.handler.scheme"));
+            PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     @Override
     public Type getType() {
@@ -80,5 +84,13 @@ public class CteraProtocol extends AbstractProtocol {
     @Override
     public String getTokenPlaceholder() {
         return "CTERA Token";
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new ETagAttributesComparison(), new DisabledAttributesComparison());
+        }
+        return super.getFeature(type);
     }
 }
