@@ -46,11 +46,13 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testList() throws Exception {
-        final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new DriveDefaultListService(session, new DriveFileIdProvider(session)).list(directory, new DisabledListProgressListener());
+        final Path directory = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertSame(directory, f.getParent());
+            assertEquals(f.attributes(), new DriveAttributesFinderFeature(session, fileid).find(f));
             if(!f.isVolume()) {
                 assertNotNull(f.attributes().getFileId());
             }
@@ -80,7 +82,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertEquals(file.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(f).getFileId());
+            assertEquals(file.attributes(), new DriveAttributesFinderFeature(session, fileid).find(f));
             break;
         }
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
