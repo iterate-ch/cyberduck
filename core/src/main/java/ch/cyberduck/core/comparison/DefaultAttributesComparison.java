@@ -17,6 +17,7 @@ package ch.cyberduck.core.comparison;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.synchronization.Comparison;
 
@@ -25,7 +26,7 @@ public class DefaultAttributesComparison implements AttributesComparison {
     private final AttributesComparison files;
     private final AttributesComparison directories;
 
-    public DefaultAttributesComparison() {
+    public DefaultAttributesComparison(final Protocol protocol) {
         this(new ChainedAttributesComparison(
                         new ChecksumAttributesComparison(),
                         new ETagAttributesComparison(),
@@ -34,7 +35,8 @@ public class DefaultAttributesComparison implements AttributesComparison {
                         new SizeAttributesComparison()),
                 new ChainedAttributesComparison(
                         new RevisionAttributesComparison(),
-                        new ETagAttributesComparison()));
+                        new ETagAttributesComparison(),
+                        protocol.getDirectoryTimestamp() == Protocol.DirectoryTimestamp.implicit ? new TimestampAttributesComparison() : new DisabledAttributesComparison()));
     }
 
     public DefaultAttributesComparison(final AttributesComparison files, final AttributesComparison directories) {

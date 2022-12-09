@@ -400,7 +400,7 @@ public abstract class AbstractProtocol implements Protocol {
             return (T) new DefaultWebUrlProvider();
         }
         if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison();
+            return (T) new DefaultAttributesComparison(this);
         }
         return null;
     }
