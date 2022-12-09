@@ -21,6 +21,9 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.TimestampAttributesComparison;
+import ch.cyberduck.core.features.AttributesComparison;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -88,5 +91,13 @@ public class FTPTLSProtocol extends AbstractProtocol {
     @Override
     public boolean isAnonymousConfigurable() {
         return true;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new TimestampAttributesComparison(), new TimestampAttributesComparison());
+        }
+        return super.getFeature(type);
     }
 }

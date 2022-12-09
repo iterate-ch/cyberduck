@@ -23,6 +23,9 @@ import ch.cyberduck.core.HostnameConfigurator;
 import ch.cyberduck.core.JumphostConfigurator;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.TimestampAttributesComparison;
+import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
@@ -93,5 +96,13 @@ public class SFTPProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new TimestampAttributesComparison(), new TimestampAttributesComparison());
+        }
+        return super.getFeature(type);
     }
 }
