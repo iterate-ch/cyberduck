@@ -22,20 +22,27 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.TimestampComparisonService;
 
-import java.util.TimeZone;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TimestampAttributesComparison implements AttributesComparison {
-
-    private final TimeZone tz;
-
-    public TimestampAttributesComparison(final TimeZone tz) {
-        this.tz = tz;
-    }
+    private static final Logger log = LogManager.getLogger(TimestampAttributesComparison.class);
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes file, final PathAttributes other) {
-        return new TimestampComparisonService(tz).compare(file, other);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Compare timestamp for %s with %s", file, other));
+        }
+        if(-1L != file.getModificationDate() && -1L != other.getModificationDate()) {
+            if(file.getModificationDate() < other.getModificationDate()) {
+                return Comparison.remote;
+            }
+            if(file.getModificationDate() > other.getModificationDate()) {
+                return Comparison.local;
+            }
+            return Comparison.equal;
+        }
+        return Comparison.unknown;
     }
 }

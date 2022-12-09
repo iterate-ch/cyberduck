@@ -20,8 +20,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.synchronization.Comparison;
 
-import java.util.TimeZone;
-
 public class DefaultAttributesComparison implements AttributesComparison {
 
     private final AttributesComparison files;
@@ -32,7 +30,7 @@ public class DefaultAttributesComparison implements AttributesComparison {
                         new ChecksumAttributesComparison(),
                         new ETagAttributesComparison(),
                         new VersionIdAttributesComparison(),
-                        new TimestampAttributesComparison(TimeZone.getDefault()),
+                        new TimestampAttributesComparison(),
                         new SizeAttributesComparison()),
                 new ChainedAttributesComparison(
                         new RevisionAttributesComparison(),
