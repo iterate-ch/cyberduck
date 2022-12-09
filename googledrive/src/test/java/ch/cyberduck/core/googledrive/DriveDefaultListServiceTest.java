@@ -89,6 +89,20 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     }
 
     @Test
+    public void testListMissingFileidOnFolder() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        fileid.cache(directory, null);
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertEquals(f1, list.get(0));
+        assertEquals(f2, list.get(1));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testListLexicographicallyLetters() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
