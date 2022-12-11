@@ -58,7 +58,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         assertTrue(new DefaultFindFeature(session).find(folder));
         {
             // trash folder and recreate it
-            final String fileid = fileidProvider.getFileId(folder, new DisabledListProgressListener());
+            final String fileid = fileidProvider.getFileId(folder);
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();
@@ -75,7 +75,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         }
         {
             // trash recreated folder
-            final String fileid = fileidProvider.getFileId(folder, new DisabledListProgressListener());
+            final String fileid = fileidProvider.getFileId(folder);
             final File body = new File();
             body.set("trashed", true);
             session.getClient().files().update(fileid, body).execute();

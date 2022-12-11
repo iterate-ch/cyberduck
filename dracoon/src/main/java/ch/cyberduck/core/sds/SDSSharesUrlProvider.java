@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -119,7 +118,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 options = new CreateDownloadShareRequest();
                 log.warn(String.format("Use default share options %s", options));
             }
-            final Long fileid = Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()));
+            final Long fileid = Long.parseLong(nodeid.getVersionId(file));
             final Host bookmark = session.getHost();
             if(SDSNodeIdProvider.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
@@ -194,7 +193,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             }
             final Host bookmark = session.getHost();
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
-                    options.targetId(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
+                    options.targetId(Long.parseLong(nodeid.getVersionId(file))), StringUtils.EMPTY, null);
             final String help;
             if(null == share.getExpireAt()) {
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));

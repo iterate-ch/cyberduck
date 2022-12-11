@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -45,7 +44,7 @@ public class SharepointSession extends AbstractSharepointSession {
 
     @Override
     protected Drive findDrive(final ContainerItem driveContainer) throws BackgroundException {
-        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get());
         final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
         if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
             return new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);

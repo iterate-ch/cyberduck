@@ -17,7 +17,6 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -55,7 +54,7 @@ public class StoregateReadFeature implements Read {
         try {
             final StoregateApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/v4/download/files/%s?stream=true", client.getBasePath(),
-                fileid.getFileId(file, new DisabledListProgressListener())));
+                fileid.getFileId(file)));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

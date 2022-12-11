@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -121,7 +120,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
-                    fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                    fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
                             containerService.getKey(file), status.getMime(), fileinfo).getFileId();
                 }
                 else {
@@ -130,7 +129,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
             }
             else {
-                fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                fileId = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
                         containerService.getKey(file), status.getMime(), fileinfo).getFileId();
             }
             // Full size of file

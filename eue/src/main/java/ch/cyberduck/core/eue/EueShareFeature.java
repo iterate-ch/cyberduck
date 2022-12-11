@@ -17,7 +17,6 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -85,7 +84,7 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
 
     private DescriptiveUrl toGuestUrl(final Path file, final ShareCreationRequestModel options, final PasswordCallback callback) throws BackgroundException {
         // Look for existing share
-        final ShareCreationResponseEntity shareForResource = findShareForResource(session.userShares(), fileid.getFileId(file, new DisabledListProgressListener()));
+        final ShareCreationResponseEntity shareForResource = findShareForResource(session.userShares(), fileid.getFileId(file));
         if(null != shareForResource) {
             return EueShareUrlProvider.toUrl(session.getHost(), shareForResource);
         }
@@ -95,7 +94,7 @@ public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestMo
     private ShareCreationResponseEntity createGuestUri(final Path file, final PasswordCallback callback, final ShareCreationRequestModel shareCreationRequestModel) throws BackgroundException {
         final EueApiClient client = new EueApiClient(session);
         final CreateShareApi createShareApi = new CreateShareApi(client);
-        final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+        final String resourceId = fileid.getFileId(file);
         try {
             final ShareCreationRequestModel shareCreationRequestEntries = null != shareCreationRequestModel ? shareCreationRequestModel : this.createShareCreationRequestModel(file, callback);
             final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(resourceId, shareCreationRequestEntries, null, null);

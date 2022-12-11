@@ -19,7 +19,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -216,7 +215,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(423);
         final TransferStatus status = new TransferStatus().withLength(content.length);
-        EueUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(), status, UploadType.SIMPLE);
+        EueUploadHelper.createResource(session, fileid.getFileId(file.getParent()), file.getName(), status, UploadType.SIMPLE);
         final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
         status.withChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());

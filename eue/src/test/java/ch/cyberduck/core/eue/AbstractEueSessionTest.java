@@ -145,7 +145,7 @@ public class AbstractEueSessionTest {
         final ShareCreationRequestModel shareCreationRequestModel = shareFeature.createShareCreationRequestModel(file, disabledPasswordCallback);
         final EueApiClient client = new EueApiClient(session);
         final CreateShareApi createShareApi = new CreateShareApi(client);
-        final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileid.getFileId(file, new DisabledListProgressListener()), shareCreationRequestModel, null, null);
+        final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileid.getFileId(file), shareCreationRequestModel, null, null);
         return shareCreationResponseModel.get("!ano");
     }
 }

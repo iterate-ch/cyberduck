@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
@@ -68,7 +67,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
 
     private Path createFolder(final Path folder) throws BackgroundException, ApiException {
         final CreateFolderRequest folderRequest = new CreateFolderRequest();
-        folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent(), new DisabledListProgressListener())));
+        folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent())));
         folderRequest.setName(folder.getName());
         final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
         nodeid.cache(folder, String.valueOf(node.getId()));
@@ -82,7 +81,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         roomRequest.addAdminIdsItem(user.getId());
         roomRequest.setAdminGroupIds(null);
         if(!room.getParent().isRoot()) {
-            roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(room.getParent(), new DisabledListProgressListener())));
+            roomRequest.setParentId(Long.parseLong(nodeid.getVersionId(room.getParent())));
         }
         roomRequest.setName(room.getName());
         final Node node = new NodesApi(session.getClient()).createRoom(roomRequest, StringUtils.EMPTY, null);
@@ -92,8 +91,8 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
             options.setIsEncrypted(true);
             return room.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(
                     new SDSAttributesAdapter(session).toAttributes(
-                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room,
-                                    new DisabledListProgressListener())), StringUtils.EMPTY, null)));
+                            new NodesApi(session.getClient()).encryptRoom(options, Long.valueOf(nodeid.getVersionId(room
+                            )), StringUtils.EMPTY, null)));
         }
         else {
             return room.withType(EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(

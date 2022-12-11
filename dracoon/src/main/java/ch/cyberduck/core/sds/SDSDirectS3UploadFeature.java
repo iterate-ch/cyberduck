@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -114,7 +113,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                     .directS3Upload(true)
                     .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
                     .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
-                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
+                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);

@@ -17,7 +17,6 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -58,10 +57,10 @@ public class StoregateMoveFeature implements Move {
             final StoregateApiClient client = session.getClient();
             final MoveFileRequest move = new MoveFileRequest()
                 .name(renamed.getName())
-                .parentID(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileId(renamed.getParent()))
                 .mode(1); // Overwrite
             final HttpEntityEnclosingRequestBase request;
-            request = new HttpPost(String.format("%s/v4/files/%s/move", client.getBasePath(), fileid.getFileId(file, new DisabledListProgressListener())));
+            request = new HttpPost(String.format("%s/v4/files/%s/move", client.getBasePath(), fileid.getFileId(file)));
             if(status.getLockId() != null) {
                 request.addHeader("X-Lock-Id", status.getLockId().toString());
             }

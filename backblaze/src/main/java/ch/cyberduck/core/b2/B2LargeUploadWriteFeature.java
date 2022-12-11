@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -123,7 +122,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 }
                 if(0 == partNumber && len < new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.size.minimum")) {
                     // Write single upload
-                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
+                    final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file)));
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                             containerService.getKey(file),
@@ -139,7 +138,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                 }
                 else {
                     if(0 == partNumber) {
-                        startLargeFileResponse.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                        startLargeFileResponse.set(session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(file)),
                                 containerService.getKey(file), overall.getMime(), fileinfo));
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Multipart upload started for %s with ID %s", file, startLargeFileResponse.get().getFileId()));

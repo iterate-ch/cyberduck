@@ -52,7 +52,7 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
             assertTrue(f.attributes().getModificationDate() > 0);
             assertTrue(f.attributes().getCreationDate() > 0);
-            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY), new DisabledListProgressListener()));
+            assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             assertEquals(f.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(f));
         }
     }

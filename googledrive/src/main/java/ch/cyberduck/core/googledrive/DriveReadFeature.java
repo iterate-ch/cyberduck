@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -89,7 +88,7 @@ public class DriveReadFeature implements Read {
             if(file.attributes().isDuplicate()) {
                 // Read previous version
                 try {
-                    final Drive.Revisions.Get request = session.getClient().revisions().get(fileid.getFileId(file, new DisabledListProgressListener()), file.attributes().getVersionId());
+                    final Drive.Revisions.Get request = session.getClient().revisions().get(fileid.getFileId(file), file.attributes().getVersionId());
                     request.setRequestHeaders(headers);
                     return request.executeMediaAsInputStream();
                 }
@@ -100,7 +99,7 @@ public class DriveReadFeature implements Read {
             else {
                 try {
                     try {
-                        final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file, new DisabledListProgressListener()));
+                        final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file));
                         request.setRequestHeaders(headers);
                         request.setSupportsTeamDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"));
                         return request.executeMediaAsInputStream();
@@ -122,7 +121,7 @@ public class DriveReadFeature implements Read {
                                 String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
                     }
                     try {
-                        final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file, new DisabledListProgressListener()));
+                        final Drive.Files.Get request = session.getClient().files().get(fileid.getFileId(file));
                         request.setAcknowledgeAbuse(true);
                         request.setRequestHeaders(headers);
                         request.setSupportsTeamDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"));

@@ -17,7 +17,6 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
@@ -43,12 +42,12 @@ public class StoregateIdProvider extends CachingFileIdProvider implements FileId
     }
 
     @Override
-    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(file.attributes().getFileId())) {
                 return file.attributes().getFileId();
             }
-            final String cached = super.getFileId(file, listener);
+            final String cached = super.getFileId(file);
             if(cached != null) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Return cached fileid %s for file %s", cached, file));

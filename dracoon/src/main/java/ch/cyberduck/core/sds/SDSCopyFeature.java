@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -56,10 +55,10 @@ public class SDSCopyFeature implements Copy {
             new NodesApi(session.getClient()).copyNodes(
                 new CopyNodesRequest()
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source, new DisabledListProgressListener()))))
+                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source))))
                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                 // Target Parent Node ID
-                Long.parseLong(nodeid.getVersionId(target.getParent(), new DisabledListProgressListener())),
+                Long.parseLong(nodeid.getVersionId(target.getParent())),
                 StringUtils.EMPTY, null);
             listener.sent(status.getLength());
             nodeid.cache(target, null);

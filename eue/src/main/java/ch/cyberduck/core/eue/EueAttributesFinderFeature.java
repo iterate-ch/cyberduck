@@ -57,7 +57,7 @@ public class EueAttributesFinderFeature implements AttributesFinder {
         try {
             final EueApiClient client = new EueApiClient(session);
             final UiFsModel response;
-            final String resourceId = fileid.getFileId(file, listener);
+            final String resourceId = fileid.getFileId(file);
             switch(resourceId) {
                 case EueResourceIdProvider.ROOT:
                 case EueResourceIdProvider.TRASH:

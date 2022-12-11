@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -63,7 +62,7 @@ public class SDSMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            final long nodeId = Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()));
+            final long nodeId = Long.parseLong(nodeid.getVersionId(file));
             if(containerService.isContainer(file)) {
                 final Node node = new NodesApi(session.getClient()).updateRoom(
                     new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
@@ -95,7 +94,7 @@ public class SDSMoveFeature implements Move {
                             .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                             .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
                             .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
-                        Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
+                        Long.parseLong(nodeid.getVersionId(renamed.getParent())),
                         StringUtils.EMPTY, null);
                 }
                 nodeid.cache(renamed, file.attributes().getVersionId());

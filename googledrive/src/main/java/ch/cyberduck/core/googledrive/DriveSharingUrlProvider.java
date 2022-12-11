@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -53,7 +52,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
         permission.setRole("reader");
         permission.setType("anyone");
         try {
-            session.getClient().permissions().create(fileid.getFileId(file, new DisabledListProgressListener()), permission)
+            session.getClient().permissions().create(fileid.getFileId(file), permission)
                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {

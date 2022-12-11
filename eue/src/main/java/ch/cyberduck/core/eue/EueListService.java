@@ -54,7 +54,7 @@ public class EueListService implements ListService {
             int offset = 0;
             UiFsModel fsModel;
             do {
-                final String resourceId = fileid.getFileId(directory, listener);
+                final String resourceId = fileid.getFileId(directory);
                 switch(resourceId) {
                     case EueResourceIdProvider.ROOT:
                     case EueResourceIdProvider.TRASH:

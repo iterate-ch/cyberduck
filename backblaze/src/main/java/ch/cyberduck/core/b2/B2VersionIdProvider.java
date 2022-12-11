@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.CachingVersionIdProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,14 +46,14 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
     }
 
     @Override
-    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getVersionId(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
             }
             return file.attributes().getVersionId();
         }
-        final String cached = super.getVersionId(file, listener);
+        final String cached = super.getVersionId(file);
         if(cached != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return cached versionid %s for file %s", cached, file));
@@ -71,7 +70,7 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
                 return this.cache(file, info.getBucketId());
             }
             // Files that have been hidden will not be returned
-            final B2ListFilesResponse response = session.getClient().listFileNames(this.getVersionId(containerService.getContainer(file), listener), containerService.getKey(file), 1);
+            final B2ListFilesResponse response = session.getClient().listFileNames(this.getVersionId(containerService.getContainer(file)), containerService.getKey(file), 1);
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                     // Cache in file attributes

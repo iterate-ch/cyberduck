@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -57,7 +56,7 @@ public class DriveSearchListService extends AbstractDriveListService {
         try {
             // Parent may not be current working directory when searching recursively
             final Set<Path> tree = new HashSet<>();
-            final String workdirId = session.getClient().files().get(fileid.getFileId(directory, new DisabledListProgressListener()))
+            final String workdirId = session.getClient().files().get(fileid.getFileId(directory))
                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute().getId();
             for(String parentid : f.getParents()) {
                 tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>()));

@@ -17,7 +17,6 @@ package ch.cyberduck.core.box;
 
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
 import ch.cyberduck.core.box.io.swagger.client.model.FileIdUploadSessionsBody;
@@ -69,7 +68,7 @@ public class BoxUploadHelper {
             final HttpEntityEnclosingRequestBase request;
             if(status.isExists()) {
                 request = new HttpPost(String.format("%s/files/%s/upload_sessions",
-                        client.getBasePath(), fileid.getFileId(file, new DisabledListProgressListener())));
+                        client.getBasePath(), fileid.getFileId(file)));
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 final FileIdUploadSessionsBody idUploadSessionsBody = new FileIdUploadSessionsBody().fileName(file.getName());
                 if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
@@ -82,7 +81,7 @@ public class BoxUploadHelper {
                 request = new HttpPost(String.format("%s/files/upload_sessions", client.getBasePath()));
                 final ByteArrayOutputStream content = new ByteArrayOutputStream();
                 final FilesUploadSessionsBody uploadSessionsBody = new FilesUploadSessionsBody()
-                        .folderId(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))
+                        .folderId(fileid.getFileId(file.getParent()))
                         .fileName(file.getName());
                 if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
                     uploadSessionsBody.fileSize(status.getLength());

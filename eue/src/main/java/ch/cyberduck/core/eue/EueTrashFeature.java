@@ -15,7 +15,6 @@ package ch.cyberduck.core.eue;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.collections.Partition;
@@ -63,13 +62,13 @@ public class EueTrashFeature implements Trash {
         final List<String> resources = new ArrayList<>();
         try {
             for(Path f : files.keySet()) {
-                switch(fileid.getFileId(f.getParent(), new DisabledListProgressListener())) {
+                switch(fileid.getFileId(f.getParent())) {
                     case EueResourceIdProvider.TRASH:
                         log.warn(String.format("Delete file %s already in trash", f));
-                        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(fileid.getFileId(f, new DisabledListProgressListener())));
+                        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(fileid.getFileId(f)));
                         break;
                     default:
-                        resources.add(fileid.getFileId(f, new DisabledListProgressListener()));
+                        resources.add(fileid.getFileId(f));
                         callback.delete(f);
                 }
             }

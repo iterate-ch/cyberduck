@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
@@ -70,11 +69,11 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public abstract boolean isSingleSite();
 
     public Site getSite(final Path file) throws BackgroundException {
-        return Site.byId(client, fileid.getFileId(file, new DisabledListProgressListener()));
+        return Site.byId(client, fileid.getFileId(file));
     }
 
     public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(client, fileid.getFileId(file, new DisabledListProgressListener()));
+        return new GroupItem(client, fileid.getFileId(file));
     }
 
     @Override
@@ -90,7 +89,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = fileid.getFileId(file, new DisabledListProgressListener());
+        final String versionId = fileid.getFileId(file);
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }

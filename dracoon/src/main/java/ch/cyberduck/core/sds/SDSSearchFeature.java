@@ -58,7 +58,7 @@ public class SDSSearchFeature implements Search {
                         String.format("*%s*", new NFCNormalizer().normalize(regex.toString())),
                         StringUtils.EMPTY,
                         -1,
-                        Long.valueOf(nodeid.getVersionId(workdir, listener)),
+                        Long.valueOf(nodeid.getVersionId(workdir)),
                         null, null, offset, chunksize, StringUtils.EMPTY
                 );
                 for(Node node : nodes.getItems()) {

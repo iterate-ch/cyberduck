@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +39,7 @@ public class B2LargeUploadPartServiceTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-            new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
+            new B2VersionIdProvider(session).getVersionId(bucket),
             file.getName(), null, Collections.emptyMap());
         assertEquals(1, new B2LargeUploadPartService(session, new B2VersionIdProvider(session)).find(file).size());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
@@ -52,10 +51,10 @@ public class B2LargeUploadPartServiceTest extends AbstractB2Test {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2StartLargeFileResponse start1Response = session.getClient().startLargeFileUpload(
-            fileid.getVersionId(bucket, new DisabledListProgressListener()),
+            fileid.getVersionId(bucket),
             file.getName(), null, Collections.emptyMap());
         final B2StartLargeFileResponse start2Response = session.getClient().startLargeFileUpload(
-            fileid.getVersionId(bucket, new DisabledListProgressListener()),
+            fileid.getVersionId(bucket),
                 file.getName(), null, Collections.emptyMap());
         final List<B2FileInfoResponse> list = new B2LargeUploadPartService(session, fileid).find(file);
         assertFalse(list.isEmpty());
@@ -70,7 +69,7 @@ public class B2LargeUploadPartServiceTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-            new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
+            new B2VersionIdProvider(session).getVersionId(bucket),
             file.getName(), null, Collections.emptyMap());
         assertTrue(new B2LargeUploadPartService(session, new B2VersionIdProvider(session)).list(startResponse.getFileId()).isEmpty());
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
@@ -81,7 +80,7 @@ public class B2LargeUploadPartServiceTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-            new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
+            new B2VersionIdProvider(session).getVersionId(bucket),
             file.getName(), null, Collections.emptyMap());
         final String fileid = startResponse.getFileId();
         new B2LargeUploadPartService(session, new B2VersionIdProvider(session)).delete(startResponse.getFileId());

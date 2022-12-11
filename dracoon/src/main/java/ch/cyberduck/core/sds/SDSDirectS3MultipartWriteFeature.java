@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -98,7 +97,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
             final CreateFileUploadRequest createFileUploadRequest = new CreateFileUploadRequest()
                     .directS3Upload(true)
                     .timestampModification(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
-                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
+                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName());
             final CreateFileUploadResponse createFileUploadResponse = new NodesApi(session.getClient())
                     .createFileUploadChannel(createFileUploadRequest, StringUtils.EMPTY);

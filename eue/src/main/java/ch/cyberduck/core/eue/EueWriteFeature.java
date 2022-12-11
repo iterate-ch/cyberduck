@@ -17,7 +17,6 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
@@ -73,12 +72,12 @@ public class EueWriteFeature extends AbstractHttpWriteFeature<EueWriteFeature.Ch
         final String resourceId;
         if(null == status.getUrl()) {
             if(status.isExists()) {
-                resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+                resourceId = fileid.getFileId(file);
                 uploadUri = EueUploadHelper.updateResource(session, resourceId, status, UploadType.SIMPLE).getUploadURI();
             }
             else {
                 final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = EueUploadHelper
-                        .createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                        .createResource(session, fileid.getFileId(file.getParent()), file.getName(),
                                 status, UploadType.SIMPLE);
                 resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
                 uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();

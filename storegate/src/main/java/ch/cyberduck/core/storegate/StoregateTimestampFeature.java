@@ -15,7 +15,6 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -40,7 +39,7 @@ public class StoregateTimestampFeature extends DefaultTimestampFeature {
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
-            files.filesUpdateFile(fileid.getFileId(file, new DisabledListProgressListener()),
+            files.filesUpdateFile(fileid.getFileId(file),
                 new UpdateFilePropertiesRequest().modified(new DateTime(status.getTimestamp())));
         }
         catch(ApiException e) {

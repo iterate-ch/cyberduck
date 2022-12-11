@@ -15,7 +15,6 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.FoldersApi;
@@ -43,7 +42,7 @@ public class BoxDirectoryFeature implements Directory {
         try {
             return folder.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FoldersApi(new BoxApiClient(session.getClient())).postFolders(new FoldersBody()
-                            .parent(new FoldersParent().id(fileid.getFileId(folder.getParent(), new DisabledListProgressListener())))
+                            .parent(new FoldersParent().id(fileid.getFileId(folder.getParent())))
                             .name(folder.getName()), Collections.emptyList())));
         }
         catch(ApiException e) {

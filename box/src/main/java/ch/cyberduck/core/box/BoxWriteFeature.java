@@ -17,7 +17,6 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.JSON;
 import ch.cyberduck.core.box.io.swagger.client.model.File;
@@ -75,7 +74,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                     final HttpPost request;
                     if(status.isExists()) {
                         request = new HttpPost(String.format("%s/files/%s/content?fields=%s", client.getBasePath(),
-                                fileid.getFileId(file, new DisabledListProgressListener()),
+                                fileid.getFileId(file),
                                 String.join(",", BoxAttributesFinderFeature.DEFAULT_FIELDS)));
                     }
                     else {
@@ -92,7 +91,7 @@ public class BoxWriteFeature extends AbstractHttpWriteFeature<File> {
                     final ByteArrayOutputStream content = new ByteArrayOutputStream();
                     new JSON().getContext(null).writeValue(content, new FilescontentAttributes()
                             .name(file.getName())
-                            .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent(), new DisabledListProgressListener())))
+                            .parent(new FilescontentAttributesParent().id(fileid.getFileId(file.getParent())))
                             .contentModifiedAt(status.getTimestamp() != null ? new DateTime(status.getTimestamp()) : null)
                     );
                     final MultipartEntityBuilder multipart = MultipartEntityBuilder.create();

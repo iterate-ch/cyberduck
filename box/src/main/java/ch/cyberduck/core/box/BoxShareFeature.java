@@ -17,7 +17,6 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
@@ -78,7 +77,7 @@ public class BoxShareFeature implements PromptUrlProvider {
             final String password = this.prompt(file, callback);
             final File link = new SharedLinksFilesApi(new BoxApiClient(session.getClient())).putFilesIdAddSharedLink(
                     "shared_link",
-                    fileid.getFileId(file, new DisabledListProgressListener()),
+                    fileid.getFileId(file),
                     new FilesFileIdaddSharedLinkBody()
                             .sharedLink(new FilesfileIdaddSharedLinkSharedLink().permissions(new FilesfileIdSharedLinkPermissions().canDownload(true))
                                     .password(password)));
@@ -94,7 +93,7 @@ public class BoxShareFeature implements PromptUrlProvider {
             final String password = this.prompt(file, callback);
             final Folder link = new SharedLinksFoldersApi(new BoxApiClient(session.getClient())).putFoldersIdAddSharedLink(
                     "shared_link",
-                    fileid.getFileId(file, new DisabledListProgressListener()),
+                    fileid.getFileId(file),
                     new FoldersFolderIdaddSharedLinkBody()
                             .sharedLink(new FoldersfolderIdaddSharedLinkSharedLink().permissions(new FoldersfolderIdaddSharedLinkSharedLinkPermissions().canDownload(false))
                                     .password(password)));

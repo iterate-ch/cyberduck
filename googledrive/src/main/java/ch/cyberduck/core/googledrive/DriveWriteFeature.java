@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.RFC3339DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -83,7 +82,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = DriveWriteFeature.this.fileid.getFileId(file, new DisabledListProgressListener());
+                        final String fileid = DriveWriteFeature.this.fileid.getFileId(file);
                         request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true&fields=%s",
                                 session.getClient().getRootUrl(), fileid, DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         if(StringUtils.isNotBlank(status.getMime())) {
@@ -105,7 +104,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                         if(StringUtils.isNotBlank(status.getMime())) {
                             metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));
                         }
-                        metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent(), new DisabledListProgressListener())));
+                        metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent())));
                         metadata.append("}");
                         request.setEntity(new StringEntity(metadata.toString(),
                                 ContentType.create("application/json", StandardCharsets.UTF_8.name())));

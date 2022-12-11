@@ -17,7 +17,6 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.ListResourceApi;
@@ -57,7 +56,7 @@ public class EueReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            final String resourceId = fileid.getFileId(file);
             final UiFsModel uiFsModel = new ListResourceApi(new EueApiClient(session)).resourceResourceIdGet(resourceId,
                 null, null, null, null, null, null,
                     Collections.singletonList(EueAttributesFinderFeature.OPTION_DOWNLOAD), null);

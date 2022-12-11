@@ -16,7 +16,6 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -55,7 +54,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
         try {
             final Host bookmark = session.getHost();
             final CreateFileShareRequest request = new CreateFileShareRequest()
-                    .fileId(fileid.getFileId(file, new DisabledListProgressListener()));
+                    .fileId(fileid.getFileId(file));
             request.setPassword(callback.prompt(bookmark,
                     LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                     MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
@@ -73,7 +72,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
         try {
             final Host bookmark = session.getHost();
             final CreateFileShareRequest request = new CreateFileShareRequest()
-                    .fileId(fileid.getFileId(file, new DisabledListProgressListener()))
+                    .fileId(fileid.getFileId(file))
                     .allowUpload(true);
             request.setPassword(callback.prompt(bookmark,
                     LocaleFactory.localizedString("Passphrase", "Cryptomator"),

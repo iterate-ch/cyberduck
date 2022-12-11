@@ -16,7 +16,6 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.FilesApi;
@@ -59,17 +58,17 @@ public class BoxCopyFeature implements Copy {
             if(file.isDirectory()) {
                 return target.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                         new FoldersApi(new BoxApiClient(session.getClient())).postFoldersIdCopy(
-                                fileid.getFileId(file, new DisabledListProgressListener()),
-                                new FolderIdCopyBody().name(target.getName()).parent(new FoldersfolderIdcopyParent().id(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))),
+                                fileid.getFileId(file),
+                                new FolderIdCopyBody().name(target.getName()).parent(new FoldersfolderIdcopyParent().id(fileid.getFileId(target.getParent()))),
                                 BoxAttributesFinderFeature.DEFAULT_FIELDS)
                 ));
             }
             return target.withAttributes(new BoxAttributesFinderFeature(session, fileid).toAttributes(
                     new FilesApi(new BoxApiClient(session.getClient())).postFilesIdCopy(
-                            fileid.getFileId(file, new DisabledListProgressListener()),
+                            fileid.getFileId(file),
                             new FileIdCopyBody()
                                     .name(target.getName())
-                                    .parent(new FilesfileIdcopyParent().id(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))),
+                                    .parent(new FilesfileIdcopyParent().id(fileid.getFileId(target.getParent()))),
                             null, BoxAttributesFinderFeature.DEFAULT_FIELDS)
             ));
         }

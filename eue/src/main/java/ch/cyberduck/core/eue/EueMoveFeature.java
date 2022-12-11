@@ -61,10 +61,10 @@ public class EueMoveFeature implements Move {
                 }
                 new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, delete);
             }
-            final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            final String resourceId = fileid.getFileId(file);
             if(!file.getParent().equals(target.getParent())) {
                 final ResourceMoveResponseEntries resourceMoveResponseEntries;
-                final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
+                final String parentResourceId = fileid.getFileId(target.getParent());
                 switch(parentResourceId) {
                     case EueResourceIdProvider.ROOT:
                     case EueResourceIdProvider.TRASH:

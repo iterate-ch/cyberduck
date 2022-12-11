@@ -1,6 +1,5 @@
 package ch.cyberduck.core.onedrive;
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -49,7 +48,7 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
         final GraphFileIdProvider idProvider = fileid;
-        final String fileId = idProvider.getFileId(path33, new DisabledListProgressListener());
+        final String fileId = idProvider.getFileId(path33);
 
         assertEquals(fileId, path33WithId.attributes().getFileId());
         assertNotEquals(fileId, path2RWithId.attributes().getFileId());

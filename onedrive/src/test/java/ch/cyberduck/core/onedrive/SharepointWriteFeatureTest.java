@@ -84,7 +84,7 @@ public class SharepointWriteFeatureTest extends AbstractSharepointTest {
         assertArrayEquals(content, compare);
         final Path copy = new Path(file);
         copy.attributes().setCustom(Collections.emptyMap());
-        assertEquals(id, fileid.getFileId(copy, new DisabledListProgressListener()));
+        assertEquals(id, fileid.getFileId(copy));
         // Overwrite
         final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);

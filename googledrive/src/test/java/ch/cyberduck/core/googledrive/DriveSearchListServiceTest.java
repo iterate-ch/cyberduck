@@ -46,7 +46,7 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
         final String name = new AlphanumericRandomStringService().random();
         final Drive.Files.Create insert = session.getClient().files().create(new File()
             .setName(name)
-            .setParents(Collections.singletonList(fileid.getFileId(directory, new DisabledListProgressListener()))));
+            .setParents(Collections.singletonList(fileid.getFileId(directory))));
         final File execute = insert.execute();
         execute.setVersion(1L);
         final Path f1 = new Path(directory, name, EnumSet.of(Path.Type.file), new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));

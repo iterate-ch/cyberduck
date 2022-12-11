@@ -15,7 +15,6 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,7 +42,7 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
             final FilesApi files = new FilesApi(session.getClient());
             final CreateFolderRequest request = new CreateFolderRequest();
             request.setName(folder.getName());
-            request.setParentID(fileid.getFileId(folder.getParent(), new DisabledListProgressListener()));
+            request.setParentID(fileid.getFileId(folder.getParent()));
             final File f = files.filesCreateFolder(request);
             fileid.cache(folder, f.getId());
             return folder.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(f));

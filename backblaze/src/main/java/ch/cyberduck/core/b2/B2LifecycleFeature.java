@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -70,13 +69,13 @@ public class B2LifecycleFeature implements Lifecycle {
         try {
             if(LifecycleConfiguration.empty().equals(configuration)) {
                 session.getClient().updateBucket(
-                    fileid.getVersionId(containerService.getContainer(container), new DisabledListProgressListener()),
+                    fileid.getVersionId(containerService.getContainer(container)),
                     new B2BucketTypeFeature(session, fileid).toBucketType(container.attributes().getAcl())
                 );
             }
             else {
                 session.getClient().updateBucket(
-                        fileid.getVersionId(containerService.getContainer(container), new DisabledListProgressListener()),
+                        fileid.getVersionId(containerService.getContainer(container)),
                         new B2BucketTypeFeature(session, fileid).toBucketType(container.attributes().getAcl()),
                         new LifecycleRule(
                                 null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),

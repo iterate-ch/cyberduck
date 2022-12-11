@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -65,7 +64,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
         if(containerService.isContainer(file)) {
             try {
                 final BucketType bucketType = this.toBucketType(acl);
-                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file)),
                         bucketType);
             }
             catch(B2ApiException e) {

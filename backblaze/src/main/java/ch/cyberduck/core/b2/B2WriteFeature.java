@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -85,7 +84,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     }
                     else {
                         if(null == urls.get()) {
-                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
+                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file)));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
                             }

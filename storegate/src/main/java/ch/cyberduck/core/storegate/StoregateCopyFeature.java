@@ -16,7 +16,6 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -42,10 +41,10 @@ public class StoregateCopyFeature implements Copy {
         try {
             final CopyFileRequest copy = new CopyFileRequest()
                 .name(target.getName())
-                .parentID(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileId(target.getParent()))
                 .mode(1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
-                fileid.getFileId(source, new DisabledListProgressListener()), copy);
+                fileid.getFileId(source), copy);
             listener.sent(status.getLength());
             fileid.cache(target, file.getId());
             return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));

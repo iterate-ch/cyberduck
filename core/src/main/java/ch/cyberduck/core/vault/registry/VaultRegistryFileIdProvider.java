@@ -15,7 +15,6 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,8 +34,8 @@ public class VaultRegistryFileIdProvider implements FileIdProvider {
     }
 
     @Override
-    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, FileIdProvider.class, proxy).getFileId(file, listener);
+    public String getFileId(final Path file) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, FileIdProvider.class, proxy).getFileId(file);
     }
 
     @Override

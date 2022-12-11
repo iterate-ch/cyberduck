@@ -63,8 +63,8 @@ public class EueCopyFeature implements Copy {
                 }
                 new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
-            final String resourceId = fileid.getFileId(file, new DisabledListProgressListener());
-            final String parentResourceId = fileid.getFileId(target.getParent(), new DisabledListProgressListener());
+            final String resourceId = fileid.getFileId(file);
+            final String parentResourceId = fileid.getFileId(target.getParent());
             String targetResourceId = null;
             final ResourceCopyResponseEntries resourceCopyResponseEntries;
             switch(parentResourceId) {
@@ -106,7 +106,7 @@ public class EueCopyFeature implements Copy {
                 uifs.setName(target.getName());
                 resourceUpdateModelUpdate.setUifs(uifs);
                 resourceUpdateModel.setUpdate(resourceUpdateModelUpdate);
-                final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(target, new DisabledListProgressListener()),
+                final ResourceMoveResponseEntries resourceMoveResponseEntries = new UpdateResourceApi(client).resourceResourceIdPatch(fileid.getFileId(target),
                         resourceUpdateModel, null, null, null);
                 if(null == resourceMoveResponseEntries) {
                     // Move of single file will return 200 status code with empty response body

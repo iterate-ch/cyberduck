@@ -34,6 +34,6 @@ public class DriveDefaultListService extends AbstractDriveListService {
     }
 
     protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return String.format("'%s' in parents", fileid.getFileId(directory, listener));
+        return String.format("'%s' in parents", fileid.getFileId(directory));
     }
 }
