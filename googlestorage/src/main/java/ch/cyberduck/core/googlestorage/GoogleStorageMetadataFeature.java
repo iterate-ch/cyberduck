@@ -52,45 +52,40 @@ public class GoogleStorageMetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            try {
-                return new GoogleStorageAttributesFinderFeature(session).find(file).getMetadata();
-            }
-            catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
-                    // No placeholder file may exist but we just have a common prefix
-                    return Collections.emptyMap();
-                }
-                throw e;
-            }
+        try {
+            return new GoogleStorageAttributesFinderFeature(session).find(file).getMetadata();
         }
-        return Collections.emptyMap();
+        catch(NotfoundException e) {
+            if(file.isDirectory()) {
+                // No placeholder file may exist but we just have a common prefix
+                return Collections.emptyMap();
+            }
+            throw e;
+        }
     }
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Write metadata %s for file %s", status, file));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Write metadata %s for file %s", status, file));
+        }
+        try {
+            final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
+                    new StorageObject().setMetadata(status.getMetadata()));
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
             }
-            try {
-                final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                        new StorageObject().setMetadata(status.getMetadata()));
-                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
-                    request.setUserProject(session.getHost().getCredentials().getUsername());
+            request.execute();
+        }
+        catch(IOException e) {
+            final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            if(file.isDirectory()) {
+                if(failure instanceof NotfoundException) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return;
                 }
-                request.execute();
             }
-            catch(IOException e) {
-                final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-                if(file.isPlaceholder()) {
-                    if(failure instanceof NotfoundException) {
-                        // No placeholder file may exist but we just have a common prefix
-                        return;
-                    }
-                }
-                throw failure;
-            }
+            throw failure;
         }
     }
 }

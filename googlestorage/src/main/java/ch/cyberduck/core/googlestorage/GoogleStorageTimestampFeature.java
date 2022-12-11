@@ -44,27 +44,25 @@ public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            try {
-                // The Custom-Time metadata is a user-specified date and time represented in the RFC 3339
-                // format YYYY-MM-DD'T'HH:MM:SS.SS'Z' or YYYY-MM-DD'T'HH:MM:SS'Z' when milliseconds are zero.
-                final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                        new StorageObject().setCustomTime(new DateTime(status.getTimestamp())));
-                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
-                    request.setUserProject(session.getHost().getCredentials().getUsername());
-                }
-                request.execute();
+        try {
+            // The Custom-Time metadata is a user-specified date and time represented in the RFC 3339
+            // format YYYY-MM-DD'T'HH:MM:SS.SS'Z' or YYYY-MM-DD'T'HH:MM:SS'Z' when milliseconds are zero.
+            final Storage.Objects.Patch request = session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
+                    new StorageObject().setCustomTime(new DateTime(status.getTimestamp())));
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
             }
-            catch(IOException e) {
-                final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-                if(file.isPlaceholder()) {
-                    if(failure instanceof NotfoundException) {
-                        // No placeholder file may exist but we just have a common prefix
-                        return;
-                    }
+            request.execute();
+        }
+        catch(IOException e) {
+            final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            if(file.isDirectory()) {
+                if(failure instanceof NotfoundException) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return;
                 }
-                throw failure;
             }
+            throw failure;
         }
     }
 }

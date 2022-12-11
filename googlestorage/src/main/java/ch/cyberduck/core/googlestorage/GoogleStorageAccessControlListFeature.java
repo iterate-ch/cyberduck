@@ -119,7 +119,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            if(file.isPlaceholder()) {
+            if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
                     // No placeholder file may exist but we just have a common prefix
                     return Acl.EMPTY;
@@ -191,7 +191,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Cannot change permissions of {0}", e, file);
-            if(file.isPlaceholder()) {
+            if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
                     // No placeholder file may exist but we just have a common prefix
                     return;

@@ -54,7 +54,7 @@ public class GoogleStorageDeleteFeature implements Delete {
                     }
                     request.execute();
                 }
-                if(file.isFile() || file.isPlaceholder()) {
+                else {
                     final Storage.Objects.Delete request = session.getClient().objects().delete(containerService.getContainer(file).getName(), containerService.getKey(file));
                     if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                         request.setUserProject(session.getHost().getCredentials().getUsername());
@@ -73,7 +73,7 @@ public class GoogleStorageDeleteFeature implements Delete {
             }
             catch(IOException e) {
                 final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Cannot delete {0}", e, file);
-                if(file.isPlaceholder()) {
+                if(file.isDirectory()) {
                     if(failure instanceof NotfoundException) {
                         // No placeholder file may exist but we just have a common prefix
                         continue;
