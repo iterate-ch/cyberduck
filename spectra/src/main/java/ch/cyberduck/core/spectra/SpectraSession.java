@@ -22,6 +22,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3Session;
@@ -37,13 +38,13 @@ public class SpectraSession extends S3Session {
 
     public SpectraSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
     }
 
     @Override
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt, cancel);
         final Jets3tProperties configuration = client.getConfiguration();
+        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
         return client;
     }
