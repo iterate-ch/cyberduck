@@ -75,21 +75,19 @@ public class S3StorageClassFeature implements Redundancy {
 
     @Override
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            try {
-                final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-                final TransferStatus status = new TransferStatus();
-                status.setLength(file.attributes().getSize());
-                status.setStorageClass(redundancy);
-                copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+        try {
+            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+            final TransferStatus status = new TransferStatus();
+            status.setLength(file.attributes().getSize());
+            status.setStorageClass(redundancy);
+            copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+        }
+        catch(NotfoundException e) {
+            if(file.isDirectory()) {
+                // No placeholder file may exist but we just have a common prefix
+                return;
             }
-            catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
-                    // No placeholder file may exist but we just have a common prefix
-                    return;
-                }
-                throw e;
-            }
+            throw e;
         }
     }
 }

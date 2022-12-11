@@ -90,7 +90,7 @@ public class S3EncryptionFeature implements Encryption {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
             PreferencesFactory.get().setProperty(key, setting.toString());
         }
-        if(file.isFile() || file.isPlaceholder()) {
+        else {
             try {
                 final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
                 // Copy item in place to write new attributes
@@ -100,7 +100,7 @@ public class S3EncryptionFeature implements Encryption {
                 copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
             }
             catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
+                if(file.isDirectory()) {
                     // No placeholder file may exist but we just have a common prefix
                     return;
                 }
