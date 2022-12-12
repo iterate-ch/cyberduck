@@ -61,6 +61,8 @@ namespace Ch.Cyberduck.Cli
             Security.setProperty("securerandom.strongAlgorithms", "Windows-PRNG:SunMSCAPI,SHA1PRNG:SUN");
 
             this.setDefault("keychain.secure", true.ToString());
+
+            this.setDefault("local.normalize.unicode", false.ToString());
         }
 
         protected override void setFactories()
