@@ -12,6 +12,13 @@ namespace Ch.Cyberduck.Core.Local
         const string WSL_PATH = @"\\wsl$\test\";
 
         [Test]
+        public void TestConvertToDirectorySeparator()
+        {
+            var path = new SystemLocal(PIPE_NAME.Replace('\\', '/'));
+            Assert.AreEqual(PIPE_NAME, path.getAbsolute());
+        }
+
+        [Test]
         public void TestDirectoryAltSeparators()
         {
             var path = new SystemLocal(@"C:" + Path.AltDirectorySeparatorChar);
@@ -25,21 +32,9 @@ namespace Ch.Cyberduck.Core.Local
             Assert.AreEqual(@"C:" + Path.DirectorySeparatorChar, path.getAbsolute());
         }
 
-        [Test]
-        public void TestConvertToDirectorySeparator()
-        {
-            var path = new SystemLocal(PIPE_NAME.Replace('\\', '/'));
-            Assert.AreEqual(PIPE_NAME, path.getAbsolute());
-        }
-
-        [Test]
-        public void TestUnicode()
-        {
-            var test = @"\\?\C:\ÄÖÜßßäöü";
-            var path = new SystemLocal(test);
-            Assert.AreEqual(test, path.getAbsolute());
-        }
-
+        /// <remarks>
+        /// <see href="https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#example-ways-to-refer-to-the-same-file" />
+        /// </remarks>
         [Test]
         public void TestFileFormats()
         {
@@ -89,6 +84,14 @@ namespace Ch.Cyberduck.Core.Local
         {
             CoreLocal local = new SystemLocal(PIPE_NAME);
             Assert.AreEqual(PIPE_NAME, local.getAbsolute());
+        }
+
+        [Test]
+        public void TestUnicode()
+        {
+            var test = @"\\?\C:\ÄÖÜßßäöü";
+            var path = new SystemLocal(test);
+            Assert.AreEqual(test, path.getAbsolute());
         }
 
         [Test]
