@@ -58,6 +58,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -196,9 +198,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     // Free space on disk
                     long space = 0L;
                     try {
-                        space = Paths.get(local.getParent().getAbsolute()).toFile().getUsableSpace();
+                        space = Files.getFileStore(Paths.get(local.getParent().getAbsolute())).getUsableSpace();
                     }
-                    catch(RuntimeException re) {
+                    catch(IOException e) {
                         log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
                     }
                     long threshold = preferences.getLong("queue.download.segments.threshold");
