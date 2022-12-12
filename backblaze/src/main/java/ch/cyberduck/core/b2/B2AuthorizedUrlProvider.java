@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -75,7 +74,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiry.add(Calendar.SECOND, seconds);
-            final String token = session.getClient().getDownloadAuthorization(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+            final String token = session.getClient().getDownloadAuthorization(fileid.getVersionId(containerService.getContainer(file)),
                 StringUtils.EMPTY, seconds);
             return new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))

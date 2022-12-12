@@ -36,7 +36,7 @@ public abstract class CachingVersionIdProvider implements VersionIdProvider {
     }
 
     @Override
-    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getVersionId(final Path file) throws BackgroundException {
         return cache.get(this.toPredicate(file));
     }
 

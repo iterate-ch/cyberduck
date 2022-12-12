@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.collections.Partition;
@@ -62,7 +61,7 @@ public class DriveBatchTrashFeature implements Trash {
             for(Path f : partition) {
                 try {
                     if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
-                        session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener()))
+                        session.getClient().teamdrives().delete(fileid.getFileId(f))
                                 .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
                     }
                     else {
@@ -73,7 +72,7 @@ public class DriveBatchTrashFeature implements Trash {
                         }
                         final File properties = new File();
                         properties.setTrashed(true);
-                        session.getClient().files().update(fileid.getFileId(f, new DisabledListProgressListener()), properties)
+                        session.getClient().files().update(fileid.getFileId(f), properties)
                                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
                                 .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
                     }

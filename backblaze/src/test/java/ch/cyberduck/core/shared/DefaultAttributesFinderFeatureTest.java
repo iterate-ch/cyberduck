@@ -16,7 +16,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.b2.AbstractB2Test;
@@ -58,7 +57,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.upload));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
+                new B2VersionIdProvider(session).getVersionId(bucket),
                 file.getName(), null, Collections.emptyMap());
         file.attributes().setVersionId(startResponse.getFileId());
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);

@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -54,7 +53,7 @@ public class B2FindFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.upload));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
-                new B2VersionIdProvider(session).getVersionId(bucket, new DisabledListProgressListener()),
+                new B2VersionIdProvider(session).getVersionId(bucket),
                 file.getName(), null, Collections.emptyMap());
         assertTrue(new B2FindFeature(session, new B2VersionIdProvider(session)).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());

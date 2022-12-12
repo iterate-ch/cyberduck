@@ -16,7 +16,6 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -50,7 +49,7 @@ public class BoxReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final BoxApiClient client = new BoxApiClient(session.getClient());
-            final HttpGet request = new HttpGet(String.format("%s/files/%s/content", client.getBasePath(), fileid.getFileId(file, new DisabledListProgressListener())));
+            final HttpGet request = new HttpGet(String.format("%s/files/%s/content", client.getBasePath(), fileid.getFileId(file)));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

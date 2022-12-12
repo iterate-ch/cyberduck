@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -84,7 +83,7 @@ public class OneDriveWriteFeatureTest extends AbstractOneDriveTest {
         assertArrayEquals(content, compare);
         final Path copy = new Path(file);
         copy.attributes().setCustom(Collections.emptyMap());
-        assertEquals(id, fileid.getFileId(copy, new DisabledListProgressListener()));
+        assertEquals(id, fileid.getFileId(copy));
         // Overwrite
         final StatusOutputStream<DriveItem.Metadata> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
         assertNotNull(overwrite);

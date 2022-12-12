@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.UUIDRandomStringService;
@@ -57,7 +56,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 final Drive.Files.Create insert = session.getClient().files().create(new File()
                         .setName(folder.getName())
                         .setMimeType("application/vnd.google-apps.folder")
-                        .setParents(Collections.singletonList(fileid.getFileId(folder.getParent(), new DisabledListProgressListener()))));
+                        .setParents(Collections.singletonList(fileid.getFileId(folder.getParent()))));
                 final File execute = insert
                         .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
                         .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();

@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -50,11 +49,11 @@ public class SDSBatchDeleteFeature implements Delete {
         for(Path file : files.keySet()) {
             final Map<Path, List<Long>> set = file.attributes().isDuplicate() ? trashed : regular;
             if(set.containsKey(file.getParent())) {
-                set.get(file.getParent()).add(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())));
+                set.get(file.getParent()).add(Long.parseLong(nodeid.getVersionId(file)));
             }
             else {
                 final List<Long> nodes = new ArrayList<>();
-                nodes.add(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())));
+                nodes.add(Long.parseLong(nodeid.getVersionId(file)));
                 set.put(file.getParent(), nodes);
             }
             callback.delete(file);

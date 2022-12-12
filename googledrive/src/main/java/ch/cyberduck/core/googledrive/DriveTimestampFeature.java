@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -40,7 +39,7 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final String fileid = this.fileid.getFileId(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileId(file);
             final File properties = new File();
             properties.setModifiedTime(new DateTime(status.getTimestamp()));
             session.getClient().files().update(fileid, properties).setFields("modifiedTime").

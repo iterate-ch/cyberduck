@@ -18,7 +18,6 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
@@ -93,7 +92,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         test.attributes().setCustom(Collections.emptyMap());
         attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
         assertNotNull(attributes.getFileId());
-        assertEquals(nodeId, new StoregateIdProvider(session).getFileId(test, new DisabledListProgressListener()));
+        assertEquals(nodeId, new StoregateIdProvider(session).getFileId(test));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

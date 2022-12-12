@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -55,7 +54,7 @@ public class DriveMoveFeature implements Move {
                 }
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            final String id = fileid.getFileId(file, new DisabledListProgressListener());
+            final String id = fileid.getFileId(file);
             File result = null;
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
@@ -79,7 +78,7 @@ public class DriveMoveFeature implements Move {
                 }
                 // Move the file to the new folder
                 result = session.getClient().files().update(id, null)
-                    .setAddParents(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
+                    .setAddParents(fileid.getFileId(renamed.getParent()))
                     .setRemoveParents(previousParents.toString())
                     .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
                     .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))

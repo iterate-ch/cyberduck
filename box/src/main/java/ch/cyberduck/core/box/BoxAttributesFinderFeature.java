@@ -51,10 +51,10 @@ public class BoxAttributesFinderFeature implements AttributesFinder, AttributesA
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(file.isDirectory()) {
-                return this.toAttributes(new FoldersApi(new BoxApiClient(session.getClient())).getFoldersId(fileid.getFileId(file, listener),
+                return this.toAttributes(new FoldersApi(new BoxApiClient(session.getClient())).getFoldersId(fileid.getFileId(file),
                         DEFAULT_FIELDS, null, null));
             }
-            return this.toAttributes(new FilesApi(new BoxApiClient(session.getClient())).getFilesId(fileid.getFileId(file, listener),
+            return this.toAttributes(new FilesApi(new BoxApiClient(session.getClient())).getFilesId(fileid.getFileId(file),
                     StringUtils.EMPTY, DEFAULT_FIELDS, null, null));
         }
         catch(ApiException e) {

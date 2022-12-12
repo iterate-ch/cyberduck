@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,7 +42,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
     }
 
     @Override
-    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getFileId())) {
             return file.attributes().getFileId();
         }
@@ -53,7 +52,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
                 || new SimplePathPredicate(file).test(DriveHomeFinderService.SHARED_DRIVES_NAME)) {
             return DriveHomeFinderService.ROOT_FOLDER_ID;
         }
-        final String cached = super.getFileId(file, listener);
+        final String cached = super.getFileId(file);
         if(cached != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return cached fileid %s for file %s", cached, file));
@@ -61,8 +60,8 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
             return cached;
         }
         if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
-            final Path found = new DriveTeamDrivesListService(session, this).list(file.getParent(), listener).find(
-                    new SimplePathPredicate(file)
+            final Path found = new DriveTeamDrivesListService(session, this).list(file.getParent(),
+                    new DisabledListProgressListener()).find(new SimplePathPredicate(file)
             );
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());

@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -105,7 +104,7 @@ public class OneDriveSession extends GraphSession {
                 return new Drive(user.asDirectoryObject()).getRoot();
             }
         }
-        final String id = fileid.getFileId(file, new DisabledListProgressListener());
+        final String id = fileid.getFileId(file);
         if(StringUtils.isEmpty(id)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }

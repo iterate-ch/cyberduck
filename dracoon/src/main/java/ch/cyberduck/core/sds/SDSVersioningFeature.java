@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -60,8 +59,8 @@ public class SDSVersioningFeature implements Versioning {
                     new RestoreDeletedNodesRequest()
                             .resolutionStrategy(RestoreDeletedNodesRequest.ResolutionStrategyEnum.OVERWRITE)
                             .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
-                            .addDeletedNodeIdsItem(Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())))
-                            .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener()))), StringUtils.EMPTY);
+                            .addDeletedNodeIdsItem(Long.parseLong(nodeid.getVersionId(file)))
+                            .parentId(Long.parseLong(nodeid.getVersionId(file.getParent()))), StringUtils.EMPTY);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Failure to write attributes of {0}", e, file);
@@ -83,7 +82,7 @@ public class SDSVersioningFeature implements Versioning {
             final AttributedList<Path> versions = new AttributedList<>();
             do {
                 nodes = new NodesApi(session.getClient()).requestDeletedNodeVersions(
-                        Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())),
+                        Long.parseLong(nodeid.getVersionId(file.getParent())),
                         file.isFile() ? "file" : "folder", file.getName(), StringUtils.EMPTY, "updatedAt:desc",
                         offset, chunksize, null);
                 for(DeletedNode item : nodes.getItems()) {

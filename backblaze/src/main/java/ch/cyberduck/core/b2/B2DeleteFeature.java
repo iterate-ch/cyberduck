@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -62,7 +61,7 @@ public class B2DeleteFeature implements Delete {
                     // Delete /.bzEmpty if any
                     final String placeholder;
                     try {
-                        placeholder = fileid.getVersionId(file, new DisabledListProgressListener());
+                        placeholder = fileid.getVersionId(file);
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
@@ -85,7 +84,7 @@ public class B2DeleteFeature implements Delete {
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Add hide marker %s of %s", file.attributes().getVersionId(), file));
                             }
-                            session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()), containerService.getKey(file));
+                            session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file)), containerService.getKey(file));
                         }
                         else {
                             // Delete specific version
@@ -110,7 +109,7 @@ public class B2DeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);
                     // Finally delete bucket itself
-                    session.getClient().deleteBucket(fileid.getVersionId(file, new DisabledListProgressListener()));
+                    session.getClient().deleteBucket(fileid.getVersionId(file));
                 }
             }
             catch(B2ApiException e) {

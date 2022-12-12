@@ -175,7 +175,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         new DriveDirectoryFeature(session, provider).mkdir(folder, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         assertEquals(1, new DriveDefaultListService(session, provider).list(parent, new DisabledListProgressListener()).size());
-        final String fileid = provider.getFileId(folder, new DisabledListProgressListener());
+        final String fileid = provider.getFileId(folder);
         final File body = new File();
         body.set("trashed", true);
         session.getClient().files().update(fileid, body).execute();
