@@ -138,12 +138,9 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 // for that bucket (in S3) allows you to do so.
                 acl = this.toAcl(session.getClient().getBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()));
             }
-            else if(file.isFile() || file.isPlaceholder()) {
+            else {
                 acl = this.toAcl(session.getClient().getVersionedObjectAcl(file.attributes().getVersionId(),
                         bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
-            }
-            else {
-                acl = Acl.EMPTY;
             }
             if(this.isBucketOwnerEnforced(bucket)) {
                 acl.setEditable(false);
@@ -152,7 +149,7 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
         }
         catch(ServiceException e) {
             final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            if(file.isPlaceholder()) {
+            if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
                     // No placeholder file may exist, but we just have a common prefix
                     return Acl.EMPTY;
@@ -176,14 +173,12 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 session.getClient().putBucketAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), list);
             }
             else {
-                if(file.isFile() || file.isPlaceholder()) {
                     session.getClient().putObjectAcl(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file), list);
-                }
             }
         }
         catch(ServiceException e) {
             final BackgroundException failure = new S3ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
-            if(file.isPlaceholder()) {
+            if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
                     // No placeholder file may exist but we just have a common prefix
                     return;
