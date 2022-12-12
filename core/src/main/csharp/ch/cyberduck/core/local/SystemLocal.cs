@@ -81,79 +81,125 @@ namespace Ch.Cyberduck.Core.Local
 
         private static string Sanitize(string name)
         {
-            if (name is null)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return null;
             }
             using StringWriter writer = new();
             using StringReader reader = new(name);
 
-            char c = default;
-            if (reader.Read() is int p && p == -1)
+            if (reader.Peek() is int p && (p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar))
+            {
+                if (!ReadUnc(reader, writer))
+                {
+                    return null;
+                }
+            }
+            else if (!ReadDriveLetter(reader, writer, false))
             {
                 return null;
             }
-            c = (char)p;
 
-            if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
-            {
-                if (reader.Peek() == -1)
-                {
-                    // this is "\" or "/", not supported.
-                    return null;
-                }
-                writer.Write(Path.DirectorySeparatorChar);
-                c = (char)reader.Read();
-                if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
-                {
-                    using StringWriter hostBuffer = new();
-                    // UNC-path continue.
-                    while (reader.Peek() != -1)
-                    {
-                        c = (char)reader.Peek();
-                        if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
-                        {
-                            break;
-                        }
-                        hostBuffer.Write((char)reader.Read());
-                    }
-                    if (hostBuffer.GetStringBuilder().Length == 0)
-                    {
-                        // what is this? "\\\"
-                        return null;
-                    }
-                    writer.Write(Path.DirectorySeparatorChar);
-                    // allow everything. This _may_ be bad, _but_ Local uses `Paths.get()` thus we don't need to do any more sanitization here.
-                    writer.Write(hostBuffer.ToString());
-                }
-                else
-                {
-                    // this is something different than "\\" and "//", ignore as not supported
-                    return null;
-                }
-            }
-            else
-            {
-                /// <see cref="System.Char.IsLetter(char)" />
-                var letter = (c | 0x20) - 'a';
-                if (letter < 0 || letter > 25)
-                {
-                    // letter is not in range A to Z.
-                    return null;
-                }
-                // change lowercase letter to uppercase
-                writer.Write((char)(c & ~0x20));
-                if (reader.Peek() != Path.VolumeSeparatorChar)
-                {
-                    // this is something like C\, CX, C/,
-                    return null;
-                }
-                writer.Write((char)reader.Read());
-                // at X:, following is only a path, thus pass on to shared implementation
-            }
             SanitizePath(reader, writer);
 
             return writer.ToString();
+
+            static bool ReadUnc(StringReader reader, StringWriter writer)
+            {
+                // test for "\" or "/"
+                var p = reader.Read();
+                if (p == -1 || !(p == Path.AltDirectorySeparatorChar || p == Path.DirectorySeparatorChar))
+                {
+                    return false;
+                }
+                // test for "//" or "\\"
+                p = reader.Read();
+                if (p == -1 || !(p == Path.AltDirectorySeparatorChar || p == Path.DirectorySeparatorChar))
+                {
+                    return false;
+                }
+                writer.Write(Path.DirectorySeparatorChar);
+
+                using StringWriter hostBuffer = new();
+                bool trail = false;
+                // UNC-path continue.
+                while (reader.Read() is int c && c != -1)
+                {
+                    if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
+                    {
+                        trail = true;
+                        break;
+                    }
+                    hostBuffer.Write((char)c);
+                }
+                if (hostBuffer.GetStringBuilder().Length == 0)
+                {
+                    // what is this? "\\\"
+                    return false;
+                }
+                writer.Write(Path.DirectorySeparatorChar);
+                var host = hostBuffer.ToString();
+                writer.Write(host);
+                if (trail)
+                {
+                    writer.Write(Path.DirectorySeparatorChar);
+                }
+                if (host == "." || host == "?")
+                {
+                    ReadDriveLetter(reader, writer, true);
+                }
+                return true;
+            }
+
+            static bool ReadDriveLetter(StringReader reader, StringWriter writer, bool readToSeparator)
+            {
+                using StringWriter buffer = new();
+
+                while (reader.Read() is int p && p > 0)
+                {
+                    if (p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar)
+                    {
+                        break;
+                    }
+                    buffer.Write((char)p);
+                }
+                using (StringReader component = new(buffer.ToString()))
+                using (StringWriter driveLetter = new())
+                {
+                    if (HandleDriveLetter(component, driveLetter))
+                    {
+                        writer.Write(driveLetter.ToString());
+                        return true;
+                    }
+                }
+                if (!readToSeparator)
+                {
+                    return false;
+                }
+                writer.Write(buffer.ToString());
+                return true;
+
+                static bool HandleDriveLetter(StringReader reader, StringWriter writer)
+                {
+                    var c = reader.Read();
+                    /// <see cref="System.Char.IsLetter(char)" />
+                    var letter = (c | 0x20) - 'a';
+                    if (letter < 0 || letter > 25)
+                    {
+                        // letter is not in range A to Z.
+                        return false;
+                    }
+                    // change lowercase letter to uppercase
+                    writer.Write((char)c);
+                    if (reader.Peek() != Path.VolumeSeparatorChar)
+                    {
+                        // this is something like C\, CX, C/,
+                        return false;
+                    }
+                    writer.Write((char)reader.Read());
+                    return true;
+                }
+            }
 
             static void ApplyRoot(StringReader reader, StringWriter writer)
             {
