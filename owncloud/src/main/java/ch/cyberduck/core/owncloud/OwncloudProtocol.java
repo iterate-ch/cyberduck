@@ -19,7 +19,10 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.ETagAttributesComparison;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.features.AttributesComparison;
 
 public class OwncloudProtocol extends AbstractProtocol {
 
@@ -61,5 +64,13 @@ public class OwncloudProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new ETagAttributesComparison(), new ETagAttributesComparison());
+        }
+        return super.getFeature(type);
     }
 }
