@@ -17,6 +17,10 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.comparison.ChecksumAttributesComparison;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.ETagAttributesComparison;
+import ch.cyberduck.core.features.AttributesComparison;
 
 public class EueProtocol extends AbstractProtocol {
 
@@ -53,5 +57,13 @@ public class EueProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new ChecksumAttributesComparison(), new ETagAttributesComparison());
+        }
+        return super.getFeature(type);
     }
 }
