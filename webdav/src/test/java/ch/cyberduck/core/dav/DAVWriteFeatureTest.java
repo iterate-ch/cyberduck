@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -76,9 +77,11 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     @Test
     public void testReplaceContent() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         {
+            final String folderEtag = new DAVAttributesFinderFeature(session).find(folder).getETag();
             final byte[] content = RandomUtils.nextBytes(100);
             final OutputStream out = local.getOutputStream(false);
             IOUtils.write(content, out);
@@ -86,10 +89,13 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+            assertNotEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
         }
         final PathAttributes attr1 = new DAVAttributesFinderFeature(session).find(test);
         {
+            final String folderEtag = new DAVAttributesFinderFeature(session).find(folder).getETag();
+            final String fileEtag = new DAVAttributesFinderFeature(session).find(test).getETag();
             final byte[] content = RandomUtils.nextBytes(101);
             final OutputStream out = local.getOutputStream(false);
             IOUtils.write(content, out);
@@ -97,12 +103,14 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+                    new DisabledStreamListener(), status, new DisabledConnectionCallback());
+            assertEquals(folderEtag, new DAVAttributesFinderFeature(session).find(folder).getETag());
+            assertNotEquals(fileEtag, new DAVAttributesFinderFeature(session).find(test).getETag());
         }
         final PathAttributes attr2 = new DAVAttributesFinderFeature(session).find(test);
         assertEquals(101L, attr2.getSize());
         assertNotEquals(attr1.getETag(), attr2.getETag());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DAVDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
