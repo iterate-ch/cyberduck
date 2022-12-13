@@ -17,6 +17,10 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.comparison.ChecksumAttributesComparison;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.RevisionAttributesComparison;
+import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.features.CredentialsCleanupService;
 import ch.cyberduck.core.features.DelegatingPairingFeature;
 import ch.cyberduck.core.features.Pairing;
@@ -115,6 +119,9 @@ public class SDSProtocol extends AbstractProtocol {
         }
         if(type == Pairing.class) {
             return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature());
+        }
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new ChecksumAttributesComparison(), new RevisionAttributesComparison());
         }
         return super.getFeature(type);
     }
