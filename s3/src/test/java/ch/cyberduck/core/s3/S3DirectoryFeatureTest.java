@@ -113,20 +113,21 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
         final String name = String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path bucket = new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<Path>() {
+        final Path bucket = new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
                 return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
                         new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
             }
         }).call();
-        final Path test = new S3PathStyleFallbackAdapter<>(host, new BackgroundExceptionCallable<Path>() {
+        final Path test = new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
                 return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
