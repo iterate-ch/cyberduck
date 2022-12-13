@@ -17,6 +17,10 @@ package ch.cyberduck.core.box;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.DisabledAttributesComparison;
+import ch.cyberduck.core.comparison.ETagAttributesComparison;
+import ch.cyberduck.core.features.AttributesComparison;
 
 public class BoxProtocol extends AbstractProtocol {
 
@@ -57,6 +61,14 @@ public class BoxProtocol extends AbstractProtocol {
 
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
-        return DirectoryTimestamp.implicit;
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new ETagAttributesComparison(), new DisabledAttributesComparison());
+        }
+        return super.getFeature(type);
     }
 }
