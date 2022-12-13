@@ -19,6 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,20 +32,13 @@ public class SizeComparisonService implements ComparisonService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare size for %s with %s", remote, local));
         }
-        //fist make sure both files are larger than 0 bytes
-        if(remote.getSize() == 0 && local.getSize() == 0) {
-            return Comparison.equal;
+        if(TransferStatus.UNKNOWN_LENGTH != local.getSize() && TransferStatus.UNKNOWN_LENGTH != remote.getSize()) {
+            if(remote.getSize() == local.getSize()) {
+                return Comparison.equal;
+            }
+            // Different file size
+            return Comparison.notequal;
         }
-        if(remote.getSize() == 0) {
-            return Comparison.local;
-        }
-        if(local.getSize() == 0) {
-            return Comparison.remote;
-        }
-        if(remote.getSize() == local.getSize()) {
-            return Comparison.equal;
-        }
-        // Different file size
-        return Comparison.notequal;
+        return Comparison.unknown;
     }
 }
