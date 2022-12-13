@@ -25,6 +25,10 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
+import ch.cyberduck.core.comparison.DefaultAttributesComparison;
+import ch.cyberduck.core.comparison.DisabledAttributesComparison;
+import ch.cyberduck.core.comparison.ETagAttributesComparison;
+import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -186,6 +190,9 @@ public class S3Protocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new DirectoryDelimiterPathContainerService();
+        }
+        if(type == AttributesComparison.class) {
+            return (T) new DefaultAttributesComparison(new ETagAttributesComparison(), new DisabledAttributesComparison());
         }
         return super.getFeature(type);
     }
