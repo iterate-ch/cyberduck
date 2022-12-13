@@ -30,15 +30,15 @@ public class TimestampAttributesComparison implements AttributesComparison {
     private static final Logger log = LogManager.getLogger(TimestampAttributesComparison.class);
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes file, final PathAttributes other) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s with %s", file, other));
+            log.debug(String.format("Compare timestamp for %s with %s", local, remote));
         }
-        if(-1L != file.getModificationDate() && -1L != other.getModificationDate()) {
-            if(file.getModificationDate() < other.getModificationDate()) {
+        if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
+            if(local.getModificationDate() < remote.getModificationDate()) {
                 return Comparison.remote;
             }
-            if(file.getModificationDate() > other.getModificationDate()) {
+            if(local.getModificationDate() > remote.getModificationDate()) {
                 return Comparison.local;
             }
             return Comparison.equal;

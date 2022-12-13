@@ -27,16 +27,16 @@ import org.apache.logging.log4j.Logger;
 public class RevisionAttributesComparison implements AttributesComparison {
     private static final Logger log = LogManager.getLogger(ChecksumComparisonService.class.getName());
 
-    public Comparison compare(final Path.Type type, final PathAttributes remote, final PathAttributes cached) {
-        if(null != remote.getRevision() && null != cached.getRevision()) {
-            if(remote.getRevision().equals(cached.getRevision())) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+        if(null != local.getRevision() && null != remote.getRevision()) {
+            if(local.getRevision().equals(remote.getRevision())) {
                 // No conflict. Proceed with overwrite
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Equal revision %s", cached.getRevision()));
+                    log.debug(String.format("Equal revision %s", remote.getRevision()));
                 }
                 return Comparison.equal;
             }
-            log.warn(String.format("Revision %s in cache differs from %s on server", cached.getRevision(), remote.getRevision()));
+            log.warn(String.format("Revision %s in cache differs from %s on server", remote.getRevision(), local.getRevision()));
             return Comparison.notequal;
         }
         return Comparison.unknown;

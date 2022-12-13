@@ -45,12 +45,12 @@ public class DefaultAttributesComparison implements AttributesComparison {
     }
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes file, final PathAttributes other) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         switch(type) {
             case directory:
-                return directories.compare(type, file, other);
+                return directories.compare(type, local, remote);
             default:
-                return files.compare(type, file, other);
+                return files.compare(type, local, remote);
         }
     }
 }

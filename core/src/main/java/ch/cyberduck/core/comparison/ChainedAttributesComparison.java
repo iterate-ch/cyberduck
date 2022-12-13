@@ -27,9 +27,9 @@ public class ChainedAttributesComparison implements AttributesComparison {
     }
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes file, final PathAttributes other) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         for(AttributesComparison delegate : delegates) {
-            final Comparison result = delegate.compare(type, file, other);
+            final Comparison result = delegate.compare(type, local, remote);
             if(result == Comparison.unknown) {
                 continue;
             }

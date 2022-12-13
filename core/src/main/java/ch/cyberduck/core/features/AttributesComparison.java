@@ -20,5 +20,11 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.synchronization.Comparison;
 
 public interface AttributesComparison {
-    Comparison compare(Path.Type type, PathAttributes file, PathAttributes other);
+    /**
+     * @param type   File or folder
+     * @param local  Latest cached attributes
+     * @param remote Latest remote attributes
+     * @return Comparison result
+     */
+    Comparison compare(Path.Type type, PathAttributes local, PathAttributes remote);
 }

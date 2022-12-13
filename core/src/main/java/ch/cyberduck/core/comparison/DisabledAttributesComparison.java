@@ -33,7 +33,7 @@ public class DisabledAttributesComparison implements AttributesComparison {
     }
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes file, final PathAttributes other) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         return comparison;
     }
 }

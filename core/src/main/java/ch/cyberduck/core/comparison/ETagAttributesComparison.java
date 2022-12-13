@@ -28,15 +28,15 @@ public class ETagAttributesComparison implements AttributesComparison {
     private static final Logger log = LogManager.getLogger(ChecksumComparisonService.class.getName());
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes remote, final PathAttributes cached) {
-        if(null != remote.getETag() && null != cached.getETag()) {
-            if(remote.getETag().equals(cached.getETag())) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+        if(null != local.getETag() && null != remote.getETag()) {
+            if(local.getETag().equals(remote.getETag())) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Equal ETag %s", cached.getETag()));
+                    log.debug(String.format("Equal ETag %s", remote.getETag()));
                 }
                 return Comparison.equal;
             }
-            log.warn(String.format("ETag %s in cache differs from %s on server", cached.getETag(), remote.getETag()));
+            log.warn(String.format("ETag %s in cache differs from %s on server", remote.getETag(), local.getETag()));
             return Comparison.notequal;
         }
         return Comparison.unknown;

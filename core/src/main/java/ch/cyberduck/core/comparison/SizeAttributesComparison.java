@@ -27,7 +27,7 @@ import ch.cyberduck.core.synchronization.SizeComparisonService;
 public class SizeAttributesComparison implements AttributesComparison {
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes file, final PathAttributes other) {
-        return new SizeComparisonService().compare(file, other);
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+        return new SizeComparisonService().compare(local, remote);
     }
 }

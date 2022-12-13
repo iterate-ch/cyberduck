@@ -24,7 +24,7 @@ import ch.cyberduck.core.synchronization.Comparison;
 public class ChecksumAttributesComparison implements AttributesComparison {
 
     @Override
-    public Comparison compare(final Path.Type type, final PathAttributes remote, final PathAttributes cached) {
-        return new ChecksumComparisonService().compare(remote, cached);
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+        return new ChecksumComparisonService().compare(local, remote);
     }
 }
