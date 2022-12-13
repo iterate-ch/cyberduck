@@ -18,19 +18,34 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.synchronization.Comparison;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Iterator;
+
 public class ChainedAttributesComparison implements AttributesComparison {
 
     private final AttributesComparison[] delegates;
+    private final EnumSet<Comparison> skipped;
 
     public ChainedAttributesComparison(final AttributesComparison... delegates) {
+        this(EnumSet.of(Comparison.unknown), delegates);
+    }
+
+    public ChainedAttributesComparison(final EnumSet<Comparison> skipped, final AttributesComparison... delegates) {
         this.delegates = delegates;
+        this.skipped = skipped;
     }
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
-        for(AttributesComparison delegate : delegates) {
+        for(Iterator<AttributesComparison> iter = Arrays.asList(delegates).iterator(); iter.hasNext(); ) {
+            final AttributesComparison delegate = iter.next();
             final Comparison result = delegate.compare(type, local, remote);
-            if(result == Comparison.unknown) {
+            if(skipped.contains(result)) {
+                if(!iter.hasNext()) {
+                    // Return regardless if last comparison
+                    return result;
+                }
                 continue;
             }
             return result;

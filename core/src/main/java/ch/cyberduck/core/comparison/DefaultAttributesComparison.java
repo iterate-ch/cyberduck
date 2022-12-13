@@ -21,6 +21,8 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.synchronization.Comparison;
 
+import java.util.EnumSet;
+
 public class DefaultAttributesComparison implements AttributesComparison {
 
     private final AttributesComparison files;
@@ -31,8 +33,8 @@ public class DefaultAttributesComparison implements AttributesComparison {
                         new ChecksumAttributesComparison(),
                         new ETagAttributesComparison(),
                         new VersionIdAttributesComparison(),
-                        new TimestampAttributesComparison(),
-                        new SizeAttributesComparison()),
+                        new ChainedAttributesComparison(
+                                EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampAttributesComparison(), new SizeAttributesComparison())),
                 new ChainedAttributesComparison(
                         new RevisionAttributesComparison(),
                         new ETagAttributesComparison(),
