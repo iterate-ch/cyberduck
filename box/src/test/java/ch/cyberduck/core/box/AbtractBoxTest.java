@@ -78,6 +78,14 @@ public class AbtractBoxTest {
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
+        public String getPassword(final String serviceName, final String accountName) {
+            if(accountName.equals("Box (cyberduck) OAuth2 Token Expiry")) {
+                return String.valueOf(Long.MAX_VALUE);
+            }
+            return null;
+        }
+
+        @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
             if(user.equals("Box (cyberduck) OAuth2 Access Token")) {
                 return System.getProperties().getProperty("box.accesstoken");
