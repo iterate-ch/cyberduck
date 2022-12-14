@@ -34,8 +34,7 @@ public class SizeComparisonService implements ComparisonService {
             log.debug(String.format("Compare size for %s with %s", remote, local));
         }
         if(TransferStatus.UNKNOWN_LENGTH != local.getSize() && TransferStatus.UNKNOWN_LENGTH != remote.getSize()) {
-            // First make sure both files are larger than 0 bytes
-            if(remote.getSize() == 0 && local.getSize() == 0) {
+            if(remote.getSize() == local.getSize()) {
                 return Comparison.equal;
             }
             if(remote.getSize() == 0) {
@@ -43,9 +42,6 @@ public class SizeComparisonService implements ComparisonService {
             }
             if(local.getSize() == 0) {
                 return Comparison.remote;
-            }
-            if(remote.getSize() == local.getSize()) {
-                return Comparison.equal;
             }
             // Different file size
             return Comparison.notequal;
