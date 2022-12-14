@@ -19,9 +19,6 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
-import ch.cyberduck.core.synchronization.ComparisonService;
-import ch.cyberduck.core.synchronization.DefaultComparisonService;
-import ch.cyberduck.core.synchronization.TimestampComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -74,13 +71,5 @@ public class DAVProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
-    }
-
-    @Override
-    public <T> T getFeature(final Class<T> type) {
-        if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new TimestampComparisonService(), ComparisonService.disabled);
-        }
-        return super.getFeature(type);
     }
 }

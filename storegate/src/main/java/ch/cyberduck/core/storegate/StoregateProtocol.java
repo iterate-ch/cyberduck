@@ -17,9 +17,6 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.synchronization.ComparisonService;
-import ch.cyberduck.core.synchronization.DefaultComparisonService;
-import ch.cyberduck.core.synchronization.TimestampComparisonService;
 
 public class StoregateProtocol extends AbstractProtocol {
     @Override
@@ -80,13 +77,5 @@ public class StoregateProtocol extends AbstractProtocol {
     @Override
     public Case getCaseSensitivity() {
         return Case.insensitive;
-    }
-
-    @Override
-    public <T> T getFeature(final Class<T> type) {
-        if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new TimestampComparisonService(), ComparisonService.disabled);
-        }
-        return super.getFeature(type);
     }
 }
