@@ -18,11 +18,15 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 
 public class ChainedComparisonService implements ComparisonService {
+    private static final Logger log = LogManager.getLogger(ChainedComparisonService.class);
 
     private final ComparisonService[] delegates;
     private final EnumSet<Comparison> skipped;
@@ -43,10 +47,16 @@ public class ChainedComparisonService implements ComparisonService {
             final Comparison result = delegate.compare(type, local, remote);
             if(skipped.contains(result)) {
                 if(!iter.hasNext()) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Return %s from %s", result, delegate));
+                    }
                     // Return regardless if last comparison
                     return result;
                 }
                 continue;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return %s from %s", result, delegate));
             }
             return result;
         }
