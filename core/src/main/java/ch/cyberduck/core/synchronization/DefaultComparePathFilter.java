@@ -39,7 +39,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.EnumSet;
 import java.util.Map;
 
 public class DefaultComparePathFilter implements ComparePathFilter {
@@ -48,9 +47,12 @@ public class DefaultComparePathFilter implements ComparePathFilter {
     private Find finder;
     private AttributesFinder attribute;
 
+    private final ComparisonService comparison;
+
     public DefaultComparePathFilter(final Session<?> session) {
         this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
         this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
+        this.comparison = session.getFeature(ComparisonService.class);
     }
 
     @Override
@@ -97,12 +99,6 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
                     current.setChecksum(this.checksum(remote.getChecksum().algorithm, local));
                 }
-                final ChainedComparisonService comparison = new ChainedComparisonService(
-                        new ChecksumComparisonService(),
-                        // Continue to decide with timestamp when both files exist and are not zero bytes
-                        new ChainedComparisonService(
-                                EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService()),
-                        ComparisonService.disabled);
                 final Comparison result = comparison.compare(Path.Type.file, current, remote);
                 switch(result) {
                     case unknown:
