@@ -62,4 +62,12 @@ public class ChainedComparisonService implements ComparisonService {
         }
         return Comparison.unknown;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ChainedComparisonService{");
+        sb.append("delegates=").append(Arrays.toString(delegates));
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -52,4 +52,13 @@ public class DefaultComparisonService implements ComparisonService {
                 return files.compare(type, local, remote);
         }
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DefaultComparisonService{");
+        sb.append("files=").append(files);
+        sb.append(", directories=").append(directories);
+        sb.append('}');
+        return sb.toString();
+    }
 }
