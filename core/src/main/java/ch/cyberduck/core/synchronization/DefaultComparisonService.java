@@ -29,7 +29,6 @@ public class DefaultComparisonService implements ComparisonService {
     public DefaultComparisonService(final Protocol protocol) {
         this(new ChainedComparisonService(
                         new ChecksumComparisonService(),
-                        new ETagComparisonService(),
                         new VersionIdComparisonService(),
                         new ChainedComparisonService(
                                 EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService())),
