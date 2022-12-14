@@ -18,7 +18,6 @@ package ch.cyberduck.core.comparison;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.AttributesComparison;
-import ch.cyberduck.core.synchronization.ChecksumComparisonService;
 import ch.cyberduck.core.synchronization.Comparison;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class VersionIdAttributesComparison implements AttributesComparison {
-    private static final Logger log = LogManager.getLogger(ChecksumComparisonService.class.getName());
+    private static final Logger log = LogManager.getLogger(VersionIdAttributesComparison.class.getName());
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
