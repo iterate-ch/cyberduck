@@ -22,6 +22,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.RootPathContainerService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -396,6 +398,9 @@ public abstract class AbstractProtocol implements Protocol {
         }
         if(type == WebUrlProvider.class) {
             return (T) new DefaultWebUrlProvider();
+        }
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(this);
         }
         return null;
     }

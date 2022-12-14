@@ -48,6 +48,7 @@ public class BrickWriteFeatureTest extends AbstractBrickTest {
     public void testWriteSinglePart() throws Exception {
         final BrickWriteFeature feature = new BrickWriteFeature(session);
         final Path container = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final long containerTimestamp = new BrickAttributesFinderFeature(session).find(container).getModificationDate();
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(4 * 1024 * 1024);
         final TransferStatus status = new TransferStatus().withLength(content.length);
@@ -62,6 +63,7 @@ public class BrickWriteFeatureTest extends AbstractBrickTest {
         assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertNotEquals(containerTimestamp, new BrickAttributesFinderFeature(session).find(container).getModificationDate());
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

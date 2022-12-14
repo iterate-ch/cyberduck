@@ -28,6 +28,9 @@ import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -186,6 +189,9 @@ public class S3Protocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new DirectoryDelimiterPathContainerService();
+        }
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

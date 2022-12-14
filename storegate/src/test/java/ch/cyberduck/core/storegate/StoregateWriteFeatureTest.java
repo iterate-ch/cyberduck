@@ -54,6 +54,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
                 new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                         EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final long folderTimestamp = new StoregateAttributesFinderFeature(session, nodeid).find(room).getModificationDate();
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final FileMetadata version;
@@ -68,6 +69,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         }
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(folderTimestamp, new StoregateAttributesFinderFeature(session, nodeid).find(room).getModificationDate());
         PathAttributes attributes = new StoregateAttributesFinderFeature(session, nodeid).find(test);
         final String versionId = attributes.getVersionId();
         assertNull(versionId);

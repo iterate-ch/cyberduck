@@ -1,6 +1,6 @@
 package ch.cyberduck.core.synchronization;
 
-import ch.cyberduck.core.LocalAttributes;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.junit.Test;
@@ -12,30 +12,9 @@ public class SizeComparisonServiceTest {
     @Test
     public void testCompare() {
         ComparisonService s = new SizeComparisonService();
-        assertEquals(Comparison.equal, s.compare(new PathAttributes() {
-                                                     @Override
-                                                     public long getSize() {
-                                                         return 1L;
-                                                     }
-                                                 }, new LocalAttributes("/t") {
-                                                     @Override
-                                                     public long getSize() {
-                                                         return 1L;
-                                                     }
-                                                 }
-        ));
-
-        assertEquals(Comparison.notequal, s.compare(new PathAttributes() {
-                                                        @Override
-                                                        public long getSize() {
-                                                            return 2L;
-                                                        }
-                                                    }, new LocalAttributes("/t") {
-                                                        @Override
-                                                        public long getSize() {
-                                                            return 1L;
-                                                        }
-                                                    }
-        ));
+        assertEquals(Comparison.remote, s.compare(Path.Type.file, new PathAttributes().withSize(0L), new PathAttributes().withSize(1L)));
+        assertEquals(Comparison.local, s.compare(Path.Type.file, new PathAttributes().withSize(1L), new PathAttributes().withSize(0L)));
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withSize(1L), new PathAttributes().withSize(1L)));
+        assertEquals(Comparison.notequal, s.compare(Path.Type.file, new PathAttributes().withSize(2L), new PathAttributes().withSize(1L)));
     }
 }

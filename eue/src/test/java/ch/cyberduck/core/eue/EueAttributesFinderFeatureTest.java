@@ -72,6 +72,8 @@ public class EueAttributesFinderFeatureTest extends AbstractEueSessionTest {
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
+        final PathAttributes uploadResponse = new EueAttributesAdapter().toAttributes(out.getStatus());
+        assertSame(PathAttributes.EMPTY, uploadResponse);
         assertNotEquals(ts, feature.find(container).getModificationDate());
         final AttributedList<Path> list = new EueListService(session, fileid).list(file.getParent(), new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(file)));

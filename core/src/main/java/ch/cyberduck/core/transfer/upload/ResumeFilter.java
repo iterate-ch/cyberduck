@@ -66,7 +66,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                                 final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                                 if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                                     if(log.isInfoEnabled()) {
-                                        log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                                        log.info(String.format("Skip file %s with checksum %s", file, attributes.getChecksum()));
                                     }
                                     return false;
                                 }

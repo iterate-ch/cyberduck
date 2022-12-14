@@ -21,22 +21,20 @@ import ch.cyberduck.core.PathAttributes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TimestampComparisonService implements ComparisonService {
-    private static final Logger log = LogManager.getLogger(TimestampComparisonService.class);
+public class ETagComparisonService implements ComparisonService {
+    private static final Logger log = LogManager.getLogger(ETagComparisonService.class.getName());
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s with %s", local, remote));
-        }
-        if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
-            if(local.getModificationDate() < remote.getModificationDate()) {
-                return Comparison.remote;
+        if(null != local.getETag() && null != remote.getETag()) {
+            if(local.getETag().equals(remote.getETag())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Equal ETag %s", remote.getETag()));
+                }
+                return Comparison.equal;
             }
-            if(local.getModificationDate() > remote.getModificationDate()) {
-                return Comparison.local;
-            }
-            return Comparison.equal;
+            log.warn(String.format("ETag %s in cache differs from %s on server", remote.getETag(), local.getETag()));
+            return Comparison.notequal;
         }
         return Comparison.unknown;
     }

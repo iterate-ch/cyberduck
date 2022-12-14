@@ -46,7 +46,7 @@ public class CompareFilter extends AbstractUploadFilter {
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                          final UploadFilterOptions options,
                          final ProgressListener listener) {
-        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session, session.getHost().getTimezone()));
+        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session));
     }
 
     public CompareFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,

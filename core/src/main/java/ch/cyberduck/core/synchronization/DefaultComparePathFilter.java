@@ -19,7 +19,6 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -30,30 +29,30 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class DefaultComparePathFilter implements ComparePathFilter {
+    private static final Logger log = LogManager.getLogger(DefaultComparePathFilter.class);
 
     private Find finder;
     private AttributesFinder attribute;
 
-    private final ComparisonService checksum;
-    private final ComparisonService size;
-    private final ComparisonService timestamp;
+    private final ComparisonService comparison;
 
-    public DefaultComparePathFilter(final Session<?> session, final TimeZone tz) {
+    public DefaultComparePathFilter(final Session<?> session) {
         this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
         this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
-        this.timestamp = new TimestampComparisonService(tz);
-        this.size = new SizeComparisonService();
-        this.checksum = new ChecksumComparisonService();
+        this.comparison = session.getFeature(ComparisonService.class);
     }
 
     @Override
@@ -81,48 +80,37 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                     // Do not compare directories
                     return Comparison.equal;
                 }
-                final PathAttributes attributes = attribute.find(file);
-                final LocalAttributes l = local.attributes();
+                final PathAttributes remote = attribute.find(file);
+                final PathAttributes current = new PathAttributes()
+                        .withModificationDate(local.attributes().getModificationDate())
+                        .withSize(local.attributes().getSize());
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
-                switch(size.compare(attributes, l)) {
+                switch(new SizeComparisonService().compare(Path.Type.file, current, remote)) {
                     case remote:
                         return Comparison.remote;
                     case local:
                         return Comparison.local;
                 }
-                if(Checksum.NONE != attributes.getChecksum()) {
-                    // MD5/ETag Checksum is supported
+                // Equal size
+                if(Checksum.NONE.equals(remote.getChecksum())) {
+                    log.warn(String.format("Missing checksum for %s", file));
+                }
+                else {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                    l.setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                            .compute(local.getInputStream(), new TransferStatus()));
-                    switch(checksum.compare(attributes, l)) {
-                        case equal:
-                            // Decision is available
-                            return Comparison.equal;
-                    }
+                    current.setChecksum(this.checksum(remote.getChecksum().algorithm, local));
                 }
-                // Continue to decide with timestamp when both files exist and are not zero bytes
-                // Default comparison is using timestamp of file.
-                final Comparison compare = timestamp.compare(attributes, l);
-                switch(compare) {
+                final Comparison result = comparison.compare(Path.Type.file, current, remote);
+                switch(result) {
                     case unknown:
-                        switch(size.compare(attributes, l)) {
-                            case local:
-                            case notequal:
-                                return Comparison.local;
-                            case remote:
-                                return Comparison.remote;
-                            default:
-                                return Comparison.equal;
-                        }
+                    case local:
+                    case notequal:
+                        return Comparison.local;
                     default:
-                        return compare;
+                        return result;
                 }
             }
-            else {
-                // Only the local file exists
-                return Comparison.local;
-            }
+            // Only the local file exists
+            return Comparison.local;
         }
         else {
             if(finder.find(file)) {
@@ -131,5 +119,9 @@ public class DefaultComparePathFilter implements ComparePathFilter {
             }
             return Comparison.equal;
         }
+    }
+
+    protected Checksum checksum(final HashAlgorithm algorithm, final Local local) throws BackgroundException {
+        return ChecksumComputeFactory.get(algorithm).compute(local.getInputStream(), new TransferStatus());
     }
 }

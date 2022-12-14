@@ -63,8 +63,10 @@ public class BoxAttributesFinderFeatureTest extends AbtractBoxTest {
         final BoxFileidProvider fileid = new BoxFileidProvider(session);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final long folderModification = new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate();
         final Path test = new BoxTouchFeature(session, fileid)
                 .touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        assertEquals(folderModification, new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate(), 0L);
         final BoxAttributesFinderFeature f = new BoxAttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
