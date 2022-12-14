@@ -22,10 +22,10 @@ import ch.cyberduck.core.features.DelegatingPairingFeature;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
-import ch.cyberduck.core.synchronization.ChecksumComparisonService;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.RevisionComparisonService;
+import ch.cyberduck.core.synchronization.VersionIdComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -121,7 +121,7 @@ public class SDSProtocol extends AbstractProtocol {
             return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature());
         }
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ChecksumComparisonService(), new RevisionComparisonService());
+            return (T) new DefaultComparisonService(new VersionIdComparisonService(), new RevisionComparisonService());
         }
         return super.getFeature(type);
     }
