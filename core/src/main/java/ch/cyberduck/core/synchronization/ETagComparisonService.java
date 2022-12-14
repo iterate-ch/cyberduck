@@ -1,4 +1,4 @@
-package ch.cyberduck.core.comparison;
+package ch.cyberduck.core.synchronization;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -17,14 +17,12 @@ package ch.cyberduck.core.comparison;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.features.AttributesComparison;
-import ch.cyberduck.core.synchronization.Comparison;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ETagAttributesComparison implements AttributesComparison {
-    private static final Logger log = LogManager.getLogger(ETagAttributesComparison.class.getName());
+public class ETagComparisonService implements ComparisonService {
+    private static final Logger log = LogManager.getLogger(ETagComparisonService.class.getName());
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {

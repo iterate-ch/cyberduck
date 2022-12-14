@@ -21,9 +21,9 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.comparison.DefaultAttributesComparison;
-import ch.cyberduck.core.comparison.TimestampAttributesComparison;
-import ch.cyberduck.core.features.AttributesComparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.TimestampComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -95,8 +95,8 @@ public class FTPTLSProtocol extends AbstractProtocol {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison(new TimestampAttributesComparison(), new TimestampAttributesComparison());
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new TimestampComparisonService(), new TimestampComparisonService());
         }
         return super.getFeature(type);
     }

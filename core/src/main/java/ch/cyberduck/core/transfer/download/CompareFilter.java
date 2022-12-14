@@ -46,7 +46,7 @@ public class CompareFilter extends AbstractDownloadFilter {
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                          final DownloadFilterOptions options,
                          final ProgressListener listener) {
-        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session, session.getHost().getTimezone()));
+        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session));
     }
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,

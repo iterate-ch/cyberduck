@@ -384,7 +384,6 @@ public class PathAttributes extends Attributes implements Serializable {
         this.group = g;
     }
 
-    @Override
     public Checksum getChecksum() {
         return checksum;
     }

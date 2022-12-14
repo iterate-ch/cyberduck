@@ -23,11 +23,10 @@ import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.comparison.DefaultAttributesComparison;
-import ch.cyberduck.core.comparison.DisabledAttributesComparison;
-import ch.cyberduck.core.comparison.ETagAttributesComparison;
-import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Comparator;
@@ -79,8 +78,8 @@ public class SwiftProtocol extends AbstractProtocol {
         if(type == PathContainerService.class) {
             return (T) new DefaultPathContainerService();
         }
-        if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison(new ETagAttributesComparison(), new DisabledAttributesComparison());
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

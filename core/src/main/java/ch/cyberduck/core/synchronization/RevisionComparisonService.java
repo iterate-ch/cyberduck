@@ -1,4 +1,4 @@
-package ch.cyberduck.core.comparison;
+package ch.cyberduck.core.synchronization;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -17,31 +17,24 @@ package ch.cyberduck.core.comparison;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.features.AttributesComparison;
-import ch.cyberduck.core.synchronization.Comparison;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class VersionIdAttributesComparison implements AttributesComparison {
-    private static final Logger log = LogManager.getLogger(VersionIdAttributesComparison.class.getName());
+public class RevisionComparisonService implements ComparisonService {
+    private static final Logger log = LogManager.getLogger(RevisionComparisonService.class.getName());
 
-    @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
-        if(null != local.getVersionId() && null != remote.getVersionId()) {
-            // Version can be nullified in attributes from transfer status. In this case assume not equal even when revision is the same.
-            if(StringUtils.equals(local.getVersionId(), remote.getVersionId())) {
+        if(null != local.getRevision() && null != remote.getRevision()) {
+            if(local.getRevision().equals(remote.getRevision())) {
                 // No conflict. Proceed with overwrite
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Equal versionId %s", remote.getVersionId()));
+                    log.debug(String.format("Equal revision %s", remote.getRevision()));
                 }
                 return Comparison.equal;
             }
-            else {
-                log.warn(String.format("Version Id %s in cache differs from %s on server", remote.getVersionId(), local.getVersionId()));
-                return Comparison.notequal;
-            }
+            log.warn(String.format("Revision %s in cache differs from %s on server", remote.getRevision(), local.getRevision()));
+            return Comparison.notequal;
         }
         return Comparison.unknown;
     }

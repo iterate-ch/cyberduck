@@ -18,12 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.comparison.DefaultAttributesComparison;
-import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.RootPathContainerService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -399,8 +399,8 @@ public abstract class AbstractProtocol implements Protocol {
         if(type == WebUrlProvider.class) {
             return (T) new DefaultWebUrlProvider();
         }
-        if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison(this);
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(this);
         }
         return null;
     }

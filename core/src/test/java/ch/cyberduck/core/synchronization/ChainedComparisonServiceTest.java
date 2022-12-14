@@ -1,4 +1,4 @@
-package ch.cyberduck.core.comparison;
+package ch.cyberduck.core.synchronization;
 
 /*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
@@ -17,7 +17,6 @@ package ch.cyberduck.core.comparison;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.synchronization.Comparison;
 
 import org.junit.Test;
 
@@ -25,29 +24,29 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class ChainedAttributesComparisonTest {
+public class ChainedComparisonServiceTest {
 
     @Test
     public void compare() {
-        assertEquals(Comparison.equal, new ChainedAttributesComparison(new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.equal, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes().withModificationDate(1L), new PathAttributes().withModificationDate(1L)
         ));
-        assertEquals(Comparison.equal, new ChainedAttributesComparison(new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.equal, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(1L).withSize(1L)
         ));
-        assertEquals(Comparison.remote, new ChainedAttributesComparison(new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.remote, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes().withModificationDate(1L), new PathAttributes().withModificationDate(2L)
         ));
-        assertEquals(Comparison.remote, new ChainedAttributesComparison(new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.remote, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(2L).withSize(1L)
         ));
-        assertEquals(Comparison.unknown, new ChainedAttributesComparison(new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.unknown, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes(), new PathAttributes()
         ));
-        assertEquals(Comparison.equal, new ChainedAttributesComparison(new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.equal, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(1L).withSize(2L)
         ));
-        assertEquals(Comparison.notequal, new ChainedAttributesComparison(EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampAttributesComparison(), new SizeAttributesComparison()).compare(
+        assertEquals(Comparison.notequal, new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(1L).withSize(2L)
         ));
     }

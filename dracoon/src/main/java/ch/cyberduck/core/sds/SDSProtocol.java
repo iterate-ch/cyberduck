@@ -17,15 +17,15 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.comparison.ChecksumAttributesComparison;
-import ch.cyberduck.core.comparison.DefaultAttributesComparison;
-import ch.cyberduck.core.comparison.RevisionAttributesComparison;
-import ch.cyberduck.core.features.AttributesComparison;
 import ch.cyberduck.core.features.CredentialsCleanupService;
 import ch.cyberduck.core.features.DelegatingPairingFeature;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
+import ch.cyberduck.core.synchronization.ChecksumComparisonService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.RevisionComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -120,8 +120,8 @@ public class SDSProtocol extends AbstractProtocol {
         if(type == Pairing.class) {
             return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature());
         }
-        if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison(new ChecksumAttributesComparison(), new RevisionAttributesComparison());
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ChecksumComparisonService(), new RevisionComparisonService());
         }
         return super.getFeature(type);
     }

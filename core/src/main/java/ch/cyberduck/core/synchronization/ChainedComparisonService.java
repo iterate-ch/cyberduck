@@ -1,4 +1,6 @@
-package ch.cyberduck.core.comparison;/*
+package ch.cyberduck.core.synchronization;
+
+/*
  * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -15,31 +17,29 @@ package ch.cyberduck.core.comparison;/*
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.features.AttributesComparison;
-import ch.cyberduck.core.synchronization.Comparison;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 
-public class ChainedAttributesComparison implements AttributesComparison {
+public class ChainedComparisonService implements ComparisonService {
 
-    private final AttributesComparison[] delegates;
+    private final ComparisonService[] delegates;
     private final EnumSet<Comparison> skipped;
 
-    public ChainedAttributesComparison(final AttributesComparison... delegates) {
+    public ChainedComparisonService(final ComparisonService... delegates) {
         this(EnumSet.of(Comparison.unknown), delegates);
     }
 
-    public ChainedAttributesComparison(final EnumSet<Comparison> skipped, final AttributesComparison... delegates) {
+    public ChainedComparisonService(final EnumSet<Comparison> skipped, final ComparisonService... delegates) {
         this.delegates = delegates;
         this.skipped = skipped;
     }
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
-        for(Iterator<AttributesComparison> iter = Arrays.asList(delegates).iterator(); iter.hasNext(); ) {
-            final AttributesComparison delegate = iter.next();
+        for(Iterator<ComparisonService> iter = Arrays.asList(delegates).iterator(); iter.hasNext(); ) {
+            final ComparisonService delegate = iter.next();
             final Comparison result = delegate.compare(type, local, remote);
             if(skipped.contains(result)) {
                 if(!iter.hasNext()) {

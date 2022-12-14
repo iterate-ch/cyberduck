@@ -17,10 +17,10 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.comparison.ChecksumAttributesComparison;
-import ch.cyberduck.core.comparison.DefaultAttributesComparison;
-import ch.cyberduck.core.comparison.ETagAttributesComparison;
-import ch.cyberduck.core.features.AttributesComparison;
+import ch.cyberduck.core.synchronization.ChecksumComparisonService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 
 public class EueProtocol extends AbstractProtocol {
 
@@ -61,8 +61,8 @@ public class EueProtocol extends AbstractProtocol {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison(new ChecksumAttributesComparison(), new ETagAttributesComparison());
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ChecksumComparisonService(), new ETagComparisonService());
         }
         return super.getFeature(type);
     }

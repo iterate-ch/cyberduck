@@ -18,7 +18,8 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +29,7 @@ public class SizeComparisonService implements ComparisonService {
     private static final Logger log = LogManager.getLogger(SizeComparisonService.class);
 
     @Override
-    public Comparison compare(final Attributes remote, final Attributes local) {
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare size for %s with %s", remote, local));
         }

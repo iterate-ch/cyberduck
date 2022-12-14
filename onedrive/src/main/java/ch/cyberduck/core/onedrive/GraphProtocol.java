@@ -18,10 +18,9 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.comparison.DefaultAttributesComparison;
-import ch.cyberduck.core.comparison.DisabledAttributesComparison;
-import ch.cyberduck.core.comparison.ETagAttributesComparison;
-import ch.cyberduck.core.features.AttributesComparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 
 public abstract class GraphProtocol extends AbstractProtocol {
     @Override
@@ -62,8 +61,8 @@ public abstract class GraphProtocol extends AbstractProtocol {
 
     @Override
     public <T> T getFeature(final Class<T> type) {
-        if(type == AttributesComparison.class) {
-            return (T) new DefaultAttributesComparison(new ETagAttributesComparison(), new DisabledAttributesComparison());
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }
