@@ -25,7 +25,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
-import ch.cyberduck.core.synchronization.ETagComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Arrays;
@@ -128,7 +127,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
             return (T) new DirectoryDelimiterPathContainerService();
         }
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
+            return (T) new DefaultComparisonService(DefaultComparisonService.forFiles(this), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

@@ -52,6 +52,7 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
                 .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
         assertNotEquals(PathAttributes.EMPTY, attr);
+        assertNotNull(attr.getETag());
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new EueTimestampFeature(session, fileid).setTimestamp(file, modified);
         final PathAttributes updated = new EueAttributesFinderFeature(session, fileid).find(file);

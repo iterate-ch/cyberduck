@@ -61,7 +61,7 @@ public abstract class GraphProtocol extends AbstractProtocol {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(DefaultComparisonService.DEFAULT_FILE_COMPARISON_CHAIN, ComparisonService.disabled);
+            return (T) new DefaultComparisonService(DefaultComparisonService.forFiles(this), ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

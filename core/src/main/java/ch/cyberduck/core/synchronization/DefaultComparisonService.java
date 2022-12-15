@@ -23,7 +23,7 @@ import java.util.EnumSet;
 
 public class DefaultComparisonService implements ComparisonService {
 
-    public static final ChainedComparisonService DEFAULT_FILE_COMPARISON_CHAIN = new ChainedComparisonService(
+    private static final ChainedComparisonService DEFAULT_FILE_COMPARISON_CHAIN = new ChainedComparisonService(
             new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.notequal), new ETagComparisonService(),
                     new ChainedComparisonService(
                             new ChecksumComparisonService(),
@@ -37,11 +37,7 @@ public class DefaultComparisonService implements ComparisonService {
     private final ComparisonService directories;
 
     public DefaultComparisonService(final Protocol protocol) {
-        this(DEFAULT_FILE_COMPARISON_CHAIN,
-                new ChainedComparisonService(
-                        new RevisionComparisonService(),
-                        new ETagComparisonService(),
-                        protocol.getDirectoryTimestamp() == Protocol.DirectoryTimestamp.implicit ? new TimestampComparisonService() : ComparisonService.disabled));
+        this(forFiles(protocol), forDirectories(protocol));
     }
 
     public DefaultComparisonService(final ComparisonService files, final ComparisonService directories) {
@@ -66,5 +62,16 @@ public class DefaultComparisonService implements ComparisonService {
         sb.append(", directories=").append(directories);
         sb.append('}');
         return sb.toString();
+    }
+
+    public static ComparisonService forFiles(final Protocol protocol) {
+        return DEFAULT_FILE_COMPARISON_CHAIN;
+    }
+
+    public static ComparisonService forDirectories(final Protocol protocol) {
+        return new ChainedComparisonService(
+                new RevisionComparisonService(),
+                new ETagComparisonService(),
+                protocol.getDirectoryTimestamp() == Protocol.DirectoryTimestamp.implicit ? new TimestampComparisonService() : ComparisonService.disabled);
     }
 }

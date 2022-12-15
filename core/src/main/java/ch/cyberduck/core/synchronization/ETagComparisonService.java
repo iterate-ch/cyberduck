@@ -24,6 +24,10 @@ import org.apache.logging.log4j.Logger;
 public class ETagComparisonService implements ComparisonService {
     private static final Logger log = LogManager.getLogger(ETagComparisonService.class.getName());
 
+    public ETagComparisonService() {
+
+    }
+
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(null != local.getETag() && null != remote.getETag()) {
