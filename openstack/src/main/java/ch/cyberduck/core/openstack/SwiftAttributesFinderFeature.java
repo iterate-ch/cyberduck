@@ -171,7 +171,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();
         try {
-            attributes.setModificationDate(new Double(Double.parseDouble(lastModified) * 1000).longValue());
+            attributes.setModificationDate(Double.valueOf(Double.parseDouble(lastModified) * 1000).longValue());
         }
         catch(NumberFormatException e) {
             log.warn(String.format("%s is not in UNIX Epoch time stamp format %s", lastModified, e.getMessage()));
