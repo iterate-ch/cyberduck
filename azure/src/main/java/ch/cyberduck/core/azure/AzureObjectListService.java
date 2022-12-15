@@ -35,6 +35,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URISyntaxException;
 import java.util.EnumSet;
@@ -51,9 +53,9 @@ import com.microsoft.azure.storage.blob.CloudBlobDirectory;
 import com.microsoft.azure.storage.blob.ListBlobItem;
 
 public class AzureObjectListService implements ListService {
+    private static final Logger log = LogManager.getLogger(AzureObjectListService.class);
 
     private final AzureSession session;
-
     private final OperationContext context;
 
     private final PathContainerService containerService
@@ -109,6 +111,9 @@ public class AzureObjectListService implements ListService {
             }
             while(result.getHasMoreResults());
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No placeholder found for directory %s", directory));
+                }
                 throw new NotfoundException(directory.getAbsolute());
             }
             return children;

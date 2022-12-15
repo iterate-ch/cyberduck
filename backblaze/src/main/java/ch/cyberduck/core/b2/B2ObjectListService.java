@@ -93,6 +93,9 @@ public class B2ObjectListService implements ListService {
             }
             while(marker.hasNext());
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No placeholder found for directory %s", directory));
+                }
                 throw new NotfoundException(directory.getAbsolute());
             }
             return objects;

@@ -187,6 +187,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("No placeholder found for directory %s", directory));
+                        }
                         throw new NotfoundException(directory.getAbsolute());
                     }
                 }
