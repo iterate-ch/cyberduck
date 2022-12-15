@@ -22,7 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.AbtractBoxTest;
+import ch.cyberduck.core.box.AbstractBoxTest;
 import ch.cyberduck.core.box.BoxDeleteFeature;
 import ch.cyberduck.core.box.BoxDirectoryFeature;
 import ch.cyberduck.core.box.BoxFileidProvider;
@@ -58,7 +58,7 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class BufferWriteFeatureTest extends AbtractBoxTest {
+public class BufferWriteFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testWriteVault() throws Exception {

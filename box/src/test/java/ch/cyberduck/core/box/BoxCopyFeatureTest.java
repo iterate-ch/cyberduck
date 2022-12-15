@@ -39,7 +39,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class BoxCopyFeatureTest extends AbtractBoxTest {
+public class BoxCopyFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testCopyFile() throws Exception {
