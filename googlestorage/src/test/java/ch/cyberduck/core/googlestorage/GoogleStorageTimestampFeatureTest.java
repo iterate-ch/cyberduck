@@ -58,6 +58,8 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         test.withAttributes(response);
         assertEquals(1530305150673L, response.getModificationDate());
         final GoogleStorageTimestampFeature feature = new GoogleStorageTimestampFeature(session);
+        feature.setTimestamp(test, 1530305150672L);
+        assertEquals(1530305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
         feature.setTimestamp(test, 1630305150672L);
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
         final Path moved = new GoogleStorageMoveFeature(session).move(test, new Path(bucket,
