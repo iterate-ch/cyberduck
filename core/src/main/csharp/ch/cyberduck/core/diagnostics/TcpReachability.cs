@@ -67,7 +67,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     {
                         if (Log.isDebugEnabled())
                         {
-                            Log.debug($"WebException thrown with status {e.Status}");
+                            Log.debug($"WebException thrown with status {e.Status} for {h}");
                         }
 
                         switch (e.Status)
@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     }
                     catch (Exception e)
                     {
-                        Log.error("Generic exception while checking for reachability", e);
+                        Log.error("Generic exception while checking for reachability for {h}", e);
                         return false;
                     }
                 default:
