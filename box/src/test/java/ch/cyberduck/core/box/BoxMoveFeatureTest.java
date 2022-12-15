@@ -35,7 +35,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxMoveFeatureTest extends AbtractBoxTest {
+public class BoxMoveFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testMove() throws Exception {

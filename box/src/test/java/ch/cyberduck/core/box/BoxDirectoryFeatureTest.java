@@ -33,7 +33,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxDirectoryFeatureTest extends AbtractBoxTest {
+public class BoxDirectoryFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testCreateDirectory() throws Exception {

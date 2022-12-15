@@ -24,7 +24,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertNotEquals;
 
 @Category(IntegrationTest.class)
-public class BoxSessionTest extends AbtractBoxTest {
+public class BoxSessionTest extends AbstractBoxTest {
 
     @Test
     public void testConnect() throws Exception {

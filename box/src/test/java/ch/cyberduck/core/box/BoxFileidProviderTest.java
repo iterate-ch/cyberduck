@@ -23,10 +23,10 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class BoxFileidProviderTest extends AbtractBoxTest {
+public class BoxFileidProviderTest extends AbstractBoxTest {
 
     @Test
     public void getFileIdRoot() throws Exception {

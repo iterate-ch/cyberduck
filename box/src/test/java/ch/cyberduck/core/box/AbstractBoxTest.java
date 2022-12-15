@@ -41,7 +41,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbtractBoxTest {
+public class AbstractBoxTest {
 
     protected BoxSession session;
 

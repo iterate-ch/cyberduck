@@ -39,7 +39,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxLargeUploadServiceTest extends AbtractBoxTest {
+public class BoxLargeUploadServiceTest extends AbstractBoxTest {
 
     @Test
     public void testUploadLargeFileInChunks() throws Exception {

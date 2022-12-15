@@ -44,7 +44,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxWriteFeatureTest extends AbtractBoxTest {
+public class BoxWriteFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testWrite() throws Exception {

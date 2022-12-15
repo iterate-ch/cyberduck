@@ -26,7 +26,6 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,10 +34,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class BoxDeleteFeatureTest extends AbtractBoxTest{
+public class BoxDeleteFeatureTest extends AbstractBoxTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {

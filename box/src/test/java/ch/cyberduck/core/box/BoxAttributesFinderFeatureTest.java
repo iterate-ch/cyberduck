@@ -33,7 +33,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxAttributesFinderFeatureTest extends AbtractBoxTest {
+public class BoxAttributesFinderFeatureTest extends AbstractBoxTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
