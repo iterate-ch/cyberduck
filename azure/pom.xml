@@ -22,8 +22,8 @@
     </parent>
     <artifactId>azure</artifactId>
     <properties>
-        <azure-storage-version>12.13.0</azure-storage-version>
-        <azure-identity-version>1.3.5</azure-identity-version>
+        <azure-storage-version>12.20.1</azure-storage-version>
+        <azure-identity-version>1.7.2</azure-identity-version>
     </properties>
 
     <dependencies>
