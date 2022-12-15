@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @Category(IntegrationTest.class)
 public class GraphLockFeatureTest extends AbstractSharepointTest {
@@ -59,8 +60,8 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
         feature.unlock(file, token);
         {
             final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
-            assertEquals(attr.getModificationDate(), latest.getModificationDate());
-            assertEquals(attr.getETag(), latest.getETag());
+            assertNotEquals(attr.getModificationDate(), latest.getModificationDate());
+            assertNotEquals(attr.getETag(), latest.getETag());
         }
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
