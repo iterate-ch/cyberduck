@@ -24,6 +24,7 @@ public class DonationKeyTest {
     public void testVerifyFailure() {
         final Local f = new Local("src/test/resources/test.cyberducklicense");
         DonationKey r = new DonationKey(f);
+        assertEquals("3d4d06d0-27be-11e4-8a03-123143079e6c", r.getValue("Transaction"));
         assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
     }
 
@@ -32,5 +33,13 @@ public class DonationKeyTest {
         final Local f = new Local("src/test/resources/test.cyberducklicense");
         DonationKey r = new DonationKey(f);
         assertEquals("test@cyberduck.io", r.getValue("Email"));
+    }
+
+    @Test
+    public void testVerifyBinaryFile() throws Exception {
+        final Local f = new Local("src/test/resources/binary.cyberducklicense");
+        DonationKey r = new DonationKey(f);
+        assertEquals("3d4d06d0-27be-11e4-8a03-123143079e6c", r.getValue("Transaction"));
+        assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
     }
 }

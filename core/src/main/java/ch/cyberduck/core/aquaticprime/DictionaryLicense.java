@@ -49,6 +49,7 @@ import com.dd.plist.NSData;
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListFormatException;
+import com.dd.plist.PropertyListParser;
 import com.dd.plist.XMLPropertyListParser;
 
 public abstract class DictionaryLicense extends AbstractLicense {
@@ -112,11 +113,11 @@ public abstract class DictionaryLicense extends AbstractLicense {
             }
         }
         catch(NoSuchPaddingException
-                | BadPaddingException
-                | IllegalBlockSizeException
-                | InvalidKeyException
-                | InvalidKeySpecException
-                | NoSuchAlgorithmException e) {
+              | BadPaddingException
+              | IllegalBlockSizeException
+              | InvalidKeyException
+              | InvalidKeySpecException
+              | NoSuchAlgorithmException e) {
             log.warn(String.format("Signature verification failure for key %s", file));
             throw new InvalidLicenseException();
         }
@@ -140,14 +141,19 @@ public abstract class DictionaryLicense extends AbstractLicense {
 
     private NSDictionary read(final Local file) {
         try {
-            return (NSDictionary) XMLPropertyListParser.parse(file.getInputStream());
+            try {
+                return (NSDictionary) PropertyListParser.parse(file.getInputStream());
+            }
+            catch(PropertyListFormatException e) {
+                return (NSDictionary) XMLPropertyListParser.parse(file.getInputStream());
+            }
         }
         catch(ParserConfigurationException
-                | IOException
-                | SAXException
-                | PropertyListFormatException
-                | ParseException
-                | AccessDeniedException e) {
+              | IOException
+              | SAXException
+              | PropertyListFormatException
+              | ParseException
+              | AccessDeniedException e) {
             log.warn(String.format("Failure %s reading dictionary from %s", e.getMessage(), file));
         }
         return null;

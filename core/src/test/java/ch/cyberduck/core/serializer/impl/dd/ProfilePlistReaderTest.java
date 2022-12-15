@@ -63,6 +63,26 @@ public class ProfilePlistReaderTest {
         ));
     }
 
+    @Test
+    public void testDeserializeBinary() throws Exception {
+        final TestProtocol parent = new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.azure;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        };
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(parent))).read(
+                new Local("src/test/resources/Azure.cyberduckprofile")
+        );
+        assertNotNull(profile);
+        assertSame(parent, profile.getProtocol());
+    }
+
     @Test(expected = AccessDeniedException.class)
     public void testDeserializeUnknownProtocol() throws Exception {
         new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {

@@ -34,6 +34,7 @@ import java.text.ParseException;
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListFormatException;
+import com.dd.plist.PropertyListParser;
 import com.dd.plist.XMLPropertyListParser;
 
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
@@ -66,7 +67,12 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
 
     private NSObject parse(final InputStream in) throws AccessDeniedException {
         try {
-            return XMLPropertyListParser.parse(in);
+            try {
+                return PropertyListParser.parse(in);
+            }
+            catch(PropertyListFormatException e) {
+                return XMLPropertyListParser.parse(in);
+            }
         }
         catch(ParserConfigurationException | IOException | SAXException | ParseException |
               PropertyListFormatException e) {
