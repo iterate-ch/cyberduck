@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -40,11 +41,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -121,6 +124,11 @@ public class EueLargeUploadService extends HttpUploadFeature<EueWriteFeature.Chu
             final String cdash64 = Base64.encodeBase64URLSafeString(messageDigest.digest());
             final EueUploadHelper.UploadResponse completedUploadResponse = new EueMultipartUploadCompleter(session)
                     .getCompletedUploadResponse(uploadUri, size, cdash64);
+            if(!StringUtils.equals(cdash64, completedUploadResponse.getCdash64())) {
+                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                        MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                HashAlgorithm.cdash64, cdash64, completedUploadResponse.getCdash64()));
+            }
             final EueWriteFeature.Chunk object = new EueWriteFeature.Chunk(resourceId, size, cdash64);
             // Mark parent status as complete
             status.withResponse(new EueAttributesAdapter().toAttributes(object)).setComplete();
