@@ -84,9 +84,6 @@ public class S3BucketListService implements RootListService {
                         }
                         attr.setRegion(location);
                     }
-                    else {
-                        attr.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(bucket).getIdentifier());
-                    }
                 }
                 buckets.add(bucket);
                 listener.chunk(directory, buckets);
