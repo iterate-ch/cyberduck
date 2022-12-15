@@ -36,7 +36,7 @@ import java.util.EnumSet;
 
 import com.google.api.services.storage.model.StorageObject;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest {
@@ -55,15 +55,24 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final PathAttributes response = status.getResponse();
+        assertNotNull(response.getETag());
         test.withAttributes(response);
         assertEquals(1530305150673L, response.getModificationDate());
         final GoogleStorageTimestampFeature feature = new GoogleStorageTimestampFeature(session);
+        // Rewrite object with timestamp earlier than already set
+        feature.setTimestamp(test, 1530305150672L);
+        assertEquals(1530305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
+        final String eTagAfterRewrite = new GoogleStorageAttributesFinderFeature(session).find(test).getETag();
+        assertNotEquals(response.getETag(), eTagAfterRewrite);
         feature.setTimestamp(test, 1630305150672L);
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
+        final String eTagAfterPatch = new GoogleStorageAttributesFinderFeature(session).find(test).getETag();
+        assertNotEquals(eTagAfterRewrite, eTagAfterPatch);
         final Path moved = new GoogleStorageMoveFeature(session).move(test, new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(moved).getModificationDate());
+        assertNotEquals(eTagAfterPatch, new GoogleStorageAttributesFinderFeature(session).find(moved).getETag());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
