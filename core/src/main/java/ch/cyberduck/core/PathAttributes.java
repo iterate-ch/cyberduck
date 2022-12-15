@@ -641,12 +641,6 @@ public class PathAttributes extends Attributes implements Serializable {
         if(!Objects.equals(revision, that.revision)) {
             return false;
         }
-        if(!Objects.equals(region, that.region)) {
-            return false;
-        }
-        if(!Objects.equals(custom, that.custom)) {
-            return false;
-        }
         return true;
     }
 
@@ -660,8 +654,6 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (fileId != null ? fileId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
-        result = 31 * result + (region != null ? region.hashCode() : 0);
-        result = 31 * result + (custom != null ? custom.hashCode() : 0);
         return result;
     }
 
