@@ -23,19 +23,21 @@ import java.util.EnumSet;
 
 public class DefaultComparisonService implements ComparisonService {
 
+    public static final ChainedComparisonService DEFAULT_FILE_COMPARISON_CHAIN = new ChainedComparisonService(
+            new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.notequal), new ETagComparisonService(),
+                    new ChainedComparisonService(
+                            new ChecksumComparisonService(),
+                            new VersionIdComparisonService(),
+                            new ChainedComparisonService(
+                                    EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService()))
+            )
+    );
+
     private final ComparisonService files;
     private final ComparisonService directories;
 
     public DefaultComparisonService(final Protocol protocol) {
-        this(new ChainedComparisonService(
-                        new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.notequal), new ETagComparisonService(),
-                                new ChainedComparisonService(
-                                        new ChecksumComparisonService(),
-                                        new VersionIdComparisonService(),
-                                        new ChainedComparisonService(
-                                                EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService()))
-                        )
-                ),
+        this(DEFAULT_FILE_COMPARISON_CHAIN,
                 new ChainedComparisonService(
                         new RevisionComparisonService(),
                         new ETagComparisonService(),

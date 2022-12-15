@@ -62,10 +62,12 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertEquals(file.attributes().getFileId(), attributes.getFileId());
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, rename));
-        final TransferStatus status = new TransferStatus().exists(true);
+        final TransferStatus status = new TransferStatus();
         final Path target = move.move(file, rename, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(attributes, target.attributes());
         assertEquals(attributes.getFileId(), target.attributes().getFileId());
-        assertEquals(attributes, attributesFinder.find(rename));
+        assertNotEquals(attributes.getETag(), attributesFinder.find(rename).getETag());
+        assertEquals(target.attributes().getETag(), attributesFinder.find(rename).getETag());
         delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -83,12 +85,16 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(attributesFinder.find(touchedFile));
+        final PathAttributes attributes = attributesFinder.find(touchedFile);
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, rename));
-        move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertNotNull(attributesFinder.find(rename));
+        final Path target = move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final PathAttributes renamedAttributes = attributesFinder.find(rename);
+        assertNotNull(renamedAttributes);
+        assertEquals(attributes, renamedAttributes);
+        assertNotEquals(attributes.getETag(), renamedAttributes.getETag());
+        assertEquals(target.attributes().getETag(), renamedAttributes.getETag());
 
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

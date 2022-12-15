@@ -30,6 +30,7 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.onedrive.features.*;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.shared.BufferWriteFeature;
@@ -255,7 +256,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphFindFeature(this, fileid);
         }
         if(type == Timestamp.class) {
-            return (T) new GraphTimestampFeature(this, fileid);
+            if(new HostPreferences(host).getBoolean("onedrive.timestamp.enable")) {
+                return (T) new GraphTimestampFeature(this, fileid);
+            }
         }
         if(type == Quota.class) {
             return (T) new GraphQuotaFeature(this, fileid);

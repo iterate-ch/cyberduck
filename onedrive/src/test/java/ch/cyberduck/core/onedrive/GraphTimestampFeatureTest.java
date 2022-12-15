@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -35,8 +36,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
@@ -46,10 +46,13 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(file));
+        final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
+        assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new GraphTimestampFeature(session, fileid).setTimestamp(file, modified);
-        assertEquals(modified, new GraphAttributesFinderFeature(session, fileid).find(file).getModificationDate());
+        final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(file);
+        assertEquals(modified, updated.getModificationDate());
+        assertNotEquals(attr.getETag(), updated.getETag());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -59,10 +62,13 @@ public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderService().find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session, fileid).mkdir(test, null);
-        assertNotNull(new GraphAttributesFinderFeature(session, fileid).find(test));
+        final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(test);
+        assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new GraphTimestampFeature(session, fileid).setTimestamp(test, modified);
-        assertEquals(modified, new GraphAttributesFinderFeature(session, fileid).find(test).getModificationDate());
+        final PathAttributes updated = new GraphAttributesFinderFeature(session, fileid).find(test);
+        assertEquals(modified, updated.getModificationDate());
+        assertNotEquals(attr.getETag(), updated.getETag());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

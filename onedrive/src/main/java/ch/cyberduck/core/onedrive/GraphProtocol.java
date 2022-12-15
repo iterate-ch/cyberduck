@@ -20,7 +20,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
-import ch.cyberduck.core.synchronization.ETagComparisonService;
 
 public abstract class GraphProtocol extends AbstractProtocol {
     @Override
@@ -62,7 +61,7 @@ public abstract class GraphProtocol extends AbstractProtocol {
     @Override
     public <T> T getFeature(final Class<T> type) {
         if(type == ComparisonService.class) {
-            return (T) new DefaultComparisonService(new ETagComparisonService(), ComparisonService.disabled);
+            return (T) new DefaultComparisonService(DefaultComparisonService.DEFAULT_FILE_COMPARISON_CHAIN, ComparisonService.disabled);
         }
         return super.getFeature(type);
     }

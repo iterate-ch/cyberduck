@@ -195,11 +195,12 @@ public class OneDriveSession extends GraphSession {
             return (T) new OneDriveListService(this, fileid);
         }
         if(type == Lock.class) {
+            final User.Metadata user = this.getUser();
             // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
             // in order to determine whether this is a Microsoft or AAD account, we need to check for
             // a null-optional, not for non-present optional.
             //noinspection OptionalAssignedToNull
-            if(null != getUser() && null != getUser().getCreationType()) {
+            if(null != user && null != user.getCreationType()) {
                 return (T) new GraphLockFeature(this, fileid);
             }
         }
