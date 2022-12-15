@@ -50,10 +50,14 @@ public class EueTimestampFeatureTest extends AbstractEueSessionTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid)
                 .touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
-        assertNotEquals(PathAttributes.EMPTY, new EueAttributesFinderFeature(session, fileid).find(file));
+        final PathAttributes attr = new EueAttributesFinderFeature(session, fileid).find(file);
+        assertNotEquals(PathAttributes.EMPTY, attr);
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
         new EueTimestampFeature(session, fileid).setTimestamp(file, modified);
-        assertEquals(modified, new EueAttributesFinderFeature(session, fileid).find(file).getModificationDate());
+        final PathAttributes updated = new EueAttributesFinderFeature(session, fileid).find(file);
+        assertEquals(modified, updated.getModificationDate());
+        assertNotEquals(attr.getETag(), updated.getETag());
+        assertEquals(attr.getChecksum(), updated.getChecksum());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
