@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.3
+- [Bugfix] Failure uploading file with diacritic in filename (Windows) (#13723)
+- [Bugfix] Folders containing backup file dirid.c9r cannot be deleted (Cryptomator) (#13957)
+- [Bugfix] Files not decrypted after unlocking vault (Cryptomator, Box) (#13961)
+
 8.5.2
 - [Bugfix] Invalid syntax in Open in Terminal command (SFTP, macOS)
 - [Bugfix] Passwords for ProxyJump hosts in .ssh/config are not saved (SFTP) (#13936)
