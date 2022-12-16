@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,8 +17,10 @@ public class TimestampComparisonServiceTest {
     public void testCompareEqual() {
         TimestampComparisonService s = new TimestampComparisonService();
         final long timestamp = System.currentTimeMillis();
-        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(timestamp)
-        ));
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(timestamp)));
+        assertEquals(Comparison.equal, s.compare(Path.Type.file, new PathAttributes().withModificationDate(timestamp), new PathAttributes().withModificationDate(
+                TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(timestamp))
+        )));
     }
 
     @Test

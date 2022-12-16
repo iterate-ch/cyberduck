@@ -17,6 +17,7 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.Timestamp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,10 +31,10 @@ public class TimestampComparisonService implements ComparisonService {
             log.debug(String.format("Compare timestamp for %s with %s", local, remote));
         }
         if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
-            if(local.getModificationDate() < remote.getModificationDate()) {
+            if(Timestamp.toSeconds(local.getModificationDate()) < Timestamp.toSeconds(remote.getModificationDate())) {
                 return Comparison.remote;
             }
-            if(local.getModificationDate() > remote.getModificationDate()) {
+            if(Timestamp.toSeconds(local.getModificationDate()) > Timestamp.toSeconds(remote.getModificationDate())) {
                 return Comparison.local;
             }
             return Comparison.equal;
