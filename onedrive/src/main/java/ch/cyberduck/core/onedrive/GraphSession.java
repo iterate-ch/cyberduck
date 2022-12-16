@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
@@ -56,7 +57,6 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -288,6 +288,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             this.isDrive = isDrive;
         }
 
+        static boolean equals(final Path a, final Path b) {
+            return (a == b) || (a != null && new SimplePathPredicate(a).test(b));
+        }
+
         public boolean isDrive() {
             return isDrive;
         }
@@ -327,10 +331,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             if(isDrive != other.isDrive) {
                 return false;
             }
-            if(!Objects.equals(collectionPath, other.collectionPath)) {
+            if(!equals(collectionPath, other.collectionPath)) {
                 return false;
             }
-            return Objects.equals(containerPath, other.containerPath);
+            return equals(containerPath, other.containerPath);
         }
 
         @Override
