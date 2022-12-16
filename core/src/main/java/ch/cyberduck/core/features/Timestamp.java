@@ -20,7 +20,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.concurrent.TimeUnit;
+
 public interface Timestamp {
+
+    static long toSeconds(final long millis) {
+        return TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millis));
+    }
 
     default void setTimestamp(Path file, Long modified) throws BackgroundException {
         this.setTimestamp(file, new TransferStatus().withTimestamp(modified));
