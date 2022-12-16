@@ -29,25 +29,25 @@ public class ChainedComparisonServiceTest {
     @Test
     public void compare() {
         assertEquals(Comparison.equal, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
-                AbstractPath.Type.file, new PathAttributes().withModificationDate(1L), new PathAttributes().withModificationDate(1L)
+                AbstractPath.Type.file, new PathAttributes().withModificationDate(1000L), new PathAttributes().withModificationDate(1000L)
         ));
         assertEquals(Comparison.equal, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
-                AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(1L).withSize(1L)
+                AbstractPath.Type.file, new PathAttributes().withModificationDate(1000L).withSize(1000L), new PathAttributes().withModificationDate(1000L).withSize(1000L)
         ));
         assertEquals(Comparison.remote, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
-                AbstractPath.Type.file, new PathAttributes().withModificationDate(1L), new PathAttributes().withModificationDate(2L)
+                AbstractPath.Type.file, new PathAttributes().withModificationDate(1000L), new PathAttributes().withModificationDate(2000L)
         ));
         assertEquals(Comparison.remote, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
-                AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(2L).withSize(1L)
+                AbstractPath.Type.file, new PathAttributes().withModificationDate(1000L).withSize(1000L), new PathAttributes().withModificationDate(2000L).withSize(1000L)
         ));
         assertEquals(Comparison.unknown, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
                 AbstractPath.Type.file, new PathAttributes(), new PathAttributes()
         ));
         assertEquals(Comparison.equal, new ChainedComparisonService(new TimestampComparisonService(), new SizeComparisonService()).compare(
-                AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(1L).withSize(2L)
+                AbstractPath.Type.file, new PathAttributes().withModificationDate(1000L).withSize(1000L), new PathAttributes().withModificationDate(1000L).withSize(2000L)
         ));
         assertEquals(Comparison.notequal, new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService()).compare(
-                AbstractPath.Type.file, new PathAttributes().withModificationDate(1L).withSize(1L), new PathAttributes().withModificationDate(1L).withSize(2L)
+                AbstractPath.Type.file, new PathAttributes().withModificationDate(1000L).withSize(1000L), new PathAttributes().withModificationDate(1000L).withSize(2000L)
         ));
     }
 }

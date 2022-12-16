@@ -30,8 +30,8 @@ public class DefaultComparisonServiceTest {
         final DefaultComparisonService c = new DefaultComparisonService(new TestProtocol());
         assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1"), new PathAttributes().withETag("1")));
         assertEquals(Comparison.unknown, c.compare(Path.Type.file, new PathAttributes().withETag("1"), new PathAttributes().withETag("2")));
-        assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1L), new PathAttributes().withETag("2").withSize(1L)));
-        assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1L).withModificationDate(1L), new PathAttributes().withETag("2").withSize(1L).withModificationDate(1L)));
-        assertEquals(Comparison.local, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1L).withModificationDate(2L), new PathAttributes().withETag("2").withSize(1L).withModificationDate(1L)));
+        assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1000L), new PathAttributes().withETag("2").withSize(1000L)));
+        assertEquals(Comparison.equal, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1000L).withModificationDate(1000L), new PathAttributes().withETag("2").withSize(1000L).withModificationDate(1000L)));
+        assertEquals(Comparison.local, c.compare(Path.Type.file, new PathAttributes().withETag("1").withSize(1000L).withModificationDate(2000L), new PathAttributes().withETag("2").withSize(1000L).withModificationDate(1000L)));
     }
 }
