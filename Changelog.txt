@@ -10,6 +10,8 @@ https://cyberduck.io/
 - [Feature] Skip button to allow creating share with no passphrase (Dropbox, Box, ownCloud, Nextcloud) (#13846)
 - [Feature] Redirect to application without requiring to copy authentication code when opening new connection (Dropbox)
 - [Feature] Allow configuration of client certificate (ownCloud, Nextcloud)
+- [Feature] Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) (Google Storage, Google Drive, Dropbox)
+- [Bugfix] Mutual authentication does not work with client certificates with a friendly name set (Windows)
 
 8.5.0
 - [Feature] Allow to view and revert previous versions of files (ownCloud, Nextcloud) (#10560)
