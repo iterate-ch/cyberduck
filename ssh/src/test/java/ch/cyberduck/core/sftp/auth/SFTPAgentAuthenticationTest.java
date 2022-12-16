@@ -16,9 +16,7 @@ package ch.cyberduck.core.sftp.auth;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,12 +42,12 @@ public class SFTPAgentAuthenticationTest {
     @Test
     public void filterIdentitiesMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user").withIdentity(new Local("mykey") {
+        final Credentials credentials = new Credentials("user").withIdentity(new Local("mykey") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }));
+        });
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
@@ -60,7 +58,7 @@ public class SFTPAgentAuthenticationTest {
         identities.add(nomatch);
         identities.add(match);
 
-        final Collection<Identity> filtered = authentication.filterIdentities(bookmark, identities);
+        final Collection<Identity> filtered = authentication.filter(credentials, identities);
         assertEquals(1, filtered.size());
         assertArrayEquals(match.getComment(), filtered.iterator().next().getComment());
     }
@@ -68,12 +66,12 @@ public class SFTPAgentAuthenticationTest {
     @Test
     public void filterIdentitiesNoMatch() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user").withIdentity(new Local("mykey") {
+        final Credentials credentials = new Credentials("user").withIdentity(new Local("mykey") {
             @Override
             public boolean exists() {
                 return true;
             }
-        }));
+        });
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
@@ -82,14 +80,14 @@ public class SFTPAgentAuthenticationTest {
         identities.add(nomatch);
         identities.add(nomatch);
 
-        final Collection<Identity> filtered = authentication.filterIdentities(bookmark, identities);
+        final Collection<Identity> filtered = authentication.filter(credentials, identities);
         assertEquals(2, filtered.size());
     }
 
     @Test
     public void filterIdentitiesNoKeySet() {
         final SFTPAgentAuthentication authentication = new SFTPAgentAuthentication(new SSHClient(), new OpenSSHAgentAuthenticator(new AgentProxy(null)));
-        final Host bookmark = new Host(new SFTPProtocol(), StringUtils.EMPTY, new Credentials("user"));
+        final Credentials credentials = new Credentials("user");
 
         final List<Identity> identities = new ArrayList<>();
         final Identity nomatch = mock(Identity.class);
@@ -98,7 +96,7 @@ public class SFTPAgentAuthenticationTest {
         identities.add(nomatch);
         identities.add(nomatch);
 
-        final Collection<Identity> filtered = authentication.filterIdentities(bookmark, identities);
+        final Collection<Identity> filtered = authentication.filter(credentials, identities);
         assertEquals(2, filtered.size());
     }
 }
