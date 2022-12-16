@@ -21,6 +21,8 @@ import ch.cyberduck.core.PathAttributes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.concurrent.TimeUnit;
+
 public class TimestampComparisonService implements ComparisonService {
     private static final Logger log = LogManager.getLogger(TimestampComparisonService.class);
 
@@ -30,14 +32,18 @@ public class TimestampComparisonService implements ComparisonService {
             log.debug(String.format("Compare timestamp for %s with %s", local, remote));
         }
         if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
-            if(local.getModificationDate() < remote.getModificationDate()) {
+            if(toSeconds(local.getModificationDate()) < toSeconds(remote.getModificationDate())) {
                 return Comparison.remote;
             }
-            if(local.getModificationDate() > remote.getModificationDate()) {
+            if(toSeconds(local.getModificationDate()) > toSeconds(remote.getModificationDate())) {
                 return Comparison.local;
             }
             return Comparison.equal;
         }
         return Comparison.unknown;
+    }
+
+    private static long toSeconds(final long millis) {
+        return TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(millis));
     }
 }
