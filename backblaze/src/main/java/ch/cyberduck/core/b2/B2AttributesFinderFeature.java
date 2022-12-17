@@ -216,7 +216,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
 
     protected PathAttributes toAttributes(final B2BucketResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setVersionId(response.getBucketId());
+        attributes.setFileId(response.getBucketId());
         attributes.setRegion(response.getBucketType().name());
         switch(response.getBucketType()) {
             case allPublic:
