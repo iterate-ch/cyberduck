@@ -44,6 +44,9 @@ public class ChainedComparisonService implements ComparisonService {
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         for(Iterator<ComparisonService> iter = Arrays.asList(delegates).iterator(); iter.hasNext(); ) {
             final ComparisonService delegate = iter.next();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, delegate));
+            }
             final Comparison result = delegate.compare(type, local, remote);
             if(skipped.contains(result)) {
                 if(!iter.hasNext()) {

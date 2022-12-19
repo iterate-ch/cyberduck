@@ -19,9 +19,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Protocol;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.EnumSet;
 
 public class DefaultComparisonService implements ComparisonService {
+    private static final Logger log = LogManager.getLogger(DefaultComparisonService.class);
 
     private static final ChainedComparisonService DEFAULT_FILE_COMPARISON_CHAIN = new ChainedComparisonService(EnumSet.of(Comparison.unknown, Comparison.notequal),
             new ETagComparisonService(),
@@ -48,8 +52,14 @@ public class DefaultComparisonService implements ComparisonService {
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         switch(type) {
             case directory:
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, directories));
+                }
                 return directories.compare(type, local, remote);
             default:
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, files));
+                }
                 return files.compare(type, local, remote);
         }
     }

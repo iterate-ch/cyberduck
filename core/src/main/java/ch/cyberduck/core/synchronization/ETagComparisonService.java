@@ -18,6 +18,7 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,13 +28,15 @@ public class ETagComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(null != local.getETag() && null != remote.getETag()) {
-            if(local.getETag().equals(remote.getETag())) {
+            if(StringUtils.equals(local.getETag(), remote.getETag())) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Equal ETag %s", remote.getETag()));
                 }
                 return Comparison.equal;
             }
-            log.warn(String.format("ETag %s in cache differs from %s on server", remote.getETag(), local.getETag()));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Local ETag %s not equal remote %s", local.getETag(), remote.getETag()));
+            }
             return Comparison.notequal;
         }
         return Comparison.unknown;

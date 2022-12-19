@@ -33,7 +33,9 @@ public class RevisionComparisonService implements ComparisonService {
                 }
                 return Comparison.equal;
             }
-            log.warn(String.format("Revision %s in cache differs from %s on server", remote.getRevision(), local.getRevision()));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Local revision %s not equal remote %s", local.getRevision(), remote.getRevision()));
+            }
             return Comparison.notequal;
         }
         return Comparison.unknown;

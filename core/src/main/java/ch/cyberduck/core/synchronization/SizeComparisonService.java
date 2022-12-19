@@ -30,11 +30,11 @@ public class SizeComparisonService implements ComparisonService {
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare size for %s with %s", remote, local));
-        }
         if(TransferStatus.UNKNOWN_LENGTH != local.getSize() && TransferStatus.UNKNOWN_LENGTH != remote.getSize()) {
-            if(remote.getSize() == local.getSize()) {
+            if(local.getSize() == remote.getSize()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Equal size %s", remote.getSize()));
+                }
                 return Comparison.equal;
             }
             if(remote.getSize() == 0) {
@@ -42,6 +42,9 @@ public class SizeComparisonService implements ComparisonService {
             }
             if(local.getSize() == 0) {
                 return Comparison.remote;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Local size %s not equal remote %s", local.getSize(), remote.getSize()));
             }
             // Different file size
             return Comparison.notequal;

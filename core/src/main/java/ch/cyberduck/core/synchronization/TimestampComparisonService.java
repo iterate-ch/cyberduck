@@ -27,15 +27,21 @@ public class TimestampComparisonService implements ComparisonService {
 
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s with %s", local, remote));
-        }
         if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
             if(Timestamp.toSeconds(local.getModificationDate()) < Timestamp.toSeconds(remote.getModificationDate())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Local modification date %d is earlier than remote %d", local.getModificationDate(), remote.getModificationDate()));
+                }
                 return Comparison.remote;
             }
             if(Timestamp.toSeconds(local.getModificationDate()) > Timestamp.toSeconds(remote.getModificationDate())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Local modification date %d is newer than remote %d", local.getModificationDate(), remote.getModificationDate()));
+                }
                 return Comparison.local;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Equal modification date %s", remote.getModificationDate()));
             }
             return Comparison.equal;
         }

@@ -28,6 +28,9 @@ public class VersionIdComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
         if(null != local.getVersionId() && null != remote.getVersionId()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Compare local attributes %s with remote %s", local, remote));
+            }
             // Version can be nullified in attributes from transfer status. In this case assume not equal even when revision is the same.
             if(StringUtils.equals(local.getVersionId(), remote.getVersionId())) {
                 // No conflict. Proceed with overwrite
@@ -36,10 +39,10 @@ public class VersionIdComparisonService implements ComparisonService {
                 }
                 return Comparison.equal;
             }
-            else {
-                log.warn(String.format("Version Id %s in cache differs from %s on server", remote.getVersionId(), local.getVersionId()));
-                return Comparison.notequal;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Local version id %s not equal remote %s", local.getVersionId(), remote.getVersionId()));
             }
+            return Comparison.notequal;
         }
         return Comparison.unknown;
     }
