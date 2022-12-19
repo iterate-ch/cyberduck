@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -52,8 +53,8 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<Void> {
                     pool.release(session, null);
                 }
             }
-            catch(ConnectionCanceledException e) {
-                log.warn("Cancel processing scheduled task. %s", e);
+            catch(LoginFailureException | ConnectionCanceledException e) {
+                log.warn("Cancel processing scheduled task after failure %s", e);
                 this.shutdown();
             }
             catch(BackgroundException e) {
