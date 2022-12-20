@@ -6,6 +6,7 @@ https://cyberduck.io/
 - [Bugfix] Folders containing backup file dirid.c9r cannot be deleted (Cryptomator) (#13957)
 - [Bugfix] Files not decrypted after unlocking vault (Cryptomator, Box) (#13961)
 - [Bugfix] Only read specific key from SSH agent with IdentitiesOnly and public key in IdentitiyFile directive in OpenSSH configuration to limit number of authentication attempts (SFTP) (#13935)
+- [Bugfix] Interoperability with IdentityAgent from 1Password (SFTP)
 
 8.5.2
 - [Bugfix] Invalid syntax in Open in Terminal command (SFTP, macOS)
