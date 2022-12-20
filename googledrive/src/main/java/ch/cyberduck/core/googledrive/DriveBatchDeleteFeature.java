@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -80,7 +81,7 @@ public class DriveBatchDeleteFeature implements Delete {
     }
 
     protected void queue(final Path file, final BatchRequest batch, final Callback callback, final List<BackgroundException> failures) throws IOException, BackgroundException {
-        if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
+        if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {
             session.getClient().teamdrives().delete(fileid.getFileId(file))
                     .queue(batch, new DeleteBatchCallback<>(file, failures, callback));
         }

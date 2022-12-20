@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,7 +46,7 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
-            if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(folder.getParent())) {
+            if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(folder.getParent())) {
                 final TeamDrive execute = session.getClient().teamdrives().create(
                         new UUIDRandomStringService().random(), new TeamDrive().setName(folder.getName())
                 ).execute();
