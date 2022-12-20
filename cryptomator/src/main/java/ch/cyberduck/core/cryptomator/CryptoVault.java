@@ -47,7 +47,12 @@ import org.cryptomator.cryptolib.api.Masterkey;
 import org.cryptomator.cryptolib.common.MasterkeyFile;
 import org.cryptomator.cryptolib.common.MasterkeyFileAccess;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.EnumSet;
@@ -117,6 +122,10 @@ public class CryptoVault implements Vault {
     }
 
     public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
+        return this.create(session, null, credentials, keychain, version);
+    }
+
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             try {
@@ -144,7 +153,7 @@ public class CryptoVault implements Vault {
         }
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withRegion(region);
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));
@@ -178,7 +187,7 @@ public class CryptoVault implements Vault {
 
     @Override
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
-        return this.create(session, credentials, keychain, VAULT_VERSION);
+        return this.create(session, region, credentials, keychain, VAULT_VERSION);
     }
 
     @Override
