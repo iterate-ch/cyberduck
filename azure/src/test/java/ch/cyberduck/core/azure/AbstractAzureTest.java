@@ -60,28 +60,11 @@ public class AbstractAzureTest {
 
     @Before
     public void setupSharedAccessSignature() throws Exception {
-        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.user"), System.getProperties().getProperty("azure.key")
-        ));
-        session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                fail(reason);
-                return null;
-            }
-        }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore(), new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
-    }
-
-    @Before
-    public void setupTokenAuthentication() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
         final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.user"), null, System.getProperties().getProperty("azure.sas")
+                System.getProperties().getProperty("azure.user"), null, System.getProperties().getProperty("azure.token")
         ));
         sas = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -93,5 +76,22 @@ public class AbstractAzureTest {
         }, new DisabledHostKeyCallback(),
                 new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(sas, new DisabledCancelCallback());
+    }
+
+    @Before
+    public void setupTokenAuthentication() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+                System.getProperties().getProperty("azure.user"), System.getProperties().getProperty("azure.password")
+        ));
+        session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                fail(reason);
+                return null;
+            }
+        }, new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(), new DisabledProgressListener());
+        login.check(session, new DisabledCancelCallback());
     }
 }
