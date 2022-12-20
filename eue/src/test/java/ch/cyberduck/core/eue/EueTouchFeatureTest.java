@@ -30,8 +30,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class EueTouchFeatureTest extends AbstractEueSessionTest {
@@ -44,17 +43,20 @@ public class EueTouchFeatureTest extends AbstractEueSessionTest {
         assertFalse(new EueTouchFeature(session, fileid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), "f."));
     }
 
-
-    @Test(expected = ConflictException.class)
+    @Test
     public void testConflict() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path container = new EueDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        assertEquals(file.attributes(), new EueAttributesFinderFeature(session, fileid).find(file));
         // Create conflict
         try {
             new EueTouchFeature(session, fileid).touch(file, new TransferStatus().withLength(0L));
             fail();
+        }
+        catch(ConflictException e) {
+            // Expected
         }
         finally {
             new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());

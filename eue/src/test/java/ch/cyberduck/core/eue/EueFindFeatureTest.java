@@ -85,7 +85,6 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder1 = new EueDirectoryFeature(session, fileid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertEquals(folder1.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder1));
         assertTrue(new EueFindFeature(session, fileid).find(folder1, new DisabledListProgressListener()));
         // Test case insensitivity
         assertTrue(new EueFindFeature(session, fileid).find(new Path(StringUtils.lowerCase(folder1.getName()), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
@@ -93,7 +92,6 @@ public class EueFindFeatureTest extends AbstractEueSessionTest {
         assertTrue(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
         final Path folder1Folder2 = new EueDirectoryFeature(session, fileid).mkdir(new Path(folder1,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertEquals(folder1Folder2.attributes().getFileId(), new EueResourceIdProvider(session).getFileId(folder1Folder2));
         assertTrue(new EueFindFeature(session, fileid).find(folder1Folder2, new DisabledListProgressListener()));
         assertTrue(new DefaultFindFeature(session).find(folder1Folder2, new DisabledListProgressListener()));
         final Path folder1Folder2Folder3 = new EueDirectoryFeature(session, fileid).mkdir(new Path(folder1Folder2,

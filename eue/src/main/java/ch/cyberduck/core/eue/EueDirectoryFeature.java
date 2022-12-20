@@ -67,8 +67,7 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
                 case HttpStatus.SC_CREATED:
                     final String resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
                     fileid.cache(folder, resourceId);
-                    return folder.withAttributes(
-                            new EueAttributesAdapter().toAttributes(new EueWriteFeature.Chunk(resourceId, 0L, null)));
+                    return folder.withAttributes(new EueAttributesFinderFeature(session, fileid).find(folder));
                 default:
                     log.warn(String.format("Failure %s creating folder %s", resourceCreationResponseEntry, folder));
                     final ResourceCreationResponseEntryEntity entity = resourceCreationResponseEntry.getEntity();

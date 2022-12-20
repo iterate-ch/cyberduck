@@ -16,14 +16,26 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class EueTouchFeature extends DefaultTouchFeature<EueWriteFeature.Chunk> {
 
+    private final EueSession session;
+    private final EueResourceIdProvider fileid;
+
     public EueTouchFeature(final EueSession session, final EueResourceIdProvider fileid) {
         super(new EueWriteFeature(session, fileid));
+        this.session = session;
+        this.fileid = fileid;
+    }
+
+    @Override
+    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
+        return super.touch(file, status).withAttributes(new EueAttributesFinderFeature(session, fileid).find(file));
     }
 
     @Override

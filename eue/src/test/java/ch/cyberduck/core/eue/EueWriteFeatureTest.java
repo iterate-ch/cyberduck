@@ -163,7 +163,6 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             in.close();
             out.close();
             assertEquals(checksum, out.getStatus().getChecksum());
-            assertEquals(resourceId, out.getStatus().getResourceId());
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertNotEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
@@ -171,7 +170,6 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertNotEquals(previous.getETag(), attributes.getETag());
             assertNotEquals(previous.getRevision(), attributes.getRevision());
             assertEquals(ts, attributes.getModificationDate());
-            assertEquals(resourceId, attributes.getFileId());
             assertEquals(content.length, attributes.getSize());
             final byte[] compare = new byte[content.length];
             final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
