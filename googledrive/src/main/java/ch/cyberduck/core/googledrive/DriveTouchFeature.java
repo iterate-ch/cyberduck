@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -67,7 +68,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
         if(workdir.isRoot()) {
             return false;
         }
-        else if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(workdir)) {
+        else if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(workdir)) {
             return false;
         }
         return true;

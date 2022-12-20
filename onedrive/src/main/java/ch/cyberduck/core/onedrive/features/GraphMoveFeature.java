@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -65,7 +66,7 @@ public class GraphMoveFeature implements Move {
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());
         }
-        if(!file.getParent().equals(renamed.getParent())) {
+        if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
             final DriveItem moveTarget = session.getItem(renamed.getParent());
             patchOperation.move(moveTarget);
         }

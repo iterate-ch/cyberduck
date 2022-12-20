@@ -59,7 +59,7 @@ public class DriveFileIdProvider extends CachingFileIdProvider implements FileId
             }
             return cached;
         }
-        if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
+        if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {
             final Path found = new DriveTeamDrivesListService(session, this).list(file.getParent(),
                     new DisabledListProgressListener()).find(new SimplePathPredicate(file)
             );

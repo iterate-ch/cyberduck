@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
@@ -65,6 +66,6 @@ public class B2CopyFeature implements Copy {
         if(source.getType().contains(Path.Type.upload)) {
             return false;
         }
-        return containerService.getContainer(source).equals(containerService.getContainer(target));
+        return new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target));
     }
 }

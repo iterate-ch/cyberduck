@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public class DriveListService implements ListService {
@@ -42,10 +43,10 @@ public class DriveListService implements ListService {
             return list;
         }
         else {
-            if(DriveHomeFinderService.SHARED_FOLDER_NAME.equals(directory)) {
+            if(new SimplePathPredicate(DriveHomeFinderService.SHARED_FOLDER_NAME).test(directory)) {
                 return new DriveSharedFolderListService(session, fileid).list(directory, listener);
             }
-            if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(directory)) {
+            if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(directory)) {
                 return new DriveTeamDrivesListService(session, fileid).list(directory, listener);
             }
             return new DriveDefaultListService(session, fileid).list(directory, listener);

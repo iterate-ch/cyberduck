@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -48,7 +49,7 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(f);
             try {
-                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
+                if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(f.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileId(f)).execute();
                 }
                 else {

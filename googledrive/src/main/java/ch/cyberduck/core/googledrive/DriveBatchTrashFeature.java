@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.collections.Partition;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Trash;
@@ -60,7 +61,7 @@ public class DriveBatchTrashFeature implements Trash {
             final List<BackgroundException> failures = new CopyOnWriteArrayList<>();
             for(Path f : partition) {
                 try {
-                    if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
+                    if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(f.getParent())) {
                         session.getClient().teamdrives().delete(fileid.getFileId(f))
                                 .queue(batch, new DeleteBatchCallback<>(f, failures, callback));
                     }

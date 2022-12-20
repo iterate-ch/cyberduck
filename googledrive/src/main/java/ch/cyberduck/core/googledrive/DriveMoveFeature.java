@@ -17,6 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -62,17 +63,17 @@ public class DriveMoveFeature implements Move {
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
                 result = session.getClient().files().update(id, properties)
-                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .execute();
+                        .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
+                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .execute();
             }
-            if(!file.getParent().equals(renamed.getParent())) {
+            if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Retrieve the existing parents to remove
                 final StringBuilder previousParents = new StringBuilder();
                 final File reference = session.getClient().files().get(id)
-                    .setFields("parents")
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .execute();
+                        .setFields("parents")
+                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .execute();
                 for(String parent : reference.getParents()) {
                     previousParents.append(parent).append(',');
                 }
