@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -55,10 +56,12 @@ public class GoogleStorageAttributesFinderFeatureTest extends AbstractGoogleStor
     public void testFindBucket() throws Exception {
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new GoogleStorageAttributesFinderFeature(session).find(container);
-        assertNotEquals(PathAttributes.EMPTY, attributes);
+        assertNotSame(PathAttributes.EMPTY, attributes);
         assertEquals(-1L, attributes.getSize());
         assertNotNull(attributes.getRegion());
         assertNotNull(attributes.getETag());
+        assertEquals(attributes, new GoogleStorageBucketListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+                new DisabledListProgressListener()).find(new SimplePathPredicate(container)).attributes());
     }
 
     @Test
