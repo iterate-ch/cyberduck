@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenApi;
 import ch.cyberduck.core.eue.io.swagger.client.api.MoveChildrenForAliasApiApi;
@@ -62,7 +63,7 @@ public class EueMoveFeature implements Move {
                 new EueTrashFeature(session, fileid).delete(Collections.singletonMap(target, status), callback, delete);
             }
             final String resourceId = fileid.getFileId(file);
-            if(!file.getParent().equals(target.getParent())) {
+            if(!new SimplePathPredicate(file.getParent()).test(target.getParent())) {
                 final ResourceMoveResponseEntries resourceMoveResponseEntries;
                 final String parentResourceId = fileid.getFileId(target.getParent());
                 switch(parentResourceId) {
