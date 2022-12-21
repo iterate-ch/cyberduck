@@ -90,8 +90,8 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
             case UNKNOWN:
                 attributes.setSize(stat.getSize());
         }
-        if (permissionsAvailable) {
-            if (0 != stat.getMode().getPermissionsMask()){
+        if(permissionsAvailable) {
+            if(0 != stat.getMode().getPermissionsMask()) {
                 attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
             }
             attributes.setOwner(String.valueOf(stat.getUID()));
@@ -108,8 +108,11 @@ public class SFTPAttributesFinderFeature implements AttributesFinder, Attributes
     }
 
     private boolean isServerBlacklisted() {
+        final String serverVersion = session.getClient().getTransport().getServerVersion();
         for(String server : PreferencesFactory.get().getList("sftp.permissions.server.blacklist")) {
-            if(StringUtils.contains(server, session.getClient().getTransport().getServerVersion())) {
+            if(StringUtils.contains(
+                    /* seq */ serverVersion,
+                    /* search seq */ server)) {
                 // Known erroneous bitmask
                 return true;
             }
