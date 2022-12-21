@@ -97,7 +97,8 @@ public class DefaultComparePathFilter implements ComparePathFilter {
                 }
                 else {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                    current.setChecksum(this.checksum(remote.getChecksum().algorithm, local));
+                    final Checksum checksum = this.checksum(remote.getChecksum().algorithm, local);
+                    current.withETag(checksum.hash).withChecksum(checksum);
                 }
                 final Comparison result = comparison.compare(Path.Type.file, current, remote);
                 switch(result) {
