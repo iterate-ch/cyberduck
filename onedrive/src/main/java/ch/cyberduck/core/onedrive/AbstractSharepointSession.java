@@ -108,7 +108,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
             throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
         }
         final DriveItem ownItem;
-        if(driveContainer.getContainerPath().map(file::equals).orElse(false)) {
+        if(driveContainer.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false)) {
             ownItem = drive.getRoot();
         }
         else {
@@ -155,7 +155,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
         if(!containerItem.isDefined()) {
             return false;
         }
-        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(file::equals).orElse(false));
+        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false));
     }
 
     protected Deque<Path> decompose(final Path file) {

@@ -92,7 +92,7 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        if(OneDriveListService.MYFILES_NAME.equals(file)) {
+        if(new SimplePathPredicate(OneDriveListService.MYFILES_NAME).test(file)) {
             final User.Metadata user = this.getUser();
             // creationType can be non-assigned (Microsoft Account)
             // or null, Inviation, LocalAccount or EmailVerified.
@@ -158,18 +158,18 @@ public class OneDriveSession extends GraphSession {
         if(containerItem.isDrive()) {
             // Is /My Files.
             // Tests whether container access is used, orelse deny access to /My Files.
-            return container || !containerItem.getContainerPath().map(file::equals).orElse(false);
+            return container || !containerItem.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false);
         }
         else {
             // Check for /Shared-path
             // Catches modification of items in /Shared
-            Optional<Boolean> predicate = containerItem.getCollectionPath().map(file::equals);
+            Optional<Boolean> predicate = containerItem.getCollectionPath().map(new SimplePathPredicate(file)::test);
             if(!container) {
                 // Append condition to /Shared-path check for
                 // If file parent is /Shared then return inaccessible below
                 // Cannot modify items in /Shared/*, but /Shared/**/*
                 // User must not be able to rename, move or copy first level of /Shared.
-                predicate = predicate.map(o -> o || containerItem.getCollectionPath().map(file.getParent()::equals).get());
+                predicate = predicate.map(o -> o || containerItem.getCollectionPath().map(new SimplePathPredicate(file.getParent())::test).get());
             }
             // Fallback to deny access for invalid paths (/Invalid).
             // Logic is upside down. Predicate determines whether to block access. Flip it.
