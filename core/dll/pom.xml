@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>8.5.3-SNAPSHOT</version>
+        <version>8.5.3</version>
     </parent>
     <artifactId>Cyberduck.Core</artifactId>
     <packaging>pom</packaging>
