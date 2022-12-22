@@ -50,7 +50,6 @@ import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListFormatException;
 import com.dd.plist.PropertyListParser;
-import com.dd.plist.XMLPropertyListParser;
 
 public abstract class DictionaryLicense extends AbstractLicense {
     private static final Logger log = LogManager.getLogger(DictionaryLicense.class);
@@ -141,12 +140,7 @@ public abstract class DictionaryLicense extends AbstractLicense {
 
     private NSDictionary read(final Local file) {
         try {
-            try {
-                return (NSDictionary) PropertyListParser.parse(file.getInputStream());
-            }
-            catch(PropertyListFormatException e) {
-                return (NSDictionary) XMLPropertyListParser.parse(file.getInputStream());
-            }
+            return (NSDictionary) PropertyListParser.parse(file.getInputStream());
         }
         catch(ParserConfigurationException
               | IOException

@@ -74,8 +74,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local(final String parent, final String name, final String delimiter) {
         this(parent.endsWith(delimiter) ?
-            String.format("%s%s", parent, name) :
-            String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
+                String.format("%s%s", parent, name) :
+                String.format("%s%c%s", parent, CharUtils.toChar(delimiter), name));
     }
 
     public Local(final Local parent, final String name) {
@@ -84,8 +84,8 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local(final Local parent, final String name, final String delimiter) {
         this(parent.isRoot() ?
-            String.format("%s%s", parent.getAbsolute(), name) :
-            String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
+                String.format("%s%s", parent.getAbsolute(), name) :
+                String.format("%s%c%s", parent.getAbsolute(), CharUtils.toChar(delimiter), name));
     }
 
     /**
@@ -220,7 +220,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(
-                LocaleFactory.localizedString("Cannot delete {0}", "Error"), this.getName()), e);
+                    LocaleFactory.localizedString("Cannot delete {0}", "Error"), this.getName()), e);
         }
     }
 
@@ -245,7 +245,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(
-                LocaleFactory.localizedString("Listing directory {0} failed", "Error"), this.getName()), e);
+                    LocaleFactory.localizedString("Listing directory {0} failed", "Error"), this.getName()), e);
         }
         return children;
     }
@@ -353,7 +353,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(MessageFormat.format(
-                LocaleFactory.localizedString("Cannot rename {0}", "Error"), this.getName()), e);
+                    LocaleFactory.localizedString("Cannot rename {0}", "Error"), this.getName()), e);
         }
         path = renamed.getAbsolute();
     }
@@ -379,7 +379,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             }
             catch(IOException e) {
                 throw new LocalAccessDeniedException(MessageFormat.format(
-                    LocaleFactory.localizedString("Cannot copy {0}", "Error"), this.getName()), e);
+                        LocaleFactory.localizedString("Cannot copy {0}", "Error"), this.getName()), e);
             }
             finally {
                 IOUtils.closeQuietly(in);
@@ -550,7 +550,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             final int bytesRead = channel.read(buffer);
             if(bytesRead > 0) {
                 buffer.position(0);
-                return buffer.get();
+                return Byte.toUnsignedInt(buffer.get());
             }
             else {
                 return -1;
