@@ -16,7 +16,6 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
@@ -54,12 +53,12 @@ public class EueSingleUploadService extends HttpUploadFeature<EueWriteFeature.Ch
         final String uploadUri;
         final String resourceId;
         if(status.isExists()) {
-            resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            resourceId = fileid.getFileId(file);
             uploadUri = EueUploadHelper.updateResource(session, resourceId, status, UploadType.SIMPLE).getUploadURI();
         }
         else {
             final ResourceCreationResponseEntry uploadResourceCreationResponseEntry = EueUploadHelper.
-                    createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                    createResource(session, fileid.getFileId(file.getParent()), file.getName(),
                             status, UploadType.SIMPLE);
             resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(uploadResourceCreationResponseEntry.getHeaders().getLocation());
             uploadUri = uploadResourceCreationResponseEntry.getEntity().getUploadURI();

@@ -4,6 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -50,18 +51,17 @@ public class DefaultComparePathFilterTest {
                 return true;
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault()).withFinder(find).withAttributes(attributes);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol()))) {
+            @Override
+            protected Checksum checksum(final HashAlgorithm algorithm, final Local local) {
+                return new Checksum(HashAlgorithm.md5, "a");
+            }
+        }.withFinder(find).withAttributes(attributes);
         final String path = new AlphanumericRandomStringService().random();
         assertEquals(Comparison.equal, s.compare(new Path(path, EnumSet.of(Path.Type.file)), new NullLocal(path) {
             @Override
             public LocalAttributes attributes() {
-                return new LocalAttributes(path) {
-                    @Override
-                    public Checksum getChecksum() {
-                        return new Checksum(HashAlgorithm.md5, "a");
-                    }
-                };
+                return new LocalAttributes(path);
             }
 
             @Override
@@ -84,7 +84,7 @@ public class DefaultComparePathFilterTest {
             }
         };
         ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault()).withFinder(find);
+        }).withFinder(find);
         assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -105,7 +105,7 @@ public class DefaultComparePathFilterTest {
             }
         };
         ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault()).withFinder(find);
+        }).withFinder(find);
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -126,7 +126,7 @@ public class DefaultComparePathFilterTest {
             }
         };
         ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault()).withFinder(find);
+        }).withFinder(find);
         assertEquals(Comparison.remote, s.compare(new Path("t", EnumSet.of(Path.Type.directory)), new NullLocal("t") {
             @Override
             public boolean exists() {
@@ -174,16 +174,16 @@ public class DefaultComparePathFilterTest {
                 };
             }
         };
-        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol())) {
-        }, TimeZone.getDefault()).withFinder(find).withAttributes(attributes);
+        ComparePathFilter s = new DefaultComparePathFilter(new NullSession(new Host(new TestProtocol()))) {
+            @Override
+            protected Checksum checksum(final HashAlgorithm algorithm, final Local local) {
+                return new Checksum(HashAlgorithm.md5, "a");
+            }
+        }.withFinder(find).withAttributes(attributes);
         assertEquals(Comparison.local, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
             @Override
             public LocalAttributes attributes() {
                 return new LocalAttributes("t") {
-                    @Override
-                    public Checksum getChecksum() {
-                        return new Checksum(HashAlgorithm.md5, "a");
-                    }
 
                     @Override
                     public long getSize() {

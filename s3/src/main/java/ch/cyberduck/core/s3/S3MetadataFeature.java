@@ -66,54 +66,52 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Write metadata %s for file %s", status, file));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Write metadata %s for file %s", status, file));
+        }
+        try {
+            final StorageObject target = new StorageObject(containerService.getKey(file));
+            target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
+            if(status.getTimestamp() != null) {
+                target.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
             }
             try {
-                final StorageObject target = new StorageObject(containerService.getKey(file));
-                target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
-                if(status.getTimestamp() != null) {
-                    target.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
-                }
-                try {
-                    // Apply non standard ACL
-                    final Acl list = acl.getPermission(file);
-                    if(list.isEditable()) {
-                        target.setAcl(acl.toAcl(list));
-                    }
-                }
-                catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure %s", e));
-                }
-                final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
-                if(storageClassFeature != null) {
-                    target.setStorageClass(storageClassFeature.getClass(file));
-                }
-                final Encryption encryptionFeature = session.getFeature(Encryption.class);
-                if(encryptionFeature != null) {
-                    final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
-                    target.setServerSideEncryptionAlgorithm(encryption.algorithm);
-                    // Set custom key id stored in KMS
-                    target.setServerSideEncryptionKmsKeyId(encryption.key);
-                }
-                final Path bucket = containerService.getContainer(file);
-                final Map<String, Object> metadata = session.getClient().updateObjectMetadata(
-                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
-                if(metadata.containsKey("version-id")) {
-                    file.attributes().setVersionId(metadata.get("version-id").toString());
+                // Apply non standard ACL
+                final Acl list = acl.getPermission(file);
+                if(list.isEditable()) {
+                    target.setAcl(acl.toAcl(list));
                 }
             }
-            catch(ServiceException e) {
-                final BackgroundException failure = new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-                if(file.isPlaceholder()) {
-                    if(failure instanceof NotfoundException) {
-                        // No placeholder file may exist but we just have a common prefix
-                        return;
-                    }
-                }
-                throw failure;
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure %s", e));
             }
+            final Redundancy storageClassFeature = session.getFeature(Redundancy.class);
+            if(storageClassFeature != null) {
+                target.setStorageClass(storageClassFeature.getClass(file));
+            }
+            final Encryption encryptionFeature = session.getFeature(Encryption.class);
+            if(encryptionFeature != null) {
+                final Encryption.Algorithm encryption = encryptionFeature.getEncryption(file);
+                target.setServerSideEncryptionAlgorithm(encryption.algorithm);
+                // Set custom key id stored in KMS
+                target.setServerSideEncryptionKmsKeyId(encryption.key);
+            }
+            final Path bucket = containerService.getContainer(file);
+            final Map<String, Object> metadata = session.getClient().updateObjectMetadata(
+                    bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), target);
+            if(metadata.containsKey("version-id")) {
+                file.attributes().setVersionId(metadata.get("version-id").toString());
+            }
+        }
+        catch(ServiceException e) {
+            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+            if(file.isDirectory()) {
+                if(failure instanceof NotfoundException) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return;
+                }
+            }
+            throw failure;
         }
     }
 }

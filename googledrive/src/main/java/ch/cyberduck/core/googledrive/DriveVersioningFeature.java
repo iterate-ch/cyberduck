@@ -76,7 +76,7 @@ public class DriveVersioningFeature implements Versioning {
             final AttributedList<Path> versions = new AttributedList<>();
             String page = null;
             do {
-                final RevisionList list = session.getClient().revisions().list(fileid.getFileId(file, listener))
+                final RevisionList list = session.getClient().revisions().list(fileid.getFileId(file))
                         .setFields(DEFAULT_FIELDS)
                         .setPageSize(new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"))
                         .setPageToken(page).execute();

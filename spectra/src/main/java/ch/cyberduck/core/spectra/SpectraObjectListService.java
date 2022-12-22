@@ -141,6 +141,9 @@ public class SpectraObjectListService extends S3AbstractListService {
             }
             while(truncated);
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No placeholder found for directory %s", directory));
+                }
                 throw new NotfoundException(directory.getAbsolute());
             }
             return objects;

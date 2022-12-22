@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
@@ -52,6 +53,9 @@ public class GoogleStorageCopyFeature implements Copy {
                 request.setGeneration(Long.parseLong(source.attributes().getVersionId()));
             }
             final StorageObject storageObject = request.execute();
+            if(null != status.getTimestamp()) {
+                storageObject.setCustomTime(new DateTime(status.getTimestamp()));
+            }
             final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
                     containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
             if(containerService.getContainer(source).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {

@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
@@ -73,7 +74,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder, Attribute
             query = file;
         }
         final AttributedList<Path> list;
-        if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
+        if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {
             list = new DriveTeamDrivesListService(session, fileid).list(file.getParent(), listener);
         }
         else {

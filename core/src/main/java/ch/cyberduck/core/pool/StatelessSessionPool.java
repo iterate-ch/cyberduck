@@ -63,7 +63,9 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        log.warn(String.format("Keep connection %s alive with failure %s", conn, failure));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Keep connection %s alive with failure %s", conn, failure));
+        }
     }
 
     @Override
@@ -74,7 +76,7 @@ public class StatelessSessionPool implements SessionPool {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
+                log.warn(String.format("Ignore failure %s closing connection", e));
             }
             finally {
                 session.removeListener(transcript);
@@ -94,7 +96,7 @@ public class StatelessSessionPool implements SessionPool {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure closing session. %s", e.getMessage()));
+                log.warn(String.format("Failure %s closing session", e));
             }
             finally {
                 registry.clear();

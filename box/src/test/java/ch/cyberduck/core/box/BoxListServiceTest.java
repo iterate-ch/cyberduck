@@ -34,7 +34,7 @@ import static ch.cyberduck.core.AbstractPath.Type.directory;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxListServiceTest extends AbtractBoxTest {
+public class BoxListServiceTest extends AbstractBoxTest {
 
     @Test
     public void testListRoot() throws Exception {

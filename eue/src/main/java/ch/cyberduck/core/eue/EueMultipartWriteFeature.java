@@ -16,7 +16,6 @@ package ch.cyberduck.core.eue;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
@@ -77,13 +76,13 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
         String uploadUri;
         String resourceId;
         if(status.isExists()) {
-            resourceId = fileid.getFileId(file, new DisabledListProgressListener());
+            resourceId = fileid.getFileId(file);
             uploadUri = EueUploadHelper.updateResource(session,
                     resourceId, status, UploadType.CHUNKED).getUploadURI();
         }
         else {
             final ResourceCreationResponseEntry resourceCreationResponseEntry =
-                    EueUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(),
+                    EueUploadHelper.createResource(session, fileid.getFileId(file.getParent()), file.getName(),
                             status, UploadType.CHUNKED);
             resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
             uploadUri = resourceCreationResponseEntry.getEntity().getUploadURI();

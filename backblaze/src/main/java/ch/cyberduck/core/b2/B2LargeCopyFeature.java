@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -92,7 +91,7 @@ public class B2LargeCopyFeature implements Copy {
                         break;
                 }
             }
-            final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
+            final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(target)),
                     containerService.getKey(target), status.getMime(), fileinfo);
             final long size = status.getLength();
             // Submit file segments for concurrent upload
@@ -156,7 +155,7 @@ public class B2LargeCopyFeature implements Copy {
                 overall.validate();
                 try {
                     HttpRange range = HttpRange.byLength(offset, length);
-                    return session.getClient().copyLargePart(fileid.getVersionId(file, new DisabledListProgressListener()), largeFileId, partNumber,
+                    return session.getClient().copyLargePart(fileid.getVersionId(file), largeFileId, partNumber,
                             String.format("bytes=%d-%d", range.getStart(), range.getEnd()));
                 }
                 catch(B2ApiException e) {

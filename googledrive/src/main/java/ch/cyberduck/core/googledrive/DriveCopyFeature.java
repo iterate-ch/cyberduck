@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -42,8 +41,8 @@ public class DriveCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final File copy = session.getClient().files().copy(fileid.getFileId(source, new DisabledListProgressListener()), new File()
-                    .setParents(Collections.singletonList(fileid.getFileId(target.getParent(), new DisabledListProgressListener())))
+            final File copy = session.getClient().files().copy(fileid.getFileId(source), new File()
+                    .setParents(Collections.singletonList(fileid.getFileId(target.getParent())))
                     .setName(target.getName()))
                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             listener.sent(status.getLength());

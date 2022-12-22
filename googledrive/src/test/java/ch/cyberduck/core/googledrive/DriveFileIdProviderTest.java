@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
@@ -44,9 +43,9 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
     @Test
     public void testGetFileidRoot() throws Exception {
         assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-            .getFileId(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+            .getFileId(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertEquals("root", new DriveFileIdProvider(new DriveSession(new Host(new DriveProtocol(), ""), new DisabledX509TrustManager(), new DefaultX509KeyManager()))
-            .getFileId(new Path("/My Drive", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+            .getFileId(new Path("/My Drive", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
@@ -54,7 +53,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -63,7 +62,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%sà", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -72,7 +71,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s'", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider driveFileIdProvider = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, driveFileIdProvider).touch(test, new TransferStatus());
-        assertNotNull(driveFileIdProvider.getFileId(test, new DisabledListProgressListener()));
+        assertNotNull(driveFileIdProvider.getFileId(test));
         new DriveDeleteFeature(session, driveFileIdProvider).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -81,7 +80,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -90,7 +89,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-        assertNotNull(fileid.getFileId(test, new DisabledListProgressListener()));
+        assertNotNull(fileid.getFileId(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -100,11 +99,11 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         final Path test1 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path p1 = new DriveTouchFeature(session, fileid).touch(test1, new TransferStatus());
-        assertEquals(p1.attributes().getFileId(), fileid.getFileId(test1, new DisabledListProgressListener()));
+        assertEquals(p1.attributes().getFileId(), fileid.getFileId(test1));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test1), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         final Path test2 = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));
         final Path p2 = new DriveTouchFeature(session, fileid).touch(test2, new TransferStatus());
-        assertEquals(p2.attributes().getFileId(), fileid.getFileId(test2, new DisabledListProgressListener()));
+        assertEquals(p2.attributes().getFileId(), fileid.getFileId(test2));
         session.getClient().files().delete(p2.attributes().getFileId());
     }
 
@@ -124,7 +123,7 @@ public class DriveFileIdProviderTest extends AbstractDriveTest {
         assertNotNull(path33WithId.attributes().getFileId());
         assertNotEquals(path2RWithId.attributes().getFileId(), path33WithId.attributes().getFileId());
 
-        final String fileId = fileid.getFileId(path33, new DisabledListProgressListener());
+        final String fileId = fileid.getFileId(path33);
 
         assertEquals(fileId, path33WithId.attributes().getFileId());
         assertNotEquals(fileId, path2RWithId.attributes().getFileId());

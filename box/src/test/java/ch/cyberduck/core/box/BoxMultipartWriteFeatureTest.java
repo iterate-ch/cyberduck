@@ -43,7 +43,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxMultipartWriteFeatureTest extends AbtractBoxTest {
+public class BoxMultipartWriteFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testWriteMultiplePartsExisting() throws Exception {

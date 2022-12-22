@@ -55,9 +55,9 @@ public class PathAttributesTest {
     public void testEquals() {
         assertEquals(new PathAttributes(), new PathAttributes());
         final PathAttributes r1 = new PathAttributes();
-        r1.setRegion("r1");
+        r1.setVersionId("r1");
         final PathAttributes r2 = new PathAttributes();
-        r2.setRegion("r2");
+        r2.setVersionId("r2");
         assertNotEquals(r1, r2);
     }
 

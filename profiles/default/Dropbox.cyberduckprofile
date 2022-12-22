@@ -25,6 +25,8 @@
         <true/>
         <key>Default Hostname</key>
         <string>www.dropbox.com</string>
+        <key>Default Nickname</key>
+        <string>Dropbox</string>
         <key>OAuth Authorization Url</key>
         <string>https://www.dropbox.com/1/oauth2/authorize</string>
         <key>OAuth Token Url</key>

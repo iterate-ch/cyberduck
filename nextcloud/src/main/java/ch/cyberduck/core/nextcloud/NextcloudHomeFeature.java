@@ -17,8 +17,6 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.AbstractHomeFeature;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,19 +35,20 @@ public class NextcloudHomeFeature extends AbstractHomeFeature {
     }
 
     @Override
-    public Path find() throws BackgroundException {
+    public Path find() {
         return this.find(Context.files);
     }
 
     public Path find(final Context files) {
-        if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+        String username = bookmark.getCredentials().getUsername();
+        if(StringUtils.isBlank(username)) {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Missing username for %s", bookmark));
             }
             return null;
         }
         final Path workdir = new Path(new Path(String.format("/remote.php/dav/%s", files.name()), EnumSet.of(Path.Type.directory)),
-                URIEncoder.encode(bookmark.getCredentials().getUsername()), EnumSet.of(Path.Type.directory));
+                username, EnumSet.of(Path.Type.directory));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Use home directory %s", workdir));
         }

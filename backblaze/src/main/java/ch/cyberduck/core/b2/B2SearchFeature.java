@@ -66,7 +66,7 @@ public class B2SearchFeature implements Search {
                 String startFilename = prefix;
                 do {
                     final B2ListFilesResponse response = session.getClient().listFileNames(
-                            fileid.getVersionId(container, listener),
+                            fileid.getVersionId(container),
                             startFilename,
                             new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"),
                             prefix, null);

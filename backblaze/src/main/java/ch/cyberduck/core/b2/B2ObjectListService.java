@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -69,7 +68,7 @@ public class B2ObjectListService implements ListService {
         try {
             final AttributedList<Path> objects = new AttributedList<>();
             Marker marker = new Marker(this.createPrefix(directory), null);
-            final String containerId = fileid.getVersionId(containerService.getContainer(directory), new DisabledListProgressListener());
+            final String containerId = fileid.getVersionId(containerService.getContainer(directory));
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
@@ -94,6 +93,9 @@ public class B2ObjectListService implements ListService {
             }
             while(marker.hasNext());
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No placeholder found for directory %s", directory));
+                }
                 throw new NotfoundException(directory.getAbsolute());
             }
             return objects;

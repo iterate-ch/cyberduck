@@ -19,7 +19,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -164,7 +163,6 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             in.close();
             out.close();
             assertEquals(checksum, out.getStatus().getChecksum());
-            assertEquals(resourceId, out.getStatus().getResourceId());
             assertTrue(new EueFindFeature(session, fileid).find(file));
             assertNotEquals(containerModification, new EueAttributesFinderFeature(session, fileid).find(container).getModificationDate());
             final PathAttributes attributes = new EueAttributesFinderFeature(session, fileid).find(file);
@@ -172,7 +170,6 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
             assertNotEquals(previous.getETag(), attributes.getETag());
             assertNotEquals(previous.getRevision(), attributes.getRevision());
             assertEquals(ts, attributes.getModificationDate());
-            assertEquals(resourceId, attributes.getFileId());
             assertEquals(content.length, attributes.getSize());
             final byte[] compare = new byte[content.length];
             final InputStream stream = new EueReadFeature(session, fileid).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -216,7 +213,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         final Path file = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(423);
         final TransferStatus status = new TransferStatus().withLength(content.length);
-        EueUploadHelper.createResource(session, fileid.getFileId(file.getParent(), new DisabledListProgressListener()), file.getName(), status, UploadType.SIMPLE);
+        EueUploadHelper.createResource(session, fileid.getFileId(file.getParent()), file.getName(), status, UploadType.SIMPLE);
         final Checksum checksum = feature.checksum(file, status).compute(new ByteArrayInputStream(content), new TransferStatus().withLength(content.length));
         status.withChecksum(checksum);
         final HttpResponseOutputStream<EueWriteFeature.Chunk> out = feature.write(file, status, new DisabledConnectionCallback());

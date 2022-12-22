@@ -25,5 +25,7 @@
         <true/>
         <key>Default Hostname</key>
         <string>s3.amazonaws.com</string>
+        <key>Default Nickname</key>
+        <string>Amazon S3</string>
     </dict>
 </plist>

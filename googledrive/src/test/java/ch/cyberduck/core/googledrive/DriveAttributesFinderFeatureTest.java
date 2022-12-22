@@ -147,11 +147,11 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
             .setMimeType("application/vnd.google-apps.shortcut")
             .setShortcutDetails(new File.ShortcutDetails()
                 .setTargetMimeType("text/plain")
-                .setTargetId(fileid.getFileId(test, new DisabledListProgressListener()))
+                .setTargetId(fileid.getFileId(test))
             )
         ).execute();
         assertEquals(attributes, f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file))));
-        session.getClient().files().delete(fileid.getFileId(test, new DisabledListProgressListener()))
+        session.getClient().files().delete(fileid.getFileId(test))
             .setSupportsAllDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         try {
             f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, shortcut.getName(), EnumSet.of(Path.Type.file)));

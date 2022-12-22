@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
@@ -26,6 +25,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.features.GraphLockFeature;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -70,11 +70,11 @@ public abstract class AbstractSharepointSession extends GraphSession {
     public abstract boolean isSingleSite();
 
     public Site getSite(final Path file) throws BackgroundException {
-        return Site.byId(client, fileid.getFileId(file, new DisabledListProgressListener()));
+        return Site.byId(client, fileid.getFileId(file));
     }
 
     public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(client, fileid.getFileId(file, new DisabledListProgressListener()));
+        return new GroupItem(client, fileid.getFileId(file));
     }
 
     @Override
@@ -90,7 +90,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
 
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = fileid.getFileId(file, new DisabledListProgressListener());
+        final String versionId = fileid.getFileId(file);
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
@@ -108,7 +108,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
             throw new NotfoundException(String.format("File %s is not part of any drive.", file.getAbsolute()));
         }
         final DriveItem ownItem;
-        if(driveContainer.getContainerPath().map(file::equals).orElse(false)) {
+        if(driveContainer.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false)) {
             ownItem = drive.getRoot();
         }
         else {
@@ -136,7 +136,9 @@ public abstract class AbstractSharepointSession extends GraphSession {
     @Override
     public <T> T _getFeature(final Class<T> type) {
         if(type == Lock.class) {
-            return (T) new GraphLockFeature(this, fileid);
+            if(new HostPreferences(host).getBoolean("sharepoint.lock.enable")) {
+                return (T) new GraphLockFeature(this, fileid);
+            }
         }
         return super._getFeature(type);
     }
@@ -153,7 +155,7 @@ public abstract class AbstractSharepointSession extends GraphSession {
         if(!containerItem.isDefined()) {
             return false;
         }
-        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(file::equals).orElse(false));
+        return containerItem.isDrive() && (container || !containerItem.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false));
     }
 
     protected Deque<Path> decompose(final Path file) {

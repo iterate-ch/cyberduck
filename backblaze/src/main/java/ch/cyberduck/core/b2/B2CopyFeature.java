@@ -17,9 +17,9 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.StreamListener;
@@ -46,8 +46,8 @@ public class B2CopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source, new DisabledListProgressListener()),
-                fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
+            final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source),
+                fileid.getVersionId(containerService.getContainer(target)),
                 containerService.getKey(target));
             listener.sent(status.getLength());
             fileid.cache(target, response.getFileId());
@@ -66,6 +66,6 @@ public class B2CopyFeature implements Copy {
         if(source.getType().contains(Path.Type.upload)) {
             return false;
         }
-        return containerService.getContainer(source).equals(containerService.getContainer(target));
+        return new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target));
     }
 }

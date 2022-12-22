@@ -99,7 +99,7 @@ public class DriveSession extends HttpSession<Drive> {
         public void initialize(final HttpRequest request) {
             super.initialize(request);
             request.setUnsuccessfulResponseHandler(new HttpBackOffUnsuccessfulResponseHandler(new ExponentialBackOff())
-                    .setBackOffRequired(HttpBackOffUnsuccessfulResponseHandler.BackOffRequired.ALWAYS));
+                    .setBackOffRequired(HttpBackOffUnsuccessfulResponseHandler.BackOffRequired.ON_SERVER_ERROR));
         }
     }
 

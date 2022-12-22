@@ -25,6 +25,8 @@
         <true/>
         <key>Default Hostname</key>
         <string>www.googleapis.com</string>
+        <key>Default Nickname</key>
+        <string>Google Drive</string>
         <key>OAuth Authorization Url</key>
         <string>https://accounts.google.com/o/oauth2/auth</string>
         <key>OAuth Token Url</key>

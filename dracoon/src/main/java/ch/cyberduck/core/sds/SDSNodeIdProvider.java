@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.CachingVersionIdProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -60,14 +59,14 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
     }
 
     @Override
-    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getVersionId(final Path file) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
             }
             return file.attributes().getVersionId();
         }
-        final String cached = super.getVersionId(file, listener);
+        final String cached = super.getVersionId(file);
         if(cached != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return cached versionid %s for file %s", cached, file));

@@ -46,11 +46,13 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testList() throws Exception {
-        final Path directory = new Path("/", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new DriveDefaultListService(session, new DriveFileIdProvider(session)).list(directory, new DisabledListProgressListener());
+        final Path directory = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertSame(directory, f.getParent());
+            assertEquals(f.attributes(), new DriveAttributesFinderFeature(session, fileid).find(f));
             if(!f.isVolume()) {
                 assertNotNull(f.attributes().getFileId());
             }
@@ -80,10 +82,24 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertEquals(file.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(f).getFileId());
+            assertEquals(file.attributes(), new DriveAttributesFinderFeature(session, fileid).find(f));
             break;
         }
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListMissingFileidOnFolder() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        fileid.cache(directory, null);
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertEquals(f1, list.get(0));
+        assertEquals(f2, list.get(1));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -159,7 +175,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         new DriveDirectoryFeature(session, provider).mkdir(folder, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         assertEquals(1, new DriveDefaultListService(session, provider).list(parent, new DisabledListProgressListener()).size());
-        final String fileid = provider.getFileId(folder, new DisabledListProgressListener());
+        final String fileid = provider.getFileId(folder);
         final File body = new File();
         body.set("trashed", true);
         session.getClient().files().update(fileid, body).execute();

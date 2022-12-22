@@ -16,7 +16,6 @@ package ch.cyberduck.core.box;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
 import ch.cyberduck.core.box.io.swagger.client.api.FilesApi;
@@ -57,13 +56,13 @@ public class BoxMoveFeature implements Move {
                 }
                 new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(renamed), callback, delete);
             }
-            final String id = fileid.getFileId(file, new DisabledListProgressListener());
+            final String id = fileid.getFileId(file);
             if(file.isDirectory()) {
                 final Folder result = new FoldersApi(new BoxApiClient(session.getClient())).putFoldersId(
                         id, new FoldersFolderIdBody()
                                 .name(renamed.getName())
                                 .parent(new FoldersfolderIdParent()
-                                        .id(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))),
+                                        .id(fileid.getFileId(renamed.getParent()))),
                         null, BoxAttributesFinderFeature.DEFAULT_FIELDS);
                 fileid.cache(file, null);
                 fileid.cache(renamed, id);
@@ -73,7 +72,7 @@ public class BoxMoveFeature implements Move {
                     id, new FilesFileIdBody()
                             .name(renamed.getName())
                             .parent(new FilesfileIdParent()
-                                    .id(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))),
+                                    .id(fileid.getFileId(renamed.getParent()))),
                     null, BoxAttributesFinderFeature.DEFAULT_FIELDS);
             fileid.cache(file, null);
             fileid.cache(renamed, id);

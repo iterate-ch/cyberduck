@@ -192,7 +192,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
                 status, new DisabledConnectionCallback());
         assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
-        assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+        assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());

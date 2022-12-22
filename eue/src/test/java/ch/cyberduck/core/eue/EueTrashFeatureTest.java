@@ -78,18 +78,18 @@ public class EueTrashFeatureTest extends AbstractEueSessionTest {
         new EueDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
         createFile(fileid, file, RandomUtils.nextBytes(511));
         assertTrue(new EueFindFeature(session, fileid).find(file));
-        assertNotNull(fileid.getFileId(file, new DisabledListProgressListener()));
+        assertNotNull(fileid.getFileId(file));
         new EueTrashFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         file.attributes().setFileId(null);
         try {
-            fileid.getFileId(file, new DisabledListProgressListener());
+            fileid.getFileId(file);
             fail();
         }
         catch(NotfoundException e) {
             //
         }
         try {
-            fileid.getFileId(folder, new DisabledListProgressListener());
+            fileid.getFileId(folder);
             fail();
         }
         catch(NotfoundException e) {

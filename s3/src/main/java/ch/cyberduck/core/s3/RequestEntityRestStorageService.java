@@ -71,6 +71,13 @@ public class RequestEntityRestStorageService extends RestS3Service {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", bookmark));
         }
+        if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
+            properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+        }
+        else {
+            properties.setProperty("s3service.disable-dns-buckets",
+                    String.valueOf(new HostPreferences(bookmark).getBoolean("s3.bucket.virtualhost.disable")));
+        }
         properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
@@ -300,10 +307,11 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     @Override
     protected boolean getDisableDnsBuckets() {
-        if(InetAddressUtils.isIPv4Address(session.getHost().getHostname()) || InetAddressUtils.isIPv6Address(session.getHost().getHostname())) {
-            return true;
-        }
-        return new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable");
+        return super.getDisableDnsBuckets();
+    }
+
+    public void disableDnsBuckets() {
+        properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
     }
 
     @Override

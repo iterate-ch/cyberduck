@@ -43,7 +43,7 @@ public class SwiftReadFeature implements Read {
     private static final Logger log = LogManager.getLogger(SwiftReadFeature.class);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final SwiftSession session;
 
@@ -57,8 +57,11 @@ public class SwiftReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
-            status.setChecksum(Checksum.NONE);
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Disable checksum verification for %s", file));
+                // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
+                status.setChecksum(Checksum.NONE);
+            }
             final Response response;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);

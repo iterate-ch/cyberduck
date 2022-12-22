@@ -173,6 +173,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
         final int length = 8;
         final byte[] content = RandomUtils.nextBytes(length);
         final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new GoogleStorageVersioningFeature(session).getConfiguration(container).isEnabled());
         final Path file = new GoogleStorageTouchFeature(session).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String initialVersion = file.attributes().getVersionId();
         final TransferStatus status = new TransferStatus().withLength(content.length);

@@ -58,9 +58,8 @@ public class EueLargeUploadServiceTest extends AbstractEueSessionTest {
         final EueWriteFeature.Chunk uploadResponse = s.upload(file, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, status, new DisabledConnectionCallback());
         assertNotNull(uploadResponse.getCdash64());
         assertEquals(content.length, count.getSent());
-        assertEquals(content.length, status.getResponse().getSize());
+        assertEquals(PathAttributes.EMPTY, status.getResponse());
         assertTrue(status.isComplete());
-        assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new EueFindFeature(session, fileid).find(file));
         assertEquals(content.length, new EueAttributesFinderFeature(session, fileid).find(file).getSize());
         final byte[] compare = new byte[content.length];

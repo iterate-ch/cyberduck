@@ -1,63 +1,50 @@
 package ch.cyberduck.core.synchronization;
 
 /*
- * Copyright (c) 2012 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.date.CalendarService;
-import ch.cyberduck.core.date.Instant;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.features.Timestamp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.TimeZone;
-
 public class TimestampComparisonService implements ComparisonService {
     private static final Logger log = LogManager.getLogger(TimestampComparisonService.class);
 
-    private final CalendarService calendarService;
-
-    public TimestampComparisonService(final TimeZone tz) {
-        this.calendarService = new CalendarService(tz);
-    }
-
     @Override
-    public Comparison compare(final Attributes remote, final Attributes local) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare timestamp for %s with %s", remote, local));
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+        if(-1L != local.getModificationDate() && -1L != remote.getModificationDate()) {
+            if(Timestamp.toSeconds(local.getModificationDate()) < Timestamp.toSeconds(remote.getModificationDate())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Local modification date %d is earlier than remote %d", local.getModificationDate(), remote.getModificationDate()));
+                }
+                return Comparison.remote;
+            }
+            if(Timestamp.toSeconds(local.getModificationDate()) > Timestamp.toSeconds(remote.getModificationDate())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Local modification date %d is newer than remote %d", local.getModificationDate(), remote.getModificationDate()));
+                }
+                return Comparison.local;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Equal modification date %s", remote.getModificationDate()));
+            }
+            return Comparison.equal;
         }
-        if(-1 == remote.getModificationDate()) {
-            log.warn(String.format("No remote modification date available for comparison for %s", remote));
-            return Comparison.unknown;
-        }
-        if(-1 == local.getModificationDate()) {
-            log.warn(String.format("No local modification date available for comparison for %s", local));
-            return Comparison.unknown;
-        }
-        if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).before(
-                calendarService.asDate(remote.getModificationDate(), Instant.SECOND))) {
-            return Comparison.remote;
-        }
-        if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).after(
-                calendarService.asDate(remote.getModificationDate(), Instant.SECOND))) {
-            return Comparison.local;
-        }
-        // Same timestamp
-        return Comparison.equal;
+        return Comparison.unknown;
     }
 }

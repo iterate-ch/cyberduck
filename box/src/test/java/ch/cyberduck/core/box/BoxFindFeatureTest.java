@@ -29,10 +29,11 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class BoxFindFeatureTest extends AbtractBoxTest{
+public class BoxFindFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testFindNotFound() throws Exception {

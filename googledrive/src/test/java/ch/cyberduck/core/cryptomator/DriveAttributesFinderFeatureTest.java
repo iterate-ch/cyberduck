@@ -145,15 +145,15 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
-        assertEquals(new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(vault, new DisabledListProgressListener()),
-                idProvider.getFileId(vault, new DisabledListProgressListener()));
+        assertEquals(new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(vault),
+                idProvider.getFileId(vault));
         final Path test = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, idProvider)).mkdir(
                 new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String fileId = test.attributes().getFileId();
         assertNotNull(fileId);
         final Path found = new CryptoListService(session, new DriveListService(session, idProvider), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         assertNull(found.attributes().getFileId());
-        assertEquals(fileId, new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(found, new DisabledListProgressListener()));
+        assertEquals(fileId, new CryptoFileIdProvider(session, idProvider, cryptomator).getFileId(found));
         final Cache<Path> cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<>();
         list.add(test);

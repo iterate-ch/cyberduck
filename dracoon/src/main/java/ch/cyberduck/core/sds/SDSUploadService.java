@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
@@ -91,7 +90,7 @@ public class SDSUploadService {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
                     .size(TransferStatus.UNKNOWN_LENGTH == status.getLength() ? null : status.getLength())
-                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent(), new DisabledListProgressListener())))
+                    .parentId(Long.parseLong(nodeid.getVersionId(file.getParent())))
                     .name(file.getName())
                     .directS3Upload(null);
             if(status.getTimestamp() != null) {

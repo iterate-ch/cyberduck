@@ -17,7 +17,6 @@ package ch.cyberduck.core.eue;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -41,12 +40,12 @@ public class EueResourceIdProviderTest extends AbstractEueSessionTest {
     @Test
     public void getFileIdRoot() throws Exception {
         assertEquals(EueResourceIdProvider.ROOT, new EueResourceIdProvider(session).getFileId(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+                new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void getFileIdTrash() throws Exception {
-        assertEquals(EueResourceIdProvider.TRASH, new EueResourceIdProvider(session).getFileId(new Path("Gelöschte Dateien", EnumSet.of(directory)), new DisabledListProgressListener()));
+        assertEquals(EueResourceIdProvider.TRASH, new EueResourceIdProvider(session).getFileId(new Path("Gelöschte Dateien", EnumSet.of(directory))));
     }
 
     @Test
@@ -59,14 +58,15 @@ public class EueResourceIdProviderTest extends AbstractEueSessionTest {
     public void testFindCaseInsensitive() throws Exception {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
-        assertEquals(folder.attributes().getFileId(), fileid.getFileId(folder, new DisabledListProgressListener()));
-        assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
-        assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(folder.getAbsolute()), folder.getType()), new DisabledListProgressListener()));
+        folder.withAttributes(new EueAttributesFinderFeature(session, fileid).find(folder));
+        assertEquals(folder.attributes().getFileId(), fileid.getFileId(folder));
+        assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(folder.getAbsolute()), folder.getType())));
+        assertEquals(folder.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(folder.getAbsolute()), folder.getType())));
         final Path file = createFile(fileid, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), RandomUtils.nextBytes(124));
         fileid.clear();
-        assertEquals(file.attributes().getFileId(), fileid.getFileId(file, new DisabledListProgressListener()));
-        assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
-        assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(file.getAbsolute()), file.getType()), new DisabledListProgressListener()));
+        assertEquals(file.attributes().getFileId(), fileid.getFileId(file));
+        assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.lowerCase(file.getAbsolute()), file.getType())));
+        assertEquals(file.attributes().getFileId(), fileid.getFileId(new Path(StringUtils.upperCase(file.getAbsolute()), file.getType())));
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

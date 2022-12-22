@@ -115,13 +115,12 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    @Ignore
     public void testWriteMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.min.io", new Credentials(
                 "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
         ));
-        final S3Session session = new S3Session(
-                host);
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(String.format("cd-%s", new AlphanumericRandomStringService().random().toLowerCase(Locale.getDefault())), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -141,13 +140,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
                 //
             }
         }
-        try {
-            assertEquals(Acl.EMPTY, f.getPermission(test));
-            fail();
-        }
-        catch(InteroperabilityException e) {
-            //
-        }
+        assertEquals(Acl.EMPTY, f.getPermission(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

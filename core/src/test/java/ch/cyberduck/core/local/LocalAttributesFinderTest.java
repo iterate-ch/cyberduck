@@ -2,7 +2,6 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
 
@@ -77,10 +76,5 @@ public class LocalAttributesFinderTest {
     public void testIsBundle() {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertFalse(a.isBundle());
-    }
-
-    @Test
-    public void testGetChecksum() {
-        assertEquals(Checksum.NONE, new LocalAttributes(UUID.randomUUID().toString()).getChecksum());
     }
 }

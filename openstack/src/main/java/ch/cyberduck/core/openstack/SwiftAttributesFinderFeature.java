@@ -44,7 +44,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
@@ -171,22 +170,16 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
         attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();
         try {
-            attributes.setModificationDate(new Double(Double.parseDouble(lastModified) * 1000).longValue());
+            attributes.setModificationDate(Double.valueOf(Double.parseDouble(lastModified) * 1000).longValue());
         }
         catch(NumberFormatException e) {
             log.warn(String.format("%s is not in UNIX Epoch time stamp format %s", lastModified, e.getMessage()));
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
             final String etag = RegExUtils.removePattern(metadata.getETag(), "\"");
-            attributes.setETag(etag);
-            if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
-                // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-                // the concatenated string of ETags for each of the segments in the manifest.
-                attributes.setChecksum(Checksum.NONE);
-            }
-            else {
-                attributes.setChecksum(Checksum.parse(etag));
-            }
+            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+            // the concatenated string of ETags for each of the segments in the manifest.
+            attributes.setChecksum(Checksum.parse(etag));
         }
         attributes.setMetadata(metadata.getMetaData());
         return attributes;

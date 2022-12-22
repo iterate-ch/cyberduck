@@ -19,17 +19,24 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
+import com.google.api.services.storage.model.StorageObject;
+
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest {
@@ -38,15 +45,36 @@ public class GoogleStorageTimestampFeatureTest extends AbstractGoogleStorageTest
     public void testFindTimesteamp() throws Exception {
         final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageTouchFeature(session).touch(new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withTimestamp(1530305150672L));
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withTimestamp(1530305150672L));
         assertEquals(1530305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
+        final TransferStatus status = new TransferStatus();
+        final byte[] content = RandomUtils.nextBytes(1033);
+        status.setLength(content.length);
+        status.setTimestamp(1530305150673L);
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        final PathAttributes response = status.getResponse();
+        assertNotNull(response.getETag());
+        assertNotNull(response.getVersionId());
+        test.withAttributes(response);
+        assertEquals(1530305150673L, response.getModificationDate());
         final GoogleStorageTimestampFeature feature = new GoogleStorageTimestampFeature(session);
+        // Rewrite object with timestamp earlier than already set
+        feature.setTimestamp(test, 1530305150672L);
+        final PathAttributes attrAfterRewrite = new GoogleStorageAttributesFinderFeature(session).find(test);
+        assertEquals(1530305150672L, attrAfterRewrite.getModificationDate());
+        assertNotEquals(response.getETag(), attrAfterRewrite.getETag());
+        assertNotEquals(response.getVersionId(), attrAfterRewrite.getVersionId());
         feature.setTimestamp(test, 1630305150672L);
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(test).getModificationDate());
+        final String eTagAfterPatch = new GoogleStorageAttributesFinderFeature(session).find(test).getETag();
+        assertNotEquals(attrAfterRewrite.getETag(), eTagAfterPatch);
         final Path moved = new GoogleStorageMoveFeature(session).move(test, new Path(bucket,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1630305150672L, moved.attributes().getModificationDate());
         assertEquals(1630305150672L, new GoogleStorageAttributesFinderFeature(session).find(moved).getModificationDate());
+        assertNotEquals(eTagAfterPatch, new GoogleStorageAttributesFinderFeature(session).find(moved).getETag());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(moved), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

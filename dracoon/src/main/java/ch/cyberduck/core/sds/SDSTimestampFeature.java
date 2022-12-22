@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,11 +55,11 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
             }
             if(file.isDirectory()) {
                 new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().timestampModification(new DateTime(status.getTimestamp())),
-                        Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                        Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
             else {
                 new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
-                        Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                        Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
         }
         catch(ApiException e) {

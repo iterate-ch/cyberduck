@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -93,7 +92,7 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public DriveItem getItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        if(OneDriveListService.MYFILES_NAME.equals(file)) {
+        if(new SimplePathPredicate(OneDriveListService.MYFILES_NAME).test(file)) {
             final User.Metadata user = this.getUser();
             // creationType can be non-assigned (Microsoft Account)
             // or null, Inviation, LocalAccount or EmailVerified.
@@ -105,7 +104,7 @@ public class OneDriveSession extends GraphSession {
                 return new Drive(user.asDirectoryObject()).getRoot();
             }
         }
-        final String id = fileid.getFileId(file, new DisabledListProgressListener());
+        final String id = fileid.getFileId(file);
         if(StringUtils.isEmpty(id)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
@@ -159,18 +158,18 @@ public class OneDriveSession extends GraphSession {
         if(containerItem.isDrive()) {
             // Is /My Files.
             // Tests whether container access is used, orelse deny access to /My Files.
-            return container || !containerItem.getContainerPath().map(file::equals).orElse(false);
+            return container || !containerItem.getContainerPath().map(new SimplePathPredicate(file)::test).orElse(false);
         }
         else {
             // Check for /Shared-path
             // Catches modification of items in /Shared
-            Optional<Boolean> predicate = containerItem.getCollectionPath().map(file::equals);
+            Optional<Boolean> predicate = containerItem.getCollectionPath().map(new SimplePathPredicate(file)::test);
             if(!container) {
                 // Append condition to /Shared-path check for
                 // If file parent is /Shared then return inaccessible below
                 // Cannot modify items in /Shared/*, but /Shared/**/*
                 // User must not be able to rename, move or copy first level of /Shared.
-                predicate = predicate.map(o -> o || containerItem.getCollectionPath().map(file.getParent()::equals).get());
+                predicate = predicate.map(o -> o || containerItem.getCollectionPath().map(new SimplePathPredicate(file.getParent())::test).get());
             }
             // Fallback to deny access for invalid paths (/Invalid).
             // Logic is upside down. Predicate determines whether to block access. Flip it.
@@ -196,11 +195,12 @@ public class OneDriveSession extends GraphSession {
             return (T) new OneDriveListService(this, fileid);
         }
         if(type == Lock.class) {
+            final User.Metadata user = this.getUser();
             // this is a hack. Graph creationType can be present, but `null`, which is totally valid.
             // in order to determine whether this is a Microsoft or AAD account, we need to check for
             // a null-optional, not for non-present optional.
             //noinspection OptionalAssignedToNull
-            if(null != getUser() && null != getUser().getCreationType()) {
+            if(null != user && null != user.getCreationType()) {
                 return (T) new GraphLockFeature(this, fileid);
             }
         }

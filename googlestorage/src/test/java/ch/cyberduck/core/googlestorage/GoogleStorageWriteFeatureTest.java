@@ -143,6 +143,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         {
             final TransferStatus status = new TransferStatus();
             final byte[] content = RandomUtils.nextBytes(2048);
+            status.setTimestamp(System.currentTimeMillis());
             status.setLength(content.length);
             status.setMime("application/octet-stream");
             status.setStorageClass("multi_regional");
@@ -165,6 +166,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setExists(true);
+            status.setTimestamp(1530305150672L);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
             final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());

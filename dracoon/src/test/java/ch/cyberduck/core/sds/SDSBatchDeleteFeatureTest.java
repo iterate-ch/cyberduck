@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -62,19 +61,19 @@ public class SDSBatchDeleteFeatureTest extends AbstractSDSTest {
         final Path file = new SDSTouchFeature(session, nodeid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(file));
-        assertNotNull(nodeid.getVersionId(file, new DisabledListProgressListener()));
+        assertNotNull(nodeid.getVersionId(file));
         new SDSBatchDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         file.attributes().setVersionId(null);
         folder.attributes().setVersionId(null);
         try {
-            nodeid.getVersionId(file, new DisabledListProgressListener());
+            nodeid.getVersionId(file);
             fail();
         }
         catch(NotfoundException e) {
             //
         }
         try {
-            nodeid.getVersionId(folder, new DisabledListProgressListener());
+            nodeid.getVersionId(folder);
             fail();
         }
         catch(NotfoundException e) {

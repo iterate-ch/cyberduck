@@ -90,15 +90,8 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
 
     @Test
     public void testFallbackDataConnection500Error() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        host.setFTPConnectMode(FTPConnectMode.active);
+        session.getHost().setFTPConnectMode(FTPConnectMode.active);
         final AtomicInteger count = new AtomicInteger();
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final TransferStatus status = new TransferStatus();
         final DataConnectionAction<Void> action = new DataConnectionAction<Void>() {
             @Override
             public Void execute() throws BackgroundException {

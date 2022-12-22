@@ -31,6 +31,8 @@
         <string>graph.microsoft.com</string>
         <key>Hostname Configurable</key>
         <false/>
+        <key>Default Nickname</key>
+        <string>OneDrive</string>
         <key>Default Port</key>
         <string>443</string>
         <key>Port Configurable</key>

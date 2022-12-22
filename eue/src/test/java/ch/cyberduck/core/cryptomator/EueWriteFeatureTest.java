@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -88,7 +89,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertEquals(content.length, status.getResponse().getSize());
+        assertEquals(PathAttributes.EMPTY, status.getResponse());
         assertTrue(new CryptoFindV6Feature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
         assertEquals(content.length, new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator).append(test, status
                 .withRemote(new CryptoAttributesFeature(session, new EueAttributesFinderFeature(session, fileid), cryptomator).find(test))).size, 0L);

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.onedrive.features.*;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.shared.BufferWriteFeature;
@@ -55,7 +57,6 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 import org.nuxeo.onedrive.client.types.User;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -255,7 +256,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             return (T) new GraphFindFeature(this, fileid);
         }
         if(type == Timestamp.class) {
-            return (T) new GraphTimestampFeature(this, fileid);
+            if(new HostPreferences(host).getBoolean("onedrive.timestamp.enable")) {
+                return (T) new GraphTimestampFeature(this, fileid);
+            }
         }
         if(type == Quota.class) {
             return (T) new GraphQuotaFeature(this, fileid);
@@ -283,6 +286,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             this.containerPath = containerPath;
             this.collectionPath = collectionPath;
             this.isDrive = isDrive;
+        }
+
+        static boolean equals(final Path a, final Path b) {
+            return (a == b) || (a != null && new SimplePathPredicate(a).test(b));
         }
 
         public boolean isDrive() {
@@ -324,10 +331,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             if(isDrive != other.isDrive) {
                 return false;
             }
-            if(!Objects.equals(collectionPath, other.collectionPath)) {
+            if(!equals(collectionPath, other.collectionPath)) {
                 return false;
             }
-            return Objects.equals(containerPath, other.containerPath);
+            return equals(containerPath, other.containerPath);
         }
 
         @Override

@@ -15,7 +15,6 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -24,14 +23,14 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class BoxFileidProviderTest extends AbtractBoxTest {
+public class BoxFileidProviderTest extends AbstractBoxTest {
 
     @Test
     public void getFileIdRoot() throws Exception {
         assertEquals(BoxFileidProvider.ROOT, new BoxFileidProvider(session).getFileId(
-                new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+                new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

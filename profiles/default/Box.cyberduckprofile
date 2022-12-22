@@ -25,6 +25,8 @@
         <true/>
         <key>Default Hostname</key>
         <string>api.box.com</string>
+        <key>Default Nickname</key>
+        <string>Box</string>
         <key>OAuth Authorization Url</key>
         <string>https://account.box.com/api/oauth2/authorize/</string>
         <key>OAuth Token Url</key>

@@ -88,7 +88,7 @@ public class QuicklookTransferBackgroundAction extends BrowserTransferBackground
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 final DownloadFilterOptions options = new DownloadFilterOptions(session.getHost());
                 options.segments = false;
-                return new CompareFilter(new DisabledDownloadSymlinkResolver(), source, options, listener, new DefaultComparePathFilter(source, session.getHost().getTimezone()) {
+                return new CompareFilter(new DisabledDownloadSymlinkResolver(), source, options, listener, new DefaultComparePathFilter(source) {
                     @Override
                     public Comparison compare(final Path file, final Local local, final ProgressListener listener) throws BackgroundException {
                         switch(super.compare(file, local, listener)) {

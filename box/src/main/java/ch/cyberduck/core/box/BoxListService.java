@@ -63,7 +63,7 @@ public class BoxListService implements ListService {
             Items items;
             do {
                 items = new FoldersApi(new BoxApiClient(session.getClient())).getFoldersIdItems(directory.isRoot() ? "0" :
-                                fileid.getFileId(directory, listener),
+                                fileid.getFileId(directory),
                         BoxAttributesFinderFeature.DEFAULT_FIELDS, false, null, (long) offset, (long) chunksize,
                         StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY);
                 for(Object entry : items.getEntries()) {

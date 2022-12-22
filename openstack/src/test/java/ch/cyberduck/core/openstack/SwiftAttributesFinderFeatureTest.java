@@ -62,6 +62,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
+        assertNull(attributes.getETag());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertEquals(attributes.getModificationDate(), new SwiftObjectListService(session).list(container, new DisabledListProgressListener())
                 .find(new DefaultPathPredicate(test)).attributes().getModificationDate());

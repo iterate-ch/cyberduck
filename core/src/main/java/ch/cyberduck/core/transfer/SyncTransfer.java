@@ -155,10 +155,10 @@ public class SyncTransfer extends Transfer {
         final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
             source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         // Set chosen action (upload, download, mirror) from prompt
-        comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source, host.getTimezone()))
-            .withCache(comparisons)
-            .withAttributes(attributes)
-            .withFinder(find);
+        comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source))
+                .withCache(comparisons)
+                .withAttributes(attributes)
+                .withFinder(find);
         return new SynchronizationPathFilter(comparison,
             download.filter(source, destination, TransferAction.overwrite, listener)
                 .withAttributes(attributes)

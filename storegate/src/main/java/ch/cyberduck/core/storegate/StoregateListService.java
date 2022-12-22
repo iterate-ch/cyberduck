@@ -37,11 +37,13 @@ public class StoregateListService implements ListService {
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
     private final int chunksize;
+    private final StoregateAttributesFinderFeature attributes;
 
     public StoregateListService(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
         this.fileid = fileid;
         this.chunksize = new HostPreferences(session.getHost()).getInteger("storegate.listing.chunksize");
+        this.attributes = new StoregateAttributesFinderFeature(session, fileid);
     }
 
     @Override
@@ -52,32 +54,29 @@ public class StoregateListService implements ListService {
                 switch(root.getRootFolderType()) {
                     case 0: // My Files
                     case 1: // Common
-                        final PathAttributes attr = new PathAttributes().withFileId(root.getId());
-                        attr.setModificationDate(root.getModified().getMillis());
-                        attr.setCreationDate(root.getCreated().getMillis());
-                        list.add(new Path(directory, PathNormalizer.name(root.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attr));
+                        list.add(new Path(directory, PathNormalizer.name(root.getName()), EnumSet.of(Path.Type.directory, Path.Type.volume),
+                                attributes.toAttributes(root)));
                         break;
                 }
+                listener.chunk(directory, list);
             }
-            listener.chunk(directory, list);
             return list;
         }
         else {
             try {
                 final AttributedList<Path> children = new AttributedList<>();
-                final StoregateAttributesFinderFeature attributes = new StoregateAttributesFinderFeature(session, fileid);
                 int pageIndex = 0;
                 int fileCount = 0;
                 FileContents files;
                 do {
                     files = new FilesApi(this.session.getClient()).filesGet(URIEncoder.encode(fileid.getPrefixedPath(directory)),
-                        pageIndex,
-                        chunksize,
-                        "Name asc",
-                        0, // All
-                        true,
-                        false,
-                        false
+                            pageIndex,
+                            chunksize,
+                            "Name asc",
+                            0, // All
+                            true,
+                            false,
+                            false
                     );
                     for(File f : files.getFiles()) {
                         final PathAttributes attrs = attributes.toAttributes(f);
@@ -98,5 +97,4 @@ public class StoregateListService implements ListService {
             }
         }
     }
-
 }

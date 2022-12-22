@@ -49,8 +49,8 @@ public class StatefulSessionPool extends StatelessSessionPool {
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
         try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Acquire lock for connection %s", session));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Acquire lock for connection %s", session));
             }
             lock.lock();
         }
@@ -65,19 +65,21 @@ public class StatefulSessionPool extends StatelessSessionPool {
     public void release(final Session<?> conn, final BackgroundException failure) {
         try {
             if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                log.warn(String.format("Close session %s after failure %s", session, failure));
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Close session %s after failure %s", session, failure));
+                }
                 try {
                     connect.close(conn);
                 }
                 catch(final BackgroundException e) {
-                    log.warn(String.format("Ignore failure %s closing connection", e.getMessage()));
+                    log.warn(String.format("Ignore failure %s closing connection", e));
                 }
             }
         }
         finally {
             try {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Release lock for connection %s", session));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Release lock for connection %s", session));
                 }
                 lock.unlock();
             }

@@ -24,7 +24,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.box.AbtractBoxTest;
+import ch.cyberduck.core.box.AbstractBoxTest;
 import ch.cyberduck.core.box.BoxAttributesFinderFeature;
 import ch.cyberduck.core.box.BoxDeleteFeature;
 import ch.cyberduck.core.box.BoxDirectoryFeature;
@@ -69,7 +69,7 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
-public class BoxThresholdUploadServiceTest extends AbtractBoxTest {
+public class BoxThresholdUploadServiceTest extends AbstractBoxTest {
 
     @Test
     public void testUploadVaultWithBulkFeature() throws Exception {

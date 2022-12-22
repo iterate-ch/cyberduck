@@ -17,6 +17,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.auth.win.CurrentWindowsCredentials;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.logging.log4j.LogManager;
@@ -31,12 +32,18 @@ public class WindowsIntegratedCredentialsConfigurator implements CredentialsConf
             if(WinHttpClients.isWinAuthAvailable()) {
                 if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
                     final String nameSamCompatible = CurrentWindowsCredentials.INSTANCE.getName();
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Configure %s with username %s", host, nameSamCompatible));
-                    }
-                    return new Credentials(host.getCredentials())
-                            .withUsername(nameSamCompatible)
+                    final Credentials credentials = new Credentials(host.getCredentials())
                             .withPassword(CurrentWindowsCredentials.INSTANCE.getPassword());
+                    if(StringUtils.contains(nameSamCompatible, '\\')) {
+                        credentials.setUsername(StringUtils.split(nameSamCompatible, '\\')[1]);
+                    }
+                    else {
+                        credentials.setUsername(nameSamCompatible);
+                    }
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Configure %s with username %s", host, credentials));
+                    }
+                    return credentials;
                 }
             }
         }

@@ -68,13 +68,13 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testFindBucket() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(container);
-        assertNotEquals(PathAttributes.EMPTY, attributes);
+        assertNotSame(PathAttributes.EMPTY, attributes);
         assertEquals(-1L, attributes.getSize());
         assertNotNull(attributes.getRegion());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
         final PathAttributes listAttributes = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
                 container.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(container)).attributes();
-        assertEquals(attributes, listAttributes);
+        assertNotSame(PathAttributes.EMPTY, listAttributes);
     }
 
     @Test(expected = NotfoundException.class)

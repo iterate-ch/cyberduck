@@ -15,9 +15,9 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -49,8 +49,8 @@ public class DriveDeleteFeature implements Delete {
             }
             callback.delete(f);
             try {
-                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(f.getParent())) {
-                    session.getClient().teamdrives().delete(fileid.getFileId(f, new DisabledListProgressListener())).execute();
+                if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(f.getParent())) {
+                    session.getClient().teamdrives().delete(fileid.getFileId(f)).execute();
                 }
                 else {
                     if(f.attributes().isDuplicate()) {
@@ -58,10 +58,10 @@ public class DriveDeleteFeature implements Delete {
                             log.warn(String.format("Delete file %s already in trash", f));
                         }
                         // Permanently deletes a file version
-                        session.getClient().revisions().delete(fileid.getFileId(f, new DisabledListProgressListener()), f.attributes().getVersionId()).execute();
+                        session.getClient().revisions().delete(fileid.getFileId(f), f.attributes().getVersionId()).execute();
                     }
                     else {
-                        session.getClient().files().delete(fileid.getFileId(f, new DisabledListProgressListener()))
+                        session.getClient().files().delete(fileid.getFileId(f))
                                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                 }

@@ -96,6 +96,14 @@ public class AbstractEueSessionTest {
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
+        public String getPassword(final String serviceName, final String accountName) {
+            if(accountName.equals("GMX Cloud (iterate@gmx.de) OAuth2 Token Expiry")) {
+                return String.valueOf(Long.MAX_VALUE);
+            }
+            return null;
+        }
+
+        @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
             if(user.equals("GMX Cloud (iterate@gmx.de) OAuth2 Access Token")) {
                 return System.getProperties().getProperty("eue.accesstoken");
@@ -145,7 +153,7 @@ public class AbstractEueSessionTest {
         final ShareCreationRequestModel shareCreationRequestModel = shareFeature.createShareCreationRequestModel(file, disabledPasswordCallback);
         final EueApiClient client = new EueApiClient(session);
         final CreateShareApi createShareApi = new CreateShareApi(client);
-        final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileid.getFileId(file, new DisabledListProgressListener()), shareCreationRequestModel, null, null);
+        final ShareCreationResponseModel shareCreationResponseModel = createShareApi.resourceResourceIdSharePost(fileid.getFileId(file), shareCreationRequestModel, null, null);
         return shareCreationResponseModel.get("!ano");
     }
 }

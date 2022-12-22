@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -52,11 +51,11 @@ public class SDSDeleteFeature implements Delete {
                     // Already trashed
                     log.warn(String.format("Delete file %s already in trash", file));
                     new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
-                            Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())))), StringUtils.EMPTY);
+                            Long.parseLong(nodeid.getVersionId(file)))), StringUtils.EMPTY);
                 }
                 else {
                     new NodesApi(session.getClient()).removeNode(
-                            Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY);
+                            Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
                 }
                 nodeid.cache(file, null);
             }

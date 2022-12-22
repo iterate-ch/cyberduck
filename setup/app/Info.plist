@@ -249,6 +249,14 @@
                     <string>io.cyberduck</string>
                 </array>
             </dict>
+            <dict>
+                <key>CFBundleURLName</key>
+                <string>Cyberduck Command URL</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>x-cyberduck-action</string>
+                </array>
+            </dict>
         </array>
         <key>CFBundleVersion</key>
         <string>${REVISION}</string>

@@ -48,7 +48,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     public void testListRoot() throws Exception {
         final AttributedList<Path> list = new SharepointListService(session, fileid).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
     }
 
     @Test

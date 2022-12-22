@@ -92,7 +92,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         }
         else {
             try {
-                final PathAttributes attr = this.toAttributes(session.getClient().getFileInfo(fileid.getVersionId(file, listener)));
+                final PathAttributes attr = this.toAttributes(session.getClient().getFileInfo(fileid.getVersionId(file)));
                 if(attr.isDuplicate()) {
                     // Throw failure if latest version has hide marker set
                     if(StringUtils.isBlank(file.attributes().getVersionId())) {
@@ -216,7 +216,7 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
 
     protected PathAttributes toAttributes(final B2BucketResponse response) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setVersionId(response.getBucketId());
+        attributes.setFileId(response.getBucketId());
         attributes.setRegion(response.getBucketType().name());
         switch(response.getBucketType()) {
             case allPublic:

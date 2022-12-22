@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds.triplecrypt;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -65,7 +64,7 @@ public class TripleCryptReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(
-                Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), null, null);
+                Long.parseLong(nodeid.getVersionId(file)), null, null);
             final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
             try {
                 final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);

@@ -150,6 +150,9 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("No placeholder found for directory %s", directory));
+                        }
                         throw new NotfoundException(directory.getAbsolute());
                     }
                 }

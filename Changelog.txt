@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.3
+- [Bugfix] Failure uploading file with diacritic in filename (Windows) (#13723)
+- [Bugfix] Folders containing backup file dirid.c9r cannot be deleted (Cryptomator) (#13957)
+- [Bugfix] Files not decrypted after unlocking vault (Cryptomator, Box) (#13961)
+- [Bugfix] Only read specific key from SSH agent with IdentitiesOnly and public key in IdentitiyFile directive in OpenSSH configuration to limit number of authentication attempts (SFTP) (#13935)
+- [Bugfix] Interoperability with IdentityAgent from 1Password (SFTP)
+
 8.5.2
 - [Bugfix] Invalid syntax in Open in Terminal command (SFTP, macOS)
 - [Bugfix] Passwords for ProxyJump hosts in .ssh/config are not saved (SFTP) (#13936)
@@ -10,6 +17,8 @@ https://cyberduck.io/
 - [Feature] Skip button to allow creating share with no passphrase (Dropbox, Box, ownCloud, Nextcloud) (#13846)
 - [Feature] Redirect to application without requiring to copy authentication code when opening new connection (Dropbox)
 - [Feature] Allow configuration of client certificate (ownCloud, Nextcloud)
+- [Feature] Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) (Google Storage, Google Drive, Dropbox)
+- [Bugfix] Mutual authentication does not work with client certificates with a friendly name set (Windows)
 
 8.5.0
 - [Feature] Allow to view and revert previous versions of files (ownCloud, Nextcloud) (#10560)

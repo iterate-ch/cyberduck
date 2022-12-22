@@ -62,7 +62,7 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
                 return new Credentials().withPassword(new AlphanumericRandomStringService().random());
             }
         }));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -70,10 +70,20 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         final Path file = new DropboxTouchFeature(session).touch(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(file, null, new DisabledLoginCallback());
+        final DescriptiveUrl url = provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return bookmark.getCredentials();
+            }
+        });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(file, null, new DisabledLoginCallback()));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(url, provider.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return bookmark.getCredentials();
+            }
+        }));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -81,10 +91,20 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxPasswordShareUrlProvider provider = new DropboxPasswordShareUrlProvider(session);
-        final DescriptiveUrl url = provider.toDownloadUrl(folder, null, new DisabledLoginCallback());
+        final DescriptiveUrl url = provider.toDownloadUrl(folder, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return bookmark.getCredentials();
+            }
+        });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
-        assertEquals(url, provider.toDownloadUrl(folder, null, new DisabledLoginCallback()));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(url, provider.toDownloadUrl(folder, null, new DisabledPasswordCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return bookmark.getCredentials();
+            }
+        }));
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -97,9 +117,9 @@ public class DropboxPasswordShareUrlProviderTest extends AbstractDropboxTest {
         assertNotEquals(DescriptiveUrl.EMPTY, provider.toUploadUrl(folder, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                throw new LoginCanceledException();
+                return bookmark.getCredentials();
             }
         }));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

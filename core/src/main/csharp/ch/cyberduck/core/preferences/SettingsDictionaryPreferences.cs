@@ -279,6 +279,7 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("local.user.home", HomeFolder);
             this.setDefault("local.delimiter", "\\");
             this.setDefault("local.normalize.tilde", false.ToString());
+            this.setDefault("local.normalize.unicode", false.ToString());
 
             // SSL Keystore
             // Add mscapi security provider

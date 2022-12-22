@@ -15,7 +15,6 @@ package ch.cyberduck.core.box;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.box.io.swagger.client.ApiException;
@@ -42,10 +41,10 @@ public class BoxDeleteFeature implements Delete {
         for(Path f : files.keySet()) {
             try {
                 if(f.isDirectory()) {
-                    new FoldersApi(new BoxApiClient(session.getClient())).deleteFoldersId(fileid.getFileId(f, new DisabledListProgressListener()), null, true);
+                    new FoldersApi(new BoxApiClient(session.getClient())).deleteFoldersId(fileid.getFileId(f), null, true);
                 }
                 else {
-                    new FilesApi(new BoxApiClient(session.getClient())).deleteFilesId(fileid.getFileId(f, new DisabledListProgressListener()), null);
+                    new FilesApi(new BoxApiClient(session.getClient())).deleteFilesId(fileid.getFileId(f), null);
                 }
             }
             catch(ApiException e) {

@@ -70,6 +70,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -142,7 +143,9 @@ public class FTPSession extends SSLSession<FTPClient> {
         final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setDefaultTimeout(timeout);
-        client.setDataTimeout(timeout);
+        client.setDataTimeout(Duration.ofMillis(timeout));
+        client.setControlKeepAliveTimeout(Duration.ofMillis(timeout));
+        client.setControlKeepAliveReplyTimeout(Duration.ofMillis(timeout));
         client.setUseEPSVwithIPv4(preferences.getBoolean("ftp.datachannel.epsv"));
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());

@@ -51,7 +51,7 @@ public class ProxySocketFactoryTest {
         assertNotNull(new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket("localhost", 22));
     }
 
-    @Test(expected = SocketTimeoutException.class)
+    @Test
     public void testCreateSocketWithProxy() throws Exception {
         final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new DefaultSocketConfigurator(),
                 new ProxyFinder() {
@@ -61,7 +61,13 @@ public class ProxySocketFactoryTest {
                     }
                 }).createSocket();
         assertNotNull(socket);
-        socket.connect(new InetSocketAddress("test.cyberduck.ch", 21), 5);
+        try {
+            socket.connect(new InetSocketAddress("test.cyberduck.ch", 21), 5);
+            fail();
+        }
+        catch(SocketException | SocketTimeoutException e) {
+            //
+        }
     }
 
     @Test

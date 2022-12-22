@@ -16,9 +16,9 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -69,11 +69,11 @@ public class B2LargeUploadPartService {
             do {
                 final B2ListFilesResponse chunk;
                 chunk = session.getClient().listUnfinishedLargeFiles(
-                    fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()), startFileId, null);
+                    fileid.getVersionId(containerService.getContainer(file)), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
                     if(file.isDirectory()) {
                         final Path parent = new Path(containerService.getContainer(file), upload.getFileName(), EnumSet.of(Path.Type.file)).getParent();
-                        if(parent.equals(file)) {
+                        if(new SimplePathPredicate(parent).test(file)) {
                             uploads.add(upload);
                         }
                     }

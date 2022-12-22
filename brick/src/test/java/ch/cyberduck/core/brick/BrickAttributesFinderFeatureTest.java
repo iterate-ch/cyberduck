@@ -69,6 +69,7 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
         assertEquals(Protocol.DirectoryTimestamp.implicit, session.getHost().getProtocol().getDirectoryTimestamp());
         assertNotEquals(folderTimestamp, f.find(folder).getModificationDate());
         assertNotEquals(rootAttributes, f.find(root));
+        assertNotEquals(rootAttributes.getModificationDate(), f.find(root).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());

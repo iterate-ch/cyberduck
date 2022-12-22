@@ -44,7 +44,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class BoxWriteFeatureTest extends AbtractBoxTest {
+public class BoxWriteFeatureTest extends AbstractBoxTest {
 
     @Test
     public void testWrite() throws Exception {
@@ -52,6 +52,8 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         final BoxWriteFeature feature = new BoxWriteFeature(session, fileid);
         final Path folder = new BoxDirectoryFeature(session, fileid).mkdir(
                 new Path(Home.ROOT, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final long folderModification = new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate();
+        assertEquals(folderModification, folder.attributes().getModificationDate());
         // Makes sure to test overwrite
         final Path file = new BoxTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
@@ -82,6 +84,7 @@ public class BoxWriteFeatureTest extends AbtractBoxTest {
         stream.close();
         assertArrayEquals(content, compare);
         // Check folder attributes after write
+        assertEquals(folderModification, new BoxAttributesFinderFeature(session, fileid).find(folder).getModificationDate(), 0L);
         final PathAttributes fileAttr = new BoxAttributesFinderFeature(session, fileid).find(file);
         assertNotEquals(file.attributes(), fileAttr);
         assertEquals(file.attributes().getCreationDate(), fileAttr.getCreationDate());

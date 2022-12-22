@@ -22,6 +22,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -49,7 +50,7 @@ public class SwiftMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        if(containerService.getContainer(file).equals(containerService.getContainer(renamed))) {
+        if(new SimplePathPredicate(containerService.getContainer(file)).test(containerService.getContainer(renamed))) {
             // Either copy complete file contents (small file) or copy manifest (large file)
             final Path rename = new SwiftDefaultCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().withLength(file.attributes().getSize()), connectionCallback, new DisabledStreamListener());
             new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback, false);
