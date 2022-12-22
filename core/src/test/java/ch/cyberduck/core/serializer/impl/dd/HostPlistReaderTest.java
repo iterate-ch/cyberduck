@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -48,7 +49,7 @@ public class HostPlistReaderTest {
     public void testRead() throws Exception {
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
-            "src/test/resources/s3.amazonaws.com – S3.duck"));
+                "src/test/resources/s3.amazonaws.com – S3.duck"));
         assertNotNull(read);
         assertEquals("Amazon Simple Storage Service & CloudFront CDN", read.getComment());
         assertEquals(new TestProtocol(), read.getProtocol());
@@ -58,7 +59,7 @@ public class HostPlistReaderTest {
     public void testReadPrivateKey() throws Exception {
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
-            "src/test/resources/Private Key Legacy.duck"));
+                "src/test/resources/Private Key Legacy.duck"));
         assertNotNull(read);
         assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
@@ -69,7 +70,7 @@ public class HostPlistReaderTest {
     public void testReadPrivateKeyBookmark() throws Exception {
         HostPlistReader reader = new HostPlistReader();
         final Host read = reader.read(new Local(
-            "src/test/resources/Private Key.duck"));
+                "src/test/resources/Private Key.duck"));
         assertNotNull(read);
         assertEquals(new TestProtocol(), read.getProtocol());
         assertNotNull(read.getCredentials().getIdentity());
@@ -80,5 +81,12 @@ public class HostPlistReaderTest {
     public void testReadNotFound() throws Exception {
         PlistReader reader = new HostPlistReader();
         reader.read(new Local("notfound.duck"));
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testBrokenBookmark() throws Exception {
+        HostPlistReader reader = new HostPlistReader();
+        final Host read = reader.read(new Local(
+                "src/test/resources/broken.duck"));
     }
 }
