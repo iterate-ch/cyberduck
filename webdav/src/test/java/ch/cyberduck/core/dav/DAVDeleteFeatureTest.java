@@ -31,11 +31,17 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testDeleteFileWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(test, new TransferStatus());
-        final String lock = new DAVLockFeature(session).lock(test);
+        String lock = null;
+        try {
+            lock = new DAVLockFeature(session).lock(test);
+        }
+        catch(InteroperabilityException e) {
+            // Not supported
+        }
         assertTrue(new DAVFindFeature(session).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));

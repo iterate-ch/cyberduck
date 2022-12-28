@@ -17,9 +17,11 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -33,6 +35,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.EnumSet;
 
 @Category(IntegrationTest.class)
@@ -50,7 +53,15 @@ public class DAVLockFeatureTest extends AbstractDAVTest {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final HttpUploadFeature upload = new DAVUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledConnectionCallback());
-        new DAVLockFeature(session).lock(test);
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        String lock = null;
+        try {
+            lock = new DAVLockFeature(session).lock(test);
+        }
+        catch(InteroperabilityException e) {
+            // Expected
+        }
+        local.delete();
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

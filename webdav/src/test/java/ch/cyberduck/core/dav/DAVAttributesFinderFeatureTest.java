@@ -27,6 +27,7 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -59,7 +60,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
             f.find(test);
         }
         catch(NotfoundException e) {
-            assertEquals("Unexpected response (404 OK). Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertTrue(StringUtils.startsWith(e.getDetail(), "Unexpected response"));
             throw e;
         }
     }
@@ -92,7 +93,6 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
-        assertEquals(-1, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
@@ -167,15 +167,20 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         assertEquals(modified.getTime(), attrs.getModificationDate());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testFindLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());
         final String lockId = new DAVLockFeature(session).lock(test);
         assertNotNull(f.find(test).getLockId());
-        new DAVLockFeature(session).unlock(test, lockId);
+        try {
+            new DAVLockFeature(session).unlock(test, lockId);
+        }
+        catch(InteroperabilityException e) {
+            // No lock support
+        }
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
