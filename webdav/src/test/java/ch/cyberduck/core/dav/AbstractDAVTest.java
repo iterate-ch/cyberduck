@@ -105,12 +105,10 @@ public class AbstractDAVTest {
 
     @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DAVSSLProtocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DAVProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/DAVS.cyberduckprofile"));
-        final Host host = new Host(profile, "ocean.fileago.com", 443, new Credentials(
-                System.getProperties().getProperty("davs.user"), System.getProperties().getProperty("davs.password")));
-        host.setDefaultPath("/webdrive/drivetest/Tests");
+                this.getClass().getResourceAsStream("/DAV.cyberduckprofile"));
+        final Host host = new Host(profile, "localhost", PORT_NUMBER, new Credentials("cyberduck"));
         session = new DAVSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
