@@ -39,7 +39,7 @@ public class DAVListServiceTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
-        new DAVListService(session).list(new Path("/notfound", EnumSet.of(Path.Type.directory, Path.Type.volume)),
+        new DAVListService(session).list(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
     }
 
