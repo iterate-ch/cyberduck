@@ -43,6 +43,9 @@
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
         <File Id="product.exe" Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="ProductExe.Config" Guid="CFC37A9B-0CD5-439B-BFB5-A3176D6500A1">
+        <File Source="$(var.CLI.TargetPath).config" KeyPath="yes" Checksum="yes"/>
+      </Component>
       <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
         <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />
       </Component>
