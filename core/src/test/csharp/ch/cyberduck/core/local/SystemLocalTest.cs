@@ -100,6 +100,12 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestTildePath()
+        {
+            CoreLocal local = new SystemLocal("~/.ssh/known_hosts");
+        }
+
+        [Test]
         public void TestUnicode()
         {
             var test = @"\\?\C:\ÄÖÜßßäöü";
