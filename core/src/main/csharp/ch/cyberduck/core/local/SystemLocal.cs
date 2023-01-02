@@ -88,16 +88,25 @@ namespace Ch.Cyberduck.Core.Local
             using StringWriter writer = new();
             using StringReader reader = new(name);
 
-            if (reader.Peek() is int p && (p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar))
+            switch (reader.Peek())
             {
-                if (!ReadUnc(reader, writer))
-                {
-                    return null;
-                }
-            }
-            else if (!ReadDriveLetter(reader, writer, false))
-            {
-                return null;
+                case int p when p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar:
+                    if (!ReadUnc(reader, writer))
+                    {
+                        return null;
+                    }
+                    break;
+
+                case int p when p == '~':
+                    writer.Write((char)reader.Read());
+                    break;
+
+                default:
+                    if (!ReadDriveLetter(reader, writer, false))
+                    {
+                        return null;
+                    }
+                    break;
             }
 
             SanitizePath(reader, writer);
@@ -163,6 +172,7 @@ namespace Ch.Cyberduck.Core.Local
                     }
                     buffer.Write((char)p);
                 }
+
                 using (StringReader component = new(buffer.ToString()))
                 using (StringWriter driveLetter = new())
                 {
