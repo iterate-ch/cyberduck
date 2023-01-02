@@ -17,8 +17,8 @@ package ch.cyberduck.core.ctera;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
 import org.junit.Test;
 
@@ -26,14 +26,16 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-public class CteraUrlProviderTest extends AbstractCteraTest {
+public class CteraUrlProviderTest {
 
     @Test
-    public void toUrl() throws Exception {
+    public void toUrl() {
+        final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me");
+        host.setDefaultPath("/ServicesPortal/webdav");
         final String filename = new AlphanumericRandomStringService().random();
-        final Path test = new Path(new DefaultHomeFinderService(session).find(),
+        final Path test = new Path(new Path("/ServicesPortal/webdav/My Files", EnumSet.of(Path.Type.directory)),
                 filename, EnumSet.of(Path.Type.file));
-        assertEquals("https://mountainduck.ctera.me/ServicesPortal/#/cloudDrive/" + filename,
-                new CteraUrlProvider(session.getHost()).toUrl(test).find(DescriptiveUrl.Type.provider).getUrl());
+        assertEquals("https://mountainduck.ctera.me/ServicesPortal/#/cloudDrive/My%20Files/" + filename,
+                new CteraUrlProvider(host).toUrl(test).find(DescriptiveUrl.Type.provider).getUrl());
     }
 }
