@@ -58,7 +58,7 @@ public class SessionBackgroundActionTest {
         catch(BackgroundException e) {
             // Ignore
         }
-        assertFalse(a.hasFailed());
+        assertTrue(a.hasFailed());
     }
 
     @Test
@@ -113,7 +113,7 @@ public class SessionBackgroundActionTest {
         catch(BackgroundException e) {
             // Ignore
         }
-        assertFalse(a.hasFailed());
+        assertTrue(a.hasFailed());
     }
 
     @Test
