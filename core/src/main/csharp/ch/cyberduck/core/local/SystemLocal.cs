@@ -115,18 +115,24 @@ namespace Ch.Cyberduck.Core.Local
 
             static bool ReadUnc(StringReader reader, StringWriter writer)
             {
-                // test for "\" or "/"
-                var p = reader.Read();
-                if (p == -1 || !(p == Path.AltDirectorySeparatorChar || p == Path.DirectorySeparatorChar))
+                // Tests for leading "//", otherwise tries to parse drive letter
+                // e.g. /C, /X, /F
+                for (int sepRead = 0; sepRead < 2; sepRead++)
                 {
-                    return false;
+                    switch (reader.Peek())
+                    {
+                        case -1:
+                            return false;
+
+                        case int p when p == Path.AltDirectorySeparatorChar || p == Path.DirectorySeparatorChar:
+                            reader.Read();
+                            break;
+
+                        default:
+                            return ReadDriveLetter(reader, writer, false);
+                    }
                 }
-                // test for "//" or "\\"
-                p = reader.Read();
-                if (p == -1 || !(p == Path.AltDirectorySeparatorChar || p == Path.DirectorySeparatorChar))
-                {
-                    return false;
-                }
+
                 writer.Write(Path.DirectorySeparatorChar);
 
                 using StringWriter hostBuffer = new();
