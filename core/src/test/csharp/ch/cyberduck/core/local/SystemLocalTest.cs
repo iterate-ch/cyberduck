@@ -1,6 +1,9 @@
-﻿using java.nio.file;
+﻿using ch.cyberduck.core;
+using java.nio.file;
+using java.util;
 using NUnit.Framework;
 using CoreLocal = ch.cyberduck.core.Local;
+using CorePath = ch.cyberduck.core.Path;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
@@ -69,6 +72,13 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestMountainDuckPath()
+        {
+            CoreLocal local = new SystemLocal("/C:/Users/Public");
+            Assert.AreEqual("C:\\Users\\Public", local.getAbsolute());
+        }
+
+        [Test]
         public void TestPathAbsoluteWin32()
         {
             var test = @"C:\Directory\File.ext";
@@ -93,6 +103,14 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestPathToLocal()
+        {
+            CorePath path = new CorePath("C:\\Users\\Public", EnumSet.of(AbstractPath.Type.directory));
+            var local = new SystemLocal(path.getAbsolute());
+            Assert.AreEqual("C:\\Users\\Public", local.getAbsolute());
+        }
+
+        [Test]
         public void TestPipeName()
         {
             CoreLocal local = new SystemLocal(PIPE_NAME);
@@ -103,6 +121,7 @@ namespace Ch.Cyberduck.Core.Local
         public void TestTildePath()
         {
             CoreLocal local = new SystemLocal("~/.ssh/known_hosts");
+            Assert.IsNotEmpty(local.getAbsolute());
         }
 
         [Test]
