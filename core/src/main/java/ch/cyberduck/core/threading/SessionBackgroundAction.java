@@ -23,7 +23,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +84,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     }
 
     /**
-     * @return True if the the action had a permanent failures. Returns false if there were only temporary exceptions
+     * @return True if the action had a permanent failures. Returns false if there were only temporary exceptions
      * and the action succeeded upon retry
      */
     public boolean hasFailed() {
@@ -108,9 +107,6 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     return SessionBackgroundAction.this.run();
                 }
             }, this, this).call();
-        }
-        catch(ConnectionCanceledException e) {
-            throw e;
         }
         catch(BackgroundException e) {
             failure = e;
