@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -74,11 +75,15 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                 try {
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
+                    if(status.isExists()) {
+                        // Remove any large object header read from metadata of existing file
+                        headers.remove(Constants.X_STATIC_LARGE_OBJECT);
+                    }
                     final Checksum checksum = status.getChecksum();
                     final String etag = session.getClient().storeObject(
-                        regionService.lookup(file),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        entity, headers, checksum.algorithm == HashAlgorithm.md5 ? checksum.hash : null);
+                            regionService.lookup(file),
+                            containerService.getContainer(file).getName(), containerService.getKey(file),
+                            entity, headers, checksum.algorithm == HashAlgorithm.md5 ? checksum.hash : null);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, etag));
                     }
