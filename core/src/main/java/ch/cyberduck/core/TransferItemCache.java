@@ -28,8 +28,8 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
     }
 
     @Override
-    public CacheReference<?> reference(final TransferItem object) {
-        return new DefaultPathPredicate(object.remote);
+    public CacheReference<TransferItem> reference(final TransferItem object) {
+        return new TransferItemCacheReference(object);
     }
 
     @Override
@@ -45,5 +45,34 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
     @Override
     public AttributedList<TransferItem> put(final TransferItem key, final AttributedList<TransferItem> children) {
         return super.put(null == key ? NULL_KEY : key, children);
+    }
+
+    public static final class TransferItemCacheReference implements CacheReference<TransferItem> {
+        private final CacheReference<Path> proxy;
+
+        public TransferItemCacheReference(final TransferItem object) {
+            this.proxy = new DefaultPathPredicate(object.remote);
+        }
+
+        @Override
+        public boolean test(final TransferItem other) {
+            return proxy.test(other.remote);
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            return proxy.equals(o);
+        }
+
+        @Override
+        public int hashCode() {
+            return proxy.hashCode();
+        }
     }
 }

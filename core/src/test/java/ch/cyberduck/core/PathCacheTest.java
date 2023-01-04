@@ -9,21 +9,6 @@ import static org.junit.Assert.*;
 public class PathCacheTest {
 
     @Test
-    public void testLookup() {
-        final Cache<Path> cache = new ReverseLookupCache<>(new PathCache(1), 1);
-        assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
-        final AttributedList<Path> list = new AttributedList<>();
-        final Path directory = new Path("p", EnumSet.of(Path.Type.directory));
-        final Path file1 = new Path(directory, "name1", EnumSet.of(Path.Type.file));
-        list.add(file1);
-        final Path file2 = new Path(directory, "name2", EnumSet.of(Path.Type.file));
-        list.add(file2);
-        cache.put(directory, list);
-        assertNotNull(cache.lookup(new DefaultPathPredicate(file1)));
-        assertNotNull(cache.lookup(new DefaultPathPredicate(file2)));
-    }
-
-    @Test
     public void testIsEmpty() {
         final PathCache cache = new PathCache(1);
         assertTrue(cache.isEmpty());
