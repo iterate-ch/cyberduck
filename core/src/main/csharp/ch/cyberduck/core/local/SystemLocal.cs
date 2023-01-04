@@ -20,7 +20,6 @@ using ch.cyberduck.core;
 using org.apache.logging.log4j;
 using System;
 using System.IO;
-using System.Text;
 using CoreLocal = ch.cyberduck.core.Local;
 using Path = System.IO.Path;
 
@@ -28,7 +27,9 @@ namespace Ch.Cyberduck.Core.Local
 {
     public class SystemLocal : CoreLocal
     {
+        private static readonly char[] INVALID_CHARS = Path.GetInvalidFileNameChars();
         private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
+        private static readonly char[] PATH_SEPARATORS = new[] { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
 
         public SystemLocal(string parent, string name)
             : base(parent, name)
@@ -83,178 +84,110 @@ namespace Ch.Cyberduck.Core.Local
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                return null;
+                return "";
             }
             using StringWriter writer = new();
-            using StringReader reader = new(name);
 
-            switch (reader.Peek())
+            var namespan = name.AsSpan();
+            int? leadingSeparators = 0;
+            bool hasUnc = false, nextDriveLetter = true;
+            for (int lastSegment = 0, index = 0; index != -1; lastSegment = index + 1)
             {
-                case int p when p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar:
-                    if (!ReadUnc(reader, writer))
+                index = name.IndexOfAny(PATH_SEPARATORS, lastSegment);
+                ReadOnlySpan<char> segment = (index switch
+                {
+                    -1 => namespan.Slice(lastSegment),
+                    _ => namespan.Slice(lastSegment, index - lastSegment)
+                }).Trim();
+
+                if (segment.IsEmpty && leadingSeparators is int lead)
+                {
+                    // handles up to first two leading separators, that is "\" and "\\"
+                    leadingSeparators = ++lead;
+                    if (lead == 2)
                     {
-                        return null;
+                        // in the case this is "\\" continue with assuming UNC
+                        // thus a drive letter _must not_ follow
+                        hasUnc = true;
+                        nextDriveLetter = false;
+                        leadingSeparators = null;
+                        writer.Write(Path.DirectorySeparatorChar);
+                        writer.Write(Path.DirectorySeparatorChar);
                     }
-                    break;
-
-                case int p when p == '~':
-                    writer.Write((char)reader.Read());
-                    break;
-
-                default:
-                    if (!ReadDriveLetter(reader, writer, false))
+                    // hereafter (after "\\" has been read) every empty segment is skipped "\\\" -> "\"
+                    // or after anything except "\\" has been read, every empty segment is skipped, "\\" -> "\"
+                }
+                else if (!segment.IsEmpty)
+                {
+                    var firstChanceDriveLetter = nextDriveLetter;
+                    nextDriveLetter = false;
+                    if (hasUnc)
                     {
-                        return null;
+                        // ignore UNC, whatever is in as first value segment is passed-through as is
+                        // there is no need to validate hostnames here, would bail out somewhere else
+                        // handles all cases of "\\*\"
+                        // including, but not limited to: wsl$, wsl.localhost, \\?\ (MAX_PATH bypass), any network share
+                        Append(segment, writer);
+                        nextDriveLetter = segment.Length == 1 && (segment[0] == '?' || segment[0] == '.');
                     }
-                    break;
-            }
-
-            SanitizePath(reader, writer);
-
-            return writer.ToString();
-
-            static bool ReadUnc(StringReader reader, StringWriter writer)
-            {
-                // Tests for leading "//", otherwise tries to parse drive letter
-                // e.g. /C, /X, /F
-                for (int sepRead = 0; sepRead < 2; sepRead++)
-                {
-                    switch (reader.Peek())
+                    else if (firstChanceDriveLetter && segment.Length == 2 && segment[1] == Path.VolumeSeparatorChar)
                     {
-                        case -1:
-                            return false;
+                        // _only_ if there is a two-letter segment, that is ending in ':' (VolumeSeparatorChar)
+                        // is this thing here run.
+                        // If there is _anything_ wrong (that is not "[A-Z]:") return empty value
 
-                        case int p when p == Path.AltDirectorySeparatorChar || p == Path.DirectorySeparatorChar:
-                            reader.Read();
-                            break;
-
-                        default:
-                            return ReadDriveLetter(reader, writer, false);
-                    }
-                }
-
-                writer.Write(Path.DirectorySeparatorChar);
-
-                using StringWriter hostBuffer = new();
-                bool trail = false;
-                // UNC-path continue.
-                while (reader.Read() is int c && c != -1)
-                {
-                    if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
-                    {
-                        trail = true;
-                        break;
-                    }
-                    hostBuffer.Write((char)c);
-                }
-                if (hostBuffer.GetStringBuilder().Length == 0)
-                {
-                    // what is this? "\\\"
-                    return false;
-                }
-                writer.Write(Path.DirectorySeparatorChar);
-                var host = hostBuffer.ToString();
-                writer.Write(host);
-                if (trail)
-                {
-                    writer.Write(Path.DirectorySeparatorChar);
-                }
-                if (host == "." || host == "?")
-                {
-                    ReadDriveLetter(reader, writer, true);
-                }
-                return true;
-            }
-
-            static bool ReadDriveLetter(StringReader reader, StringWriter writer, bool readToSeparator)
-            {
-                using StringWriter buffer = new();
-
-                while (reader.Read() is int p && p > 0)
-                {
-                    if (p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar)
-                    {
-                        break;
-                    }
-                    buffer.Write((char)p);
-                }
-
-                using (StringReader component = new(buffer.ToString()))
-                using (StringWriter driveLetter = new())
-                {
-                    if (HandleDriveLetter(component, driveLetter))
-                    {
-                        writer.Write(driveLetter.ToString());
-                        return true;
-                    }
-                }
-                if (!readToSeparator)
-                {
-                    return false;
-                }
-                writer.Write(buffer.ToString());
-                return true;
-
-                static bool HandleDriveLetter(StringReader reader, StringWriter writer)
-                {
-                    var c = reader.Read();
-                    /// <see cref="System.Char.IsLetter(char)" />
-                    var letter = (c | 0x20) - 'a';
-                    if (letter < 0 || letter > 25)
-                    {
-                        // letter is not in range A to Z.
-                        return false;
-                    }
-                    // change lowercase letter to uppercase
-                    writer.Write((char)c);
-                    if (reader.Peek() != Path.VolumeSeparatorChar)
-                    {
-                        // this is something like C\, CX, C/,
-                        return false;
-                    }
-                    writer.Write((char)reader.Read());
-                    return true;
-                }
-            }
-
-            static void ApplyRoot(StringReader reader, StringWriter writer)
-            {
-                if (reader.Peek() is int p && (p == Path.DirectorySeparatorChar || p == Path.AltDirectorySeparatorChar))
-                {
-                    reader.Read();
-                }
-                writer.Write(Path.DirectorySeparatorChar);
-            }
-
-            static void SanitizePath(StringReader reader, StringWriter writer)
-            {
-                var invalid = Path.GetInvalidFileNameChars();
-                ApplyRoot(reader, writer);
-                StringBuilder segmentBuilder = new();
-                while (reader.Peek() != -1)
-                {
-                    char c = (char)reader.Read();
-                    if (c == Path.AltDirectorySeparatorChar || c == Path.DirectorySeparatorChar)
-                    {
-                        if (segmentBuilder.Length > 0)
+                        /// <see cref="System.Char.IsLetter(char)" />
+                        var letter = (segment[0] | 0x20) - 'a';
+                        if (letter < 0 || letter > 25)
                         {
-                            writer.Write(segmentBuilder.ToString().Trim());
-                            writer.Write(Path.DirectorySeparatorChar);
-                            segmentBuilder.Clear();
+                            // letter is not in range A to Z.
+                            return "";
                         }
-                    }
-                    else if (Array.IndexOf(invalid, c) != -1)
-                    {
-                        segmentBuilder.Append('_');
+                        // check above is simplified only, this passes raw input through
+                        // check is 'a' but segment is 'A:', then 'A:' is written to output
+                        Append(segment, writer);
+                        // additionally, this strips away all leading separator characters before the drive letter
+                        // "/C:" becomes "C:".
                     }
                     else
                     {
-                        segmentBuilder.Append(c);
+                        if (leadingSeparators > 0)
+                        {
+                            // workaround.
+                            // there may be input that is leading with one separator, but contains no
+                            writer.Write(Path.DirectorySeparatorChar);
+                        }
+
+                        // pass through segment sanitized from path invalid characters
+                        foreach (ref readonly var c in segment)
+                        {
+                            writer.Write(Array.IndexOf(INVALID_CHARS, c) switch
+                            {
+                                -1 => c,
+                                _ => '_'
+                            });
+                        }
+                    }
+                    hasUnc = false;
+                    leadingSeparators = null;
+
+                    if (index != -1)
+                    {
+                        // allow for input of "C:\Abc" and "C:\Abc\", preserve trailing separators, where
+                        // (1) return "C:\Abc"
+                        // (2) return "C:\Abc\"
+                        writer.Write(Path.DirectorySeparatorChar);
                     }
                 }
-                if (segmentBuilder.Length != 0)
+            }
+            return writer.ToString();
+
+            static void Append(in ReadOnlySpan<char> range, StringWriter writer)
+            {
+                // skip any allocation of strings or arrays.
+                foreach (ref readonly var c in range)
                 {
-                    writer.Write(segmentBuilder.ToString().Trim());
+                    writer.Write(c);
                 }
             }
         }
