@@ -28,6 +28,27 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestBadDriveLetter1()
+        {
+            const string PATH = @"#:\";
+            Assert.IsEmpty(new SystemLocal(PATH).getAbsolute());
+        }
+
+        [Test]
+        public void TestBadDriveLetter2()
+        {
+            const string PATH = @"\#:\";
+            Assert.IsEmpty(new SystemLocal(PATH).getAbsolute());
+        }
+
+        [Test]
+        public void TestBadDriveLetter3()
+        {
+            const string PATH = @"\\.\#:\";
+            Assert.IsEmpty(new SystemLocal(PATH).getAbsolute());
+        }
+
+        [Test]
         public void TestConvertToDirectorySeparator()
         {
             var path = new SystemLocal(PIPE_NAME.Replace('\\', '/'));
@@ -46,6 +67,12 @@ namespace Ch.Cyberduck.Core.Local
         {
             var path = new SystemLocal(@"C:" + Path.DirectorySeparatorChar);
             Assert.AreEqual(@"C:" + Path.DirectorySeparatorChar, path.getAbsolute());
+        }
+
+        [Test]
+        public void TestEmptyPath()
+        {
+            Assert.IsEmpty(new SystemLocal("").getAbsolute());
         }
 
         /// <remarks>
@@ -72,6 +99,15 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestInvalidCharacters()
+        {
+            const string TEST = @"C:\:?<>:";
+            const string EXPECT = @"C:\_____";
+            CoreLocal local = new SystemLocal(TEST);
+            Assert.AreEqual(EXPECT, local.getAbsolute());
+        }
+
+        [Test]
         public void TestMountainDuckPath()
         {
             CoreLocal local = new SystemLocal("/C:/Users/Public");
@@ -84,6 +120,14 @@ namespace Ch.Cyberduck.Core.Local
             var test = @"C:\Directory\File.ext";
             var path = new SystemLocal(test);
             Assert.AreEqual(test, path.getAbsolute());
+        }
+
+        [Test]
+        public void TestPathFromNonWindows()
+        {
+            const string TEST = @"\Volumes\System\Test";
+            SystemLocal path = new(TEST);
+            Assert.AreEqual(TEST, path.getAbsolute());
         }
 
         [Test]
