@@ -22,7 +22,6 @@ public class PathCacheTest {
         final Path f = new Path("/", EnumSet.of(Path.Type.directory));
         assertFalse(cache.containsKey(f));
         cache.put(f, new AttributedList<>());
-        final CacheReference reference = new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)));
         assertTrue(cache.containsKey(f));
         assertTrue(cache.isCached(f));
     }
@@ -55,5 +54,34 @@ public class PathCacheTest {
         cache.put(file, AttributedList.emptyList());
         assertFalse(cache.containsKey(file));
         assertEquals(0, cache.size());
+    }
+
+    @Test
+    public void testDirectoryWithFileIdDefaultPredicate() {
+        final PathCache cache = new PathCache(1);
+        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withFileId("1"));
+        assertFalse(cache.containsKey(f));
+        cache.put(f, new AttributedList<>());
+        assertTrue(cache.containsKey(f));
+        assertTrue(cache.isCached(f));
+        assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testDirectoryWithFileIdSimplePredicate() {
+        final PathCache cache = new PathCache(1) {
+            @Override
+            public CacheReference<Path> reference(final Path file) {
+                return new SimplePathPredicate(file);
+            }
+        };
+        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withFileId("1"));
+        assertFalse(cache.containsKey(f));
+        cache.put(f, new AttributedList<>());
+        assertTrue(cache.containsKey(f));
+        assertTrue(cache.isCached(f));
+        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }
