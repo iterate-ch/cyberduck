@@ -64,15 +64,20 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
             if(this == o) {
                 return true;
             }
-            if(o == null || getClass() != o.getClass()) {
-                return false;
+            if(o instanceof CacheReference) {
+                return proxy.equals(o);
             }
-            return proxy.equals(o);
+            return false;
         }
 
         @Override
         public int hashCode() {
             return proxy.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return proxy.toString();
         }
     }
 }
