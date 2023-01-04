@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.ctera.auth.CteraTokens;
 import ch.cyberduck.core.ctera.model.AttachDeviceResponse;
 import ch.cyberduck.core.ctera.model.Attachment;
@@ -173,6 +174,9 @@ public class CteraSession extends DAVSession {
         }
         if(type == Metadata.class) {
             return null;
+        }
+        if(type == UrlProvider.class) {
+            return (T) new CteraUrlProvider(host);
         }
         if(type == CustomActions.class) {
             return (T) new CteraCustomActions(this);
