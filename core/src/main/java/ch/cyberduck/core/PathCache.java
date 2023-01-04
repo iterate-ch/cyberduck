@@ -21,7 +21,7 @@ public class PathCache extends AbstractCache<Path> {
 
     private static final PathCache EMPTY = new PathCache(0) {
         @Override
-        public AttributedList<Path> put(final Path directory, final AttributedList<Path> children) {
+        public AttributedList<Path> put(final Path key, final AttributedList<Path> children) {
             return AttributedList.emptyList();
         }
     };
@@ -35,7 +35,7 @@ public class PathCache extends AbstractCache<Path> {
     }
 
     @Override
-    public CacheReference<?> reference(final Path file) {
+    public CacheReference<Path> reference(final Path file) {
         return new DefaultPathPredicate(file);
     }
 }

@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -65,7 +66,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
         // Unordered list
-        for(Map.Entry<TransferItem, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {
+        for(Map.Entry<CacheReference<TransferItem>, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
