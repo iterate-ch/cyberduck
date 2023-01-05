@@ -101,17 +101,22 @@ public class S3Protocol extends AbstractProtocol {
             new S3LocationFeature.S3Region("eu-west-3"),
             new S3LocationFeature.S3Region("eu-north-1"),
             new S3LocationFeature.S3Region("eu-south-1"),
+            new S3LocationFeature.S3Region("eu-south-2"),
             new S3LocationFeature.S3Region("eu-central-1"),
+            new S3LocationFeature.S3Region("eu-central-2"),
             new S3LocationFeature.S3Region("ap-southeast-1"),
             new S3LocationFeature.S3Region("ap-southeast-2"),
+            new S3LocationFeature.S3Region("ap-southeast-3"),
             new S3LocationFeature.S3Region("ap-northeast-1"),
             new S3LocationFeature.S3Region("ap-northeast-2"),
             new S3LocationFeature.S3Region("ap-northeast-3"),
             new S3LocationFeature.S3Region("ap-south-1"),
+            new S3LocationFeature.S3Region("ap-south-2"),
             new S3LocationFeature.S3Region("ap-east-1"),
             new S3LocationFeature.S3Region("sa-east-1"),
             new S3LocationFeature.S3Region("me-south-1"),
-            new S3LocationFeature.S3Region("af-south-1")
+            new S3LocationFeature.S3Region("af-south-1"),
+            new S3LocationFeature.S3Region("me-central-1")
         ));
     }
 
