@@ -66,7 +66,7 @@ public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements
                         }
                         final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
                         final AttributedList<Path> attributes
-                                = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), listener);
+                                = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()));
                         if(attributes.contains(file)) {
                             return attributes.get(attributes.indexOf(file)).attributes();
                         }

@@ -15,9 +15,7 @@ package ch.cyberduck.core.ftp.list;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
@@ -49,7 +47,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
     }
 
     @Override
-    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener) throws FTPInvalidListException {
+    public AttributedList<Path> read(final Path directory, final List<String> replies) throws FTPInvalidListException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
         boolean success = false;
@@ -95,7 +93,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                     if(StringUtils.isBlank(target)) {
                         log.warn(String.format("Missing symbolic link target for %s", parsed));
                         final EnumSet<Path.Type> type = parsed.getType();
-                        type.remove(AbstractPath.Type.symboliclink);
+                        type.remove(Path.Type.symboliclink);
                     }
                     else if(StringUtils.startsWith(target, String.valueOf(Path.DELIMITER))) {
                         parsed.setSymlinkTarget(new Path(PathNormalizer.normalize(target), EnumSet.of(Path.Type.file)));

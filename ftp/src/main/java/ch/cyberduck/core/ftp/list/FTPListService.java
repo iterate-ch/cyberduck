@@ -198,10 +198,9 @@ public class FTPListService implements ListService {
                             target.setType(EnumSet.of(Path.Type.file));
                         }
                     }
-                    if(verified.add(file)) {
-                        // Make sure we remove and add because hash code will change
-                        removal.add(file);
-                    }
+                    verified.add(file);
+                    // Make sure we remove and add because hash code will change
+                    removal.add(file);
                 }
             }
             list.removeAll(removal);
