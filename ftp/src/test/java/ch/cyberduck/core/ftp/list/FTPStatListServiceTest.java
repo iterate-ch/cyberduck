@@ -77,7 +77,7 @@ public class FTPStatListServiceTest extends AbstractFTPTest {
         assertEquals(6, list.size());
         final Path parent = new Path("/cgi-bin", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> parsed = new FTPListResponseReader(parser, true).read(
-            parent, list, new DisabledListProgressListener()
+                parent, list
         );
         assertEquals(2, parsed.size());
         assertTrue(parsed.contains(new Path(parent, "tmp", EnumSet.of(Path.Type.directory))));
@@ -97,7 +97,7 @@ public class FTPStatListServiceTest extends AbstractFTPTest {
         assertTrue(list.contains("-rw-------   0 David-Kocher -          529 Jun 17 07:59 App.config"));
         final Path parent = new Path("/cyberduck", EnumSet.of(Path.Type.directory));
         final AttributedList<Path> parsed = new FTPListResponseReader(parser, true).read(
-            parent, list, new DisabledListProgressListener());
+                parent, list);
         assertEquals(2, parsed.size());
     }
 

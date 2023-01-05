@@ -16,12 +16,11 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 
 import java.util.List;
 
 public interface FTPDataResponseReader {
 
-    AttributedList<Path> read(Path parent, List<String> replies, ListProgressListener listener) throws FTPInvalidListException;
+    AttributedList<Path> read(Path parent, List<String> replies) throws FTPInvalidListException;
 }
