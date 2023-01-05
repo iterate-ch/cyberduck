@@ -28,13 +28,11 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
-using Ch.Cyberduck.Ui.Core.Contracts;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
 using org.apache.logging.log4j;
-using StructureMap;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,6 +45,7 @@ using System.Text;
 using System.Windows.Forms;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using ch.cyberduck.ui.browser;
 using static Ch.Cyberduck.ImageHelper;
 using static Windows.Win32.CorePInvoke;
 using static Windows.Win32.PInvoke;
@@ -2486,7 +2485,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (ToolStripMenuItem item in columnContextMenu.Items)
             {
                 ToolStripMenuItem item1 = item;
-                MenuItem nItem = new MenuItem(LocaleFactory.localizedString(item.Text),
+                string tag = ((ColumnHeader)item.Tag).Tag as string;
+                MenuItem nItem = new MenuItem(null != tag ? BrowserColumn.valueOf(tag).ToString() : LocaleFactory.localizedString(item.Text),
                     delegate { item1.PerformClick(); });
                 //forward click event
                 nItem.Checked = item.Checked;
