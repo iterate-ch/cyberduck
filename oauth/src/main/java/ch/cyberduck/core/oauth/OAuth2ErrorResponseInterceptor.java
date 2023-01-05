@@ -56,22 +56,21 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     try {
+                        OAuthTokens tokens;
                         try {
                             log.info(String.format("Attempt to refresh OAuth tokens for failure %s", response));
-                            final OAuthTokens tokens = service.refresh();
-                            service.setTokens(tokens);
-                            bookmark.getCredentials().withOauth(tokens);
-                            store.save(bookmark);
+                            tokens = service.refresh();
                         }
                         catch(InteroperabilityException | LoginFailureException e) {
                             log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
                             // Reset OAuth Tokens
                             bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
-                            final OAuthTokens tokens = service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode);
-                            service.setTokens(tokens);
-                            bookmark.getCredentials().withOauth(tokens);
-                            store.save(bookmark);
+                            tokens = service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode);
                         }
+                        // Store new token retrieved
+                        service.setTokens(tokens);
+                        bookmark.getCredentials().withOauth(tokens);
+                        store.save(bookmark);
                         // Try again
                         return true;
                     }
