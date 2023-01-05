@@ -591,7 +591,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.shareMainMenuItem.Index = 13;
             this.shareMainMenuItem.Text = "Share…";
-            // 
+            //
             // editMainMenuItem
             // 
             this.editMainMenuItem.Index = 15;
@@ -1280,7 +1280,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.shareToolStripMenuItem.Name = "shareToolStripMenuItem";
             this.shareToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.shareToolStripMenuItem.Text = "Share…";
-            // 
+            //
             // editWithToolStripMenuItem
             // 
             this.editWithToolStripMenuItem.Name = "editWithToolStripMenuItem";
@@ -2225,7 +2225,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.shareContextToolStripMenuItem.Name = "shareContextToolStripMenuItem";
             this.shareContextToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.shareContextToolStripMenuItem.Text = "Share…";
-            // 
+            //
             // infoContextToolStripMenuItem
             // 
             this.infoContextToolStripMenuItem.Name = "infoContextToolStripMenuItem";
@@ -2595,97 +2595,97 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // treeColumnName
             // 
-            this.treeColumnName.CellPadding = null;
             this.treeColumnName.FillsFreeSpace = true;
+            this.treeColumnName.Tag = "filename";
             this.treeColumnName.Text = "Filename";
             this.treeColumnName.Width = 180;
             // 
             // treeColumnSize
             // 
-            this.treeColumnSize.CellPadding = null;
             this.treeColumnSize.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.treeColumnSize.IsEditable = false;
+            this.treeColumnSize.Tag = "size";
             this.treeColumnSize.Text = "Size";
             this.treeColumnSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // treeColumnModified
             // 
-            this.treeColumnModified.CellPadding = null;
             this.treeColumnModified.IsEditable = false;
             this.treeColumnModified.IsTileViewColumn = true;
+            this.treeColumnModified.Tag = "modified";
             this.treeColumnModified.Text = "Modified";
             this.treeColumnModified.Width = 145;
             // 
             // treeColumnOwner
             // 
-            this.treeColumnOwner.CellPadding = null;
             this.treeColumnOwner.DisplayIndex = 3;
             this.treeColumnOwner.IsEditable = false;
             this.treeColumnOwner.IsVisible = false;
+            this.treeColumnOwner.Tag = "owner";
             this.treeColumnOwner.Text = "Owner";
             // 
             // treeColumnGroup
             // 
-            this.treeColumnGroup.CellPadding = null;
             this.treeColumnGroup.DisplayIndex = 4;
             this.treeColumnGroup.IsEditable = false;
             this.treeColumnGroup.IsVisible = false;
+            this.treeColumnGroup.Tag = "group";
             this.treeColumnGroup.Text = "Group";
             // 
             // treeColumnPermissions
             // 
-            this.treeColumnPermissions.CellPadding = null;
             this.treeColumnPermissions.DisplayIndex = 5;
             this.treeColumnPermissions.IsEditable = false;
             this.treeColumnPermissions.IsVisible = false;
+            this.treeColumnPermissions.Tag = "permission";
             this.treeColumnPermissions.Text = "Permissions";
             // 
             // treeColumnKind
             // 
-            this.treeColumnKind.CellPadding = null;
             this.treeColumnKind.DisplayIndex = 6;
             this.treeColumnKind.IsEditable = false;
             this.treeColumnKind.IsVisible = false;
+            this.treeColumnKind.Tag = "kind";
             this.treeColumnKind.Text = "Kind";
             // 
             // treeColumnExtension
             // 
-            this.treeColumnExtension.CellPadding = null;
             this.treeColumnExtension.DisplayIndex = 7;
             this.treeColumnExtension.IsEditable = false;
             this.treeColumnExtension.IsVisible = false;
+            this.treeColumnExtension.Tag = "extension";
             this.treeColumnExtension.Text = "Extension";
             // 
             // treeColumnRegion
             // 
-            this.treeColumnRegion.CellPadding = null;
             this.treeColumnRegion.DisplayIndex = 10;
             this.treeColumnRegion.IsEditable = false;
             this.treeColumnRegion.IsVisible = false;
+            this.treeColumnRegion.Tag = "region";
             this.treeColumnRegion.Text = "Region";
             // 
             // treeColumnStorageClass
             // 
-            this.treeColumnStorageClass.CellPadding = null;
             this.treeColumnStorageClass.DisplayIndex = 8;
             this.treeColumnStorageClass.IsEditable = false;
             this.treeColumnStorageClass.IsVisible = false;
+            this.treeColumnStorageClass.Tag = "storageclass";
             this.treeColumnStorageClass.Text = "Storage Class";
             // 
             // treeColumnVersion
             // 
-            this.treeColumnVersion.CellPadding = null;
             this.treeColumnVersion.DisplayIndex = 9;
             this.treeColumnVersion.IsEditable = false;
             this.treeColumnVersion.IsVisible = false;
+            this.treeColumnVersion.Tag = "version";
             this.treeColumnVersion.Text = "Version";
             // 
             // treeColumnChecksum
             // 
-            this.treeColumnChecksum.CellPadding = null;
             this.treeColumnChecksum.DisplayIndex = 10;
             this.treeColumnChecksum.IsEditable = false;
             this.treeColumnChecksum.IsVisible = false;
+            this.treeColumnChecksum.Tag = "checksum";
             this.treeColumnChecksum.Text = "Checksum";
             // 
             // transcriptBox
@@ -3245,7 +3245,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.shareBrowserContextMenuItem.Index = 11;
             this.shareBrowserContextMenuItem.Text = "Share…";
-            // 
+            //
             // editBrowserContextMenuItem
             // 
             this.editBrowserContextMenuItem.Index = 13;
@@ -3438,7 +3438,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.requestFilesToolStripMenuItem.Name = "requestFilesToolStripMenuItem";
             this.requestFilesToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.requestFilesToolStripMenuItem.Text = "Request files…";
-            // 
+            //
             // BrowserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
