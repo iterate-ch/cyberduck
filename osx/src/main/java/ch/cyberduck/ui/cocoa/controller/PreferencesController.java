@@ -151,7 +151,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.panelS3 = v;
     }
 
-    public void setPanelGoogleStorage(final NSView v) {
+    public void setPanelGoogleStorage(NSView v) {
         this.panelGoogleStorage = v;
     }
 
