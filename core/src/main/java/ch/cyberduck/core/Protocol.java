@@ -215,6 +215,12 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
     Set<Location.Name> getRegions();
 
     /**
+     * @param regions Available regions represented as strings from profile
+     * @return Localized region set
+     */
+    Set<Location.Name> getRegions(List<String> regions);
+
+    /**
      * @return Default region
      */
     String getRegion();

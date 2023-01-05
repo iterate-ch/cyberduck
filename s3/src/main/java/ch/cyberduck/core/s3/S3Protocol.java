@@ -35,9 +35,9 @@ import ch.cyberduck.core.synchronization.ETagComparisonService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.amazonaws.auth.AWSCredentialsProviderChain;
 import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
@@ -89,30 +89,8 @@ public class S3Protocol extends AbstractProtocol {
     }
 
     @Override
-    public Set<Location.Name> getRegions() {
-        return new HashSet<Location.Name>(Arrays.asList(
-            new S3LocationFeature.S3Region("us-east-1"),
-            new S3LocationFeature.S3Region("us-east-2"),
-            new S3LocationFeature.S3Region("us-west-1"),
-            new S3LocationFeature.S3Region("us-west-2"),
-            new S3LocationFeature.S3Region("ca-central-1"),
-            new S3LocationFeature.S3Region("eu-west-1"),
-            new S3LocationFeature.S3Region("eu-west-2"),
-            new S3LocationFeature.S3Region("eu-west-3"),
-            new S3LocationFeature.S3Region("eu-north-1"),
-            new S3LocationFeature.S3Region("eu-south-1"),
-            new S3LocationFeature.S3Region("eu-central-1"),
-            new S3LocationFeature.S3Region("ap-southeast-1"),
-            new S3LocationFeature.S3Region("ap-southeast-2"),
-            new S3LocationFeature.S3Region("ap-northeast-1"),
-            new S3LocationFeature.S3Region("ap-northeast-2"),
-            new S3LocationFeature.S3Region("ap-northeast-3"),
-            new S3LocationFeature.S3Region("ap-south-1"),
-            new S3LocationFeature.S3Region("ap-east-1"),
-            new S3LocationFeature.S3Region("sa-east-1"),
-            new S3LocationFeature.S3Region("me-south-1"),
-            new S3LocationFeature.S3Region("af-south-1")
-        ));
+    public Set<Location.Name> getRegions(final List<String> regions) {
+        return regions.stream().map(S3LocationFeature.S3Region::new).collect(Collectors.toSet());
     }
 
     @Override
