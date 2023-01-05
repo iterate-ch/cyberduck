@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 
+import java.util.Comparator;
 import java.util.Set;
 
 public class RegionController extends AlertController {
@@ -65,7 +66,7 @@ public class RegionController extends AlertController {
         view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         regionPopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
         regionPopup.setFrameOrigin(new NSPoint(0, 0));
-        for(Location.Name region : regions) {
+        regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(region -> {
             regionPopup.addItemWithTitle(region.toString());
             final NSMenuItem item = regionPopup.itemWithTitle(region.toString());
             item.setRepresentedObject(region.getIdentifier());
@@ -77,7 +78,7 @@ public class RegionController extends AlertController {
             if(region.equals(defaultRegion)) {
                 regionPopup.selectItem(regionPopup.lastItem());
             }
-        }
+        });
         // Override accessory view with location menu added
         view.addSubview(regionPopup);
         return view;
