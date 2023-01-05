@@ -264,6 +264,16 @@ public class FTPMlsdListResponseReaderTest {
         assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
     }
 
+    @Test(expected = FTPInvalidListException.class)
+    public void testParseMlsdSymbolicMissingTarget() throws Exception {
+        Path path = new Path(
+            "/www", EnumSet.of(Path.Type.directory));
+        String[] replies = new String[]{
+            "type=OS.unix=slink:;size=11;modify=20190522005707;UNIX.mode=0777;UNIX.uid=1677;UNIX.gid=1676;unique=841g5e0003; www"
+        };
+        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+    }
+
     @Test
     @Ignore
     public void testParseSlashInFilename() throws Exception {
