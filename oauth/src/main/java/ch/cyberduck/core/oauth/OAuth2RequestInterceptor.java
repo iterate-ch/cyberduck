@@ -16,11 +16,13 @@ package ch.cyberduck.core.oauth;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -37,7 +39,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.HttpTransport;
 
 public class OAuth2RequestInterceptor extends OAuth2AuthorizationService implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
@@ -47,13 +48,11 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
      */
     private OAuthTokens tokens = OAuthTokens.EMPTY;
 
-    public OAuth2RequestInterceptor(final HttpClient client, final Protocol protocol) {
-        this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(),
-                protocol.getOAuthClientSecret(), protocol.getOAuthScopes(), protocol.isOAuthPKCE());
-    }
+    private final HostPasswordStore store = PasswordStoreFactory.get();
+    private final Host host;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
-        this(client,
+        this(client, host,
                 Scheme.isURL(host.getProtocol().getOAuthTokenUrl()) ? host.getProtocol().getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
@@ -64,18 +63,18 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 host.getProtocol().isOAuthPKCE());
     }
 
-    public OAuth2RequestInterceptor(final HttpClient client, final String tokenServerUrl, final String authorizationServerUrl,
+    public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
         super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
+        this.host = host;
     }
 
-    public OAuth2RequestInterceptor(final HttpTransport transport, final String tokenServerUrl, final String authorizationServerUrl,
-                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
-        super(transport, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
-    }
-
-    public void setTokens(final OAuthTokens tokens) {
-        this.tokens = tokens;
+    public void setTokens(final OAuthTokens tokens) throws LocalAccessDeniedException {
+        host.getCredentials().withOauth(this.tokens = tokens);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save new OAuth token %s for %s", tokens, host));
+        }
+        store.save(host);
     }
 
     public OAuthTokens refresh() throws BackgroundException {
@@ -86,7 +85,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                tokens = this.refresh(tokens);
+                this.setTokens(this.refresh(tokens));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e));
