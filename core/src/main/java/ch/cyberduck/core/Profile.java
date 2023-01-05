@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -385,11 +384,12 @@ public class Profile implements Protocol {
         if(regions.isEmpty()) {
             return parent.getRegions();
         }
-        final Set<Location.Name> set = new HashSet<>();
-        for(String region : regions) {
-            set.add(new Location.Name(region));
-        }
-        return set;
+        return parent.getRegions(regions);
+    }
+
+    @Override
+    public Set<Location.Name> getRegions(final List<String> regions) {
+        return parent.getRegions(regions);
     }
 
     @Override

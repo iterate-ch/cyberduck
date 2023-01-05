@@ -32,11 +32,11 @@ import ch.cyberduck.core.synchronization.SizeComparisonService;
 import ch.cyberduck.core.synchronization.TimestampComparisonService;
 import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class GoogleStorageProtocol extends AbstractProtocol {
 
@@ -82,12 +82,8 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public Set<Location.Name> getRegions() {
-        return new HashSet<>(Arrays.asList(
-                new GoogleStorageLocationFeature.GoogleStorageRegion("us"),
-                new GoogleStorageLocationFeature.GoogleStorageRegion("eu"),
-                new GoogleStorageLocationFeature.GoogleStorageRegion("asia")
-        ));
+    public Set<Location.Name> getRegions(final List<String> regions) {
+        return regions.stream().map(GoogleStorageLocationFeature.GoogleStorageRegion::new).collect(Collectors.toSet());
     }
 
     @Override

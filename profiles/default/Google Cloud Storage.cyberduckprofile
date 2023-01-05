@@ -41,5 +41,11 @@
         <string>io.cyberduck:oauth</string>
         <key>Password Configurable</key>
         <false/>
+        <key>Regions</key>
+        <array>
+            <string>us</string>
+            <string>eu</string>
+            <string>asia</string>
+        </array>
     </dict>
 </plist>
