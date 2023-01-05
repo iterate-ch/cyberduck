@@ -157,7 +157,7 @@
                                     <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources
                                     </outputDirectory>
                                     <includes>
-                                        *.lproj/Browser.strings.1,*.lproj/Preferences.strings.1,*.lproj/Main.strings.1,*.lproj/Info.strings.1
+                                        *.lproj/Browser.strings.1,*.lproj/Preferences.strings.1,*.lproj/Main.strings.1,*.lproj/Info.strings.1,*.lproj/Profiles.strings.1
                                     </includes>
                                     <overWriteReleases>true</overWriteReleases>
                                     <overWriteSnapshots>true</overWriteSnapshots>
@@ -243,7 +243,7 @@
                 <sparkle.feed>local</sparkle.feed>
                 <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
                 <installer.certificate>Developer ID Installer: David Kocher (G69SCX94XU)</installer.certificate>
-                <codesign.arg>--entitlements ../setup/app/sandbox.entitlements</codesign.arg>
+                <codesign.arg>--entitlements ../setup/app/default.entitlements</codesign.arg>
             </properties>
         </profile>
         <profile>
