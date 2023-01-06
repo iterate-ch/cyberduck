@@ -17,11 +17,12 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.transfer.TransferItem;
 
 public class TransferItemCache extends AbstractCache<TransferItem> {
 
-    private static final TransferItem NULL_KEY = new TransferItem(null);
+    private static final CacheReference<TransferItem> NULL_KEY = new TransferItemCacheReference(new TransferItem(Home.ROOT));
 
     public TransferItemCache(final int size) {
         super(size);
@@ -29,22 +30,10 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
 
     @Override
     public CacheReference<TransferItem> reference(final TransferItem object) {
+        if(null == object) {
+            return NULL_KEY;
+        }
         return new TransferItemCacheReference(object);
-    }
-
-    @Override
-    public boolean containsKey(final TransferItem key) {
-        return super.containsKey(null == key ? NULL_KEY : key);
-    }
-
-    @Override
-    public AttributedList<TransferItem> get(final TransferItem key) {
-        return super.get(null == key ? NULL_KEY : key);
-    }
-
-    @Override
-    public AttributedList<TransferItem> put(final TransferItem key, final AttributedList<TransferItem> children) {
-        return super.put(null == key ? NULL_KEY : key, children);
     }
 
     public static final class TransferItemCacheReference implements CacheReference<TransferItem> {

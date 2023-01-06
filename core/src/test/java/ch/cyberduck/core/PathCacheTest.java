@@ -48,6 +48,16 @@ public class PathCacheTest {
     }
 
     @Test
+    public void testGetNull() {
+        final PathCache cache = new PathCache(1);
+        final Path file = new Path("name", EnumSet.of(Path.Type.file));
+        final AttributedList<Path> list = new AttributedList<>();
+        list.add(file);
+        cache.put(null, list);
+        assertEquals(list, cache.get(null));
+    }
+
+    @Test
     public void testDisabledCache() {
         PathCache cache = PathCache.empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));

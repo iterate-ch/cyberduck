@@ -100,9 +100,6 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      *                                                   and requests a new filter here.
      */
     public AttributedList<T> get(final T key) {
-        if(null == key) {
-            return AttributedList.emptyList();
-        }
         final AttributedList<T> children = impl.get(this.reference(key));
         if(null == children) {
             if(log.isDebugEnabled()) {
