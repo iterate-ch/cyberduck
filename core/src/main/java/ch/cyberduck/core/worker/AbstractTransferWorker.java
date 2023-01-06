@@ -368,21 +368,21 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         else {
                             // Do transfer with retry
                             this.transferSegment(segment);
-                        }
-                        final Session<?> source = borrow(Connection.source);
-                        final Session<?> destination = borrow(Connection.destination);
-                        try {
-                            // Determine transfer filter implementation from selected overwrite action
-                            final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
-                            // Post process of file.
-                            filter.complete(
-                                    segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                    segment.getRename().local != null ? segment.getRename().local : item.local,
-                                    segment, progress);
-                        }
-                        finally {
-                            release(source, Connection.source, null);
-                            release(destination, Connection.destination, null);
+                            final Session<?> source = borrow(Connection.source);
+                            final Session<?> destination = borrow(Connection.destination);
+                            try {
+                                // Determine transfer filter implementation from selected overwrite action
+                                final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
+                                // Post process of file.
+                                filter.complete(
+                                        segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                        segment.getRename().local != null ? segment.getRename().local : item.local,
+                                        segment, progress);
+                            }
+                            finally {
+                                release(source, Connection.source, null);
+                                release(destination, Connection.destination, null);
+                            }
                         }
                         // Recursive
                         if(item.remote.isDirectory()) {
