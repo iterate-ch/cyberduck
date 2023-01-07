@@ -40,6 +40,9 @@ public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R
             return proxy.call();
         }
         catch(ResolveFailedException e) {
+            if(S3Session.isAwsHostname(client.getEndpoint())) {
+                throw e;
+            }
             log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
             client.disableDnsBuckets();
             return proxy.call();
