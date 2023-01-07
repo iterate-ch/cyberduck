@@ -40,7 +40,7 @@ jobs:
           mvn -B verify --projects cli/linux --also-make -DskipTests
           dpkg-deb -R cli/linux/target/release/duck_${{env.VERSION}}.$COUNT-1_amd64.deb .
       - name: Log in to the Container registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
