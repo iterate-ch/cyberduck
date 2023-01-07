@@ -15,6 +15,7 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -22,18 +23,23 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
+import org.apache.ftpserver.DataConnectionConfiguration;
 import org.apache.ftpserver.FtpServer;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.Authority;
@@ -56,10 +62,12 @@ import static org.junit.Assert.fail;
 
 public class AbstractFTPTest {
 
+    private static final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+
     protected FTPSession session;
 
     private FtpServer server;
-    private static final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+    private Local directory;
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
@@ -132,6 +140,12 @@ public class AbstractFTPTest {
     @After
     public void stop() {
         server.stop();
+        try {
+            directory.delete();
+        }
+        catch(AccessDeniedException | NotfoundException e) {
+            // Ignore
+        }
     }
 
     @Before
@@ -142,7 +156,9 @@ public class AbstractFTPTest {
         BaseUser user = new BaseUser();
         user.setName("test");
         user.setPassword("test");
-        user.setHomeDirectory(new TemporaryApplicationResourcesFinder().find().getAbsolute());
+        directory = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
+        directory.mkdir();
+        user.setHomeDirectory(directory.getAbsolute());
         List<Authority> authorities = new ArrayList<Authority>();
         authorities.add(new WritePermission());
         //authorities.add(new ConcurrentLoginPermission(2, Integer.MAX_VALUE));
