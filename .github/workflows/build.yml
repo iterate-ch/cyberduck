@@ -25,7 +25,7 @@ jobs:
                 if: runner.os == 'Windows'
             -   uses: ilammy/msvc-dev-cmd@v1
                 if: runner.os == 'Windows'
-            -   uses: microsoft/setup-msbuild@v1.1
+            -   uses: microsoft/setup-msbuild@v1.3
                 if: runner.os == 'Windows'
                 with:
                     msbuild-architecture: x64
