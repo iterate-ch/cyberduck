@@ -27,7 +27,7 @@ public class FTPUnixPermissionFeatureTest extends AbstractFTPTest {
     public void testSetUnixPermission() throws Exception {
         final FTPWorkdirService workdir = new FTPWorkdirService(session);
         final Path home = workdir.find();
-        final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         new FTPUnixPermissionFeature(session).setUnixPermission(test, new Permission(666));
         assertEquals("666", new FTPListService(session, null, TimeZone.getDefault()).list(home, new DisabledListProgressListener()).get(test).attributes().getPermission().getMode());
