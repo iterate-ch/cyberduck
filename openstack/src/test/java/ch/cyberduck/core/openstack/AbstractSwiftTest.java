@@ -54,7 +54,7 @@ public abstract class AbstractSwiftTest {
     @Before
     public void setup() throws Exception {
         session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                System.getProperties().getProperty("rackspace.user"), System.getProperties().getProperty("rackspace.password")
         )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
