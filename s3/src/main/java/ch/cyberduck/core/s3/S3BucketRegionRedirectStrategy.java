@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -62,7 +61,8 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Retry request with URI %s", redirect.getURI()));
             }
-            final String bucketName = ServiceUtils.findBucketNameInHostOrPath(redirect.getURI(), RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
+            final String bucketName = ServiceUtils.findBucketNameInHostOrPath(redirect.getURI(),
+                    RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
             }
