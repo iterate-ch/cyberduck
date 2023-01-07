@@ -41,7 +41,7 @@ import java.util.EnumSet;
 @Category(IntegrationTest.class)
 public class DAVLockFeatureTest extends AbstractDAVTest {
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testLockNotSupported() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());

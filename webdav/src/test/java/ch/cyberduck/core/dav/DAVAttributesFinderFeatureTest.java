@@ -68,7 +68,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testFindFile() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -90,7 +90,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertNotEquals(-1L, attributes.getModificationDate());
@@ -173,9 +173,9 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());
-        final String lockId = new DAVLockFeature(session).lock(test);
-        assertNotNull(f.find(test).getLockId());
         try {
+            final String lockId = new DAVLockFeature(session).lock(test);
+            assertNotNull(f.find(test).getLockId());
             new DAVLockFeature(session).unlock(test, lockId);
         }
         catch(InteroperabilityException e) {
