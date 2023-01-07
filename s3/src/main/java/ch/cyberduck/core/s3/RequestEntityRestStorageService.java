@@ -296,13 +296,12 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     protected static String createRegionSpecificEndpoint(final Host host, final String region) {
         final PreferencesReader preferences = new HostPreferences(host);
+        final String endpoint = preferences.getBoolean("s3.endpoint.dualstack.enable")
+                ? preferences.getProperty("s3.endpoint.format.ipv6") : preferences.getProperty("s3.endpoint.format.ipv4");
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Apply region %s to endpoint", region));
+            log.debug(String.format("Apply region %s to endpoint %s", region, endpoint));
         }
-        if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
-            return String.format(preferences.getProperty("s3.endpoint.format.ipv6"), region);
-        }
-        return String.format(preferences.getProperty("s3.endpoint.format.ipv4"), region);
+        return String.format(endpoint, region);
     }
 
     @Override
