@@ -53,6 +53,14 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Received redirect response %s with %s", response, header));
             }
+            if(service.getDisableDnsBuckets()) {
+                final String message = String.format("Virtual host style requests are disabled but received redirect response %s with x-amz-bucket-region %s",
+                        response, response.getFirstHeader("x-amz-bucket-region"));
+                if(log.isWarnEnabled()) {
+                    log.warn(message);
+                }
+                throw new RedirectException(message);
+            }
             final String region = header.getValue();
             final String uri = StringUtils.replaceEach(request.getRequestLine().getUri(),
                     host.getProtocol().getRegions().stream().map(Location.Name::getIdentifier).toArray(String[]::new),
