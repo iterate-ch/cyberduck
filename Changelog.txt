@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.4
+- [Bugfix] Failure authorizing using OAuth with no desktop browser installed (Linux) (#14028)
+
 8.5.3
 - [Bugfix] Failure uploading file with diacritic in filename (Windows) (#13723)
 - [Bugfix] Folders containing backup file dirid.c9r cannot be deleted (Cryptomator) (#13957)
