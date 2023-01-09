@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -54,6 +53,14 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Received redirect response %s with %s", response, header));
             }
+            if(service.getDisableDnsBuckets()) {
+                final String message = String.format("Virtual host style requests are disabled but received redirect response %s with x-amz-bucket-region %s",
+                        response, response.getFirstHeader("x-amz-bucket-region"));
+                if(log.isWarnEnabled()) {
+                    log.warn(message);
+                }
+                throw new RedirectException(message);
+            }
             final String region = header.getValue();
             final String uri = StringUtils.replaceEach(request.getRequestLine().getUri(),
                     host.getProtocol().getRegions().stream().map(Location.Name::getIdentifier).toArray(String[]::new),
@@ -62,7 +69,8 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Retry request with URI %s", redirect.getURI()));
             }
-            final String bucketName = ServiceUtils.findBucketNameInHostOrPath(redirect.getURI(), RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
+            final String bucketName = ServiceUtils.findBucketNameInHostOrPath(redirect.getURI(),
+                    RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
             }
