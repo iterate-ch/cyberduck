@@ -63,8 +63,10 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Keep connection %s alive with failure %s", conn, failure));
+        if(failure != null) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Keep connection %s alive with failure %s", conn, failure));
+            }
         }
     }
 
