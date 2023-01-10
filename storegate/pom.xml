@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.5.4</version>
+        <version>8.5.5-SNAPSHOT</version>
     </parent>
     <artifactId>storegate</artifactId>
 
