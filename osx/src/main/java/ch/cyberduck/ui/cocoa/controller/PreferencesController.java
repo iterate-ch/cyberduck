@@ -47,7 +47,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -2173,7 +2172,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        for(Location.Name location : new S3Protocol().getRegions()) {
+        for(Location.Name location : ProtocolFactory.get().forType(Protocol.Type.s3).getRegions()) {
             this.defaultBucketLocation.addItemWithTitle(location.toString());
             this.defaultBucketLocation.lastItem().setRepresentedObject(location.getIdentifier());
         }
@@ -2271,7 +2270,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocationGoogleStorage = b;
         this.defaultBucketLocationGoogleStorage.setAutoenablesItems(false);
         this.defaultBucketLocationGoogleStorage.removeAllItems();
-        for(Location.Name location : new GoogleStorageProtocol().getRegions()) {
+        for(Location.Name location : ProtocolFactory.get().forType(Protocol.Type.googlestorage).getRegions()) {
             this.defaultBucketLocationGoogleStorage.addItemWithTitle(location.toString());
             this.defaultBucketLocationGoogleStorage.lastItem().setRepresentedObject(location.getIdentifier());
         }
