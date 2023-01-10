@@ -47,7 +47,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
@@ -69,6 +68,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -2173,10 +2173,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        for(Location.Name location : new S3Protocol().getRegions()) {
+        ProtocolFactory.get().forType(Protocol.Type.s3).getRegions().stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocation.addItemWithTitle(location.toString());
             this.defaultBucketLocation.lastItem().setRepresentedObject(location.getIdentifier());
-        }
+        });
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
         this.defaultBucketLocation.selectItemAtIndex(
@@ -2271,10 +2271,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocationGoogleStorage = b;
         this.defaultBucketLocationGoogleStorage.setAutoenablesItems(false);
         this.defaultBucketLocationGoogleStorage.removeAllItems();
-        for(Location.Name location : new GoogleStorageProtocol().getRegions()) {
+        ProtocolFactory.get().forType(Protocol.Type.googlestorage).getRegions().stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocationGoogleStorage.addItemWithTitle(location.toString());
             this.defaultBucketLocationGoogleStorage.lastItem().setRepresentedObject(location.getIdentifier());
-        }
+        });
         this.defaultBucketLocationGoogleStorage.setTarget(this.id());
         this.defaultBucketLocationGoogleStorage.setAction(Foundation.selector("defaultBucketLocationGoogleStorageClicked:"));
         this.defaultBucketLocationGoogleStorage.selectItemAtIndex(
