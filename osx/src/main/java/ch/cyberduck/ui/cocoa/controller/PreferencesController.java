@@ -68,6 +68,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -2172,10 +2173,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        for(Location.Name location : ProtocolFactory.get().forType(Protocol.Type.s3).getRegions()) {
+        ProtocolFactory.get().forType(Protocol.Type.s3).getRegions().stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocation.addItemWithTitle(location.toString());
             this.defaultBucketLocation.lastItem().setRepresentedObject(location.getIdentifier());
-        }
+        });
         this.defaultBucketLocation.setTarget(this.id());
         this.defaultBucketLocation.setAction(Foundation.selector("defaultBucketLocationClicked:"));
         this.defaultBucketLocation.selectItemAtIndex(
@@ -2270,10 +2271,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocationGoogleStorage = b;
         this.defaultBucketLocationGoogleStorage.setAutoenablesItems(false);
         this.defaultBucketLocationGoogleStorage.removeAllItems();
-        for(Location.Name location : ProtocolFactory.get().forType(Protocol.Type.googlestorage).getRegions()) {
+        ProtocolFactory.get().forType(Protocol.Type.googlestorage).getRegions().stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocationGoogleStorage.addItemWithTitle(location.toString());
             this.defaultBucketLocationGoogleStorage.lastItem().setRepresentedObject(location.getIdentifier());
-        }
+        });
         this.defaultBucketLocationGoogleStorage.setTarget(this.id());
         this.defaultBucketLocationGoogleStorage.setAction(Foundation.selector("defaultBucketLocationGoogleStorageClicked:"));
         this.defaultBucketLocationGoogleStorage.selectItemAtIndex(
