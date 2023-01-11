@@ -15,7 +15,6 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
@@ -77,27 +76,38 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         return tokens = super.authorize(bookmark, prompt, cancel, type);
     }
 
-    public void setTokens(final OAuthTokens tokens) throws LocalAccessDeniedException {
-        host.getCredentials().withOauth(this.tokens = tokens);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save new OAuth token %s for %s", tokens, host));
-        }
-        store.save(host);
+    public OAuthTokens refresh() throws BackgroundException {
+        return tokens = this.refresh(tokens);
     }
 
-    public OAuthTokens refresh() throws BackgroundException {
-        return super.refresh(tokens);
+    @Override
+    public OAuthTokens refresh(final OAuthTokens previous) throws BackgroundException {
+        return tokens = super.refresh(previous);
+    }
+
+    /**
+     * Save updated tokens in keychain
+     *
+     * @return Same tokens saved
+     */
+    public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
+        host.getCredentials().withOauth(tokens);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save new tokens %s for %s", tokens, host));
+        }
+        store.save(host);
+        return tokens;
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                this.setTokens(this.refresh(tokens));
+                this.save(this.refresh(tokens));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e));
-                // Follow up error 401 handled in error interceptor
+                // Follow-up error 401 handled in error interceptor
             }
         }
         if(StringUtils.isNotBlank(tokens.getAccessToken())) {
