@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.StringAppender;
@@ -117,7 +118,7 @@ public class OAuth2AuthorizationService {
                 log.warn(String.format("Refresh expired access tokens %s", saved));
                 // Refresh expired access key
                 try {
-                    return credentials.withOauth(this.refresh(saved)).getOauth();
+                    return credentials.withOauth(this.refresh(saved)).withSaved(new LoginOptions().keychain).getOauth();
                 }
                 catch(LoginFailureException | InteroperabilityException e) {
                     log.warn(String.format("Failure refreshing tokens from %s for %s", saved, bookmark));

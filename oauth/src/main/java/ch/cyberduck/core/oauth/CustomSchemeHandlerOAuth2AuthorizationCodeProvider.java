@@ -58,7 +58,6 @@ public class CustomSchemeHandlerOAuth2AuthorizationCodeProvider extends BrowserO
                     log.info(String.format("Callback with code %s", code));
                 }
                 if(!StringUtils.isBlank(code)) {
-                    bookmark.getCredentials().setSaved(PreferencesFactory.get().getBoolean("connection.login.keychain"));
                     authenticationCode.set(code);
                 }
                 signal.countDown();
