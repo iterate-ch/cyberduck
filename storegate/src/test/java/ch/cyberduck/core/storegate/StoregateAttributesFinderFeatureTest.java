@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -46,6 +47,14 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         final StoregateAttributesFinderFeature f = new StoregateAttributesFinderFeature(session, nodeid);
         assertNotNull(f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         assertNotEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testDefaultPaths() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        for(Path container : new StoregateListService(session, nodeid).list(Home.ROOT, new DisabledListProgressListener())) {
+            assertEquals(container.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(container));
+        }
     }
 
     @Test
