@@ -191,7 +191,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         final Credentials credentials = bookmark.getCredentials();
         if(log.isInfoEnabled()) {
-            log.info(String.format("Save credentials for bookmark %s", bookmark));
+            log.info(String.format("Save credentials %s for bookmark %s", credentials, bookmark));
         }
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),

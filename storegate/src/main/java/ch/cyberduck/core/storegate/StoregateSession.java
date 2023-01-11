@@ -134,7 +134,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, controller, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        authorizationService.authorize(host, controller, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
         try {
             final HttpRequestBase request = new HttpPost(
                 new HostUrlProvider().withUsername(false).withPath(true).get(
@@ -180,7 +180,6 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                 log.debug(String.format("Authenticated for user %s", me));
             }
             credentials.setUsername(me.getUsername());
-            credentials.setSaved(true);
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();
         }

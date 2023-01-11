@@ -107,7 +107,6 @@ public class CteraSession extends DAVSession {
             final CteraTokens tokens = this.getTokens(credentials, prompt, cancel);
             this.authenticateWithTokens(tokens);
             credentials.setToken(tokens.toString());
-            credentials.setSaved(true);
         }
         else {
             try {
@@ -118,13 +117,11 @@ public class CteraSession extends DAVSession {
                 final CteraTokens tokens = this.getTokens(credentials, prompt, cancel);
                 this.authenticateWithTokens(tokens);
                 credentials.setToken(tokens.toString());
-                credentials.setSaved(true);
             }
         }
 
         if(StringUtils.isBlank(credentials.getUsername())) {
             credentials.setUsername(this.getCurrentSession().username);
-            credentials.setSaved(true);
         }
     }
 

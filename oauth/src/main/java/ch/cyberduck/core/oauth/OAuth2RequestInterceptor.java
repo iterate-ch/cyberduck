@@ -18,11 +18,13 @@ package ch.cyberduck.core.oauth;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -69,27 +71,43 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         this.host = host;
     }
 
-    public void setTokens(final OAuthTokens tokens) throws LocalAccessDeniedException {
-        host.getCredentials().withOauth(this.tokens = tokens);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Save new OAuth token %s for %s", tokens, host));
-        }
-        store.save(host);
+    @Override
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final FlowType type) throws BackgroundException {
+        return tokens = super.authorize(bookmark, prompt, cancel, type);
     }
 
     public OAuthTokens refresh() throws BackgroundException {
-        return super.refresh(tokens);
+        return tokens = this.refresh(tokens);
+    }
+
+    @Override
+    public OAuthTokens refresh(final OAuthTokens previous) throws BackgroundException {
+        return tokens = super.refresh(previous);
+    }
+
+    /**
+     * Save updated tokens in keychain
+     *
+     * @return Same tokens saved
+     */
+    public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
+        host.getCredentials().withOauth(tokens);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save new tokens %s for %s", tokens, host));
+        }
+        store.save(host);
+        return tokens;
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                this.setTokens(this.refresh(tokens));
+                this.save(this.refresh(tokens));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e));
-                // Follow up error 401 handled in error interceptor
+                // Follow-up error 401 handled in error interceptor
             }
         }
         if(StringUtils.isNotBlank(tokens.getAccessToken())) {

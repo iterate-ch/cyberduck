@@ -53,30 +53,25 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
             case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     try {
-                        OAuthTokens tokens;
                         try {
-                            log.info(String.format("Attempt to refresh OAuth tokens for failure %s", response));
-                            tokens = service.refresh();
+                            log.warn(String.format("Attempt to refresh OAuth tokens for failure %s", response));
+                            service.save(service.refresh());
                         }
                         catch(InteroperabilityException | LoginFailureException e) {
-                            log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
+                            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                             // Reset OAuth Tokens
                             bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
-                            tokens = service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode);
+                            service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode));
                         }
-                        // Store new token retrieved
-                        service.setTokens(tokens);
                         // Try again
                         return true;
                     }
                     catch(BackgroundException e) {
-                        log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
+                        log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                     }
                 }
                 else {
-                    if(log.isWarnEnabled()) {
-                        log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
-                    }
+                    log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
                 }
                 break;
         }

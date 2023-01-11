@@ -230,9 +230,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel,
+                authorizationService.authorize(host, prompt, cancel,
                         SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
-                                ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode));
+                                ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode);
                 break;
         }
         final UserAccount account;
@@ -248,7 +248,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
                 credentials.setUsername(account.getLogin());
-                credentials.setSaved(true);
         }
         userAccount.set(new UserAccountWrapper(account));
         requiredKeyPairVersion = this.getRequiredKeyPairVersion();
