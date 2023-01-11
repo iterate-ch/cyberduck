@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -47,6 +48,8 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         assertNotSame(AttributedList.emptyList(), list);
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
+        assertNotNull(list.find(new SimplePathPredicate(new Path("/Common files", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
+        assertNotNull(list.find(new SimplePathPredicate(new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume)))));
         for(Path f : list) {
             assertSame(directory, f.getParent());
             assertFalse(f.getName().contains(String.valueOf(Path.DELIMITER)));
