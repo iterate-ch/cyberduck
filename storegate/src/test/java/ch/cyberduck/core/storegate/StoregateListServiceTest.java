@@ -33,6 +33,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -58,6 +60,22 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
             assertNotNull(nodeid.getFileId(new Path(f).withAttributes(PathAttributes.EMPTY)));
             assertEquals(f.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(f));
         }
+    }
+
+    @Test
+    public void testListDefaultPath() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        final Set<String> common = new StoregateListService(session, nodeid).list(
+                new Path("/common", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume)), new DisabledListProgressListener()).toStream().map(Path::getName).collect(Collectors.toSet());
+        assertEquals(common, new StoregateListService(session, nodeid).list(
+                new Path("/Common", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume)), new DisabledListProgressListener()).toStream().map(Path::getName).collect(Collectors.toSet()));
+        assertEquals(common, new StoregateListService(session, nodeid).list(
+                new Path("/Common files", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume)), new DisabledListProgressListener()).toStream().map(Path::getName).collect(Collectors.toSet()));
+
+        final Set<String> home = new StoregateListService(session, nodeid).list(
+                new Path("/mduck", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume)), new DisabledListProgressListener()).toStream().map(Path::getName).collect(Collectors.toSet());
+        assertEquals(home, new StoregateListService(session, nodeid).list(
+                new Path("/Home/mduck", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume)), new DisabledListProgressListener()).toStream().map(Path::getName).collect(Collectors.toSet()));
     }
 
     @Test
