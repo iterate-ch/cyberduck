@@ -19,6 +19,7 @@ import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -69,13 +70,14 @@ public class StoregateIdProvider extends CachingFileIdProvider implements FileId
      */
     protected String getPrefixedPath(final Path file) {
         final PathContainerService service = new DefaultPathContainerService();
-        final String root = service.getContainer(file).getAbsolute();
+        final String name = new DefaultPathContainerService().getContainer(file).getName();
         for(RootFolder r : session.roots()) {
-            if(root.endsWith(r.getName())) {
+            if(StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getPath()))
+                    || StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getName()))) {
                 if(service.isContainer(file)) {
                     return r.getPath();
                 }
-                return String.format("%s/%s", r.getPath(), PathRelativizer.relativize(root, file.getAbsolute()));
+                return String.format("%s/%s", r.getPath(), PathRelativizer.relativize(name, file.getAbsolute()));
             }
         }
         return file.getAbsolute();
