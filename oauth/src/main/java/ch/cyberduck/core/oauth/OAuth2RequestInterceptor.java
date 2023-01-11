@@ -15,14 +15,17 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -67,6 +70,11 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                                     final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
         super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
         this.host = host;
+    }
+
+    @Override
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final FlowType type) throws BackgroundException {
+        return tokens = super.authorize(bookmark, prompt, cancel, type);
     }
 
     public void setTokens(final OAuthTokens tokens) throws LocalAccessDeniedException {

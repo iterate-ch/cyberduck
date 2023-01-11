@@ -90,7 +90,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
         try {
             final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
             if(log.isDebugEnabled()) {

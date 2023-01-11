@@ -183,7 +183,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
         try {
             user = Users.get(User.getCurrent(client), new ODataQuery().select(User.Select.values()));
             final String account = user.getUserPrincipalName();

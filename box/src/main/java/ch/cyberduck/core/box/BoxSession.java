@@ -76,7 +76,7 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode));
+        authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
         try {
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(new UsersApi(new BoxApiClient(client)).getUsersMe(Collections.emptyList()).getLogin());

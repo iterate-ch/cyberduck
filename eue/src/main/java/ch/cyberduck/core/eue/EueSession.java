@@ -175,18 +175,16 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            authorizationService.setTokens(
-                    authorizationService.refresh(authorizationService.authorize(host, prompt, cancel,
-                            OAuth2AuthorizationService.FlowType.AuthorizationCode))
-            );
+            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel,
+                    OAuth2AuthorizationService.FlowType.AuthorizationCode));
         }
         catch(InteroperabilityException e) {
             // Perm.INVALID_GRANT
             log.warn(String.format("Failure %s refreshing OAuth tokens", e));
             // Reset OAuth Tokens
             host.getCredentials().setOauth(OAuthTokens.EMPTY);
-            authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel,
-                    OAuth2AuthorizationService.FlowType.AuthorizationCode));
+            authorizationService.authorize(host, prompt, cancel,
+                    OAuth2AuthorizationService.FlowType.AuthorizationCode);
         }
         try {
             final StringBuilder url = new StringBuilder();
