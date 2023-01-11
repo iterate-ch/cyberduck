@@ -80,7 +80,6 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
         try {
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(new UsersApi(new BoxApiClient(client)).getUsersMe(Collections.emptyList()).getLogin());
-            credentials.setSaved(true);
         }
         catch(ApiException e) {
             throw new BoxExceptionMappingService(fileid).map(e);

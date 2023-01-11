@@ -98,7 +98,6 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             }
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(account.getEmail());
-            credentials.setSaved(true);
             switch(account.getAccountType()) {
                 case BUSINESS:
                     locking = new DropboxLockFeature(this);

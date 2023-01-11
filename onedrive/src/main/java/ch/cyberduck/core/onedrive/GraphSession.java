@@ -192,7 +192,6 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
             }
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(account);
-            credentials.setSaved(true);
         }
         catch(OneDriveAPIException e) {
             log.warn(String.format("Failure reading current user properties probably missing user.read scope. %s.", e.getMessage()));

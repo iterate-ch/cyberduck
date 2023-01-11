@@ -180,7 +180,6 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                 log.debug(String.format("Authenticated for user %s", me));
             }
             credentials.setUsername(me.getUsername());
-            credentials.setSaved(true);
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();
         }

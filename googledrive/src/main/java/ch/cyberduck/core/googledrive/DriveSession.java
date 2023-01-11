@@ -118,7 +118,6 @@ public class DriveSession extends HttpSession<Drive> {
             log.debug(String.format("Authenticated as user %s", about.getUser()));
         }
         credentials.setUsername(about.getUser().getEmailAddress());
-        credentials.setSaved(true);
     }
 
     @Override

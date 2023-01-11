@@ -218,7 +218,6 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(new UserInfoApi(new EueApiClient(this))
                     .userinfoGet(null, null).getAccount().getOsServiceId());
-            credentials.setSaved(true);
             if(StringUtils.isNotBlank(host.getProperty("pacs.url"))) {
                 try {
                     client.execute(new HttpPost(host.getProperty("pacs.url")));

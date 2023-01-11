@@ -105,7 +105,7 @@ public class BrickSession extends HttpSession<CloseableHttpClient> {
             // No prompt on explicit connect
             this.pair(host, new DisabledConnectionCallback(), prompt, cancel,
                     LocaleFactory.localizedString("Connect an account", "Brick"),
-                    LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick")).setSaved(true);
+                    LocaleFactory.localizedString("Please complete the login process in your browser.", "Brick"));
             retryHandler.setApiKey(credentials.getPassword());
         }
     }

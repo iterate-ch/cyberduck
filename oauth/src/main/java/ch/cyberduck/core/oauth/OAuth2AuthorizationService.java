@@ -117,7 +117,6 @@ public class OAuth2AuthorizationService {
                 log.warn(String.format("Refresh expired access tokens %s", saved));
                 // Refresh expired access key
                 try {
-                    credentials.setSaved(true);
                     return credentials.withOauth(this.refresh(saved)).getOauth();
                 }
                 catch(LoginFailureException | InteroperabilityException e) {
