@@ -15,9 +15,11 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,14 +47,13 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            if(!file.isRoot()) {
-                if(file.getParent().isRoot()) {
-                    final Optional<RootFolder> root = session.roots().stream().filter(rootFolder -> rootFolder.getName().equals(file.getName())).findFirst();
-                    if(root.isPresent()) {
-                        return this.toAttributes(root.get());
-                    }
-                    throw new NotfoundException(file.getAbsolute());
+            final PathContainerService service = new DefaultPathContainerService();
+            if(service.isContainer(file)) {
+                final Optional<RootFolder> root = session.roots().stream().filter(rootFolder -> rootFolder.getName().equals(file.getName())).findFirst();
+                if(root.isPresent()) {
+                    return this.toAttributes(root.get());
                 }
+                throw new NotfoundException(file.getAbsolute());
             }
             final FilesApi files = new FilesApi(session.getClient());
             return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));
