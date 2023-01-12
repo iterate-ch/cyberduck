@@ -192,18 +192,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             archiveMenuStrip.Items.Add(string.Empty);
 
             archiveMenuStrip.Opening += OnArchiveMenuStripOpening;
-            createArchiveMainMenuItem.MenuItems.Add(string.Empty);
-            createArchiveMainMenuItem.Popup += OnArchiveMenuItemOnPopup;
-            createArchiveBrowserContextMenuItem.MenuItems.Add(string.Empty);
-            createArchiveBrowserContextMenuItem.Popup += OnArchiveMenuItemOnPopup;
-            copyUrlMainMenuItem.MenuItems.Add(string.Empty);
-            copyUrlMainMenuItem.Popup += OnCopyUrlMenuItemPopup;
-            copyUrlBrowserContextMenuItem.MenuItems.Add(string.Empty);
-            copyUrlBrowserContextMenuItem.Popup += OnCopyUrlMenuItemPopup;
-            openUrlMainMenuItem.MenuItems.Add(string.Empty);
-            openUrlMainMenuItem.Popup += OnOpenUrlMenuItemPopup;
-            openUrlBrowserContextMenuItem.MenuItems.Add(string.Empty);
-            openUrlBrowserContextMenuItem.Popup += OnOpenUrlMenuItemPopup;
+            createArchiveMainMenuItem.Select += OnArchiveMenuItemOnPopup;
+            createArchiveBrowserContextMenuItem.Select += OnArchiveMenuItemOnPopup;
+            copyUrlMainMenuItem.Select += OnCopyUrlMenuItemPopup;
+            copyUrlBrowserContextMenuItem.Select += OnCopyUrlMenuItemPopup;
+            openUrlMainMenuItem.Select += OnOpenUrlMenuItemPopup;
+            openUrlBrowserContextMenuItem.Select += OnOpenUrlMenuItemPopup;
 
             textEncodingMenuStrip.Items.Add(string.Empty);
             textEncodingMainMenuItem.MenuItems.Add(string.Empty);
