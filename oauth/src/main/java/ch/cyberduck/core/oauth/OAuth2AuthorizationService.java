@@ -150,7 +150,7 @@ public class OAuth2AuthorizationService {
         return credentials.withOauth(new OAuthTokens(
                 response.getAccessToken(), response.getRefreshToken(),
                 null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).getOauth();
+                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
     }
 
     private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
