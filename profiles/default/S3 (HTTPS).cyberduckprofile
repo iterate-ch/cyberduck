@@ -56,5 +56,9 @@
             <string>us-west-1</string>
             <string>us-west-2</string>
         </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER GLACIER_IR DEEP_ARCHIVE</string>
+        </array>
     </dict>
 </plist>
