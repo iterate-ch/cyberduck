@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,7 +35,7 @@ import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.fail;
 
-public abstract class AbstractSwiftTest {
+public abstract class AbstractSwiftTest extends VaultTest {
 
     protected SwiftSession session;
 
@@ -54,7 +55,7 @@ public abstract class AbstractSwiftTest {
     @Before
     public void setup() throws Exception {
         session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.user"), System.getProperties().getProperty("rackspace.password")
+                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
         )), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override

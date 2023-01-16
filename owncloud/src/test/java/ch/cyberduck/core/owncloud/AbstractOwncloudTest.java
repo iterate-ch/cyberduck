@@ -30,6 +30,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +40,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractOwncloudTest {
+public class AbstractOwncloudTest extends VaultTest {
 
     protected OwncloudSession session;
 
@@ -53,8 +54,8 @@ public class AbstractOwncloudTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OwncloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/ownCloud.cyberduckprofile"));
-        final Host host = new Host(profile, System.getProperties().getProperty("owncloud.hostname"), 443, System.getProperties().getProperty("owncloud.path"),
-                new Credentials(System.getProperties().getProperty("owncloud.user"), System.getProperties().getProperty("owncloud.password")));
+        final Host host = new Host(profile, PROPERTIES.get("owncloud.hostname"), 443, PROPERTIES.get("owncloud.path"),
+                new Credentials(PROPERTIES.get("owncloud.user"), PROPERTIES.get("owncloud.password")));
         session = new OwncloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override

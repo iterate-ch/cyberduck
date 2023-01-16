@@ -494,7 +494,6 @@
                             --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
-                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
@@ -517,7 +516,6 @@
                             --add-opens=java.base/java.lang=ALL-UNNAMED
                             -Djava.library.path=${project.build.directory}
                         </argLine>
-                        <systemPropertiesFile>${main.basedir}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>

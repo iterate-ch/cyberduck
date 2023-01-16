@@ -59,7 +59,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTP).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         assertFalse(host.getProtocol().isSecure());
         final S3Session session = new S3Session(host, new X509TrustManager() {
@@ -123,7 +123,7 @@ public class S3SessionTest extends AbstractS3Test {
             }
         };
         final Host host = new Host(protocol, protocol.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         assertNotNull(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
@@ -146,7 +146,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         host.setDefaultPath("/test-eu-west-1-cyberduck");
         final S3Session session = new S3Session(host);
@@ -161,7 +161,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
             this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, "testu.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("s3.key"), "s"
+                PROPERTIES.get("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);
         try {
@@ -177,7 +177,7 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testCustomHostname() throws Exception {
         final Host host = new Host(new S3Protocol(), "cyberduck.io", new Credentials(
-            System.getProperties().getProperty("s3.key"), "s"
+                PROPERTIES.get("s3.key"), "s"
         ));
         final AtomicBoolean set = new AtomicBoolean();
         final S3Session session = new S3Session(host);
@@ -234,7 +234,7 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testBucketVirtualHostStyleAmazon() throws Exception {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck.s3.amazonaws.com", new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final S3Session session = new S3Session(host);
         assertFalse(session.open(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
@@ -245,7 +245,7 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testTrustChain() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final AtomicBoolean verified = new AtomicBoolean();
         final S3Session session = new S3Session(host, new DefaultX509TrustManager() {

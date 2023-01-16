@@ -28,11 +28,12 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
 
-public class AbstractSpectraTest {
+public class AbstractSpectraTest extends VaultTest {
 
     protected SpectraSession session;
 
@@ -47,8 +48,8 @@ public class AbstractSpectraTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
+                PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
         ));
         session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());

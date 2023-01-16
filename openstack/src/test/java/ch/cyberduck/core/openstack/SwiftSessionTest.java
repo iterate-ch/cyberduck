@@ -69,7 +69,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
         ));
         assertTrue(session.isConnected());
         session.close();
@@ -97,7 +97,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
             }
         };
         final Host host = new Host(protocol, "storage.us2.oraclecloud.com", new Credentials(
-            System.getProperties().getProperty("oraclecloud.key"), System.getProperties().getProperty("oraclecloud.secret")
+                PROPERTIES.get("oraclecloud.key"), PROPERTIES.get("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));

@@ -86,7 +86,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final Local local = new Local(PROPERTIES.get("java.io.tmpdir"), new AlphanumericRandomStringService().random());
 
         final int BYTES_TOTAL = 10;//00;
         final int BYTES_OFFSET = 1;//00;
@@ -126,7 +126,7 @@ public class MantaReadFeatureTest extends AbstractMantaTest {
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new MantaTouchFeature(session).touch(test, new TransferStatus());
 
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final Local local = new Local(PROPERTIES.get("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);

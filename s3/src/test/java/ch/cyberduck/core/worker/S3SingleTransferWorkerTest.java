@@ -122,7 +122,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
             this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final AtomicBoolean failed = new AtomicBoolean();
         final S3Session session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {

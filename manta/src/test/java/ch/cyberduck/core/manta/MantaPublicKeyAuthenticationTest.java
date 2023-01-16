@@ -41,40 +41,38 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-
 @Category(IntegrationTest.class)
 public class MantaPublicKeyAuthenticationTest {
 
     @Test
     public void testAuthenticateOpenSSHKeyWithoutPassphrase() throws Exception {
-        Assume.assumeNotNull(System.getProperty("manta.url"), System.getProperty("manta.key_id"), System.getProperty("manta.key_path"));
+        Assume.assumeNotNull(PROPERTIES.get("manta.url"), PROPERTIES.get("manta.key_id"), PROPERTIES.get("manta.key_path"));
 
-        final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Credentials credentials = new Credentials(PROPERTIES.get("manta.user"), "");
+        final Local key = new Local(PROPERTIES.get("java.io.tmpdir"), UUID.randomUUID().toString());
         credentials.setIdentity(key);
 
         try {
             new DefaultLocalTouchFeature().touch(key);
             IOUtils.copy(
-                new FileReader(System.getProperty("manta.key_path")),
-                key.getOutputStream(false),
-                StandardCharsets.UTF_8
+                    new FileReader(PROPERTIES.get("manta.key_path")),
+                    key.getOutputStream(false),
+                    StandardCharsets.UTF_8
             );
-            final String hostname = new URL(System.getProperty("manta.url")).getHost();
+            final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT,
-                new DisabledLoginCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                        throw new LoginCanceledException();
-                    }
-                },
-                new DisabledCancelCallback()
+                    new DisabledLoginCallback() {
+                        @Override
+                        public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                            throw new LoginCanceledException();
+                        }
+                    },
+                    new DisabledCancelCallback()
             );
-            assertEquals(session.getClient().getContext().getMantaKeyId(), System.getProperty("manta.key_id"));
+            assertEquals(session.getClient().getContext().getMantaKeyId(), PROPERTIES.get("manta.key_id"));
             session.close();
         }
         finally {
@@ -84,13 +82,13 @@ public class MantaPublicKeyAuthenticationTest {
 
     @Test
     public void testAuthenticateOpenSSHKeyWithPassphrase() throws Exception {
-        Assume.assumeNotNull(System.getProperty("manta.url"), System.getProperty("manta.passphrase.key_id"), System.getProperty("manta.passphrase.key_path"), System.getProperty("manta.passphrase.password"));
+        Assume.assumeNotNull(PROPERTIES.get("manta.url"), PROPERTIES.get("manta.passphrase.key_id"), PROPERTIES.get("manta.passphrase.key_path"), PROPERTIES.get("manta.passphrase.password"));
 
-        final Credentials credentials = new Credentials(System.getProperty("manta.user"), "");
-        final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Credentials credentials = new Credentials(PROPERTIES.get("manta.user"), "");
+        final Local key = new Local(PROPERTIES.get("java.io.tmpdir"), UUID.randomUUID().toString());
         credentials.setIdentity(key);
-        final String passphraseKeyPassword = System.getProperty("manta.passphrase.password");
-        final String passphraseKeyPath = System.getProperty("manta.passphrase.key_path");
+        final String passphraseKeyPassword = PROPERTIES.get("manta.passphrase.password");
+        final String passphraseKeyPath = PROPERTIES.get("manta.passphrase.key_path");
         if(passphraseKeyPassword == null || passphraseKeyPath == null) {
             Assert.fail("No passphrase key configured, please set 'manta.passphrase.key_path' and 'manta.passphrase.password' to a key path and passphrase respectively");
         }
@@ -99,24 +97,24 @@ public class MantaPublicKeyAuthenticationTest {
 
             new DefaultLocalTouchFeature().touch(key);
             IOUtils.copy(
-                new FileReader(passphraseKeyPath),
-                key.getOutputStream(false),
+                    new FileReader(passphraseKeyPath),
+                    key.getOutputStream(false),
                 StandardCharsets.UTF_8
             );
-            final String hostname = new URL(System.getProperty("manta.url")).getHost();
+            final String hostname = new URL(PROPERTIES.get("manta.url")).getHost();
             final Host host = new Host(new MantaProtocol(), hostname, credentials);
             final MantaSession session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT,
-                new DisabledLoginCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                        return new VaultCredentials(passphraseKeyPassword);
-                    }
-                },
-                new DisabledCancelCallback()
+                    new DisabledLoginCallback() {
+                        @Override
+                        public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                            return new VaultCredentials(passphraseKeyPassword);
+                        }
+                    },
+                    new DisabledCancelCallback()
             );
-            assertEquals(System.getProperty("manta.passphrase.key_id"), session.getClient().getContext().getMantaKeyId());
+            assertEquals(PROPERTIES.get("manta.passphrase.key_id"), session.getClient().getContext().getMantaKeyId());
             session.close();
         }
         finally {

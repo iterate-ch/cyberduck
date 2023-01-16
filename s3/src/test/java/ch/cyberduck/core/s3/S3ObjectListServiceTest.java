@@ -32,7 +32,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -241,7 +240,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test(expected = BackgroundException.class)
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);
@@ -265,7 +264,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     @Test
     public void testLaxHostnameVerification() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host),
                 new DisabledCertificateStore() {

@@ -29,6 +29,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +39,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractFreenetTest {
+public class AbstractFreenetTest extends VaultTest {
 
     protected FreenetSession session;
 
@@ -53,7 +54,7 @@ public class AbstractFreenetTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/freenet.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("freenet.user"), System.getProperties().getProperty("freenet.password")
+                PROPERTIES.get("freenet.user"), PROPERTIES.get("freenet.password")
         ));
         session = new FreenetSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {

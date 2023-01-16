@@ -25,6 +25,7 @@ import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +33,7 @@ import org.junit.Before;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class AbstractCteraTest {
+public class AbstractCteraTest extends VaultTest {
 
     protected CteraSession session;
 
@@ -44,8 +45,8 @@ public class AbstractCteraTest {
     @Before
     public void setup() throws Exception {
         final Host host = new Host(new CteraProtocol(), "mountainduck.ctera.me", new Credentials(
-                System.getProperty("ctera.user"), System.getProperty("ctera.password"),
-                System.getProperty("ctera.token")
+                PROPERTIES.get("ctera.user"), PROPERTIES.get("ctera.password"),
+                PROPERTIES.get("ctera.token")
         ));
         host.setDefaultPath("/ServicesPortal/webdav/My Files");
         session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
