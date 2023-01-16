@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,6 +55,9 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         for(Path container : new StoregateListService(session, nodeid).list(Home.ROOT, new DisabledListProgressListener())) {
             assertEquals(container.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(container));
+        }
+        for(RootFolder root : session.roots()) {
+            assertNotEquals(PathAttributes.EMPTY, new StoregateAttributesFinderFeature(session, nodeid).find(new Path(root.getPath(), EnumSet.of(Path.Type.directory))));
         }
     }
 

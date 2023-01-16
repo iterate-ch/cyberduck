@@ -20,6 +20,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,7 +33,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
-import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 public class StoregateAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileMetadata> {
 
@@ -49,9 +50,11 @@ public class StoregateAttributesFinderFeature implements AttributesFinder, Attri
         try {
             final PathContainerService service = new DefaultPathContainerService();
             if(service.isContainer(file)) {
-                final Optional<RootFolder> root = session.roots().stream().filter(rootFolder -> rootFolder.getName().equals(file.getName())).findFirst();
-                if(root.isPresent()) {
-                    return this.toAttributes(root.get());
+                for(RootFolder r : session.roots()) {
+                    if(StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getPath()))
+                            || StringUtils.equalsIgnoreCase(file.getName(), PathNormalizer.name(r.getName()))) {
+                        return this.toAttributes(r);
+                    }
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
