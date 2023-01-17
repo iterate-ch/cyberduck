@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,6 +39,9 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
+
+    private final PathContainerService containerService
+            = new SDSPathContainerService();
 
     public SDSTimestampFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -53,7 +58,11 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
                     throw new UnsupportedException();
                 }
             }
-            if(file.isDirectory()) {
+            if(containerService.isContainer(file)) {
+                new NodesApi(session.getClient()).updateRoom(new UpdateRoomRequest().timestampModification(new DateTime(status.getTimestamp())),
+                        Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
+            }
+            else if(file.isDirectory()) {
                 new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().timestampModification(new DateTime(status.getTimestamp())),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
