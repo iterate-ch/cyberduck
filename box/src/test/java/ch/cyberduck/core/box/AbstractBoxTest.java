@@ -31,6 +31,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +42,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractBoxTest {
+public class AbstractBoxTest extends VaultTest {
 
     protected BoxSession session;
 
@@ -62,8 +63,8 @@ public class AbstractBoxTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new BoxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Box.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
+                this.getClass().getResourceAsStream("/Box.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("box.user")));
         session = new BoxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -72,28 +73,45 @@ public class AbstractBoxTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
         public String getPassword(final String serviceName, final String accountName) {
-            if(accountName.equals("Box (cyberduck) OAuth2 Token Expiry")) {
-                return String.valueOf(Long.MAX_VALUE);
+            if(accountName.equals("Box (post@iterate.ch) OAuth2 Token Expiry")) {
+                return PROPERTIES.get("box.tokenexpiry");
             }
             return null;
         }
 
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Box (cyberduck) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("box.accesstoken");
+            if(user.equals("Box (post@iterate.ch) OAuth2 Access Token")) {
+                return PROPERTIES.get("box.accesstoken");
             }
-            if(user.equals("Box (cyberduck) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("box.refreshtoken");
+            if(user.equals("Box (post@iterate.ch) OAuth2 Refresh Token")) {
+                return PROPERTIES.get("box.refreshtoken");
             }
             return null;
+        }
+
+        @Override
+        public void addPassword(final String serviceName, final String accountName, final String password) {
+            if(accountName.equals("Box (post@iterate.ch) OAuth2 Token Expiry")) {
+                VaultTest.add("box.tokenexpiry", password);
+            }
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
+            if(user.equals("Box (post@iterate.ch) OAuth2 Access Token")) {
+                VaultTest.add("box.accesstoken", password);
+            }
+            if(user.equals("Box (post@iterate.ch) OAuth2 Refresh Token")) {
+                VaultTest.add("box.refreshtoken", password);
+            }
         }
     }
 }

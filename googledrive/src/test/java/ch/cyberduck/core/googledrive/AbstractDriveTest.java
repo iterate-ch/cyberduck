@@ -31,6 +31,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +42,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractDriveTest {
+public class AbstractDriveTest extends VaultTest {
 
     protected DriveSession session;
 
@@ -62,7 +63,7 @@ public class AbstractDriveTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Google Drive.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Google Drive.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -72,20 +73,45 @@ public class AbstractDriveTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Google Drive (cyberduck) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("googledrive.accesstoken");
-            }
-            if(user.equals("Google Drive (cyberduck) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("googledrive.refreshtoken");
+        public String getPassword(final String serviceName, final String accountName) {
+            if(accountName.equals("Google Drive (cyberduck) OAuth2 Refresh Token")) {
+                return PROPERTIES.get("googledrive.tokenexpiry");
             }
             return null;
+        }
+
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.equals("Google Drive (cyberduck) OAuth2 Access Token")) {
+                return PROPERTIES.get("googledrive.accesstoken");
+            }
+            if(user.equals("Google Drive (cyberduck) OAuth2 Refresh Token")) {
+                return PROPERTIES.get("googledrive.refreshtoken");
+            }
+            return null;
+        }
+
+        @Override
+        public void addPassword(final String serviceName, final String accountName, final String password) {
+            if(accountName.equals("Google Drive (cyberduck) OAuth2 Refresh Token")) {
+                VaultTest.add("googledrive.tokenexpiry", password);
+            }
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
+            if(user.equals("Google Drive (cyberduck) OAuth2 Access Token")) {
+                VaultTest.add("googledrive.accesstoken", password);
+            }
+            if(user.equals("Google Drive (cyberduck) OAuth2 Refresh Token")) {
+                VaultTest.add("googledrive.refreshtoken", password);
+            }
         }
     }
 }

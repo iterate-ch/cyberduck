@@ -42,7 +42,7 @@ public class SwiftRegionServiceTest extends AbstractSwiftTest {
         final SwiftSession session = new SwiftSession(
                 new Host(profile, "identity.api.rackspacecloud.com",
                         new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
                         )), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
 
         };

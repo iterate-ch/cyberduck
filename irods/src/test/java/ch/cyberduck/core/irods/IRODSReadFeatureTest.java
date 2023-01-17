@@ -38,6 +38,7 @@ import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -57,7 +58,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class IRODSReadFeatureTest {
+public class IRODSReadFeatureTest extends VaultTest {
 
     @Test
     public void testRead() throws Exception {
@@ -65,7 +66,7 @@ public class IRODSReadFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -101,7 +102,7 @@ public class IRODSReadFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -121,7 +122,7 @@ public class IRODSReadFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
         final IRODSSession session = new IRODSSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());

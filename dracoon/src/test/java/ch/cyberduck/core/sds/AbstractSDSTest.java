@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +39,7 @@ import org.junit.Before;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class AbstractSDSTest {
+public class AbstractSDSTest extends VaultTest {
 
     protected SDSSession session;
 
@@ -53,7 +54,7 @@ public class AbstractSDSTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
         final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
-                System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")));
+                PROPERTIES.get("dracoon.user"), PROPERTIES.get("dracoon.key")));
         session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -69,7 +70,7 @@ public class AbstractSDSTest {
         @Override
         public String getPassword(final String serviceName, final String accountName) {
             if(accountName.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Token Expiry")) {
-                return String.valueOf(Long.MAX_VALUE);
+                return PROPERTIES.get("dracoon.tokenexpiry");
             }
             return null;
         }
@@ -77,12 +78,29 @@ public class AbstractSDSTest {
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
             if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("dracoon.accesstoken");
+                return PROPERTIES.get("dracoon.accesstoken");
             }
             if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("dracoon.refreshtoken");
+                return PROPERTIES.get("dracoon.refreshtoken");
             }
             return null;
+        }
+
+        @Override
+        public void addPassword(final String serviceName, final String accountName, final String password) {
+            if(accountName.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Token Expiry")) {
+                VaultTest.add("dracoon.tokenexpiry", password);
+            }
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
+            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Access Token")) {
+                VaultTest.add("dracoon.accesstoken", password);
+            }
+            if(user.equals("DRACOON (OAuth) (dkocher+test@iterate.ch) OAuth2 Refresh Token")) {
+                VaultTest.add("dracoon.refreshtoken", password);
+            }
         }
     }
 }

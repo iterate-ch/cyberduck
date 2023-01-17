@@ -33,6 +33,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +44,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public abstract class AbstractGraphTest {
+public abstract class AbstractGraphTest extends VaultTest {
     private GraphSession session;
     protected GraphFileIdProvider fileid;
 
@@ -56,7 +57,7 @@ public abstract class AbstractGraphTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(profile());
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(this.user()));
         session = session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         fileid = session.fileid;
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -77,4 +78,6 @@ public abstract class AbstractGraphTest {
     protected abstract HostPasswordStore passwordStore();
 
     protected abstract GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key);
+
+    protected abstract String user();
 }

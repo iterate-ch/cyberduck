@@ -37,6 +37,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -56,7 +57,7 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class IRODSWriteFeatureTest {
+public class IRODSWriteFeatureTest extends VaultTest {
 
     @Test
     public void testWriteConcurrent() throws Exception {
@@ -64,7 +65,7 @@ public class IRODSWriteFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
@@ -110,7 +111,7 @@ public class IRODSWriteFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
@@ -216,7 +217,7 @@ public class IRODSWriteFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -289,7 +290,7 @@ public class IRODSWriteFeatureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);

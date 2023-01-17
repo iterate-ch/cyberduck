@@ -30,6 +30,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +41,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractAzureTest {
+public class AbstractAzureTest extends VaultTest {
 
     protected AzureSession session;
     protected AzureSession sas;
@@ -64,7 +65,7 @@ public class AbstractAzureTest {
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Azure (Shared Access Signature Token).cyberduckprofile"));
         final Host host = new Host(profile, "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.user"), null, System.getProperties().getProperty("azure.token")
+                PROPERTIES.get("azure.user"), null, PROPERTIES.get("azure.token")
         ));
         sas = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -81,7 +82,7 @@ public class AbstractAzureTest {
     @Before
     public void setupTokenAuthentication() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.user"), System.getProperties().getProperty("azure.password")
+                PROPERTIES.get("azure.user"), PROPERTIES.get("azure.password")
         ));
         session = new AzureSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {

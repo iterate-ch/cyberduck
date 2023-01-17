@@ -30,6 +30,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +40,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractStoregateTest {
+public class AbstractStoregateTest extends VaultTest {
 
     protected StoregateSession session;
 
@@ -52,8 +53,8 @@ public class AbstractStoregateTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new StoregateProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Storegate.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
+                this.getClass().getResourceAsStream("/Storegate.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(PROPERTIES.get("storegate.user")));
         session = new StoregateSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -62,29 +63,44 @@ public class AbstractStoregateTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Storegate (cyberduck) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("storegate.accesstoken");
-            }
-            if(user.equals("Storegate (cyberduck) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("storegate.refreshtoken");
+        public String getPassword(final String serviceName, final String accountName) {
+            if(accountName.equals("Storegate (mduck) OAuth2 Token Expiry")) {
+                return PROPERTIES.get("storegate.tokenexpiry");
             }
             return null;
         }
 
         @Override
-        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-            if(user.equals("Storegate (cyberduck) OAuth2 Access Token")) {
-                System.getProperties().setProperty("storegate.accesstoken", password);
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.equals("Storegate (mduck) OAuth2 Access Token")) {
+                return PROPERTIES.get("storegate.accesstoken");
             }
-            if(user.equals("Storegate (cyberduck) OAuth2 Refresh Token")) {
-                System.getProperties().setProperty("storegate.refreshtoken", password);
+            if(user.equals("Storegate (mduck) OAuth2 Refresh Token")) {
+                return PROPERTIES.get("storegate.refreshtoken");
+            }
+            return null;
+        }
+
+        @Override
+        public void addPassword(final String serviceName, final String accountName, final String password) {
+            if(accountName.equals("Storegate (mduck) OAuth2 Token Expiry")) {
+                VaultTest.add("storegate.tokenexpiry", password);
+            }
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
+            if(user.equals("Storegate (mduck) OAuth2 Access Token")) {
+                VaultTest.add("storegate.accesstoken", password);
+            }
+            if(user.equals("Storegate (mduck) OAuth2 Refresh Token")) {
+                VaultTest.add("storegate.refreshtoken", password);
             }
         }
     }

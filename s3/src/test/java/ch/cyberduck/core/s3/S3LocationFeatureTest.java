@@ -116,7 +116,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     @Test
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);

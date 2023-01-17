@@ -32,6 +32,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -47,7 +48,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.UUID;
 
-public abstract class AbstractMantaTest {
+public abstract class AbstractMantaTest extends VaultTest {
     private static final Logger log = LogManager.getLogger(AbstractMantaTest.class);
 
     protected MantaSession session;
@@ -61,19 +62,19 @@ public abstract class AbstractMantaTest {
 
         final String hostname;
         final Local file;
-        if(ObjectUtils.allNotNull(System.getProperty("manta.key_path"), System.getProperty("manta.url"))) {
-            file = new Local(System.getProperty("manta.key_path"));
-            hostname = new URL(System.getProperty("manta.url")).getHost();
+        if(ObjectUtils.allNotNull(PROPERTIES.get("manta.key_path"), PROPERTIES.get("manta.url"))) {
+            file = new Local(PROPERTIES.get("manta.key_path"));
+            hostname = new URL(PROPERTIES.get("manta.url")).getHost();
         }
         else {
-            final String key = System.getProperty("manta.key");
+            final String key = PROPERTIES.get("manta.key");
             file = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
             LocalTouchFactory.get().touch(file);
             IOUtils.write(key, file.getOutputStream(false), Charset.defaultCharset());
             hostname = profile.getDefaultHostname();
         }
 
-        final String user = System.getProperty("manta.user");
+        final String user = PROPERTIES.get("manta.user");
         final Host host = new Host(profile, hostname, new Credentials(user).withIdentity(file));
         session = new MantaSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
