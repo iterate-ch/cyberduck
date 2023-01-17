@@ -61,7 +61,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
     @Test
     public void testReadMicrosoft() throws Exception {
         final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
-            System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
+                PROPERTIES.get("webdav.iis.user"), PROPERTIES.get("webdav.iis.password")
         ));
         host.setDefaultPath("/WebDAV");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());

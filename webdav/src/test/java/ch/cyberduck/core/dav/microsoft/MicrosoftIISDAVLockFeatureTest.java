@@ -42,6 +42,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -56,12 +57,12 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MicrosoftIISDAVLockFeatureTest {
+public class MicrosoftIISDAVLockFeatureTest extends VaultTest {
 
     @Test
     public void testLock() throws Exception {
         final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
-            System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
+                PROPERTIES.get("webdav.iis.user"), PROPERTIES.get("webdav.iis.password")
         ));
         host.setDefaultPath("/WebDAV");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
