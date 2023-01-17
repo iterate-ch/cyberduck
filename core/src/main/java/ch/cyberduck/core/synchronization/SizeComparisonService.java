@@ -51,4 +51,12 @@ public class SizeComparisonService implements ComparisonService {
         }
         return Comparison.unknown;
     }
+
+    @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        if(TransferStatus.UNKNOWN_LENGTH == attr.getSize()) {
+            return 0;
+        }
+        return Long.valueOf(attr.getSize()).hashCode();
+    }
 }

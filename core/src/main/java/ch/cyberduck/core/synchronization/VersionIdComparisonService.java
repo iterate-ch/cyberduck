@@ -46,4 +46,12 @@ public class VersionIdComparisonService implements ComparisonService {
         }
         return Comparison.unknown;
     }
+
+    @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        if(null == attr.getVersionId()) {
+            return 0;
+        }
+        return attr.getVersionId().hashCode();
+    }
 }

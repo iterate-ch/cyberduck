@@ -67,6 +67,15 @@ public class ChainedComparisonService implements ComparisonService {
     }
 
     @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        int result = 0;
+        for(ComparisonService delegate : delegates) {
+            result = 31 * result + delegate.hashCode(type, attr);
+        }
+        return result;
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ChainedComparisonService{");
         sb.append("delegates=").append(Arrays.toString(delegates));

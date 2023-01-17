@@ -36,5 +36,12 @@ public interface ComparisonService {
         public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
             return Comparison.unknown;
         }
+
+        @Override
+        public int hashCode(final Path.Type type, final PathAttributes attr) {
+            return 0;
+        }
     };
+
+    int hashCode(Path.Type type, PathAttributes attr);
 }

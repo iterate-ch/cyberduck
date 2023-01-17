@@ -47,4 +47,12 @@ public class TimestampComparisonService implements ComparisonService {
         }
         return Comparison.unknown;
     }
+
+    @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        if(-1L == attr.getModificationDate()) {
+            return 0;
+        }
+        return Long.valueOf(attr.getModificationDate()).hashCode();
+    }
 }

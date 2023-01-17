@@ -65,6 +65,15 @@ public class DefaultComparisonService implements ComparisonService {
     }
 
     @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        switch(type) {
+            case directory:
+                return directories.hashCode(type, attr);
+        }
+        return files.hashCode(type, attr);
+    }
+
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultComparisonService{");
         sb.append("files=").append(files);
