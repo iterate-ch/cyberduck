@@ -34,6 +34,7 @@ import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -83,7 +84,7 @@ import io.milton.simpleton.SimpletonServer;
 
 import static org.junit.Assert.fail;
 
-public class AbstractDAVTest {
+public class AbstractDAVTest extends VaultTest {
 
     protected DAVSession session;
 
