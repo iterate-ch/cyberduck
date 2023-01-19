@@ -22,10 +22,11 @@
         <version>8.5.5-SNAPSHOT</version>
     </parent>
     <artifactId>manta</artifactId>
+
     <properties>
-        <maven.test.skip>true</maven.test.skip>
         <manta-client-version>3.5.0</manta-client-version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -60,4 +61,16 @@
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

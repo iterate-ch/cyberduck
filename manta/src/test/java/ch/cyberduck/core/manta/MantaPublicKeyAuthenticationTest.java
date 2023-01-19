@@ -29,6 +29,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -41,8 +42,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+
 @Category(IntegrationTest.class)
-public class MantaPublicKeyAuthenticationTest {
+public class MantaPublicKeyAuthenticationTest extends VaultTest {
 
     @Test
     public void testAuthenticateOpenSSHKeyWithoutPassphrase() throws Exception {
