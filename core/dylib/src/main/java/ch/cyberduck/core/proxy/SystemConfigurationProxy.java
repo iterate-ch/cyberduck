@@ -18,7 +18,10 @@ package ch.cyberduck.core.proxy;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.binding.foundation.NSAppleScript;
+import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,12 +40,18 @@ public final class SystemConfigurationProxy extends AbstractProxyFinder implemen
 
     @Override
     public void configure() {
-        final String script = "tell application \"System Preferences\"\n" +
-                "activate\n" +
-                "reveal anchor \"Proxies\" of pane \"com.apple.preference.network\"\n" +
-                "end tell";
-        final NSAppleScript open = NSAppleScript.createWithSource(script);
-        open.executeAndReturnError(null);
+        if(Factory.Platform.osversion.matches("(10|11.12)\\..*")) {
+            final String script = "tell application \"System Preferences\"\n" +
+                    "activate\n" +
+                    "reveal anchor \"Proxies\" of pane \"com.apple.preference.network\"\n" +
+                    "end tell";
+            final NSAppleScript open = NSAppleScript.createWithSource(script);
+            open.executeAndReturnError(null);
+        }
+        else {
+            // macOS 13+
+            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("x-apple.systempreferences:com.apple.Network-Settings.extension"));
+        }
     }
 
     @Override
