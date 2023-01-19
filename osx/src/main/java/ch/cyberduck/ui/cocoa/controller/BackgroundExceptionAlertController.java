@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
@@ -45,7 +46,8 @@ public class BackgroundExceptionAlertController extends AlertController {
     @Override
     public void loadBundle() {
         final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+        alert.setMessageText(String.format("%s (%s)", null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
+                BookmarkNameProvider.toString(host)));
         alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
         alert.addButtonWithTitle(defaultButton);
         alert.addButtonWithTitle(cancelButton);

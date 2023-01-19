@@ -61,7 +61,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             _controller.Invoke(delegate
                 {
                     string footer = ProviderHelpServiceFactory.get().help(host.getProtocol());
-                    string title = LocaleFactory.localizedString("Error");
+                    string title = BookmarkNameProvider.toString(host);
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
                     string expanded = log.length() > 0 ? log.toString() : null;
