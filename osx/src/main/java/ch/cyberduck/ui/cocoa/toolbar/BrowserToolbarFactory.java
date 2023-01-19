@@ -469,7 +469,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         if(!toolbarItems.containsKey(identifier)) {
             switch(BrowserToolbarItem.valueOf(identifier)) {
                 case search:
-                    if(!Factory.Platform.osversion.matches("10\\.(12|13|14|15).*")) {
+                    if(!Factory.Platform.osversion.matches("(10)\\..*")) {
                         toolbarItems.put(identifier, NSSearchToolbarItem.itemWithIdentifier(identifier));
                         break;
                     }

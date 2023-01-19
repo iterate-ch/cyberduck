@@ -1190,8 +1190,8 @@ public class InfoController extends ToolbarWindowController {
     public void setVersionsRevertButton(final NSButton b) {
         this.versionsRevertButton = b;
         this.versionsRevertButton.setTarget(this.id());
-        if(!Factory.Platform.osversion.matches("10\\.(12|13|14|15).*")) {
-            // Available in 10.16 or later
+        if(!Factory.Platform.osversion.matches("(10)\\..*")) {
+            // Available in macOS 11+ or later
             this.versionsRevertButton.setImage(IconCacheFactory.<NSImage>get().iconNamed("clock.arrow.circlepath"));
         }
         this.versionsRevertButton.setAction(Foundation.selector("versionsRevertButtonClicked:"));
