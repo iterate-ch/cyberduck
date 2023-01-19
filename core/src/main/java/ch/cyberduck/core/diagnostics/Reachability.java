@@ -31,13 +31,6 @@ public interface Reachability {
      */
     boolean isReachable(Host bookmark);
 
-    /**
-     * Opens the network configuration assistant for the URL denoting this host
-     *
-     * @param bookmark Hostname
-     */
-    void diagnose(Host bookmark);
-
     Monitor monitor(Host bookmark, Callback callback);
 
     interface Callback {
@@ -51,5 +44,15 @@ public interface Reachability {
         Monitor start();
 
         Monitor stop();
+    }
+
+    interface Diagnostics {
+
+        /**
+         * Opens the network configuration assistant for the URL denoting this host
+         *
+         * @param bookmark Hostname
+         */
+        void diagnose(Host bookmark);
     }
 }

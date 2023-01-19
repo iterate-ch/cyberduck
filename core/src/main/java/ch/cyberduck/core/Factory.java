@@ -68,6 +68,9 @@ public abstract class Factory<T> {
         }
     }
 
+    public boolean isAvailable() {
+        return null != clazz;
+    }
 
     public enum Platform {
         osname {

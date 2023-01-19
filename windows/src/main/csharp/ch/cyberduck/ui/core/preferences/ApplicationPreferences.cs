@@ -89,6 +89,7 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
                 typeof(SyncPromptController).AssemblyQualifiedName);
             this.setDefault("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
             this.setDefault("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
+            this.setDefault("factory.reachability.diagnostics.class", typeof(TcpReachability).AssemblyQualifiedName);
 
             this.setDefault("factory.applicationfinder.class", typeof(ShellApplicationFinder).AssemblyQualifiedName);
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);

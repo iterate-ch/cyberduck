@@ -20,7 +20,7 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.DefaultProviderHelpService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.diagnostics.ReachabilityFactory;
+import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.notification.NotificationAlertCallback;
@@ -54,7 +54,7 @@ public class PromptAlertCallback implements AlertCallback {
                     case SheetCallback.ALTERNATE_OPTION:
                         switch(type) {
                             case network:
-                                ReachabilityFactory.get().diagnose(host);
+                                ReachabilityDiagnosticsFactory.get().diagnose(host);
                                 break;
                             case quota:
                                 BrowserLauncherFactory.get().open(new DefaultProviderHelpService().help(host.getProtocol()));
