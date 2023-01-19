@@ -59,4 +59,16 @@ public class SDSTimestampFeatureTest extends AbstractSDSTest {
         assertEquals(1599047952805L, attributes.getModificationDate());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testWriteTimestampRoom() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        new SDSTimestampFeature(session, nodeid).setTimestamp(room, 1599047952805L);
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
+        final PathAttributes attributes = f.find(room);
+        assertEquals(1599047952805L, attributes.getModificationDate());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
