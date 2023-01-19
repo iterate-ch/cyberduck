@@ -28,5 +28,10 @@ public interface ProxyFinder {
      */
     Proxy find(String target);
 
-    void configure();
+    interface Configuration {
+        /**
+         * Allow user to configure system proxy settings
+         */
+        void configure();
+    }
 }

@@ -44,12 +44,4 @@ public abstract class AbstractProxyFinder implements ProxyFinder {
         }
         return false;
     }
-
-    /**
-     * Allow user to configure system proxy settings
-     */
-    @Override
-    public void configure() {
-        log.warn("Configuration not supported");
-    }
 }

@@ -43,6 +43,7 @@ import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyConfigurationFactory;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
@@ -2395,7 +2396,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void configureProxiesButtonClicked(NSButton sender) {
-        ProxyFactory.get().configure();
+        ProxyConfigurationFactory.get().configure();
     }
 
     @Outlet

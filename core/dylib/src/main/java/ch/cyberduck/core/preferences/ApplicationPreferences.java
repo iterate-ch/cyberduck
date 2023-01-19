@@ -41,6 +41,8 @@ import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
+import ch.cyberduck.core.proxy.SystemPreferencesProxyConfiguration;
+import ch.cyberduck.core.proxy.SystemSettingsProxyConfiguration;
 import ch.cyberduck.core.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Sandbox;
@@ -66,6 +68,12 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.passwordstore.class", KeychainPasswordStore.class.getName());
         this.setDefault("factory.certificatestore.class", KeychainCertificateStore.class.getName());
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
+        if(Factory.Platform.osversion.matches("(10|11.12)\\..*")) {
+            this.setDefault("factory.proxy.configuration.class", SystemPreferencesProxyConfiguration.class.getName());
+        }
+        else {
+            this.setDefault("factory.proxy.configuration.class", SystemSettingsProxyConfiguration.class.getName());
+        }
         this.setDefault("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
         this.setDefault("factory.reachability.class", SystemConfigurationReachability.class.getName());
 
