@@ -25,17 +25,14 @@ import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 
 public class BackgroundExceptionAlertController extends AlertController {
+
     private final BackgroundException failure;
     private final Host host;
-
-    public final String defaultButton;
-    public final String cancelButton;
+    private final String defaultButton;
+    private final String cancelButton;
 
     public BackgroundExceptionAlertController(final BackgroundException failure, final Host host) {
-        this.failure = failure;
-        this.host = host;
-        this.defaultButton = LocaleFactory.localizedString("Try Again", "Alert");
-        this.cancelButton = LocaleFactory.localizedString("Cancel", "Alert");
+        this(failure, host, LocaleFactory.localizedString("Try Again", "Alert"), LocaleFactory.localizedString("Cancel", "Alert"));
     }
 
     public BackgroundExceptionAlertController(final BackgroundException failure, final Host host, final String defaultButton, final String cancelButton) {
