@@ -29,4 +29,4 @@ jobs:
       - name: Build with Maven
         env:
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
-        run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode
+        run: mvn verify -pl protocols -am --no-transfer-progress --batch-mode --fail-at-end
