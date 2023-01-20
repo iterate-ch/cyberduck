@@ -6,9 +6,11 @@
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
       <bal:WixStandardBootstrapperApplication LicenseUrl=""
                                               LogoFile="$(var.SetupDir)banner.png"
-                                              LogoSideFile="$(var.SetupDir)welcome.bmp"/>
+                                              LogoSideFile="$(var.SetupDir)welcome.bmp"
+                                              ThemeFile="InstallerTheme.xml"/>
     </BootstrapperApplicationRef>
     <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles64Folder]Cyberduck"/>
+    <Variable Name="InstallBonjour" bal:Overridable="yes" Type="numeric" Value="1"/>
     <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
     <util:RegistrySearch Id="CurrentBuild" Variable="CBNumber" Result="value" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Value="CurrentBuildNumber"/>
     <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
@@ -29,8 +31,8 @@
         <MsiProperty Name="INSTALLLOCATION" Value="[InstallFolder]"/>
         <MsiProperty Name="AUTOSTART" Value="0"/>
       </MsiPackage>
-      <MsiPackage SourceFile="$(var.SetupDir)Bonjour.msi" Compressed="yes" Vital="no" InstallCondition="NOT VersionNT64"/>
-      <MsiPackage SourceFile="$(var.SetupDir)Bonjour64.msi" Compressed="yes" Vital="no" InstallCondition="VersionNT64"/>
+      <MsiPackage SourceFile="$(var.SetupDir)Bonjour.msi" Compressed="yes" Permanent="yes" Visible="yes" Vital="no" InstallCondition="InstallBonjour=1 AND NOT VersionNT64"/>
+      <MsiPackage SourceFile="$(var.SetupDir)Bonjour64.msi" Compressed="yes" Permanent="yes" Visible="yes" Vital="no" InstallCondition="InstallBonjour=1 AND VersionNT64"/>
     </Chain>
   </Bundle>
 </Wix>
