@@ -41,4 +41,12 @@ public class ETagComparisonService implements ComparisonService {
         }
         return Comparison.unknown;
     }
+
+    @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        if(null == attr.getETag()) {
+            return 0;
+        }
+        return attr.getETag().hashCode();
+    }
 }

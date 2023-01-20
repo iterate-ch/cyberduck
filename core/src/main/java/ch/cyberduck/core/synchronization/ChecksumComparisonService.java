@@ -46,4 +46,12 @@ public class ChecksumComparisonService implements ComparisonService {
         }
         return Comparison.notequal;
     }
+
+    @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        if(Checksum.NONE == attr.getChecksum()) {
+            return 0;
+        }
+        return attr.getChecksum().hashCode();
+    }
 }
