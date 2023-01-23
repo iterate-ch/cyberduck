@@ -122,14 +122,23 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
             return false;
         }
         if(file.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Found encrypted flag for %s", file));
+            }
             return Boolean.parseBoolean(file.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         }
         final Path parent = file.getParent();
         if(parent.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Found encrypted flag for %s", parent));
+            }
             return Boolean.parseBoolean(parent.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         }
         final Path container = new DefaultPathContainerService().getContainer(file);
         if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Found encrypted flag for %s", container));
+            }
             return Boolean.parseBoolean(container.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         }
         return false;
