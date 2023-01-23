@@ -33,7 +33,9 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     private final SDSNodeIdProvider nodeid;
 
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
-        super(new SDSDelegatingWriteFeature(session, nodeid, new HostPreferences(session.getHost()).getBoolean("sds.upload.s3.enable") ? new SDSDirectS3MultipartWriteFeature(session, nodeid) : new SDSMultipartWriteFeature(session, nodeid)));
+        super(new SDSDelegatingWriteFeature(session, nodeid,
+                new HostPreferences(session.getHost()).getBoolean("sds.upload.s3.enable") ?
+                        new SDSDirectS3MultipartWriteFeature(session, nodeid) : new SDSMultipartWriteFeature(session, nodeid)));
         this.session = session;
         this.nodeid = nodeid;
     }
