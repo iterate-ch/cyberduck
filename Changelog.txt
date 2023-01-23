@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.5
+- [Bugfix] Save OAuth tokens with usernam to allow connecting to different accounts (Google Drive, Google Storage, OneDrive, Dropbox, Box)
+
 8.5.4
 - [Bugfix] Failure authorizing using OAuth with no desktop browser installed (Linux) (#14028)
 - [Bugfix] Allow to create new buckets in regions ap-south-2, ap-southeast-3, eu-south-2, eu-central-2, me-central-1 (S3) (#14045)
