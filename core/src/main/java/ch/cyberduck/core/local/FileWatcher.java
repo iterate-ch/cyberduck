@@ -69,6 +69,10 @@ public final class FileWatcher {
         }
     }
 
+    public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {
+        return this.register(file.getParent(), new DefaultFileFilter(file), listener);
+    }
+
     public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Register folder %s watching with filter %s", folder, filter));

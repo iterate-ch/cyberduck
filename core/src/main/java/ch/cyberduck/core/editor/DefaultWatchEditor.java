@@ -54,7 +54,7 @@ public class DefaultWatchEditor extends AbstractEditor {
 
     @Override
     protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(temporary.getParent(), new FileWatcher.DefaultFileFilter(temporary), listener));
+        Uninterruptibles.awaitUninterruptibly(monitor.register(temporary, listener));
     }
 
     @Override
