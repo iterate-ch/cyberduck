@@ -41,7 +41,7 @@ public class FlatTemporaryFileService extends AbstractTemporaryFileService imple
     @Override
     public Local create(final String uid, final Path file) {
         final Local folder = LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"), uid);
-        return this.create(folder, file.getName());
+        return this.create(folder, String.format("%s-%d", file.getName(), file.attributes().hashCode()));
     }
 
     /**
