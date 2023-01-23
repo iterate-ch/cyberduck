@@ -37,6 +37,7 @@ public class VaultTest {
         final VaultConfig config;
         try {
             config = new VaultConfig()
+                    .engineVersion(2)
                     .address("https://vault.iterate.ch")
                     .token(System.getenv("VAULT_TOKEN"))
                     .build();
