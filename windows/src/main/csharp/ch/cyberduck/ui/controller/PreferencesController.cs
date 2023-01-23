@@ -39,6 +39,9 @@ using org.apache.logging.log4j;
 using org.apache.logging.log4j.core;
 using StructureMap;
 using Logger = org.apache.logging.log4j.Logger;
+using ch.cyberduck.core.eue.io.swagger.client.model;
+using com.google.common.graph;
+using ch.cyberduck.core.proxy;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -307,17 +310,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangeSystemProxyEvent()
         {
-            LaunchIEOptions(4);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="activeRegister">Register to select (connections settings=4)</param>
-        private void LaunchIEOptions(int activeRegister)
-        {
-            ApplicationLauncherFactory.get()
-                .open(new Application("rundll32.exe"), "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
+            ProxyConfigurationFactory.get().configure();
         }
 
         private void View_UpdateFeedChangedEvent()
