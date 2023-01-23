@@ -94,7 +94,7 @@ public abstract class AbstractEditor implements Editor {
         else {
             this.file = file;
         }
-        this.temporary = temp.create(host.getUuid(), this.file);
+        this.temporary = temp.create(String.format("editor-%s", host.getUuid()), this.file);
         this.launcher = launcher;
         this.finder = finder;
         this.progress = listener;
@@ -127,7 +127,6 @@ public abstract class AbstractEditor implements Editor {
      */
     @Override
     public Worker<Transfer> open(final Application application, final ApplicationQuitCallback callback, final FileWatcherListener listener) {
-        final Local temporary = temp.create(host.getUuid(), file);
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
                 temporary, progress, listener, notification) {
             @Override
