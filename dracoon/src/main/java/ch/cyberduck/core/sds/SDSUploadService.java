@@ -98,9 +98,15 @@ public class SDSUploadService {
                 final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                 if(matcher.matches()) {
                     if(new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set modification timestamp to %d for %s", status.getTimestamp(), file));
+                        }
                         body.timestampModification(new DateTime(status.getTimestamp()));
                     }
                 }
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Start file upload for %s with %s", file, body));
             }
             return new NodesApi(session.getClient()).createFileUploadChannel(body, StringUtils.EMPTY);
         }
@@ -123,6 +129,9 @@ public class SDSUploadService {
                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep"))
                     .resolutionStrategy(CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE);
             if(status.getFilekey() != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set file key to %s for %s", status.getFilekey(), file));
+                }
                 final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
                 final FileKey fileKey = reader.readValue(status.getFilekey().array());
                 final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
@@ -130,6 +139,9 @@ public class SDSUploadService {
                         TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                 );
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Complete file upload for %s with %s", file, body));
             }
             final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken, StringUtils.EMPTY);
             if(!upload.isIsEncrypted()) {
@@ -168,7 +180,9 @@ public class SDSUploadService {
      * @param uploadToken Upload token
      */
     public void cancel(final Path file, final String uploadToken) throws BackgroundException {
-        log.warn(String.format("Cancel failed upload %s for %s", uploadToken, file));
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("Cancel failed upload %s for %s", uploadToken, file));
+        }
         try {
             new UploadsApi(session.getClient()).cancelFileUploadByToken(uploadToken);
         }
@@ -187,6 +201,9 @@ public class SDSUploadService {
      * @throws BackgroundException Error status received
      */
     public S3FileUploadStatus await(final Path file, final TransferStatus status, final String uploadId) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Await file upload for %s with upload ID %s", file, uploadId));
+        }
         final CountDownLatch signal = new CountDownLatch(1);
         final AtomicReference<S3FileUploadStatus> response = new AtomicReference<>();
         final AtomicReference<BackgroundException> failure = new AtomicReference<>();
