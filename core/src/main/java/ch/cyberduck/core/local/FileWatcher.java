@@ -30,10 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.concurrent.Callable;
@@ -76,14 +75,12 @@ public final class FileWatcher {
     }
 
     public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
-        // Make sure to canonicalize the watched folder
-        final Path canonical = new File(folder.getAbsolute()).getCanonicalFile().toPath();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Register folder %s watching with filter %s", canonical, filter));
+            log.debug(String.format("Register folder %s watching with filter %s", folder, filter));
         }
-        final WatchKey key = monitor.register(canonical, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        final WatchKey key = monitor.register(Paths.get(folder.getAbsolute()), new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         if(!key.isValid()) {
-            throw new IOException(String.format("Failure registering for events in %s", canonical));
+            throw new IOException(String.format("Failure registering for events in %s", folder));
         }
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
