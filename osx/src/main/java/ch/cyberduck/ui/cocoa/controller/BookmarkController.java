@@ -36,6 +36,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -277,7 +278,9 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.alertIcon.setEnabled(false);
         this.alertIcon.setImage(null);
         this.alertIcon.setTarget(this.id());
-        this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
+        if(new ReachabilityDiagnosticsFactory().isAvailable()) {
+            this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
+        }
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -307,7 +310,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void launchNetworkAssistant(final NSButton sender) {
-        ReachabilityFactory.get().diagnose(bookmark);
+        ReachabilityDiagnosticsFactory.get().diagnose(bookmark);
     }
 
     public void setPortField(final NSTextField field) {

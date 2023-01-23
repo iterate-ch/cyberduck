@@ -27,7 +27,7 @@ using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
-    public class TcpReachability : Reachability
+    public class TcpReachability : Reachability, Reachability.Diagnostics
     {
         private static readonly Logger Log = LogManager.getLogger(typeof(TcpReachability).FullName);
 

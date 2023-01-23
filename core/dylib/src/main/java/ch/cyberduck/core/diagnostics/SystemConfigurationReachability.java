@@ -29,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
-public final class SystemConfigurationReachability implements Reachability {
+public class SystemConfigurationReachability implements Reachability {
     private static final Logger log = LogManager.getLogger(SystemConfigurationReachability.class);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
@@ -55,7 +55,7 @@ public final class SystemConfigurationReachability implements Reachability {
 
     @Override
     public Monitor monitor(final Host bookmark, final Callback callback) {
-        final String url = this.toURL(bookmark);
+        final String url = toURL(bookmark);
         return new Reachability.Monitor() {
             private final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(url);
             private final NotificationFilterCallback listener = new NotificationFilterCallback(callback);
@@ -63,7 +63,7 @@ public final class SystemConfigurationReachability implements Reachability {
             @Override
             public Monitor start() {
                 notificationCenter.addObserver(listener.id(), Foundation.selector("notify:"),
-                    "kNetworkReachabilityChangedNotification", monitor.id());
+                        "kNetworkReachabilityChangedNotification", monitor.id());
                 monitor.startReachabilityMonitor();
                 return this;
             }
@@ -79,20 +79,11 @@ public final class SystemConfigurationReachability implements Reachability {
 
     @Override
     public boolean isReachable(final Host bookmark) {
-        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(this.toURL(bookmark));
+        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(toURL(bookmark));
         return monitor.isReachable();
     }
 
-    /**
-     * Opens the network configuration assistant for the URL denoting this host
-     */
-    @Override
-    public void diagnose(final Host bookmark) {
-        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(this.toURL(bookmark));
-        monitor.diagnoseInteractively();
-    }
-
-    private String toURL(final Host host) {
+    protected static String toURL(final Host host) {
         StringBuilder url = new StringBuilder(host.getProtocol().getScheme().toString());
         url.append("://");
         url.append(new PunycodeConverter().convert(host.getHostname()));

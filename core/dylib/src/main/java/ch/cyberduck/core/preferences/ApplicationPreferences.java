@@ -21,6 +21,7 @@ import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainCertificateStore;
 import ch.cyberduck.core.KeychainPasswordStore;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
+import ch.cyberduck.core.diagnostics.SystemConfigurationDiagnostics;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleRegexLocale;
@@ -68,7 +69,10 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
         this.setDefault("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
         this.setDefault("factory.reachability.class", SystemConfigurationReachability.class.getName());
-
+        if(Factory.Platform.osversion.matches("(10|11|12)\\..*")) {
+            // Disabled on macOS 13 and later
+            this.setDefault("factory.reachability.diagnostics.class", SystemConfigurationDiagnostics.class.getName());
+        }
         this.setDefault("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
         this.setDefault("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
         this.setDefault("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());

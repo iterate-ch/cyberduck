@@ -21,6 +21,7 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
@@ -54,7 +55,9 @@ public class BackgroundExceptionAlertController extends AlertController {
         final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
         switch(type) {
             case network:
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                if(new ReachabilityDiagnosticsFactory().isAvailable()) {
+                    alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                }
                 break;
             case quota:
                 alert.addButtonWithTitle(LocaleFactory.localizedString("Help", "Main"));

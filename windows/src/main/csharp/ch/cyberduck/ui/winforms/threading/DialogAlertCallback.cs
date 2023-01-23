@@ -91,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                                        case 1:
                                                            if (type == FailureDiagnostics.Type.network)
                                                            {
-                                                               ReachabilityFactory.get().diagnose(host);
+                                                               ReachabilityDiagnosticsFactory.get().diagnose(host);
                                                            }
                                                            if (type == FailureDiagnostics.Type.quota)
                                                            {
