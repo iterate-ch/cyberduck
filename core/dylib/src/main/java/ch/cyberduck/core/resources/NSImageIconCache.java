@@ -63,7 +63,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
     private NSImage load(final String name, final Integer size) {
         NSImage cached = NSImage.imageNamed(toName(name, size));
         if(null == cached) {
-            if(!Factory.Platform.osversion.matches("10\\.(12|13|14|15).*")) {
+            if(!Factory.Platform.osversion.matches("(10)\\..*")) {
                 cached = NSImage.imageWithSymbol(name);
             }
             if(null == cached) {

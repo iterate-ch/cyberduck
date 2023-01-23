@@ -56,10 +56,11 @@ public abstract class BundleController extends ProxyController {
     public static final int TEXT_ALIGNMENT_RIGHT;
 
     static {
-        if(Factory.Platform.osversion.matches("10\\.(12|13|14|15|16).*")) {
+        if(Factory.Platform.osversion.matches("(10|11)\\..*")) {
             TEXT_ALIGNMENT_RIGHT = NSText.NSRightTextAlignment;
         }
         else {
+            // Fix #12703 for macOS 12+
             TEXT_ALIGNMENT_RIGHT = NSText.NSTextAlignmentRight;
         }
     }
@@ -67,10 +68,11 @@ public abstract class BundleController extends ProxyController {
     public static final int TEXT_ALIGNMENT_CENTER;
 
     static {
-        if(Factory.Platform.osversion.matches("10\\.(12|13|14|15|16).*")) {
+        if(Factory.Platform.osversion.matches("(10|11)\\..*")) {
             TEXT_ALIGNMENT_CENTER = NSText.NSCenterTextAlignment;
         }
         else {
+            // Fix #12703 for macOS 12+
             TEXT_ALIGNMENT_CENTER = NSText.NSTextAlignmentCenter;
         }
     }
