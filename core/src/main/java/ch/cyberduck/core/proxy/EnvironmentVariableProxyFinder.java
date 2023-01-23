@@ -1,8 +1,6 @@
 package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -13,9 +11,6 @@ import java.net.URISyntaxException;
 
 public class EnvironmentVariableProxyFinder implements ProxyFinder {
     private static final Logger log = LogManager.getLogger(EnvironmentVariableProxyFinder.class);
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
 
     @Override
     public Proxy find(final String target) {
