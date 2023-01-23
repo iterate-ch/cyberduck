@@ -47,25 +47,6 @@ import static org.junit.Assert.assertNotNull;
 @Category(IntegrationTest.class)
 public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
-    @Test
-    public void testConnect() throws Exception {
-        session.close();
-        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore() {
-                @Override
-                public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                        return System.getProperties().getProperty("googlestorage.accesstoken");
-                    }
-                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                        return System.getProperties().getProperty("googlestorage.refreshtoken");
-                    }
-                    return null;
-                }
-            }, new DisabledProgressListener());
-        login.check(session, new DisabledCancelCallback());
-    }
-
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidRefreshToken() throws Exception {
         session.close();
