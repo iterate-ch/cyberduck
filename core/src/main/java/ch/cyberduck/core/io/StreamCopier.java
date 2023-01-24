@@ -141,7 +141,6 @@ public final class StreamCopier {
                 c.close(in);
             }
         }
-        cancel.validate();
     }
 
     public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {
