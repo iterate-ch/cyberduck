@@ -133,7 +133,7 @@
                                             <groupId>net.temurin</groupId>
                                             <artifactId>jdk</artifactId>
                                             <type>zip</type>
-                                            <version>17.0.5</version>
+                                            <version>17.0.6</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
