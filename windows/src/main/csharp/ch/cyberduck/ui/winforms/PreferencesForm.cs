@@ -56,8 +56,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 Width = newWidth;
             };
 
-            MaximumSize = new Size(MaxWidth, MaxHeight);
-            MinimumSize = new Size(MinWidth, MinHeight);
+            MaximumSize = new Size(int.MaxValue, MaxHeight);
+            MinimumSize = new Size(0, MinHeight);
 
             generalButton.Image = Images.General.Size(32);
             browserButton.Image = Images.Browser.Size(32);
