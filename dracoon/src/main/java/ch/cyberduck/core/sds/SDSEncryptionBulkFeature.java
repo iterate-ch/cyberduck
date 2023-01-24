@@ -54,6 +54,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     final Path container = new DefaultPathContainerService().getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set file key for %s", entry.getKey()));
+                        }
                         status.setFilekey(nodeid.getFileKey());
                     }
                 }
@@ -73,6 +76,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             final Path container = containerService.getContainer(entry.getKey().remote);
             if(rooms.containsKey(container)) {
                 continue;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Determine encryption status for %s", container));
             }
             rooms.put(container, SDSNodeIdProvider.isEncrypted(entry.getKey().remote));
         }
@@ -94,6 +100,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             if(file.isFile()) {
                                 final Path container = new DefaultPathContainerService().getContainer(file);
                                 if(rooms.get(container)) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Run missing file keys for %s", file));
+                                    }
                                     background.operate(session, callback, file);
                                 }
                             }
