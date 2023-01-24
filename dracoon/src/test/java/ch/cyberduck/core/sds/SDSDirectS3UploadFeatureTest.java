@@ -204,7 +204,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         IOUtils.write(random, out);
         out.close();
         final TransferStatus status = new TransferStatus();
-        status.setFilekey(nodeid.getFileKey());
+        status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
@@ -243,7 +243,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         IOUtils.write(random, out);
         out.close();
         final TransferStatus status = new TransferStatus();
-        status.setFilekey(nodeid.getFileKey());
+        status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());
@@ -282,7 +282,7 @@ public class SDSDirectS3UploadFeatureTest extends AbstractSDSTest {
         IOUtils.write(random, out);
         out.close();
         final TransferStatus status = new TransferStatus();
-        status.setFilekey(nodeid.getFileKey());
+        status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         status.setLength(random.length);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test, local), status), new DisabledConnectionCallback());

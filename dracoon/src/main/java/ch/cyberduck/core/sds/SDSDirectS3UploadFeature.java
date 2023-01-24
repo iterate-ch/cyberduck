@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -91,6 +92,9 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
     private final Integer concurrency;
     private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
 
+    private final PathContainerService containerService
+            = new SDSPathContainerService();
+
     public SDSDirectS3UploadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> writer) {
         this(session, nodeid, writer, new HostPreferences(session.getHost()).getLong("s3.upload.multipart.size"),
                 new HostPreferences(session.getHost()).getInteger("s3.upload.multipart.concurrency"));
@@ -125,7 +129,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
             final List<Future<TransferStatus>> parts = new ArrayList<>();
             final InputStream in;
             final String random = new UUIDRandomStringService().random();
-            if(SDSNodeIdProvider.isEncrypted(file)) {
+            if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
                 in = new SDSTripleCryptEncryptorFeature(session, nodeid).encrypt(file, local.getInputStream(), status);
             }
             else {
@@ -139,7 +143,7 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<Node, MessageDig
                 for(int partNumber = 1; remaining >= 0; partNumber++) {
                     final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
                     final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
-                    if(SDSNodeIdProvider.isEncrypted(file)) {
+                    if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
                         final Local temporary = temp.create(String.format("%s-%d", random, partNumber));
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Encrypted contents for part %d to %s", partNumber, temporary));

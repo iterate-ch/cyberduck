@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -32,6 +33,10 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
+    private final PathContainerService containerService
+            = new SDSPathContainerService();
+
+
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         super(new SDSDelegatingWriteFeature(session, nodeid,
                 new HostPreferences(session.getHost()).getBoolean("sds.upload.s3.enable") ?
@@ -42,8 +47,8 @@ public class SDSTouchFeature extends DefaultTouchFeature<Node> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        if(SDSNodeIdProvider.isEncrypted(file)) {
-            status.setFilekey(nodeid.getFileKey());
+        if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
+            status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
         }
         return super.touch(file, status);
     }

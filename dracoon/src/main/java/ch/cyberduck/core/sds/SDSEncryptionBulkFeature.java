@@ -16,8 +16,8 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -36,11 +36,14 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private static final Logger log = LogManager.getLogger(SDSEncryptionBulkFeature.class);
 
     private final SDSSession session;
-    private final SDSNodeIdProvider nodeid;
+    private final SDSTripleCryptEncryptorFeature triplecrypt;
+
+    private final PathContainerService containerService
+            = new SDSPathContainerService();
 
     public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
-        this.nodeid = nodeid;
+        this.triplecrypt = new SDSTripleCryptEncryptorFeature(session, nodeid);
     }
 
     @Override
@@ -51,13 +54,13 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             default: {
                 final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                 for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                    final Path container = new DefaultPathContainerService().getContainer(entry.getKey().remote);
+                    final Path container = containerService.getContainer(entry.getKey().remote);
                     if(rooms.get(container)) {
                         final TransferStatus status = entry.getValue();
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Set file key for %s", entry.getKey()));
                         }
-                        status.setFilekey(nodeid.getFileKey());
+                        status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
                     }
                 }
             }
@@ -69,9 +72,8 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
      * @param files Files to upload
      * @return Map of rooms with Triple Crypt enabled
      */
-    private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) {
+    private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) throws BackgroundException {
         final Map<Path, Boolean> rooms = new HashMap<>();
-        final DefaultPathContainerService containerService = new DefaultPathContainerService();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
             final Path container = containerService.getContainer(entry.getKey().remote);
             if(rooms.containsKey(container)) {
@@ -80,7 +82,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Determine encryption status for %s", container));
             }
-            rooms.put(container, SDSNodeIdProvider.isEncrypted(entry.getKey().remote));
+            rooms.put(container, triplecrypt.isEncrypted(container));
         }
         return rooms;
     }
@@ -98,7 +100,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                             final Path file = entry.getKey().remote;
                             if(file.isFile()) {
-                                final Path container = new DefaultPathContainerService().getContainer(file);
+                                final Path container = containerService.getContainer(file);
                                 if(rooms.get(container)) {
                                     if(log.isDebugEnabled()) {
                                         log.debug(String.format("Run missing file keys for %s", file));
@@ -116,5 +118,4 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     public Bulk<Void> withDelete(final Delete delete) {
         return this;
     }
-
 }

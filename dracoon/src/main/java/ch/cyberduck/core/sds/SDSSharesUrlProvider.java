@@ -78,7 +78,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         switch(type) {
             case download: {
                 if(file.isDirectory()) {
-                    if(SDSNodeIdProvider.isEncrypted(containerService.getContainer(file))) {
+                    if(SDSAttributesAdapter.isEncrypted(file.attributes())) {
                         log.warn(String.format("Not supported for file %s in encrypted room", file));
                         // In encrypted rooms only files can be shared
                         return false;
@@ -120,7 +120,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             }
             final Long fileid = Long.parseLong(nodeid.getVersionId(file));
             final Host bookmark = session.getHost();
-            if(SDSNodeIdProvider.isEncrypted(file)) {
+            if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(file)) {
                 // get existing file key associated with the sharing user
                 final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(fileid, null, null);
                 final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);

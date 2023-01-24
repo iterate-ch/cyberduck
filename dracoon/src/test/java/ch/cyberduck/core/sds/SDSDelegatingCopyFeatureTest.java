@@ -347,6 +347,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        test.withAttributes(status.getResponse());
         final Path target = new Path(room2, test.getName(), EnumSet.of(Path.Type.file));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, target));
