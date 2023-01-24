@@ -43,8 +43,8 @@ import ch.cyberduck.core.local.RevealServiceFactory;
 import ch.cyberduck.core.preferences.LogDirectoryFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.ProxyConfigurationFactory;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
@@ -87,6 +87,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     private final Preferences preferences
             = PreferencesFactory.get();
+
     private final ConnectionTimeout connectionTimeoutPreferences
             = ConnectionTimeoutFactory.get();
 
@@ -2196,7 +2197,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        for(String s : preferences.getList("s3.storage.class.options")) {
+        for(String s : PreferencesReader.toList(ProtocolFactory.get().forType(Protocol.Type.s3).getProperties().get("s3.storage.class.options"))) {
             this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopup.lastItem().setRepresentedObject(s);
         }
