@@ -141,7 +141,7 @@ public class SDSUploadService {
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Complete file upload for %s with %s", file, body));
+                log.debug(String.format("Complete file upload for %s with token %s", file, uploadToken));
             }
             final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken, StringUtils.EMPTY);
             if(!upload.isIsEncrypted()) {
