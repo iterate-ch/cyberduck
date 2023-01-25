@@ -38,5 +38,3 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Build with Maven
         run: mvn --no-transfer-progress verify -DskipITs -DskipSign --batch-mode -Drevision=0
-      - name: Publish Test Report
-        uses: ScaCap/action-surefire-report@v1.3.0
