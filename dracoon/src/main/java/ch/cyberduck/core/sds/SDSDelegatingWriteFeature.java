@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
@@ -36,6 +37,9 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
     private final SDSNodeIdProvider nodeid;
     private final Write<Node> proxy;
 
+    private final PathContainerService containerService
+            = new SDSPathContainerService();
+
     public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<Node> proxy) {
         this.session = session;
         this.nodeid = nodeid;
@@ -44,7 +48,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public StatusOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(SDSNodeIdProvider.isEncrypted(file)) {
+        if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(file))) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Return encrypting writer for %s", file));
             }
@@ -56,7 +60,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        if(SDSNodeIdProvider.isEncrypted(file)) {
+        if(SDSAttributesAdapter.isEncrypted(containerService.getContainer(file).attributes())) {
             return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, status);
         }
         return proxy.append(file, status);
@@ -74,7 +78,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<Node> {
 
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
-        if(SDSNodeIdProvider.isEncrypted(file)) {
+        if(SDSAttributesAdapter.isEncrypted(containerService.getContainer(file).attributes())) {
             return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file, status);
         }
         return proxy.checksum(file, status);

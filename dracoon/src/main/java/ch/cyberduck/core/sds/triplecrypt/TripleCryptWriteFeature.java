@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSSession;
+import ch.cyberduck.core.sds.SDSTripleCryptEncryptorFeature;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,7 +59,7 @@ public class TripleCryptWriteFeature implements Write<Node> {
                 log.debug(String.format("Read file key for file %s", file));
             }
             if(null == status.getFilekey()) {
-                status.setFilekey(nodeid.getFileKey());
+                status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
             }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
             return new TripleCryptEncryptingOutputStream(session, nodeid, proxy.write(file, status, callback),

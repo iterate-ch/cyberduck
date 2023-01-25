@@ -82,6 +82,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertNotNull(attributes.getCustom().get(SDSAttributesFinderFeature.KEY_CLASSIFICATION));
+        assertNotNull(attributes.getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
         // Test wrong type
         try {
             f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));

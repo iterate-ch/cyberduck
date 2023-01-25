@@ -16,8 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.CachingVersionIdProvider;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,24 +24,14 @@ import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.model.PlainFileKey;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class SDSNodeIdProvider extends CachingVersionIdProvider implements VersionIdProvider {
     private static final Logger log = LogManager.getLogger(SDSNodeIdProvider.class);
@@ -115,39 +103,5 @@ public class SDSNodeIdProvider extends CachingVersionIdProvider implements Versi
         catch(ApiException e) {
             throw new SDSExceptionMappingService(this).map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    public static boolean isEncrypted(final Path file) {
-        if(file.isRoot()) {
-            return false;
-        }
-        if(file.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
-            return Boolean.parseBoolean(file.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
-        }
-        final Path parent = file.getParent();
-        if(parent.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
-            return Boolean.parseBoolean(parent.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
-        }
-        final Path container = new DefaultPathContainerService().getContainer(file);
-        if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
-            return Boolean.parseBoolean(container.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
-        }
-        return false;
-    }
-
-    public ByteBuffer getFileKey() throws BackgroundException {
-        return this.toBuffer(TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey(PlainFileKey.Version.AES256GCM)));
-    }
-
-    public ByteBuffer toBuffer(final FileKey fileKey) throws BackgroundException {
-        final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            writer.writeValue(out, fileKey);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        return ByteBuffer.wrap(out.toByteArray());
     }
 }

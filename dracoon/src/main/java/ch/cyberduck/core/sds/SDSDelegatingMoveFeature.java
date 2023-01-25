@@ -56,7 +56,7 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
         }
-        if(SDSNodeIdProvider.isEncrypted(source) ^ SDSNodeIdProvider.isEncrypted(target)) {
+        if(new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(source) ^ new SDSTripleCryptEncryptorFeature(session, nodeid).isEncrypted(containerService.getContainer(target))) {
             // Moving into or from an encrypted room
             final Copy copy = new SDSDelegatingCopyFeature(session, nodeid, new SDSCopyFeature(session, nodeid));
             if(log.isDebugEnabled()) {
@@ -78,7 +78,7 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        if(SDSNodeIdProvider.isEncrypted(source) ^ SDSNodeIdProvider.isEncrypted(target)) {
+        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
             return session.getFeature(Copy.class).isRecursive(source, target);
         }
         return proxy.isRecursive(source, target);
@@ -86,7 +86,7 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(SDSNodeIdProvider.isEncrypted(source) ^ SDSNodeIdProvider.isEncrypted(target)) {
+        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
             return session.getFeature(Copy.class).isSupported(source, target);
         }
         return proxy.isSupported(source, target);

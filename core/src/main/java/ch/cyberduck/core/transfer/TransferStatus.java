@@ -703,6 +703,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", lockId=").append(lockId);
         sb.append(", region=").append(region);
         sb.append(", part=").append(part);
+        sb.append(", filekey=").append(filekey);
         sb.append('}');
         return sb.toString();
     }

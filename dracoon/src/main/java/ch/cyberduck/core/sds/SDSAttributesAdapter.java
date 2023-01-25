@@ -181,4 +181,11 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
         }
         return acl;
     }
+
+    public static boolean isEncrypted(final PathAttributes attr) {
+        if(attr.getCustom().containsKey(KEY_ENCRYPTED)) {
+            return Boolean.parseBoolean(attr.getCustom().get(KEY_ENCRYPTED));
+        }
+        return false;
+    }
 }
