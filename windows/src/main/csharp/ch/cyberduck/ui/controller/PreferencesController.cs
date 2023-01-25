@@ -1225,7 +1225,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultS3StorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            Iterator iter = PreferencesFactory.get().getList("s3.storage.class.options").iterator();
+            Iterator iter = PreferencesReader.toList(ProtocolFactory.get().forType(Protocol.Type.s3).getProperties().get("s3.storage.class.options") as string).iterator();
             while (iter.hasNext())
             {
                 string s = (string) iter.next();
