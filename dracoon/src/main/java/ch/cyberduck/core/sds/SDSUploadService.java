@@ -222,6 +222,9 @@ public class SDSUploadService {
                                     failure.set(new InteroperabilityException());
                                 }
                                 else {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Error in upload status %s", uploadStatus));
+                                    }
                                     failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
                                 }
                                 signal.countDown();
