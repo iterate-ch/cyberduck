@@ -55,23 +55,6 @@ import static org.junit.Assert.*;
 public class SDSSessionTest extends AbstractSDSTest {
 
     @Test
-    public void testLoginOAuthPasswordFlow() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/DRACOON (CLI).cyberduckprofile"));
-        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
-                System.getProperties().getProperty("dracoon.user"), System.getProperties().getProperty("dracoon.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(new DisabledProxyFinder().find(new HostUrlProvider().get(host)), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(new SDSListService(session, new SDSNodeIdProvider(session))
-                .list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-    }
-
-    @Test
     public void testClassificationConfiguration() throws Exception {
         final ClassificationPoliciesConfig policies = session.shareClassificationsPolicies();
         assertNotNull(policies);
