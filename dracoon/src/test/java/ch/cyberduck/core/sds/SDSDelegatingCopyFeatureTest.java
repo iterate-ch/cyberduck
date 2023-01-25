@@ -275,10 +275,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("dracoon.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final EncryptRoomRequest encrypt = new EncryptRoomRequest();
-        encrypt.setIsEncrypted(true);
-        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room2
-        )), StringUtils.EMPTY, null);
+        final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
+        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room2)), StringUtils.EMPTY, null);
         room2.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -332,10 +330,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("dracoon.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final EncryptRoomRequest encrypt = new EncryptRoomRequest();
-        encrypt.setIsEncrypted(true);
-        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room2
-        )), StringUtils.EMPTY, null);
+        final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
+        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room2)), StringUtils.EMPTY, null);
         room2.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
