@@ -594,7 +594,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(!file.isFile()) {
                 continue;
             }
-            downloads.add(new TransferItem(file, temporary.create(pool.getHost().getUuid(), file)));
+            downloads.add(new TransferItem(file, temporary.create(String.format("quicklook-%s", pool.getHost().getUuid()), file)));
         }
         if(downloads.size() > 0) {
             this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, downloads));

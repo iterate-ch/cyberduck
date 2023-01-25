@@ -28,7 +28,6 @@ import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
-import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcherListener;
@@ -75,7 +74,6 @@ public class AbstractEditorTest {
         };
         final AtomicBoolean e = new AtomicBoolean();
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
-        final Local temporary = new DefaultTemporaryFileService().create(host.getUuid(), file);
         file.attributes().setSize("content".getBytes().length);
         final AbstractEditor editor = new AbstractEditor(host, file, new DisabledProgressListener()) {
             @Override
@@ -96,6 +94,5 @@ public class AbstractEditorTest {
         editor.open(new Application("com.editor"), new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener()).run(session);
         assertTrue(t.get());
         assertTrue(e.get());
-        assertTrue(temporary.exists());
     }
 }

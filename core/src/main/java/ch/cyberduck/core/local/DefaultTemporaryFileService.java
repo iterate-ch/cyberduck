@@ -18,15 +18,12 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 
@@ -54,21 +51,11 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
         $1%s: Delimiter
         $2%s: UID
         $3%s: Path
-        $4%s: Region
+        $4%s: Attributes Hash
          */
         final String pathFormat = "%2$s%1$s%3$s%1$s%4$s";
         final String normalizedPathFormat = pathFormat + "%1$s%5$s";
-        String attributes = StringUtils.EMPTY;
-        if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            if(new DefaultPathContainerService().isContainer(file)) {
-                attributes += file.attributes().getRegion();
-            }
-        }
-        if(file.isFile()) {
-            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                attributes += file.attributes().getVersionId();
-            }
-        }
+        final String attributes = String.valueOf(file.attributes().hashCode());
         final int limit = preferences.getInteger("local.temporaryfiles.shortening.threshold") -
                 new File(preferences.getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, file.getName())).getAbsolutePath().length();
         final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"), String.format(pathFormat, delimiter, uid,

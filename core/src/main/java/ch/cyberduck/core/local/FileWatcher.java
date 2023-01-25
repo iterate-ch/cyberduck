@@ -21,6 +21,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.io.watchservice.RegisterWatchService;
 import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.threading.DefaultThreadPool;
@@ -30,15 +31,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.regex.Pattern;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -57,7 +56,7 @@ public final class FileWatcher {
         this.pool = new DefaultThreadPool("watcher", 1);
     }
 
-    public static final class DefaultFileFilter implements Filter<Local> {
+    public static final class DefaultFileFilter extends NullFilter<Local> {
         private final Local file;
 
         public DefaultFileFilter(final Local file) {
@@ -68,22 +67,19 @@ public final class FileWatcher {
         public boolean accept(final Local f) {
             return StringUtils.equals(file.getName(), f.getName());
         }
+    }
 
-        @Override
-        public Pattern toPattern() {
-            return Pattern.compile(file.getName());
-        }
+    public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {
+        return this.register(file.getParent(), new DefaultFileFilter(file), listener);
     }
 
     public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
-        // Make sure to canonicalize the watched folder
-        final Path canonical = new File(folder.getAbsolute()).getCanonicalFile().toPath();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Register folder %s watching with filter %s", canonical, filter));
+            log.debug(String.format("Register folder %s watching with filter %s", folder, filter));
         }
-        final WatchKey key = monitor.register(canonical, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+        final WatchKey key = monitor.register(Paths.get(folder.getAbsolute()), new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         if(!key.isValid()) {
-            throw new IOException(String.format("Failure registering for events in %s", canonical));
+            throw new IOException(String.format("Failure registering for events in %s", folder));
         }
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
