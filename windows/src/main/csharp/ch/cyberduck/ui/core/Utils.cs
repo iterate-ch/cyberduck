@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Core
                 .FooterText(FormatHelp(help))
                 .Instruction(mainInstruction)
                 .MainIcon(mainIcon)
-                .Parent((HWND)owner?.Handle)
+                .Parent((HWND)(owner?.Handle ?? default))
                 .Title(title)
                 .UseHyperlinks()
                 .VerificationText(verificationText, false)
