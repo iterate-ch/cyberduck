@@ -43,7 +43,10 @@ public class CteraCustomActions implements CustomActions {
 
     @Override
     public Set<Action> list(final Path file) {
-        return Collections.singleton(CteraActions.versioning);
+        if(file.isFile()) {
+            return Collections.singleton(CteraActions.versioning);
+        }
+        return Collections.emptySet();
     }
 
     private enum CteraActions implements Action {
