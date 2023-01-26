@@ -27,7 +27,7 @@ public class ReverseLookupCacheTest {
     @Test
     public void testLookup() {
         final Cache<Path> cache = new ReverseLookupCache<>(new PathCache(1), 1);
-        assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
+        assertNull(cache.lookup(new SimplePathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
         final AttributedList<Path> list = new AttributedList<>();
         final Path directory = new Path("p", EnumSet.of(Path.Type.directory));
         final Path file1 = new Path(directory, "name1", EnumSet.of(Path.Type.file));
