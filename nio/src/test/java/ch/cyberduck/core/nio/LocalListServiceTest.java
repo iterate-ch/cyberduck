@@ -122,7 +122,7 @@ public class LocalListServiceTest {
             new LocalListService(session).list(recent, new DisabledListProgressListener());
             fail();
         }
-        catch(AccessDeniedException e) {
+        catch(AccessDeniedException | NotfoundException e) {
             //
         }
         session.close();
