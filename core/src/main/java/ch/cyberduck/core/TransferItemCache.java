@@ -40,7 +40,7 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
         private final CacheReference<Path> proxy;
 
         public TransferItemCacheReference(final TransferItem object) {
-            this.proxy = new DefaultPathPredicate(object.remote);
+            this.proxy = new SimplePathPredicate(object.remote);
         }
 
         @Override
