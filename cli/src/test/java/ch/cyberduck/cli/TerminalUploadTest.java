@@ -27,6 +27,7 @@ import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -43,7 +44,7 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class TerminalUploadTest {
+public class TerminalUploadTest extends VaultTest {
 
     @Test
     public void testUploadEncryptedRoom() throws Exception {
@@ -53,8 +54,8 @@ public class TerminalUploadTest {
         IOUtils.write(RandomUtils.nextBytes(256), local.getOutputStream(false));
         final CommandLine input = parser.parse(options, new String[]{
                 "--assumeyes",
-                "--username", System.getProperties().getProperty("dracoon.user"),
-                "--password", System.getProperties().getProperty("dracoon.key"),
+                "--username", PROPERTIES.get("dracoon.user"),
+                "--password", PROPERTIES.get("dracoon.key"),
                 "--upload", String.format("dracoon-cli://duck.dracoon.com/test/%s", new AlphanumericRandomStringService().random()),
                 local.getAbsolute()});
         final LinuxTerminalPreferences preferences = new LinuxTerminalPreferences();
