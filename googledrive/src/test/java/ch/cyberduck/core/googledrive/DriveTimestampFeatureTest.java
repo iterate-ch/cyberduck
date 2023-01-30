@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,9 +42,12 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
-        new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
+        final TransferStatus status = new TransferStatus().withTimestamp(modified);
+        new DriveTimestampFeature(session, fileid).setTimestamp(test, status);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
-        assertEquals(modified, new DriveAttributesFinderFeature(session, fileid).find(test).getModificationDate());
+        final PathAttributes attr = new DriveAttributesFinderFeature(session, fileid).find(test);
+        assertEquals(modified, attr.getModificationDate());
+        assertEquals(attr, status.getResponse());
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

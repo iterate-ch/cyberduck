@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
@@ -58,18 +59,20 @@ public class SDSTimestampFeature extends DefaultTimestampFeature {
                     throw new UnsupportedException();
                 }
             }
+            final Node latest;
             if(containerService.isContainer(file)) {
-                new NodesApi(session.getClient()).updateRoom(new UpdateRoomRequest().timestampModification(new DateTime(status.getTimestamp())),
+                latest = new NodesApi(session.getClient()).updateRoom(new UpdateRoomRequest().timestampModification(new DateTime(status.getTimestamp())),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
             else if(file.isDirectory()) {
-                new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().timestampModification(new DateTime(status.getTimestamp())),
+                latest =   new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().timestampModification(new DateTime(status.getTimestamp())),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
             else {
-                new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
+                latest =  new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().timestampModification(new DateTime(status.getTimestamp())),
                         Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY, null);
             }
+            status.setResponse(new SDSAttributesAdapter(session).toAttributes(latest));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService(nodeid).map("Failure to write attributes of {0}", e, file);

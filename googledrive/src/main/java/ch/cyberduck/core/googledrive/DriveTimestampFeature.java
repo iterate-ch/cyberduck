@@ -42,8 +42,9 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
             final String fileid = this.fileid.getFileId(file);
             final File properties = new File();
             properties.setModifiedTime(new DateTime(status.getTimestamp()));
-            session.getClient().files().update(fileid, properties).setFields("modifiedTime").
-                setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+            final File latest = session.getClient().files().update(fileid, properties).setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS).
+                    setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+            status.setResponse(new DriveAttributesFinderFeature(session, this.fileid).toAttributes(latest));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
