@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -36,8 +37,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class GraphLockFeatureTest extends AbstractSharepointTest {
@@ -57,6 +57,31 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
             assertEquals(attr.getModificationDate(), latest.getModificationDate());
             assertEquals(attr.getETag(), latest.getETag());
         }
+        feature.unlock(file, token);
+        {
+            final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
+            assertNotEquals(attr.getModificationDate(), latest.getModificationDate());
+            assertNotEquals(attr.getETag(), latest.getETag());
+        }
+        new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testDoubleLock() throws Exception {
+        final ListService list = new SharepointListService(session, fileid);
+        final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final Path drive = drives.get(0);
+        final Path file = new GraphTouchFeature(session, fileid).touch(new Path(drive,
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
+        final GraphLockFeature feature = new GraphLockFeature(session, fileid);
+        final String token = feature.lock(file);
+        {
+            final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
+            assertEquals(attr.getModificationDate(), latest.getModificationDate());
+            assertEquals(attr.getETag(), latest.getETag());
+        }
+        assertThrows(BackgroundException.class, () -> feature.lock(file));
         feature.unlock(file, token);
         {
             final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
