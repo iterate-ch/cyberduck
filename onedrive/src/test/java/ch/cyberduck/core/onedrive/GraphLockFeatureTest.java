@@ -31,6 +31,7 @@ import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -67,6 +68,7 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
     }
 
     @Test
+    @Ignore("Same user can checkout file multiple times (╯‵□′)╯︵┻━┻")
     public void testDoubleLock() throws Exception {
         final ListService list = new SharepointListService(session, fileid);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
