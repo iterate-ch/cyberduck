@@ -113,7 +113,6 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         Map<QName, String> map = new HashMap<>();
         final String ts = "Mon, 29 Oct 2018 21:14:06 UTC";
         map.put(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, ts);
-        map.put(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE, "Thu, 01 Nov 2018 15:31:57 UTC");
         when(mock.getModified()).thenReturn(new DateTime("2018-11-01T15:31:57Z").toDate());
         when(mock.getCustomPropsNS()).thenReturn(map);
 
@@ -128,38 +127,6 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
         Map<QName, String> map = new HashMap<>();
         final Date modified = new DateTime("2018-11-01T15:31:57Z").toDate();
-        when(mock.getModified()).thenReturn(modified);
-        when(mock.getCustomPropsNS()).thenReturn(map);
-
-        final PathAttributes attrs = f.toAttributes(mock);
-        assertEquals(modified.getTime(), attrs.getModificationDate());
-    }
-
-    @Test
-    public void testCustomModified_Modified() {
-        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
-        final DavResource mock = mock(DavResource.class);
-
-        Map<QName, String> map = new HashMap<>();
-        map.put(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, "Mon, 29 Oct 2018 21:14:06 UTC");
-        map.put(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE, "Thu, 01 Nov 2018 15:31:57 UTC");
-        final Date modified = new DateTime("2018-11-02T15:31:57Z").toDate();
-        when(mock.getModified()).thenReturn(modified);
-        when(mock.getCustomPropsNS()).thenReturn(map);
-
-        final PathAttributes attrs = f.toAttributes(mock);
-        assertEquals(modified.getTime(), attrs.getModificationDate());
-    }
-
-    @Test
-    public void testCustomModified_Epoch() {
-        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
-        final DavResource mock = mock(DavResource.class);
-
-        Map<QName, String> map = new HashMap<>();
-        map.put(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, "Thu, 01 Jan 1970 00:00:00 UTC");
-        map.put(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE, "Thu, 02 Nov 2018 15:31:57 UTC");
-        final Date modified = new DateTime("2018-11-02T15:31:57Z").toDate();
         when(mock.getModified()).thenReturn(modified);
         when(mock.getCustomPropsNS()).thenReturn(map);
 

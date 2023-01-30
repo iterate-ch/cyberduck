@@ -37,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -135,10 +134,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
 
     protected List<DavResource> list(final Path file) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
-                Stream.of(
-                                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                        collect(Collectors.toSet())
+                Stream.of(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE).collect(Collectors.toSet())
         );
     }
 
@@ -150,35 +146,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
             final String value = properties.get(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
             if(StringUtils.isNotBlank(value)) {
                 try {
-                    if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE)) {
-                        final String svalue = properties.get(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
-                        if(StringUtils.isNotBlank(svalue)) {
-                            final Date server = rfc1123.parse(svalue);
-                            if(server.equals(resource.getModified())) {
-                                // file not touched with a different client
-                                attributes.setModificationDate(
-                                        rfc1123.parse(value).getTime());
-                            }
-                            else {
-                                // file touched with a different client, use default modified date from server
-                                if(resource.getModified() != null) {
-                                    attributes.setModificationDate(resource.getModified().getTime());
-                                }
-                            }
-                        }
-                        else {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Missing value for property %s", DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE));
-                            }
-                            if(resource.getModified() != null) {
-                                attributes.setModificationDate(resource.getModified().getTime());
-                            }
-                        }
-                    }
-                    else {
-                        attributes.setModificationDate(
-                                rfc1123.parse(value).getTime());
-                    }
+                    attributes.setModificationDate(rfc1123.parse(value).getTime());
                 }
                 catch(InvalidDateException e) {
                     log.warn(String.format("Failure parsing property %s with value %s", DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, value));

@@ -45,10 +45,7 @@ public class NextcloudListService extends DAVListService {
     @Override
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
-                Stream.of(
-                                NextcloudAttributesFinderFeature.FILEID_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                Stream.of(NextcloudAttributesFinderFeature.FILEID_CUSTOM_NAMESPACE, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE).
                         collect(Collectors.toSet()));
     }
 }

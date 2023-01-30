@@ -75,9 +75,7 @@ public class NextcloudAttributesFinderFeature extends DAVAttributesFinderFeature
             url = new DAVPathEncoder().encode(file);
         }
         return session.getClient().list(url, 0,
-                Stream.of(FILEID_CUSTOM_NAMESPACE,
-                        DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
+                Stream.of(FILEID_CUSTOM_NAMESPACE, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE).collect(Collectors.toSet()));
     }
 
     @Override

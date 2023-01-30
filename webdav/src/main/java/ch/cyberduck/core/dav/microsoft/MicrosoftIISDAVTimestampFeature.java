@@ -41,7 +41,8 @@ public class MicrosoftIISDAVTimestampFeature extends DAVTimestampFeature {
         super(session);
     }
 
-    protected List<Element> getCustomProperties(final DavResource resource, final Long modified) {
+    @Override
+    protected List<Element> getCustomProperties(final Long modified) {
         final List<Element> props = new ArrayList<>();
         final Element element = SardineUtil.createElement(LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
         element.setTextContent(new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("GMT")));

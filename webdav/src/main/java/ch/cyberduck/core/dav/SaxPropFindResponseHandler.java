@@ -198,12 +198,6 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                         prop.setGetetag(value);
                         break;
                     }
-                    case "lastmodified_server": {
-                        final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
-                        element.setTextContent(text.toString());
-                        prop.getAny().add(element);
-                        break;
-                    }
                     case "lastmodified": {
                         final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
                         element.setTextContent(text.toString());

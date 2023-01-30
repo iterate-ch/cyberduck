@@ -101,9 +101,7 @@ public class NextcloudVersioningFeature implements Versioning {
             prop.setGetcontentlength(objectFactory.createGetcontentlength());
             prop.setGetlastmodified(objectFactory.createGetlastmodified());
             List<Element> any = prop.getAny();
-            for(QName entry : Stream.of(
-                            DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                            DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+            for(QName entry : Stream.of(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE).
                     collect(Collectors.toSet())) {
                 Element element = SardineUtil.createElement(entry);
                 any.add(element);
