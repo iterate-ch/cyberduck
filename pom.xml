@@ -80,7 +80,7 @@
         <argLine />
         <jna-version>5.12.1</jna-version>
         <jersey-version>2.38</jersey-version>
-        <jackson-version>2.14.1</jackson-version>
+        <jackson-version>2.14.2</jackson-version>
         <slf4j-version>2.0.6</slf4j-version>
         <log4j-version>2.19.0</log4j-version>
         <bouncycastle-version>1.70</bouncycastle-version>
