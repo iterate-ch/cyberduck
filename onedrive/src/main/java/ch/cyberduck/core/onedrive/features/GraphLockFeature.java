@@ -19,11 +19,13 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.http.HttpStatus;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
@@ -49,6 +51,9 @@ public class GraphLockFeature implements Lock<String> {
             publication = Files.publication(item);
         }
         catch(OneDriveAPIException e) {
+            if(e.getResponseCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                throw new LockedException(e.getMessage());
+            }
             throw new GraphExceptionMappingService(fileid).map("Failure to checkout file {0}", e, file);
         }
         catch(IOException e) {
