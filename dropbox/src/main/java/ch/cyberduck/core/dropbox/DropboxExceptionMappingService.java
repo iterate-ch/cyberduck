@@ -137,8 +137,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     case MALFORMED_PATH:
                     case DISALLOWED_NAME:
                     case NO_WRITE_PERMISSION:
-                    case CONFLICT:
                         return new AccessDeniedException(buffer.toString(), failure);
+                    case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
                     case INSUFFICIENT_SPACE:
                         return new QuotaException(buffer.toString(), failure);
                 }
@@ -187,6 +188,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 this.parse(buffer, lookup.toString());
                 switch(lookup.getReason().tag()) {
                     case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
                     case NO_WRITE_PERMISSION:
                     case DISALLOWED_NAME:
                         return new AccessDeniedException(buffer.toString(), failure);
@@ -206,10 +208,11 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 switch(lookup.tag()) {
                     case OTHER:
                         return new InteroperabilityException(buffer.toString(), failure);
+                    case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
                     case MALFORMED_PATH:
                     case DISALLOWED_NAME:
                     case NO_WRITE_PERMISSION:
-                    case CONFLICT:
                         return new AccessDeniedException(buffer.toString(), failure);
                     case INSUFFICIENT_SPACE:
                         return new QuotaException(buffer.toString(), failure);
