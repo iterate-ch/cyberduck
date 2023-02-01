@@ -21,6 +21,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -53,6 +54,9 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
                 return folder.withAttributes(new PathAttributes(folder.attributes()).withFileId(execute.getId()));
             }
             else {
+                if(new DriveFindFeature(session, fileid).find(folder)) {
+                    throw new ConflictException(folder.getAbsolute());
+                }
                 // Identified by the special folder MIME type application/vnd.google-apps.folder
                 final Drive.Files.Create insert = session.getClient().files().create(new File()
                         .setName(folder.getName())

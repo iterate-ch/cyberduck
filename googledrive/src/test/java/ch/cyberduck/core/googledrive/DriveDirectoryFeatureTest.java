@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,10 +43,17 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
                 new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String id = test.attributes().getFileId();
         assertNotNull(test.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
+        try {
+            new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus());
+            fail();
+        }
+        catch(ConflictException e) {
+            // Expected
+        }
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         // Trashed
