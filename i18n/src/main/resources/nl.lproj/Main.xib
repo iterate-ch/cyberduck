@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -254,7 +254,7 @@ CA
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Request files…" id="GnH-xE-vqc">
+                            <menuItem title="Bestanden aanvragen..." id="GnH-xE-vqc">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>
@@ -565,6 +565,6 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="20" height="13"/>
+        <image name="NSQuickLookTemplate" width="27" height="16"/>
     </resources>
 </document>
