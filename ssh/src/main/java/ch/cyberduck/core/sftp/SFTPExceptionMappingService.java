@@ -21,11 +21,15 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.QuotaException;
+import ch.cyberduck.core.features.Quota;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -62,18 +66,28 @@ public class SFTPExceptionMappingService extends AbstractExceptionMappingService
             final SFTPException failure = (SFTPException) e;
             final Response.StatusCode code = failure.getStatusCode();
             switch(code) {
-                case UNKNOWN:
-                case BAD_MESSAGE:
-                case FAILURE:
-                case OP_UNSUPPORTED:
-                    return new InteroperabilityException(buffer.toString(), e);
+                case FILE_ALREADY_EXISTS:
+                    return new ConflictException(buffer.toString(),e);
                 case NO_SUCH_FILE:
+                case NO_SUCH_PATH:
+                case INVALID_HANDLE:
                     return new NotfoundException(buffer.toString(), e);
                 case PERMISSION_DENIED:
+                case WRITE_PROTECT:
+                case CANNOT_DELETE:
                     return new AccessDeniedException(buffer.toString(), e);
                 case NO_CONNECTION:
                 case CONNECITON_LOST:
                     return new ConnectionRefusedException(buffer.toString(), e);
+                case NO_MEDIA:
+                    break;
+                case NO_SPACE_ON_FILESYSTEM:
+                case QUOTA_EXCEEDED:
+                    return new QuotaException(buffer.toString(), e);
+                case LOCK_CONFLICT:
+                    return new LockedException(buffer.toString(), e);
+                default:
+                    return new InteroperabilityException(buffer.toString(), e);
             }
         }
         if(e instanceof UserAuthException) {
