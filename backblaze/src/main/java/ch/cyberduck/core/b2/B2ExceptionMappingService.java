@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
@@ -66,6 +67,9 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 }
                 break;
             case HttpStatus.SC_BAD_REQUEST:
+                if("duplicate_bucket_name".equalsIgnoreCase(e.getCode())) {
+                    return new ConflictException(buffer.toString(), e);
+                }
                 if("no_such_file".equalsIgnoreCase(e.getCode())) {
                     return new NotfoundException(buffer.toString(), e);
                 }

@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -45,6 +46,13 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2DirectoryFeature feature = new B2DirectoryFeature(session, fileid);
         assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
         feature.mkdir(bucket, new TransferStatus());
+        try {
+            feature.mkdir(bucket, new TransferStatus());
+            fail();
+        }
+        catch(ConflictException e) {
+            // Expected
+        }
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
