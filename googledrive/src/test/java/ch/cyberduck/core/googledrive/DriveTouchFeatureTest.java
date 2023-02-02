@@ -46,13 +46,8 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         assertNotNull(id);
         assertNull(test.attributes().getVersionId());
         assertEquals(test.attributes().getFileId(), new DriveAttributesFinderFeature(session, fileid).find(test).getFileId());
-        try {
-            new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new DriveTouchFeature(session, fileid).touch(test, new TransferStatus()));
+        assertThrows(ConflictException.class, () -> new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus()));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         // Trashed

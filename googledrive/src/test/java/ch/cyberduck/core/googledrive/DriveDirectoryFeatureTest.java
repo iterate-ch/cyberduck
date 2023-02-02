@@ -47,13 +47,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final String id = test.attributes().getFileId();
         assertNotNull(test.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        try {
-            new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus()));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertNull(test.attributes().getFileId());
         // Trashed

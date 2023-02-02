@@ -42,21 +42,9 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        try {
-            new SDSDirectoryFeature(session, nodeid).mkdir(room, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(room, new TransferStatus()));
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        try {
-            new SDSDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new SDSDirectoryFeature(session, nodeid).mkdir(test, new TransferStatus()));
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());

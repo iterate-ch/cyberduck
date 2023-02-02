@@ -51,16 +51,8 @@ public class EueTouchFeatureTest extends AbstractEueSessionTest {
         final Path file = new EueTouchFeature(session, fileid).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertEquals(file.attributes(), new EueAttributesFinderFeature(session, fileid).find(file));
         // Create conflict
-        try {
-            new EueTouchFeature(session, fileid).touch(file, new TransferStatus().withLength(0L));
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
-        finally {
-            new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        }
+        assertThrows(ConflictException.class, () -> new EueTouchFeature(session, fileid).touch(file, new TransferStatus().withLength(0L)));
+        new EueDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = ConflictException.class)

@@ -45,13 +45,7 @@ public class LocalDirectoryFeatureTest {
         final Path folder = new Path(new LocalHomeFinderFeature().find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
         assertTrue(Files.exists(session.toPath(folder)));
-        try {
-            new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new LocalDirectoryFeature(session).mkdir(folder, new TransferStatus()));
         new LocalDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(Files.exists(session.toPath(folder)));
     }

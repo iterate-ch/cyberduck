@@ -46,13 +46,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2DirectoryFeature feature = new B2DirectoryFeature(session, fileid);
         assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
         feature.mkdir(bucket, new TransferStatus());
-        try {
-            feature.mkdir(bucket, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> feature.mkdir(bucket, new TransferStatus()));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

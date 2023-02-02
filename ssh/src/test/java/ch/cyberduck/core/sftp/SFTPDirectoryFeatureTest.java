@@ -31,8 +31,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
@@ -42,13 +42,7 @@ public class SFTPDirectoryFeatureTest extends AbstractSFTPTest {
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(new SFTPFindFeature(session).find(test));
-        try {
-            new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new SFTPDirectoryFeature(session).mkdir(test, new TransferStatus()));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

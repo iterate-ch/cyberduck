@@ -26,13 +26,7 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new AzureFindFeature(session, null).find(container));
         assertEquals(container.attributes(), new AzureAttributesFinderFeature(session, null).find(container));
-        try {
-            feature.mkdir(container, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> feature.mkdir(container, new TransferStatus()));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(container));
     }

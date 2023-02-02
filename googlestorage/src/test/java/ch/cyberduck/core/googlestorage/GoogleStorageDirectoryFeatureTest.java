@@ -48,13 +48,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
                 new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus().withRegion("us"));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
-        try {
-            new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus()));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -45,13 +45,7 @@ public class BoxDirectoryFeatureTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(folder));
         assertEquals(0L, folder.attributes().getSize());
         assertNotEquals(-1L, folder.attributes().getModificationDate());
-        try {
-            new BoxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new BoxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus()));
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
     }

@@ -32,8 +32,8 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
 public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
@@ -45,13 +45,7 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level1));
         assertTrue(new DropboxFindFeature(session).find(level1));
-        try {
-            new DropboxDirectoryFeature(session).mkdir(level1, new TransferStatus());
-            fail();
-        }
-        catch(ConflictException e) {
-            // Expected
-        }
+        assertThrows(ConflictException.class, () -> new DropboxDirectoryFeature(session).mkdir(level1, new TransferStatus()));
         final Path level2 = new DropboxDirectoryFeature(session).mkdir(new Path(level1,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level2));
