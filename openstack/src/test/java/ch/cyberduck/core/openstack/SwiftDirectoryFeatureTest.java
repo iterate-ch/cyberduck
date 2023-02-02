@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -43,9 +44,12 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
     @Test
     public void testCreateContainer() throws Exception {
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
-        final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withRegion("ORD"));
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path container = feature.mkdir(test, new TransferStatus().withRegion("ORD"));
         assertTrue(new SwiftFindFeature(session).find(container));
         assertEquals(container.attributes(), new SwiftAttributesFinderFeature(session).find(container));
+        // Can create again regardless if exists
+        feature.mkdir(test, new TransferStatus());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new SwiftFindFeature(session).find(container));
     }

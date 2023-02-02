@@ -23,6 +23,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEnt
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntryEntity;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -63,7 +64,7 @@ public class EueDirectoryFeature implements Directory<EueWriteFeature.Chunk> {
             switch(resourceCreationResponseEntry.getStatusCode()) {
                 case HttpStatus.SC_OK:
                     // Already exists
-                    log.warn(String.format("Folder %s already exists", folder));
+                    throw new ConflictException(folder.getAbsolute());
                 case HttpStatus.SC_CREATED:
                     final String resourceId = EueResourceIdProvider.getResourceIdFromResourceUri(resourceCreationResponseEntry.getHeaders().getLocation());
                     fileid.cache(folder, resourceId);

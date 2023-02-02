@@ -20,14 +20,13 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.ssl.SSLExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.client.HttpResponseException;
 
 import javax.net.ssl.SSLException;
 import java.net.UnknownHostException;
@@ -43,30 +42,16 @@ public class AzureExceptionMappingService extends AbstractExceptionMappingServic
         if(ExceptionUtils.getRootCause(failure) instanceof UnknownHostException) {
             return new NotfoundException(buffer.toString(), failure);
         }
-        switch(failure.getHttpStatusCode()) {
-            case 403:
-                return new LoginFailureException(buffer.toString(), failure);
-            case 404:
-                return new NotfoundException(buffer.toString(), failure);
-            case 304:
-            case 405:
-            case 400:
-            case 411:
-            case 412:
-                return new InteroperabilityException(buffer.toString(), failure);
-            case 500:
-                // InternalError
-                // OperationTimedOut
-                return new ConnectionTimeoutException(buffer.toString(), failure);
-            case 503:
-                // ServerBusy
-                return new RetriableAccessDeniedException(buffer.toString(), failure);
-        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SSLException) {
                 return new SSLExceptionMappingService().map(buffer.toString(), (SSLException) cause);
             }
         }
-        return this.wrap(failure, buffer);
+        switch(failure.getHttpStatusCode()) {
+            case 403:
+                return new LoginFailureException(buffer.toString(), failure);
+            default:
+                return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getHttpStatusCode(), buffer.toString()));
+        }
     }
 }

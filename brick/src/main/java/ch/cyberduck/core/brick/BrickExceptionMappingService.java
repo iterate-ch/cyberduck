@@ -28,8 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -42,7 +40,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class BrickExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
-    private static final Logger log = LogManager.getLogger(BrickExceptionMappingService.class);
 
     @Override
     public BackgroundException map(final ApiException failure) {

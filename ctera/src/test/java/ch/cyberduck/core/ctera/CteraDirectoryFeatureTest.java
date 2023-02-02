@@ -1,25 +1,24 @@
-package ch.cyberduck.core.dav;
+package ch.cyberduck.core.ctera;
 
 /*
- * Copyright (c) 2002-2013 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -36,15 +35,15 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DAVDirectoryFeatureTest extends AbstractDAVTest {
+public class CteraDirectoryFeatureTest extends AbstractCteraTest {
 
     @Test
     public void testMakeDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
+        new CteraDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         try {
-            new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
+            new CteraDirectoryFeature(session).mkdir(test, new TransferStatus());
             fail();
         }
         catch(ConflictException e) {

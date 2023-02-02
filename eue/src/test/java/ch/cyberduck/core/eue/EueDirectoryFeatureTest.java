@@ -42,6 +42,13 @@ public class EueDirectoryFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final TransferStatus status = new TransferStatus();
         final Path directory = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
+        try {
+            new EueDirectoryFeature(session, fileid).mkdir(directory, new TransferStatus());
+            fail();
+        }
+        catch(ConflictException e) {
+            // Expected
+        }
         assertEquals(new EueAttributesFinderFeature(session, fileid).find(directory).getFileId(), directory.attributes().getFileId());
         new EueDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

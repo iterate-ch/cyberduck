@@ -18,6 +18,7 @@ package ch.cyberduck.core.box;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -44,6 +45,13 @@ public class BoxDirectoryFeatureTest extends AbstractBoxTest {
         assertTrue(new BoxFindFeature(session, fileid).find(folder));
         assertEquals(0L, folder.attributes().getSize());
         assertNotEquals(-1L, folder.attributes().getModificationDate());
+        try {
+            new BoxDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
+            fail();
+        }
+        catch(ConflictException e) {
+            // Expected
+        }
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));
     }
