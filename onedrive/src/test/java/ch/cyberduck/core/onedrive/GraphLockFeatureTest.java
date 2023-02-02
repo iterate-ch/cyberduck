@@ -51,6 +51,8 @@ public class GraphLockFeatureTest extends AbstractSharepointTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).find(file);
         final GraphLockFeature feature = new GraphLockFeature(session, fileid);
+        feature.lock(file);
+        // Same user can checkout file multiple times
         final String token = feature.lock(file);
         {
             final PathAttributes latest = new GraphAttributesFinderFeature(session, fileid).find(file);
