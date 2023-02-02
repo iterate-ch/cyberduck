@@ -52,7 +52,7 @@ public class GraphLockFeature implements Lock<String> {
         }
         catch(OneDriveAPIException e) {
             if(e.getResponseCode() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-                throw new LockedException(e.getMessage());
+                throw new LockedException(e.getMessage(), e);
             }
             throw new GraphExceptionMappingService(fileid).map("Failure to checkout file {0}", e, file);
         }
