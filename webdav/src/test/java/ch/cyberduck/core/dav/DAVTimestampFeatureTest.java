@@ -18,6 +18,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -39,9 +40,12 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
-        final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new DAVTimestampFeature(session).setTimestamp(file, 5000L);
-        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
+        final TransferStatus status = new TransferStatus();
+        final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
+        new DAVTimestampFeature(session).setTimestamp(file, status.withTimestamp(5000L));
+        final PathAttributes attr = new DAVAttributesFinderFeature(session).find(file);
+        assertEquals(5000L, attr.getModificationDate());
+        assertEquals(status.getResponse(), attr);
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

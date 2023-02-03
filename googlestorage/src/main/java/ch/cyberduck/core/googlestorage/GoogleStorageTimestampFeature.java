@@ -55,7 +55,8 @@ public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
             if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                 request.setUserProject(session.getHost().getCredentials().getUsername());
             }
-            request.execute();
+            final StorageObject latest = request.execute();
+            status.setResponse(new GoogleStorageAttributesFinderFeature(session).toAttributes(latest));
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
@@ -72,7 +73,7 @@ public class GoogleStorageTimestampFeature extends DefaultTimestampFeature {
                 // You cannot remove Custom-Time once it's been set on an object. Additionally, the value for Custom-Time cannot
                 // decrease. That is, you cannot set Custom-Time to be an earlier date/time than the existing Custom-Time.
                 // You can, however, effectively remove or reset the Custom-Time by rewriting the object.
-                new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
+                status.setResponse(new GoogleStorageCopyFeature(session).copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener()).attributes());
                 return;
             }
             throw failure;

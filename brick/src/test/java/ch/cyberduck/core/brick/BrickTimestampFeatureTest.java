@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -39,8 +40,11 @@ public class BrickTimestampFeatureTest extends AbstractBrickTest {
     public void testSetTimestampFile() throws Exception {
         final Path file = new BrickTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new BrickTimestampFeature(session).setTimestamp(file, 5000L);
-        assertEquals(5000L, new BrickAttributesFinderFeature(session).find(file).getModificationDate());
+        final TransferStatus status = new TransferStatus().withTimestamp(5000L);
+        new BrickTimestampFeature(session).setTimestamp(file, status);
+        final PathAttributes attr = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(5000L, attr.getModificationDate());
+        assertEquals(attr, status.getResponse());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

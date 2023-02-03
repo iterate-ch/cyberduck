@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
@@ -74,6 +75,9 @@ public class NextcloudSession extends DAVSession {
         }
         if(type == Read.class) {
             return (T) new NextcloudReadFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new NextcloudTimestampFeature(this);
         }
         return super._getFeature(type);
     }

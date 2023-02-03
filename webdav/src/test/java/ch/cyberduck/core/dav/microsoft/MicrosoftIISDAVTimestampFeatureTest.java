@@ -61,8 +61,11 @@ public class MicrosoftIISDAVTimestampFeatureTest extends AbstractDAVTest {
         final Path file = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new MicrosoftIISDAVFindFeature(session).find(file));
         assertNotSame(PathAttributes.EMPTY, new MicrosoftIISDAVAttributesFinderFeature(session).find(file));
-        new MicrosoftIISDAVTimestampFeature(session).setTimestamp(file, 5000L);
-        assertEquals(5000L, new MicrosoftIISDAVAttributesFinderFeature(session).find(file).getModificationDate());
+        final TransferStatus status = new TransferStatus();
+        new MicrosoftIISDAVTimestampFeature(session).setTimestamp(file, status.withTimestamp(5000L));
+        final PathAttributes attr = new MicrosoftIISDAVAttributesFinderFeature(session).find(file);
+        assertEquals(5000L, attr.getModificationDate());
+        assertEquals(status.getResponse(), attr);
         assertEquals(5000L, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(file.getParent(),
                 new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
