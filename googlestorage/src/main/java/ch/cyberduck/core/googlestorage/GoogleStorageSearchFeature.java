@@ -66,7 +66,6 @@ public class GoogleStorageSearchFeature implements Search {
 
     @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
-
 }
