@@ -89,7 +89,7 @@ public class AzureSingleTransferWorkerTest extends AbstractAzureTest {
 
         }.run(session));
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
     }
 }

@@ -103,22 +103,22 @@ public class CryptoAzureSingleTransferWorkerTest extends AbstractAzureTest {
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(dir1));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new AzureAttributesFinderFeature(session, null), cryptomator).find(file1).getSize());
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(dir1));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new AzureAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, null), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, new CryptoAttributesFeature(session, new AzureAttributesFinderFeature(session, null), cryptomator).find(file2).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new AzureAttributesFinderFeature(session), cryptomator).find(file2).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-            final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, null), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(file1, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();
