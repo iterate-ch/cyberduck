@@ -34,7 +34,9 @@ public class SearchFilterTest {
         assertFalse(new SearchFilter("a").accept(new Path("/f.txt", EnumSet.of(Path.Type.file))));
         assertFalse(new SearchFilter(".*").accept(new Path("/f.txt", EnumSet.of(Path.Type.file))));
         assertTrue(new SearchFilter("f*").accept(new Path("/f.txt", EnumSet.of(Path.Type.file))));
+        assertTrue(new SearchFilter("f*").accept(new Path("/F.txt", EnumSet.of(Path.Type.file))));
         assertTrue(new SearchFilter("*.txt").accept(new Path("/f.txt", EnumSet.of(Path.Type.file))));
+        assertTrue(new SearchFilter("*.txt").accept(new Path("/f.TXT", EnumSet.of(Path.Type.file))));
         assertTrue(new SearchFilter("*").accept(new Path("/f.txt", EnumSet.of(Path.Type.file))));
     }
 }

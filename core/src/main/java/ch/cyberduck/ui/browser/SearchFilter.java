@@ -44,7 +44,7 @@ public class SearchFilter implements Filter<Path> {
             return true;
         }
         final Pattern pattern = this.toPattern();
-        if(pattern.matcher(file.getName()).matches()) {
+        if(pattern.matcher(StringUtils.lowerCase(file.getName())).matches()) {
             // Matching pattern
             return true;
         }
@@ -72,8 +72,9 @@ public class SearchFilter implements Filter<Path> {
     public Pattern toPattern() {
         final StringBuilder pattern = new StringBuilder();
         pattern.append("\\A");
-        for(int i = 0; i < input.length(); i++) {
-            char ch = input.charAt(i);
+        final String lowercaseInput = StringUtils.lowerCase(input);
+        for(int i = 0; i < lowercaseInput.length(); i++) {
+            char ch = lowercaseInput.charAt(i);
             if(ch == '?') {
                 pattern.append('.');
             }

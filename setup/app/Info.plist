@@ -275,7 +275,7 @@
             <key>WorkingDirectory</key>
             <string>$APP_PACKAGE/Contents/Resources</string>
             <key>VMOptions</key>
-            <string>$JVM_RUNTIME_ARGS</string>
+            <string>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 $JVM_RUNTIME_ARGS</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
