@@ -26,13 +26,14 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketCreateService {
-    private static final Logger log = Logger.getLogger(S3BucketCreateService.class);
+    private static final Logger log = LogManager.getLogger(S3BucketCreateService.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -43,7 +44,10 @@ public class S3BucketCreateService {
     }
 
     public void create(final Path bucket, final String region) throws BackgroundException {
-        if(!session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Create bucket %s in region %s", bucket, region));
+        }
+        if(!new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
                 throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
             }
@@ -58,12 +62,16 @@ public class S3BucketCreateService {
         try {
             if(StringUtils.isNotBlank(region)) {
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    session.getClient().getConfiguration().setProperty("s3service.s3-endpoint", String.format("s3.dualstack.%s.amazonaws.com", region));
+                    // Adjust default region to be used when searching for existing bucket will return 404
+                    session.getHost().setProperty("s3.location", region);
                 }
+            }
+            else {
+                log.warn("Missing region for bucket location");
             }
             // Create bucket
             session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()),
-                "us-east-1".equals(region) ? "US" : region, acl);
+                    "us-east-1".equals(region) ? "US" : region, acl);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);

@@ -158,7 +158,7 @@ public final class PathNormalizer {
      * @return Normalized
      */
     public static List<Path> normalize(final List<Path> selected) {
-        final List<Path> normalized = new Collection<Path>();
+        final List<Path> normalized = new Collection<>();
         for(Path f : selected) {
             boolean duplicate = false;
             for(Path n : normalized) {
@@ -200,7 +200,7 @@ public final class PathNormalizer {
                 // Relative path
                 normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), false);
             }
-            return new Path(String.format("%s%s%s", root.getAbsolute(), Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
+            return new Path(String.format("%s%s%s", root.getAbsolute(), root.isRoot() ? StringUtils.EMPTY : Path.DELIMITER, normalized), EnumSet.of(Path.Type.directory));
         }
     }
 }

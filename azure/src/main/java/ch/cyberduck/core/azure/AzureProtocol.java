@@ -95,6 +95,7 @@ public class AzureProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new DirectoryDelimiterPathContainerService();

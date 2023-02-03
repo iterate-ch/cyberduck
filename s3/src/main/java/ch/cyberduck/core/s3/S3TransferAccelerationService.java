@@ -22,31 +22,28 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.TransferAcceleration;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.jets3t.service.Jets3tProperties;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.model.AccelerateConfig;
-import org.jets3t.service.utils.ServiceUtils;
 
 public class S3TransferAccelerationService implements TransferAcceleration {
+    private static final Logger log = LogManager.getLogger(S3TransferAccelerationService.class);
 
-    private final PathContainerService containerService;
+    private final Preferences preferences = PreferencesFactory.get();
+
     private final S3Session session;
+    private final PathContainerService containerService;
 
-    public static final String S3_ACCELERATE_HOSTNAME = "s3-accelerate.amazonaws.com";
     public static final String S3_ACCELERATE_DUALSTACK_HOSTNAME = "s3-accelerate.dualstack.amazonaws.com";
 
-    private final String hostname;
-
     public S3TransferAccelerationService(final S3Session session) {
-        this(session, S3_ACCELERATE_DUALSTACK_HOSTNAME);
-    }
-
-    public S3TransferAccelerationService(final S3Session session, final String hostname) {
         this.session = session;
-        this.hostname = hostname;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -54,7 +51,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public boolean getStatus(final Path file) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
         try {
-            return session.getClient().getAccelerateConfig(bucket.getName()).isEnabled();
+            return session.getClient().getAccelerateConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName()).isEnabled();
         }
         catch(S3ServiceException failure) {
             throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", failure, bucket);
@@ -65,10 +62,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     public void setStatus(final Path file, final boolean enabled) throws BackgroundException {
         final Path bucket = containerService.getContainer(file);
         try {
-            if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
-                throw new InteroperabilityException("The name of the bucket used for Transfer Acceleration must be DNS-compliant and must not contain periods.");
-            }
-            session.getClient().setAccelerateConfig(bucket.getName(), new AccelerateConfig(enabled));
+            session.getClient().setAccelerateConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), new AccelerateConfig(enabled));
         }
         catch(S3ServiceException failure) {
             throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", failure, bucket);
@@ -97,24 +91,20 @@ public class S3TransferAccelerationService implements TransferAcceleration {
 
     @Override
     public void configure(final boolean enable, final Path file) {
-        final Jets3tProperties options = session.getClient().getConfiguration();
+        final Host host = session.getHost();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set S3 transfer acceleration to %s", enable));
+        }
+        // Set accelerated endpoint
+        host.setProperty("s3.transferacceleration.enable", String.valueOf(enable));
         if(enable) {
-            // Set accelerated endpoint
-            options.setProperty("s3service.s3-endpoint", hostname);
-            options.setProperty("s3service.disable-dns-buckets", String.valueOf(false));
-            options.setProperty("s3service.disable-expect-continue", String.valueOf(true));
+            host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(false));
+            host.setProperty("s3.upload.expect-continue", String.valueOf(false));
         }
         else {
             // Revert default configuration
-            options.loadAndReplaceProperties(session.getClient().getConfiguration(), this.toString());
+            host.setProperty("s3.bucket.virtualhost.disable", preferences.getProperty("s3.bucket.virtualhost.disable"));
+            host.setProperty("s3.upload.expect-continue", preferences.getProperty("s3.upload.expect-continue"));
         }
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("S3TransferAccelerationService{");
-        sb.append("hostname='").append(hostname).append('\'');
-        sb.append('}');
-        return sb.toString();
     }
 }

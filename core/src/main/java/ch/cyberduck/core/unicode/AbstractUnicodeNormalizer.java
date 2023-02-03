@@ -15,12 +15,13 @@ package ch.cyberduck.core.unicode;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.Normalizer;
 
 public abstract class AbstractUnicodeNormalizer implements UnicodeNormalizer {
-    private static final Logger log = Logger.getLogger(AbstractUnicodeNormalizer.class);
+    private static final Logger log = LogManager.getLogger(AbstractUnicodeNormalizer.class);
 
     private final Normalizer.Form form;
 

@@ -22,6 +22,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
+using static Ch.Cyberduck.ImageHelper;
+using Windows.Win32.UI.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -153,17 +155,17 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                     case TransferStatus.InProgress:
                         progressBar.Visible = true;
                         statusLabel.Visible = false;
-                        statusPictureBox.Image = ResourcesBundle.statusYellow;
+                        statusPictureBox.Image = Images.StatusYellow;
                         break;
                     case TransferStatus.Complete:
                         progressBar.Visible = false;
                         statusLabel.Visible = true;
-                        statusPictureBox.Image = ResourcesBundle.statusGreen;
+                        statusPictureBox.Image = Images.StatusGreen;
                         break;
                     case TransferStatus.Incomplete:
                         progressBar.Visible = false;
                         statusLabel.Visible = true;
-                        statusPictureBox.Image = ResourcesBundle.statusRed;
+                        statusPictureBox.Image = Images.StatusRed;
                         break;
                 }
             }
@@ -175,15 +177,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 if (value == TransferDirection.Download)
                 {
-                    directionPictureBox.Image = ResourcesBundle.transfer_download;
+                    directionPictureBox.Image = Images.TransferDownload;
                 }
                 if (value == TransferDirection.Upload)
                 {
-                    directionPictureBox.Image = ResourcesBundle.transfer_upload;
+                    directionPictureBox.Image = Images.TransferUpload;
                 }
                 if (value == TransferDirection.Sync)
                 {
-                    directionPictureBox.Image = ResourcesBundle.sync;
+                    directionPictureBox.Image = Images.Sync;
                 }
             }
         }
@@ -234,23 +236,14 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         }
 
         public TaskDialogResult MessageBox(string title, string message, string content, string expandedInfo,
-            string help, string verificationText, DialogResponseHandler handler)
-        {
-            return TaskDialogResult.Empty;
-        }
+            string help, string verificationText, DialogResponseHandler handler) => default;
 
-        public TaskDialogResult MessageBox(string title, string message, string content, TaskDialogCommonButtons buttons,
-            TaskDialogIcon icons)
-        {
-            return TaskDialogResult.Empty;
-        }
+        public TaskDialogResult MessageBox(string title, string message, string content, TASKDIALOG_COMMON_BUTTON_FLAGS buttons,
+            TaskDialogIcon icons) => default;
 
         public TaskDialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
             string help, string verificationText, string commandButtons, bool showCancelButton, TaskDialogIcon mainIcon,
-            TaskDialogIcon footerIcon, DialogResponseHandler handler)
-        {
-            return TaskDialogResult.Empty;
-        }
+            TaskDialogIcon footerIcon, DialogResponseHandler handler) => default;
 
         public event VoidHandler ViewShownEvent = delegate { };
         public event VoidHandler ViewClosedEvent = delegate { };
@@ -266,6 +259,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         private void DelegateOnClick(object sender, EventArgs e)
         {
             OnClick(EventArgs.Empty);
+        }
+
+        bool IView.IsOnCurrentDesktop() => default;
+        Guid IView.GetDesktopId() => default;
+        void IView.MoveToDesktop(Guid desktop)
+        {
         }
     }
 

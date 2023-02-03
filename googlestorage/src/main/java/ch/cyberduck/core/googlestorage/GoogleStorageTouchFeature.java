@@ -15,53 +15,20 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
-import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 
-public class GoogleStorageTouchFeature implements Touch<VersionId> {
+import com.google.api.services.storage.model.StorageObject;
 
-    private Write<VersionId> writer;
-    private final GoogleStorageSession session;
+public class GoogleStorageTouchFeature extends DefaultTouchFeature<StorageObject> {
 
     public GoogleStorageTouchFeature(final GoogleStorageSession session) {
-        this.writer = new GoogleStorageWriteFeature(session);
-        this.session = session;
-    }
-
-    @Override
-    public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setLength(0L);
-        final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
-        new DefaultStreamCloser().close(out);
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-            session.getFeature(PathContainerService.class).getContainer(file)
-        ) : VersioningConfiguration.empty();
-        if(versioning.isEnabled()) {
-            return file.withAttributes(new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
-        }
-        return file;
+        super(new GoogleStorageWriteFeature(session));
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
-    }
-
-    @Override
-    public Touch<VersionId> withWriter(final Write<VersionId> writer) {
-        this.writer = writer;
-        return this;
     }
 }

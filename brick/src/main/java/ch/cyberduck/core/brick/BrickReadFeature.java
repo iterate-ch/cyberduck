@@ -36,13 +36,14 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BrickReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(BrickReadFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickReadFeature.class);
 
     private final BrickSession session;
 
@@ -53,14 +54,14 @@ public class BrickReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            final FileEntity entity = new FilesApi(new BrickApiClient(session))
                 .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     null, null, null, null);
             final HttpUriRequest request = new HttpGet(entity.getDownloadUri());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {
@@ -77,7 +78,7 @@ public class BrickReadFeature implements Read {
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_OK:
                 case HttpStatus.SC_PARTIAL_CONTENT:
-                    return new HttpMethodReleaseInputStream(response);
+                    return new HttpMethodReleaseInputStream(response, status);
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
                         response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);

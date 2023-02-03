@@ -142,7 +142,7 @@ public abstract class NSData extends NSObject {
      * Original signature : <code>BOOL isEqualToData(NSData*)</code><br>
      * <i>from NSExtendedData native declaration : :40</i>
      */
-    public abstract byte isEqualToData(NSData other);
+    public abstract boolean isEqualToData(NSData other);
     /**
      * <i>from NSExtendedData native declaration : :41</i><br>
      * Conversion Error : /// Original signature : <code>NSData* subdataWithRange(null)</code><br>

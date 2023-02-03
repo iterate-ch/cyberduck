@@ -15,7 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LoggingTranscriptListener implements TranscriptListener {
 
@@ -23,7 +24,7 @@ public class LoggingTranscriptListener implements TranscriptListener {
     private final Logger response;
 
     public LoggingTranscriptListener() {
-        this(Logger.getLogger("ch.cyberduck.transcript.request"), Logger.getLogger("ch.cyberduck.transcript.response"));
+        this(LogManager.getLogger("ch.cyberduck.transcript.request"), LogManager.getLogger("ch.cyberduck.transcript.response"));
     }
 
     public LoggingTranscriptListener(final Logger request, final Logger response) {

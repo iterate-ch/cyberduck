@@ -32,19 +32,24 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.controller.InsecureLoginAlertController;
 import ch.cyberduck.ui.cocoa.controller.LoginController;
+import ch.cyberduck.ui.cocoa.controller.ProgressAlertController;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 
+import java.util.concurrent.CountDownLatch;
+
 public final class PromptLoginCallback extends PromptPasswordCallback implements LoginCallback {
-    private static final Logger log = Logger.getLogger(PromptLoginCallback.class);
+    private static final Logger log = LogManager.getLogger(PromptLoginCallback.class);
 
     private final Preferences preferences
         = PreferencesFactory.get();
@@ -60,13 +65,22 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
+    public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) throws ConnectionCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Display progress alert for %s", bookmark));
+        }
+        final AlertController alert = new ProgressAlertController(signal, title, message, bookmark.getProtocol());
+        alert.beginSheet(parent);
+    }
+
+    @Override
     public void warn(final Host bookmark, final String title, final String message,
-                     final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                     final String continueButton, final String disconnectButton, final String preference) throws ConnectionCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Display insecure connection alert for %s", bookmark));
         }
         final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton,
-            bookmark.getProtocol(), StringUtils.isNotBlank(preference));
+                bookmark.getProtocol(), StringUtils.isNotBlank(preference));
         int option = alert.beginSheet(parent);
         if(alert.isSuppressed()) {
             // Never show again.

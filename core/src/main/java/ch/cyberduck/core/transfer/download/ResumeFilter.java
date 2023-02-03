@@ -30,15 +30,16 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ResumeFilter extends AbstractDownloadFilter {
-    private static final Logger log = Logger.getLogger(ResumeFilter.class);
+    private static final Logger log = LogManager.getLogger(ResumeFilter.class);
 
     private final Download download;
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new DownloadFilterOptions());
+        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public ResumeFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
@@ -63,7 +64,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                         final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                         if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                                log.info(String.format("Skip file %s with checksum %s", file, attributes.getChecksum()));
                             }
                             return false;
                         }
@@ -110,7 +111,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
                             status.setAppend(true);
                             status.setLength(status.getLength() - local.attributes().getSize());
                             status.setOffset(status.getOffset() + local.attributes().getSize());
-                            status.rename((Local) null);
+                            status.withRename((Local) null);
                             if(status.getLength() == 0L) {
                                 status.setComplete();
                             }

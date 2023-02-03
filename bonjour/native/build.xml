@@ -38,7 +38,7 @@
     </target>
 
     <target name="build" depends="init-msbuild, version">
-        <!-- Create DLL Cyberduck.Core.Native -->
+        <!-- Create DLL Cyberduck.Bonjour.Native -->
         <msbuild buildfile="../src/main/csharp/Cyberduck.Bonjour.Native.csproj">
             <target name="Build"/>
 

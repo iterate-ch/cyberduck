@@ -42,7 +42,8 @@ import ch.cyberduck.ui.cocoa.controller.ProgressController;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -53,7 +54,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class TransferTableDataSource extends ListDataSource {
-    private static final Logger log = Logger.getLogger(TransferTableDataSource.class);
+    private static final Logger log = LogManager.getLogger(TransferTableDataSource.class);
 
     private final Map<Transfer, ProgressController> controllers
             = new HashMap<Transfer, ProgressController>();

@@ -1,0 +1,18 @@
+﻿<Project>
+  <PropertyGroup>
+    <i18n_gen_dll>$(CyberduckDir)core\target\i18n-gen.dll</i18n_gen_dll>
+  </PropertyGroup>
+
+  <UsingTask TaskName="ResourceGenTask"
+             AssemblyFile="$(i18n_gen_dll)"
+             TaskFactory="TaskHostFactory" />
+  <UsingTask TaskName="ImageDiscoverTask"
+             AssemblyFile="$(i18n_gen_dll)"
+             TaskFactory="TaskHostFactory" />
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)i18n-gen.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="False" />
+  </ItemGroup>
+</Project>

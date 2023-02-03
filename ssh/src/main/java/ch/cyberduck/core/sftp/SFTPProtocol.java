@@ -89,4 +89,9 @@ public class SFTPProtocol extends AbstractProtocol {
     public JumphostConfigurator getJumpHostFinder() {
         return jumphost;
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
 }

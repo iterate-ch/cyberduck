@@ -25,18 +25,19 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Preload CDN configuration
  */
-public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeature<Map<Path, Distribution>> {
-    private static final Logger log = Logger.getLogger(SwiftDistributionConfigurationLoader.class);
+public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeature<Set<Distribution>> {
+    private static final Logger log = LogManager.getLogger(SwiftDistributionConfigurationLoader.class);
 
     private final SwiftSession session;
 
@@ -46,20 +47,21 @@ public class SwiftDistributionConfigurationLoader extends OneTimeSchedulerFeatur
     }
 
     @Override
-    protected Map<Path, Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
+    protected Set<Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
         if(null == feature) {
-            return Collections.emptyMap();
+            return Collections.emptySet();
         }
-        final AttributedList<Path> containers = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion())).list(file, new DisabledListProgressListener());
-        final Map<Path, Distribution> distributions = new ConcurrentHashMap<>();
+        final AttributedList<Path> containers = new SwiftContainerListService(session, new SwiftLocationFeature.SwiftRegion(session.getHost().getRegion()))
+            .list(file, new DisabledListProgressListener());
+        final Set<Distribution> distributions = new LinkedHashSet<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
                 final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Cache distribution %s", distribution));
                 }
-                distributions.put(container, distribution);
+                distributions.add(distribution);
             }
         }
         return distributions;

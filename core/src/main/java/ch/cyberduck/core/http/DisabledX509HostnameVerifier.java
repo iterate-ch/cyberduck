@@ -1,12 +1,13 @@
 package ch.cyberduck.core.http;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 public class DisabledX509HostnameVerifier implements HostnameVerifier {
-    private static final Logger log = Logger.getLogger(DisabledX509HostnameVerifier.class);
+    private static final Logger log = LogManager.getLogger(DisabledX509HostnameVerifier.class);
 
     @Override
     public boolean verify(final String host, final SSLSession sslSession) {

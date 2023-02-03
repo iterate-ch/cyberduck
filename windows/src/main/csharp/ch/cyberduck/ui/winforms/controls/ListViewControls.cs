@@ -16,13 +16,16 @@
 // yves@cyberduck.ch
 // 
 
+using BrightIdeasSoftware;
 using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BrightIdeasSoftware;
+using Windows.Win32.Foundation;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -31,15 +34,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     /// </summary>
     public class ListViewControls : ObjectListView
     {
-        // ListView messages
-        private const int LVM_FIRST = 0x1000;
-        private const int LVM_GETCOLUMNORDERARRAY = (LVM_FIRST + 59);
-
-        // Windows Messages
-        private const int WM_HSCROLL = 0x114;
-        private const int WM_PAINT = 0x000F;
-        private const int WM_VSCROLL = 0x115;
-
         private readonly ArrayList _embeddedControls = new ArrayList();
 
         public ListViewControls()
@@ -63,9 +57,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             }
         }
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wPar, IntPtr lPar);
-
         /// <summary>
         /// Retrieve the order in which columns appear
         /// </summary>
@@ -74,8 +65,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             IntPtr lPar = Marshal.AllocHGlobal(Marshal.SizeOf(typeof (int))*Columns.Count);
 
-            IntPtr res = SendMessage(Handle, LVM_GETCOLUMNORDERARRAY, new IntPtr(Columns.Count), lPar);
-            if (res.ToInt32() == 0) // Something went wrong
+            var res = SendMessage((HWND)Handle, LVM_GETCOLUMNORDERARRAY, (nuint)Columns.Count, lPar);
+            if (res.Value == 0) // Something went wrong
             {
                 Marshal.FreeHGlobal(lPar);
                 return null;
@@ -226,7 +217,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
         protected override void WndProc(ref Message m)
         {
-            switch (m.Msg)
+            switch ((uint)m.Msg)
             {
                 case WM_HSCROLL:
                 case WM_VSCROLL:

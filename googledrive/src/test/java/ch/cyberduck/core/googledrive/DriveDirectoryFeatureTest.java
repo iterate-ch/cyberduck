@@ -15,10 +15,13 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -28,10 +31,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DriveDirectoryFeatureTest extends AbstractDriveTest {
@@ -39,15 +40,25 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final String id = test.attributes().getFileId();
         assertNotNull(test.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-            new Delete.DisabledCallback());
+        assertThrows(ConflictException.class, () -> new DriveDirectoryFeature(session, fileid).mkdir(test, new TransferStatus()));
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertNull(test.attributes().getFileId());
         // Trashed
-        assertTrue(new DriveFindFeature(session, fileid).find(test));
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
+        assertFalse(new DriveFindFeature(session, fileid).find(test));
+        assertFalse(new DefaultFindFeature(session).find(test));
+        // When searching with version "2", find trashed file
+        final Path trashed = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        assertNotNull(trashed);
+        assertEquals(id, trashed.attributes().getFileId());
+        assertTrue(new DefaultFindFeature(session).find(trashed));
+        assertTrue(new DriveFindFeature(session, fileid).find(trashed));
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

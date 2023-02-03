@@ -17,24 +17,24 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -53,10 +52,10 @@ import static ch.cyberduck.core.b2.B2LargeUploadService.X_BZ_INFO_LARGE_FILE_SHA
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2LargeCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(B2LargeCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(B2LargeCopyFeature.class);
 
     private final PathContainerService containerService
-        = new B2PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -66,7 +65,7 @@ public class B2LargeCopyFeature implements Copy {
 
     public B2LargeCopyFeature(final B2Session session, final B2VersionIdProvider fileid) {
         this(session, fileid, new HostPreferences(session.getHost()).getLong("b2.copy.largeobject.size"),
-            new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
+                new HostPreferences(session.getHost()).getInteger("b2.upload.largeobject.concurrency"));
     }
 
     public B2LargeCopyFeature(final B2Session session, final B2VersionIdProvider fileid, final Long partSize, final Integer concurrency) {
@@ -77,7 +76,7 @@ public class B2LargeCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
         try {
             final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
@@ -92,8 +91,8 @@ public class B2LargeCopyFeature implements Copy {
                         break;
                 }
             }
-            final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(target), new DisabledListProgressListener()),
-                containerService.getKey(target), status.getMime(), fileinfo);
+            final B2StartLargeFileResponse response = session.getClient().startLargeFileUpload(fileid.getVersionId(containerService.getContainer(target)),
+                    containerService.getKey(target), status.getMime(), fileinfo);
             final long size = status.getLength();
             // Submit file segments for concurrent upload
             final List<Future<B2UploadPartResponse>> parts = new ArrayList<Future<B2UploadPartResponse>>();
@@ -110,22 +109,10 @@ public class B2LargeCopyFeature implements Copy {
                 remaining -= length;
                 offset += length;
             }
-            try {
-                for(Future<B2UploadPartResponse> f : parts) {
-                    completed.add(f.get());
-                }
-            }
-            catch(InterruptedException e) {
-                log.error("Part upload failed with interrupt failure");
-                status.setCanceled();
-                throw new ConnectionCanceledException(e);
-            }
-            catch(ExecutionException e) {
-                log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                if(e.getCause() instanceof BackgroundException) {
-                    throw (BackgroundException) e.getCause();
-                }
-                throw new DefaultExceptionMappingService().map(e.getCause());
+            for(Future<B2UploadPartResponse> f : parts) {
+                final B2UploadPartResponse part = Interruptibles.await(f);
+                completed.add(part);
+                listener.sent(part.getContentLength());
             }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override
@@ -168,8 +155,8 @@ public class B2LargeCopyFeature implements Copy {
                 overall.validate();
                 try {
                     HttpRange range = HttpRange.byLength(offset, length);
-                    return session.getClient().copyLargePart(fileid.getVersionId(file, new DisabledListProgressListener()), largeFileId, partNumber,
-                        String.format("bytes=%d-%d", range.getStart(), range.getEnd()));
+                    return session.getClient().copyLargePart(fileid.getVersionId(file), largeFileId, partNumber,
+                            String.format("bytes=%d-%d", range.getStart(), range.getEnd()));
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService(fileid).map("Cannot copy {0}", e, file);

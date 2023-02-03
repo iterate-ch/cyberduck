@@ -6,7 +6,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -68,9 +67,9 @@ public class SwiftSessionTest extends AbstractSwiftTest {
     public void testConnectRackspaceLon() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Rackspace UK.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
         ));
         assertTrue(session.isConnected());
         session.close();
@@ -98,7 +97,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
             }
         };
         final Host host = new Host(protocol, "storage.us2.oraclecloud.com", new Credentials(
-            System.getProperties().getProperty("oraclecloud.key"), System.getProperties().getProperty("oraclecloud.secret")
+                PROPERTIES.get("oraclecloud.key"), PROPERTIES.get("oraclecloud.secret")
         ));
         final SwiftSession session = new SwiftSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));

@@ -67,7 +67,7 @@ public class B2FindFeature implements Find {
             return false;
         }
         catch(B2ApiException e) {
-            throw new B2ExceptionMappingService(fileid).map(e);
+            throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

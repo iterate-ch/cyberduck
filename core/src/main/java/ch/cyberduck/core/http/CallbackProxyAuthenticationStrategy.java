@@ -45,7 +45,8 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -58,7 +59,7 @@ import java.util.Map;
 import java.util.Queue;
 
 public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStrategy {
-    private static final Logger log = Logger.getLogger(CallbackProxyAuthenticationStrategy.class);
+    private static final Logger log = LogManager.getLogger(CallbackProxyAuthenticationStrategy.class);
 
     private static final String PROXY_CREDENTIALS_INPUT_ID = "cyberduck.credentials.input";
 
@@ -96,7 +97,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
     @Override
     public Queue<AuthOption> select(final Map<String, Header> challenges, final HttpHost authhost, final HttpResponse response, final HttpContext context) throws MalformedChallengeException {
         final HttpClientContext clientContext = HttpClientContext.adapt(context);
-        final Queue<AuthOption> options = new LinkedList<AuthOption>();
+        final Queue<AuthOption> options = new LinkedList<>();
         final RequestConfig config = clientContext.getRequestConfig();
         Collection<String> authPrefs = config.getProxyPreferredAuthSchemes();
         if(authPrefs == null) {

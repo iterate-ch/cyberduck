@@ -7,7 +7,7 @@ namespace Ch.Cyberduck.Ui.Controller
     [TestFixture]
     public class AbstractDesktopNotificationServiceTest
     {
-        [Ignore, Test]
+        [Ignore("Doesn't work correctly automated."), Test]
         public void TestNotifyPermutation()
         {
             var valid = new[] { null, string.Empty, "Test" };

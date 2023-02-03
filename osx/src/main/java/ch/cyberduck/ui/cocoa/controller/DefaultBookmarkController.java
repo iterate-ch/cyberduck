@@ -40,7 +40,8 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
@@ -53,7 +54,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 public class DefaultBookmarkController extends BookmarkController {
-    private static final Logger log = Logger.getLogger(DefaultBookmarkController.class);
+    private static final Logger log = LogManager.getLogger(DefaultBookmarkController.class);
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
         "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";

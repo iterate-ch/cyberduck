@@ -19,11 +19,11 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.5.6-SNAPSHOT</version>
     </parent>
     <artifactId>onedrive</artifactId>
     <properties>
-        <onedrive-java-client-version>3.1.8</onedrive-java-client-version>
+        <onedrive-java-client-version>3.1.13</onedrive-java-client-version>
     </properties>
     <dependencies>
         <dependency>
@@ -55,15 +55,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

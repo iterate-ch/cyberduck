@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -24,9 +25,15 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 public class LocalProtocolTest {
+
+    @Test
+    public void testFeatures() {
+        assertEquals(Protocol.DirectoryTimestamp.implicit, new LocalProtocol().getDirectoryTimestamp());
+    }
 
     @Test
     public void testDefaultProfile() throws Exception {

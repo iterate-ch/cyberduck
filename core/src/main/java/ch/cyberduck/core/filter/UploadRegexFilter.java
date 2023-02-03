@@ -22,13 +22,14 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class UploadRegexFilter implements Filter<Local> {
-    private static final Logger log = Logger.getLogger(UploadRegexFilter.class);
+    private static final Logger log = LogManager.getLogger(UploadRegexFilter.class);
 
     private final Pattern pattern;
 

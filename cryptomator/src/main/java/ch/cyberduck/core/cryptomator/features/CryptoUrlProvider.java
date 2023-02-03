@@ -27,13 +27,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
 
 public class CryptoUrlProvider implements UrlProvider {
-    private static final Logger log = Logger.getLogger(DecryptingListProgressListener.class);
+    private static final Logger log = LogManager.getLogger(DecryptingListProgressListener.class);
 
     private final Session<?> session;
     private final UrlProvider delegate;

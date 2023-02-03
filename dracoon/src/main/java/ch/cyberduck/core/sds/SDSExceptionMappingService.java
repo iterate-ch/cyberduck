@@ -33,7 +33,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -45,7 +46,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 public class SDSExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
-    private static final Logger log = Logger.getLogger(SDSExceptionMappingService.class);
+    private static final Logger log = LogManager.getLogger(SDSExceptionMappingService.class);
 
     private final SDSNodeIdProvider fileid;
 
@@ -64,7 +65,10 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                         switch(failure.getCode()) {
                             case HttpStatus.SC_NOT_FOUND:
                                 switch(errorCode) {
+                                    // "debugInfo":"Node not found","errorCode":-41000
                                     case -41000:
+                                        // "debugInfo":"File not found","errorCode":-40751
+                                    case -40751:
                                         // Invalidate cache on Node not found
                                         fileid.cache(file, null);
                                         break;

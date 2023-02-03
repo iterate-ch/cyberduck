@@ -23,11 +23,13 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSSession;
+import ch.cyberduck.core.sds.SDSTripleCryptEncryptorFeature;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -37,7 +39,7 @@ import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class TripleCryptWriteFeature implements Write<Node> {
-    private static final Logger log = Logger.getLogger(TripleCryptWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -57,11 +59,11 @@ public class TripleCryptWriteFeature implements Write<Node> {
                 log.debug(String.format("Read file key for file %s", file));
             }
             if(null == status.getFilekey()) {
-                status.setFilekey(nodeid.getFileKey());
+                status.setFilekey(SDSTripleCryptEncryptorFeature.generateFileKey());
             }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-            return new TripleCryptOutputStream<>(session, proxy.write(file, status, callback),
-                Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
+            return new TripleCryptEncryptingOutputStream(session, nodeid, proxy.write(file, status, callback),
+                    Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
         }
         catch(CryptoSystemException | UnknownVersionException e) {
@@ -75,11 +77,6 @@ public class TripleCryptWriteFeature implements Write<Node> {
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return proxy.append(file, status);
-    }
-
-    @Override
-    public boolean temporary() {
-        return proxy.temporary();
     }
 
     @Override

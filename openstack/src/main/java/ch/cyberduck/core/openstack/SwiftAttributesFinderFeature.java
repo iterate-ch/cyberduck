@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CancellingListProgressListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.ListProgressListener;
@@ -28,7 +29,9 @@ import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
@@ -36,19 +39,19 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.ContainerInfo;
 import ch.iterate.openstack.swift.model.ObjectMetadata;
 import ch.iterate.openstack.swift.model.Region;
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(SwiftAttributesFinderFeature.class);
+public class SwiftAttributesFinderFeature implements AttributesFinder, AttributesAdapter<StorageObject> {
+    private static final Logger log = LogManager.getLogger(SwiftAttributesFinderFeature.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();
@@ -74,7 +77,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         try {
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,
-                    containerService.getContainer(file).getName());
+                        containerService.getContainer(file).getName());
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(info.getTotalSize());
                 attributes.setRegion(info.getRegion().getRegionId());
@@ -84,7 +87,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
             try {
                 try {
                     metadata = session.getClient().getObjectMetaData(region,
-                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                            containerService.getContainer(file).getName(), containerService.getKey(file));
                 }
                 catch(GenericException e) {
                     throw new SwiftExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -94,7 +97,11 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                 if(file.isDirectory()) {
                     // Directory placeholder file may be missing. Still return empty attributes when we find children
                     try {
-                        new SwiftObjectListService(session).list(file, listener, containerService.getKey(file));
+                        new SwiftObjectListService(session).list(file, new CancellingListProgressListener());
+                    }
+                    catch(ListCanceledException l) {
+                        // Found common prefix
+                        return PathAttributes.EMPTY;
                     }
                     catch(NotfoundException n) {
                         throw e;
@@ -110,13 +117,15 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
                 throw e;
             }
             if(file.isDirectory()) {
-                if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
-                    throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                if(!StringUtils.equals(SwiftDirectoryFeature.DIRECTORY_MIME_TYPE, metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("File %s has set MIME type %s but expected %s",
+                            file.getAbsolute(), metadata.getMimeType(), SwiftDirectoryFeature.DIRECTORY_MIME_TYPE));
                 }
             }
             if(file.isFile()) {
-                if(StringUtils.equals("application/directory", metadata.getMimeType())) {
-                    throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                if(StringUtils.equals(SwiftDirectoryFeature.DIRECTORY_MIME_TYPE, metadata.getMimeType())) {
+                    throw new NotfoundException(String.format("File %s has set MIME type %s",
+                            file.getAbsolute(), metadata.getMimeType()));
                 }
             }
             return this.toAttributes(metadata);
@@ -129,7 +138,8 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final StorageObject object) {
+    @Override
+    public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         if(StringUtils.isNotBlank(object.getMd5sum())) {
             // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
@@ -155,27 +165,21 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    protected PathAttributes toAttributes(final ObjectMetadata metadata) {
+    public PathAttributes toAttributes(final ObjectMetadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();
         try {
-            attributes.setModificationDate(rfc1123DateFormatter.parse(lastModified).getTime());
+            attributes.setModificationDate(Double.valueOf(Double.parseDouble(lastModified) * 1000).longValue());
         }
-        catch(InvalidDateException e) {
-            log.warn(String.format("%s is not RFC 1123 format %s", lastModified, e.getMessage()));
+        catch(NumberFormatException e) {
+            log.warn(String.format("%s is not in UNIX Epoch time stamp format %s", lastModified, e.getMessage()));
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
             final String etag = RegExUtils.removePattern(metadata.getETag(), "\"");
-            attributes.setETag(etag);
-            if(metadata.getMetaData().containsKey(Constants.X_STATIC_LARGE_OBJECT)) {
-                // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
-                // the concatenated string of ETags for each of the segments in the manifest.
-                attributes.setChecksum(Checksum.NONE);
-            }
-            else {
-                attributes.setChecksum(Checksum.parse(etag));
-            }
+            // For manifest files, the ETag in the response for a GET or HEAD on the manifest file is the MD5 sum of
+            // the concatenated string of ETags for each of the segments in the manifest.
+            attributes.setChecksum(Checksum.parse(etag));
         }
         attributes.setMetadata(metadata.getMetaData());
         return attributes;

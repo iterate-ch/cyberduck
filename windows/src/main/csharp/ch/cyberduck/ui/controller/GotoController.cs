@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -34,7 +34,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override Image IconView
         {
-            get { return IconCache.IconForFolder(IconCache.IconSize.Large); }
+            get { return IconProvider.GetFileIcon(string.Empty, true, true, false); }
         }
 
         public override void Callback(DialogResult result)

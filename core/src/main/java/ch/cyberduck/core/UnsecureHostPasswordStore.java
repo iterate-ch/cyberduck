@@ -4,7 +4,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
-    private static final Logger log = Logger.getLogger(UnsecureHostPasswordStore.class);
+    private static final Logger log = LogManager.getLogger(UnsecureHostPasswordStore.class);
 
     private final Local file = LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials");
 

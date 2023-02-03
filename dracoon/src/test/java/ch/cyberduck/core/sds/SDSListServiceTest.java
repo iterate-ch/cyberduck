@@ -15,13 +15,16 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.unicode.NFDNormalizer;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -30,20 +33,38 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SDSListServiceTest extends AbstractSDSTest {
 
     @Test
+    public void testListRoot() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path directory = new Path("/", EnumSet.of(AbstractPath.Type.directory, Path.Type.volume));
+        final AttributedList<Path> list = new SDSListService(session, nodeid).list(
+                directory, new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        for(Path f : list) {
+            assertSame(directory, f.getParent());
+            assertEquals(f.attributes(), new SDSAttributesFinderFeature(session, nodeid).find(f));
+        }
+    }
+
+    @Test
     public void testList() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
-        new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertEquals(1, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
+        final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1);
+        assertEquals(1, (list.size()));
+        assertNotNull(list.find(new DefaultPathPredicate(file)));
+        // Not preserving Unicode normalization
+        assertNotEquals(filename, list.find(new DefaultPathPredicate(file)).getName());
         new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(2, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
         assertEquals(2, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).size()));

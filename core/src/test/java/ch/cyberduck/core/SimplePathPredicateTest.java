@@ -15,12 +15,14 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.NFDNormalizer;
+
 import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SimplePathPredicateTest {
 
@@ -32,9 +34,33 @@ public class SimplePathPredicateTest {
         assertFalse(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
     }
 
+
+    @Test
+    public void testParent() {
+        final SimplePathPredicate t = new SimplePathPredicate(new Path("/a/g/f-1", EnumSet.of(Path.Type.file)));
+        assertTrue(t.isChild(new SimplePathPredicate(new Path("/a/g", EnumSet.of(Path.Type.directory)))));
+        assertFalse(t.isChild(new SimplePathPredicate(new Path("/g", EnumSet.of(Path.Type.directory)))));
+        assertTrue(t.isChild(new SimplePathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
+        assertFalse(t.isChild(new SimplePathPredicate(new Path("/a/g/f", EnumSet.of(Path.Type.file)))));
+        assertFalse(t.isChild(new SimplePathPredicate(new Path("/a/g/f-12", EnumSet.of(Path.Type.file)))));
+        assertFalse(t.isChild(new SimplePathPredicate(new Path("/a/g/a", EnumSet.of(Path.Type.directory)))));
+        assertFalse(t.isChild(new SimplePathPredicate(new Path("/a/g/f-1f", EnumSet.of(Path.Type.file)))));
+        assertFalse(new SimplePathPredicate(new Path("/a/g/f-1f", EnumSet.of(Path.Type.file))).isChild(t));
+        assertFalse(new SimplePathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))
+                .isChild(new SimplePathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
+    }
+
     @Test
     public void testCollision() {
         final Path t = new Path("/d/2R", EnumSet.of(Path.Type.directory));
         assertFalse(new SimplePathPredicate(t).test(new Path("/d/33", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testNormalization() {
+        final String name = "ä";
+        assertNotEquals(new NFCNormalizer().normalize(name).toString(), new NFDNormalizer().normalize(name).toString());
+        assertTrue(new SimplePathPredicate(new Path(new NFCNormalizer().normalize(name).toString(), EnumSet.of(Path.Type.file)))
+                .test(new Path(new NFDNormalizer().normalize(name).toString(), EnumSet.of(Path.Type.file))));
     }
 }

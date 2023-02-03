@@ -14,6 +14,7 @@
 
 package ch.cyberduck.cli;
 
+import ch.cyberduck.core.DisabledConnectionTimeout;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
@@ -22,14 +23,18 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class TerminalPreferences extends Preferences {
-    private static final Logger log = Logger.getLogger(TerminalPreferences.class);
+    private static final Logger log = LogManager.getLogger(TerminalPreferences.class);
 
     private final Preferences proxy;
 
@@ -53,16 +58,18 @@ public class TerminalPreferences extends Preferences {
         }
         this.setDefault("factory.vault.class", CryptoVault.class.getName());
         this.setDefault("factory.securerandom.class", FastSecureRandomProvider.class.getName());
+        this.setDefault("factory.connectiontimeout.class", DisabledConnectionTimeout.class.getName());
     }
 
     @Override
-    protected void configureLogging(final String level) {
-        super.configureLogging(level);
-        // Send log output to system.log
-        Logger root = Logger.getRootLogger();
-        final Appender appender = new TerminalAppender();
-        appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
-        root.addAppender(appender);
+    protected void configureAppenders(final String level) {
+        final LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        final Configuration config = ctx.getConfiguration();
+        final Appender appender = new TerminalAppender(PatternLayout.newBuilder().withConfiguration(config).withPattern("[%t] %-5p %c - %m%n").withCharset(StandardCharsets.UTF_8).build());
+        appender.start();
+        config.addAppender(appender);
+        config.getRootLogger().addAppender(appender, null, null);
+        ctx.updateLoggers();
     }
 
     @Override
@@ -71,8 +78,8 @@ public class TerminalPreferences extends Preferences {
 
         this.setDefault("logging", "fatal");
 
-        this.setDefault("website.home", "http://duck.sh/");
-        this.setDefault("website.help", "http://help.duck.sh/");
+        this.setDefault("website.home", "https://duck.sh/");
+        this.setDefault("website.help", "https://help.duck.sh/");
 
         System.setProperty("jna.library.path", this.getProperty("java.library.path"));
 

@@ -23,7 +23,8 @@ import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -37,7 +38,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(XmlBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(XmlBookmarkCollection.class);
 
     private static final long serialVersionUID = -3145592458663362423L;
 

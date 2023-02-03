@@ -25,6 +25,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -34,7 +35,8 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.copy.ChecksumFilter;
 import ch.cyberduck.core.transfer.copy.OverwriteFilter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -44,10 +46,10 @@ import java.util.List;
 import java.util.Map;
 
 public class CopyTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(CopyTransfer.class);
+    private static final Logger log = LogManager.getLogger(CopyTransfer.class);
 
-    private final Filter<Path> filter = new NullFilter<Path>();
-    private final Comparator<Path> comparator = new NullComparator<Path>();
+    private final Filter<Path> filter = new NullFilter<>();
+    private final Comparator<Path> comparator = new NullComparator<>();
 
     private Cache<Path> cache
         = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
@@ -73,10 +75,10 @@ public class CopyTransfer extends Transfer {
 
     public CopyTransfer(final Host source, final Host destination,
                         final Map<Path, Path> selected, final BandwidthThrottle bandwidth) {
-        super(source, new ArrayList<TransferItem>(), bandwidth);
+        super(source, new ArrayList<>(), bandwidth);
         this.destination = destination;
         this.selected = selected;
-        this.mapping = new HashMap<Path, Path>(selected);
+        this.mapping = new HashMap<>(selected);
         for(Path f : selected.keySet()) {
             roots.add(new TransferItem(f));
 
@@ -85,6 +87,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public Transfer withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 
@@ -104,7 +107,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         if(destination != null) {
@@ -128,7 +131,7 @@ public class CopyTransfer extends Transfer {
     public TransferAction action(final Session<?> source, final Session<?> destination, boolean resumeRequested, boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+            log.debug(String.format("Find transfer action with prompt %s", prompt));
         }
         if(resumeRequested) {
             return TransferAction.comparison;
@@ -192,7 +195,7 @@ public class CopyTransfer extends Transfer {
         for(Path p : list) {
             mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
         }
-        final List<TransferItem> nullified = new ArrayList<TransferItem>();
+        final List<TransferItem> nullified = new ArrayList<>();
         for(Path p : list) {
             nullified.add(new TransferItem(p));
         }
@@ -200,7 +203,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> download = source.getFeature(Bulk.class);
         {
             final Object id = download.pre(Type.download, files, callback);
@@ -222,7 +225,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> download = source.getFeature(Bulk.class);
         {
             download.post(Type.download, files, callback);
@@ -257,13 +260,27 @@ public class CopyTransfer extends Transfer {
         else {
             // Transfer
             final Copy feature = new DefaultCopyFeature(session).withTarget(destination);
-            feature.copy(source, mapping.get(source), segment, connectionCallback);
-            this.addTransferred(segment.getLength());
+            feature.copy(source, mapping.get(source), segment, connectionCallback, new CopyStreamListener(this, streamListener));
         }
     }
 
     @Override
     public void normalize() {
         //
+    }
+
+    private static final class CopyStreamListener extends DelegateStreamListener {
+        private final CopyTransfer transfer;
+
+        public CopyStreamListener(final CopyTransfer transfer, final StreamListener delegate) {
+            super(delegate);
+            this.transfer = transfer;
+        }
+
+        @Override
+        public void sent(final long bytes) {
+            transfer.addTransferred(bytes);
+            super.sent(bytes);
+        }
     }
 }

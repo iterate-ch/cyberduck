@@ -73,25 +73,53 @@ public class BackgroundActionRegistryTest {
     }
 
     @Test
-    public void testAddSecondaryThread() throws Exception {
+    public void testAddThreaded() throws Exception {
         final BackgroundActionRegistry r = new BackgroundActionRegistry();
-        final CountDownLatch lock = new CountDownLatch(1);
-        final AbstractBackgroundAction action = new AbstractBackgroundAction() {
-            @Override
-            public Object run() {
-                return null;
-            }
-        };
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                r.add(action);
-                lock.countDown();
-            }
-        }).start();
-        lock.await(1, TimeUnit.SECONDS);
-        assertEquals(1, r.size());
-        r.remove(action);
-        assertTrue(r.isEmpty());
+        int runs = 10;
+        final CountDownLatch lock = new CountDownLatch(runs);
+        for(int i = 0; i < runs; i++) {
+            final AbstractBackgroundAction action = new AbstractBackgroundAction() {
+                @Override
+                public Object run() {
+                    return null;
+                }
+            };
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    assertTrue(r.add(action));
+                    r.start(action);
+                    lock.countDown();
+                }
+            }).start();
+        }
+        lock.await();
+        assertEquals(runs, r.size());
+    }
+
+    @Test
+    public void testAddRemoveThreaded() throws Exception {
+        final BackgroundActionRegistry r = new BackgroundActionRegistry();
+        int runs = 10;
+        final CountDownLatch lock = new CountDownLatch(runs);
+        for(int i = 0; i < runs; i++) {
+            final AbstractBackgroundAction action = new AbstractBackgroundAction() {
+                @Override
+                public Object run() {
+                    return null;
+                }
+            };
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    assertTrue(r.add(action));
+                    r.start(action);
+                    r.stop(action);
+                    lock.countDown();
+                }
+            }).start();
+        }
+        lock.await();
+        assertEquals(0, r.size());
     }
 }

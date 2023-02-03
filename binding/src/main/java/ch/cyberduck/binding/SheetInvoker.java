@@ -21,7 +21,8 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSThread;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
@@ -32,14 +33,14 @@ import java.util.concurrent.CountDownLatch;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class SheetInvoker extends ProxyController {
-    private static final Logger log = Logger.getLogger(SheetInvoker.class);
+    private static final Logger log = LogManager.getLogger(SheetInvoker.class);
 
     /**
-     * Keep a reference to the sheet to protect it from being
-     * deallocated as a weak reference before the callback from the runtime
+     * Keep a reference to the sheet to protect it from being deallocated as a weak reference before the callback from
+     * the runtime
      */
     protected static final Set<SheetInvoker> registry
-        = new HashSet<SheetInvoker>();
+            = new HashSet<SheetInvoker>();
 
     private final SheetCallback callback;
 
@@ -47,11 +48,8 @@ public class SheetInvoker extends ProxyController {
      * The controller of the parent window
      */
     private final NSWindow parent;
-
-    private NSWindow window;
-
+    private final NSWindow window;
     private final NSApplication application = NSApplication.sharedApplication();
-
     private final WindowController controller;
 
     /**
@@ -59,8 +57,7 @@ public class SheetInvoker extends ProxyController {
      */
     private int returncode = SheetCallback.CANCEL_OPTION;
 
-    private final CountDownLatch signal
-        = new CountDownLatch(1);
+    private final CountDownLatch signal;
 
     {
         registry.add(this);
@@ -74,22 +71,38 @@ public class SheetInvoker extends ProxyController {
      * @param sheet    Sheet
      */
     public SheetInvoker(final SheetCallback callback, final WindowController parent, final NSWindow sheet) {
+        this(callback, parent, sheet, new CountDownLatch(1));
+    }
+
+    public SheetInvoker(final SheetCallback callback, final WindowController parent, final NSWindow sheet, final CountDownLatch signal) {
         this.callback = callback;
         this.parent = parent.window();
         this.window = sheet;
+        this.signal = signal;
         this.controller = null;
     }
 
     public SheetInvoker(final SheetCallback callback, final WindowController parent, final WindowController controller) {
+        this(callback, parent, controller, new CountDownLatch(1));
+    }
+
+    public SheetInvoker(final SheetCallback callback, final WindowController parent, final WindowController controller, final CountDownLatch signal) {
         this.callback = callback;
         this.parent = parent.window();
+        this.window = controller.window();
         this.controller = controller;
+        this.signal = signal;
     }
 
     public SheetInvoker(final SheetCallback callback, final NSWindow parent, final NSWindow sheet) {
+        this(callback, parent, sheet, new CountDownLatch(1));
+    }
+
+    public SheetInvoker(final SheetCallback callback, final NSWindow parent, final NSWindow sheet, final CountDownLatch signal) {
         this.callback = callback;
         this.parent = parent;
         this.window = sheet;
+        this.signal = signal;
         this.controller = null;
     }
 
@@ -131,6 +144,19 @@ public class SheetInvoker extends ProxyController {
             }
             // Synchronize on parent controller. Only display one sheet at once.
             Uninterruptibles.awaitUninterruptibly(signal);
+            // Close window in case signal was count down prior closing window
+            invoke(new DefaultMainAction() {
+                @Override
+                public void run() {
+                    //Invoke again on main thread
+                    if(controller != null) {
+                        application.endSheet(controller.window());
+                    }
+                    else {
+                        application.endSheet(window);
+                    }
+                }
+            }, true);
         }
         return returncode;
     }
@@ -138,16 +164,15 @@ public class SheetInvoker extends ProxyController {
     protected void beginSheet(final NSWindow sheet) {
         parent.makeKeyAndOrderFront(null);
         application.beginSheet(sheet, //sheet
-            this.parentWindow(), // modalForWindow
-            this.id(), // modalDelegate
-            Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
-            null); //context
+                this.parentWindow(), // modalForWindow
+                this.id(), // modalDelegate
+                Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
+                null); //context
     }
 
     /**
-     * Called by the runtime after a sheet has been dismissed. Ends any modal session and
-     * sends the returncode to the callback implementation. Also invalidates this controller to be
-     * garbage collected and notifies the lock object
+     * Called by the runtime after a sheet has been dismissed. Ends any modal session and sends the returncode to the
+     * callback implementation. Also invalidates this controller to be garbage collected and notifies the lock object
      *
      * @param sheet       Sheet window
      * @param returncode  Identifier for the button clicked by the user

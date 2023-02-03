@@ -14,7 +14,8 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<project name="Cyberduck CLI Linux" basedir=".">
+<project name="Cyberduck CLI Linux" basedir="."
+         xmlns:unless="ant:unless">
 
     <import file="../../build.xml"/>
 
@@ -55,9 +56,15 @@
         <antcall target="jpackage">
             <param name="type" value="deb"/>
         </antcall>
+        <antcall target="jpackage">
+            <param name="type" value="app-image"/>
+        </antcall>
     </target>
 
     <target name="jpackage">
+        <condition property="is-app-image">
+            <equals arg1="${type}" arg2="app-image"/>
+        </condition>
         <echo message="Create native ${type} bundle"/>
         <exec executable="${java.home}/bin/jpackage">
             <arg value="--name"/>
@@ -96,12 +103,12 @@
             <arg value="${app.name}"/>
             <arg value="--vendor"/>
             <arg value="cyberduck.io"/>
-            <arg value="--license-file"/>
-            <arg value="${license}"/>
-            <arg value="--linux-deb-maintainer"/>
-            <arg value="&lt;feedback@cyberduck.io&gt;"/>
-            <arg value="--linux-rpm-license-type"/>
-            <arg value="GPL"/>
+            <arg value="--license-file" unless:true="${is-app-image}"/>
+            <arg value="${license}" unless:true="${is-app-image}"/>
+            <arg value="--linux-deb-maintainer" unless:true="${is-app-image}"/>
+            <arg value="&lt;feedback@cyberduck.io&gt;" unless:true="${is-app-image}"/>
+            <arg value="--linux-rpm-license-type" unless:true="${is-app-image}"/>
+            <arg value="GPL" unless:true="${is-app-image}"/>
             <arg value="--type"/>
             <arg value="${type}"/>
             <arg value="--verbose"/>

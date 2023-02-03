@@ -52,9 +52,10 @@ public final class OAuthTokens {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Tokens{");
-        sb.append("accessToken='").append(accessToken).append('\'');
-        sb.append(", refreshToken='").append(refreshToken).append('\'');
+        final StringBuilder sb = new StringBuilder("OAuthTokens{");
+        sb.append("accessToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessToken)))).append('\'');
+        sb.append(", refreshToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(refreshToken)))).append('\'');
+        sb.append(", expiryInMilliseconds=").append(expiryInMilliseconds);
         sb.append('}');
         return sb.toString();
     }

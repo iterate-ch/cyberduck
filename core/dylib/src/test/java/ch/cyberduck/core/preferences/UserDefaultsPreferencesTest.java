@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -40,12 +41,22 @@ public class UserDefaultsPreferencesTest {
     }
 
     @Test
+    public void testGetMap() {
+        Preferences p = new UserDefaultsPreferences();
+        p.load();
+        p.setProperty("metadata", "Content-Type=application/xml Cache-Control=public,max-age=86400");
+        final Map<String, String> properties = p.getMap("metadata");
+        assertTrue(properties.containsKey("Content-Type"));
+        assertEquals("application/xml", properties.get("Content-Type"));
+        assertTrue(properties.containsKey("Cache-Control"));
+        assertEquals("public,max-age=86400", properties.get("Cache-Control"));
+    }
+
+    @Test
     public void testGetList() {
         Preferences p = new UserDefaultsPreferences();
         p.load();
-        p.setProperty("metadata",
-                "a b");
-
+        p.setProperty("metadata", "a b");
         final List<String> properties = p.getList("metadata");
         assertTrue(properties.contains("a"));
         assertTrue(properties.contains("b"));
@@ -92,14 +103,6 @@ public class UserDefaultsPreferencesTest {
         p.load();
         p.setProperty("t", 1.2d);
         assertEquals(1L, p.getLong("t"));
-    }
-
-    @Test
-    public void testInterfaceBlacklist() {
-        UserDefaultsPreferences p = new UserDefaultsPreferences();
-        p.load();
-        p.setDefaults();
-        assertTrue(p.getList("network.interface.blacklist").contains("awdl0"));
     }
 
     @Test

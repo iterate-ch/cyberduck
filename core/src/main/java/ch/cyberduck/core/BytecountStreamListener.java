@@ -19,9 +19,11 @@ import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class BytecountStreamListener extends DelegateStreamListener {
-    private long sent = 0L;
-    private long recv = 0L;
+    private final AtomicLong sent = new AtomicLong(0L);
+    private final AtomicLong recv = new AtomicLong(0L);
 
     public BytecountStreamListener() {
         super(new DisabledStreamListener());
@@ -33,21 +35,21 @@ public class BytecountStreamListener extends DelegateStreamListener {
 
     @Override
     public void sent(final long bytes) {
-        sent += bytes;
+        sent.addAndGet(bytes);
         super.sent(bytes);
     }
 
     @Override
     public void recv(final long bytes) {
-        recv += bytes;
+        recv.addAndGet(bytes);
         super.recv(bytes);
     }
 
     public long getRecv() {
-        return recv;
+        return recv.get();
     }
 
     public long getSent() {
-        return sent;
+        return sent.get();
     }
 }

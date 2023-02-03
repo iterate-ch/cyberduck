@@ -28,6 +28,8 @@ import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import com.sun.jna.Pointer;
+
 /// <i>native declaration : :43</i>
 public abstract class NSWorkspace extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWorkspace", _Class.class);
@@ -390,4 +392,24 @@ public abstract class NSWorkspace extends NSObject {
      * <i>native declaration : :164</i>
      */
     public abstract boolean type_conformsToType(String firstTypeName1, String secondTypeName2);
+
+    /**
+     * macOS 12.0+
+     */
+    public abstract void setDefaultApplicationAtURL_toOpenURLsWithScheme_completionHandler(NSURL applicationURL, String urlScheme, Pointer completionHandler);
+
+    /**
+     * macOS 12.0+
+     */
+    public abstract NSArray URLsForApplicationsToOpenURL(NSURL url);
+
+    /**
+     * Returns the URL to the default app that would be opened.
+     * macOS 10.6+
+     *
+     * @param url The URL of the file to open.
+     * @return The URL of the default app that would open the specified url. Returns nil if no app is able to open the URL, or if the file URL does not exist.
+     */
+    public abstract NSURL URLForApplicationToOpenURL(NSURL url);
+
 }

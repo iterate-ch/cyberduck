@@ -21,12 +21,13 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class CreateSymlinkWorker extends Worker<Path> {
-    private static final Logger log = Logger.getLogger(CreateSymlinkWorker.class);
+    private static final Logger log = LogManager.getLogger(CreateSymlinkWorker.class);
 
     private final Path link;
     private final String target;

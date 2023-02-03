@@ -17,10 +17,15 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class SynchronizingTransferErrorCallback implements TransferErrorCallback {
+    private static final Logger log = LogManager.getLogger(SynchronizingTransferErrorCallback.class);
+
     private final TransferErrorCallback proxy;
     private final Lock lock = new ReentrantLock();
 
@@ -30,6 +35,9 @@ public class SynchronizingTransferErrorCallback implements TransferErrorCallback
 
     @Override
     public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Await lock %s", lock));
+        }
         lock.lock();
         try {
             return proxy.prompt(item, status, failure, pending);

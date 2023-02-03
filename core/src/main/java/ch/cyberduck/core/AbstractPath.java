@@ -63,6 +63,9 @@ public abstract class AbstractPath {
                 return 8;
             }
         },
+        /**
+         * Marker file for directory that should be treated for display like a regular folder
+         */
         placeholder {
             @Override
             public int legacy() {
@@ -81,6 +84,7 @@ public abstract class AbstractPath {
         /**
          * File from encrypted data room
          */
+        @Deprecated
         triplecrypt {
             @Override
             public int legacy() {

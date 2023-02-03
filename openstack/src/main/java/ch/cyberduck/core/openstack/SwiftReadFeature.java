@@ -30,7 +30,8 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,10 +40,10 @@ import ch.iterate.openstack.swift.Response;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(SwiftReadFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftReadFeature.class);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final SwiftSession session;
 
@@ -56,12 +57,15 @@ public class SwiftReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
-            status.setChecksum(Checksum.NONE);
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Disable checksum verification for %s", file));
+                // Do not set checksum when metadata key X-Static-Large-Object is present. Disable checksum verification in download filter.
+                status.setChecksum(Checksum.NONE);
+            }
             final Response response;
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     response = session.getClient().getObject(regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
                             range.getStart());
@@ -76,7 +80,7 @@ public class SwiftReadFeature implements Read {
                 response = session.getClient().getObject(regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file));
             }
-            return new HttpMethodReleaseInputStream(response.getResponse());
+            return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Download {0} failed", e, file);

@@ -17,6 +17,7 @@
 //
 
 using ch.cyberduck.cli;
+using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Diagnostics;
@@ -60,6 +61,8 @@ namespace Ch.Cyberduck.Cli
             Security.setProperty("securerandom.strongAlgorithms", "Windows-PRNG:SunMSCAPI,SHA1PRNG:SUN");
 
             this.setDefault("keychain.secure", true.ToString());
+
+            this.setDefault("local.normalize.unicode", false.ToString());
         }
 
         protected override void setFactories()
@@ -75,7 +78,7 @@ namespace Ch.Cyberduck.Cli
                 typeof(AssemblyApplicationResourcesFinder).AssemblyQualifiedName);
             this.setDefault("factory.editorfactory.class", typeof(SystemWatchEditorFactory).AssemblyQualifiedName);
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
-            this.setDefault("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
+            this.setDefault("factory.applicationfinder.class", typeof(ShellApplicationFinder).AssemblyQualifiedName);
             this.setDefault("factory.local.class", typeof(SystemLocal).AssemblyQualifiedName);
             this.setDefault("factory.passwordstore.class", typeof(PasswordStoreFacade).AssemblyQualifiedName);
             this.setDefault("factory.proxycredentialsstore.class",
@@ -84,6 +87,14 @@ namespace Ch.Cyberduck.Cli
             this.setDefault("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
             this.setDefault("factory.filedescriptor.class", typeof(Win32FileDescriptor).AssemblyQualifiedName);
             this.setDefault("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
+
+            // HACK Cyberduck.Cryptomator.dll includes cryptolib v2, which uses java ServiceLoader.
+            // Without this hack the ServiceLoader is incapable of finding org.cryptomator.cryptolib.api.v1.CryptorProviderImpl,
+            // which results in non-working state of ch.cyberduck.core.cryptomator.CryptoVault.
+            // This is a transient dependency coming from Cyberduck.Cryptomator through Cyberduck.Cli,
+            // which isn't used in duck. Thus crazy stuff happens, and we have to force-load Cyberduck.Cryptomator here.
+            // ref https://github.com/iterate-ch/cyberduck/issues/12812
+            this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
         }
     }
 }

@@ -26,14 +26,15 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 
 public abstract class AbstractRetryCallable<T> implements Callable<T> {
-    private static final Logger log = Logger.getLogger(AbstractRetryCallable.class);
+    private static final Logger log = LogManager.getLogger(AbstractRetryCallable.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -51,11 +52,6 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
      * Backoff in seconds
      */
     private int backoff;
-
-    public AbstractRetryCallable(final Host host) {
-        this(host, PreferencesFactory.get().getInteger("connection.retry"),
-            PreferencesFactory.get().getInteger("connection.retry.delay"));
-    }
 
     public AbstractRetryCallable(final Host host, final int retry, final int delay) {
         this.host = host;
@@ -99,7 +95,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                             log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
                             return false;
                         }
-                        delay = PreferencesFactory.get().getInteger("connection.retry.delay");
+                        delay = preferences.getInteger("connection.retry.delay");
                     }
                 }
                 else {
@@ -117,6 +113,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 @Override
                 public void validate() throws ConnectionCanceledException {
                     if(cancel.isCanceled()) {
+                        log.warn(String.format("Abort pausing retry after failure %s", failure));
                         throw new ConnectionCanceledException();
                     }
                 }

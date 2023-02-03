@@ -21,27 +21,30 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
-import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.UploadSessionAppendV2Uploader;
 import com.dropbox.core.v2.files.UploadSessionCursor;
 import com.dropbox.core.v2.files.UploadSessionFinishUploader;
 import com.dropbox.core.v2.files.UploadSessionStartUploader;
 import com.dropbox.core.v2.files.WriteMode;
 
-public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
-    private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
+public class DropboxWriteFeature extends AbstractHttpWriteFeature<Metadata> {
+    private static final Logger log = LogManager.getLogger(DropboxWriteFeature.class);
 
     private final DropboxSession session;
     private final Long chunksize;
@@ -52,6 +55,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
+        super(new DropboxAttributesFinderFeature(session));
         this.session = session;
         this.chunksize = chunksize;
         this.containerService = new DropboxPathContainerService(session);
@@ -63,7 +67,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Metadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient(file));
             final UploadSessionStartUploader start = files.uploadSessionStart();
@@ -81,30 +85,25 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }
 
-    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<String> {
+    private final class SegmentingUploadProxyOutputStream extends HttpResponseOutputStream<Metadata> {
 
         private final Path file;
         private final TransferStatus status;
         private final DbxUserFilesRequests client;
         private final String sessionId;
-        private String fileId;
 
+        private final AtomicReference<Metadata> response = new AtomicReference<>();
         private Long offset = 0L;
         private Long written = 0L;
         private UploadSessionAppendV2Uploader uploader;
 
         public SegmentingUploadProxyOutputStream(final Path file, final TransferStatus status, final DbxUserFilesRequests client,
                                                  final UploadSessionAppendV2Uploader uploader, final String sessionId) {
-            super(uploader.getOutputStream());
+            super(uploader.getOutputStream(), new DropboxAttributesFinderFeature(session), status);
             this.file = file;
             this.status = status;
             this.client = client;
@@ -147,8 +146,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
 
         @Override
-        public String getStatus() {
-            return fileId;
+        public Metadata getStatus() {
+            return response.get();
         }
 
         @Override
@@ -156,14 +155,13 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
             try {
                 DropboxWriteFeature.this.close(uploader);
                 final UploadSessionFinishUploader finish = client.uploadSessionFinish(new UploadSessionCursor(sessionId, written),
-                    CommitInfo.newBuilder(containerService.getKey(file))
-                        .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
-                        .withMode(WriteMode.OVERWRITE)
-                        .build()
+                        CommitInfo.newBuilder(containerService.getKey(file))
+                                .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
+                                .withMode(WriteMode.OVERWRITE)
+                                .build()
                 );
                 finish.getOutputStream().close();
-                final FileMetadata metadata = finish.finish();
-                fileId = metadata.getId();
+                response.set(finish.finish());
             }
             catch(IllegalStateException e) {
                 // Already closed
@@ -190,5 +188,10 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
         uploader.getOutputStream().close();
         uploader.finish();
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return new DropboxChecksumCompute();
     }
 }

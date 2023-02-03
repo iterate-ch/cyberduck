@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa"
+          propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -72,6 +73,8 @@
                 <outlet property="infoWindowAsInspectorCheckbox" destination="83" id="472"/>
                 <outlet property="keychainCheckbox" destination="53" id="473"/>
                 <outlet property="languagePopup" destination="412" id="474"/>
+                <outlet property="logCheckbox" destination="P74-g6-epb" id="eph3AhWo"/>
+                <outlet property="logShowButton" destination="cdn-DG-bwU" id="cae3maiZ"/>
                 <outlet property="openAfterDownloadCheckbox" destination="103" id="476"/>
                 <outlet property="openUntitledBrowserCheckbox" destination="36" id="477"/>
                 <outlet property="panelAdvanced" destination="280" id="478"/>
@@ -120,11 +123,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="2" customClass="NSApplication"/>
-        <window title="Tercihler" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="3" customClass="NSPanel">
+        <window title="Ayarlar" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" visibleAtLaunch="NO" frameAutosaveName="Preferences" animationBehavior="default" id="3" customClass="NSPanel">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="272" y="168" width="507" height="518"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="3008" height="1667"/>
             <view key="contentView" id="4">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -152,7 +155,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Düzenleme" identifier="pencil" id="12">
+                            <tabViewItem label="Düzenleyici" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -176,13 +179,13 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Google Drive" identifier="google" id="20">
+                            <tabViewItem label="Google belgeler" identifier="google" id="20">
                                 <view key="view" id="21">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Bant Genişliği" identifier="bandwidth" id="22">
+                            <tabViewItem label="Bant genişliği" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -200,7 +203,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Güncelleme" identifier="update" id="26">
+                            <tabViewItem label="Güncelle" identifier="update" id="26">
                                 <view key="view" id="27">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -218,68 +221,29 @@
             </view>
             <point key="canvasLocation" x="7" y="147"/>
         </window>
-        <customView id="30">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="417"/>
+        <customView id="30" userLabel="Panel General">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="226"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <box fixedFrame="YES" title="Tarayıcı" translatesAutoresizingMaskIntoConstraints="NO" id="31">
-                    <rect key="frame" x="17" y="222" width="473" height="175"/>
+                    <rect key="frame" x="17" y="117" width="473" height="89"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nXa-rF-OQT">
-                        <rect key="frame" x="3" y="3" width="467" height="157"/>
+                        <rect key="frame" x="3" y="3" width="467" height="71"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="32">
-                                <rect key="frame" x="263" y="42" width="195" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünümler" id="34">
-                                        <items>
-                                            <menuItem title=" " state="on" id="35"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36">
-                                <rect key="frame" x="10" y="72" width="449" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Başlangıçta boş bir tarayıcı aç" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="38">
-                                <rect key="frame" x="9" y="47" width="252" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Yer imine bağlan:" id="39">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="40">
-                                <rect key="frame" x="10" y="130" width="449" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Çalışmaları Kaydet" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
+                                <rect key="frame" x="10" y="44" width="449" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Çalışma alanı kaydedilsin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="42">
-                                <rect key="frame" x="9" y="96" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Çıkışta tüm açık pencereleri kaydeder ve açılışta bağlantıları geri getirir" id="43">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="44">
-                                <rect key="frame" x="9" y="12" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Uygulamanın başlangıcında boş bir tarayıcı açılır. Seçilen yer imine bağlantı otomatik kurulur." id="45">
+                                <rect key="frame" x="9" y="10" width="452" height="28"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Çıkışta tüm açık pencereleri kaydeder ve açılışta bağlantıları geri yükler." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -288,80 +252,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Bağlantı" translatesAutoresizingMaskIntoConstraints="NO" id="46">
-                    <rect key="frame" x="17" y="16" width="473" height="202"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="jTZ-Rs-0Ac">
-                        <rect key="frame" x="3" y="3" width="467" height="184"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
-                                <rect key="frame" x="17" y="38" width="244" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Öntanımlı iletişim kuralı:" id="48">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
-                                <rect key="frame" x="263" y="33" width="195" height="26"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünümler" id="51">
-                                        <items>
-                                            <menuItem title=" " state="on" id="52"/>
-                                        </items>
-                                    </menu>
-                                </popUpButtonCell>
-                            </popUpButton>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
-                                <rect key="frame" x="10" y="157" width="449" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Anahtar Zinciri'ni Kullan" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="55">
-                                <rect key="frame" x="10" y="99" width="449" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Bağlantıyı keserken onaylat" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                            </button>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="57">
-                                <rect key="frame" x="9" y="123" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Şifreler için Anahtar Zinciri'ne bakar. Başarılı oturumlarda şifreleri otomatik olarak Anahtar Zinciri'ne kaydeder." id="58">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59">
-                                <rect key="frame" x="9" y="65" width="449" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Bağlı tarayıcı pencerelerini kapatırken sor." id="60">
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
-                </box>
-            </subviews>
-            <point key="canvasLocation" x="-581" y="662"/>
-        </customView>
-        <customView id="61">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="422"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <box fixedFrame="YES" title="Yer İmleri" translatesAutoresizingMaskIntoConstraints="NO" id="62">
+                <box fixedFrame="YES" title="Yer imleri" translatesAutoresizingMaskIntoConstraints="NO" id="62">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="h51-aZ-jAv">
@@ -371,22 +262,78 @@
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="63">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Küçük Simgeler Kullan" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="DiğerGörünümler" id="65">
                                         <items>
-                                            <menuItem title="Küçük Simgeler Kullan" state="on" id="66"/>
-                                            <menuItem title="Orta Boy Kullan" tag="1" id="67"/>
-                                            <menuItem title="Büyük Simgeler Kullan" tag="2" id="68"/>
+                                            <menuItem title="Küçük simgeler kullanılsın" id="66"/>
+                                            <menuItem title="Orta simgeler kullanılsın" tag="1" id="67"/>
+                                            <menuItem title="Büyük simgeler kullanılsın" tag="2" id="68"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="69">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Küçük simgeler kullanılırken,  yer imleri çekmecesinde yalnızca isim görünür." id="70">
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Küçük simgeler kullanılırken, yalnız yer iminin kısa adı görüntülenir." id="70">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </box>
+            </subviews>
+            <point key="canvasLocation" x="-581.5" y="566"/>
+        </customView>
+        <customView id="61" userLabel="Panel Browser">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="450"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <box fixedFrame="YES" title="Tarayıcı" translatesAutoresizingMaskIntoConstraints="NO" id="mev-Su-J1f">
+                    <rect key="frame" x="17" y="305" width="473" height="125"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="8q9-Nr-uTj">
+                        <rect key="frame" x="3" y="3" width="467" height="107"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="32">
+                                <rect key="frame" x="261" y="49" width="195" height="26"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="NnP-Br-fPH">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" title="DiğerGörünümler" id="34">
+                                        <items>
+                                            <menuItem title=" " id="35"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="36">
+                                <rect key="frame" x="10" y="80" width="437" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Başlangıçta yeni bir tarayıcı açılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hyX-wz-Yx3">
+                                <rect key="frame" x="7" y="55" width="252" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Yer imiyle bağlantı kur:" id="39">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="58A-j5-2qh">
+                                <rect key="frame" x="10" y="20" width="446" height="27"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Uygulamanın başlatılırken boş bir tarayıcı açılır. Yeni bir tarayıcı için seçilmiş yer imiyle bağlantı kurulur." id="45">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -396,7 +343,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Görünüm" translatesAutoresizingMaskIntoConstraints="NO" id="71">
-                    <rect key="frame" x="17" y="117" width="473" height="95"/>
+                    <rect key="frame" x="17" y="16" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
                         <rect key="frame" x="3" y="3" width="467" height="77"/>
@@ -405,7 +352,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Satırları iki renkli yap" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Satır arka planında iki renk kullanılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -430,7 +377,7 @@
                     </view>
                 </box>
                 <box fixedFrame="YES" title="Genel" translatesAutoresizingMaskIntoConstraints="NO" id="78">
-                    <rect key="frame" x="17" y="216" width="473" height="186"/>
+                    <rect key="frame" x="17" y="115" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="zSl-Q7-PPX">
                         <rect key="frame" x="3" y="3" width="467" height="168"/>
@@ -439,7 +386,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="79">
                                 <rect key="frame" x="10" y="140" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Gizli dosyaları göster" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
+                                <buttonCell key="cell" type="check" title="Gizli dosyaları gösterilsin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -447,7 +394,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="81">
                                 <rect key="frame" x="10" y="120" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Çift tıklanan dosyayı harici düzenleyicide aç" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
+                                <buttonCell key="cell" type="check" title="Çift tıklanan dosya dış düzenleyicide açılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -455,7 +402,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="83">
                                 <rect key="frame" x="10" y="81" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Bilgi Ver penceresi sadece seçili olanı göstersin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
+                                <buttonCell key="cell" type="check" title="Bilgiler penceresi yalnız geçerli seçimi göstersin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -463,7 +410,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="85">
                                 <rect key="frame" x="10" y="61" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Dosyaları sürüklerken yaylanarak açılar klasörleri kullan" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
+                                <buttonCell key="cell" type="check" title="Dosyaları sürüklerken klasörler yaylanarak açılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="86">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -505,7 +452,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="95">
                                 <rect key="frame" x="78" y="35" width="80" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Gecikme:" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="96">
+                                <buttonCell key="cell" type="check" title="gecikme:" bezelStyle="regularSquare" imagePosition="left" alignment="right" controlSize="small" inset="2" id="96">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
@@ -513,7 +460,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97">
                                 <rect key="frame" x="10" y="100" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Enter tuşu dosya ve klasörleri yeniden adlandırma için seçsin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
+                                <buttonCell key="cell" type="check" title="Enter tuşu dosya ve klasörleri yeniden adlandırsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -522,9 +469,9 @@
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-6" y="701"/>
+            <point key="canvasLocation" x="-6.5" y="715"/>
         </customView>
-        <customView id="99">
+        <customView id="99" userLabel="Panel Transfers">
             <rect key="frame" x="0.0" y="0.0" width="507" height="412"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -541,7 +488,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="105">
                                         <rect key="frame" x="10" y="248" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Aktarım tamamlandığında Aktarımlar penceresinden sil" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
+                                        <buttonCell key="cell" type="check" title="Aktarım tamamlandığında kaldırılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -549,7 +496,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="115">
                                         <rect key="frame" x="10" y="288" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Aktarım başladığında Aktarımlar penceresini öne getir" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
+                                        <buttonCell key="cell" type="check" title="Aktarım başladığında pencere öne getirilsin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -557,7 +504,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="117">
                                         <rect key="frame" x="10" y="268" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Aktarım tamamlandığında Aktarımlar penceresini kapat" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
+                                        <buttonCell key="cell" type="check" title="Aktarım tamamlandığında pencere kapatılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -569,7 +516,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="123">
                                         <rect key="frame" x="9" y="228" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirilenler" id="124">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirmeler" id="124">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -578,7 +525,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="139">
                                         <rect key="frame" x="9" y="312" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Transfer Files:" id="140">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dosya aktarımı:" id="140">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -593,7 +540,7 @@
                                             <menu key="menu" title="DiğerGörünümler" id="143">
                                                 <items>
                                                     <menuItem title="Yeni bağlantı kur" state="on" id="144"/>
-                                                    <menuItem title="Tarayıcıdaki bağlantıyı kullan" id="145"/>
+                                                    <menuItem title="Tarayıcıdaki bağlantı kullanılsın" id="145"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -601,7 +548,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="103">
                                         <rect key="frame" x="11" y="181" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="İndirilen dosyaları öntanımlı uygulamayla aç" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
+                                        <buttonCell key="cell" type="check" title="İndirilen dosyalar saptanmış uygulamayla açılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="104">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -609,7 +556,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="107">
                                         <rect key="frame" x="10" y="132" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dosya Mevcutsa:" id="108">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Var olan dosyalar" id="108">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -618,7 +565,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="109">
                                         <rect key="frame" x="10" y="158" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="İndirme Klasörü:" id="110">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="İndirme klasörü:" id="110">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -644,7 +591,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="120">
                                         <rect key="frame" x="10" y="88" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklenenler" id="121">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklemeler" id="121">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -653,7 +600,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="125">
                                         <rect key="frame" x="10" y="40" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dosya Mevcutsa:" id="126">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Var olan dosyalar:" id="126">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -675,7 +622,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="131">
                                         <rect key="frame" x="166" y="108" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yeniden yüklerken dosyaların her zaman üzerine yaz" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
+                                        <buttonCell key="cell" type="check" title="Yeniden yüklemede dosya üzerine yazılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -683,7 +630,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="133">
                                         <rect key="frame" x="166" y="16" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yeniden yüklerken dosyaların her zaman üzerine yaz" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
+                                        <buttonCell key="cell" type="check" title="Yeniden yüklemede dosya üzerine yazılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -704,7 +651,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="146">
                                         <rect key="frame" x="11" y="64" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Upload with temporary filename" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
+                                        <buttonCell key="cell" type="check" title="Geçici dosya adı ile yüklensin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -712,7 +659,7 @@
                                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Dosya başına çoklu bağlantılar içeren bölütlenmiş indirmeler" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="Her dosya için birkaç bağlantı ile parçalı indirme yapılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -728,7 +675,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="150">
                                         <rect key="frame" x="10" y="158" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="İzinleri değiştir" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="151">
+                                        <buttonCell key="cell" type="check" title="İzinler değiştirilsin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="151">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -736,7 +683,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="152">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="İzinleri değiştir" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="153">
+                                        <buttonCell key="cell" type="check" title="İzinler değiştirilsin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="153">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -744,7 +691,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="154">
                                         <rect key="frame" x="220" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yazar" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="155">
+                                        <buttonCell key="cell" type="check" title="Yazma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="155">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -752,7 +699,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="156">
                                         <rect key="frame" x="303" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Çalıştırır" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
+                                        <buttonCell key="cell" type="check" title="Çalıştırma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -769,7 +716,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="160">
                                         <rect key="frame" x="220" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yazar" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="161">
+                                        <buttonCell key="cell" type="check" title="Yazma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="161">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -786,7 +733,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="164">
                                         <rect key="frame" x="303" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Çalıştırır" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
+                                        <buttonCell key="cell" type="check" title="Çalıştırma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -794,7 +741,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="166">
                                         <rect key="frame" x="303" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Çalıştırır" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
+                                        <buttonCell key="cell" type="check" title="Çalıştırma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -802,7 +749,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="168">
                                         <rect key="frame" x="137" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Okur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="169">
+                                        <buttonCell key="cell" type="check" title="Okuma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="169">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -810,7 +757,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="170">
                                         <rect key="frame" x="137" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Okur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="171">
+                                        <buttonCell key="cell" type="check" title="Okuma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="171">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -818,7 +765,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="172">
                                         <rect key="frame" x="137" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Okur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="173">
+                                        <buttonCell key="cell" type="check" title="Okuma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="173">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -826,7 +773,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="174">
                                         <rect key="frame" x="9" y="97" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Kullanıcı" id="175">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Sahip" id="175">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -835,7 +782,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="176">
                                         <rect key="frame" x="220" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yazar" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="177">
+                                        <buttonCell key="cell" type="check" title="Yazma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="177">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -843,7 +790,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="178">
                                         <rect key="frame" x="137" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Okur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="179">
+                                        <buttonCell key="cell" type="check" title="Okuma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="179">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -851,7 +798,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="180">
                                         <rect key="frame" x="303" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Çalıştırır" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
+                                        <buttonCell key="cell" type="check" title="Çalıştırma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -868,7 +815,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="184">
                                         <rect key="frame" x="303" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Çalıştırır" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="185">
+                                        <buttonCell key="cell" type="check" title="Çalıştırma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="185">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -876,7 +823,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="186">
                                         <rect key="frame" x="137" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Okur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="187">
+                                        <buttonCell key="cell" type="check" title="Okuma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="187">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -884,7 +831,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="188">
                                         <rect key="frame" x="137" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Okur" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="189">
+                                        <buttonCell key="cell" type="check" title="Okuma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="189">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -892,7 +839,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="190">
                                         <rect key="frame" x="303" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Çalıştırır" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
+                                        <buttonCell key="cell" type="check" title="Çalıştırma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -900,7 +847,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="192">
                                         <rect key="frame" x="220" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yazar" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="193">
+                                        <buttonCell key="cell" type="check" title="Yazma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="193">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -908,7 +855,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="194">
                                         <rect key="frame" x="220" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yazar" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="195">
+                                        <buttonCell key="cell" type="check" title="Yazma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="195">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -916,7 +863,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="196">
                                         <rect key="frame" x="220" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Yazar" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="197">
+                                        <buttonCell key="cell" type="check" title="Yazma" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="197">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -933,7 +880,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="200">
                                         <rect key="frame" x="9" y="239" width="123" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Kullanıcı" id="201">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Sahip" id="201">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -942,7 +889,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="202">
                                         <rect key="frame" x="48" y="134" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="Uzak dosya ve klasörlerin izinlerine" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
+                                        <buttonCell key="cell" type="radio" title="Yerel  dosya ya da klasörlerin izinlerine" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -958,7 +905,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="206">
                                         <rect key="frame" x="48" y="276" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="Yerel dosya ve klasörlerin izinlerine" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
+                                        <buttonCell key="cell" type="radio" title="Uzak dosya ya da klasör izinlerine" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -978,7 +925,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="211">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirilenler" id="212">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirmeler" id="212">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -991,7 +938,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="214">
                                         <rect key="frame" x="9" y="183" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklenenler" id="215">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklemeler" id="215">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1000,13 +947,13 @@
                                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="216">
                                         <rect key="frame" x="191" y="119" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="Dosyalar" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="219" id="217">
+                                        <popUpButtonCell key="cell" type="push" title="Dosyalar için" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="219" id="217">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                             <menu key="menu" title="DiğerGörünümler" id="218">
                                                 <items>
-                                                    <menuItem title="Dosyalar" state="on" id="219"/>
-                                                    <menuItem title="Klasörler" tag="1" id="220"/>
+                                                    <menuItem title="Dosyalar için" state="on" id="219"/>
+                                                    <menuItem title="Klasörler için" tag="1" id="220"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -1014,13 +961,13 @@
                                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="221">
                                         <rect key="frame" x="191" y="261" width="107" height="15"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <popUpButtonCell key="cell" type="push" title="Dosyalar" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
+                                        <popUpButtonCell key="cell" type="push" title="Dosyalar için" bezelStyle="rounded" alignment="left" controlSize="mini" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="224" id="222">
                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                             <menu key="menu" title="DiğerGörünümler" id="223">
                                                 <items>
-                                                    <menuItem title="Dosyalar" state="on" id="224"/>
-                                                    <menuItem title="Klasörler" tag="1" id="225"/>
+                                                    <menuItem title="Dosyalar için" state="on" id="224"/>
+                                                    <menuItem title="Klasörler için" tag="1" id="225"/>
                                                 </items>
                                             </menu>
                                         </popUpButtonCell>
@@ -1028,7 +975,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Tarih Bilgisi" identifier="3" id="226">
+                        <tabViewItem label="Zaman damgaları" identifier="3" id="226">
                             <view key="view" id="227">
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1036,7 +983,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="228">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Değişiklik tarihini koru" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
+                                        <buttonCell key="cell" type="check" title="Değişiklik tarihi korunsun" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1044,7 +991,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="230">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Değişiklik tarihini koru" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
+                                        <buttonCell key="cell" type="check" title="Değişiklik tarihi korunsun" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1056,7 +1003,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="233">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirilenler" id="234">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirmeler" id="234">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1069,7 +1016,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="236">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklenenler" id="237">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklemeler" id="237">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1078,7 +1025,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Checksum" identifier="" id="VK5-4m-22V">
+                        <tabViewItem label="Sağlama" identifier="" id="VK5-4m-22V">
                             <view key="view" id="Sgm-g4-6Sg">
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1086,7 +1033,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="Buu-j0-hMk">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Sağlamayı doğrula" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                        <buttonCell key="cell" type="check" title="Sağlama doğrulansın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1094,7 +1041,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="jvf-VY-vT3">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Sağlamayı doğrula" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                        <buttonCell key="cell" type="check" title="Sağlama doğrulansın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1106,7 +1053,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="Pdu-UD-1af">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirilenler" id="jMp-5G-M0R">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirmeler" id="jMp-5G-M0R">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1119,7 +1066,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="oCu-3p-Hmv">
                                         <rect key="frame" x="9" y="268" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklenenler" id="OF7-e3-pIZ">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklemeler" id="OF7-e3-pIZ">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1128,7 +1075,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Gelişmiş" identifier="4" id="238">
+                        <tabViewItem label="Süzgeç" identifier="4" id="238">
                             <view key="view" id="239">
                                 <rect key="frame" x="10" y="33" width="461" height="342"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1140,7 +1087,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="241">
                                         <rect key="frame" x="9" y="325" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirilenler" id="242">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirmeler" id="242">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1153,7 +1100,7 @@
                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="244">
                                         <rect key="frame" x="9" y="195" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklenenler" id="245">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklemeler" id="245">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1177,11 +1124,13 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750"
+                                                  doubleValue="1" controlSize="small" horizontal="YES" id="249">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="250">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750"
+                                                  doubleValue="1" controlSize="small" horizontal="NO" id="250">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1189,7 +1138,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="256">
                                         <rect key="frame" x="9" y="301" width="364" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Skip files matching the regular expression:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
+                                        <buttonCell key="cell" type="check" title="Kurallı ifadeye uyan dosyalar atlansın:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1197,7 +1146,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="258">
                                         <rect key="frame" x="9" y="171" width="364" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Skip files matching the regular expression:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
+                                        <buttonCell key="cell" type="check" title="Kurallı ifadeye uyan dosyalar atlansın:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1205,7 +1154,7 @@
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="260">
                                         <rect key="frame" x="378" y="300" width="72" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="Öntanımlı" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
+                                        <buttonCell key="cell" type="push" title="Saptanmış" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="261">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
@@ -1213,7 +1162,7 @@
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="262">
                                         <rect key="frame" x="377" y="171" width="72" height="16"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="push" title="Öntanımlı" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
+                                        <buttonCell key="cell" type="push" title="Saptanmış" bezelStyle="rounded" alignment="center" controlSize="mini" borderStyle="border" inset="2" id="263">
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="miniSystem"/>
                                         </buttonCell>
@@ -1236,11 +1185,13 @@
                                                 </textView>
                                             </subviews>
                                         </clipView>
-                                        <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
+                                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750"
+                                                  doubleValue="1" controlSize="small" horizontal="YES" id="254">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
-                                        <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="255">
+                                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750"
+                                                  doubleValue="1" controlSize="small" horizontal="NO" id="255">
                                             <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
@@ -1253,12 +1204,12 @@
             </subviews>
             <point key="canvasLocation" x="139.5" y="1183"/>
         </customView>
-        <customView id="264">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
+        <customView id="264" userLabel="Panel FTP">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="248"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Öntanımlı Protokol İşleyici" translatesAutoresizingMaskIntoConstraints="NO" id="265">
-                    <rect key="frame" x="17" y="16" width="473" height="97"/>
+                <box fixedFrame="YES" title="Saptanmış iletişim kuralı işleyici" translatesAutoresizingMaskIntoConstraints="NO" id="265">
+                    <rect key="frame" x="17" y="131" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
                         <rect key="frame" x="3" y="3" width="467" height="79"/>
@@ -1280,7 +1231,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="270">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="FTP konumlarına işaret eden dosya ve klasörler için açılacak öntanımlı uygulamayı seçin." id="271">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="FTP konumu gösteren dosya ya da bağlantılar için açılacak saptanmış uygulamayı seçin." id="271">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1289,14 +1240,47 @@
                         </subviews>
                     </view>
                 </box>
+                <box fixedFrame="YES" title="Karakter kodlaması" translatesAutoresizingMaskIntoConstraints="NO" id="281">
+                    <rect key="frame" x="17" y="16" width="473" height="111"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="pwh-9x-TZR">
+                        <rect key="frame" x="3" y="3" width="467" height="93"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="282">
+                                <rect key="frame" x="9" y="8" width="197" height="26"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" title="DiğerGörünümler" id="284">
+                                        <items>
+                                            <menuItem title=" " state="on" id="285"/>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="286">
+                                <rect key="frame" x="9" y="40" width="446" height="41"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <string key="title">Seçilmiş saptanmış karakter kodlaması tarayıcıda görünen dosya adlarının dönüştürülmesinde kullanılır. Seçiminiz sunucunun karakter kodlamasıyla aynı olmalıdır.</string>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                </box>
             </subviews>
-            <point key="canvasLocation" x="-435" y="1048"/>
+            <point key="canvasLocation" x="-435.5" y="1105"/>
         </customView>
-        <customView id="272">
+        <customView id="272" userLabel="Panel SFTP">
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Öntanımlı Protokol İşleyici" translatesAutoresizingMaskIntoConstraints="NO" id="273">
+                <box fixedFrame="YES" title="Saptanmış iletişim kuralı işleyici" translatesAutoresizingMaskIntoConstraints="NO" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="QDL-re-aeA">
@@ -1319,7 +1303,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="278">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="SFTP konumlarına işaret eden dosya ve klasörler için açılacak öntanımlı uygulamayı seçin." id="279">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="SFTP konumu gösteren dosya ya da bağlantılar için açılacak saptanmış uygulamayı seçin." id="279">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1331,36 +1315,69 @@
             </subviews>
             <point key="canvasLocation" x="-1010" y="1008"/>
         </customView>
-        <customView id="280">
-            <rect key="frame" x="0.0" y="0.0" width="508" height="383"/>
+        <customView id="280" userLabel="Panel Connection">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="544"/>
             <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
             <subviews>
-                <box fixedFrame="YES" title="Karakter Kodlaması" translatesAutoresizingMaskIntoConstraints="NO" id="281">
-                    <rect key="frame" x="17" y="252" width="473" height="111"/>
+                <box fixedFrame="YES" title="Bağlantı" translatesAutoresizingMaskIntoConstraints="NO" id="46">
+                    <rect key="frame" x="17" y="350" width="473" height="174"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="N8s-vX-pXb">
-                        <rect key="frame" x="3" y="3" width="467" height="93"/>
+                    <view key="contentView" id="jTZ-Rs-0Ac">
+                        <rect key="frame" x="3" y="3" width="467" height="156"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="282">
-                                <rect key="frame" x="9" y="8" width="197" height="26"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="285" id="283">
-                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="53">
+                                <rect key="frame" x="8" y="90" width="449" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Anahtar zinciri kullanılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="55">
+                                <rect key="frame" x="8" y="32" width="449" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Bağlantı kesilirken onay istensin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="56">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Iv8-tk-Wkx">
+                                <rect key="frame" x="7" y="56" width="449" height="27"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Parolaları anahtar zincirinde arar. Başarılı oturum açma durumlarında parolaları otomatik olarak anahtar zincirine kaydeder." id="58">
+                                    <font key="font" metaFont="smallSystem"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tJC-cb-GKG">
+                                <rect key="frame" x="7" y="116" width="244" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Saptanmış iletişim kuralı:" id="48">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
+                                <rect key="frame" x="253" y="110" width="195" height="26"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="bv6-7A-srz">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünümler" id="284">
+                                    <menu key="menu" title="DiğerGörünümler" id="51">
                                         <items>
-                                            <menuItem title=" " state="on" id="285"/>
+                                            <menuItem title=" " id="52"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="286">
-                                <rect key="frame" x="9" y="40" width="446" height="41"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kiy-ac-4ub">
+                                <rect key="frame" x="7" y="11" width="442" height="14"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Bağlanmış tarayıcı pencereleri kapatılırken onay istenir." id="60">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Seçilen öntanımlı karakter kodlaması tarayıcıda görünün dosya isimlerinin dönüştürülmesinde kullanılır. Seçiminiz sunucudaki karakter kodlamasıyla uyumlu olmalıdır.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1368,8 +1385,8 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Elçi Sunucular" translatesAutoresizingMaskIntoConstraints="NO" id="288">
-                    <rect key="frame" x="17" y="16" width="474" height="94"/>
+                <box fixedFrame="YES" title="Vekil sunucular" translatesAutoresizingMaskIntoConstraints="NO" id="288">
+                    <rect key="frame" x="17" y="114" width="474" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
                         <rect key="frame" x="3" y="3" width="468" height="76"/>
@@ -1386,7 +1403,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="291">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Sistemdeki elçi sunucu ayarlarını kullan" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
+                                <buttonCell key="cell" type="check" title="Sistem vekil sunucu ayarları kullanılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1394,8 +1411,8 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Zaman Aşımı" translatesAutoresizingMaskIntoConstraints="NO" id="293">
-                    <rect key="frame" x="17" y="114" width="474" height="134"/>
+                <box fixedFrame="YES" title="Zaman aşımları" translatesAutoresizingMaskIntoConstraints="NO" id="293">
+                    <rect key="frame" x="17" y="212" width="474" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Tuf-VX-07Q">
                         <rect key="frame" x="3" y="3" width="468" height="116"/>
@@ -1403,8 +1420,8 @@
                         <subviews>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="294">
                                 <rect key="frame" x="9" y="88" width="284" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Bağlantı kurmada zaman aşımı süresi (saniye):" id="295">
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Bağlantı kurma zaman aşımı süresi (saniye):" id="295">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1412,12 +1429,12 @@
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="296">
                                 <rect key="frame" x="349" y="35" width="15" height="22"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="30" doubleValue="1" id="297"/>
                             </stepper>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="298">
                                 <rect key="frame" x="298" y="37" width="45" height="19"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="299">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1426,8 +1443,8 @@
                             </textField>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Deneme sayısı:" id="301">
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Yeniden deneme sayısı:" id="301">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1435,7 +1452,7 @@
                             </textField>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="302">
                                 <rect key="frame" x="9" y="39" width="284" height="14"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Gecikme (saniye):" id="303">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1444,20 +1461,20 @@
                             </textField>
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="304">
                                 <rect key="frame" x="10" y="62" width="445" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Başarısız ağ görevlerini tekrar dene" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Başarısız olan ağ görevleri yeniden denensin" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="306">
                                 <rect key="frame" x="349" y="9" width="15" height="22"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="9" doubleValue="1" id="307"/>
                             </stepper>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="308">
                                 <rect key="frame" x="298" y="11" width="45" height="19"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="309">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1466,12 +1483,12 @@
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="310">
                                 <rect key="frame" x="349" y="84" width="15" height="22"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="120" doubleValue="60" id="311"/>
                             </stepper>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="312">
                                 <rect key="frame" x="298" y="86" width="45" height="19"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" bezelStyle="round" id="313">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -1481,70 +1498,86 @@
                         </subviews>
                     </view>
                 </box>
-            </subviews>
-            <point key="canvasLocation" x="-1156" y="685"/>
-        </customView>
-        <userDefaultsController representsSharedInstance="YES" id="314"/>
-        <customView id="315">
-            <rect key="frame" x="0.0" y="0.0" width="507" height="165"/>
-            <autoresizingMask key="autoresizingMask"/>
-            <subviews>
-                <box fixedFrame="YES" title="Güncelleme" translatesAutoresizingMaskIntoConstraints="NO" id="316">
-                    <rect key="frame" x="17" y="16" width="473" height="129"/>
+                <box fixedFrame="YES" title="Günlük" translatesAutoresizingMaskIntoConstraints="NO" id="lZs-z3-3nW">
+                    <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="V20-wh-cwb">
-                        <rect key="frame" x="3" y="3" width="467" height="111"/>
+                    <view key="contentView" id="Qz9-Ok-1iw">
+                        <rect key="frame" x="3" y="3" width="467" height="76"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
-                                <rect key="frame" x="10" y="84" width="227" height="18"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Güncellemeleri otomatik denetle" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P74-g6-epb">
+                                <rect key="frame" x="10" y="48" width="445" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Hata ayıklama günlüğü kullanılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Ocq-JC-4Gq">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
-                                <rect key="frame" x="121" y="38" width="225" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <buttonCell key="cell" type="push" title="Güncellemeleri Şimdi Denetle" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cdn-DG-bwU">
+                                <rect key="frame" x="153" y="4" width="156" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Finder içinde göster" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Pw4-rQ-xRd">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                             </button>
-                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="321">
-                                <rect key="frame" x="8" y="12" width="447" height="14"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="center" id="322">
-                                    <dateFormatter key="formatter" formatterBehavior="pre10_4" dateFormat="%x" id="323"/>
-                                    <font key="font" metaFont="smallSystem"/>
-                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.SULastCheckTime" id="530"/>
-                                </connections>
-                            </textField>
-                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="324">
-                                <rect key="frame" x="240" y="78" width="200" height="26"/>
+                        </subviews>
+                    </view>
+                </box>
+            </subviews>
+            <point key="canvasLocation" x="-1156.5" y="551"/>
+        </customView>
+        <userDefaultsController representsSharedInstance="YES" id="314"/>
+        <customView id="315" userLabel="Panel Update">
+            <rect key="frame" x="0.0" y="0.0" width="507" height="137"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <subviews>
+                <box fixedFrame="YES" title="Güncelleme" translatesAutoresizingMaskIntoConstraints="NO" id="316">
+                    <rect key="frame" x="17" y="16" width="473" height="101"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <view key="contentView" id="V20-wh-cwb">
+                        <rect key="frame" x="3" y="3" width="467" height="83"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="317">
+                                <rect key="frame" x="10" y="56" width="203" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
+                                <buttonCell key="cell" type="check" title="Güncelleme denetleme sıklığı" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <popUpButton verticalHuggingPriority="750" fixedFrame="YES"
+                                         translatesAutoresizingMaskIntoConstraints="NO" id="324">
+                                <rect key="frame" x="218" y="50" width="238" height="26"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left"
+                                                 lineBreakMode="truncatingTail" borderStyle="borderAndBezel"
+                                                 imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="DiğerGörünümler" id="326"/>
                                 </popUpButtonCell>
                             </popUpButton>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="319">
+                                <rect key="frame" x="129" y="13" width="209" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Güncellemeleri şimdi denetle" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
                         </subviews>
                     </view>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-1302" y="346"/>
+            <point key="canvasLocation" x="-1302.5" y="331.5"/>
         </customView>
-        <customView id="327">
+        <customView id="327" userLabel="Panel Bandwidth">
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Aktarım Sınırlama" translatesAutoresizingMaskIntoConstraints="NO" id="328">
+                <box fixedFrame="YES" title="Aktarım sınırlaması" translatesAutoresizingMaskIntoConstraints="NO" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="9Em-Vf-Pix">
@@ -1558,7 +1591,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="330">
                                 <rect key="frame" x="9" y="104" width="449" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirilenler" id="331">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="İndirmeler" id="331">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1571,7 +1604,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklenenler" id="334">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Yüklemeler" id="334">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1585,7 +1618,7 @@
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="DiğerGörünümler" id="337">
                                         <items>
-                                            <menuItem title="Sınırsız Bant Genişliği" tag="-1" id="338"/>
+                                            <menuItem title="Sınırsız bant genişliği" tag="-1" id="338"/>
                                             <menuItem isSeparatorItem="YES" state="on" id="339">
                                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                             </menuItem>
@@ -1596,7 +1629,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="340">
                                 <rect key="frame" x="9" y="77" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Üst Sınır:" id="341">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Üst sınır:" id="341">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1610,7 +1643,7 @@
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="DiğerGörünümler" id="344">
                                         <items>
-                                            <menuItem title="Sınırsız Bant Genişliği" tag="-1" id="345"/>
+                                            <menuItem title="Sınırsız bant genişliği" tag="-1" id="345"/>
                                             <menuItem isSeparatorItem="YES" state="on" id="346">
                                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                             </menuItem>
@@ -1621,7 +1654,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="347">
                                 <rect key="frame" x="9" y="14" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Üst Sınır:" id="348">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Üst sınır:" id="348">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1633,11 +1666,11 @@
             </subviews>
             <point key="canvasLocation" x="-1448" y="107"/>
         </customView>
-        <customView id="349">
+        <customView id="349" userLabel="Panel S3">
             <rect key="frame" x="0.0" y="0.0" width="507" height="436"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Encryption" translatesAutoresizingMaskIntoConstraints="NO" id="350">
+                <box fixedFrame="YES" title="Şifreleme" translatesAutoresizingMaskIntoConstraints="NO" id="350">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
@@ -1656,7 +1689,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="354">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algirithm to encrypt files with on upload." id="355">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Yükleme sırasında dosyaları şifreleme algoritmasını seçin." id="355">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1665,7 +1698,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Öntanımlı 'Bucket' Konumu" translatesAutoresizingMaskIntoConstraints="NO" id="356">
+                <box fixedFrame="YES" title="Saptanmış klasör konumu" translatesAutoresizingMaskIntoConstraints="NO" id="356">
                     <rect key="frame" x="17" y="319" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aDe-7a-zvt">
@@ -1684,7 +1717,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="360">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Öntanımlı 'bucket' oluşturma konumu." id="361">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Saptanmış klasörlerin oluşturulacağı coğrafi konum." id="361">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1693,7 +1726,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Öntanımlı Depolama Sınıfı" translatesAutoresizingMaskIntoConstraints="NO" id="362">
+                <box fixedFrame="YES" title="Saptanmış depolama sınıfı" translatesAutoresizingMaskIntoConstraints="NO" id="362">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wk5-XB-g4g">
@@ -1714,7 +1747,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Hayati olmayan, yeniden oluşturulabilir verilerin düşük seviyede yedeklemesinde düşük maliyetler için Reduced Redundancy Storage'yi (RRS) seçin.</string>
+                                    <string key="title">Kritik olmayan, yeniden oluşturulabilir verilerin düşük yedeklilik düzeyinde ve düşük maliyetler ile tutulması için azaltılmış yedeklilik düzeyi (RRS) olarak seçin.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1722,7 +1755,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
+                <box fixedFrame="YES" title="Saptanmış EDL" translatesAutoresizingMaskIntoConstraints="NO" id="413-ca-YoL">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Sgq-Kr-VcS">
@@ -1735,13 +1768,13 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Nln-7K-rM6">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünüm" id="LOt-Ur-gZL"/>
+                                    <menu key="menu" title="DiğerGörünümler" id="LOt-Ur-gZL"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dmt-yG-0WL">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="Qg3-4s-tpR">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Yeni klasör ve dosyalara uygulanacak hazır izin alanları ve izinleri seçin." id="Qg3-4s-tpR">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1753,11 +1786,11 @@
             </subviews>
             <point key="canvasLocation" x="-1594.5" y="-168"/>
         </customView>
-        <customView id="368">
+        <customView id="368" userLabel="Panel Editor">
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Düzenleme" translatesAutoresizingMaskIntoConstraints="NO" id="369">
+                <box fixedFrame="YES" title="Düzenleyici" translatesAutoresizingMaskIntoConstraints="NO" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
@@ -1780,7 +1813,7 @@
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="374">
                                 <rect key="frame" x="9" y="75" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Başka bir uygulamayla ilişkilendirilmemiş türdeki dosyaların öntanımlı olarak birlikte açılacağı bir metin düzenleyici seçin." id="375">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Başka bir uygulamayla ilişkilendirilmemiş dosyaların saptanmış olarak açılacağı metin düzenleyiciyi seçin." id="375">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1789,7 +1822,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="376">
                                 <rect key="frame" x="10" y="11" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Her zaman bu uygulamayı kullan" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
+                                <buttonCell key="cell" type="check" title="Her zaman bu uygulama kullanılsın" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="377">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1800,7 +1833,7 @@
             </subviews>
             <point key="canvasLocation" x="-86" y="1542"/>
         </customView>
-        <customView id="408">
+        <customView id="408" userLabel="Panel Language">
             <rect key="frame" x="0.0" y="0.0" width="507" height="134"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -1849,7 +1882,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tzo-pv-NCb">
                                 <rect key="frame" x="10" y="21" width="253" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Auto detect and open vault in browser" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
+                                <buttonCell key="cell" type="check" title="Kasa algılansın ve tarayıcıda açılsın" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1864,7 +1897,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box fixedFrame="YES" title="Öntanımlı 'Bucket' Konumu" translatesAutoresizingMaskIntoConstraints="NO" id="V1l-Oi-w0c">
+                <box fixedFrame="YES" title="Saptanmış klasör konumu" translatesAutoresizingMaskIntoConstraints="NO" id="V1l-Oi-w0c">
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="geU-Rj-cda">
@@ -1877,13 +1910,13 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="Yox-e4-qNs">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünüm" id="diO-fA-NtZ"/>
+                                    <menu key="menu" title="DiğerGörünümler" id="diO-fA-NtZ"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uX6-1U-HMv">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Öntanımlı 'bucket' oluşturma konumu." id="Vaz-8e-u1G">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Saptanmış klasörlerin oluşturulacağı coğrafi konum." id="Vaz-8e-u1G">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1892,7 +1925,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Öntanımlı Depolama Sınıfı" translatesAutoresizingMaskIntoConstraints="NO" id="H10-BD-7Zg">
+                <box fixedFrame="YES" title="Saptanmış depolama sınıfı" translatesAutoresizingMaskIntoConstraints="NO" id="H10-BD-7Zg">
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="IXD-mF-Yya">
@@ -1905,7 +1938,7 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="3pD-c1-mdX">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünüm" id="8oB-mo-TeL"/>
+                                    <menu key="menu" title="DiğerGörünümler" id="8oB-mo-TeL"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jCJ-ma-J2r">
@@ -1913,7 +1946,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="SEJ-MV-ehv">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Hayati olmayan, yeniden oluşturulabilir verilerin düşük seviyede yedeklemesinde düşük maliyetler için Reduced Redundancy Storage'yi (RRS) seçin.</string>
+                                    <string key="title">Kritik olmayan, yeniden oluşturulabilir verilerin düşük yedeklilik düzeyinde ve düşük maliyetler ile tutulması için azaltılmış yedeklilik düzeyi (RRS) olarak seçin.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1921,7 +1954,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box fixedFrame="YES" title="Default ACL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
+                <box fixedFrame="YES" title="Saptanmış EDL" translatesAutoresizingMaskIntoConstraints="NO" id="y8O-CF-T0G">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wuK-Me-6mi">
@@ -1934,13 +1967,13 @@
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" id="K6E-Rf-5sb">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="DiğerGörünüm" id="rw5-0E-6t1"/>
+                                    <menu key="menu" title="DiğerGörünümler" id="rw5-0E-6t1"/>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lB4-Ql-F2I">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the predefined set of grantees and permissions to apply to new buckets and files." id="4Yf-WE-fsN">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Yeni klasör ve dosyalara uygulanacak hazır izin alanları ve izinleri seçin." id="4Yf-WE-fsN">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>

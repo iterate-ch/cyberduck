@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FilesPathBody;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -37,9 +38,10 @@ public class BrickTimestampFeature extends DefaultTimestampFeature {
     @Override
     public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
-                .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
-                    new FilesPathBody().providedMtime(new DateTime(status.getTimestamp())));
+            final FileEntity response = new FilesApi(new BrickApiClient(session))
+                    .patchFilesPath(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                            new FilesPathBody().providedMtime(new DateTime(status.getTimestamp())));
+            status.setResponse(new BrickAttributesFinderFeature(session).toAttributes(response));
         }
         catch(ApiException e) {
             throw new BrickExceptionMappingService().map("Failure to write attributes of {0}", e, file);

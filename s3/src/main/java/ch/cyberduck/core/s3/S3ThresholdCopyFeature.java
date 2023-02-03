@@ -20,10 +20,12 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class S3ThresholdCopyFeature extends S3CopyFeature {
+public class S3ThresholdCopyFeature implements Copy {
 
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
@@ -34,18 +36,17 @@ public class S3ThresholdCopyFeature extends S3CopyFeature {
     }
 
     public S3ThresholdCopyFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
-        super(session, accessControlListFeature);
         this.session = session;
         this.accessControlListFeature = accessControlListFeature;
         this.multipartThreshold = new HostPreferences(session.getHost()).getLong("s3.upload.multipart.required.threshold");
     }
 
-    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(status.getLength() > multipartThreshold) {
-            return new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
+            return new S3MultipartCopyFeature(session, accessControlListFeature).copy(source, copy, status, callback, listener);
         }
         else {
-            return new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback);
+            return new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback, listener);
         }
     }
 }

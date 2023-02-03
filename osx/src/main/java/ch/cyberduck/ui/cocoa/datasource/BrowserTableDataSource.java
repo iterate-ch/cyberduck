@@ -51,6 +51,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileDescriptor;
 import ch.cyberduck.core.local.FileDescriptorFactory;
@@ -75,9 +76,11 @@ import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
+import ch.cyberduck.ui.cocoa.controller.ReloadCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -96,7 +99,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
-    private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
+    private static final Logger log = LogManager.getLogger(BrowserTableDataSource.class);
 
     private final SizeFormatter sizeFormatter = SizeFormatterFactory.get();
     private final AbstractUserDateFormatter dateFormatter = UserDateFormatterFactory.get();
@@ -197,7 +200,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), item.attributes());
+                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), new PathAttributes(item.attributes()).withVersionId(null));
                 new MoveController(controller).rename(item, renamed);
             }
         }
@@ -297,6 +300,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             value = NSAttributedString.attributedStringWithAttributes(
                 StringUtils.isNotBlank(item.attributes().getVersionId()) ? item.attributes().getVersionId() :
                     LocaleFactory.localizedString("None"),
+                TableCellAttributes.browserFontLeftAlignment());
+        }
+        else if(identifier.equals(BrowserColumn.checksum.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
+                !Checksum.NONE.equals(item.attributes().getChecksum()) ? item.attributes().getChecksum().hash :
+                    StringUtils.isNotBlank(item.attributes().getETag()) ? item.attributes().getETag() : LocaleFactory.localizedString("None"),
                 TableCellAttributes.browserFontLeftAlignment());
         }
         else if(identifier.equals(BrowserColumn.storageclass.name())) {
@@ -609,7 +618,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         final PathPasteboard pasteboard = controller.getPasteboard();
         if(NSDraggingInfo.NSDragOperationDelete.intValue() == operation.intValue()) {
-            new DeleteController(controller).delete(pasteboard);
+            new DeleteController(controller, controller.getSession()).delete(pasteboard, new ReloadCallback() {
+                @Override
+                public void done(final List<Path> files) {
+                    controller.reload(controller.workdir(), pasteboard, Collections.emptyList());
+                }
+            });
         }
         pasteboard.clear();
     }
@@ -636,7 +650,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         NSMutableArray promisedDragNames = NSMutableArray.array();
         if(null != url) {
             final Local destination = LocalFactory.get(url.path());
-            final DownloadFilterOptions options = new DownloadFilterOptions();
+            final DownloadFilterOptions options = new DownloadFilterOptions(controller.getSession().getHost());
             if(destination.isChild(new TemporarySupportDirectoryFinder().find())) {
                 options.icon = false;
                 options.segments = false;

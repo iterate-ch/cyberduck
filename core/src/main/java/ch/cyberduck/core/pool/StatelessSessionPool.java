@@ -22,25 +22,23 @@ import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundActionStateCancelCallback;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class StatelessSessionPool implements SessionPool {
-    private static final Logger log = Logger.getLogger(StatelessSessionPool.class);
+    private static final Logger log = LogManager.getLogger(StatelessSessionPool.class);
 
-    private final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
     private final ConnectionService connect;
     private final TranscriptListener transcript;
     private final Session<?> session;
     private final VaultRegistry registry;
 
-    private final Lock lock = new ReentrantLock();
+    private final Lock sync = new ReentrantLock();
 
     public StatelessSessionPool(final ConnectionService connect, final Session<?> session,
                                 final TranscriptListener transcript, final VaultRegistry registry) {
@@ -53,41 +51,34 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-        lock.lock();
+        sync.lock();
         try {
             connect.check(session.withListener(transcript), new BackgroundActionStateCancelCallback(callback));
             return session;
         }
         finally {
-            lock.unlock();
+            sync.unlock();
         }
     }
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        lock.lock();
-        try {
-            if(null == failure) {
-                return;
+        if(failure != null) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Keep connection %s alive with failure %s", conn, failure));
             }
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                connect.close(conn);
-            }
-        }
-        finally {
-            lock.unlock();
         }
     }
 
     @Override
     public void evict() {
-        lock.lock();
+        sync.lock();
         try {
             try {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Ignore failure closing connection. %s", e.getMessage()));
+                log.warn(String.format("Ignore failure %s closing connection", e));
             }
             finally {
                 session.removeListener(transcript);
@@ -95,26 +86,26 @@ public class StatelessSessionPool implements SessionPool {
             }
         }
         finally {
-            lock.unlock();
+            sync.unlock();
         }
     }
 
     @Override
     public void shutdown() {
-        lock.lock();
+        sync.lock();
         try {
             try {
                 session.close();
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure closing session. %s", e.getMessage()));
+                log.warn(String.format("Failure %s closing session", e));
             }
             finally {
                 registry.clear();
             }
         }
         finally {
-            lock.unlock();
+            sync.unlock();
         }
     }
 

@@ -21,7 +21,7 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
@@ -29,7 +29,8 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.ui.cocoa.controller.ChangedHostKeyAlertController;
 import ch.cyberduck.ui.cocoa.controller.UnknownHostKeyAlertController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.PublicKey;
 
@@ -37,7 +38,7 @@ import java.security.PublicKey;
  * Using known_hosts from OpenSSH to store accepted host keys.
  */
 public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
-    private static final Logger log = Logger.getLogger(PromptHostKeyCallback.class);
+    private static final Logger log = LogManager.getLogger(PromptHostKeyCallback.class);
 
     private final WindowController controller;
 
@@ -53,8 +54,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key)
-            throws ConnectionCanceledException, ChecksumException {
+    protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) throws BackgroundException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
         final AlertController alert = new UnknownHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {
@@ -67,8 +67,7 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key)
-            throws ConnectionCanceledException, ChecksumException {
+    protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) throws BackgroundException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
         final AlertController alert = new ChangedHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {

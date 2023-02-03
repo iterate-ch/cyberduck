@@ -24,7 +24,8 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,8 @@ import java.security.NoSuchAlgorithmException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SwiftSmallObjectUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftSmallObjectUploadFeature.class);
+
     private final SwiftSession session;
 
     public SwiftSmallObjectUploadFeature(final SwiftSession session, final Write<StorageObject> writer) {
@@ -50,7 +52,7 @@ public class SwiftSmallObjectUploadFeature extends HttpUploadFeature<StorageObje
             return super.decorate(in, null);
         }
         else {
-            return new DigestInputStream(super.decorate(in, digest), digest);
+            return new DigestInputStream(in, digest);
         }
     }
 

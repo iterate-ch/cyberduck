@@ -17,13 +17,14 @@ package ch.cyberduck.core.io;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class BufferOutputStream extends ProxyOutputStream {
-    private static final Logger log = Logger.getLogger(BufferOutputStream.class.getName());
+    private static final Logger log = LogManager.getLogger(BufferOutputStream.class.getName());
 
     private final Buffer buffer;
 

@@ -21,14 +21,20 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.RelocationResult;
 
 public class DropboxCopyFeature implements Copy {
+    private static final Logger log = LogManager.getLogger(DropboxCopyFeature.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;
@@ -39,17 +45,21 @@ public class DropboxCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                }
                 new DropboxDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
             // If the source path is a folder all its contents will be copied.
-            new DbxUserFilesRequests(session.getClient(source)).copyV2(containerService.getKey(source), containerService.getKey(target));
-            return target;
+            final RelocationResult result = new DbxUserFilesRequests(session.getClient(file)).copyV2(containerService.getKey(file), containerService.getKey(target));
+            listener.sent(status.getLength());
+            return target.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, source);
+            throw new DropboxExceptionMappingService().map("Cannot copy {0}", e, file);
         }
     }
 

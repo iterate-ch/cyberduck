@@ -28,15 +28,16 @@ import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedulerFeature<Map<Path, Distribution>> {
-    private static final Logger log = Logger.getLogger(CloudFrontDistributionConfigurationPreloader.class);
+public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedulerFeature<Set<Distribution>> {
+    private static final Logger log = LogManager.getLogger(CloudFrontDistributionConfigurationPreloader.class);
 
     private final S3Session session;
 
@@ -46,28 +47,24 @@ public class CloudFrontDistributionConfigurationPreloader extends OneTimeSchedul
     }
 
     @Override
-    protected Map<Path, Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
+    protected Set<Distribution> operate(final PasswordCallback callback, final Path file) throws BackgroundException {
         final DistributionConfiguration feature = session.getFeature(DistributionConfiguration.class);
         if(null == feature) {
-            return Collections.emptyMap();
+            return Collections.emptySet();
         }
-        final AttributedList<Path> containers = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(file, new DisabledListProgressListener());
-        final Map<Path, Distribution> distributions = new ConcurrentHashMap<>();
+        final AttributedList<Path> containers = new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion()))
+            .list(file, new DisabledListProgressListener());
+        final Set<Distribution> distributions = new LinkedHashSet<>();
         for(Path container : containers) {
             for(Distribution.Method method : feature.getMethods(container)) {
                 if(Distribution.WEBSITE.equals(method)) {
                     continue;
                 }
-                if(Distribution.WEBSITE_CDN.equals(method)) {
-                    continue;
-                }
                 final Distribution distribution = feature.read(container, method, new DisabledLoginCallback());
-                if(distribution.isEnabled()) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Cache distribution %s", distribution));
-                    }
-                    distributions.put(container, distribution);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Cache distribution %s", distribution));
                 }
+                distributions.add(distribution);
             }
         }
         return distributions;

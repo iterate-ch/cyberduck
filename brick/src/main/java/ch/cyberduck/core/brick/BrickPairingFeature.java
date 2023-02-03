@@ -42,7 +42,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthSchemeProvider;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpDelete;
@@ -50,12 +49,13 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class BrickPairingFeature implements Pairing {
-    private static final Logger log = Logger.getLogger(BrickPairingFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickPairingFeature.class);
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
 
@@ -85,7 +85,7 @@ public class BrickPairingFeature implements Pairing {
                 }
                 client.execute(resource, new ResponseHandler<Void>() {
                     @Override
-                    public Void handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                    public Void handleResponse(final HttpResponse response) {
                         return null;
                     }
                 });

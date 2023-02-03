@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
@@ -28,7 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,7 +39,7 @@ import java.util.TimeZone;
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
-    private static final Logger log = Logger.getLogger(B2AuthorizedUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(B2AuthorizedUrlProvider.class);
 
     private final PathContainerService containerService
         = new B2PathContainerService();
@@ -74,7 +74,7 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiry.add(Calendar.SECOND, seconds);
-            final String token = session.getClient().getDownloadAuthorization(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
+            final String token = session.getClient().getDownloadAuthorization(fileid.getVersionId(containerService.getContainer(file)),
                 StringUtils.EMPTY, seconds);
             return new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))

@@ -50,12 +50,18 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         // Will get new pairing key if missing credentials
         return true;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == Pairing.class) {
             return (T) new BrickPairingFeature();

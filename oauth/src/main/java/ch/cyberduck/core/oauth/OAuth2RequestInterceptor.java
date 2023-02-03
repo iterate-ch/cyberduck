@@ -16,11 +16,16 @@ package ch.cyberduck.core.oauth;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
-import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
@@ -30,62 +35,80 @@ import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.HttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.http.HttpTransport;
 
 public class OAuth2RequestInterceptor extends OAuth2AuthorizationService implements HttpRequestInterceptor {
-    private static final Logger log = Logger.getLogger(OAuth2RequestInterceptor.class);
+    private static final Logger log = LogManager.getLogger(OAuth2RequestInterceptor.class);
 
     /**
      * Currently valid tokens
      */
     private OAuthTokens tokens = OAuthTokens.EMPTY;
 
-    public OAuth2RequestInterceptor(final HttpClient client, final Protocol protocol) {
-        this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(), protocol.getOAuthClientSecret(), protocol.getOAuthScopes());
-    }
+    private final HostPasswordStore store = PasswordStoreFactory.get();
+    private final Host host;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
-        this(client,
+        this(client, host,
                 Scheme.isURL(host.getProtocol().getOAuthTokenUrl()) ? host.getProtocol().getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthTokenUrl()),
                 Scheme.isURL(host.getProtocol().getOAuthAuthorizationUrl()) ? host.getProtocol().getOAuthAuthorizationUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                         host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthAuthorizationUrl()),
                 host.getProtocol().getOAuthClientId(),
                 host.getProtocol().getOAuthClientSecret(),
-                host.getProtocol().getOAuthScopes());
+                host.getProtocol().getOAuthScopes(),
+                host.getProtocol().isOAuthPKCE());
     }
 
-    public OAuth2RequestInterceptor(final HttpClient client, final String tokenServerUrl, final String authorizationServerUrl, final String clientid, final String clientsecret, final List<String> scopes) {
-        super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
+    public OAuth2RequestInterceptor(final HttpClient client, final Host host, final String tokenServerUrl, final String authorizationServerUrl,
+                                    final String clientid, final String clientsecret, final List<String> scopes, final boolean pkce) {
+        super(client, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes, pkce);
+        this.host = host;
     }
 
-    public OAuth2RequestInterceptor(final HttpTransport transport, final String tokenServerUrl, final String authorizationServerUrl, final String clientid, final String clientsecret, final List<String> scopes) {
-        super(transport, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
-    }
-
-    public void setTokens(final OAuthTokens tokens) {
-        this.tokens = tokens;
+    @Override
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final FlowType type) throws BackgroundException {
+        return tokens = super.authorize(bookmark, prompt, cancel, type);
     }
 
     public OAuthTokens refresh() throws BackgroundException {
-        return super.refresh(tokens);
+        return tokens = this.refresh(tokens);
+    }
+
+    @Override
+    public OAuthTokens refresh(final OAuthTokens previous) throws BackgroundException {
+        return tokens = super.refresh(previous);
+    }
+
+    /**
+     * Save updated tokens in keychain
+     *
+     * @return Same tokens saved
+     */
+    public OAuthTokens save(final OAuthTokens tokens) throws LocalAccessDeniedException {
+        host.getCredentials().withOauth(tokens).withSaved(new LoginOptions().keychain);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save new tokens %s for %s", tokens, host));
+        }
+        store.save(host);
+        return tokens;
     }
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(tokens.isExpired()) {
             try {
-                tokens = this.refresh(tokens);
+                this.save(this.refresh(tokens));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e));
-                // Follow up error 401 handled in error interceptor
+                // Follow-up error 401 handled in error interceptor
             }
         }
         if(StringUtils.isNotBlank(tokens.getAccessToken())) {

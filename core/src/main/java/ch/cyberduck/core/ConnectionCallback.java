@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
+import java.util.concurrent.CountDownLatch;
+
 public interface ConnectionCallback extends PasswordCallback {
     /**
      * Display warning sheet. Block connection until decision is made.
@@ -30,9 +32,19 @@ public interface ConnectionCallback extends PasswordCallback {
      * @param defaultButton Button title for default button
      * @param cancelButton  Button title for other button
      * @param preference    Where to save preference if dismissed
-     * @throws ch.cyberduck.core.exception.ConnectionCanceledException If the other option has been selected.
+     * @throws ConnectionCanceledException If the other option has been selected.
      */
     void warn(Host bookmark, String title, String message, String defaultButton, String cancelButton,
               String preference) throws ConnectionCanceledException;
 
+    /**
+     * Alert with indeterminate progress to await result from background task
+     *
+     * @param signal   Await signal on latch prior returning
+     * @param bookmark Host
+     * @param title    Title in alert window
+     * @param message  Message in alert window
+     * @throws ConnectionCanceledException If await is canceled by the user
+     */
+    void await(CountDownLatch signal, Host bookmark, String title, String message) throws ConnectionCanceledException;
 }

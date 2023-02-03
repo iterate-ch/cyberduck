@@ -52,12 +52,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             {
                 return false;
             }
+            if (type == FailureDiagnostics.Type.skip)
+            {
+                return false;
+            }
             _notification.alert(host, failure, log);
             bool r = false;
             _controller.Invoke(delegate
                 {
                     string footer = ProviderHelpServiceFactory.get().help(host.getProtocol());
-                    string title = LocaleFactory.localizedString("Error");
+                    string title = BookmarkNameProvider.toString(host);
                     string message = failure.getMessage() ?? LocaleFactory.localizedString("Unknown");
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
                     string expanded = log.length() > 0 ? log.toString() : null;
@@ -87,7 +91,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                                        case 1:
                                                            if (type == FailureDiagnostics.Type.network)
                                                            {
-                                                               ReachabilityFactory.get().diagnose(host);
+                                                               ReachabilityDiagnosticsFactory.get().diagnose(host);
                                                            }
                                                            if (type == FailureDiagnostics.Type.quota)
                                                            {

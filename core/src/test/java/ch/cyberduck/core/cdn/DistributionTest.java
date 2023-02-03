@@ -12,11 +12,12 @@ public class DistributionTest {
 
     @Test
     public void testEquals() {
-        assertEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.DOWNLOAD, false));
-        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.STREAMING, false));
-        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.CUSTOM, false));
-        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.WEBSITE, false));
-        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.WEBSITE_CDN, false));
+        assertEquals(new Distribution(Distribution.DOWNLOAD, URI.create("o"), false), new Distribution(Distribution.DOWNLOAD, URI.create("o"), false));
+        assertEquals(new Distribution(Distribution.DOWNLOAD, URI.create("o"), true), new Distribution(Distribution.DOWNLOAD, URI.create("o"), false));
+        assertNotEquals(new Distribution(Distribution.DOWNLOAD, URI.create("o"), false), new Distribution(Distribution.STREAMING, URI.create("o"), false));
+        assertNotEquals(new Distribution(Distribution.DOWNLOAD, URI.create("o"), false), new Distribution(Distribution.CUSTOM, URI.create("o"), false));
+        assertNotEquals(new Distribution(Distribution.DOWNLOAD, URI.create("o"), false), new Distribution(Distribution.WEBSITE, URI.create("o"), false));
+        assertNotEquals(new Distribution(Distribution.DOWNLOAD, URI.create("o"), false), new Distribution(Distribution.WEBSITE_CDN, URI.create("o"), false));
     }
 
     @Test
@@ -46,12 +47,12 @@ public class DistributionTest {
     @Test
     public void testOriginBucket() {
         assertEquals(URI.create("test.cyberduck.ch.s3.amazonaws.com"),
-                new Distribution(URI.create("test.cyberduck.ch.s3.amazonaws.com"), Distribution.DOWNLOAD, false).getOrigin());
+            new Distribution(Distribution.DOWNLOAD, URI.create("test.cyberduck.ch.s3.amazonaws.com"), false).getOrigin());
     }
 
     @Test
     public void testOriginCustom() {
         assertEquals(URI.create("test.cyberduck.ch"),
-                new Distribution(URI.create("test.cyberduck.ch"), Distribution.DOWNLOAD, false).getOrigin());
+            new Distribution(Distribution.DOWNLOAD, URI.create("test.cyberduck.ch"), false).getOrigin());
     }
 }

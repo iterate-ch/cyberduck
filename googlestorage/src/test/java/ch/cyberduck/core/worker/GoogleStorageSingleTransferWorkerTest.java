@@ -24,16 +24,16 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
 import ch.cyberduck.core.googlestorage.GoogleStorageDeleteFeature;
 import ch.cyberduck.core.googlestorage.GoogleStorageWriteFeature;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -55,6 +55,8 @@ import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import com.google.api.services.storage.model.StorageObject;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -62,9 +64,9 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
 
     @Test
     public void testDownload() throws Exception {
-        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Local localFile = TemporaryFileServiceFactory.get().create(test);
+        final Local localFile = new DefaultTemporaryFileService().create(test.getName());
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
@@ -75,11 +77,11 @@ public class GoogleStorageSingleTransferWorkerTest extends AbstractGoogleStorage
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().withLength(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<StorageObject> out = new GoogleStorageWriteFeature(session).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final String versionId = String.valueOf(out.getStatus().id);
+        final String versionId = String.valueOf(out.getStatus().getGeneration());
         assertNotNull(versionId);
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {

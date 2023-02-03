@@ -36,12 +36,13 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
 public class Transmit3BookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(Transmit3BookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(Transmit3BookmarkCollection.class);
 
     private static final long serialVersionUID = 6406786269501430927L;
 

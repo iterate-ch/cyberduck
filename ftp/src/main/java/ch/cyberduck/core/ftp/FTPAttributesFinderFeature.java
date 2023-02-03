@@ -22,6 +22,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -33,13 +34,14 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-public class FTPAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(FTPAttributesFinderFeature.class);
+public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements AttributesFinder {
+    private static final Logger log = LogManager.getLogger(FTPAttributesFinderFeature.class);
 
     private final FTPSession session;
 
@@ -60,7 +62,7 @@ public class FTPAttributesFinderFeature implements AttributesFinder {
                     }
                     final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
                     final AttributedList<Path> attributes
-                        = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), listener);
+                            = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), listener);
                     if(attributes.contains(file)) {
                         return attributes.get(attributes.indexOf(file)).attributes();
                     }

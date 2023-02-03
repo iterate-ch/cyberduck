@@ -27,7 +27,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
@@ -47,7 +47,7 @@ public class MantaListServiceTest extends AbstractMantaTest {
         final Path folder = new MantaDirectoryFeature(session).mkdir(new Path(
             testPathPrefix, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new MantaListService(session).list(folder, new DisabledListProgressListener()).isEmpty());
-        new MantaDeleteFeature(session).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new MantaDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -59,12 +59,13 @@ public class MantaListServiceTest extends AbstractMantaTest {
     @Test
     public void testAccountRoot() throws Exception {
         final MantaAccountHomeInfo root = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath());
+        final Path directory = root.getAccountRoot();
         final AttributedList<Path> list = new MantaListService(session)
-            .list(root.getAccountRoot(), new DisabledListProgressListener());
+                .list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
-            assertSame(root.getAccountRoot(), f.getParent());
-            assertEquals(root.getAccountRoot().getName(), f.getParent().getName());
+            assertSame(directory, f.getParent());
+            assertEquals(directory.getName(), f.getParent().getName());
         }
     }
 }

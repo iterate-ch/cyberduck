@@ -35,7 +35,7 @@ public class TransferStatusTest {
     }
 
     @Test
-    public void testSetComplete() {
+    public void testSetComplete() throws Exception {
         TransferStatus status = new TransferStatus();
         status.setLength(1L);
         assertFalse(status.isComplete());

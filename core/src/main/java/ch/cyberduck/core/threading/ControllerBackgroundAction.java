@@ -37,12 +37,12 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
         this(controller, session, progress, AlertCallbackFactory.get(controller));
     }
 
-    public ControllerBackgroundAction(final Controller controller,
+    public ControllerBackgroundAction(final BackgroundActionListener listener,
                                       final SessionPool session,
                                       final ProgressListener progress,
                                       final AlertCallback alert) {
         super(session, alert, progress);
-        this.listener = controller;
+        this.listener = listener;
     }
 
     @Override

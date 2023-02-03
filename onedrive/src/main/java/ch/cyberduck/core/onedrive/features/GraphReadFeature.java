@@ -24,24 +24,26 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.DriveItemVersion;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
 public class GraphReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(GraphReadFeature.class);
+    private static final Logger log = LogManager.getLogger(GraphReadFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -55,7 +57,7 @@ public class GraphReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(file.getType().contains(Path.Type.placeholder)) {
-                final DescriptiveUrl link = new OneDriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+                final DescriptiveUrl link = new GraphUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
                 if(DescriptiveUrl.EMPTY.equals(link)) {
                     log.warn(String.format("Missing web link for file %s", file));
                     return new NullInputStream(file.attributes().getSize());
@@ -68,7 +70,7 @@ public class GraphReadFeature implements Read {
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
                     final String header;
-                    if(-1 == range.getEnd()) {
+                    if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                         header = String.format("%d-", range.getStart());
                     }
                     else {
@@ -77,9 +79,19 @@ public class GraphReadFeature implements Read {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add range header %s for file %s", header, file));
                     }
-                    return Files.download(target, header);
+                    if(file.attributes().isDuplicate()) {
+                        return Files.downloadVersion(target, file.attributes().getVersionId(), header);
+                    }
+                    else {
+                        return Files.download(target, header);
+                    }
                 }
-                return Files.download(target);
+                if(file.attributes().isDuplicate()) {
+                    return Files.downloadVersion(target, file.attributes().getVersionId());
+                }
+                else {
+                    return Files.download(target);
+                }
             }
         }
         catch(OneDriveAPIException e) {

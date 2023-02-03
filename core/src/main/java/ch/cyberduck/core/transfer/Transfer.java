@@ -37,7 +37,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +51,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class Transfer implements Serializable {
-    private static final Logger log = Logger.getLogger(Transfer.class);
+    private static final Logger log = LogManager.getLogger(Transfer.class);
 
     /**
      * Files and folders initially selected to be part of this transfer
@@ -129,7 +130,7 @@ public abstract class Transfer implements Serializable {
      * Unique identifier
      */
     protected String uuid
-        = new UUIDRandomStringService().random();
+            = new UUIDRandomStringService().random();
 
     /**
      * Transfer state
@@ -170,7 +171,7 @@ public abstract class Transfer implements Serializable {
 
     public abstract Transfer withCache(final Cache<Path> cache);
 
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
@@ -304,9 +305,13 @@ public abstract class Transfer implements Serializable {
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
      * @param files       Files pending transfer
+     * @param filter      Transfer filter
+     * @param error       Error callback
+     * @param listener    Listener
      * @param callback    Prompt
      */
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                    final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
             try {
                 switch(this.getType()) {
@@ -329,9 +334,12 @@ public abstract class Transfer implements Serializable {
      * @param source      Connection to source server of transfer. May be null.
      * @param destination Connection to target server of transfer
      * @param files       Files transfered
+     * @param error       Error callback
+     * @param listener    Listener
      * @param callback    Prompt
      */
-    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                     final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
             final Map.Entry<Local, Object> entry = iter.next();
             switch(this.getType()) {

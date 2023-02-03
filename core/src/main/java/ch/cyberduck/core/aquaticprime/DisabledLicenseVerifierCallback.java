@@ -15,10 +15,11 @@ package ch.cyberduck.core.aquaticprime;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DisabledLicenseVerifierCallback implements LicenseVerifierCallback {
-    private static final Logger log = Logger.getLogger(DisabledLicenseVerifierCallback.class);
+    private static final Logger log = LogManager.getLogger(DisabledLicenseVerifierCallback.class);
 
     @Override
     public void failure(final InvalidLicenseException failure) {

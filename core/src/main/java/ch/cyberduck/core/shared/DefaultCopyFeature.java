@@ -26,12 +26,17 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.util.Objects;
 
 public class DefaultCopyFeature implements Copy {
+    private static final Logger log = LogManager.getLogger(DefaultCopyFeature.class);
 
     private Session<?> from;
     private Session<?> to;
@@ -42,21 +47,25 @@ public class DefaultCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         InputStream in;
         StatusOutputStream out;
         in = from.getFeature(Read.class).read(source, new TransferStatus(status), callback);
-        Write write = to.getFeature(MultipartWrite.class);
-        if(null == write) {
+        Write writer = to.getFeature(MultipartWrite.class);
+        if(null == writer) {
             // Fallback if multipart write is not available
-            write = to.getFeature(Write.class);
+            writer = to.getFeature(Write.class);
         }
-        out = write.write(target, status, callback);
-        new StreamCopier(status, status).transfer(in, out);
-        final Object reply = out.getStatus();
-        return target.withAttributes(new PathAttributes(target.attributes())
-            .withVersionId(null)
-            .withFileId(null));
+        out = writer.write(target, status, callback);
+        new StreamCopier(status, status).withListener(listener).transfer(in, out);
+        if(!PathAttributes.EMPTY.equals(status.getResponse())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received reply %s for creating file %s", status.getResponse(), target));
+            }
+            return new Path(target).withAttributes(status.getResponse());
+        }
+        log.warn(String.format("Missing status from writer %s", writer));
+        return target;
     }
 
     @Override

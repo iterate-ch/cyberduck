@@ -27,12 +27,13 @@ import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Semaphore;
 
 public final class TransferQueue {
-    private static final Logger log = Logger.getLogger(TransferQueue.class);
+    private static final Logger log = LogManager.getLogger(TransferQueue.class);
 
     private final ApplicationBadgeLabeler label = ApplicationBadgeLabelerFactory.get();
     private final NotificationService notification = NotificationServiceFactory.get();
@@ -49,11 +50,9 @@ public final class TransferQueue {
     }
 
     public TransferQueue(final int size) {
-        this.permits = size;
-        this.semaphore = new ResizeableSemaphore(
-            size == TransferConnectionLimiter.AUTO ?
-                PreferencesFactory.get().getInteger("queue.connections.limit.default") :
-                size, true);
+        this.permits = size == TransferConnectionLimiter.AUTO ?
+                PreferencesFactory.get().getInteger("queue.connections.limit.default") : size;
+        this.semaphore = new ResizeableSemaphore(permits, true);
     }
 
     /**
@@ -86,15 +85,23 @@ public final class TransferQueue {
             log.debug(String.format("Remove %s from queue", t));
         }
         semaphore.release();
-        label.badge(String.valueOf(permits - semaphore.availablePermits() + semaphore.getQueueLength()));
+        final int size = permits - semaphore.availablePermits() + semaphore.getQueueLength();
+        if(0 == size) {
+            label.clear();
+        }
+        else {
+            label.badge(String.valueOf(size));
+        }
     }
 
     /**
      * Resize queue with current setting in preferences.
      *
-     * @param limit New limit
+     * @param size New limit
      */
-    public void resize(int limit) {
+    public void resize(int size) {
+        int limit = size == TransferConnectionLimiter.AUTO ?
+                PreferencesFactory.get().getInteger("queue.connections.limit.default") : size;
         if(log.isDebugEnabled()) {
             log.debug(String.format("Resize queue to %d", limit));
         }
@@ -110,10 +117,6 @@ public final class TransferQueue {
     }
 
     private static final class ResizeableSemaphore extends Semaphore {
-        public ResizeableSemaphore(final int permits) {
-            super(permits);
-        }
-
         public ResizeableSemaphore(final int permits, final boolean fair) {
             super(permits, fair);
         }

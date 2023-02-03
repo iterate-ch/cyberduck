@@ -40,7 +40,8 @@ public abstract class AbstractItemListService extends AbstractListService<DriveI
     protected Path toPath(final DriveItem.Metadata metadata, final Path directory) {
         final PathAttributes attr = attributes.toAttributes(metadata);
         final String fileName;
-        if(metadata.isPackage()) {
+        final DriveItem.Metadata remoteItem = metadata.getRemoteItem();
+        if(metadata.isPackage() || (remoteItem != null && remoteItem.isPackage())) {
             fileName = String.format("%s.%s", PathNormalizer.name(metadata.getName()), urlFileWriter.getExtension());
         }
         else {

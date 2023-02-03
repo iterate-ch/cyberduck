@@ -25,7 +25,8 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -46,7 +47,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
-    private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
+    private static final Logger log = LogManager.getLogger(CertificateStoreX509KeyManager.class);
 
     private final CertificateIdentityCallback prompt;
     private final Host bookmark;
@@ -79,7 +80,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Load default store of type %s", type));
                 }
-                if(null == type) {
+                if(StringUtils.isBlank(type)) {
                     type = KeyStore.getDefaultType();
                 }
                 final String provider = preferences.getProperty("connection.ssl.keystore.provider");
@@ -113,7 +114,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     @Override
     public List<String> list() {
         // List of issuer distinguished name
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         try {
             final KeyStore store;
             try {
@@ -153,7 +154,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
 
     public String[] getClientAliases(final String[] keyTypes, final Principal[] issuers) {
         // List of issuer distinguished name
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         for(String alias : this.list()) {
             // returns the first element of the certificate chain of that key entry
             final Certificate cert = this.getCertificate(alias, keyTypes, issuers);
@@ -206,7 +207,6 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     public String chooseClientAlias(final String[] keyTypes, final Principal[] issuers, final Socket socket) {
         try {
             final X509Certificate selected;
-            final String hostname = socket.getInetAddress().getHostName();
             try {
                 final String alias = bookmark.getCredentials().getCertificate();
                 if(StringUtils.isNotBlank(alias)) {
@@ -268,7 +268,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
             catch(IOException e) {
                 return null;
             }
-            final List<X509Certificate> result = new ArrayList<X509Certificate>();
+            final List<X509Certificate> result = new ArrayList<>();
             final Certificate[] chain = store.getCertificateChain(alias);
             if(null == chain) {
                 log.warn(String.format("No certificate chain for alias %s", alias));

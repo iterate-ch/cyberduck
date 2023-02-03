@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2022 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,99 +16,71 @@
 // feedback@cyberduck.io
 // 
 
+// Bug fixes, suggestions and comments should be sent to:
+// feedback@cyberduck.io
+//
+
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text.RegularExpressions;
+using System.Resources;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.preferences;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.I18n
 {
+    using ch.cyberduck.core.preferences;
+
     public class DictionaryLocale : Locale
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(DictionaryLocale).FullName);
-        private static readonly Regex StringsRegex = new Regex("\"?(.*?)\"?[ ]*=[ ]*\"(.*)\"", RegexOptions.Compiled);
+        private static readonly Logger Log = LogManager.getLogger(typeof(DictionaryLocale).FullName);
 
-        private readonly IDictionary<string, Dictionary<string, string>> _cache =
-            new Dictionary<string, Dictionary<string, string>>();
+        private readonly bool _enabled;
+        private readonly Preferences preferences;
+        private readonly Lazy<ResourceManager> resourceManager;
 
-        private readonly bool _enabled = PreferencesFactory.get().getBoolean("application.localization.enable");
+        public DictionaryLocale()
+        {
+            preferences = PreferencesFactory.get();
+            _enabled = preferences.getBoolean("application.localization.enable");
+            resourceManager = new Lazy<ResourceManager>(() =>
+                new ResourceManager("i18n." + preferences.getProperty("application.language"),
+                    typeof(DictionaryLocale).Assembly));
+        }
 
         public string localize(string key, string table)
         {
-            if (String.IsNullOrEmpty(key) || !_enabled)
+            if (string.IsNullOrEmpty(key) || !_enabled)
             {
                 return key;
             }
-            Dictionary<string, string> bundle;
-            if (!_cache.TryGetValue(table, out bundle))
+
+            var resources = resourceManager.Value;
+            string value;
+            try
             {
-                lock (this)
-                {
-                    load(table);
-                }
-                //try again
-                if (!_cache.TryGetValue(table, out bundle))
-                {
-                    Log.warn(string.Format("Key '{0}' in bundle '{1}' not found", key, table));
-                    return key;
-                }
+                value = resources.GetString(table + ":" + key);
+            }
+            catch (Exception e)
+            {
+                Log.warn(string.Format("Key '{0}' in bundle '{1}' not found", key, table), e);
+                return key;
             }
 
-            string value;
-            return bundle.TryGetValue(key, out value) ? value : key;
+            if (string.IsNullOrEmpty(value))
+            {
+                if (Log.isTraceEnabled())
+                {
+                    Log.trace(string.Format("Key '{0}' in bundle '{1}' not found", key, table));
+                }
+
+                return key;
+            }
+
+            return value;
         }
 
         public void setDefault(string language)
         {
             PreferencesFactory.get().setProperty("application.language", language);
-        }
-
-        private void load(string bundle)
-        {
-            Log.debug("Caching bundle " + bundle);
-            string language = PreferencesFactory.get().getProperty("application.language");
-            Assembly asm = Utils.Me();
-            string[] resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            Stream stream = null;
-            foreach (string resourceName in resourceNames)
-            {
-                if (resourceName.Contains(string.Format("{0}.lproj.{1}.strings", language, bundle)))
-                {
-                    stream = asm.GetManifestResourceStream(resourceName + ".1");
-                    if (stream == null)
-                    {
-                        stream = asm.GetManifestResourceStream(resourceName);
-                    }
-                    break;
-                }
-            }
-            if (null != stream)
-            {
-                using (StreamReader file = new StreamReader(stream))
-                {
-                    Dictionary<string, string> bundleDict = new Dictionary<string, string>();
-                    _cache[bundle] = bundleDict;
-                    string line;
-                    while ((line = file.ReadLine()) != null)
-                    {
-                        if (StringsRegex.IsMatch(line))
-                        {
-                            Match match = StringsRegex.Match(line);
-                            string key = match.Groups[1].Value;
-                            string value = match.Groups[2].Value;
-                            bundleDict[key] = value;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Log.warn(String.Format("Bundle {0} for language {1} not found", bundle, language));
-            }
         }
     }
 }

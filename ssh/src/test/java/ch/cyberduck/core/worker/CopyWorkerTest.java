@@ -53,7 +53,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         worker.run(session);
         assertTrue(new SFTPFindFeature(session).find(source));
         assertTrue(new SFTPFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         worker.run(session);
         assertTrue(new SFTPFindFeature(session).find(sourceFile));
         assertTrue(new SFTPFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(new SFTPFindFeature(session).find(targetFile));
         assertTrue(new SFTPFindFeature(session).find(folder));
         assertTrue(new SFTPFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), PathCache.empty(), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), new DisabledProgressListener()).run(session);
 
     }
 }

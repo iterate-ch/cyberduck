@@ -28,7 +28,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.BucketAccessControls;
@@ -46,7 +48,7 @@ import com.google.api.services.storage.model.ObjectAccessControls;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
-    private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageAccessControlListFeature.class);
 
     public static final Set<? extends Acl> CANNED_LIST = new LinkedHashSet<>(Arrays.asList(
         Acl.CANNED_PRIVATE,
@@ -71,8 +73,27 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     }
 
     @Override
-    public Acl getDefault(final Local file) {
-        return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+        try {
+            final Path bucket = containerService.getContainer(file);
+            final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
+            if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket configuration = request.execute();
+            if(null != configuration.getIamConfiguration()) {
+                if(configuration.getIamConfiguration().getUniformBucketLevelAccess().getEnabled()) {
+                    return Acl.EMPTY;
+                }
+            }
+            else {
+                log.warn(String.format("Missing IAM configuration for bucket %s", bucket));
+            }
+            return Acl.toAcl(new HostPreferences(session.getHost()).getProperty("googlestorage.acl.default"));
+        }
+        catch(IOException e) {
+            throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
     }
 
     @Override
@@ -98,7 +119,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            if(file.isPlaceholder()) {
+            if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
                     // No placeholder file may exist but we just have a common prefix
                     return Acl.EMPTY;
@@ -152,20 +173,25 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
     @Override
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         try {
+            final Path bucket = containerService.getContainer(file);
             if(containerService.isContainer(file)) {
                 final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(acl);
-                session.getClient().buckets().update(containerService.getContainer(file).getName(),
-                    new Bucket().setAcl(bucketAccessControls)).execute();
+                session.getClient().buckets().update(bucket.getName(),
+                        new Bucket().setAcl(bucketAccessControls)).execute();
             }
             else {
                 final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(acl);
-                session.getClient().objects().update(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setAcl(objectAccessControls)).execute();
+                final Storage.Objects.Update request = session.getClient().objects().update(bucket.getName(), containerService.getKey(file),
+                        new StorageObject().setAcl(objectAccessControls));
+                if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
         }
         catch(IOException e) {
             final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Cannot change permissions of {0}", e, file);
-            if(file.isPlaceholder()) {
+            if(file.isDirectory()) {
                 if(failure instanceof NotfoundException) {
                     // No placeholder file may exist but we just have a common prefix
                     return;

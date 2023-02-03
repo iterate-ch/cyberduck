@@ -39,25 +39,24 @@
     </target>
 
     <target name="restore" depends="init-msbuild, version">
-        <msbuild buildfile="../src/main/csharp/duck.csproj">
+        <msbuild buildfile="build.proj">
             <target name="Restore" />
-        </msbuild>
-        <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
-            <target name="Restore" />
-        </msbuild>
-        <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
-            <target name="Restore" />
+
+            <property name="Exe" value="true" />
+            <property name="Installer" value="true" />
         </msbuild>
     </target>
 
     <target name="build" depends="init-msbuild, version">
-        <msbuild buildfile="../src/main/csharp/duck.csproj">
+        <msbuild buildfile="build.proj">
             <target name="Build" />
 
-            <property name="Version" value="${version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Exe" value="true" />
+            <property name="Platform" value="x64" />
+            <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 
@@ -67,25 +66,16 @@
         </condition>
         <property name="msbuild.sign" value="" />
 
-        <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
+        <msbuild buildfile="build.proj">
             <target name="Build" />
 
             <property name="BuildProjectReferences" value="false" />
-            <property name="Version" value="${version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
-            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
-            <property name="SignOutput" value="${msbuild.sign}" />
-        </msbuild>
-        <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
-            <target name="Build" />
-
-            <property name="BuildProjectReferences" value="false" />
-            <property name="Version" value="${version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
-            <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Installer" value="true" />
+            <property name="ShortVersion" value="${version} (${revision})" />
             <property name="SignOutput" value="${msbuild.sign}" />
+            <property name="Version" value="${version}.${revision}" />
         </msbuild>
     </target>
 

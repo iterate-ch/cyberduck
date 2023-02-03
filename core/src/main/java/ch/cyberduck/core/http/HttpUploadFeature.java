@@ -38,7 +38,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.client.HttpResponseException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +47,7 @@ import java.security.MessageDigest;
 import java.text.MessageFormat;
 
 public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
-    private static final Logger log = Logger.getLogger(HttpUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(HttpUploadFeature.class);
 
     private Write<Reply> writer;
 
@@ -62,7 +63,11 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     @Override
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
                         final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.upload(file, local, throttle, listener, status, status, status, callback);
+        final Reply response = this.upload(file, local, throttle, listener, status, status, status, callback);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Received response %s", response));
+        }
+        return response;
     }
 
     public Reply upload(final Path file, final Local local, final BandwidthThrottle throttle,
@@ -70,15 +75,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
                         final StreamCancelation cancel, final StreamProgress progress, final ConnectionCallback callback) throws BackgroundException {
         try {
             final Digest digest = this.digest();
-            // Wrap with digest stream if available
-            final InputStream in = this.decorate(local.getInputStream(), digest);
-            final StatusOutputStream<Reply> out = writer.write(file, status, callback);
-            new StreamCopier(cancel, progress)
-                .withOffset(status.getOffset())
-                .withLimit(status.getLength())
-                .withListener(listener)
-                .transfer(in, new ThrottledOutputStream(out, throttle));
-            final Reply response = out.getStatus();
+            final Reply response = this.transfer(file, local, throttle, listener, status, cancel, progress, callback, digest);
             this.post(file, digest, response);
             return response;
         }
@@ -90,6 +87,20 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         }
     }
 
+    protected Reply transfer(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
+                             final TransferStatus status, final StreamCancelation cancel, final StreamProgress progress,
+                             final ConnectionCallback callback, final Digest digest) throws IOException, BackgroundException {
+        // Wrap with digest stream if available
+        final InputStream in = this.decorate(local.getInputStream(), digest);
+        final StatusOutputStream<Reply> out = writer.write(file, status, callback);
+        new StreamCopier(cancel, progress)
+                .withOffset(status.getOffset())
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(in, new ThrottledOutputStream(out, throttle));
+        return out.getStatus();
+    }
+
     protected InputStream decorate(final InputStream in, final Digest digest) throws IOException {
         return in;
     }
@@ -99,8 +110,9 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     }
 
     protected void post(final Path file, final Digest digest, final Reply response) throws BackgroundException {
+        // No-op with no checksum verification by default
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Received response %s", response));
+            log.debug(String.format("Missing checksum verification for %s", file));
         }
     }
 
@@ -122,8 +134,8 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             // Compare our locally-calculated hash with the ETag returned by S3.
             if(!checksum.equals(expected)) {
                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                        expected, checksum.hash));
+                        MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                expected, checksum.hash));
             }
         }
     }

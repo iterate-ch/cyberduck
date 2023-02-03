@@ -21,7 +21,7 @@ using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Properties;
 using java.util;
 using org.apache.commons.lang3;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Core.Preferences
 {
     public class AppConfigPreferences : DefaultPreferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(AppConfigPreferences).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(AppConfigPreferences).FullName);
         private SettingsDictionary settings;
         private Locales locales;
 

@@ -35,9 +35,11 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.s3.S3AttributesAdapter;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.spectra.SpectraAttributesFinderFeature;
 import ch.cyberduck.core.spectra.SpectraBulkService;
+import ch.cyberduck.core.spectra.SpectraDirectoryFeature;
 import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.spectra.SpectraSession;
 import ch.cyberduck.core.spectra.SpectraUploadFeature;
@@ -90,8 +92,8 @@ public class SpectraSingleTransferWorkerTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
+                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final BytecountStreamListener counter = new BytecountStreamListener();
         final AtomicBoolean failed = new AtomicBoolean();
@@ -117,7 +119,7 @@ public class SpectraSingleTransferWorkerTest {
                                 throw new SocketTimeoutException();
                             }
                         }
-                    }) {
+                    }, new S3AttributesAdapter(), status) {
                         @Override
                         public StorageObject getStatus() throws BackgroundException {
                             return proxy.getStatus();
@@ -139,14 +141,15 @@ public class SpectraSingleTransferWorkerTest {
                     return (T) write;
                 }
                 if(type == Upload.class) {
-                    return (T) new SpectraUploadFeature(write, new SpectraBulkService(this));
+                    return (T) new SpectraUploadFeature(this, write, new SpectraBulkService(this));
                 }
                 return super._getFeature(type);
             }
         };
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -155,7 +158,7 @@ public class SpectraSingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();

@@ -20,34 +20,35 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Vault;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class VaultFactory extends Factory<Vault> {
-    private static final Logger log = Logger.getLogger(VaultFactory.class);
+    private static final Logger log = LogManager.getLogger(VaultFactory.class);
 
     protected VaultFactory() {
         super("factory.vault.class");
     }
 
-    public static Vault get(final Path directory, final String masterkey, final byte[] pepper) {
-        return new VaultFactory().create(directory, masterkey, pepper);
+    public static Vault get(final Path directory, final String masterkey, final String config, final byte[] pepper) {
+        return new VaultFactory().create(directory, masterkey, config, pepper);
     }
 
-    private Vault create(final Path directory, final String masterkey, final byte[] pepper) {
+    private Vault create(final Path directory, final String masterkey, final String config, final byte[] pepper) {
         try {
-            final Constructor<Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
-                directory.getClass(), masterkey.getClass(), pepper.getClass());
+            final Constructor<? extends Vault> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
+                    directory.getClass(), masterkey.getClass(), config.getClass(), pepper.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", directory.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
-            return constructor.newInstance(directory, masterkey, pepper);
+            return constructor.newInstance(directory, masterkey, config, pepper);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return Vault.DISABLED;
         }

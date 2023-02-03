@@ -38,13 +38,14 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
 
 public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
-    private static final Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(ThirdpartyBookmarkCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
     private final PasswordStore keychain;
@@ -197,7 +198,7 @@ public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
     public void filter(final AbstractHostCollection bookmarks) {
         for(Iterator<Host> iter = this.iterator(); iter.hasNext(); ) {
             final Host i = iter.next();
-            if(bookmarks.find(i)) {
+            if(bookmarks.find(new AbstractHostCollection.HostComparePredicate(i)).isPresent()) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Remove %s from import as we found it in bookmarks", i));
                 }

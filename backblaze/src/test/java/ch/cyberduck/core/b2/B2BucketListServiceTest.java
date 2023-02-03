@@ -25,6 +25,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
@@ -32,8 +33,12 @@ public class B2BucketListServiceTest extends AbstractB2Test {
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new B2BucketListService(session, new B2VersionIdProvider(session)).list(
-            new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
+        final AttributedList<Path> list = new B2BucketListService(session, fileid).list(
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
+        for(Path bucket : list) {
+            assertEquals(bucket.attributes(), new B2AttributesFinderFeature(session, fileid).find(bucket, new DisabledListProgressListener()));
+        }
     }
 }

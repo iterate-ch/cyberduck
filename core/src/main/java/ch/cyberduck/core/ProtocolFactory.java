@@ -16,115 +16,167 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.profiles.LocalProfilesFinder;
+import ch.cyberduck.core.profiles.ProfileDescription;
+import ch.cyberduck.core.profiles.ProfilesFinder;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class ProtocolFactory {
-    private static final Logger log = Logger.getLogger(ProtocolFactory.class);
+    private static final Logger log = LogManager.getLogger(ProtocolFactory.class);
 
     private static final ProtocolFactory global = new ProtocolFactory();
+
+    private final Preferences preferences = PreferencesFactory.get();
+
+    public static final Predicate<Protocol> DEFAULT_PROTOCOL_PREDICATE
+            = protocol -> !protocol.isEnabled() && !protocol.isBundled();
+
+    public static final Predicate<Protocol> BUNDLED_PROFILE_PREDICATE
+            = protocol -> protocol.isEnabled() && protocol.isBundled();
 
     public static ProtocolFactory get() {
         return global;
     }
 
     private final Set<Protocol> registered;
+
     private final Local bundle;
+    private final Local profiles;
 
     public ProtocolFactory() {
-        this(new LinkedHashSet<Protocol>());
+        this(new LinkedHashSet<>());
     }
 
-    public ProtocolFactory(final Set<Protocol> protocols) {
-        this(LocalFactory.get(ApplicationResourcesFinderFactory.get().find(),
-            PreferencesFactory.get().getProperty("profiles.folder.name")), protocols);
+    /**
+     * @param registered Default registered set of protocols
+     */
+    public ProtocolFactory(final Set<Protocol> registered) {
+        this(registered,
+                LocalFactory.get(ApplicationResourcesFinderFactory.get().find(),
+                        PreferencesFactory.get().getProperty("profiles.folder.name")),
+                LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                        PreferencesFactory.get().getProperty("profiles.folder.name")));
     }
 
-    public ProtocolFactory(final Local bundle, final Set<Protocol> protocols) {
+    /**
+     * @param registered Default registered set of protocols
+     * @param bundle     Directory with default profiles in application installation directory
+     * @param profiles   Third party profiles directory in application support
+     */
+    public ProtocolFactory(final Set<Protocol> registered, final Local bundle, final Local profiles) {
+        this.registered = new HashSet<>(registered);
         this.bundle = bundle;
-        this.registered = protocols;
+        this.profiles = profiles;
     }
 
     public void register(Protocol... protocols) {
-        // Order determines list in connection dropdown
-        for(Protocol protocol : protocols) {
-            this.register(protocol);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register protocols %s", Arrays.toString(protocols)));
         }
+        // Order determines list in connection dropdown
+        Collections.addAll(registered, protocols);
     }
 
     /**
      * Load profiles embedded in bundles and installed in the application support directory.
      */
-    public void loadDefaultProfiles() {
-        if(bundle.exists()) {
-            try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Load profiles from %s", bundle));
-                }
-                for(Local f : bundle.list().filter(new ProfileFilter())) {
-                    try {
-                        final Profile profile = ProfileReaderFactory.get().read(f);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Adding bundled protocol %s", profile));
-                        }
-                        // Replace previous possibly disable protocol in Preferences
-                        registered.add(profile);
-                    }
-                    catch(AccessDeniedException e) {
-                        log.error(String.format("Failure reading profile from %s. %s", f, e));
-                    }
-                }
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundle, e));
-            }
-        }
+    public void load() {
+        // Return default registered protocol specification as parent but not other profile
+        this.load(new LocalProfilesFinder(this, bundle, DEFAULT_PROTOCOL_PREDICATE));
         // Load thirdparty protocols
-        final Local library = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-            PreferencesFactory.get().getProperty("profiles.folder.name"));
-        if(library.exists()) {
-            try {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Load profiles from %s", library));
-                }
-                for(Local f : library.list().filter(new ProfileFilter())) {
-                    try {
-                        final Profile profile = ProfileReaderFactory.get().read(f);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Adding profile %s", profile));
-                        }
-                        // Replace previous possibly disable protocol in Preferences
-                        registered.add(profile);
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure reading profile from %s. %s", f, e));
-                    }
-                }
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", library, e));
-            }
+        this.load(new LocalProfilesFinder(this, profiles, BUNDLED_PROFILE_PREDICATE));
+        if(registered.isEmpty()) {
+            log.error(String.format("No connection profiles in %s or %s", bundle, profiles));
         }
     }
 
-    public void register(final Protocol protocol) {
-        if(null == protocol) {
-            log.error("Attempt to register unknown protocol");
-            return;
+    /**
+     * Load all profiles found
+     *
+     * @param finder Finder to locate profiles
+     */
+    public void load(final ProfilesFinder finder) {
+        try {
+            for(ProfileDescription description : finder.find()) {
+                final Optional<Profile> profile = description.getProfile();
+                profile.ifPresent(registered::add);
+            }
         }
-        registered.add(protocol);
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure %s reading profiles from %s", finder, e));
+        }
+    }
+
+    /**
+     * Register profile and copy to application support directory
+     *
+     * @param file Connection profile to install
+     * @return Installation location in application support directory
+     */
+    public Local register(final Local file) {
+        try {
+            final Profile profile = new ProfilePlistReader(this, BUNDLED_PROFILE_PREDICATE).read(file);
+            if(null == profile) {
+                log.error("Attempt to register unknown protocol");
+                return null;
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Register profile %s", profile));
+            }
+            registered.add(profile);
+            preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), true);
+            if(!profiles.exists()) {
+                new DefaultLocalDirectoryFeature().mkdir(profiles);
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Save profile %s to %s", profile, profiles));
+            }
+            if(!file.isChild(profiles)) {
+                final Local target = LocalFactory.get(profiles, file.getName());
+                file.copy(target);
+                return target;
+            }
+            return file;
+        }
+        catch(AccessDeniedException e) {
+            log.error(String.format("Failure %s reading profile %s", e, file));
+            return null;
+        }
+    }
+
+    /**
+     * Remove connection profile
+     *
+     * @param profile Connection profile
+     */
+    public void unregister(final Profile profile) {
+        if(registered.remove(profile)) {
+            preferences.setProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", profile.getProtocol(), profile.getProvider())), false);
+        }
+        else {
+            log.warn(String.format("Failure removing protocol %s", profile));
+        }
     }
 
     /**
@@ -167,25 +219,28 @@ public final class ProtocolFactory {
      */
     public Protocol forName(final List<Protocol> enabled, final String identifier, final String provider) {
         final Protocol match =
-            // Exact match with hash code
-            enabled.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
-                // Matching vendor string for third party profiles
-                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier) && StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
-                    // Matching vendor string usage in CLI
-                    enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
-                        // Fallback for bug in 6.1
-                        enabled.stream().filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
-                            // Matching scheme with fallback to generic protocol type
-                            this.forScheme(enabled, identifier, enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
+                // Exact match with hash code
+                enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
+                        // Matching vendor string for third party profiles
+                        enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier) && StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
+                                // Matching vendor string usage in CLI
+                                enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                                        // Fallback for bug in 6.1
+                                        enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
+                                                // Matching bundled first with identifier match
+                                                enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> protocol.isBundled() && StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
+                                                        // Matching scheme with fallback to generic protocol type
+                                                        this.forScheme(enabled, identifier, enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
+                                                )
+                                        )
+                                )
                         )
-                    )
-                )
-            );
+                );
         if(null == match) {
             if(enabled.isEmpty()) {
                 log.error(String.format("List of registered protocols in %s is empty", this));
             }
-            log.error(String.format("Missing registered protocol for identifier %s", identifier));
+            log.warn(String.format("Missing registered protocol for identifier %s", identifier));
         }
         return match;
     }
@@ -196,7 +251,7 @@ public final class ProtocolFactory {
     }
 
     private Protocol forType(final List<Protocol> enabled, final Protocol.Type type) {
-        return enabled.stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
+        return enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
     }
 
     public Protocol forScheme(final Scheme scheme) {
@@ -220,28 +275,25 @@ public final class ProtocolFactory {
                 filter = scheme;
                 break;
         }
-        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
-            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(fallback)
+        return enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
+                enabled.stream().sorted(new DeprecatedProtocolComparator()).filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(fallback)
         );
     }
 
-    private static final class ProfileFilter implements Filter<Local> {
+    private static final class DeprecatedProtocolComparator implements Comparator<Protocol> {
         @Override
-        public boolean accept(final Local file) {
-            return "cyberduckprofile".equals(Path.getExtension(file.getName()));
-        }
-
-        @Override
-        public Pattern toPattern() {
-            return Pattern.compile(".*\\.cyberduckprofile");
+        public int compare(final Protocol o1, final Protocol o2) {
+            return Boolean.compare(o1.isDeprecated(), o2.isDeprecated());
         }
     }
+
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ProtocolFactory{");
         sb.append("registered=").append(registered);
         sb.append(", bundle=").append(bundle);
+        sb.append(", profiles=").append(profiles);
         sb.append('}');
         return sb.toString();
     }

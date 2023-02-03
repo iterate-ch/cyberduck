@@ -71,8 +71,10 @@ public abstract class NSOutlineView extends NSTableView {
     }
 
     /**
-     * The 'outlineTableColumn' is the column that displays data in a hierarchical fashion, indented one identationlevel per level, decorated with indentation marker (disclosure triangle) on rows that are expandable. On MacOS 10.5, this value is saved in encodeWithCoder: and restored in initWithCoder:;<br>
-     * Original signature : <code>void setOutlineTableColumn(NSTableColumn*)</code><br>
+     * The 'outlineTableColumn' is the column that displays data in a hierarchical fashion, indented one identationlevel
+     * per level, decorated with indentation marker (disclosure triangle) on rows that are expandable. On MacOS 10.5,
+     * this value is saved in encodeWithCoder: and restored in initWithCoder:;<br> Original signature : <code>void
+     * setOutlineTableColumn(NSTableColumn*)</code><br>
      * <i>native declaration : :103</i>
      */
     public abstract void setOutlineTableColumn(NSTableColumn outlineTableColumn);
@@ -91,57 +93,57 @@ public abstract class NSOutlineView extends NSTableView {
     public abstract boolean isExpandable(NSObject item);
 
     /**
-     * Expands 'item', if not already expanded, and all children if 'expandChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will expand  each item under the root.<br>
-     * Original signature : <code>void expandItem(id, BOOL)</code><br>
+     * Expands 'item', if not already expanded, and all children if 'expandChildren' is YES. On 10.5 and higher, passing
+     * 'nil' for 'item' will expand  each item under the root.<br> Original signature : <code>void expandItem(id,
+     * BOOL)</code><br>
      * <i>native declaration : :112</i>
      */
     public abstract void expandItem_expandChildren(NSObject item, boolean expandChildren);
 
     /**
-     * Calls expandItem:expandChildren with 'expandChildren == NO'<br>
-     * Original signature : <code>void expandItem(id)</code><br>
+     * Calls expandItem:expandChildren with 'expandChildren == NO'<br> Original signature : <code>void
+     * expandItem(id)</code><br>
      * <i>native declaration : :116</i>
      */
     public abstract void expandItem(NSObject item);
 
     /**
-     * Collapses 'item' and all children if 'collapseChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will collapse each item under the root.<br>
-     * Original signature : <code>void collapseItem(id, BOOL)</code><br>
+     * Collapses 'item' and all children if 'collapseChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will
+     * collapse each item under the root.<br> Original signature : <code>void collapseItem(id, BOOL)</code><br>
      * <i>native declaration : :120</i>
      */
     public abstract void collapseItem_collapseChildren(NSObject item, boolean collapseChildren);
 
     /**
-     * Calls collapseItem:collapseChildren with 'collapseChildren == NO'<br>
-     * Original signature : <code>void collapseItem(id)</code><br>
+     * Calls collapseItem:collapseChildren with 'collapseChildren == NO'<br> Original signature : <code>void
+     * collapseItem(id)</code><br>
      * <i>native declaration : :124</i>
      */
     public abstract void collapseItem(NSObject item);
 
     /**
-     * Reloads 'item' and all children if 'reloadChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will reload everything under the root item.<br>
-     * Original signature : <code>void reloadItem(id, BOOL)</code><br>
+     * Reloads 'item' and all children if 'reloadChildren' is YES. On 10.5 and higher, passing 'nil' for 'item' will
+     * reload everything under the root item.<br> Original signature : <code>void reloadItem(id, BOOL)</code><br>
      * <i>native declaration : :128</i>
      */
     public abstract void reloadItem_reloadChildren(NSObject item, boolean reloadChildren);
 
     /**
-     * Calls reloadItem:reloadChildren with 'reloadChildren == NO'<br>
-     * Original signature : <code>void reloadItem(id)</code><br>
+     * Calls reloadItem:reloadChildren with 'reloadChildren == NO'<br> Original signature : <code>void
+     * reloadItem(id)</code><br>
      * <i>native declaration : :132</i>
      */
     public abstract void reloadItem(NSObject item);
 
     /**
-     * Returns the parent for 'item', or nil, if the parent is the root.<br>
-     * Original signature : <code>id parentForItem(id)</code><br>
+     * Returns the parent for 'item', or nil, if the parent is the root.<br> Original signature : <code>id
+     * parentForItem(id)</code><br>
      * <i>native declaration : :138</i>
      */
     public abstract NSObject parentForItem(NSObject item);
 
     /**
-     * Item/Row translation<br>
-     * Original signature : <code>id itemAtRow(NSInteger)</code><br>
+     * Item/Row translation<br> Original signature : <code>id itemAtRow(NSInteger)</code><br>
      * <i>native declaration : :144</i>
      */
     public abstract NSObject itemAtRow(NSInteger row);
@@ -153,8 +155,7 @@ public abstract class NSOutlineView extends NSTableView {
     public abstract NSInteger rowForItem(NSObject item);
 
     /**
-     * Indentation<br>
-     * Original signature : <code>NSInteger levelForItem(id)</code><br>
+     * Indentation<br> Original signature : <code>NSInteger levelForItem(id)</code><br>
      * <i>native declaration : :149</i>
      */
     public abstract NSInteger levelForItem(NSObject item);
@@ -172,8 +173,8 @@ public abstract class NSOutlineView extends NSTableView {
     public abstract boolean isItemExpanded(NSObject item);
 
     /**
-     * The indentation amount per level defaults to 16.0.<br>
-     * Original signature : <code>void setIndentationPerLevel(CGFloat)</code><br>
+     * The indentation amount per level defaults to 16.0.<br> Original signature : <code>void
+     * setIndentationPerLevel(CGFloat)</code><br>
      * <i>native declaration : :155</i>
      */
     public abstract void setIndentationPerLevel(CGFloat indentationPerLevel);
@@ -185,8 +186,8 @@ public abstract class NSOutlineView extends NSTableView {
     public abstract CGFloat indentationPerLevel();
 
     /**
-     * The indentation marker is the visual indicator that shows an item is expandable (i.e. disclosure triangle). The default value is YES.<br>
-     * Original signature : <code>void setIndentationMarkerFollowsCell(BOOL)</code><br>
+     * The indentation marker is the visual indicator that shows an item is expandable (i.e. disclosure triangle). The
+     * default value is YES.<br> Original signature : <code>void setIndentationMarkerFollowsCell(BOOL)</code><br>
      * <i>native declaration : :160</i>
      */
     public abstract void setIndentationMarkerFollowsCell(boolean drawInCell);
@@ -213,8 +214,11 @@ public abstract class NSOutlineView extends NSTableView {
      * Conversion Error : NSRect
      */
     /**
-     * To be used from validateDrop: in order to "re-target" the proposed drop.  To specify a drop on an item I, one would specify item=I, and index=NSOutlineViewDropOnItemIndex.  To specify a drop between child 2 and 3 of an item I, on would specify item=I, and index=3 (children are zero-base indexed).  To specify a drop on an un-expandable item I, one would specify item=I, and index=NSOutlineViewDropOnItemIndex.<br>
-     * Original signature : <code>void setDropItem(id, NSInteger)</code><br>
+     * To be used from validateDrop: in order to "re-target" the proposed drop.  To specify a drop on an item I, one
+     * would specify item=I, and index=NSOutlineViewDropOnItemIndex.  To specify a drop between child 2 and 3 of an item
+     * I, on would specify item=I, and index=3 (children are zero-base indexed).  To specify a drop on an un-expandable
+     * item I, one would specify item=I, and index=NSOutlineViewDropOnItemIndex.<br> Original signature : <code>void
+     * setDropItem(id, NSInteger)</code><br>
      * <i>native declaration : :179</i>
      */
     public abstract void setDropItem_dropChildIndex(NSObject item, NSInteger index);
@@ -224,15 +228,19 @@ public abstract class NSOutlineView extends NSTableView {
     }
 
     /**
-     * This method returns YES to indicate that auto expanded items should return to their original collapsed state.  Override this method to provide custom behavior.  'deposited' tells wether or not the drop terminated due to a successful drop (as indicated by the return value from acceptDrop:).  Note that exiting the view will be treated the same as a failed drop.<br>
-     * Original signature : <code>BOOL shouldCollapseAutoExpandedItemsForDeposited(BOOL)</code><br>
+     * This method returns YES to indicate that auto expanded items should return to their original collapsed state.
+     * Override this method to provide custom behavior.  'deposited' tells wether or not the drop terminated due to a
+     * successful drop (as indicated by the return value from acceptDrop:).  Note that exiting the view will be treated
+     * the same as a failed drop.<br> Original signature : <code>BOOL shouldCollapseAutoExpandedItemsForDeposited(BOOL)</code><br>
      * <i>native declaration : :183</i>
      */
     public abstract boolean shouldCollapseAutoExpandedItemsForDeposited(boolean deposited);
 
     /**
-     * Persistence. The value for autosaveExpandedItems is saved out in the nib file on Mac OS 10.5 or higher. The default value is NO. Calling setAutosaveExpandedItems:YES requires you to implement outlineView:itemForPersistentObject: and outlineView:persistentObjectForItem:.<br>
-     * Original signature : <code>BOOL autosaveExpandedItems()</code><br>
+     * Persistence. The value for autosaveExpandedItems is saved out in the nib file on Mac OS 10.5 or higher. The
+     * default value is NO. Calling setAutosaveExpandedItems:YES requires you to implement
+     * outlineView:itemForPersistentObject: and outlineView:persistentObjectForItem:.<br> Original signature :
+     * <code>BOOL autosaveExpandedItems()</code><br>
      * <i>native declaration : :187</i>
      */
     public abstract boolean autosaveExpandedItems();
@@ -242,4 +250,30 @@ public abstract class NSOutlineView extends NSTableView {
      * <i>native declaration : :188</i>
      */
     public abstract void setAutosaveExpandedItems(boolean save);
+
+    /**
+     * When the value of this property is YES, the outline view retains and releases the objects returned to it from
+     * dataSource. When the value is NO, the outline view treats the objects as opaque items and assumes that the client
+     * has a retain on them. The default value is YES for applications linked on macOS 10.12 and later, and NO for
+     * applications linked on earlier versions of macOS. If you require the legacy behavior and your app links in macOS
+     * 10.12 or later, the value of this property must be explicitly set toNO in code, because it is not encoded in the
+     * nib. In general, this is required if the items themselves create a retain cycle.
+     *
+     * @return A Boolean value that indicates whether the outline view retains and releases the objects returned from
+     * its data source.
+     */
+    public abstract boolean stronglyReferencesItems();
+
+    /**
+     * When the value of this property is YES, the outline view retains and releases the objects returned to it from
+     * dataSource. When the value is NO, the outline view treats the objects as opaque items and assumes that the client
+     * has a retain on them. The default value is YES for applications linked on macOS 10.12 and later, and NO for
+     * applications linked on earlier versions of macOS. If you require the legacy behavior and your app links in macOS
+     * 10.12 or later, the value of this property must be explicitly set toNO in code, because it is not encoded in the
+     * nib. In general, this is required if the items themselves create a retain cycle.
+     *
+     * @param value A Boolean value that indicates whether the outline view retains and releases the objects returned
+     *              from its data source.
+     */
+    public abstract void setStronglyReferencesItems(boolean value);
 }

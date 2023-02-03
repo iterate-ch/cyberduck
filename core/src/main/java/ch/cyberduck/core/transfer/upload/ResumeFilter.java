@@ -31,15 +31,16 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ResumeFilter extends AbstractUploadFilter {
-    private static final Logger log = Logger.getLogger(ResumeFilter.class);
+    private static final Logger log = LogManager.getLogger(ResumeFilter.class);
 
     private final Upload<?> upload;
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
+        this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
     public ResumeFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
@@ -65,7 +66,7 @@ public class ResumeFilter extends AbstractUploadFilter {
                                 final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);
                                 if(compute.compute(local.getInputStream(), parent).equals(attributes.getChecksum())) {
                                     if(log.isInfoEnabled()) {
-                                        log.info(String.format("Skip file %s with checksum %s", file, local.attributes().getChecksum()));
+                                        log.info(String.format("Skip file %s with checksum %s", file, attributes.getChecksum()));
                                     }
                                     return false;
                                 }
@@ -95,11 +96,9 @@ public class ResumeFilter extends AbstractUploadFilter {
                 final Write.Append append = upload.append(file, status);
                 if(append.append && append.size < status.getLength()) {
                     // Append to existing file
-                    status.setAppend(true);
+                    status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
                     status.setLength(status.getLength() - append.size);
                     status.setOffset(append.size);
-                    // Disable use of temporary target when resuming upload
-                    status.temporary(null, null);
                 }
             }
         }

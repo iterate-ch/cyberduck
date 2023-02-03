@@ -24,12 +24,13 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Symlink;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.cocoa.foundation.NSError;
 
 public class WorkspaceSymlinkFeature implements Symlink {
-    private static final Logger log = Logger.getLogger(WorkspaceSymlinkFeature.class);
+    private static final Logger log = LogManager.getLogger(WorkspaceSymlinkFeature.class);
 
     @Override
     public void symlink(final Local file, final String target) throws AccessDeniedException {

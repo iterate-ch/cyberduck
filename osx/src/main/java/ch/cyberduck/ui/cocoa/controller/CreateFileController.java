@@ -20,6 +20,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -38,10 +39,11 @@ public class CreateFileController extends FileController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create new file", "File"));
-        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new file", "File"));
+        final String message = LocaleFactory.localizedString("Enter the name for the new file", "File");
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "File"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "File"));
-        if(EditorFactory.instance().getDefaultEditor() != Application.notfound) {
+        if(EditorFactory.getDefaultEditor() != Application.notfound) {
             alert.addButtonWithTitle(LocaleFactory.localizedString("Edit", "File"));
         }
         alert.setIcon(IconCacheFactory.<NSImage>get().documentIcon(null, 64));

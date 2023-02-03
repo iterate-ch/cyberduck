@@ -19,7 +19,7 @@
 using System;
 using ch.cyberduck.core;
 using Microsoft.Win32;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using ch.cyberduck.core.urlhandler;
 using java.util;
 using Application = System.Windows.Forms.Application;
@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
 {
     public class URLSchemeHandlerConfiguration : AbstractSchemeHandler
     {
-        private static readonly Logger Logger = Logger.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
+        private static readonly Logger Logger = LogManager.getLogger(typeof (URLSchemeHandlerConfiguration).FullName);
 
         public URLSchemeHandlerConfiguration()
         {

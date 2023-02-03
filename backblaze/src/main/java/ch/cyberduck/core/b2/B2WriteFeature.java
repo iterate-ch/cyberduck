@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,7 +31,8 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,7 +50,7 @@ import synapticloop.b2.response.BaseB2Response;
 import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> implements Write<BaseB2Response> {
-    private static final Logger log = Logger.getLogger(B2WriteFeature.class);
+    private static final Logger log = LogManager.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
         = new B2PathContainerService();
@@ -62,6 +62,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
         = new ThreadLocal<>();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
+        super(new B2AttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }
@@ -69,7 +70,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     @Override
     public HttpResponseOutputStream<BaseB2Response> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store call to background thread
-        final DelayedHttpEntityCallable<BaseB2Response> command = new DelayedHttpEntityCallable<BaseB2Response>() {
+        final DelayedHttpEntityCallable<BaseB2Response> command = new DelayedHttpEntityCallable<BaseB2Response>(file) {
             /**
              * @return The SHA-1 returned by the server for the uploaded object
              */
@@ -83,7 +84,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     }
                     else {
                         if(null == urls.get()) {
-                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()));
+                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getVersionId(containerService.getContainer(file)));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
                             }
@@ -116,15 +117,15 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 }
             }
 
-            protected BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
+            private BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException {
                 final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
                 if(null != status.getTimestamp()) {
                     fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
                 }
                 final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
-                    containerService.getKey(file),
-                    entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                    status.getMime(), fileinfo);
+                        containerService.getKey(file),
+                        entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
+                        status.getMime(), fileinfo);
                 fileid.cache(file, response.getFileId());
                 return response;
             }
@@ -135,11 +136,6 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
             }
         };
         return this.write(file, status, command);
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
     }
 
     @Override

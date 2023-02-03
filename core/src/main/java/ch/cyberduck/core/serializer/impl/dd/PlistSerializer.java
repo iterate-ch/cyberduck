@@ -27,9 +27,9 @@ import java.util.Map;
 import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
 
-public class PlistSerializer implements Serializer {
+public class PlistSerializer implements Serializer<NSDictionary> {
 
-    final NSDictionary dict;
+    private final NSDictionary dict;
 
     public PlistSerializer() {
         this(new NSDictionary());
@@ -46,15 +46,15 @@ public class PlistSerializer implements Serializer {
 
     @Override
     public void setObjectForKey(final Serializable value, final String key) {
-        dict.put(key, value.<NSDictionary>serialize(new PlistSerializer()));
+        dict.put(key, value.serialize(new PlistSerializer()));
     }
 
     @Override
-    public <T extends Serializable> void setListForKey(final Collection<T> value, final String key) {
+    public <O extends Serializable> void setListForKey(final Collection<O> value, final String key) {
         final NSArray list = new NSArray(value.size());
         int i = 0;
         for(Serializable serializable : value) {
-            list.setValue(i, serializable.<NSDictionary>serialize(new PlistSerializer()));
+            list.setValue(i, serializable.serialize(new PlistSerializer()));
             i++;
         }
         dict.put(key, list);

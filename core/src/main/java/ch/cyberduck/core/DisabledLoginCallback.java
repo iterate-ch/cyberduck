@@ -19,17 +19,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.LoginCanceledException;
 
-public class DisabledLoginCallback implements LoginCallback {
-
-    public DisabledLoginCallback() {
-        super();
-    }
-
-    @Override
-    public void warn(final Host bookmark, final String title, final String message,
-                     final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
-        throw new LoginCanceledException();
-    }
+public class DisabledLoginCallback extends DisabledConnectionCallback implements LoginCallback {
 
     @Override
     public Credentials prompt(final Host bookmark, final String username, final String title, final String reason,
@@ -39,16 +29,6 @@ public class DisabledLoginCallback implements LoginCallback {
 
     @Override
     public Local select(final Local identity) throws LoginCanceledException {
-        throw new LoginCanceledException();
-    }
-
-    @Override
-    public void close(final String input) {
-        //
-    }
-
-    @Override
-    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }
 }

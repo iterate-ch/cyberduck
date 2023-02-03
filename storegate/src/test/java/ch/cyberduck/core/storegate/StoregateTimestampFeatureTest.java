@@ -18,8 +18,10 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -45,9 +47,12 @@ public class StoregateTimestampFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, nodeid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(new StoregateAttributesFinderFeature(session, nodeid).find(file));
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
-        new StoregateTimestampFeature(session, nodeid).setTimestamp(file, modified);
-        assertEquals(modified, new StoregateAttributesFinderFeature(session, nodeid).find(file).getModificationDate());
+        final TransferStatus status = new TransferStatus().withTimestamp(modified);
+        new StoregateTimestampFeature(session, nodeid).setTimestamp(file, status);
+        final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(file);
+        assertEquals(modified, attr.getModificationDate());
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
+        assertEquals(attr, status.getResponse());
         new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -21,6 +21,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
 
@@ -29,15 +30,16 @@ public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
     private final BackgroundActionState cancel;
 
     public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final StreamCancelation status) {
-        this(host, delegate, new TransferBackgroundActionState(status));
-    }
-
-    public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final BackgroundActionState cancel) {
-        this(host, delegate, new DisabledProgressListener(), cancel);
+        this(host, delegate, new DisabledProgressListener(), new TransferBackgroundActionState(status));
     }
 
     public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {
-        super(host);
+        this(host, PreferencesFactory.get().getInteger("connection.retry"),
+            PreferencesFactory.get().getInteger("connection.retry.delay"), delegate, listener, cancel);
+    }
+
+    public DefaultRetryCallable(final Host host, final int retry, final int delay, final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {
+        super(host, retry, delay);
         this.delegate = delegate;
         this.listener = listener;
         this.cancel = cancel;

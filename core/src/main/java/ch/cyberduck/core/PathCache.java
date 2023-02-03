@@ -17,11 +17,15 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.features.Home;
+
 public class PathCache extends AbstractCache<Path> {
+
+    private static final CacheReference<Path> NULL_KEY = new DefaultPathPredicate(Home.ROOT);
 
     private static final PathCache EMPTY = new PathCache(0) {
         @Override
-        public AttributedList<Path> put(final Path directory, final AttributedList<Path> children) {
+        public AttributedList<Path> put(final Path key, final AttributedList<Path> children) {
             return AttributedList.emptyList();
         }
     };
@@ -35,7 +39,10 @@ public class PathCache extends AbstractCache<Path> {
     }
 
     @Override
-    public CacheReference<?> reference(final Path file) {
+    public CacheReference<Path> reference(final Path file) {
+        if(null == file) {
+            return NULL_KEY;
+        }
         return new DefaultPathPredicate(file);
     }
 }

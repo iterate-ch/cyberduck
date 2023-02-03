@@ -2,6 +2,8 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -28,31 +30,53 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test
     public void testFindNotFound() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path test = new Path(container, UUID.randomUUID() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
-        f.find(test);
+        try {
+            f.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        try {
+            f.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
     }
 
     @Test
     public void testFind() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final String name = UUID.randomUUID() + ".txt";
-        final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+                new Path(container, String.format("%s-", name), EnumSet.of(Path.Type.file)), new TransferStatus());
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
+        assertNull(attributes.getETag());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
+        assertEquals(attributes.getModificationDate(), new SwiftObjectListService(session).list(container, new DisabledListProgressListener())
+                .find(new DefaultPathPredicate(test)).attributes().getModificationDate());
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
             f.find(new Path(container, name, EnumSet.of(Path.Type.directory)));
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
+        }
+        try {
+            f.find(new Path(container, String.format("%s-", name), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
@@ -98,8 +122,8 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
         assertTrue(new SwiftFindFeature(session).find(container));
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
-            new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
-                new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(new SwiftAttributesFinderFeature(session).find(test));
         assertNotNull(new SwiftAttributesFinderFeature(session).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

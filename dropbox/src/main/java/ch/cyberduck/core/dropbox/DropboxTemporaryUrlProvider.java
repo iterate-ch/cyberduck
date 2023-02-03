@@ -24,7 +24,8 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -36,7 +37,7 @@ import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
 public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void> {
-    private static final Logger log = Logger.getLogger(DropboxTemporaryUrlProvider.class);
+    private static final Logger log = LogManager.getLogger(DropboxTemporaryUrlProvider.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;

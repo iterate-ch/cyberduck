@@ -30,33 +30,38 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
             AutoSize = true;
-            FormClosing += delegate(object sender, FormClosingEventArgs args)
+            FormClosing += delegate (object sender, FormClosingEventArgs args)
             {
+                if (DialogResult == DialogResult.Cancel || DialogResult == DialogResult.Ignore)
+                {
+                    return;
+                }
+
                 bool valid = true;
                 if (ValidateInput != null)
                 {
                     foreach (var d in ValidateInput.GetInvocationList())
                     {
-                        valid = (bool) d.DynamicInvoke();
+                        valid = (bool)d.DynamicInvoke();
                         if (!valid)
                         {
                             break;
                         }
                     }
                 }
-                bool cancel = DialogResult != DialogResult.Cancel && !valid;
-                if (cancel)
+                if (!valid)
                 {
                     args.Cancel = true;
                     SystemSounds.Beep.Play();
                 }
             };
             MinimumSize = new Size(400, 150);
+            skipButton.Visible = ValidateSkip();
         }
 
         protected override bool EnableAutoSizePosition => false;
 
-        public override string[] BundleNames => new[] {"Folder", "Cryptomator", "Keychain"};
+        public override string[] BundleNames => new[] { "Folder", "Cryptomator", "Keychain" };
 
         public string InputText
         {
@@ -76,5 +81,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             inputTextBox.Focus();
             inputTextBox.SelectAll();
         }
+
+        protected virtual bool ValidateSkip() => false;
     }
 }

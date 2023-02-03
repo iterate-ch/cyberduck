@@ -17,6 +17,7 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
@@ -40,7 +41,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -52,14 +52,14 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
     @Ignore
     public void testAccessDenied() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(local);
         final Path test = new Path(new Path("/dav/accessdenied", EnumSet.of(Path.Type.directory)), "nosuchname", EnumSet.of(Path.Type.file));
         try {
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DAVUploadFeature(session).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         catch(AccessDeniedException e) {
             assertEquals("Unexpected response (403 Forbidden). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -72,26 +72,26 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testAppend() throws Exception {
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final int length = 32770;
         final byte[] content = RandomUtils.nextBytes(length);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2);
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DAVUploadFeature(session).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().withLength(content.length / 2).withOffset(content.length / 2).append(true);
-            new DAVUploadFeature(new DAVWriteFeature(session)).upload(
-                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status,
-                new DisabledConnectionCallback());
+            new DAVUploadFeature(session).upload(
+                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                    status,
+                    new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());

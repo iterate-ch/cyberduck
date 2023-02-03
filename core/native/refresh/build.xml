@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *	$Revision: 6757 $
+ *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
+ *
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
+ *  http://cyberduck.io/
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.package
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	Bug fixes, suggestions and comments should be sent to:
+ *	dkocher@cyberduck.io
+ -->
+<project name="Cyberduck Native Libraries" basedir=".">
+
+    <import file="../../../build.xml"/>
+
+    <condition property="msbuild.configuration" value="Debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+    <condition property="msbuild.configuration" value="Release">
+        <equals arg1="${configuration}" arg2="release" />
+    </condition>
+
+    <target name="init-msbuild">
+        <taskdef name="msbuild"
+                 classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+    </target>
+
+    <target name="restore" depends="init-msbuild, version">
+        <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
+            <target name="Restore" />
+        </msbuild>
+    </target>
+
+    <target name="build" depends="init-msbuild, version">
+        <!-- Create DLL Cyberduck.Core.Refresh -->
+        <msbuild buildfile="src/main/csharp/Cyberduck.Core.Refresh.csproj">
+            <target name="Build"/>
+
+            <property name="BuildProjectReferences" value="false" />
+            <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
+        </msbuild>
+    </target>
+</project>

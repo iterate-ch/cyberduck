@@ -40,6 +40,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
+
+import com.google.api.services.drive.model.File;
 
 import static org.junit.Assert.*;
 
@@ -48,8 +51,10 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveFileIdProvider idProvider = new DriveFileIdProvider(session);
+        final Path folder = new DriveDirectoryFeature(session, idProvider).mkdir(
+                new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         String fileid;
         {
             final TransferStatus status = new TransferStatus();
@@ -57,13 +62,14 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             status.setTimestamp(1620113107725L);
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
-            final HttpResponseOutputStream<String> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            fileid = out.getStatus();
+            fileid = out.getStatus().getId();
             assertNotNull(fileid);
             assertTrue(new DefaultFindFeature(session).find(test));
-            test.attributes().setCustom(Collections.emptyMap());
+            assertEquals(status.getTimestamp(), new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()).getModificationDate(), 0L);
             final PathAttributes attributes = new DriveAttributesFinderFeature(session, idProvider).find(test);
+            assertEquals(new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()), attributes);
             assertEquals(fileid, attributes.getFileId());
             assertEquals(1620113107725L, attributes.getModificationDate());
             assertEquals(content.length, attributes.getSize());
@@ -85,15 +91,15 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             status.setExists(true);
             final byte[] content = RandomUtils.nextBytes(1024);
             status.setLength(content.length);
-            final HttpResponseOutputStream<String> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<File> out = new DriveWriteFeature(session, idProvider).write(test, status, new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-            assertEquals(fileid, out.getStatus());
-            test.attributes().setVersionId("2");
+            assertEquals(fileid, out.getStatus().getId());
             final PathAttributes attributes = new DriveListService(session, idProvider).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
             assertEquals("x-application/cyberduck", session.getClient().files().get(test.attributes().getFileId()).execute().getMimeType());
+            assertEquals(new DriveAttributesFinderFeature(session, idProvider).toAttributes(out.getStatus()), attributes);
         }
-        new DriveDeleteFeature(session, idProvider).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -102,15 +108,19 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        final String id = test.attributes().getFileId();
+        assertNotNull(id);
+        new DriveTrashFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertNull(test.attributes().getFileId());
+        assertFalse(new DriveFindFeature(session, fileid).find(test));
+        test.attributes().withFileId(id);
         assertTrue(new DriveFindFeature(session, fileid).find(test));
-        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
-        test.attributes().withVersionId("2");
-        assertTrue(new DriveFindFeature(session, fileid).find(test));
-        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isHidden());
         // Files with duplicate flag (trashed) are filtered
-        assertFalse(new DefaultFindFeature(session).find(test));
-        new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertFalse(new DefaultFindFeature(session).find(new Path(test).withAttributes(PathAttributes.EMPTY)));
+        final Path upload = new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
+        assertEquals(upload.attributes(), new DriveAttributesFinderFeature(session, fileid).find(upload));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

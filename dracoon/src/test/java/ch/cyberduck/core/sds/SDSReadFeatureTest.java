@@ -34,7 +34,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -74,7 +73,7 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
+        final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
@@ -102,16 +101,16 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
+        final byte[] content = RandomUtils.nextBytes(1023);
         final OutputStream out = local.getOutputStream(false);
         assertNotNull(out);
         IOUtils.write(content, out);
         out.close();
         final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<>(new SDSMultipartWriteFeature(session, nodeid)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
-            new DisabledConnectionCallback());
+        new DefaultUploadFeature<>(new SDSDirectS3MultipartWriteFeature(session, nodeid)).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setAppend(true);
@@ -142,9 +141,9 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         out.close();
         final TransferStatus upload = new TransferStatus().withLength(content.length);
         upload.setExists(true);
-        new DefaultUploadFeature<>(new SDSMultipartWriteFeature(session, nodeid)).upload(
-            test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
-            new DisabledConnectionCallback());
+        new DefaultUploadFeature<>(new SDSDirectS3MultipartWriteFeature(session, nodeid)).upload(
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), upload,
+                new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         status.setAppend(true);
@@ -170,13 +169,36 @@ public class SDSReadFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
+        final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<Node> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new SDSReadFeature(session, nodeid).read(test, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testChangedNodeId() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String latestnodeid = test.attributes().getVersionId();
+        assertNotNull(latestnodeid);
+        // Assume previously seen but changed on server
+        final String invalidId = String.valueOf(RandomUtils.nextLong());
+        test.attributes().setVersionId(invalidId);
+        nodeid.cache(test, invalidId);
+        try {
+            final InputStream in = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().withRemote(test.attributes()), new DisabledLoginCallback());
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        assertNull(test.attributes().getVersionId());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

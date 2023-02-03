@@ -20,13 +20,13 @@ public class UploadSymlinkResolverTest {
 
     @Test
     public void testNoSymbolicLink() throws Exception {
-        UploadSymlinkResolver resolver = new UploadSymlinkResolver(null, Collections.<TransferItem>emptyList());
+        UploadSymlinkResolver resolver = new UploadSymlinkResolver(null, Collections.emptyList());
         assertFalse(resolver.resolve(new NullLocal("a")));
     }
 
     @Test
     public void testResolve() throws Exception {
-        final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
+        final ArrayList<TransferItem> files = new ArrayList<>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         files.add(new TransferItem(a, new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
             @Override

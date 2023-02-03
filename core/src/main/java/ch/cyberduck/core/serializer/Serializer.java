@@ -23,7 +23,10 @@ import ch.cyberduck.core.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface Serializer {
+/**
+ * @param <T> Serialized object type
+ */
+public interface Serializer<T> {
 
     /**
      * @param value Value for key
@@ -38,19 +41,18 @@ public interface Serializer {
     void setObjectForKey(Serializable value, String key);
 
     /**
+     * @param <O>   Type of serialized native object
      * @param value Value for key
      * @param key   Identifier for value to serialize
      */
-    <T extends Serializable> void setListForKey(Collection<T> value, String key);
+    <O extends Serializable> void setListForKey(Collection<O> value, String key);
 
     void setStringListForKey(Collection<String> value, String key);
 
     void setMapForKey(Map<String, String> value, String key);
 
     /**
-     * @param <T> Type of native format
      * @return Native serialized format
      */
-    <T> T getSerialized();
-
+    T getSerialized();
 }

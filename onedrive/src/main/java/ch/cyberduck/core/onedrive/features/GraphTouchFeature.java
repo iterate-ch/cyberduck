@@ -34,15 +34,13 @@ import org.nuxeo.onedrive.client.types.DriveItem;
 
 import java.io.IOException;
 
-public class GraphTouchFeature implements Touch<Void> {
+public class GraphTouchFeature implements Touch<DriveItem.Metadata> {
 
     private final GraphSession session;
-    private final GraphAttributesFinderFeature attributes;
     private final GraphFileIdProvider fileid;
 
     public GraphTouchFeature(final GraphSession session, final GraphFileIdProvider fileid) {
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session, fileid);
         this.fileid = fileid;
     }
 
@@ -51,8 +49,8 @@ public class GraphTouchFeature implements Touch<Void> {
         try {
             final DriveItem folder = session.getItem(file.getParent());
             final DriveItem.Metadata metadata = Files.createFile(folder, URIEncoder.encode(file.getName()),
-                StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
-            final PathAttributes attr = attributes.toAttributes(metadata);
+                    StringUtils.isNotBlank(status.getMime()) ? status.getMime() : MimeTypeService.DEFAULT_CONTENT_TYPE);
+            final PathAttributes attr = new GraphAttributesFinderFeature(session, fileid).toAttributes(metadata);
             fileid.cache(file, attr.getFileId());
             return file.withAttributes(attr);
         }
@@ -70,7 +68,7 @@ public class GraphTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public Touch<Void> withWriter(final Write writer) {
+    public Touch<DriveItem.Metadata> withWriter(final Write writer) {
         return this;
     }
 }

@@ -16,12 +16,12 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -30,12 +30,13 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CopyNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
 public class SDSCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(SDSCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSCopyFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -49,16 +50,17 @@ public class SDSCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             new NodesApi(session.getClient()).copyNodes(
                 new CopyNodesRequest()
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source, new DisabledListProgressListener()))))
+                    .addItemsItem(new CopyNode().id(Long.parseLong(nodeid.getVersionId(source))))
                     .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
                 // Target Parent Node ID
-                Long.parseLong(nodeid.getVersionId(target.getParent(), new DisabledListProgressListener())),
+                Long.parseLong(nodeid.getVersionId(target.getParent())),
                 StringUtils.EMPTY, null);
+            listener.sent(status.getLength());
             nodeid.cache(target, null);
             final PathAttributes attributes = new SDSAttributesFinderFeature(session, nodeid).find(target);
             nodeid.cache(target, attributes.getVersionId());
@@ -80,10 +82,10 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
-        if(SDSNodeIdProvider.isEncrypted(source) ^ SDSNodeIdProvider.isEncrypted(target)) {
+        if(SDSAttributesAdapter.isEncrypted(source.attributes()) ^ SDSAttributesAdapter.isEncrypted(containerService.getContainer(target).attributes())) {
             // If source xor target is encrypted data room we cannot use server side copy
             log.warn(String.format("Cannot use server side copy with source container %s and target container %s",
-                containerService.getContainer(source), containerService.getContainer(target)));
+                    containerService.getContainer(source), containerService.getContainer(target)));
             return false;
         }
         if(!StringUtils.equals(source.getName(), target.getName())) {

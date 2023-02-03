@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -50,7 +51,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(4 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -78,7 +79,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(56);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -106,7 +107,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(11 * 1024 * 1024);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         final TransferStatus progress = new TransferStatus();
@@ -135,7 +136,7 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<FileEntity> out = feature.write(file, status, new DisabledConnectionCallback());
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();

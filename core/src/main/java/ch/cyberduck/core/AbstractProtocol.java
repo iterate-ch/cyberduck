@@ -20,7 +20,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.RootPathContainerService;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,8 +37,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class AbstractProtocol implements Protocol {
+
+    @Override
+    public <T> T serialize(final Serializer<T> dict) {
+        return null;
+    }
 
     @Override
     public String getProvider() {
@@ -163,6 +172,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public String getHostnamePlaceholder() {
+        return this.getDefaultHostname();
+    }
+
+    @Override
     public String getUsernamePlaceholder() {
         return LocaleFactory.localizedString("Username", "Credentials");
     }
@@ -193,6 +207,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isOAuthPKCE() {
+        return true;
+    }
+
+    @Override
     public String getDefaultHostname() {
         // Blank by default
         return PreferencesFactory.get().getProperty("connection.hostname.default");
@@ -201,6 +220,11 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public Set<Location.Name> getRegions() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public Set<Location.Name> getRegions(final List<String> regions) {
+        return regions.stream().map(Location.Name::new).collect(Collectors.toSet());
     }
 
     @Override
@@ -321,7 +345,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public int compareTo(final Protocol o) {
-        return this.getIdentifier().compareTo(o.getIdentifier());
+        return new ProtocolComparator(this).compareTo(o);
     }
 
     @Override
@@ -373,12 +397,16 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new RootPathContainerService();
         }
         if(type == WebUrlProvider.class) {
             return (T) new DefaultWebUrlProvider();
+        }
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(this);
         }
         return null;
     }

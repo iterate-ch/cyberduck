@@ -129,6 +129,17 @@ public class FTPMlsdListResponseReaderTest {
     }
 
     @Test
+    public void testEmptyDir() throws Exception {
+        Path path = new Path(
+            "/www", EnumSet.of(Path.Type.directory));
+
+        String[] replies = new String[]{};
+
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        assertEquals(0, children.size());
+    }
+
+    @Test
     public void testSize() throws Exception {
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));

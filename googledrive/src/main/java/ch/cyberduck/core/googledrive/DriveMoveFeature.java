@@ -16,8 +16,8 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -25,6 +25,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -32,15 +34,15 @@ import java.util.Collections;
 import com.google.api.services.drive.model.File;
 
 public class DriveMoveFeature implements Move {
+    private static final Logger log = LogManager.getLogger(DriveMoveFeature.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
-
-    private Delete delete;
+    private final Delete delete;
 
     public DriveMoveFeature(final DriveSession session, final DriveFileIdProvider fileid) {
         this.session = session;
-        this.delete = new DriveDeleteFeature(session, fileid);
+        this.delete = new DriveTrashFeature(session, fileid);
         this.fileid = fileid;
     }
 
@@ -48,9 +50,12 @@ public class DriveMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Trash file %s to be replaced with %s", renamed, file));
+                }
                 delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            final String id = fileid.getFileId(file, new DisabledListProgressListener());
+            final String id = fileid.getFileId(file);
             File result = null;
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 // Rename title
@@ -58,23 +63,23 @@ public class DriveMoveFeature implements Move {
                 properties.setName(renamed.getName());
                 properties.setMimeType(status.getMime());
                 result = session.getClient().files().update(id, properties)
-                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .execute();
+                        .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
+                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .execute();
             }
-            if(!file.getParent().equals(renamed.getParent())) {
+            if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Retrieve the existing parents to remove
                 final StringBuilder previousParents = new StringBuilder();
                 final File reference = session.getClient().files().get(id)
-                    .setFields("parents")
-                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
-                    .execute();
+                        .setFields("parents")
+                        .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
+                        .execute();
                 for(String parent : reference.getParents()) {
                     previousParents.append(parent).append(',');
                 }
                 // Move the file to the new folder
                 result = session.getClient().files().update(id, null)
-                    .setAddParents(fileid.getFileId(renamed.getParent(), new DisabledListProgressListener()))
+                    .setAddParents(fileid.getFileId(renamed.getParent()))
                     .setRemoveParents(previousParents.toString())
                     .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
                     .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"))
@@ -99,6 +104,10 @@ public class DriveMoveFeature implements Move {
         if(target.isRoot()) {
             return false;
         }
-        return !source.getType().contains(Path.Type.placeholder);
+        if(source.isPlaceholder()) {
+            // Disable for application/vnd.google-apps
+            return false;
+        }
+        return true;
     }
 }

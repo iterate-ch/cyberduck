@@ -24,53 +24,55 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CompareFilter extends AbstractDownloadFilter {
-    private static final Logger log = Logger.getLogger(CompareFilter.class);
+    private static final Logger log = LogManager.getLogger(CompareFilter.class);
 
     private final ProgressListener listener;
-    private final DefaultComparePathFilter comparisonService;
+    private final ComparePathFilter comparison;
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final ProgressListener listener) {
-        this(symlinkResolver, session, new DownloadFilterOptions(), listener);
+        this(symlinkResolver, session, new DownloadFilterOptions(session.getHost()), listener);
     }
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                          final DownloadFilterOptions options,
                          final ProgressListener listener) {
-        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session, session.getHost().getTimezone()));
+        this(symlinkResolver, session, options, listener, new DefaultComparePathFilter(session));
     }
 
     public CompareFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
                          final DownloadFilterOptions options, final ProgressListener listener,
-                         final DefaultComparePathFilter comparisonService) {
+                         final ComparePathFilter comparison) {
         super(symlinkResolver, session, options);
         this.listener = listener;
-        this.comparisonService = comparisonService;
+        this.comparison = comparison;
     }
 
     @Override
     public AbstractDownloadFilter withFinder(final Find finder) {
-        comparisonService.withFinder(finder);
+        comparison.withFinder(finder);
         return super.withFinder(finder);
     }
 
     @Override
     public AbstractDownloadFilter withAttributes(final AttributesFinder attributes) {
-        comparisonService.withAttributes(attributes);
+        comparison.withAttributes(attributes);
         return super.withAttributes(attributes);
     }
 
     @Override
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(super.accept(file, local, parent)) {
-            final Comparison comparison = comparisonService.compare(file, local, listener);
+            final Comparison comparison = this.comparison.compare(file, local, listener);
             switch(comparison) {
                 case local:
                     if(log.isInfoEnabled()) {

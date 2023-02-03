@@ -14,7 +14,6 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
@@ -29,7 +28,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testAcceptDirectoryNew() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())),
@@ -39,7 +38,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testAcceptDirectoryExists() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         final Find find = new Find() {
@@ -65,7 +64,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testPrepareFile() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
         files.put(source, new Path("a", EnumSet.of(Path.Type.file)));
@@ -76,7 +75,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testPrepareDirectory() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.directory));
         source.attributes().setSize(1L);
         final Path target = new Path("a", EnumSet.of(Path.Type.directory));
@@ -88,7 +87,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testComplete() throws Exception {
-        final HashMap<Path, Path> files = new HashMap<Path, Path>();
+        final HashMap<Path, Path> files = new HashMap<>();
         final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
         source.attributes().setPermission(new Permission(777));
@@ -98,7 +97,8 @@ public class OverwriteFilterTest {
         final boolean[] permissionWrite = new boolean[1];
         final Path target = new Path("a", EnumSet.of(Path.Type.file));
         files.put(source, target);
-        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(host), new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -138,13 +138,13 @@ public class OverwriteFilterTest {
                 }
                 return super._getFeature(type);
             }
-        }, files, new UploadFilterOptions().withPermission(true).withTimestamp(true));
+        }, files, new UploadFilterOptions(host).withPermission(true).withTimestamp(true));
         final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
-        f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(source, null, status, new DisabledProgressListener());
         assertFalse(permissionWrite[0]);
         assertFalse(timestampWrite[0]);
         status.setComplete();
-        f.complete(source, null, new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(source, null, status, new DisabledProgressListener());
         assertTrue(permissionWrite[0]);
         assertTrue(timestampWrite[0]);
     }

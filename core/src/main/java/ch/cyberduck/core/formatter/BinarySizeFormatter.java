@@ -17,6 +17,9 @@ package ch.cyberduck.core.formatter;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+/**
+ * Format based on powers of 2 using binary prefixes (kibi, mebi, gibi) for display.
+ */
 public class BinarySizeFormatter extends AbstractSizeFormatter {
 
     private static final Unit KILO = new Unit(1024L) {
@@ -24,21 +27,29 @@ public class BinarySizeFormatter extends AbstractSizeFormatter {
         public String suffix() {
             return "KiB";
         }
-    }; //2^10
+    }; //1024^2
     private static final Unit MEGA = new Unit(1048576L) {
         @Override
         public String suffix() {
             return "MiB";
         }
-    }; //2^20
+    }; //1024^3
     private static final Unit GIGA = new Unit(1073741824L) {
         @Override
         public String suffix() {
+            // Gibibyte
             return "GiB";
         }
-    }; //2^30
+    }; //1024^4
+    private static final Unit TERA = new Unit(1099511627776L) {
+        @Override
+        public String suffix() {
+            // Tebibyte
+            return "TiB";
+        }
+    }; //1024^5
 
     public BinarySizeFormatter() {
-        super(KILO, MEGA, GIGA);
+        super(KILO, MEGA, GIGA, TERA);
     }
 }

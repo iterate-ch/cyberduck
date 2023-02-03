@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -46,9 +45,9 @@ public class HubicSessionTest {
     public void testConnectInvalidRefreshToken() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new HubicProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/hubiC.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
-            new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+                new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         try {
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -64,9 +63,9 @@ public class HubicSessionTest {
     public void testConnectInvalidAccessToken() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new HubicProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/hubiC.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
-            new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+                new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();

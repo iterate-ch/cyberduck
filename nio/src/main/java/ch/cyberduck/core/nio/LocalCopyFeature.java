@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -34,9 +35,10 @@ public class LocalCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             Files.copy(session.toPath(source), session.toPath(target), StandardCopyOption.REPLACE_EXISTING);
+            listener.sent(status.getLength());
             // Copy attributes from original file
             return target.withAttributes(new LocalAttributesFinderFeature(session).find(target));
         }

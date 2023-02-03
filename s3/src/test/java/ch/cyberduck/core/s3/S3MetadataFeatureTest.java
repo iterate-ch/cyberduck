@@ -48,9 +48,9 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetMetadataFile() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus().withMime("text/plain"));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus().withMime("text/plain"));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(metadata.isEmpty());
@@ -65,13 +65,13 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
     public void testSetMetadataFileLeaveOtherFeatures() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
         final String v = UUID.randomUUID().toString();
-        final S3StorageClassFeature storage = new S3StorageClassFeature(session);
+        final S3StorageClassFeature storage = new S3StorageClassFeature(session, new S3AccessControlListFeature(session));
         storage.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, storage.getClass(test));
 
-        final S3EncryptionFeature encryption = new S3EncryptionFeature(session);
+        final S3EncryptionFeature encryption = new S3EncryptionFeature(session, new S3AccessControlListFeature(session));
         encryption.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
@@ -90,9 +90,9 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
         assertTrue(feature.getMetadata(test).containsKey("Content-Type"));
         feature.setMetadata(test, Collections.singletonMap("Content-type", "text/plain"));

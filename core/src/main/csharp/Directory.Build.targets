@@ -1,0 +1,34 @@
+<!--
+  ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+
+  <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
+
+  <Target Name="GenerateI18nResource" BeforeTargets="PrepareResources" DependsOnTargets="ResolveProjectReferences">
+    <ResourceGenTask SourcePath="$(CyberduckDir)i18n\src\main\resources" OutputPath="$(IntermediateOutputPath)">
+      <Output TaskParameter="Resources" ItemName="GeneratedResources" />
+    </ResourceGenTask>
+    <ItemGroup>
+      <EmbeddedResource Include="@(GeneratedResources)" OutputResource="%(Identity)">
+        <GenerateResource>false</GenerateResource>
+        <Type>Resx</Type>
+        <WithCulture>false</WithCulture>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+</Project>

@@ -33,7 +33,7 @@ using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Application = System.Windows.Forms.Application;
@@ -43,15 +43,13 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 {
     public class ApplicationPreferences : SettingsDictionaryPreferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(ApplicationPreferences).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(ApplicationPreferences).FullName);
 
         protected override void setDefaults()
         {
             base.setDefaults();
 
             this.setDefault("application.language", GetDefaultLanguage());
-
-            this.setDefault("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
 
             this.setDefault("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
 
@@ -90,9 +88,11 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             this.setDefault("factory.transferpromptcallback.sync.class",
                 typeof(SyncPromptController).AssemblyQualifiedName);
             this.setDefault("factory.proxy.class", typeof(SystemProxy).AssemblyQualifiedName);
+            this.setDefault("factory.proxy.configuration.class", typeof(SystemSettingsProxy).AssemblyQualifiedName);
             this.setDefault("factory.reachability.class", typeof(TcpReachability).AssemblyQualifiedName);
+            this.setDefault("factory.reachability.diagnostics.class", typeof(TcpReachability).AssemblyQualifiedName);
 
-            this.setDefault("factory.applicationfinder.class", typeof(RegistryApplicationFinder).AssemblyQualifiedName);
+            this.setDefault("factory.applicationfinder.class", typeof(ShellApplicationFinder).AssemblyQualifiedName);
             this.setDefault("factory.applicationlauncher.class", typeof(WindowsApplicationLauncher).AssemblyQualifiedName);
             this.setDefault("factory.browserlauncher.class", typeof(DefaultBrowserLauncher).AssemblyQualifiedName);
             this.setDefault("factory.reveal.class", typeof(ExplorerRevealService).AssemblyQualifiedName);

@@ -16,8 +16,13 @@ package ch.cyberduck.core.nextcloud;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.ETagComparisonService;
 
 public class NextcloudProtocol extends AbstractProtocol {
 
@@ -49,5 +54,23 @@ public class NextcloudProtocol extends AbstractProtocol {
     @Override
     public String icon() {
         return new DAVSSLProtocol().icon();
+    }
+
+    @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return new WindowsIntegratedCredentialsConfigurator();
+    }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new ETagComparisonService(), new ETagComparisonService());
+        }
+        return super.getFeature(type);
     }
 }

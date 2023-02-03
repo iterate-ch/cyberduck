@@ -27,13 +27,15 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class BundleController extends ProxyController {
-    private static final Logger log = Logger.getLogger(BundleController.class);
+    private static final Logger log = LogManager.getLogger(BundleController.class);
 
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL;
@@ -41,19 +43,43 @@ public abstract class BundleController extends ProxyController {
 
     static {
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE = NSMutableParagraphStyle.paragraphStyle();
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setAlignment(NSText.NSLeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setAlignment(NSText.NSTextAlignmentLeft);
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingMiddle);
     }
 
     static {
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.paragraphStyle();
-        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.NSLeftTextAlignment);
+        PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.NSTextAlignmentLeft);
         PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingTail);
+    }
+
+    public static final int TEXT_ALIGNMENT_RIGHT;
+
+    static {
+        if(Factory.Platform.osversion.matches("(10|11)\\..*")) {
+            TEXT_ALIGNMENT_RIGHT = NSText.NSRightTextAlignment;
+        }
+        else {
+            // Fix #12703 for macOS 12+
+            TEXT_ALIGNMENT_RIGHT = NSText.NSTextAlignmentRight;
+        }
+    }
+
+    public static final int TEXT_ALIGNMENT_CENTER;
+
+    static {
+        if(Factory.Platform.osversion.matches("(10|11)\\..*")) {
+            TEXT_ALIGNMENT_CENTER = NSText.NSCenterTextAlignment;
+        }
+        else {
+            // Fix #12703 for macOS 12+
+            TEXT_ALIGNMENT_CENTER = NSText.NSTextAlignmentCenter;
+        }
     }
 
     static {
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL = NSMutableParagraphStyle.paragraphStyle();
-        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(NSText.NSRightTextAlignment);
+        PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setAlignment(TEXT_ALIGNMENT_RIGHT);
         PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL.setLineBreakMode(NSParagraphStyle.NSLineBreakByTruncatingTail);
     }
 

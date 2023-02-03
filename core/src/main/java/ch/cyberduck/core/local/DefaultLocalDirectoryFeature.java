@@ -21,7 +21,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Directory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +30,7 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 public class DefaultLocalDirectoryFeature implements Directory {
-    private static final Logger log = Logger.getLogger(DefaultLocalDirectoryFeature.class);
+    private static final Logger log = LogManager.getLogger(DefaultLocalDirectoryFeature.class);
 
     @Override
     public void mkdir(final Local file) throws AccessDeniedException {

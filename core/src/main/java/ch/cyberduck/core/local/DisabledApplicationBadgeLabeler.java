@@ -23,4 +23,9 @@ public final class DisabledApplicationBadgeLabeler implements ApplicationBadgeLa
     public void badge(String label) {
         //
     }
+
+    @Override
+    public void clear() {
+        //
+    }
 }

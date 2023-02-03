@@ -29,7 +29,8 @@ import ch.cyberduck.core.features.Location;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftLocationFeature implements Location {
-    private static final Logger log = Logger.getLogger(SwiftLocationFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftLocationFeature.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();

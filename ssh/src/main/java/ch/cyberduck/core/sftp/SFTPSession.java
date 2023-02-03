@@ -22,11 +22,9 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
@@ -42,16 +40,18 @@ import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHCredentialsConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostnameConfigurator;
-import ch.cyberduck.core.sftp.openssh.OpenSSHIdentitiesOnlyConfigurator;
+import ch.cyberduck.core.sftp.openssh.OpenSSHIdentityAgentConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
+import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -64,6 +64,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.jcraft.jsch.agentproxy.AgentProxyException;
 import net.schmizz.concurrent.Promise;
 import net.schmizz.keepalive.KeepAlive;
 import net.schmizz.keepalive.KeepAliveProvider;
@@ -87,7 +88,7 @@ import net.schmizz.sshj.transport.verification.AlgorithmsVerifier;
 import net.schmizz.sshj.transport.verification.HostKeyVerifier;
 
 public class SFTPSession extends Session<SSHClient> {
-    private static final Logger log = Logger.getLogger(SFTPSession.class);
+    private static final Logger log = LogManager.getLogger(SFTPSession.class);
 
     private final PreferencesReader preferences = new HostPreferences(host);
 
@@ -117,9 +118,9 @@ public class SFTPSession extends Session<SSHClient> {
         final DefaultConfig configuration = new DefaultConfig();
         if("zlib".equals(preferences.getProperty("ssh.compression"))) {
             configuration.setCompressionFactories(Arrays.asList(
-                new DelayedZlibCompression.Factory(),
-                new ZlibCompression.Factory(),
-                new NoneCompression.Factory()));
+                    new DelayedZlibCompression.Factory(),
+                    new ZlibCompression.Factory(),
+                    new NoneCompression.Factory()));
         }
         else {
             configuration.setCompressionFactories(Collections.singletonList(new NoneCompression.Factory()));
@@ -145,23 +146,19 @@ public class SFTPSession extends Session<SSHClient> {
                 log.info(String.format("Connect using jump host configuration %s", proxy));
                 final SSHClient hop = this.toClient(key, configuration);
                 hop.connect(proxy.getHostname(), proxy.getPort());
-                proxy.setCredentials(new OpenSSHCredentialsConfigurator().configure(proxy));
+                final Credentials proxyCredentials = new OpenSSHCredentialsConfigurator().configure(proxy);
+                proxy.setCredentials(proxyCredentials);
+                final KeychainLoginService service = new KeychainLoginService();
+                service.validate(proxy, prompt, new LoginOptions(proxy.getProtocol()));
                 // Authenticate with jump host
                 this.authenticate(hop, proxy, prompt, new DisabledCancelCallback());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Authenticated with jump host %s", proxy));
                 }
-                if(proxy.getCredentials().isSaved()) {
-                    // Write credentials to keychain
-                    try {
-                        PasswordStoreFactory.get().save(proxy);
-                    }
-                    catch(LocalAccessDeniedException e) {
-                        log.error(String.format("Failure saving credentials for %s in keychain. %s", proxy, e));
-                    }
-                }
+                // Write credentials to keychain
+                service.save(proxy);
                 final DirectConnection tunnel = hop.newDirectConnection(
-                    new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
+                        new OpenSSHHostnameConfigurator().getHostname(host.getHostname()), host.getPort());
                 // Connect to internal host
                 connection.connectVia(tunnel);
             }
@@ -179,7 +176,8 @@ public class SFTPSession extends Session<SSHClient> {
 
     private SSHClient toClient(final HostKeyCallback key, final Config configuration) {
         final SSHClient connection = new SSHClient(configuration);
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
+        connection.getTransport().setTimeoutMs(timeout);
         connection.setTimeout(timeout);
         connection.setSocketFactory(new ProxySocketFactory(host));
         connection.addHostKeyVerifier(new HostKeyVerifier() {
@@ -188,9 +186,14 @@ public class SFTPSession extends Session<SSHClient> {
                 try {
                     return key.verify(host, publicKey);
                 }
-                catch(ConnectionCanceledException | ChecksumException e) {
+                catch(BackgroundException e) {
                     return false;
                 }
+            }
+
+            @Override
+            public List<String> findExistingAlgorithms(final String hostname, final int port) {
+                return Collections.emptyList();
             }
         });
         connection.addAlgorithmsVerifier(new AlgorithmsVerifier() {
@@ -215,22 +218,22 @@ public class SFTPSession extends Session<SSHClient> {
         }
         if(!preferences.getBoolean(String.format("ssh.algorithm.whitelist.%s", host.getHostname()))) {
             if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getClient2ServerCipherAlgorithm())) {
-                alert(prompt, algorithms.getClient2ServerCipherAlgorithm());
+                this.alert(prompt, algorithms.getClient2ServerCipherAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.cipher.blacklist").contains(algorithms.getServer2ClientCipherAlgorithm())) {
-                alert(prompt, algorithms.getServer2ClientCipherAlgorithm());
+                this.alert(prompt, algorithms.getServer2ClientCipherAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.mac.blacklist").contains(algorithms.getClient2ServerMACAlgorithm())) {
-                alert(prompt, algorithms.getClient2ServerMACAlgorithm());
+                this.alert(prompt, algorithms.getClient2ServerMACAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.mac.blacklist").contains(algorithms.getServer2ClientMACAlgorithm())) {
-                alert(prompt, algorithms.getServer2ClientMACAlgorithm());
+                this.alert(prompt, algorithms.getServer2ClientMACAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.kex.blacklist").contains(algorithms.getKeyExchangeAlgorithm())) {
-                alert(prompt, algorithms.getKeyExchangeAlgorithm());
+                this.alert(prompt, algorithms.getKeyExchangeAlgorithm());
             }
             if(preferences.getList("ssh.algorithm.signature.blacklist").contains(algorithms.getSignatureAlgorithm())) {
-                alert(prompt, algorithms.getSignatureAlgorithm());
+                this.alert(prompt, algorithms.getSignatureAlgorithm());
             }
         }
         return super.alert(prompt);
@@ -238,13 +241,13 @@ public class SFTPSession extends Session<SSHClient> {
 
     private void alert(final ConnectionCallback prompt, final String algorithm) throws ConnectionCanceledException {
         prompt.warn(host, MessageFormat.format(LocaleFactory.localizedString("Insecure algorithm {0} negotiated with server", "Credentials"),
-            algorithm),
-            new StringAppender()
-                .append(LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"))
-                .append(LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")).toString(),
-            LocaleFactory.localizedString("Continue", "Credentials"),
-            LocaleFactory.localizedString("Disconnect", "Credentials"),
-            String.format("ssh.algorithm.whitelist.%s", host.getHostname()));
+                        algorithm),
+                new StringAppender()
+                        .append(LocaleFactory.localizedString("The algorithm is possibly too weak to meet current cryptography standards", "Credentials"))
+                        .append(LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")).toString(),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                LocaleFactory.localizedString("Disconnect", "Credentials"),
+                String.format("ssh.algorithm.whitelist.%s", host.getHostname()));
     }
 
     @Override
@@ -252,7 +255,7 @@ public class SFTPSession extends Session<SSHClient> {
         this.authenticate(client, host, prompt, cancel);
         try {
             sftp = new LoggingSFTPEngine(client, this).init();
-            sftp.setTimeoutMs(preferences.getInteger("connection.timeout.seconds") * 1000);
+            sftp.setTimeoutMs(ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000);
         }
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map(e);
@@ -272,23 +275,38 @@ public class SFTPSession extends Session<SSHClient> {
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-            if(new OpenSSHIdentitiesOnlyConfigurator().isIdentitiesOnly(host.getHostname())) {
-                log.warn("Skip reading keys from SSH agent with IdentitiesOnly configuration");
-            }
-            else {
-                switch(Factory.Platform.getDefault()) {
-                    case windows:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
-                        break;
-                    default:
-                        defaultMethods.add(new SFTPAgentAuthentication(client, new OpenSSHAgentAuthenticator()));
-                        break;
-                }
+            final String identityAgent = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
+                    try {
+                        defaultMethods.add(new SFTPAgentAuthentication(client,
+                                new WindowsOpenSSHAgentAuthenticator(identityAgent)));
+                    }
+                    catch(AgentProxyException e) {
+                        log.warn(String.format("Agent proxy failed with %s", e));
+                    }
+                    break;
+                default:
+                    try {
+                        defaultMethods.add(new SFTPAgentAuthentication(client,
+                                new OpenSSHAgentAuthenticator(identityAgent)));
+                    }
+                    catch(AgentProxyException e) {
+                        log.warn(String.format("Agent proxy failed with %s", e));
+                    }
+                    break;
             }
         }
         defaultMethods.add(new SFTPPublicKeyAuthentication(client));
-        defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
-        defaultMethods.add(new SFTPPasswordAuthentication(client));
+        if(credentials.isPasswordAuthentication()) {
+            defaultMethods.add(0, new SFTPPasswordAuthentication(client));
+            defaultMethods.add(0, new SFTPChallengeResponseAuthentication(client));
+        }
+        else {
+            defaultMethods.add(new SFTPChallengeResponseAuthentication(client));
+            defaultMethods.add(new SFTPPasswordAuthentication(client));
+        }
         final LinkedHashMap<String, List<AuthenticationProvider<Boolean>>> methodsMap = new LinkedHashMap<>();
         defaultMethods.forEach(m -> methodsMap.computeIfAbsent(m.getMethod(), k -> new ArrayList<>()).add(m));
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<>();
@@ -355,13 +373,13 @@ public class SFTPSession extends Session<SSHClient> {
             }
             catch(IllegalStateException ignored) {
                 log.warn(String.format("Server disconnected with %s while trying authentication method %s",
-                    disconnectListener.getFailure(), auth));
+                        disconnectListener.getFailure(), auth));
                 try {
                     if(null == disconnectListener.getFailure()) {
                         throw new ConnectionRefusedException(LocaleFactory.localizedString("Login failed", "Credentials"), ignored);
                     }
                     throw new SFTPExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"),
-                        disconnectListener.getFailure());
+                            disconnectListener.getFailure());
                 }
                 catch(InteroperabilityException e) {
                     throw new LoginFailureException(e.getDetail(false), e);
@@ -374,7 +392,7 @@ public class SFTPSession extends Session<SSHClient> {
         if(!client.isAuthenticated()) {
             if(null == lastFailure) {
                 throw new LoginFailureException(MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
+                        "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(host)));
             }
             throw lastFailure;
         }

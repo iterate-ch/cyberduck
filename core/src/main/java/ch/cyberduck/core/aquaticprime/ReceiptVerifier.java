@@ -23,7 +23,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -43,7 +44,6 @@ import org.bouncycastle.util.Store;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.NetworkInterface;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -52,7 +52,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 public class ReceiptVerifier implements LicenseVerifier {
-    private static final Logger log = Logger.getLogger(ReceiptVerifier.class);
+    private static final Logger log = LogManager.getLogger(ReceiptVerifier.class);
 
     private final Local file;
     private final String application;

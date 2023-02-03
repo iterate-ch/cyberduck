@@ -19,13 +19,13 @@
 using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core
 {
     public class DataProtectorPasswordStore : DefaultHostPasswordStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(DataProtectorPasswordStore).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(DataProtectorPasswordStore).FullName);
 
         // Login Password
         public override void addPassword(Scheme scheme, int port, String hostname, String user, String password)

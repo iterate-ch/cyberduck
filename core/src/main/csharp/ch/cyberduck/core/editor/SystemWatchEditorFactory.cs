@@ -16,177 +16,21 @@
 // yves@cyberduck.ch
 // 
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
-using ch.cyberduck.core.local;
-using ch.cyberduck.core.pool;
+using Ch.Cyberduck.Core.Local;
 using java.util;
-using Microsoft.Win32;
-using org.apache.log4j;
-using Path = ch.cyberduck.core.Path;
+using System.Linq;
 
 namespace Ch.Cyberduck.Core.Editor
 {
     public class SystemWatchEditorFactory : EditorFactory
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (SystemWatchEditorFactory).Name);
-        private readonly IList<Application> _registeredEditors = new List<Application>();
-
-        public SystemWatchEditorFactory()
+        public override ch.cyberduck.core.editor.Editor create(Host host, Path file, ProgressListener listener)
         {
-            _registeredEditors.Add(new Dreamweaver());
-            _registeredEditors.Add(new Notepad());
-            _registeredEditors.Add(new NotepadPlusPlus());
-            _registeredEditors.Add(new TextPad());
+            return new SystemWatchEditor(host, file, listener);
         }
 
-        protected override List getConfigured()
-        {
-            return Utils.ConvertToJavaList(_registeredEditors);
-        }
-
-        public override ch.cyberduck.core.editor.Editor create(ProgressListener listener, SessionPool session, Application application, Path file)
-        {
-            return new SystemWatchEditor(application, session, file, listener);
-        }
-
-        protected override object create()
-        {
-            throw new NotImplementedException();
-        }
-
-        private class Dreamweaver : Application
-        {
-            public Dreamweaver() : base(Identifier(), "Dreamweaver")
-            {
-            }
-
-            private static string Identifier()
-            {
-                try
-                {
-                    using (var uc = Registry.LocalMachine.OpenSubKey(@"Software\Adobe\Dreamweaver\"))
-                    {
-                        if (null != uc)
-                        {
-                            string[] subKeyNames = uc.GetSubKeyNames();
-                            foreach (string keyName in subKeyNames)
-                            {
-                                RegistryKey versionSubtree = uc.OpenSubKey(keyName + "\\Installation");
-                                if (versionSubtree != null)
-                                {
-                                    string exePath = (string) versionSubtree.GetValue(null);
-                                    if (null != exePath)
-                                    {
-                                        return exePath.ToLower();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.error(e.Message, e);
-                }
-                return null;
-            }
-        }
-
-        /**
-         * Default Editor if none selected
-         */
-
-        public class Notepad : Application
-        {
-            public Notepad() : base(Identifier(), "Notepad")
-            {
-            }
-
-            private static string Identifier()
-            {
-                string windir = Environment.ExpandEnvironmentVariables("%WinDir%");
-                string notepadExe = System.IO.Path.Combine(windir, "system32", "notepad.exe");
-                if (File.Exists(notepadExe))
-                {
-                    return notepadExe.ToLower();
-                }
-                return null;
-            }
-        }
-
-        private class NotepadPlusPlus : Application
-        {
-            public NotepadPlusPlus() : base(Identifier(), "Notepad++")
-            {
-            }
-
-            private static string Identifier()
-            {
-                try
-                {
-                    using (
-                        var uc =
-                            Registry.LocalMachine.OpenSubKey(
-                                @"Software\Microsoft\Windows\CurrentVersion\Uninstall\Notepad++"))
-                    {
-                        if (null != uc)
-                        {
-                            string exe = (string) uc.GetValue("DisplayIcon");
-                            if (null != exe)
-                            {
-                                return exe.ToLower();
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.error(e.Message, e);
-                }
-                return null;
-            }
-        }
-
-        private class TextPad : Application
-        {
-            public TextPad() : base(Identifier(), "TextPad")
-            {
-            }
-
-            private static string Identifier()
-            {
-                try
-                {
-                    using (var uc = Registry.LocalMachine.OpenSubKey(@"Software\Helios\TextPad\"))
-                    {
-                        if (null != uc)
-                        {
-                            string version = (string) uc.GetValue("CurrentVersion");
-                            if (null != version)
-                            {
-                                RegistryKey versionSubtree = uc.OpenSubKey(version);
-                                if (versionSubtree != null)
-                                {
-                                    string exePath = (string) versionSubtree.GetValue("ExePath");
-                                    if (null != exePath)
-                                    {
-                                        return exePath.ToLower();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.error(e.Message, e);
-                }
-                return null;
-            }
-        }
+        protected override List getConfigured() => ShellApplicationFinder.findAll();
     }
 }

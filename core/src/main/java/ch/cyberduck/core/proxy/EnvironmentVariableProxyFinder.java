@@ -1,32 +1,25 @@
 package ch.cyberduck.core.proxy;
 
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class EnvironmentVariableProxyFinder implements ProxyFinder {
-    private static final Logger log = Logger.getLogger(EnvironmentVariableProxyFinder.class);
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
+    private static final Logger log = LogManager.getLogger(EnvironmentVariableProxyFinder.class);
 
     @Override
     public Proxy find(final String target) {
-        if(!preferences.getBoolean("connection.proxy.enable")) {
-            return Proxy.DIRECT;
-        }
         switch(Scheme.valueOf(URI.create(target).getScheme())) {
             case ftp:
             case ftps:
             case sftp:
                 final String ftp_proxy = System.getenv("ftp_proxy");
-                if(StringUtils.isNoneBlank(ftp_proxy)) {
+                if(StringUtils.isNotBlank(ftp_proxy)) {
                     try {
                         final URI uri = new URI(ftp_proxy);
                         return new Proxy(Proxy.Type.SOCKS, uri.getHost(), uri.getPort());
@@ -38,7 +31,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                 break;
             case http:
                 final String http_proxy = System.getenv("http_proxy");
-                if(StringUtils.isNoneBlank(http_proxy)) {
+                if(StringUtils.isNotBlank(http_proxy)) {
                     try {
                         final URI uri = new URI(http_proxy);
                         return new Proxy(Proxy.Type.HTTP, uri.getHost(), uri.getPort());
@@ -50,7 +43,7 @@ public class EnvironmentVariableProxyFinder implements ProxyFinder {
                 break;
             case https:
                 final String https_proxy = System.getenv("https_proxy");
-                if(StringUtils.isNoneBlank(https_proxy)) {
+                if(StringUtils.isNotBlank(https_proxy)) {
                     try {
                         final URI uri = new URI(https_proxy);
                         return new Proxy(Proxy.Type.HTTP, uri.getHost(), uri.getPort());

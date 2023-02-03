@@ -55,9 +55,9 @@ public class PathAttributesTest {
     public void testEquals() {
         assertEquals(new PathAttributes(), new PathAttributes());
         final PathAttributes r1 = new PathAttributes();
-        r1.setRegion("r1");
+        r1.setVersionId("r1");
         final PathAttributes r2 = new PathAttributes();
-        r2.setRegion("r2");
+        r2.setVersionId("r2");
         assertNotEquals(r1, r2);
     }
 
@@ -80,7 +80,7 @@ public class PathAttributesTest {
         final Map<String, String> custom = new HashMap<>(attributes.getCustom());
         custom.put("key", "value");
         attributes.setCustom(custom);
-        final PathAttributes deserialized = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
+        final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(attributes.getSize(), deserialized.getSize());
         assertEquals(attributes.getModificationDate(), deserialized.getModificationDate());
         assertEquals(attributes.getPermission(), deserialized.getPermission());

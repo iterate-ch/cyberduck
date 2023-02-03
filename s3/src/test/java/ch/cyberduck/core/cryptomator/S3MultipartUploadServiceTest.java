@@ -25,7 +25,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoUploadFeature;
 import ch.cyberduck.core.features.Delete;
@@ -33,6 +33,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -76,11 +77,12 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-            new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
-            new S3WriteFeature(session), cryptomator);
+                new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5L * 1024L * 1024L, 5),
+                new S3WriteFeature(session, acl), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final int length = 5242880;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -93,8 +95,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, writeStatus, null);
         assertEquals(content.length, count.getSent());
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, acl), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
@@ -102,7 +104,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertArrayEquals(content, buffer.toByteArray());
         cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-}
+    }
 
     @Test
     public void testUpload() throws Exception {
@@ -111,11 +113,12 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-            new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
-            new S3WriteFeature(session), cryptomator);
+                new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5L * 1024L * 1024L, 5),
+                new S3WriteFeature(session, acl), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         IOUtils.write(content, local.getOutputStream(false));
@@ -125,8 +128,8 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         writeStatus.setLength(content.length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, acl), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
@@ -143,22 +146,23 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final TransferStatus writeStatus = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         writeStatus.setLength(content.length);
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new S3DefaultDeleteFeature(session), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-            new S3MultipartUploadService(session, new S3WriteFeature(session), 5L * 1024L * 1024L, 5),
-            new S3WriteFeature(session), cryptomator);
+                new S3MultipartUploadService(session, new S3WriteFeature(session, acl), acl, 5L * 1024L * 1024L, 5),
+                new S3WriteFeature(session, acl), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindV6Feature(session, new S3FindFeature(session, acl), cryptomator).find(test));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, acl), cryptomator).find(test).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().withLength(content.length);
         final InputStream in = new CryptoReadFeature(session, new S3ReadFeature(session), cryptomator).read(test, readStatus, new DisabledConnectionCallback());

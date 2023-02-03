@@ -19,4 +19,11 @@ package ch.cyberduck.core.io;
 
 public interface StreamProgress {
     void setComplete();
+
+    StreamProgress noop = new StreamProgress() {
+        @Override
+        public void setComplete() {
+            //
+        }
+    };
 }

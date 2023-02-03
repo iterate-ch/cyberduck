@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -33,18 +32,21 @@ import ch.cyberduck.core.sds.io.swagger.client.model.MoveNode;
 import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFileRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.UpdateFolderRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SDSMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(SDSMoveFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSMoveFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -60,13 +62,13 @@ public class SDSMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
-            final long nodeId = Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener()));
+            final long nodeId = Long.parseLong(nodeid.getVersionId(file));
             if(containerService.isContainer(file)) {
                 final Node node = new NodesApi(session.getClient()).updateRoom(
                     new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
-                return renamed.withAttributes(new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
+                return renamed.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
             }
             else {
                 if(status.isExists()) {
@@ -76,13 +78,25 @@ public class SDSMoveFeature implements Move {
                         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
                     }
                 }
-                new NodesApi(session.getClient()).moveNodes(
-                    new MoveNodesRequest()
-                        .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
-                        .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
-                        .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
-                    Long.parseLong(nodeid.getVersionId(renamed.getParent(), new DisabledListProgressListener())),
-                    StringUtils.EMPTY, null);
+                if(new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
+                    // Rename only
+                    if(file.isDirectory()) {
+                        new NodesApi(session.getClient()).updateFolder(new UpdateFolderRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                    }
+                    else {
+                        new NodesApi(session.getClient()).updateFile(new UpdateFileRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null);
+                    }
+                }
+                else {
+                    // Move to different parent
+                    new NodesApi(session.getClient()).moveNodes(
+                        new MoveNodesRequest()
+                            .resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.OVERWRITE)
+                            .addItemsItem(new MoveNode().id(nodeId).name(renamed.getName()))
+                            .keepShareLinks(new HostPreferences(session.getHost()).getBoolean("sds.upload.sharelinks.keep")),
+                        Long.parseLong(nodeid.getVersionId(renamed.getParent())),
+                        StringUtils.EMPTY, null);
+                }
                 nodeid.cache(renamed, file.attributes().getVersionId());
                 nodeid.cache(file, null);
                 // Copy original file attributes
@@ -147,7 +161,7 @@ public class SDSMoveFeature implements Move {
                     final SoftwareVersionData version = session.softwareVersion();
                     final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(version.getRestApiVersion());
                     if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.14))) < 0) {
+                        if(new Version(matcher.group(1)).compareTo(new Version("4.14")) < 0) {
                             // SDS-1055
                             return false;
                         }

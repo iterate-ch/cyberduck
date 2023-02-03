@@ -30,7 +30,8 @@ import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferProgress;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 public class TransferCollection extends Collection<Transfer> {
-    private static final Logger log = Logger.getLogger(TransferCollection.class);
+    private static final Logger log = LogManager.getLogger(TransferCollection.class);
 
     private static final TransferCollection TRANSFER_COLLECTION = new TransferCollection(
         LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Transfers"));
@@ -207,7 +208,7 @@ public class TransferCollection extends Collection<Transfer> {
 
     @Override
     public boolean addAll(java.util.Collection<? extends Transfer> c) {
-        final List<Transfer> temporary = new ArrayList<Transfer>();
+        final List<Transfer> temporary = new ArrayList<>();
         for(Transfer transfer : c) {
             if(temporary.contains(transfer)) {
                 log.warn(String.format("Reset UUID of duplicate in collection for %s", transfer));

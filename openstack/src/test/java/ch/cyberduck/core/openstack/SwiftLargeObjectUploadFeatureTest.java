@@ -6,6 +6,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -77,15 +78,18 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertTrue(interrupt.get());
         assertEquals(32768L, listener.getSent());
         assertFalse(status.isComplete());
+        assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
 
         final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-            1 * 1024L * 1024L, 1).upload(test, local,
-            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
-            new DisabledLoginCallback());
+                1 * 1024L * 1024L, 1).upload(test, local,
+                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+                new DisabledLoginCallback());
+        assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertTrue(append.isComplete());
+        assertNotSame(PathAttributes.EMPTY, append.getResponse());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -145,6 +149,8 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, listener.getSent());
         assertTrue(append.isComplete());
+        assertNotSame(PathAttributes.EMPTY, append.getResponse());
+        assertEquals(content.length, append.getResponse().getSize());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(2, new SwiftSegmentService(session, regionService).list(test).size());
@@ -180,16 +186,19 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
             regionService,
             new SwiftObjectListService(session, regionService),
             new SwiftSegmentService(session, ".segments-test/"),
-            new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final BytecountStreamListener count = new BytecountStreamListener();
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
-            status, new DisabledConnectionCallback());
+                status, new DisabledConnectionCallback());
         assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
-        assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+        assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        assertEquals(content.length, status.getResponse().getSize());
+
         // Verify not canceled
         status.validate();
         assertEquals(content.length, count.getSent());
@@ -211,6 +220,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
         assertEquals(1048576L, segments.get(1).attributes().getSize());
         assertEquals(1L, segments.get(2).attributes().getSize());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(0, new SwiftSegmentService(session).list(test).size());
         local.delete();
     }
 }

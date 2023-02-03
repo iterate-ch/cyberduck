@@ -26150,7 +26150,7 @@
                             "pending",
                             "counting",
                             "processing",
-                            "complete",
+                            "completed",
                             "processing_subfolders",
                             "finishing",
                             "creating_dest_folder",
@@ -26160,8 +26160,9 @@
                             "waiting_for_all_subfolders",
                             "failed",
                             "waiting_for_enqueued_operations",
-                            "processing_deferred_folders",
-                            "processing_recursively"
+                            "unused",
+                            "processing_recursively",
+                            "removing_deferred_folders"
                         ]
                     }
                 },

@@ -15,42 +15,41 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CachingFileIdProvider;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.PathRelativizer;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.FileIdProvider;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public class StoregateIdProvider implements FileIdProvider {
-    private static final Logger log = Logger.getLogger(StoregateIdProvider.class);
+public class StoregateIdProvider extends CachingFileIdProvider implements FileIdProvider {
+    private static final Logger log = LogManager.getLogger(StoregateIdProvider.class);
 
     private final StoregateSession session;
-    private final LRUCache<SimplePathPredicate, String> cache = LRUCache.build(PreferencesFactory.get().getLong("fileid.cache.size"));
 
     public StoregateIdProvider(final StoregateSession session) {
+        super(session.getCaseSensitivity());
         this.session = session;
     }
 
     @Override
-    public String getFileId(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileId(final Path file) throws BackgroundException {
         try {
             if(StringUtils.isNotBlank(file.attributes().getFileId())) {
                 return file.attributes().getFileId();
             }
-            if(cache.contains(new SimplePathPredicate(file))) {
-                final String cached = cache.get(new SimplePathPredicate(file));
+            final String cached = super.getFileId(file);
+            if(cached != null) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Return cached fileid %s for file %s", cached, file));
                 }
@@ -65,38 +64,20 @@ public class StoregateIdProvider implements FileIdProvider {
         }
     }
 
-    public String cache(final Path file, final String id) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Cache %s for file %s", id, file));
-        }
-        if(null == id) {
-            cache.remove(new SimplePathPredicate(file));
-            file.attributes().setFileId(null);
-        }
-        else {
-            cache.put(new SimplePathPredicate(file), id);
-            file.attributes().setFileId(id);
-        }
-        return id;
-    }
-
-    @Override
-    public void clear() {
-        cache.clear();
-    }
-
     /**
-     * Mapping of path "/Home/mduck" to "My files" Mapping of path "/Common" to "Common files"
+     * Mapping of path "/Home/mduck" to "My files"
+     * Mapping of path "/Common" to "Common files"
      */
     protected String getPrefixedPath(final Path file) {
         final PathContainerService service = new DefaultPathContainerService();
-        final String root = service.getContainer(file).getAbsolute();
+        final String name = new DefaultPathContainerService().getContainer(file).getName();
         for(RootFolder r : session.roots()) {
-            if(root.endsWith(r.getName())) {
+            if(StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getPath()))
+                    || StringUtils.equalsIgnoreCase(name, PathNormalizer.name(r.getName()))) {
                 if(service.isContainer(file)) {
                     return r.getPath();
                 }
-                return String.format("%s/%s", r.getPath(), PathRelativizer.relativize(root, file.getAbsolute()));
+                return String.format("%s/%s", r.getPath(), PathRelativizer.relativize(name, file.getAbsolute()));
             }
         }
         return file.getAbsolute();

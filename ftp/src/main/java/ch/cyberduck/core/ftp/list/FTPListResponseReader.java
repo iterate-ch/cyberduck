@@ -26,14 +26,15 @@ import ch.cyberduck.core.ftp.parser.FTPExtendedFile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.List;
 
 public class FTPListResponseReader implements FTPDataResponseReader {
-    private static final Logger log = Logger.getLogger(FTPListResponseReader.class);
+    private static final Logger log = LogManager.getLogger(FTPListResponseReader.class);
 
     private final FTPFileEntryParser parser;
     private final boolean lenient;

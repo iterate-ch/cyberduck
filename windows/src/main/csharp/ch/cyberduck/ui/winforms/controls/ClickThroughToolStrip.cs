@@ -17,7 +17,7 @@
 // 
 using System;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -30,10 +30,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
-            if (m.Msg == NativeConstants.WM_MOUSEACTIVATE &&
-                m.Result == (IntPtr) NativeConstants.MA_ACTIVATEANDEAT)
+            if (m.Msg == WM_MOUSEACTIVATE &&
+                m.Result == (IntPtr) MA_ACTIVATEANDEAT)
             {
-                m.Result = (IntPtr) NativeConstants.MA_ACTIVATE;
+                m.Result = (IntPtr) MA_ACTIVATE;
             }
         }
     }

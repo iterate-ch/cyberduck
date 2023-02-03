@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 
@@ -43,9 +44,10 @@ public interface TransferPathFilter {
      * @param parent   Parent transfer status
      * @param listener Progress listener
      * @return Transfer status
+     * @throws TransferStatusCanceledException To skip item
      */
     TransferStatus prepare(Path file, Local local, TransferStatus parent, ProgressListener listener)
-        throws BackgroundException;
+            throws TransferStatusCanceledException, BackgroundException;
 
     /**
      * Apply filter outcome such as renaming file prior transfer
@@ -63,11 +65,10 @@ public interface TransferPathFilter {
      * Post processing of completed transfer.
      *
      * @param file     File
-     * @param options  Options
      * @param status   Transfer status
      * @param listener Progress listener
      */
-    void complete(Path file, Local local, TransferOptions options,
+    void complete(Path file, Local local,
                   TransferStatus status, ProgressListener listener) throws BackgroundException;
 
     TransferPathFilter withFinder(Find finder);

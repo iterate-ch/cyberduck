@@ -20,11 +20,12 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
-import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
+import ch.cyberduck.core.sftp.SFTPTouchFeature;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -52,18 +53,16 @@ public class DefaultCopyFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testCopy() throws Exception {
-
         final Path source = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)),
-            new SFTPAttributesFinderFeature(session)).touch(source, new TransferStatus());
+        new SFTPTouchFeature(session).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().withLength(content.length);
         final OutputStream out = new SFTPWriteFeature(session).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), new DisabledConnectionCallback());
+        new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DefaultFindFeature(session).find(source));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());

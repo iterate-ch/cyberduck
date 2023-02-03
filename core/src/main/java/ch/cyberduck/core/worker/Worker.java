@@ -26,7 +26,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class Worker<T> {
-    private static final Logger log = Logger.getLogger(Worker.class);
+    private static final Logger log = LogManager.getLogger(Worker.class);
 
     private final AtomicBoolean canceled
             = new AtomicBoolean();
@@ -93,10 +94,6 @@ public abstract class Worker<T> {
                 return null;
             }
         };
-    }
-
-    public void reset() {
-        //
     }
 
     public interface RecursiveCallback<T> {

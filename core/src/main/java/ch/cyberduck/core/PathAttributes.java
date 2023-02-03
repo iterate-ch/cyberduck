@@ -21,9 +21,11 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,19 +36,19 @@ import java.util.Objects;
  * Attributes of a remote directory or file.
  */
 public class PathAttributes extends Attributes implements Serializable {
-    private static final Logger log = Logger.getLogger(PathAttributes.class);
+    private static final Logger log = LogManager.getLogger(PathAttributes.class);
 
     public static final PathAttributes EMPTY = new PathAttributes();
 
     /**
      * The file length
      */
-    private long size = -1;
+    private long size = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * Quota of folder
      */
-    private long quota = -1;
+    private long quota = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * The file modification date in milliseconds
@@ -97,11 +99,6 @@ public class PathAttributes extends Attributes implements Serializable {
      * Unique identifier for a given version of a file
      */
     private String versionId;
-
-    /**
-     * References to previous versions if any
-     */
-    private AttributedList<Path> versions = AttributedList.emptyList();
 
     /**
      * Lock id
@@ -177,7 +174,6 @@ public class PathAttributes extends Attributes implements Serializable {
         encryption = copy.encryption;
         fileId = copy.fileId;
         versionId = copy.versionId;
-        versions = AttributedList.EMPTY == copy.versions ? AttributedList.emptyList() : new AttributedList<>(copy.versions);
         lockId = copy.lockId;
         duplicate = copy.duplicate;
         hidden = copy.hidden;
@@ -194,7 +190,7 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         if(size != -1) {
             dict.setStringForKey(String.valueOf(size), "Size");
         }
@@ -204,11 +200,11 @@ public class PathAttributes extends Attributes implements Serializable {
         if(modified != -1) {
             dict.setStringForKey(String.valueOf(modified), "Modified");
         }
+        if(created != -1) {
+            dict.setStringForKey(String.valueOf(created), "Created");
+        }
         if(revision != null) {
             dict.setStringForKey(String.valueOf(revision), "Revision");
-        }
-        if(!versions.isEmpty()) {
-            dict.setListForKey(versions.toList(), "Versions");
         }
         if(etag != null) {
             dict.setStringForKey(etag, "ETag");
@@ -216,11 +212,20 @@ public class PathAttributes extends Attributes implements Serializable {
         if(permission != Permission.EMPTY) {
             dict.setObjectForKey(permission, "Permission");
         }
+        if(owner != null) {
+            dict.setStringForKey(owner, "Owner");
+        }
+        if(group != null) {
+            dict.setStringForKey(group, "Group");
+        }
         if(acl != Acl.EMPTY) {
             dict.setObjectForKey(acl, "Acl");
         }
         if(link != DescriptiveUrl.EMPTY) {
-            dict.setStringForKey(link.getUrl(), "Link");
+            final Map<String, String> wrapper = new HashMap<>();
+            wrapper.put("Url", link.getUrl());
+            wrapper.put("Type", link.getType().name());
+            dict.setMapForKey(wrapper, "Link");
         }
         if(checksum != Checksum.NONE) {
             final Map<String, String> wrapper = new HashMap<>();
@@ -291,6 +296,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.quota = quota;
     }
 
+    public PathAttributes withQuota(final long quota) {
+        this.setQuota(quota);
+        return this;
+    }
+
     @Override
     public long getModificationDate() {
         return modified;
@@ -298,6 +308,11 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setModificationDate(final long millis) {
         this.modified = millis;
+    }
+
+    public PathAttributes withModificationDate(final long millis) {
+        this.setModificationDate(millis);
+        return this;
     }
 
     @Override
@@ -333,12 +348,22 @@ public class PathAttributes extends Attributes implements Serializable {
         this.permission = p;
     }
 
+    public PathAttributes withPermission(final Permission p) {
+        this.setPermission(p);
+        return this;
+    }
+
     public Acl getAcl() {
         return acl;
     }
 
     public void setAcl(final Acl acl) {
         this.acl = acl;
+    }
+
+    public PathAttributes withAcl(final Acl acl) {
+        this.setAcl(acl);
+        return this;
     }
 
     @Override
@@ -359,7 +384,6 @@ public class PathAttributes extends Attributes implements Serializable {
         this.group = g;
     }
 
-    @Override
     public Checksum getChecksum() {
         return checksum;
     }
@@ -368,12 +392,22 @@ public class PathAttributes extends Attributes implements Serializable {
         this.checksum = checksum;
     }
 
+    public PathAttributes withChecksum(final Checksum checksum) {
+        this.setChecksum(checksum);
+        return this;
+    }
+
     public String getETag() {
         return etag;
     }
 
     public void setETag(final String etag) {
         this.etag = etag;
+    }
+
+    public PathAttributes withETag(final String etag) {
+        this.setETag(etag);
+        return this;
     }
 
     /**
@@ -430,9 +464,8 @@ public class PathAttributes extends Attributes implements Serializable {
         return fileId;
     }
 
-    public PathAttributes setFileId(final String fileId) {
+    public void setFileId(final String fileId) {
         this.fileId = fileId;
-        return this;
     }
 
     public PathAttributes withFileId(final String fileId) {
@@ -440,25 +473,16 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public AttributedList<Path> getVersions() {
-        return versions;
-    }
-
-    public void setVersions(final AttributedList<Path> versions) {
-        this.versions = versions;
-    }
-
-    public PathAttributes withVersions(final AttributedList<Path> versions) {
-        this.setVersions(versions);
-        return this;
-    }
-
     public String getLockId() {
         return lockId;
     }
 
-    public PathAttributes setLockId(final String lockId) {
+    public void setLockId(final String lockId) {
         this.lockId = lockId;
+    }
+
+    public PathAttributes withLockId(final String lockId) {
+        this.setLockId(lockId);
         return this;
     }
 
@@ -617,15 +641,6 @@ public class PathAttributes extends Attributes implements Serializable {
         if(!Objects.equals(revision, that.revision)) {
             return false;
         }
-        if(!Objects.equals(versions, that.versions)) {
-            return false;
-        }
-        if(!Objects.equals(region, that.region)) {
-            return false;
-        }
-        if(!Objects.equals(custom, that.custom)) {
-            return false;
-        }
         return true;
     }
 
@@ -639,9 +654,6 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (fileId != null ? fileId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
-        result = 31 * result + (versions != null ? versions.hashCode() : 0);
-        result = 31 * result + (region != null ? region.hashCode() : 0);
-        result = 31 * result + (custom != null ? custom.hashCode() : 0);
         return result;
     }
 
@@ -666,7 +678,6 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", duplicate=").append(duplicate);
         sb.append(", hidden=").append(hidden);
         sb.append(", revision=").append(revision);
-        sb.append(", versions=").append(versions);
         sb.append(", region='").append(region).append('\'');
         sb.append(", metadata=").append(metadata).append('\'');
         sb.append(", custom=").append(custom).append('\'');

@@ -17,14 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
@@ -39,41 +36,44 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
     private static final String MIMETYPE = "application/x-directory";
 
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
     private final PathContainerService containerService;
 
     private Write<StorageObject> writer;
 
-    public S3DirectoryFeature(final S3Session session, final Write<StorageObject> writer) {
+    public S3DirectoryFeature(final S3Session session, final Write<StorageObject> writer, final S3AccessControlListFeature acl) {
         this.session = session;
         this.writer = writer;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         if(containerService.isContainer(folder)) {
             final S3BucketCreateService service = new S3BucketCreateService(session);
-            service.create(folder, StringUtils.isBlank(status.getRegion()) ? new S3LocationFeature(session).getDefault().getIdentifier() : status.getRegion());
+            service.create(folder, StringUtils.isBlank(status.getRegion()) ?
+                    new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getDefault().getIdentifier() : status.getRegion());
             return folder;
         }
         else {
-            status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
-            // Add placeholder object
-            status.setMime(MIMETYPE);
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
             type.add(Path.Type.placeholder);
-            final StatusOutputStream<StorageObject> out = writer.write(folder.withType(type), status, new DisabledConnectionCallback());
-            new DefaultStreamCloser().close(out);
-            final StorageObject metadata = out.getStatus();
-            return folder.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
+            return new S3TouchFeature(session, acl).withWriter(writer).touch(folder
+                    .withType(type), status
+                    // Add placeholder object
+                    .withMime(MIMETYPE)
+                    .withChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status)));
         }
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        if(workdir.isRoot()) {
-            if(StringUtils.isNotBlank(name)) {
-                return ServiceUtils.isBucketNameValidDNSName(name);
+        if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            if(workdir.isRoot()) {
+                if(StringUtils.isNotBlank(name)) {
+                    return ServiceUtils.isBucketNameValidDNSName(name);
+                }
             }
         }
         return true;

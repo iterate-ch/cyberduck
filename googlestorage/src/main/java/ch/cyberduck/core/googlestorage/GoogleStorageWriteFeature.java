@@ -19,7 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.date.RFC3339DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -49,31 +49,37 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.TimeZone;
 
-import com.google.gson.stream.JsonReader;
+import com.google.api.services.storage.model.StorageObject;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
+public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
     public GoogleStorageWriteFeature(final GoogleStorageSession session) {
+        super(new GoogleStorageAttributesFinderFeature(session));
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
     @Override
-    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
+    public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             @Override
-            public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
+            public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     // POST /upload/storage/v1/b/myBucket/o
                     final StringBuilder uri = new StringBuilder(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",
-                        session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
+                            session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
+                    if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                        uri.append(String.format("&userProject=%s", session.getHost().getCredentials().getUsername()));
+                    }
                     if(!Acl.EMPTY.equals(status.getAcl())) {
                         if(status.getAcl().isCanned()) {
                             uri.append("&predefinedAcl=");
@@ -103,8 +109,12 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     final StringBuilder metadata = new StringBuilder();
                     metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
                     metadata.append(",\"metadata\": {");
-                    for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
+                    for(Iterator<Map.Entry<String, String>> iter = status.getMetadata().entrySet().iterator(); iter.hasNext(); ) {
+                        final Map.Entry<String, String> item = iter.next();
                         metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
+                        if(iter.hasNext()) {
+                            metadata.append(",");
+                        }
                     }
                     metadata.append("}");
                     if(StringUtils.isNotBlank(status.getMime())) {
@@ -113,9 +123,13 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     if(StringUtils.isNotBlank(status.getStorageClass())) {
                         metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
                     }
+                    if(null != status.getTimestamp()) {
+                        metadata.append(String.format(", \"customTime\": \"%s\"",
+                                new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                    }
                     metadata.append("}");
                     request.setEntity(new StringEntity(metadata.toString(),
-                        ContentType.create("application/json", StandardCharsets.UTF_8.name())));
+                            ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                     if(StringUtils.isNotBlank(status.getMime())) {
                         // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                         request.addHeader("X-Upload-Content-Type", status.getMime());
@@ -129,7 +143,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                                 break;
                             default:
                                 throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                        new HttpResponseException(response.getStatusLine().getStatusCode(),
+                                                new GoogleStorageExceptionMappingService().parse(response)));
                         }
                     }
                     finally {
@@ -145,23 +160,12 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                             switch(putResponse.getStatusLine().getStatusCode()) {
                                 case HttpStatus.SC_OK:
                                 case HttpStatus.SC_CREATED:
-                                    try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
-                                        reader.beginObject();
-                                        while(reader.hasNext()) {
-                                            final String name = reader.nextName();
-                                            final String value = reader.nextString();
-                                            switch(name) {
-                                                case "generation":
-                                                    file.attributes().setVersionId(value);
-                                                    return new VersionId(value);
-                                            }
-                                        }
-                                        reader.endObject();
-                                    }
-                                    break;
+                                    return session.getClient().getObjectParser().parseAndClose(new InputStreamReader(
+                                            putResponse.getEntity().getContent(), StandardCharsets.UTF_8), StorageObject.class);
                                 default:
                                     throw new DefaultHttpResponseExceptionMappingService().map(
-                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                            new HttpResponseException(putResponse.getStatusLine().getStatusCode(),
+                                                    new GoogleStorageExceptionMappingService().parse(putResponse)));
                             }
                         }
                         finally {
@@ -170,9 +174,9 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     }
                     else {
                         throw new DefaultHttpResponseExceptionMappingService().map(
-                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                new HttpResponseException(response.getStatusLine().getStatusCode(),
+                                        new GoogleStorageExceptionMappingService().parse(response)));
                     }
-                    return new VersionId(null);
                 }
                 catch(IOException e) {
                     throw new GoogleStorageExceptionMappingService().map("Upload {0} failed", e, file);
@@ -193,8 +197,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
     }
 
     @Override
-    public boolean temporary() {
-        return false;
+    public boolean timestamp() {
+        return true;
     }
 
     @Override

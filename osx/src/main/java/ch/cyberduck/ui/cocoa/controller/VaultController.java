@@ -30,6 +30,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordStrengthValidator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -75,7 +76,8 @@ public class VaultController extends FolderController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Create Vault", "Cryptomator"));
-        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new folder", "Folder"));
+        final String message = LocaleFactory.localizedString("Enter the name for the new folder", "Folder");
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create Vault", "Cryptomator"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("cryptomator.tiff", 64));
@@ -118,8 +120,8 @@ public class VaultController extends FolderController {
     }
 
     @Override
-    public boolean validate() {
-        if(super.validate()) {
+    public boolean validate(final int option) {
+        if(super.validate(option)) {
             if(StringUtils.isBlank(passwordField.stringValue())) {
                 return false;
             }

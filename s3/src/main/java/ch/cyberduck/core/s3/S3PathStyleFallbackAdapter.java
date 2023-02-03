@@ -1,4 +1,6 @@
-package ch.cyberduck.core.s3;/*
+package ch.cyberduck.core.s3;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -18,16 +20,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R> {
-    private static final Logger log = Logger.getLogger(S3PathStyleFallbackAdapter.class);
+    private static final Logger log = LogManager.getLogger(S3PathStyleFallbackAdapter.class);
 
-    private final S3Session session;
+    private final RequestEntityRestStorageService client;
     private final BackgroundExceptionCallable<R> proxy;
 
-    public S3PathStyleFallbackAdapter(final S3Session session, final BackgroundExceptionCallable<R> proxy) {
-        this.session = session;
+    public S3PathStyleFallbackAdapter(final RequestEntityRestStorageService client, final BackgroundExceptionCallable<R> proxy) {
+        this.client = client;
         this.proxy = proxy;
     }
 
@@ -37,8 +40,11 @@ public class S3PathStyleFallbackAdapter<R> extends BackgroundExceptionCallable<R
             return proxy.call();
         }
         catch(ResolveFailedException e) {
+            if(S3Session.isAwsHostname(client.getEndpoint())) {
+                throw e;
+            }
             log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
-            session.getClient().getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            client.disableDnsBuckets();
             return proxy.call();
         }
     }

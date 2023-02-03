@@ -32,7 +32,7 @@ public class LoginInputValidator implements InputValidator {
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(final int option) {
         return bookmark.getCredentials().validate(protocol, options);
     }
 

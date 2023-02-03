@@ -17,9 +17,6 @@ package ch.cyberduck.core.proxy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
 import java.net.URI;
@@ -27,16 +24,10 @@ import java.net.URI;
 public class DefaultProxyFinder implements ProxyFinder {
 
     private final ProxySelector selector
-        = ProxySelector.getDefault();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
+            = ProxySelector.getDefault();
 
     @Override
     public Proxy find(final String target) {
-        if(!preferences.getBoolean("connection.proxy.enable")) {
-            return Proxy.DIRECT;
-        }
         for(java.net.Proxy proxy : selector.select(URI.create(target))) {
             switch(proxy.type()) {
                 case DIRECT: {

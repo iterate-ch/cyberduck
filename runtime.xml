@@ -2,7 +2,7 @@
 
 <project name="Java Runtime" basedir=".">
 
-    <property name="runtime.dependency" value="${build}/jdk-15.0.1+9-jre"/>
+    <property name="runtime.dependency" value="${build}/jdk-17.0.6+10"/>
 
     <property name="bundle.runtime" value="${bundle.plugins}/Runtime.jre"/>
     <property name="bundle.runtime.lib"
@@ -21,10 +21,10 @@
 
     <target name="shared-library-install-name">
         <echo message="Change dynamic shared library install names to ${newname} in ${directory}"/>
-        <apply executable="/usr/bin/install_name_tool" failonerror="true"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="file"
                parallel="false" spawn="false" force="true">
-            <arg line="-change ${oldname} ${newname}"/>
+            <arg line="install_name_tool -change ${oldname} ${newname}"/>
             <fileset dir="${directory}">
                 <include name="*.dylib"/>
             </fileset>
@@ -34,13 +34,13 @@
 
     <target name="lipo">
         <echo message="Remove ${arch} slice from ${build.lipo.binaries}"/>
-        <apply executable="/usr/bin/lipo" failonerror="false" dest="${bundle}"
+        <apply executable="/usr/bin/xcrun" failonerror="false" dest="${bundle}"
                parallel="false" spawn="false" force="true">
             <!--Remove from executables-->
             <!--Remove from frameworks-->
             <!--Remove from shared libraries-->
             <fileset dir="${bundle}" includes="${build.lipo.binaries}"/>
-            <arg line="-remove ${arch} -output"/>
+            <arg line="lipo -remove ${arch} -output"/>
             <srcfile/>
             <targetfile/>
             <identitymapper/>

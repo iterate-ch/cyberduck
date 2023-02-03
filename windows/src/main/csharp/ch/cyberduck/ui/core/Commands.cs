@@ -27,6 +27,8 @@ namespace Ch.Cyberduck.Ui.Core
     /// </summary>
     public class Commands
     {
+        public static readonly ValidateCommand True = () => true;
+
         private readonly List<Command> _commands = new List<Command>();
 
         /// <summary>
@@ -40,8 +42,17 @@ namespace Ch.Cyberduck.Ui.Core
             }
         }
 
+        // this maps default mappings to not hit on clicked.
+        private static ValidateCommand2 Map(ValidateCommand command) => clicked => !clicked && command();
+
         public void Add(ToolStripItem[] toolStripItems, MenuItem[] menuItems, EventHandler clickDelegate,
             ValidateCommand validateDelegate)
+        {
+            _commands.Add(new Command(toolStripItems, menuItems, clickDelegate, Map(validateDelegate)));
+        }
+
+        public void Add(ToolStripItem[] toolStripItems, MenuItem[] menuItems, EventHandler clickDelegate,
+            ValidateCommand2 validateDelegate)
         {
             _commands.Add(new Command(toolStripItems, menuItems, clickDelegate, validateDelegate));
         }
@@ -55,18 +66,25 @@ namespace Ch.Cyberduck.Ui.Core
         }
          */
 
-        public void Add(Control control, EventHandler clickDelegate, ValidateCommand validateDelegate)
+        public void Add(Control control, EventHandler clickDelegate, ValidateCommand validateDelegate) => Add(control, clickDelegate, Map(validateDelegate));
+
+        public void Add(Control control, EventHandler clickDelegate, ValidateCommand2 validateDelegate)
         {
-            _commands.Add(new Command(null, null, new[] {control}, clickDelegate, validateDelegate));
+            _commands.Add(new Command(null, null, new[] { control }, clickDelegate, validateDelegate));
         }
 
-        public void Add(Control control, ValidateCommand validateDelegate)
+        public void Add(Control control, ValidateCommand validateDelegate) => Add(control, Map(validateDelegate));
+
+        public void Add(Control control, ValidateCommand2 validateDelegate)
         {
-            _commands.Add(new Command(null, null, new[] {control}, delegate { }, validateDelegate));
+            _commands.Add(new Command(null, null, new[] { control }, delegate { }, validateDelegate));
         }
 
         public void Add(ToolStripItem[] items, Control[] controls, MenuItem[] menuItems, EventHandler clickDelegate,
-            ValidateCommand validateDelegate)
+            ValidateCommand validateDelegate) => Add(items, controls, menuItems, clickDelegate, Map(validateDelegate));
+
+        public void Add(ToolStripItem[] items, Control[] controls, MenuItem[] menuItems, EventHandler clickDelegate,
+            ValidateCommand2 validateDelegate)
         {
             _commands.Add(new Command(items, menuItems, controls, clickDelegate, validateDelegate));
         }
@@ -82,15 +100,28 @@ namespace Ch.Cyberduck.Ui.Core
             private readonly MenuItem[] _menuItems;
             private readonly ToolStripItem[] _toolStripItems;
             private readonly ValidateCommand _validateCommandDelegate;
+            private bool clicked = false;
 
             public Command(ToolStripItem[] toolStripItems, MenuItem[] menuItems, Control[] controls,
-                EventHandler clickDelegate, ValidateCommand validateDelegate)
+                EventHandler clickDelegate, ValidateCommand2 validateDelegate)
             {
                 _toolStripItems = toolStripItems;
                 _menuItems = menuItems;
                 _controls = controls;
-                _validateCommandDelegate = validateDelegate;
-                _clickCommandDelegate = clickDelegate;
+                _validateCommandDelegate = () => validateDelegate(clicked);
+                _clickCommandDelegate = (s, e) =>
+                {
+                    clicked = true;
+                    Validate();
+                    try
+                    {
+                        clickDelegate(s, e);
+                    }
+                    finally
+                    {
+                        clicked = false;
+                    }
+                };
 
                 if (toolStripItems != null)
                     foreach (ToolStripItem item in toolStripItems)
@@ -113,7 +144,7 @@ namespace Ch.Cyberduck.Ui.Core
             }
 
             public Command(ToolStripItem[] toolStripItems, MenuItem[] menuItems, EventHandler clickDelegate,
-                ValidateCommand validateDelegate)
+                ValidateCommand2 validateDelegate)
                 : this(toolStripItems, menuItems, null, clickDelegate, validateDelegate)
             {
             }
@@ -162,4 +193,6 @@ namespace Ch.Cyberduck.Ui.Core
     }
 
     public delegate bool ValidateCommand();
+
+    public delegate bool ValidateCommand2(bool clicked);
 }

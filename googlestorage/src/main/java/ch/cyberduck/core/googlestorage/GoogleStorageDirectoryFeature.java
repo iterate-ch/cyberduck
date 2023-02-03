@@ -17,33 +17,28 @@ package ch.cyberduck.core.googlestorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersionId;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
+import com.google.api.services.storage.model.StorageObject;
 
-public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
+public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
 
     private static final String MIMETYPE = "application/x-directory";
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
 
-    private Write<VersionId> writer;
+    private Write<StorageObject> writer;
 
     public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;
@@ -55,29 +50,22 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
-                    new Bucket()
-                        .setLocation(status.getRegion())
-                        .setStorageClass(status.getStorageClass())
-                        .setName(containerService.getContainer(folder).getName())).execute();
+                final Storage.Buckets.Insert request = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
+                        new Bucket()
+                                .setLocation(status.getRegion())
+                                .setStorageClass(status.getStorageClass())
+                                .setName(containerService.getContainer(folder).getName()));
+                final Bucket bucket = request.execute();
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.volume);
                 return folder.withType(type).withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
             }
             else {
-                // Add placeholder object
-                status.setMime(MIMETYPE);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
-                final StatusOutputStream<VersionId> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
-                    new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
-                new DefaultStreamCloser().close(out);
-                final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                    session.getFeature(PathContainerService.class).getContainer(folder)
-                ) : VersioningConfiguration.empty();
-                if(versioning.isEnabled()) {
-                    return folder.withType(type).withAttributes(folder.attributes().withVersionId(out.getStatus().id));
-                }
-                return folder;
+                type.add(Path.Type.placeholder);
+                // Add placeholder object
+                return new GoogleStorageTouchFeature(session).withWriter(writer).touch(folder.withType(type),
+                        status.withMime(MIMETYPE));
             }
         }
         catch(IOException e) {
@@ -86,7 +74,7 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
+    public Directory<StorageObject> withWriter(final Write<StorageObject> writer) {
         this.writer = writer;
         return this;
     }

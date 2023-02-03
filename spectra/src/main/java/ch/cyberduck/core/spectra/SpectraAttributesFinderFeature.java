@@ -22,12 +22,14 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,8 +40,8 @@ import com.spectralogic.ds3client.commands.HeadObjectRequest;
 import com.spectralogic.ds3client.commands.HeadObjectResponse;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
-public class SpectraAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(SpectraAttributesFinderFeature.class);
+public class SpectraAttributesFinderFeature implements AttributesFinder, AttributesAdapter<HeadObjectResponse> {
+    private static final Logger log = LogManager.getLogger(SpectraAttributesFinderFeature.class);
 
     private final SpectraSession session;
     private final PathContainerService containerService;
@@ -78,6 +80,7 @@ public class SpectraAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    @Override
     public PathAttributes toAttributes(final HeadObjectResponse object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getObjectSize());

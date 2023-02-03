@@ -29,7 +29,8 @@ import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -41,7 +42,7 @@ import ch.iterate.openstack.swift.model.Container;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftContainerListService implements RootListService {
-    private static final Logger log = Logger.getLogger(SwiftContainerListService.class);
+    private static final Logger log = LogManager.getLogger(SwiftContainerListService.class);
 
     private final SwiftSession session;
     private final SwiftLocationFeature.SwiftRegion region;

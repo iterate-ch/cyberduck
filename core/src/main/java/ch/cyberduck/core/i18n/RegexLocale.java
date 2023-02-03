@@ -22,7 +22,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexLocale implements Locale {
-    private static final Logger log = Logger.getLogger(RegexLocale.class);
+    private static final Logger log = LogManager.getLogger(RegexLocale.class);
 
     /**
      * Loaded tables
@@ -111,7 +112,7 @@ public class RegexLocale implements Locale {
         }
     }
 
-    private final class Key {
+    private static final class Key {
         private final String table;
         private final String key;
 

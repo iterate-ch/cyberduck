@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -37,7 +37,7 @@
                                     <action selector="aboutMenuClicked:" target="-2" id="366"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Zoek nieuwe versie…" id="229">
+                            <menuItem title="Zoek Nieuwe Versie…" id="229">
                                 <connections>
                                     <action selector="updateMenuClicked:" target="-2" id="367"/>
                                 </connections>
@@ -72,7 +72,7 @@
                                     <action selector="hide:" target="224" id="370"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Verberg andere" keyEquivalent="h" id="239">
+                            <menuItem title="Verberg Anderen" keyEquivalent="h" id="239">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="hideOtherApplications:" target="224" id="371"/>
@@ -105,7 +105,7 @@
                     </attributedString>
                     <menu key="submenu" title="Bestand" id="244">
                         <items>
-                            <menuItem title="Nieuwe browser" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="Nieuwe Browser" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
@@ -117,43 +117,43 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="247"/>
-                            <menuItem title="Nieuwe download" keyEquivalent="" id="248">
+                            <menuItem title="Nieuwe Download" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="249"/>
-                            <menuItem title="Nieuwe map…" keyEquivalent="N" id="250">
+                            <menuItem title="Nieuwe Map…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nieuwe versleutelde kluis…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Nieuwe Versleutelde Kluis…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nieuw bestand…" keyEquivalent="f" id="251">
+                            <menuItem title="Nieuw Bestand…" keyEquivalent="f" id="251">
                                 <connections>
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nieuwe symbolische link…" id="252">
+                            <menuItem title="Nieuwe Symbolische Link…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="255"/>
-                            <menuItem title="Bestand hernoemen…" id="253">
+                            <menuItem title="Hernoemen…" id="253">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Dupliceer bestand…" keyEquivalent="d" id="254">
+                            <menuItem title="Dupliceer…" keyEquivalent="d" id="254">
                                 <connections>
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
@@ -182,13 +182,13 @@
                                     <action selector="downloadButtonClicked:" target="-1" id="384"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Download als…" keyEquivalent="" id="264">
+                            <menuItem title="Download Als…" keyEquivalent="" id="264">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
                                 <connections>
                                     <action selector="downloadAsButtonClicked:" target="-1" id="385"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Download naar…" id="265">
+                            <menuItem title="Download Naar…" id="265">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
@@ -215,7 +215,7 @@ CA
                                     <action selector="deleteFileButtonClicked:" target="-1" id="389"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Vorige versie" id="270">
+                            <menuItem title="Ongedaan maken" id="270">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
@@ -228,16 +228,16 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="271"/>
-                            <menuItem title="Vergrendel kluis" keyEquivalent="l" id="bBu-IP-reP">
+                            <menuItem title="Vergrendel Kluis" keyEquivalent="l" id="bBu-IP-reP">
                                 <connections>
                                     <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="GdE-9v-Sbq"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="mtY-h2-1n1"/>
-                            <menuItem title="Maak archief" id="272">
-                                <menu key="submenu" title="Maak archief" id="273"/>
+                            <menuItem title="Maak Archief" id="272">
+                                <menu key="submenu" title="Maak Archief" id="273"/>
                             </menuItem>
-                            <menuItem title="Pak archief uit" id="274">
+                            <menuItem title="Pak Archief Uit" id="274">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
@@ -254,14 +254,20 @@ CA
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Bestanden aanvragen..." id="GnH-xE-vqc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="275"/>
-                            <menuItem title="Druk af..." keyEquivalent="p" id="276">
+                            <menuItem title="Afdrukken..." keyEquivalent="p" id="276">
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="392"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="277"/>
-                            <menuItem title="Sluit venster" keyEquivalent="w" id="278">
+                            <menuItem title="Sluit Venster" keyEquivalent="w" id="278">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="393"/>
                                 </connections>
@@ -304,7 +310,7 @@ CA
                                     <action selector="paste:" target="-1" id="398"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Selecteer alles" keyEquivalent="a" id="289">
+                            <menuItem title="Selecteer Alles" keyEquivalent="a" id="289">
                                 <connections>
                                     <action selector="selectAll:" target="-1" id="399"/>
                                 </connections>
@@ -315,12 +321,12 @@ CA
                 <menuItem title="Weergave" id="290">
                     <menu key="submenu" title="Weergave" id="291">
                         <items>
-                            <menuItem title="Als lijst" keyEquivalent="1" id="292">
+                            <menuItem title="als Lijst" keyEquivalent="1" id="292">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="400"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Als structuur" tag="1" keyEquivalent="2" id="293">
+                            <menuItem title="als Structuur" tag="1" keyEquivalent="2" id="293">
                                 <connections>
                                     <action selector="browserSwitchMenuClicked:" target="-1" id="401"/>
                                 </connections>
@@ -330,20 +336,20 @@ CA
                                 <menu key="submenu" title="Kolom" id="296"/>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="297"/>
-                            <menuItem title="Verberg knoppenbalk" id="298">
+                            <menuItem title="Verberg Knoppenbalk" id="298">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Pas knoppenbalk aan…" tag="1" id="299">
+                            <menuItem title="Pas Knoppenbalk Aan…" tag="1" id="299">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="300"/>
-                            <menuItem title="Toon verborgen bestanden" keyEquivalent="R" id="301">
+                            <menuItem title="Toon Verborgen Bestanden" keyEquivalent="R" id="301">
                                 <connections>
                                     <action selector="showHiddenFilesClicked:" target="-1" id="404"/>
                                 </connections>
@@ -364,7 +370,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="309"/>
-                            <menuItem title="Ga naar map" keyEquivalent="g" id="310">
+                            <menuItem title="Ga naar Map" keyEquivalent="g" id="310">
                                 <connections>
                                     <action selector="gotoButtonClicked:" target="-1" id="407"/>
                                 </connections>
@@ -379,7 +385,7 @@ CA
                                     <action selector="forwardButtonClicked:" target="-1" id="409"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Bovenliggende map" keyEquivalent="" id="313">
+                            <menuItem title="Bovenliggende Map" keyEquivalent="" id="313">
                                 <connections>
                                     <action selector="upButtonClicked:" target="-1" id="410"/>
                                 </connections>
@@ -395,7 +401,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="316"/>
-                            <menuItem title="Voer opdracht uit…" keyEquivalent="c" id="317">
+                            <menuItem title="Voer Opdracht Uit…" keyEquivalent="c" id="317">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="sendCustomCommandClicked:" target="-1" id="413"/>
@@ -424,14 +430,14 @@ CA
                 <menuItem title="Bladwijzer" id="322">
                     <menu key="submenu" title="Bladwijzer" id="323">
                         <items>
-                            <menuItem title="Toon/verberg bladwijzers" keyEquivalent="b" id="324">
+                            <menuItem title="Toon/verberg Bladwijzers" keyEquivalent="b" id="324">
                                 <connections>
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sorteren op" id="325">
+                            <menuItem title="Sorteren Op" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Sorteren op" id="326">
+                                <menu key="submenu" title="Sorteren Op" id="326">
                                     <items>
                                         <menuItem title="Schermnaam" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
@@ -455,23 +461,23 @@ CA
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="330"/>
-                            <menuItem title="Nieuwe bladwijzer" keyEquivalent="B" id="331">
+                            <menuItem title="Nieuwe Bladwijzer" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Verwijder bladwijzer" id="332">
+                            <menuItem title="Verwijder Bladwijzer" id="332">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Bewerk bladwijzer" keyEquivalent="e" id="333">
+                            <menuItem title="Bewerk Bladwijzer" keyEquivalent="e" id="333">
                                 <connections>
                                     <action selector="editBookmarkButtonClicked:" target="-1" id="423"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Dupliceer bladwijzer" id="334">
+                            <menuItem title="Dupliceer Bladwijzer" id="334">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="duplicateBookmarkButtonClicked:" target="-1" id="424"/>
@@ -501,7 +507,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="342"/>
-                            <menuItem title="Alles op voorgrond" tag="2" id="343">
+                            <menuItem title="Alles op Voorgrond" tag="2" id="343">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="arrangeInFront:" target="-1" id="428"/>
@@ -513,7 +519,7 @@ CA
                 <menuItem title="Help" id="344">
                     <menu key="submenu" title="Help" id="345">
                         <items>
-                            <menuItem title="Cyberduck-help" keyEquivalent="?" id="346">
+                            <menuItem title="Cyberduck Help" keyEquivalent="?" id="346">
                                 <connections>
                                     <action selector="helpMenuClicked:" target="-2" id="429"/>
                                 </connections>
@@ -531,7 +537,7 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="349"/>
-                            <menuItem title="Rapporteer fout" id="350">
+                            <menuItem title="Rapporteer Fout" id="350">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="bugreportMenuClicked:" target="-2" id="432"/>
@@ -545,7 +551,7 @@ CA
         </menu>
         <menu title="Menu" id="351">
             <items>
-                <menuItem title="Nieuwe browser" keyEquivalent="n" id="352">
+                <menuItem title="Nieuwe Browser" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>
@@ -559,6 +565,6 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="19" height="12"/>
+        <image name="NSQuickLookTemplate" width="27" height="16"/>
     </resources>
 </document>

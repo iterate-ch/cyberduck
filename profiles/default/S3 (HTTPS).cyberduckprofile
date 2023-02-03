@@ -25,5 +25,40 @@
         <true/>
         <key>Default Hostname</key>
         <string>s3.amazonaws.com</string>
+        <key>Default Nickname</key>
+        <string>Amazon S3</string>
+        <key>Regions</key>
+        <array>
+            <string>af-south-1</string>
+            <string>ap-east-1</string>
+            <string>ap-south-1</string>
+            <string>ap-south-2</string>
+            <string>ap-northeast-1</string>
+            <string>ap-northeast-2</string>
+            <string>ap-northeast-3</string>
+            <string>ap-southeast-1</string>
+            <string>ap-southeast-2</string>
+            <string>ap-southeast-3</string>
+            <string>ca-central-1</string>
+            <string>eu-west-1</string>
+            <string>eu-west-2</string>
+            <string>eu-west-3</string>
+            <string>eu-north-1</string>
+            <string>eu-south-1</string>
+            <string>eu-south-2</string>
+            <string>eu-central-1</string>
+            <string>eu-central-2</string>
+            <string>me-central-1</string>
+            <string>me-south-1</string>
+            <string>sa-east-1</string>
+            <string>us-east-1</string>
+            <string>us-east-2</string>
+            <string>us-west-1</string>
+            <string>us-west-2</string>
+        </array>
+        <key>Properties</key>
+        <array>
+            <string>s3.storage.class.options=STANDARD INTELLIGENT_TIERING STANDARD_IA ONEZONE_IA REDUCED_REDUNDANCY GLACIER GLACIER_IR DEEP_ARCHIVE</string>
+        </array>
     </dict>
 </plist>

@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -54,7 +55,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-            new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            new TransferStatus().withLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(test.attributes().getVersionId(), copy.attributes().getVersionId());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
@@ -64,7 +65,6 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         stream.close();
         assertArrayEquals(content, compare);
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -81,7 +81,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         out.close();
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path copy = new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
-            new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+            new TransferStatus().withLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         final byte[] compare = new byte[content.length];
@@ -90,7 +90,6 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         stream.close();
         assertArrayEquals(content, compare);
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, copy, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -108,7 +107,7 @@ public class B2LargeCopyFeatureTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(new Path(folder, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(copy));
         new B2LargeCopyFeature(session, fileid, 5 * 1024L * 1024L, 1).copy(test, copy,
-            new TransferStatus().exists(true).withLength(content.length), new DisabledConnectionCallback());
+            new TransferStatus().exists(true).withLength(content.length), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

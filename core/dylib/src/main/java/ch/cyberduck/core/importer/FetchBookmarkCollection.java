@@ -30,12 +30,13 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
 public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(FetchBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(FetchBookmarkCollection.class);
 
     private static final long serialVersionUID = -7544710198776572190L;
 

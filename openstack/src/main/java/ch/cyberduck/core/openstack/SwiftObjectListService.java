@@ -31,7 +31,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -41,7 +42,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftObjectListService implements ListService {
-    private static final Logger log = Logger.getLogger(SwiftObjectListService.class);
+    private static final Logger log = LogManager.getLogger(SwiftObjectListService.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();
@@ -73,7 +74,7 @@ public class SwiftObjectListService implements ListService {
             final Path container = containerService.getContainer(directory);
             do {
                 list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
-                    prefix, null, limit, marker, Path.DELIMITER);
+                        prefix, null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final PathAttributes attr = attributes.toAttributes(object);
                     String name = StringUtils.removeStart(object.getName(), prefix);
@@ -85,7 +86,7 @@ public class SwiftObjectListService implements ListService {
                             continue;
                         }
                     }
-                    final EnumSet<Path.Type> types = "application/directory".equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                    final EnumSet<Path.Type> types = SwiftDirectoryFeature.DIRECTORY_MIME_TYPE.equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     attr.setOwner(container.attributes().getOwner());
                     attr.setRegion(container.attributes().getRegion());
                     children.add(new Path(directory, name, types, attr));
@@ -97,8 +98,14 @@ public class SwiftObjectListService implements ListService {
             if(!containerService.isContainer(directory)) {
                 if(children.isEmpty()) {
                     try {
-                        if(0 == session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
-                            containerService.getKey(directory), null, 1, null, Path.DELIMITER).size()) {
+                        // Do not throw failure if placeholder is found
+                        final List<StorageObject> chunk = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
+                                containerService.getKey(directory), null, 1, null, Path.DELIMITER);
+                        if(chunk.stream().filter(object -> SwiftDirectoryFeature.DIRECTORY_MIME_TYPE.equals(object.getMimeType()))
+                                .map(StorageObject::getName).noneMatch(key -> key.equals(containerService.getKey(directory)))) {
+                            if(log.isWarnEnabled()) {
+                                log.warn(String.format("No placeholder found for directory %s", directory));
+                            }
                             throw new NotfoundException(directory.getAbsolute());
                         }
                     }

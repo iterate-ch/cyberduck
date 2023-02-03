@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -66,7 +67,7 @@ public class LimitedListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public ListProgressListener reset() {
+    public ListProgressListener reset() throws ConnectionCanceledException {
         return this;
     }
 

@@ -22,7 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LockedException;
-import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -64,6 +64,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String version = out.getStatus().getId();
         assertNotNull(version);
+        assertEquals(content.length, out.getStatus().getFileSize(), 0L);
         assertTrue(new DefaultFindFeature(session).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -101,7 +102,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = TransferCanceledException.class)
+    @Test(expected = TransferStatusCanceledException.class)
     public void testWriteCancel() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
@@ -114,7 +115,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
             @Override
             public void validate() throws ConnectionCanceledException {
                 if(listener.getSent() >= 32768) {
-                    throw new TransferCanceledException();
+                    throw new TransferStatusCanceledException();
                 }
                 super.validate();
             }
@@ -161,6 +162,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final String version = out.getStatus().getId();
+        assertEquals(content.length, out.getStatus().getFileSize(), 0L);
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -178,6 +180,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
         final HttpResponseOutputStream<FileMetadata> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
+        assertEquals(0L, out.getStatus().getFileSize(), 0L);
         final String version = out.getStatus().getId();
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));

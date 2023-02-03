@@ -37,6 +37,11 @@ public class FTPProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
     public Statefulness getStatefulness() {
         return Statefulness.stateful;
     }

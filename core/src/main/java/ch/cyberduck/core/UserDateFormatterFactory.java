@@ -20,16 +20,17 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.TimeZone;
 
 public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
-    private static final Logger log = Logger.getLogger(UserDateFormatterFactory.class);
+    private static final Logger log = LogManager.getLogger(UserDateFormatterFactory.class);
 
-    private Constructor<AbstractUserDateFormatter> constructor;
+    private Constructor<? extends AbstractUserDateFormatter> constructor;
 
     protected UserDateFormatterFactory() {
         super("factory.dateformatter.class");
@@ -43,11 +44,11 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", timezone.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(timezone);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

@@ -15,50 +15,47 @@
 
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <TargetFramework>net47</TargetFramework>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <Reference Include="Microsoft.VisualBasic" />
-        <Reference Include="System.Security" />
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System.Security" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <CyberduckReference Include="Core" />
-    </ItemGroup>
+  <ItemGroup>
+    <CyberduckReference Include="Core" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="@(IKVMReferences)" />
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="@(IKVMReferences)" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="ExceptionReporter " />
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
-        <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ExceptionReporter " />
+    <PackageReference Include="Fody" />
+    <PackageReference Include="InlineIL.Fody" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
+    <PackageReference Include="System.Memory" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Compile Update="ch\cyberduck\properties\Settings.Designer.cs">
-            <DesignTimeSharedInput>True</DesignTimeSharedInput>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Settings.settings</DependentUpon>
-        </Compile>
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ch\cyberduck\properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings.1" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.txt" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="ch\cyberduck\properties\Settings.settings">
-            <Generator>SettingsSingleFileGenerator</Generator>
-            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-            <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
-        </None>
-    </ItemGroup>
-
+  <ItemGroup>
+    <None Update="ch\cyberduck\properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
+    </None>
+  </ItemGroup>
 </Project>

@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
@@ -28,12 +27,10 @@ import ch.cyberduck.core.onedrive.features.onedrive.SharedWithMeListService;
 import java.util.EnumSet;
 
 public class OneDriveListService implements ListService {
-    private static final String MYFILES_ID = "MYFILES_NAME";
-    public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(MYFILES_ID));
-    public static final SimplePathPredicate MYFILES_PREDICATE = new SimplePathPredicate(MYFILES_NAME);
-    private static final String SHARED_ID = "SHARED_NAME";
-    public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withFileId(SHARED_ID));
-    public static final SimplePathPredicate SHARED_PREDICATE = new SimplePathPredicate(SHARED_NAME);
+
+    public static final Path MYFILES_NAME = new Path("/My Files", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
+    public static final Path SHARED_NAME = new Path("/Shared", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory));
+
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
 
@@ -51,7 +48,7 @@ public class OneDriveListService implements ListService {
             listener.chunk(directory, list);
             return list;
         }
-        else if(SHARED_PREDICATE.test(directory)) {
+        else if(new SimplePathPredicate(SHARED_NAME).test(directory)) {
             return new SharedWithMeListService(session, fileid).list(directory, listener);
         }
         else {

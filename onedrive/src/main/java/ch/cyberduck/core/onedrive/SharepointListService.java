@@ -24,7 +24,8 @@ import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
 import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Site;
 
 import java.io.IOException;
@@ -32,17 +33,17 @@ import java.util.EnumSet;
 import java.util.Optional;
 
 public class SharepointListService extends AbstractSharepointListService {
-    static final Logger log = Logger.getLogger(SharepointListService.class);
+    static final Logger log = LogManager.getLogger(SharepointListService.class);
 
     public static final String DEFAULT_SITE = "Default";
     public static final String DRIVES_CONTAINER = "Drives";
     public static final String GROUPS_CONTAINER = "Groups";
     public static final String SITES_CONTAINER = "Sites";
 
-    public static final Path DEFAULT_NAME = new Path("/" + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
-    public static final Path DRIVES_NAME = new Path("/" + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path GROUPS_NAME = new Path("/" + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
-    public static final Path SITES_NAME = new Path("/" + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path DEFAULT_NAME = new Path(Path.DELIMITER + DEFAULT_SITE, EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory, Path.Type.symboliclink));
+    public static final Path DRIVES_NAME = new Path(Path.DELIMITER + DRIVES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path GROUPS_NAME = new Path(Path.DELIMITER + GROUPS_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
+    public static final Path SITES_NAME = new Path(Path.DELIMITER + SITES_CONTAINER, EnumSet.of(Path.Type.placeholder, Path.Type.directory));
 
     private final SharepointSession session;
     private final GraphFileIdProvider fileid;
@@ -56,7 +57,7 @@ public class SharepointListService extends AbstractSharepointListService {
     private Optional<Path> getDefault(final Path directory) {
         try {
             final Site site = Site.byId(session.getClient(), "root");
-            final Site.Metadata metadata = site.getMetadata();
+            final Site.Metadata metadata = site.getMetadata(null); // query: null: Default return set.
             final EnumSet<Path.Type> type = EnumSet.copyOf(DEFAULT_NAME.getType());
             final Path path = new Path(directory, DEFAULT_NAME.getName(), type, new PathAttributes().withFileId(metadata.getId()));
             path.setSymlinkTarget(
@@ -71,7 +72,7 @@ public class SharepointListService extends AbstractSharepointListService {
     }
 
     @Override
-    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         getDefault(directory).ifPresent(list::add);
         addDefaultItems(list);
@@ -79,13 +80,13 @@ public class SharepointListService extends AbstractSharepointListService {
         return list;
     }
 
-    static void addDefaultItems(final AttributedList<Path> list) throws BackgroundException {
+    static void addDefaultItems(final AttributedList<Path> list) {
         list.add(GROUPS_NAME);
         list.add(SITES_NAME);
     }
 
     @Override
-    AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> processList(Path directory, final ListProgressListener listener) throws BackgroundException {
         final GraphSession.ContainerItem container = session.getContainer(directory);
         if(container.isDrive()) {
             return AttributedList.emptyList();

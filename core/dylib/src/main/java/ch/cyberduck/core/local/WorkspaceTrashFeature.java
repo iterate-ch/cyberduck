@@ -25,10 +25,11 @@ import ch.cyberduck.core.local.features.Trash;
 import ch.cyberduck.core.unicode.NFDNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WorkspaceTrashFeature implements Trash {
-    private static final Logger log = Logger.getLogger(WorkspaceTrashFeature.class);
+    private static final Logger log = LogManager.getLogger(WorkspaceTrashFeature.class);
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 

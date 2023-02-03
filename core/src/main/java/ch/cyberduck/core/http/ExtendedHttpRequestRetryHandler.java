@@ -21,7 +21,8 @@ package ch.cyberduck.core.http;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.io.UnrecoverableIOException;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -33,14 +34,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHandler {
-    private static final Logger log = Logger.getLogger(ExtendedHttpRequestRetryHandler.class);
+    private static final Logger log = LogManager.getLogger(ExtendedHttpRequestRetryHandler.class);
 
     private static final List<Class<? extends IOException>> exceptions = Arrays.asList(
         UnrecoverableIOException.class,
         InterruptedIOException.class,
         UnknownHostException.class,
         ConnectException.class,
-//            ExceptionUDT.class,
         // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
         // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
         SSLHandshakeException.class);

@@ -28,13 +28,14 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.StandardCharsets;
 
 public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
-    private static final Logger log = Logger.getLogger(CryptoDirectoryV6Feature.class);
+    private static final Logger log = LogManager.getLogger(CryptoDirectoryV6Feature.class);
 
     private final Session<?> session;
     private final Write<Reply> writer;
@@ -54,8 +55,8 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
 
     @Override
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
-        final String directoryId = random.random();
-        final Path encrypt = vault.encrypt(session, folder, directoryId, false);
+        final Path encrypt = vault.encrypt(session, folder, random.random(), false);
+        final String directoryId = encrypt.attributes().getDirectoryId();
         // Create metadata file for directory
         final Path directoryMetadataFile = vault.encrypt(session, folder, true);
         if(log.isDebugEnabled()) {

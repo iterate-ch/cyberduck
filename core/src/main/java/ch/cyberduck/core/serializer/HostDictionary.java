@@ -27,7 +27,8 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -35,10 +36,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class HostDictionary {
-    private static final Logger log = Logger.getLogger(HostDictionary.class);
+public class HostDictionary<T> {
+    private static final Logger log = LogManager.getLogger(HostDictionary.class);
 
-    private final DeserializerFactory factory;
+    private final DeserializerFactory<T> factory;
     private final ProtocolFactory protocols;
 
     public HostDictionary() {
@@ -46,20 +47,20 @@ public class HostDictionary {
     }
 
     public HostDictionary(final ProtocolFactory protocols) {
-        this(protocols, new DeserializerFactory());
+        this(protocols, new DeserializerFactory<>());
     }
 
-    public HostDictionary(final DeserializerFactory factory) {
+    public HostDictionary(final DeserializerFactory<T> factory) {
         this(ProtocolFactory.get(), factory);
     }
 
-    public HostDictionary(final ProtocolFactory protocols, final DeserializerFactory factory) {
+    public HostDictionary(final ProtocolFactory protocols, final DeserializerFactory<T> factory) {
         this.protocols = protocols;
         this.factory = factory;
     }
 
-    public <T> Host deserialize(final T serialized) {
-        final Deserializer dict = factory.create(serialized);
+    public Host deserialize(final T serialized) {
+        final Deserializer<T> dict = factory.create(serialized);
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj == null) {
             log.warn(String.format("Missing protocol key in %s", dict));
@@ -97,9 +98,9 @@ public class HostDictionary {
             if(keyObjDeprecated != null) {
                 bookmark.getCredentials().setIdentity(LocalFactory.get(keyObjDeprecated));
             }
-            final Object keyObj = dict.objectForKey("Private Key File Dictionary");
+            final T keyObj = dict.objectForKey("Private Key File Dictionary");
             if(keyObj != null) {
-                bookmark.getCredentials().setIdentity(new LocalDictionary(factory).deserialize(keyObj));
+                bookmark.getCredentials().setIdentity(new LocalDictionary<>(factory).deserialize(keyObj));
             }
             final Object certObj = dict.stringForKey("Client Certificate");
             if(certObj != null) {
@@ -118,9 +119,9 @@ public class HostDictionary {
             if(workdirObjDeprecated != null) {
                 bookmark.setWorkdir(new Path(workdirObjDeprecated.toString(), EnumSet.of(Path.Type.directory)));
             }
-            final Object workdirObj = dict.objectForKey("Workdir Dictionary");
+            final T workdirObj = dict.objectForKey("Workdir Dictionary");
             if(workdirObj != null) {
-                bookmark.setWorkdir(new PathDictionary(factory).deserialize(workdirObj));
+                bookmark.setWorkdir(new PathDictionary<>(factory).deserialize(workdirObj));
             }
             final Object nicknameObj = dict.stringForKey("Nickname");
             if(nicknameObj != null) {
@@ -145,7 +146,7 @@ public class HostDictionary {
                 // Legacy
                 Object connObj = dict.stringForKey("Maximum Connections");
                 if(connObj != null) {
-                    if(1 == Integer.valueOf(connObj.toString())) {
+                    if(1 == Integer.parseInt(connObj.toString())) {
                         bookmark.setTransfer(Host.TransferType.browser);
                     }
                 }
@@ -155,13 +156,13 @@ public class HostDictionary {
             if(downloadObjDeprecated != null) {
                 bookmark.setDownloadFolder(LocalFactory.get(downloadObjDeprecated.toString()));
             }
-            final Object downloadObj = dict.objectForKey("Download Folder Dictionary");
+            final T downloadObj = dict.objectForKey("Download Folder Dictionary");
             if(downloadObj != null) {
-                bookmark.setDownloadFolder(new LocalDictionary(factory).deserialize(downloadObj));
+                bookmark.setDownloadFolder(new LocalDictionary<>(factory).deserialize(downloadObj));
             }
-            final Object uploadObj = dict.objectForKey("Upload Folder Dictionary");
+            final T uploadObj = dict.objectForKey("Upload Folder Dictionary");
             if(uploadObj != null) {
-                bookmark.setUploadFolder(new LocalDictionary(factory).deserialize(uploadObj));
+                bookmark.setUploadFolder(new LocalDictionary<>(factory).deserialize(uploadObj));
             }
             final Object timezoneObj = dict.stringForKey("Timezone");
             if(timezoneObj != null) {

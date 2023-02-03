@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,6 +43,8 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import com.dropbox.core.v2.files.Metadata;
+
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -54,11 +57,14 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final byte[] content = RandomUtils.nextBytes(66800);
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
+        final HttpResponseOutputStream<Metadata> out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        test.withAttributes(status.getResponse());
         assertTrue(new DropboxFindFeature(session).find(test));
         final PathAttributes attributes = new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        assertEquals(status.getResponse(), attributes);
         assertEquals(content.length, attributes.getSize());
         assertEquals(content.length, write.append(test, status.withRemote(attributes)).size, 0L);
         {
@@ -90,6 +96,8 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        assertNotSame(PathAttributes.EMPTY, status.getResponse());
+        test.withAttributes(status.getResponse());
         assertTrue(new DropboxFindFeature(session).find(test));
         final PathAttributes attributes = new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());

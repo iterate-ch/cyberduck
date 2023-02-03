@@ -18,9 +18,30 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 
 public interface ComparisonService {
 
-    Comparison compare(Attributes file, Attributes local);
+    /**
+     * @param type   File or folder
+     * @param local  Latest cached attributes
+     * @param remote Latest remote attributes
+     * @return Comparison result
+     */
+    Comparison compare(Path.Type type, PathAttributes local, PathAttributes remote);
+
+    ComparisonService disabled = new ComparisonService() {
+        @Override
+        public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+            return Comparison.unknown;
+        }
+
+        @Override
+        public int hashCode(final Path.Type type, final PathAttributes attr) {
+            return 0;
+        }
+    };
+
+    int hashCode(Path.Type type, PathAttributes attr);
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
@@ -24,8 +23,9 @@ import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.AbstractChecksumCompute;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.io.VoidStatusOutputStream;
+import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -34,7 +34,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
@@ -46,8 +47,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class CryptoChecksumCompute extends AbstractChecksumCompute {
-    private static final Logger log = Logger.getLogger(CryptoChecksumCompute.class);
+    private static final Logger log = LogManager.getLogger(CryptoChecksumCompute.class);
 
     private final CryptoVault cryptomator;
     private final ChecksumCompute delegate;
@@ -58,7 +62,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
     }
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         if(Checksum.NONE == delegate.compute(new NullInputStream(0L), new TransferStatus())) {
             return Checksum.NONE;
         }
@@ -67,48 +71,45 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
             final FileHeader header = cryptomator.getFileHeaderCryptor().create();
             status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         }
-        // Make nonces reusable in case we need to compute a checksum
-        status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
-        return this.compute(this.normalize(in, status), status.getOffset(), status.getHeader(), status.getNonces());
+        if(null == status.getNonces()) {
+            // Make nonces reusable in case we need to compute a checksum
+            status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
+        }
+        return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
     }
 
-    protected Checksum compute(final InputStream in, final long offset, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
+    protected Checksum compute(final InputStream in, final StreamCancelation cancel,
+                               final long offset, final long length, final ByteBuffer header, final NonceGenerator nonces) throws ChecksumException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Calculate checksum with header %s", header));
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
-            final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), cryptomator.getFileContentCryptor(),
-                cryptomator.getFileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
+            final CryptoOutputStream out = new CryptoOutputStream(source, cryptomator.getFileContentCryptor(),
+                    cryptomator.getFileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);
             try {
-                final Future execute = pool.execute(new Callable<TransferStatus>() {
+                final Future<Void> execute = pool.execute(new Callable<Void>() {
                     @Override
-                    public TransferStatus call() throws Exception {
+                    public Void call() throws Exception {
                         if(offset == 0) {
                             source.write(header.array());
                         }
-                        final TransferStatus status = new TransferStatus();
-                        new StreamCopier(status, status).transfer(in, out);
-                        return status;
+                        new StreamCopier(cancel, StreamProgress.noop).transfer(in, out);
+                        return null;
                     }
                 });
                 try {
-                    return delegate.compute(sink, new TransferStatus());
+                    return delegate.compute(sink, new TransferStatus().withLength(cryptomator.toCiphertextSize(offset, length)));
                 }
                 finally {
                     try {
-                        execute.get();
-                    }
-                    catch(InterruptedException e) {
-                        throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+                        Uninterruptibles.getUninterruptibly(execute);
                     }
                     catch(ExecutionException e) {
-                        if(e.getCause() instanceof BackgroundException) {
-                            throw (BackgroundException) e.getCause();
-                        }
-                        throw new DefaultExceptionMappingService().map(e.getCause());
+                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
                     }
                 }
             }
@@ -120,7 +121,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
             throw e;
         }
         catch(IOException | BackgroundException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+            throw new ChecksumException(e);
         }
     }
 

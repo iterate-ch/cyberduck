@@ -19,5 +19,11 @@ package ch.cyberduck.core;
 
 public interface PathKindDetector {
 
+    /**
+     * Determine if file or directory
+     *
+     * @param path Path representation
+     * @return Type detected
+     */
     Path.Type detect(String path);
 }

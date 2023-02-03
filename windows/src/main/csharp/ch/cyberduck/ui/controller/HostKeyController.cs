@@ -24,13 +24,13 @@ using ch.cyberduck.core.sftp;
 using Ch.Cyberduck.Core.TaskDialog;
 using java.security;
 using net.schmizz.sshj.common;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class HostKeyController : PreferencesHostKeyVerifier
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (HostKeyController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (HostKeyController).FullName);
 
         /// <summary>
         /// Parent browser
@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
                     String.Format(
                         LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.",
-                            "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).name()),
+                            "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).toString()),
                     String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                         LocaleFactory.localizedString("Deny")), false, LocaleFactory.localizedString("Always"),
                     TaskDialogIcon.Question,
@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
                     String.Format(
                         LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.",
-                            "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).name()),
+                            "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).toString()),
                     String.Format("{0}|{1}", LocaleFactory.localizedString("Allow"),
                         LocaleFactory.localizedString("Deny")), false, LocaleFactory.localizedString("Always"),
                     TaskDialogIcon.Warning,

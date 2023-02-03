@@ -31,4 +31,11 @@ public interface TransferErrorCallback {
      * @throws BackgroundException Abort file transfer with exception
      */
     boolean prompt(TransferItem item, TransferStatus status, BackgroundException failure, int pending) throws BackgroundException;
+
+    TransferErrorCallback ignore = new TransferErrorCallback() {
+        @Override
+        public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) {
+            return true;
+        }
+    };
 }

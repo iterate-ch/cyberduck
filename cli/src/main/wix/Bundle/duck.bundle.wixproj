@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" TreatAsLocalProperty="SignOutput" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>f6975079-f730-4a31-9909-de536e524764</ProjectGuid>
@@ -70,12 +70,12 @@
 	Other similar extension points exist, see Wix.targets.
   -->
   <Target Name="SignDLLs" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool" AfterTargets="Compile" BeforeTargets="Link">
-      <ItemGroup>
-          <Assemblies Include="$(TargetBuildDir)*.dll" />
-          <Assemblies Include="$(TargetBuildDir)*.exe" />
-      </ItemGroup>
+    <ItemGroup>
+      <Assemblies Include="$(TargetBuildDir)*.dll" />
+      <Assemblies Include="$(TargetBuildDir)*.exe" />
+    </ItemGroup>
 
-      <Exec
-          Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;$([System.IO.Path]::GetFullPath('%(Assemblies.Identity)'))&quot;"/>
+    <Exec
+        Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.entrust.net/TSS/RFC3161sha2TS /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;$([System.IO.Path]::GetFullPath('%(Assemblies.Identity)'))&quot;"/>
   </Target>
 </Project>

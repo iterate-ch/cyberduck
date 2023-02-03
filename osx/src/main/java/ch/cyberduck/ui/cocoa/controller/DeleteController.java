@@ -16,26 +16,36 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.worker.DeleteWorker;
 
 import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class DeleteController extends ProxyController {
 
-    private final BrowserController parent;
+    private final WindowController parent;
+    private final SessionPool pool;
+    private final boolean trash;
 
-    public DeleteController(final BrowserController parent) {
+    public DeleteController(final WindowController parent, final SessionPool pool) {
+        this(parent, pool, PreferencesFactory.get().getBoolean("browser.delete.trash"));
+    }
+
+    public DeleteController(final WindowController parent, final SessionPool pool, final boolean trash) {
         this.parent = parent;
+        this.pool = pool;
+        this.trash = trash;
     }
 
     /**
@@ -43,7 +53,7 @@ public class DeleteController extends ProxyController {
      *
      * @param selected The files selected in the browser to delete
      */
-    public void delete(final List<Path> selected) {
+    public void delete(final List<Path> selected, final ReloadCallback callback) {
         final List<Path> normalized = PathNormalizer.normalize(selected);
         if(normalized.isEmpty()) {
             return;
@@ -59,31 +69,29 @@ public class DeleteController extends ProxyController {
             alertText.append('\n').append('\u2022').append(' ').append('…');
         }
         final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
-            alertText.toString(),
-            LocaleFactory.localizedString("Delete"), // defaultbutton
-            LocaleFactory.localizedString("Cancel"), //alternative button
-            null //other button
+                alertText.toString(),
+                LocaleFactory.localizedString("Delete"), // defaultbutton
+                LocaleFactory.localizedString("Cancel"), //alternative button
+                null //other button
         );
         parent.alert(alert, new SheetCallback() {
             @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    run(normalized);
+                    parent.background(new WorkerBackgroundAction<>(parent, pool,
+                                    new DeleteWorker(LoginCallbackFactory.get(parent), normalized, parent, trash) {
+                                        @Override
+                                        public void cleanup(final List<Path> deleted) {
+                                            callback.done(deleted);
+                                        }
+                                    }
+                            )
+                    );
+                }
+                else {
+                    callback.cancel();
                 }
             }
         });
-    }
-
-    private void run(final List<Path> files) {
-        parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-            new DeleteWorker(LoginCallbackFactory.get(parent), files, parent.getCache(), parent) {
-                    @Override
-                    public void cleanup(final List<Path> deleted) {
-                        super.cleanup(deleted);
-                        parent.reload(parent.workdir(), files, Collections.emptyList());
-                    }
-                }
-            )
-        );
     }
 }

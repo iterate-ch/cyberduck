@@ -21,20 +21,23 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class BrickCredentialsConfigurator implements CredentialsConfigurator {
+    private static final Logger log = LogManager.getLogger(BrickCredentialsConfigurator.class);
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials credentials = new Credentials(host.getCredentials());
-        return this.configure(credentials);
-    }
-
-    public Credentials configure(final Credentials credentials) {
-        if(StringUtils.isBlank(credentials.getToken())) {
+        if(StringUtils.isBlank(host.getCredentials().getToken())) {
+            final Credentials credentials = new Credentials(host.getCredentials());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set new random token for %s", host));
+            }
             credentials.setToken(new AlphanumericRandomStringService().random());
+            return credentials;
         }
-        return credentials;
+        return host.getCredentials();
     }
 
     @Override

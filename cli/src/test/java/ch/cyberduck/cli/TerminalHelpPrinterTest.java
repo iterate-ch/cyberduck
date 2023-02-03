@@ -17,7 +17,6 @@ package ch.cyberduck.cli;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
@@ -55,7 +54,7 @@ public class TerminalHelpPrinterTest {
     @Test
     public void testScheme() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new AzureProtocol())));
-        final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory());
+        final ProfilePlistReader reader = new ProfilePlistReader(factory);
         final Profile profile = reader.read(
             this.getClass().getResourceAsStream("/Azure.cyberduckprofile")
         );

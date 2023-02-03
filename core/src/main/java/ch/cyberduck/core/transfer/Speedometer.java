@@ -34,7 +34,7 @@ public class Speedometer {
     /**
      * Formatter for file size
      */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+    private final SizeFormatter sizeFormatter;
 
     /**
      * The time to start counting bytes transferred
@@ -152,7 +152,7 @@ public class Speedometer {
                     if(transferred < size) {
                         b.append(", ");
                         // Remaining time in milliseconds
-                        Long remaining = new BigDecimal((size - transferred) / speed).setScale(0, RoundingMode.UP).longValue();
+                        long remaining = new BigDecimal((size - transferred) / speed).setScale(0, RoundingMode.UP).longValue();
                         // Display in seconds
                         b.append(periodFormatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
                     }

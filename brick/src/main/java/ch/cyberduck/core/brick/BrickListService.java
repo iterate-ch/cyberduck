@@ -23,7 +23,7 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.FoldersApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,24 +43,28 @@ public class BrickListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return this.list(directory, listener, new HostPreferences(session.getHost()).getInteger("brick.listing.chunksize"));
+    }
+
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             String cursor = null;
             List<FileEntity> response;
-            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            final BrickApiClient client = new BrickApiClient(session);
             do {
-                response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)), cursor,
-                    PreferencesFactory.get().getInteger("brick.listing.chunksize"),
-                    null, null, null, null, null, null);
+                response = new FoldersApi(client).foldersListForPath(StringUtils.removeStart(directory.getAbsolute(), String.valueOf(Path.DELIMITER)),
+                        cursor, chunksize, null, null, null, null, null, null);
                 for(FileEntity entity : response) {
-                    children.add(new Path(entity.getPath(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
-                        attributes.toAttributes(entity)));
+                    children.add(new Path(directory, entity.getDisplayName(), EnumSet.of("directory".equals(entity.getType()) ? Path.Type.directory : Path.Type.file),
+                            attributes.toAttributes(entity)));
                 }
                 if(client.getResponseHeaders().containsKey("X-Files-Cursor")) {
                     final Optional<String> header = client.getResponseHeaders().get("X-Files-Cursor").stream().findFirst();
-                    if(header.isPresent()) {
-                        cursor = header.get();
-                    }
+                    cursor = header.orElse(null);
+                }
+                else {
+                    cursor = null;
                 }
                 listener.chunk(directory, children);
             }

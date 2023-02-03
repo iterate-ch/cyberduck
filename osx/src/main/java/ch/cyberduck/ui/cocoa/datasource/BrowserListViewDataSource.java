@@ -28,7 +28,8 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BrowserListViewDataSource extends BrowserTableDataSource implements NSTableView.DataSource {
-    private static final Logger log = Logger.getLogger(BrowserListViewDataSource.class);
+    private static final Logger log = LogManager.getLogger(BrowserListViewDataSource.class);
 
     public BrowserListViewDataSource(final BrowserController controller, final Cache<Path> cache) {
         super(controller, cache);

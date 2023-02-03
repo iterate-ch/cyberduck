@@ -19,18 +19,15 @@
 using System.Collections.Generic;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.preferences;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Core;
-using java.lang;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using org.apache.commons.lang3;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class DefaultBookmarkController : BookmarkController<IBookmarkView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(DefaultBookmarkController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(DefaultBookmarkController).FullName);
 
         public DefaultBookmarkController(Host bookmark) : base(bookmark)
         {
@@ -41,26 +38,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (_options.keychain() && _options.password())
             {
-                if (Utils.IsBlank(_host.getHostname()))
+                if (string.IsNullOrWhiteSpace(_host.getHostname()))
                 {
                     return;
                 }
-                if (Utils.IsBlank(_host.getCredentials().getUsername()))
+                if (string.IsNullOrWhiteSpace(_host.getCredentials().getUsername()))
                 {
                     return;
                 }
-                if (Utils.IsBlank(View.Password))
+                if (string.IsNullOrWhiteSpace(View.Password))
                 {
                     return;
                 }
                 try
                 {
-                    PasswordStoreFactory.get().addPassword(_host.getProtocol().getScheme(),
-                        _host.getPort(),
-                        _host.getHostname(),
-                        _host.getCredentials().getUsername(),
-                        StringUtils.strip(View.Password)
-                    );
+                    _host.getCredentials().setPassword(View.Password);
+                    PasswordStoreFactory.get().save(_host);
                 }
                 catch (LocalAccessDeniedException e)
                 {

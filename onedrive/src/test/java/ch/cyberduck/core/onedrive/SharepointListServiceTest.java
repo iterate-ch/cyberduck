@@ -48,7 +48,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     public void testListRoot() throws Exception {
         final AttributedList<Path> list = new SharepointListService(session, fileid).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
-        assertEquals(2, list.size());
+        assertEquals(3, list.size());
     }
 
     @Test
@@ -61,7 +61,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
         final ListService list = new SharepointListService(session, fileid);
         final AttributedList<Path> drives = list.list(new Path(SharepointListService.DEFAULT_NAME, "Drives", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         final Path drive = drives.get(0);
-        new PathAttributesHomeFeature(() -> drive, new GraphAttributesFinderFeature(session, fileid), new RootPathContainerService()).find();
+        new PathAttributesHomeFeature(session, () -> drive, new GraphAttributesFinderFeature(session, fileid), new RootPathContainerService()).find();
         list.list(drive, new DisabledListProgressListener());
     }
 

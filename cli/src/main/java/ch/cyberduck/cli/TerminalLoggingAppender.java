@@ -18,43 +18,43 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Layout;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Property;
+import org.apache.logging.log4j.util.Strings;
 import org.fusesource.jansi.Ansi;
 
-public class TerminalLoggingAppender extends AppenderSkeleton {
+import java.nio.charset.StandardCharsets;
+
+public class TerminalLoggingAppender extends AbstractAppender {
 
     private final Console console = new Console();
 
-    @Override
-    public void close() {
-        //
+    public TerminalLoggingAppender(final Layout layout) {
+        super(TerminalAppender.class.getName(), null, layout, true, Property.EMPTY_ARRAY);
     }
 
     @Override
-    protected void append(final LoggingEvent event) {
+    public void append(final LogEvent event) {
         final StringBuilder buffer = new StringBuilder();
-        buffer.append(layout.format(event));
-        if(layout.ignoresThrowable()) {
-            final String[] trace = event.getThrowableStrRep();
-            if(trace != null) {
-                buffer.append(Layout.LINE_SEP);
+        buffer.append(new String(getLayout().toByteArray(event), StandardCharsets.UTF_8));
+        if(ignoreExceptions()) {
+            final Throwable thrown = event.getThrown();
+            if(thrown != null) {
+                buffer.append(Strings.LINE_SEPARATOR);
+                final String[] trace = ExceptionUtils.getStackFrames(thrown);
                 for(final String t : trace) {
-                    buffer.append(t).append(Layout.LINE_SEP);
+                    buffer.append(t).append(Strings.LINE_SEPARATOR);
                 }
             }
         }
         console.printf("\r%s%s%s", Ansi.ansi()
-                        .saveCursorPosition()
-                        .eraseLine(Ansi.Erase.ALL)
-                        .fg(Ansi.Color.MAGENTA)
-                        .restoreCursorPosition(),
-                buffer.toString(), Ansi.ansi().reset());
-    }
-
-    @Override
-    public boolean requiresLayout() {
-        return true;
+                .saveCursorPosition()
+                .eraseLine(Ansi.Erase.ALL)
+                .fg(Ansi.Color.MAGENTA)
+                .restoreCursorPosition(),
+            buffer.toString(), Ansi.ansi().reset());
     }
 }

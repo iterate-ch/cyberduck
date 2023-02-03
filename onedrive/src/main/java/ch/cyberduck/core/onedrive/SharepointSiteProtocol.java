@@ -27,6 +27,11 @@ public class SharepointSiteProtocol extends GraphProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public String getName() {
         return "Sharepoint Site";
     }

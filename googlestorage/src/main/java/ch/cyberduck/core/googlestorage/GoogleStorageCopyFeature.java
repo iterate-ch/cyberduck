@@ -18,23 +18,21 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(GoogleStorageMoveFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -45,25 +43,34 @@ public class GoogleStorageCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final Storage.Objects.Get request = session.getClient().objects().get(containerService.getContainer(source).getName(), containerService.getKey(source));
+            if(containerService.getContainer(containerService.getContainer(source)).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
             if(StringUtils.isNotBlank(source.attributes().getVersionId())) {
                 request.setGeneration(Long.parseLong(source.attributes().getVersionId()));
             }
             final StorageObject storageObject = request.execute();
-            final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
-                containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
-            final RewriteResponse response = rewrite.execute();
-            // Include this field (from the previous rewrite response) on each rewrite request after the first one,
-            // until the rewrite response 'done' flag is true.
-            while(!rewrite.setRewriteToken(response.getRewriteToken()).execute().getDone()) {
-                log.warn(String.format("Pending rewrite for object %s", storageObject));
+            if(null != status.getTimestamp()) {
+                storageObject.setCustomTime(new DateTime(status.getTimestamp()));
             }
-            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                containerService.getContainer(target)
-            ) : VersioningConfiguration.empty();
-            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource(), versioning));
+            final Storage.Objects.Rewrite rewrite = session.getClient().objects().rewrite(containerService.getContainer(source).getName(), containerService.getKey(source),
+                    containerService.getContainer(target).getName(), containerService.getKey(target), storageObject);
+            if(containerService.getContainer(source).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                rewrite.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            RewriteResponse response;
+            do {
+                response = rewrite.execute();
+                // Include this field (from the previous rewrite response) on each rewrite request after the first one,
+                // until the rewrite response 'done' flag is true.
+                rewrite.setRewriteToken(response.getRewriteToken());
+            }
+            while(!response.getDone());
+            listener.sent(status.getLength());
+            return target.withAttributes(new GoogleStorageAttributesFinderFeature(session).toAttributes(response.getResource()));
         }
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot copy {0}", e, source);

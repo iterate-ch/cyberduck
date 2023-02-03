@@ -42,10 +42,11 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testSearchInBucket() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new GoogleStorageTouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageSearchFeature feature = new GoogleStorageSearchFeature(session);
         assertNotNull(feature.search(bucket, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.upperCase(name)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         assertNotNull(feature.search(bucket, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         final Path subdir = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -55,8 +56,7 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testSearchInDirectory() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        bucket.attributes().setRegion("us-east-1");
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new GoogleStorageTouchFeature(session).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GoogleStorageSearchFeature feature = new GoogleStorageSearchFeature(session);
@@ -77,5 +77,4 @@ public class GoogleStorageSearchFeatureTest extends AbstractGoogleStorageTest {
         }
         new GoogleStorageDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
-
 }

@@ -29,6 +29,8 @@
         <string>app.files.com</string>
         <key>Hostname Configurable</key>
         <false/>
+        <key>Default Nickname</key>
+        <string>Files.com</string>
         <key>Port Configurable</key>
         <false/>
         <key>Username Configurable</key>

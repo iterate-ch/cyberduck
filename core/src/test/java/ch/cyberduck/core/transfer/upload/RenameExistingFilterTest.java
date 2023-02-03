@@ -16,7 +16,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledUploadSymlinkResolver;
 
@@ -72,7 +71,7 @@ public class RenameExistingFilterTest {
 
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> l = new AttributedList<Path>();
+                final AttributedList<Path> l = new AttributedList<>();
                 l.add(new Path("t", EnumSet.of(Path.Type.file)));
                 return l;
             }
@@ -90,7 +89,7 @@ public class RenameExistingFilterTest {
     }
 
     @Test
-    public void testTemporaryFileUpload() throws Exception {
+    public void testFileUploadWithTemporaryFilename() throws Exception {
         final Path file = new Path("/t", EnumSet.of(Path.Type.file));
         final AtomicBoolean found = new AtomicBoolean();
         final AtomicInteger moved = new AtomicInteger();
@@ -110,7 +109,8 @@ public class RenameExistingFilterTest {
                 return new PathAttributes();
             }
         };
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -157,20 +157,23 @@ public class RenameExistingFilterTest {
                 return null;
             }
         };
-        final UploadFilterOptions options = new UploadFilterOptions().withTemporary(true);
+        final UploadFilterOptions options = new UploadFilterOptions(host).withTemporary(true);
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
             options);
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
+        f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
+        assertFalse(status.isExists());
+        assertFalse(status.getDisplayname().exists);
         assertNotNull(status.getRename());
         assertNotNull(status.getRename().remote);
-        assertNotEquals(file, status.getDisplayname().local);
+        assertEquals(file, status.getDisplayname().remote);
         assertNull(status.getRename().local);
         f.apply(file, new NullLocal("t"), status, new DisabledProgressListener());
         // Complete
         status.setComplete();
-        f.complete(file, new NullLocal("t"), new TransferOptions(), status, new DisabledProgressListener());
+        f.complete(file, new NullLocal("t"), status, new DisabledProgressListener());
         assertTrue(found.get());
         assertEquals(2, moved.get());
     }
@@ -196,7 +199,8 @@ public class RenameExistingFilterTest {
                 return new PathAttributes();
             }
         };
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final Host host = new Host(new TestProtocol());
+        final NullSession session = new NullSession(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -236,7 +240,7 @@ public class RenameExistingFilterTest {
             }
         };
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
-            new UploadFilterOptions().withTemporary(true));
+            new UploadFilterOptions(host).withTemporary(true));
         f.withFinder(find).withAttributes(attributes);
         final TransferStatus status = f.prepare(file, new NullLocal("/t") {
             @Override

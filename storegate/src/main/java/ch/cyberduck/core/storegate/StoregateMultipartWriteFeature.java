@@ -38,7 +38,8 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -50,7 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetadata> {
-    private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(StoregateMultipartWriteFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -66,16 +67,12 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public HttpResponseOutputStream<FileMetadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String location = new StoregateWriteFeature(session, fileid).start(file, status);
         final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
         return new HttpResponseOutputStream<FileMetadata>(new MemorySegementingOutputStream(proxy,
-            new HostPreferences(session.getHost()).getInteger("storegate.upload.multipart.chunksize"))) {
+                new HostPreferences(session.getHost()).getInteger("storegate.upload.multipart.chunksize")),
+                new StoregateAttributesFinderFeature(session, fileid), status) {
             @Override
             public FileMetadata getStatus() {
                 return proxy.getResult();
@@ -124,7 +121,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                             if(0L != overall.getLength() && 0 != content.length) {
                                 final HttpRange range = HttpRange.byLength(offset, content.length);
                                 final String header;
-                                if(overall.getLength() == -1L) {
+                                if(overall.getLength() == TransferStatus.UNKNOWN_LENGTH) {
                                     header = String.format("%d-%d/*", range.getStart(), range.getEnd());
                                 }
                                 else {
@@ -145,8 +142,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                                         offset += content.length;
                                         break;
                                     default:
-                                        throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                            EntityUtils.toString(response.getEntity())));
+                                        final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                                EntityUtils.toString(response.getEntity()));
+                                        throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed", failure, file);
                                 }
                             }
                             catch(BackgroundException e) {
@@ -178,6 +176,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                     return;
                 }
                 if(null != canceled.get()) {
+                    log.warn(String.format("Skip closing with previous failure %s", canceled.get()));
                     return;
                 }
                 if(overall.getLength() <= 0) {
@@ -190,14 +189,15 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                             case HttpStatus.SC_OK:
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata metadata = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
-                                    FileMetadata.class);
+                                        FileMetadata.class);
                                 result.set(metadata);
                                 fileid.cache(file, metadata.getId());
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
-                                throw new StoregateExceptionMappingService(fileid).map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                    EntityUtils.toString(response.getEntity())));
+                                final ApiException failure = new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                        EntityUtils.toString(response.getEntity()));
+                                throw new StoregateExceptionMappingService(fileid).map("Upload {0} failed", failure, file);
                         }
                     }
                     catch(BackgroundException e) {

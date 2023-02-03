@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds.triplecrypt;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -34,7 +33,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 
@@ -48,7 +48,7 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(TripleCryptReadFeature.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptReadFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -64,21 +64,21 @@ public class TripleCryptReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final FileKey key = new NodesApi(session.getClient()).requestUserFileKey(
-                Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), null, null);
+                Long.parseLong(nodeid.getVersionId(file)), null, null);
             final EncryptedFileKey encFileKey = TripleCryptConverter.toCryptoEncryptedFileKey(key);
             try {
                 final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword());
-                return new TripleCryptInputStream(proxy.read(file, status, callback),
-                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
+                return new TripleCryptDecryptingInputStream(proxy.read(file, status, callback),
+                        Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
             }
             catch(InvalidFileKeyException e) {
                 log.warn(String.format("Failure %s  decrypting file key for %s. Invalidate cache", e, file));
                 session.resetUserKeyPairs();
                 final UserKeyPair userKeyPair = this.getUserKeyPair(encFileKey);
                 final PlainFileKey plainFileKey = Crypto.decryptFileKey(encFileKey, userKeyPair.getUserPrivateKey(), this.unlock(callback, userKeyPair).getPassword());
-                return new TripleCryptInputStream(proxy.read(file, status, callback),
-                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
+                return new TripleCryptDecryptingInputStream(proxy.read(file, status, callback),
+                        Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
             }
         }
         catch(ApiException e) {

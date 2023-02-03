@@ -20,9 +20,11 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public interface IPasswordPromptView : IPromptView
     {
+        bool CanSkip { set; }
         string Title { set; }
         string Reason { set; }
         string OkButtonText { set; }
+        string SkipButtonText { set; }
 
         bool SavePasswordState { get; set; }
         bool SavePasswordEnabled { set; }

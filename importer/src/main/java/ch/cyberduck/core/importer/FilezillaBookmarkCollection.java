@@ -30,11 +30,12 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 
 public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
-    private static final Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(FilezillaBookmarkCollection.class);
 
     private static final long serialVersionUID = -4612895793983093594L;
 

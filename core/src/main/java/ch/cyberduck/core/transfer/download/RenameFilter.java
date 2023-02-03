@@ -28,13 +28,14 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RenameFilter extends AbstractDownloadFilter {
-    private static final Logger log = Logger.getLogger(RenameFilter.class);
+    private static final Logger log = LogManager.getLogger(RenameFilter.class);
 
     public RenameFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session) {
-        super(symlinkResolver, session, new DownloadFilterOptions());
+        super(symlinkResolver, session, new DownloadFilterOptions(session.getHost()));
     }
 
     public RenameFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
@@ -53,12 +54,7 @@ public class RenameFilter extends AbstractDownloadFilter {
                 if(StringUtils.isNotBlank(Path.getExtension(filename))) {
                     proposal += String.format(".%s", Path.getExtension(filename));
                 }
-                if(parent.getRename().local != null) {
-                    status.rename(LocalFactory.get(parent.getRename().local, proposal));
-                }
-                else {
-                    status.rename(LocalFactory.get(local.getParent(), proposal));
-                }
+                status.withRename(LocalFactory.get(local.getParent(), proposal));
             }
             while(status.getRename().local.exists());
             if(log.isInfoEnabled()) {
@@ -71,7 +67,7 @@ public class RenameFilter extends AbstractDownloadFilter {
         }
         else {
             if(parent.getRename().local != null) {
-                status.rename(LocalFactory.get(parent.getRename().local, file.getName()));
+                status.withRename(LocalFactory.get(parent.getRename().local, file.getName()));
             }
             if(log.isInfoEnabled()) {
                 log.info(String.format("Changed download target from %s to %s", local, status.getRename().local));

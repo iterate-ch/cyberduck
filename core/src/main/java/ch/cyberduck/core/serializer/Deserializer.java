@@ -21,6 +21,9 @@ package ch.cyberduck.core.serializer;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @param <T> Serialized object type
+ */
 public interface Deserializer<T> {
 
     /**
@@ -38,6 +41,7 @@ public interface Deserializer<T> {
     /**
      * Find multiple values for key
      *
+     * @param <L> Type of serialized native objects in list
      * @param key Key name
      * @return List values for key
      */

@@ -1,6 +1,193 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.5
+- [Bugfix] Save OAuth tokens with username to allow connecting to different accounts (Google Drive, Google Storage, OneDrive, Dropbox, Box)
+
+8.5.4
+- [Bugfix] Failure authorizing using OAuth with no desktop browser installed (Linux) (#14028)
+- [Bugfix] Allow to create new buckets in regions ap-south-2, ap-southeast-3, eu-south-2, eu-central-2, me-central-1 (S3) (#14045)
+- [Bugfix] Allow custom path for IdentityAgent configuration (SFTP, Windows) (#13933)
+
+8.5.3
+- [Bugfix] Failure uploading file with diacritic in filename (Windows) (#13723)
+- [Bugfix] Folders containing backup file dirid.c9r cannot be deleted (Cryptomator) (#13957)
+- [Bugfix] Files not decrypted after unlocking vault (Cryptomator, Box) (#13961)
+- [Bugfix] Only read specific key from SSH agent with IdentitiesOnly and public key in IdentitiyFile directive in OpenSSH configuration to limit number of authentication attempts (SFTP) (#13935)
+- [Bugfix] Interoperability with IdentityAgent from 1Password (SFTP)
+
+8.5.2
+- [Bugfix] Invalid syntax in Open in Terminal command (SFTP, macOS)
+- [Bugfix] Passwords for ProxyJump hosts in .ssh/config are not saved (SFTP) (#13936)
+- [Bugfix] Files in vault not decrypted (Cryptomator, Google Storage) (#13949)
+
+8.5.1
+- [Feature] Skip button to allow creating share with no passphrase (Dropbox, Box, ownCloud, Nextcloud) (#13846)
+- [Feature] Redirect to application without requiring to copy authentication code when opening new connection (Dropbox)
+- [Feature] Allow configuration of client certificate (ownCloud, Nextcloud)
+- [Feature] Use Authorization Code Flow with Proof Key for Code Exchange (PKCE) (Google Storage, Google Drive, Dropbox)
+- [Bugfix] Mutual authentication does not work with client certificates with a friendly name set (Windows)
+
+8.5.0
+- [Feature] Allow to view and revert previous versions of files (ownCloud, Nextcloud) (#10560)
+- [Feature] Allow to request files with upload share link (Dropbox) (#13832)
+- [Bugfix] Try keyboard-interactive authentication always before password for interoperability with 2FA configurations (SFTP)
+- [Bugfix] Connect to custom hostname from pairing response (Files.com)
+- [Bugfix] Failure creating upload link to request files (Nextcloud) (#13791)
+
+8.4.5
+- [Bugfix] Failure enabling connection profile from Preferences (#13739)
+- [Bugfix] Only set userProject parameter in requests for buckets with requester pays option enabled (Google Storage) (#13745)
+- [Bugfix] Allow glob pattern when searching for files in browser (#13781)
+
+8.4.4
+- [Bugfix] Prioritise password authentication if password is available (SFTP) (#13442)
+- [Bugfix] Filter identities in SSH agent based on private key selection in bookmark (SFTP) (#13680)
+- [Bugfix] Switch OAuth registration with redirect URIs shorter than the allowed maximum of 32 characters in Windows Store (Google Storage, Google Drive) (#13695)
+- [Bugfix] Save OAuth expiry in keychain instead of preferences (#13710)
+
+8.4.3
+- [Bugfix] Repeated prompt to verify server fingerprint (SFTP, Windows) (#13638)
+- [Bugfix] OAuth token not saved in credentials manager (Dropbox, Windows) (#13613)
+- [Bugfix] Malformed authorization header with wrong region when browsing buckets in multiple regions (S3)
+- [Bugfix] Lower memory footprint regardless of available memory on system (macOS)
+
+8.4.2
+- [Bugfix] Setting to always open default editor application set in Preferences (Windows) (#13546)
+- [Bugfix] Unable to complete OAuth flow with missing scheme handler registered when running in sandbox (Google Storage, Google Drive) (Mac App Store)
+
+8.4.1
+- [Bugfix] Crash running on versions prior macOS 11 (#13521)
+
+8.4.0
+- [Feature] Revert previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Storage, OneDrive, Microsoft Sharepoint)
+- [Feature] Delete previous file versions in Info panel (S3, Backblaze B2, Google Drive, Google Storage)
+- [Feature] View previous file versions in Info panel (S3, Backblaze B2, Dropbox, Google Drive, Google Storage, OneDrive, Microsoft Sharepoint)
+- [Feature] View previous versions in browser by choosing View → Show Hidden (Google Drive)
+- [Feature] Support applications installed from Windows Store for editing files (#12802) (Windows)
+- [Feature] No length limitation when storing passwords in Windows Credential manager (#12803) (Windows)
+- [Feature] Migrate OAuth out-of-band flow to an alternative method (#13360) (Google Drive, Google Storage)
+- [Feature] Add menu item to request files for protocols that support upload share links (#13426) (Box, Nextcloud, ownCloud)
+- [Feature] Include region identifier in region selection when creating new bucket (S3) (#13501)
+- [Bugfix] Do not attempt to set ACL on files uploaded to bucket with owner controls set that disallows ACLs (S3) (#13386)
+- [Bugfix] Register custom DNS resolver to handle IPv6 preference (#13399)
+- [Bugfix] Failure opening vault (Cryptomator, FTP) (#13375)
+- [Bugfix] Mismatch between SHA256 hash error when downloading files (Dropbox) (#13361)
+- [Bugfix] No such file error when uploading with temporary filename option (SFTP) (#13367)
+- [Bugfix] Transfer acceleration endpoints not used (S3) (#13359)
+- [Bugfix] Delete multiple files with batch request (DRACOON)
+- [Bugfix] RequestTimeTooSkewed error with computer date settings not using Gregorian calendar (S3) (#13454)
+- [Bugfix] Fix error reporting to display exact parser failure for unexpected response contents (S3) (#13383)
+- [Bugfix] Invalid hostname used when completing multipart upload when connecting to single bucket (S3)
+- [Bugfix] Unable to delete object version created prior enabling file versioning for bucket (S3) (#13507)
+- [Bugfix] Bucket versioning checkbox should reflect lifecycle configuration (Backblaze B2) (#13505)
+
+8.3.3
+- [Bugfix] Failing transfers with multiple files (FTP) (#13322)
+
+8.3.2
+- [Bugfix] Connection not released causing freeze in browser or transfer (FTP) (#13273)
+
+8.3.1
+- [Bugfix] Failure reconnecting when control connection is closed on server (FTP) (#13037)
+- [Bugfix] Set role session name from configuration when connecting using credentials from AWS Command Line Interface (S3)
+- [Bugfix] Hide file when deleting latest version to allow later restore (Backblaze B2)
+
+8.3.0
+- [Bugfix] Enable authentication using OpenSSH agent on Windows (SFTP, Windows) (#12880)
+- [Bugfix] File edited moved to trash and no longer updated on server (#11729)
+- [Bugfix] Failure copying or renaming file when bucket name is set in hostname using virtual host style (S3)
+- [Bugfix] Failure deleting file (Google Drive, Cryptomator)
+- [Bugfix] Failures when deleting folder with no placeholder (Azure) (#12900)
+- [Bugfix] Batch requests when deleting multiple files (Dropbox) (#12904)
+- [Bugfix] Deleting many files may fail with 413 Request Entity Too Large (Google Drive) (#12902)
+- [Bugfix] IPv6 not working for hosts with both A and AAAA entries (#12917)
+- [Bugfix] Resolve tilde in IdentityAgent configuration (SFTP) (#12954)
+- [Bugfix] Missing download overwrite prompt (#12860)
+- [Bugfix] Compose segments of download very slow after downloading is slow (#12996)
+- [Bugfix] Trim whitespace from input in username and password fields (#12986)
+- [Bugfix] Missing Glacier Instant Retrieval storage class option (S3) (#12915)
+
+8.2.3
+- [Bugfix] When creating new vault save vault.cryptomator to make vaults readable by Cryptomator apps (Cryptomator)
+- [Bugfix] Unable to download files using glob pattern (CLI) (#12797)
+- [Bugfix] Failure unlocking vault (CLI, Cryptomator, Windows) (#12812)
+
+8.2.2
+- [Bugfix] Add support reading IdentityAgent from OpenSSH configuration (SFTP)
+- [Bugfix] Unable to enable debug log configuration (Windows)
+
+8.2.1
+- [Bugfix] Try all public key algorithms available for a specific key type (SFTP) (#12733)
+- [Bugfix] Add fallback when location query for endpoint URI fails (S3) (#12723)
+- [Bugfix] Failure connecting to bucket with missing virtual host style request support (S3) (#12746)
+- [Bugfix] Fix display scaling issues (Windows) (#12742)
+
+8.2.0
+- [Feature] Support for Box API (Box) (#10235)
+- [Bugfix] Failure opening connection (FTP-SSL, Windows)
+- [Bugfix] Interoperability with Sharepoint Site (Microsoft Sharepoint)
+- [Bugfix] Compare option for existing files in transfer fails to verify checksums (#12688)
+- [Bugfix] Failure uploading to folders in vault (Cryptomator, CLI) (#11881)
+
+8.1.2
+- [Bugfix] Crash with unsatisfied link error using random functions (Windows) (#12628)
+
+8.1.1
+- [Feature] Interoperability with vault format 8 (Cryptomator) (#11888)
+- [Feature] Support for AWS SSO using Session Token Authentication (S3) (#11568)
+- [Feature] Support for TLSv1.3 (Windows) (#11790)
+- [Bugfix] Allow session reuse for data connections (FTP-SSL) (#12589)
+
+8.1.0
+- [Feature] Native support for Apple silicon (#11101)
+
+8.0.2
+- [Bugfix] Replacing file may cause empty permission set in ACL (S3)
+- [Bugfix] Failure authentication with PuTTY private key (SFTP) (#11887)
+- [Bugfix] Set storage class for transition to "ARCHIVE" when editing lifecycle configuration (Google Cloud Storage) (#11906)
+- [Bugfix] Deleted folders still displayed with versioning enabled on bucket (Google Cloud Storage) (#11904)
+
+8.0.1
+- [Bugfix] Interoperability with servers not supporting Range header in requests (WebDAV)
+
+8.0.0
+- [Feature] Allow to manage additional connection profiles in Preferences (#10823)
+- [Feature] New default connection profile for ownCloud
+- [Feature] Retain modification date in metadata for uploads (Google Cloud Storage) (#11784)
+- [Feature] Retain modification date in metadata for uploads (S3) (#11784)
+- [Feature] Build package in AppImage format (CLI) (#11762)
+- [Feature] Support for PuTTY v3 key files (SFTP)
+- [Feature] Support public key authentication using certificates (SFTP)
+- [Feature] Support for PEM ASN.1 encoded private keys (SFTP)
+- [Feature] Support for host certificate keys handling @cert-authority in known_hosts (SFTP)
+- [Feature] Column in browser window to display checksum (#11824)
+- [Bugfix] Change default path for NextCloud connections to include username (#11787)
+- [Bugfix] Failed to overwrite upload of object with custom metadata (Google Cloud Storage) (#11781)
+- [Bugfix] Skip duplicate file versions in output (Cyberduck CLI) (#11786)
+- [Bugfix] Fails to use selected private key file outside of ~/.ssh folder (SFTP, Mac App Store) (#11782)
+- [Bugfix] Unable to delete folders (Google Cloud Storage) (#11808)
+- [Bugfix] Allow to set Glacier storage class (Google Cloud Storage) (#11521)
+- [Bugfix] Unable to remove delete marker (S3) (#11803)
+- [Bugfix] Unable to download previous version of file (S3, Backblaze B2) (#11797, #11835)
+- [Bugfix] Copying files requires permission to read bucket ACL (S3) (#11701)
+- [Bugfix] Unable to set storage class to STANDARD (S3) (#11849)
+- [Bugfix] Taskbar shows incorrect number of transfers (Windows) (#11813)
+- [Bugfix] Allow to delete trashed files (Google Drive) (#11816)
+- [Bugfix] Create directory placeholders using default storage class (S3) (#11751)
+- [Bugfix] Create master key using default storage class (S3, Cryptomator) (#11751)
+- [Bugfix] Use specific region endpoint only with --region option (S3, CLI) (#11827)
+- [Bugfix] Empty list output when listing root directory (CLI) (#11814)
+
+7.10.2
+- [Feature] Add --purge option to invalidate files in Amazon CloudFront distributions and OpenStack Swift (X-CDN-Enabled header) (#11767)
+- [Bugfix] Links for CloudFront distributions and S3 website endpoints are missing in the Copy URL and Open URL menu (S3) (#11764)
+- [Bugfix] Failure downloading files (Files.com)
+- [Bugfix] Return existing share URL when found (Dropbox) (#11209)
+- [Bugfix] Select origin bucket for logging target with missing permission to list all buckets (S3) (#17755)
+- [Bugfix] Unable to upload to buckets with uniform bucket-level access enabled (Google Cloud Storage) (#11766)
+- [Bugfix] Missing progress information when copying file (#11019)
+
 7.10.1
 - [Feature] Support S3 interface endpoints (AWS PrivateLink for Amazon S3) (#11735)
 - [Feature] Updated support for Files.com using proprietary REST API (Files.com)
@@ -10,10 +197,10 @@ https://cyberduck.io/
 - [Bugfix] Downloads from HTTP server with no WebDAV extension support (CLI) (#11727)
 
 7.10.0
-- [Feature] Preference to set default storage class (Google Storage) (#11521)
-- [Feature] Preference to set default bucket region (Google Storage)
-- [Feature] Preference to set predefined set of grantees and permissions for new files (S3, Google Storage)
-- [Feature] Support to set predefined ACL bucket-owner-full-control (S3, Google Storage) (#11697)
+- [Feature] Preference to set default storage class (Google Cloud Storage) (#11521)
+- [Feature] Preference to set default bucket region (Google Cloud Storage)
+- [Feature] Preference to set predefined set of grantees and permissions for new files (S3, Google Cloud Storage)
+- [Feature] Support to set predefined ACL bucket-owner-full-control (S3, Google Cloud Storage) (#11697)
 - [Feature] Context menu in browser table header to select columns (macOS) (#11718)
 - [Feature] Allow selection of region when creating new bucket for third party S3 providers
 - [Bugfix] Recursive search yields no results (#11424)
@@ -25,17 +212,17 @@ https://cyberduck.io/
 
 7.9.1
 - [Bugfix] Slow synchronisation of a large folder (#11676)
-- [Bugfix] Slow tranfer when using "compare" option for existing files (#11679)
+- [Bugfix] Slow transfer when using "compare" option for existing files (#11679)
 - [Bugfix] Downloads fail with error "The specified key does not exist" (S3) (#11670)
 
 7.9.0
 - [Feature] New Big Sur style application icon (macOS)
 - [Feature] New "Auto" default option for number of connections for transfers
 - [Feature] Increased default to 5 concurrent connections for transfers for protocols other than FTP
-- [Feature] Allow toggling versioning configuration for bucket (Google Storage)
-- [Feature] Display and restore of previous file versions in bucket (Google Storage)
+- [Feature] Allow toggling versioning configuration for bucket (Google Cloud Storage)
+- [Feature] Display and restore of previous file versions in bucket (Google Cloud Storage)
 - [Feature] Support chacha20-poly1305@openssh.com cipher (SFTP) (#8554)
-- [Feature] Share file option to set public-read ACL on file and copy URL (S3, Google Storage)
+- [Feature] Share file option to set public-read ACL on file and copy URL (S3, Google Cloud Storage)
 - [Feature] Tremendously faster uploading folders with many files to vault (Cryptomator, OneDrive, Google Drive, Backblaze B2) (#10849)
 - [Feature] Substantially faster uploading folders with many files (OneDrive, Google Drive, Backblaze B2)
 - [Bugfix] Maximum number of simultaneous transfers not handled properly (#11001)
@@ -47,7 +234,7 @@ https://cyberduck.io/
 
 7.8.5
 - [Feature] Support ED25519 and ECDSA keys in the PuTTY format (SFTP)
-- [Bugfix] Large increasing memory usage when downloading files with segmeted downloads option (#11151)
+- [Bugfix] Large increasing memory usage when downloading files with segmented downloads option (#11151)
 - [Bugfix] Faster transfer rate with segmented downloads option enabled (SFTP)
 - [Bugfix] Allow revert and restore of multiple files (S3)
 
@@ -72,7 +259,7 @@ https://cyberduck.io/
 - [Bugfix] Interoperability with Oracle Object Storage using path style requests (#10956, #11548)
 - [Bugfix] Failure listing files with shortcut pointing to deleted file (Google Drive)
 - [Bugfix] Allow configuration of path for Nextcloud & ownCloud connections (#11540)
-- [Bugfix] Failure unlocking vaults on Google Storage (Cryptomator) (#11528)
+- [Bugfix] Failure unlocking vaults on Google Cloud Storage (Cryptomator) (#11528)
 - [Bugfix] Fix SSL session reuse on data channel (FTP, Windows)
 - [Bugfix] Failure running application (CLI, Linux)
 - [Bugfix] Recursive search yields no results (Google Drive) (#11424)
@@ -87,7 +274,7 @@ https://cyberduck.io/
 - [Feature] Connecting to different libraries (SharePoint) (#11043)
 - [Feature] Default connection profile (Microsoft SharePoint Site) to connect so specific site (Sharepoint)  (#10115, #11375)
 - [Feature] Create shared link for file (OneDrive, SharePoint) (#11373)
-- [Feature] Updated toolbar icons in Preferencs window (macOS)
+- [Feature] Updated toolbar icons in Preferences window (macOS)
 - [Bugfix] No attempt to authenticate using SSH agent (SFTP)
 - [Bugfix] Allow browsing filenames containing forward slash (Google Drive)
 - [Bugfix] Allow accessing shortcuts for files and folders (Google Drive)
@@ -142,7 +329,7 @@ https://cyberduck.io/
 7.5.0
 - [Feature] Interoperability with macOS 11
 - [Feature] Column for storage class in browser (S3)
-- [Bugfix] Use STANDARD for default storage class (Google Storage) (#11062)
+- [Bugfix] Use STANDARD for default storage class (Google Cloud Storage) (#11062)
 - [Bugfix] Switch to UTF-8 for encoding HTTP authentication header (WebDAV)
 - [Bugfix] SNI support for TLS connections (FTP) (#9257)
 - [Bugfix] Handle formatting errors in ~/.aws/credentials (S3)
@@ -166,8 +353,8 @@ https://cyberduck.io/
 - [Bugfix] Slow updating files after saving changes in external editor (#11004)
 
 7.3.1
-- [Feature] Edit ACLs for files (Google Storage) (#11008)
-- [Feature] Support to set storage class (Google Storage)
+- [Feature] Edit ACLs for files (Google Cloud Storage) (#11008)
+- [Feature] Support to set storage class (Google Cloud Storage)
 - [Feature] Support for Intelligent-Tiering storage class (S3) (#11031)
 - [Feature] Support for Glacier Deep Archive storage class (S3) (#10681)
 - [Feature] Allow selection of Glacier storage class as default for uploads (S3) (#10681)
@@ -183,7 +370,7 @@ https://cyberduck.io/
 - [Feature] Labels for bookmarks (macOS) (#9719)
 - [Feature] Group bookmarks by labels in menu (macOS)
 - [Feature] Support TLS 1.3 (#10962)
-- [Bugfix] Download fails for files with whitespace in name (Google Storage) (#10931)
+- [Bugfix] Download fails for files with whitespace in name (Google Cloud Storage) (#10931)
 - [Bugfix] Unable to access documents in Shared with me (Google Drive)
 - [Bugfix] Read timeout after copying large file (OpenStack Swift)
 - [Bugfix] Repeated prompt for authorization code (hubiC)
@@ -232,16 +419,16 @@ https://cyberduck.io/
 
 7.1.1
 - [Bugfix] Failure authenticating using SSH agent (SFTP) (#10800)
-- [Bugfix] Failure overwriting existing file (Google Storage)
+- [Bugfix] Failure overwriting existing file (Google Cloud Storage)
 - [Bugfix] Missing hostname verification in TLS handshake when connecting through HTTP proxy
 
 7.1.0
 - [Feature] Application running as 64-bit (Windows)
 - [Feature] Application package is notarized (macOS)
-- [Feature] Support for storage classes (Google Storage)
-- [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
-- [Feature] Support to set lifecycle configuration on bucket (Google Storage)
-- [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
+- [Feature] Support for storage classes (Google Cloud Storage)
+- [Feature] Support to select region (eu, us, asia) for new buckets (Google Cloud Storage)
+- [Feature] Support to set lifecycle configuration on bucket (Google Cloud Storage)
+- [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Cloud Storage)
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
 - [Bugfix] Errors accessing Cryptomator vault (Google Drive, OneDrive)
 - [Bugfix] No route to host error with IPv6 only server (macOS)
@@ -274,8 +461,8 @@ https://cyberduck.io/
 - [Feature] Support to open SSH terminal in bash.exe from Windows Linux Subsystem (SFTP, Windows) (#10065)
 - [Bugfix] Existing metadata not displayed (S3) (#10647)
 - [Bugfix] Browser always shows modification time in UTC timezone (Windows) (#10629)
-- [Bugfix] Interoerability with Apache Sling (WebDAV) (#10598)
-- [Bugfix] Interoerability with SAP NetWeaver Application Server (WebDAV)
+- [Bugfix] Interoperability with Apache Sling (WebDAV) (#10598)
+- [Bugfix] Interoperability with SAP NetWeaver Application Server (WebDAV)
 - [Bugfix] Upload fails with 400 error reply (Google Drive)
 - [Bugfix] Wrong MIME type set for uploaded files (S3)
 - [Bugfix] Invalid signature for files with + or * character in key (S3) (#9914, #10679)
@@ -536,21 +723,21 @@ https://cyberduck.io/
 - [Bugfix] Updater ignores custom installation location (Windows) (#9782)
 
 6.0.4 [https://trac.cyberduck.io/milestone/6.0.4]
-- [Bugfix] Failure to upload to root of vault (Cryptomator)
-- [Bugfix] Disable x-amz-request-payer header for non AWS endpoints (S3)
+- [Bugfix] Failure to upload to root of vault (Cryptomator)
+- [Bugfix] Disable x-amz-request-payer header for non AWS endpoints (S3)
 
 6.0.2 [https://trac.cyberduck.io/milestone/6.0.2]
-- [Bugfix] Invalid version number format for Mac App Store (Mac)
+- [Bugfix] Invalid version number format for Mac App Store (Mac)
 
 6.0.1 [https://trac.cyberduck.io/milestone/6.0.1]
-- [Bugfix] New connections do not authenticate (Dropbox) (#9932)
-- [Bugfix] Large file uploads do not resume (Backblaze B2) (#9935)
-- [Bugfix] Failure listing folders with whitespace (OneDrive) (#9937)
-- [Bugfix] Failure duplicating files (FTP) (#9933)
-- [Bugfix] Failure uploading files with temporary filename option enabled (Backblaze B2)
-- [Bugfix] Failure connecting to local disk (Windows)
-- [Bugfix] Multipart uploads fail if the user lacks permission to list multipart uploads (S3) (#9948)
-- [Bugfix] Synchronize files in vault (Cryptomator)
+- [Bugfix] New connections do not authenticate (Dropbox) (#9932)
+- [Bugfix] Large file uploads do not resume (Backblaze B2) (#9935)
+- [Bugfix] Failure listing folders with whitespace (OneDrive) (#9937)
+- [Bugfix] Failure duplicating files (FTP) (#9933)
+- [Bugfix] Failure uploading files with temporary filename option enabled (Backblaze B2)
+- [Bugfix] Failure connecting to local disk (Windows)
+- [Bugfix] Multipart uploads fail if the user lacks permission to list multipart uploads (S3) (#9948)
+- [Bugfix] Synchronize files in vault (Cryptomator)
 - [Bugfix] Repeated login prompt (2-Factor Authentication SFTP)
 - [Bugfix] Enable copy of text from log drawer (Windows) (#9952)
 
@@ -566,11 +753,11 @@ https://cyberduck.io/
 - [Feature] Copy pre-authenticated URLs (Backblaze B2)
 
 5.4.4 [https://trac.cyberduck.io/milestone/5.4.4]
-- [Bugfix] Multipart uploads do not resume (S3)
-- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
+- [Bugfix] Multipart uploads do not resume (S3)
+- [Bugfix] Field in login prompt disabled to enter authentication code (OAuth 2.0)
 
 5.4.3 [https://trac.cyberduck.io/milestone/5.4.3]
-- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
+- [Bugfix]  Interoperability with PROPFIND for listing folders (WebDAV)
 - [Bugfix] Failed to generate HMAC (Spectra S3)
 - [Bugfix] Quick Look only works one time (#9889)
 - [Bugfix] Set MD5 checksum in ETag request header (OpenStack Swift)
@@ -666,19 +853,19 @@ https://cyberduck.io/
 - [Bugfix] Overwriting file creates duplicate (Google Drive)
 
 5.1.2 [https://trac.cyberduck.io/milestone/5.1.2]
-- [Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (#9672)
+- [Bugfix] Crash importing bookmarks from ExpanDrive (Windows) (#9672)
 
 5.1.1 [https://trac.cyberduck.io/milestone/5.1.1]
 - [Feature] Allow connections with AWS2 signature version using connection profile (S3) (#9667)
-- [Bugfix] Cleanup temporary files on application exit
-- [Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (#9668)
+- [Bugfix] Cleanup temporary files on application exit
+- [Bugfix] Certificate trust error connecting to os.unil.cloud.switch.ch (S3) (#9668)
 
 5.1 [https://trac.cyberduck.io/milestone/5.1]
 - [Feature] Prompt when recursively applying permissions (#9657)
 - [Feature] Default to signature version AWS4 when connecting to third party S3 providers
 - [Feature] Use batch operation to delete multiple files (Google Drive)
-- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
-- [Bugfix] Copy transfer from other connection fails (Spectra S3)
+- [Bugfix] Prompt to insert Smart Card when connecting to TLS secured site (Windows) (#8595)
+- [Bugfix] Copy transfer from other connection fails (Spectra S3)
 - [Bugfix] Interoperability with Minio (S3)
 - [Bugfix] Repeated prompt to select private key for authentication (App Store) (SFTP)
 - [Bugfix] Repeated prompt for changed host key fingerprint (SFTP)
@@ -698,7 +885,7 @@ https://cyberduck.io/
 - [Feature] Display in-progress multipart uploads in browser (S3)
 - [Feature] Importer for bookmarks from Transmit 4 (Mac)
 - [Bugfix] Allow to select encryption keys from KMS different from default us-east-1 region (S3) (#9617)
-- [Bugfix] Uncomfirmed reads are unbounded (SFTP) (#9603)
+- [Bugfix] Unconfirmed reads are unbounded (SFTP) (#9603)
 - [Bugfix] Mismatch for MD5 checksum when downloading large object (OpenStack Swift) (#8861)
 
 5.0.8 [https://trac.cyberduck.io/milestone/5.0.8]
@@ -806,7 +993,7 @@ https://cyberduck.io/
 - [Bugfix] Certificate chain displayed not complete (#8885)
 - [Bugfix] Permission failure deleting files looking for interrupted multipart uploads (S3) (#9000)
 - [Bugfix] Support for Infrequent Access (Standard IA) storage class (S3)
-- [Bugfix] XML validation failure with AccessControlPolicy element (Google Storage) (#9002)
+- [Bugfix] XML validation failure with AccessControlPolicy element (Google Cloud Storage) (#9002)
 - [Bugfix] Do not try list containers if default path is provided (OpenStack Swift) (#9038)
 - [Bugfix] Faster connection setup with many containers (OpenStack Swift)
 - [Bugfix] Failure uploading multiple files (iRODS) (#8911)
@@ -886,7 +1073,7 @@ https://cyberduck.io/
 
 4.6.1 [https://trac.cyberduck.io/milestone/4.6.1]
 - [Bugfix] Uploads to buckets in eu-central-1 (S3) (#8375)
-- [Bugfix] Supporting both Project ID and Project Number for login username (Google Storage) (#8352)
+- [Bugfix] Supporting both Project ID and Project Number for login username (Google Cloud Storage) (#8352)
 - [Bugfix] Changes not uploaded when editing multiple files (Windows) (#8359, #8369)
 - [Bugfix] Failure to read attributes downloading bucket (S3) (#8388)
 - [Bugfix] Wrong timestamp in temporary URL (OpenStack Swift) (#8384)
@@ -924,8 +1111,8 @@ https://cyberduck.io/
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#6521)
 - [Feature] New SSH/SFTP protocol implementation
 - [Feature] TLS mutual (two-way) authentication with client certificate (WebDAV, FTP-TLS) (#5883)
-- [Feature] Public key authentification using OpenSSH agent (SFTP) (Mac) (#75)
-- [Feature] Public key authentification using Pageant (SFTP) (Windows) (#75)
+- [Feature] Public key authentication using OpenSSH agent (SFTP) (Mac) (#75)
+- [Feature] Public key authentication using Pageant (SFTP) (Windows) (#75)
 - [Feature] GZIP Compression (SFTP) (#123)
 - [Feature] ECDSA public key authentication (SFTP) (#7938)
 - [Feature] Notifications in system tray (Windows) (#8007)
@@ -1036,20 +1223,20 @@ https://cyberduck.io/
 - [Bugfix] Filename for edited file includes absolute path (Windows) (#7175)
 - [Bugfix] Change of default editor (Windows) (#7178)
 - [Bugfix] Change bandwidth limit (#7189)
-- [Bugfix] Always asks for permsission to access Keychain (10.6) (#7202)
+- [Bugfix] Always asks for permission to access Keychain (10.6) (#7202)
 
 4.3 [https://trac.cyberduck.io/milestone/4.3]
 - [Localize] Arabic Localization
 - [Feature] Retina resolution support (10.8) (#6760)
 - [Feature] Notification center support (10.8) (#6792)
 - [Feature] Gatekeeper support (10.8) (#6888)
-- [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)
+- [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Cloud Storage)
 - [Feature] Bucket location in South America (São Paulo) Region (S3)
 - [Feature] Bucket location in Asia Pacific (Sydney) Region (S3)
 - [Feature] Multi-Object Delete (S3)
 - [Feature] Interoperability with HP Cloud (Openstack)
 - [Feature] Interoperability with Lunacloud Storage (S3)
-- [Feature] Website Configuration (Google Storage)
+- [Feature] Website Configuration (Google Cloud Storage)
 - [Feature] Website Configuration (Cloudfiles)
 - [Feature] Edit container metadata (Cloudfiles)
 - [Feature] Reuse Session key on data connection (FTP/TLS) (#5087)
@@ -1084,7 +1271,7 @@ https://cyberduck.io/
 - [Feature] Support US West (Oregon) location (S3)
 - [Feature] Try public key authentication login with default keys from OpenSSH (SFTP) (#3982)
 - [Bugfix] Performance improvement preparing files for download
-- [Bugfix] ETag mismatch deleting files	(Google Docs) (#6204)
+- [Bugfix] ETag mismatch deleting files    (Google Docs) (#6204)
 - [Bugfix] Creating new file (WebDAV) (#6341)
 - [Bugfix] No error message when SFTP subsystem is disabled (SFTP) (#5902)
 
@@ -1092,8 +1279,8 @@ https://cyberduck.io/
 - [Bugfix] Freeze after file transfer is complete (#6183)
 - [Bugfix] Connection failure to Eucalyptus Cloud installation (S3) (#6206)
 - [Feature] Copy streaming URLs (Cloudfiles)
-- [Feature] Option to set ACLs for Google Apps Domain (Google Storage)
-- [Feature] Option to set ACLs for Google Group Email Address (Google Storage)
+- [Feature] Option to set ACLs for Google Apps Domain (Google Cloud Storage)
+- [Feature] Option to set ACLs for Google Group Email Address (Google Cloud Storage)
 - [Feature] Allow setting non-metadata headers (Cloudfiles, Openstack Swift) (#6191, #6239)
 
 4.1.2 [https://trac.cyberduck.io/milestone/4.1.2]
@@ -1166,7 +1353,7 @@ https://cyberduck.io/
 - [Feature] Website endpoint configuration option for buckets (S3)
 - [Feature] CDN configuration for website endpoints as custom origin (CloudFront)
 - [Bugfix] Limit number of concurrent transfers (#5539, #5624)
-- [Bugfix] Qeued transfers start in random order (#5632)
+- [Bugfix] Queued transfers start in random order (#5632)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
 - [Bugfix] ACLs getting dropped when updating metadata (S3) (#5571)
 - [Bugfix] .CDN_ACCESS_LOGS folder listing is empty (Cloudfiles) (#5350)
@@ -1200,7 +1387,7 @@ https://cyberduck.io/
 - [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Reduced upload preparation time for thousands of files
 - [Bugfix] Support for S3Fox directory placeholders (S3)
-- [Bugfix] Support for Google Storage Console directory placeholders (S3)
+- [Bugfix] Support for Google Cloud Storage Console directory placeholders (S3)
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
 - [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
 - [Bugfix] Changing storage class fails (S3)
@@ -1238,8 +1425,8 @@ https://cyberduck.io/
 - [Bugfix] Failure reading symbolic link target for directories (SFTP) (#5141)
 
 3.6 (Sep-06-2010) [https://trac.cyberduck.io/milestone/3.6]
-- [Feature] Connecting to Google Storage (Google Storage)
-- [Feature] Edit Access Control List (ACL) (#3191) (S3, Google Storage, Google Docs)
+- [Feature] Connecting to Google Cloud Storage (Google Cloud Storage)
+- [Feature] Edit Access Control List (ACL) (#3191) (S3, Google Cloud Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
 - [Feature] Enable Bucket Multi-Factor Authentication Delete (#4510) (S3)
 - [Feature] Display previous file versions in browser (S3)
@@ -1254,13 +1441,13 @@ https://cyberduck.io/
 - [Feature] Change SSH options for open in Terminal.app (#4232)
 - [Feature] Unsecure connection warning when password is transmitted in plaintext
 - [Feature] Alert to change connection to TLS if server supports AUTH TLS (FTP)
-- [Feature] Edit metadata for multiple files (S3, Google Storage)
+- [Feature] Edit metadata for multiple files (S3, Google Cloud Storage)
 - [Feature] Menu items to copy HTTP, CDN, signed & authenticated URLs to clipboard (#4207)
 - [Feature] Menu items to open HTTP, CDN, signed & authenticated URLs in Web Browser
 - [Feature] Move and rename files and folders (Google Docs)
 - [Feature] Update size display incrementally while calculating recursively (#3213)
 - [Feature] Hidden preference to change SSH options for 'Open in Terminal.app' (#4232)
-- [Feature] Batch editing of S3 metadata (Google Storage, S3) (#5105)
+- [Feature] Batch editing of S3 metadata (Google Cloud Storage, S3) (#5105)
 - [Feature] Show number of active transfers in Dock (#3808)
 - [Feature] Copy directory listing to clipboard (#2372)
 - [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
@@ -1290,7 +1477,7 @@ https://cyberduck.io/
 - [Feature] Download format preferences for documents (Google Docs)
 - [Feature] Optical Character Recognition (OCR) for image uploads (Google Docs)
 - [Feature] Support for Asia Pacific (Singapore) location (S3)
-- [Feature] Support for keyboard-interactive authentiation using SecurID (#4459) (SFTP)
+- [Feature] Support for keyboard-interactive authentication using SecurID (#4459) (SFTP)
 - [Feature] HTTP plain text connection support to connect to third party S3 servers (#4181) (S3)
 - [Feature] Custom metadata attributes (#4063) (S3, Rackspace Cloud Files)
 - [Feature] Configure Access Logs for CloudFront streaming distributions (S3)
@@ -1327,7 +1514,7 @@ https://cyberduck.io/
 - [Bugfix] Synchronisation does not transfer files with equal size (#3100)
 - [Bugfix] Selection in synchronize prompt (#3901)
 - [Bugfix] Bonjour bookmarks ignore TXT record with path and credentials attributes (#3984)
-- [Bugfix] Donation prompt cannot be supressed (#3937)
+- [Bugfix] Donation prompt cannot be suppressed (#3937)
 - [Bugfix] Error when uploading file with different display name from real filename (#4041)
 - [Bugfix] Quick Connect needs extra keystroke to connect (#3801)
 - [Bugfix] Password in non-default keychain are copied to login keychain (#2878)
@@ -1573,7 +1760,7 @@ https://cyberduck.io/
 - [Feature] Added PageSpinner to the list of supported editors (http://www.optima-system.com/pagespinner) (#205)
 - [Bugfix] Disconnecting in the background not blocking the user interface (#--]
 - [Bugfix] Folders marked as inaccessible after timeouts and cannot be opened after reconnecting (#611)
-- [Bugfix] Applescript/Dashboard should not use seperate session for transfers (#--]
+- [Bugfix] Applescript/Dashboard should not use separate session for transfers (#--]
 - [Bugfix] Cannot write to group writable files (SFTP) (#173)
 - [Bugfix] File length is set to zero if updating permission fails (SFTP) (#974)
 - [Bugfix] Directory listing is not refreshed when upload is completed after "Try Again" (#982)
@@ -1621,7 +1808,7 @@ https://cyberduck.io/
 
 2.6 (Jun-07-2006) [https://trac.cyberduck.io/milestone/2.6]
 - [Localize] Turkish Localization
-- [Feature] Automatic software udpate using the Sparkle.framework (Thanks to Andy Matuschak!) (#300)
+- [Feature] Automatic software update using the Sparkle.framework (Thanks to Andy Matuschak!) (#300)
 - [Feature] Dashboard Widget included (Thanks to Claudio Procida!)
 - [Feature] Marking write-only and non-accessible directories with special icon as in Finder.app
 - [Feature] Reintroduced transcript drawer in browser window (#104) and transfer window (#375)
@@ -1629,7 +1816,7 @@ https://cyberduck.io/
 - [Feature] Display alert icon if hostname cannot be resolved and Network Diagnostics.app integration
 - [Feature] Indicate estimated remaining time left for transfers (#43)
 - [Feature] Using custom error notifications instead of alert sheets don't block the parent window
-- [Bugfix] Adjustements to the graphical user interface (Thanks to Peter Maurer!)
+- [Bugfix] Adjustments to the graphical user interface (Thanks to Peter Maurer!)
 - [Bugfix] Stalled connection and file transfer attempts cannot be interrupted (#55)
 - [Bugfix] Cannot login with colon in username (#309)
 - [Bugfix] Cannot delete directory from server (#256)
@@ -1642,7 +1829,7 @@ https://cyberduck.io/
 
 2.5.5 (Mar-01-2006) [https://trac.cyberduck.io/milestone/2.5.5]
 - [Localize] Hebrew Localization
-- [Bugfix] Excape key cancels editing (#190)
+- [Bugfix] Escape key cancels editing (#190)
 - [Bugfix] Adjust permissions on created folders when transferring files (#77)
 - [Bugfix] Cannot write to group writable files (SFTP) (#173)
 - [Bugfix] Spotlight binary not executable (#212)
@@ -1661,7 +1848,7 @@ https://cyberduck.io/
 - [Feature] Paste files copied in Finder.app (Upload)
 - [Feature] Includes Unsanity Crash Reporter
 - [Bugfix] Renaming files in expanded tree of outline view bogus
-- [Bugfix] Change to invalid directories not catched
+- [Bugfix] Change to invalid directories not caught
 - [Bugfix] Second login attempt always fails (SFTP)
 
 2.5.2 (Nov-18-2005)
@@ -1744,8 +1931,8 @@ https://cyberduck.io/
 - [Bugfix] Right-click a file in the browser will first select before it displays the contextual menu
 - [Bugfix] Transfer success notification when remote editing file even when transfer fails (Growl)
 - [Bugfix] Resolved incompatibility with SSH-1 keys in ~/.ssh/known_hosts (SFTP)
-- [Bugfix] Applescript compatiblity issues with 10.4
-- [Bugfix] Browser column width compatiblity issues with 10.4
+- [Bugfix] Applescript compatibility issues with 10.4
+- [Bugfix] Browser column width compatibility issues with 10.4
 - [Bugfix] Could not drag bookmark file to drawer when empty
 - [Bugfix] Ignored custom port when selecting bookmark in connection dialog
 
@@ -1801,8 +1988,8 @@ https://cyberduck.io/
 - [Bugfix] Typing in transfer window causes crash
 - [Bugfix] Transcript causes crash
 - [Bugfix] Reporting correct file size for large files
-- [Bugfix] Disable resume on ASCII tranfers (FTP)
-- [Bugfix] Incompatiblity with Filezilla Server (FTP)
+- [Bugfix] Disable resume on ASCII transfers (FTP)
+- [Bugfix] Incompatibility with Filezilla Server (FTP)
 - [Bugfix] Synchronizing current working directory
 - [Bugfix] Graceful failure on SSH connection problems (SFTP)
 - [Bugfix] Correctly resolving '~' in filenames
@@ -1879,7 +2066,7 @@ https://cyberduck.io/
 - [Feature] Preference item to disable the update check
 - [Feature] Toolbar item to open downloaded files with default application
 - [Feature] Graceful application termination (Properly ask to close all connections and then quit)
-- [Bugfix] Remembering choosen directories in open and save dialogs
+- [Bugfix] Remembering chosen directories in open and save dialogs
 
 2.3 (May-15-2004)
 - [Localize] Finnish Localization
@@ -1945,7 +2132,7 @@ https://cyberduck.io/
 
 2.2b4 (Jan-31-2004)
 - [Bugfix] Fixed a bug that with some servers the permissions could not be modified (FTP)
-- [Bugfix] When addding a transfer to the queue it is highlighted
+- [Bugfix] When adding a transfer to the queue it is highlighted
 - [Bugfix] Improved login process
 - [Localize] Updated Japanese localization
 
@@ -1992,7 +2179,7 @@ https://cyberduck.io/
 - [Feature] Double clicking a Cyberduck bookmark file in the Finder will open a new browser and connect to the remote site
 - [Feature] Bookmarks can now be modified
 - [Feature] Specify an initial directory upon new connection (e.g. public_html instead of the default home)
-- [Feature] Use keyboard shortcut (commann-up/down) for browsing a directory
+- [Feature] Use keyboard shortcut (command-up/down) for browsing a directory
 - [Feature] Uploaded files have the same permissions as locally (FTP)
 - [Feature] Updated icon set
 - [Bugfix] Remembering sort order while browsing
@@ -2017,18 +2204,18 @@ https://cyberduck.io/
 
 2.1b3 (Aug-17-2003)
 - [Localize] Localization support
-- [Feature] Files and foldes can now be dragged to the Finder to download them
+- [Feature] Files and folders can now be dragged to the Finder to download them
 - [Bugfix] Windows do now no more stack exactly on the top of prior one
 - [Feature] There are now equivalent menu actions for the toolbar items
 - [Bugfix] Modification dates and time are now displayed correctly
 - [Bugfix] The modification date column is now sorted correctly
 - [Bugfix] Browser columns are now sortable in both directions
-- [Bugfix] When deleting multiple files and directores, the file list will now only get updated at the end because of performance
+- [Bugfix] When deleting multiple files and directories, the file list will now only get updated at the end because of performance
 - [Bugfix] If multiples have been selected to transfer, Cyberduck now puts them in the same queue and opens only one connection to the server
 - [Feature] There is a new command 'Go to folder' for changing the working directory quickly
 - [Bugfix] Many smaller bug fixes
 
 2.1b2 (Aug-15-2003)
 - [Feature] SSH (SFTP) support
-- [Feature] Completly rewritten user interface using the Cocoa Framework
+- [Feature] Completely rewritten user interface using the Cocoa Framework
 

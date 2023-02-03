@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -28,7 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -40,7 +40,7 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 
 public class DAVListService implements ListService {
-    private static final Logger log = Logger.getLogger(DAVListService.class);
+    private static final Logger log = LogManager.getLogger(DAVListService.class);
 
     private final DAVSession session;
     private final DAVAttributesFinderFeature attributes;

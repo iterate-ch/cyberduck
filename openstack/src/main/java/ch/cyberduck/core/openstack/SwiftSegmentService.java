@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -32,7 +31,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -48,7 +48,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class SwiftSegmentService {
-    private static final Logger log = Logger.getLogger(SwiftSegmentService.class);
+    private static final Logger log = LogManager.getLogger(SwiftSegmentService.class);
 
     private final SwiftSession session;
 
@@ -152,14 +152,14 @@ public class SwiftSegmentService {
     }
 
     /**
-     * The value of the ETag header is calculated by taking
-     * the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
+     * The value of the ETag header is calculated by taking the ETag value of each segment, concatenating them together,
+     * and then returning the MD5 checksum of the result.
      *
      * @param checksum Checksum compute service
      * @param objects  Files
      * @return Concatenated checksum
      */
-    public Checksum checksum(final ChecksumCompute checksum, final List<StorageObject> objects) throws ChecksumException {
+    public Checksum checksum(final ChecksumCompute checksum, final List<StorageObject> objects) throws BackgroundException {
         final StringBuilder concatenated = new StringBuilder();
         for(StorageObject s : objects) {
             concatenated.append(s.getMd5sum());

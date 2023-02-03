@@ -24,7 +24,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Encryption;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -34,7 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> {
-    private static final Logger log = Logger.getLogger(ListEncryptionKeysWorker.class);
+    private static final Logger log = LogManager.getLogger(ListEncryptionKeysWorker.class);
 
     /**
      * Selected files.

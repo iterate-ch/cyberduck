@@ -22,11 +22,12 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 
 public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection {
-    private static final Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(CloudberryBookmarkCollection.class);
 
     private static final long serialVersionUID = 2245328157886337606L;
 

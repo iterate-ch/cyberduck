@@ -21,10 +21,11 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DefaultWorkingDirectoryFinder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StaticApplicationResourcesFinder implements ApplicationResourcesFinder {
-    private static final Logger log = Logger.getLogger(StaticApplicationResourcesFinder.class);
+    private static final Logger log = LogManager.getLogger(StaticApplicationResourcesFinder.class);
 
     @Override
     public Local find() {

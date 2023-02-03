@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +46,7 @@ public class DriveMetadataFeature implements Metadata {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final String fileid = this.fileid.getFileId(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileId(file);
             final Map<String, String> properties = session.getClient().files().get(fileid).setFields("properties")
                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute().getProperties();
             if(null == properties) {
@@ -63,7 +62,7 @@ public class DriveMetadataFeature implements Metadata {
     @Override
     public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final String fileid = this.fileid.getFileId(file, new DisabledListProgressListener());
+            final String fileid = this.fileid.getFileId(file);
             final File body = new File();
             body.setProperties(status.getMetadata());
             session.getClient().files().update(fileid, body).setFields("properties").

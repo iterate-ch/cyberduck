@@ -19,42 +19,62 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.concurrency.Interruptibles;
+
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-
 public abstract class DelayedHttpEntity extends AbstractHttpEntity {
-    private static final Logger log = Logger.getLogger(DelayedHttpEntity.class);
+    private static final Logger log = LogManager.getLogger(DelayedHttpEntity.class);
 
-    private final CountDownLatch entry;
-    private final CountDownLatch exit = new CountDownLatch(1);
+    /**
+     * Count down when stream to server has been opened
+     */
+    private final CountDownLatch streamOpen;
+
+    /**
+     * Count down when stream is closed writing entity to server
+     */
+    private final CountDownLatch streamClosed = new CountDownLatch(1);
 
     public DelayedHttpEntity() {
-        this(new CountDownLatch(1));
+        this(Thread.currentThread(), new CountDownLatch(1));
     }
 
     /**
-     * @param entry Signal when stream is ready
+     * @param streamOpen Signal when stream is ready
      */
-    public DelayedHttpEntity(final CountDownLatch entry) {
-        this.entry = entry;
+    public DelayedHttpEntity(final CountDownLatch streamOpen) {
+        this(Thread.currentThread(), streamOpen);
+    }
+
+    public DelayedHttpEntity(final Thread parentThread, final CountDownLatch streamOpen) {
+        this.parentThread = parentThread;
+        this.streamOpen = streamOpen;
     }
 
     /**
      * HTTP stream to write to
      */
     private OutputStream stream;
+
     /**
-     *
+     * Entity written to server
      */
-    private boolean consumed = false;
+    private boolean entityWritten = false;
+
+    /**
+     * Parent thread to check if still alive
+     */
+    private final Thread parentThread;
 
     public boolean isRepeatable() {
         return true;
@@ -79,51 +99,39 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
 
     public void writeTo(final OutputStream out) throws IOException {
         try {
-            stream = new OutputStream() {
-                @Override
-                public void write(final byte[] b, final int off, final int len) throws IOException {
-                    out.write(b, off, len);
-                }
-
-                @Override
-                public void write(final int b) throws IOException {
-                    out.write(b);
-                }
-
-                @Override
-                public void write(final byte[] b) throws IOException {
-                    out.write(b);
-                }
-
+            // Signal when finished writing to stream
+            stream = new ProxyOutputStream(out) {
                 @Override
                 public void close() throws IOException {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        // Signal finished writing to stream
-                        exit.countDown();
-                    }
+                    super.close();
+                    streamClosed.countDown();
+                }
+
+                @Override
+                protected void handleIOException(final IOException e) throws IOException {
+                    streamClosed.countDown();
+                    throw e;
                 }
             };
         }
         finally {
-            entry.countDown();
+            // Signal stream is ready for writing
+            streamOpen.countDown();
         }
         // Wait for signal when content has been written to the pipe
-        Uninterruptibles.awaitUninterruptibly(exit);
+        Interruptibles.await(streamClosed, IOException.class, new Interruptibles.ThreadAliveCancelCallback(parentThread));
         // Entity written to server
-        consumed = true;
+        entityWritten = true;
     }
 
     public boolean isStreaming() {
-        return !consumed;
+        return !entityWritten;
     }
 
     /**
      * @return Set when output stream is ready
      */
-    public CountDownLatch getEntry() {
-        return entry;
+    public CountDownLatch getStreamOpen() {
+        return streamOpen;
     }
 }

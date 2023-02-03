@@ -1,40 +1,39 @@
-// 
+//
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
-using System;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.updater;
-using java.time;
-using org.apache.log4j;
+using Microsoft.Win32.SafeHandles;
+using org.apache.logging.log4j;
+using System;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using Windows.Win32.Security;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.Security.TOKEN_INFORMATION_CLASS;
 
 namespace Ch.Cyberduck.Core.Sparkle
 {
     public class WinSparklePeriodicUpdateChecker : AbstractPeriodicUpdateChecker, IDisposable
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern bool GetTokenInformation(IntPtr tokenHandle, TokenInformationClass tokenInformationClass,
-            IntPtr tokenInformation, int tokenInformationLength, out int returnLength);
 
         public WinSparklePeriodicUpdateChecker(Controller controller)
             : base(controller)
@@ -71,10 +70,9 @@ namespace Ch.Cyberduck.Core.Sparkle
             {
                 WinSparkle.CheckUpdateWithUi();
             }
-            _preferences.setProperty("update.check.last", DateTime.Now.Ticks);
         }
 
-        public override bool hasUpdatePrivileges()
+        public unsafe override bool hasUpdatePrivileges()
         {
             var privilegeCheck = PreferencesFactory.get().getBoolean("update.check.privilege");
             if (!privilegeCheck)
@@ -101,100 +99,39 @@ namespace Ch.Cyberduck.Core.Sparkle
                 return false;
             }
 
-            int tokenInfLength = Marshal.SizeOf(typeof (int));
-            IntPtr tokenInformation = Marshal.AllocHGlobal(tokenInfLength);
-
-            try
+            TOKEN_ELEVATION_TYPE elevationType;
+            using var identityHandle = new SafeFileHandle(identity.Token, false);
+            var result = GetTokenInformation(identityHandle, TokenElevationType, &elevationType, sizeof(TOKEN_ELEVATION_TYPE), out var length);
+            if (!result)
             {
-                var result = GetTokenInformation(identity.Token, TokenInformationClass.TokenElevationType,
-                    tokenInformation, tokenInfLength, out tokenInfLength);
+                var exception = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
+                Log.warn("Exception while retrieving token information", exception);
+                return false;
+            }
 
-                if (!result)
-                {
-                    var exception = Marshal.GetExceptionForHR(Marshal.GetHRForLastWin32Error());
-                    Log.warn("Exception while retrieving token information", exception);
+            switch (elevationType)
+            {
+                case TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault:
+                    // TokenElevationTypeDefault - User is not using a split token, so they cannot elevate.
                     return false;
-                }
 
-                var elevationType = (TokenElevationType) Marshal.ReadInt32(tokenInformation);
+                case TOKEN_ELEVATION_TYPE.TokenElevationTypeFull:
+                    // TokenElevationTypeFull - User has a split token, and the process is running elevated. Assuming they're an administrator.
+                    return true;
 
-                switch (elevationType)
-                {
-                    case TokenElevationType.TokenElevationTypeDefault:
-                        // TokenElevationTypeDefault - User is not using a split token, so they cannot elevate.
-                        return false;
-                    case TokenElevationType.TokenElevationTypeFull:
-                        // TokenElevationTypeFull - User has a split token, and the process is running elevated. Assuming they're an administrator.
-                        return true;
-                    case TokenElevationType.TokenElevationTypeLimited:
-                        // TokenElevationTypeLimited - User has a split token, but the process is not running elevated. Assuming they're an administrator.
-                        return true;
-                    default:
-                        Log.warn($"Unknown token elevation type: {elevationType}");
-                        return false;
-                }
+                case TOKEN_ELEVATION_TYPE.TokenElevationTypeLimited:
+                    // TokenElevationTypeLimited - User has a split token, but the process is not running elevated. Assuming they're an administrator.
+                    return true;
+
+                default:
+                    Log.warn($"Unknown token elevation type: {elevationType}");
+                    return false;
             }
-            finally
-            {
-                if (tokenInformation != IntPtr.Zero) Marshal.FreeHGlobal(tokenInformation);
-            }
-        }
-
-        private enum TokenInformationClass
-        {
-            TokenUser = 1,
-            TokenGroups,
-            TokenPrivileges,
-            TokenOwner,
-            TokenPrimaryGroup,
-            TokenDefaultDacl,
-            TokenSource,
-            TokenType,
-            TokenImpersonationLevel,
-            TokenStatistics,
-            TokenRestrictedSids,
-            TokenSessionId,
-            TokenGroupsAndPrivileges,
-            TokenSessionReference,
-            TokenSandBoxInert,
-            TokenAuditPolicy,
-            TokenOrigin,
-            TokenElevationType,
-            TokenLinkedToken,
-            TokenElevation,
-            TokenHasRestrictions,
-            TokenAccessInformation,
-            TokenVirtualizationAllowed,
-            TokenVirtualizationEnabled,
-            TokenIntegrityLevel,
-            TokenUiAccess,
-            TokenMandatoryPolicy,
-            TokenLogonSid,
-            MaxTokenInfoClass
-        }
-
-        /// <summary>
-        /// The elevation type for a user token.
-        /// </summary>
-        private enum TokenElevationType
-        {
-            TokenElevationTypeDefault = 1,
-            TokenElevationTypeFull,
-            TokenElevationTypeLimited
         }
 
         #region IDisposable Support
+
         private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                WinSparkle.Cleanup();
-
-                disposedValue = true;
-            }
-        }
 
         ~WinSparklePeriodicUpdateChecker()
         {
@@ -206,6 +143,17 @@ namespace Ch.Cyberduck.Core.Sparkle
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        #endregion
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                WinSparkle.Cleanup();
+
+                disposedValue = true;
+            }
+        }
+
+        #endregion IDisposable Support
     }
 }

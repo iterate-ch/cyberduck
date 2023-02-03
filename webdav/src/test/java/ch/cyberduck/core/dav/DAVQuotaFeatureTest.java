@@ -15,16 +15,7 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -38,20 +29,6 @@ public class DAVQuotaFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testGet() throws Exception {
-        final Quota.Space quota = new DAVQuotaFeature(session).get();
-        assertNotNull(quota);
-        assertEquals(Long.MAX_VALUE, quota.available, 0L);
-        assertEquals(0L, quota.used, 0L);
-    }
-
-    @Test
-    public void testGetRepository() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
         assertEquals(Long.MAX_VALUE, quota.available, 0L);

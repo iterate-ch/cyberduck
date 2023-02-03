@@ -18,6 +18,8 @@
     <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
     <VFS>$(PackageFiles)VFS/</VFS>
     <PackageLayout>$(PackageFiles)</PackageLayout>
+
+    <Version Condition=" '$(BuildVersion)'!='' ">$(BuildVersion).0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -58,6 +60,9 @@
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Cyberduck.Core.Native.dll">
       <PackagePath>$(PackageLayout)\Cyberduck.Core.Native.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Cyberduck.Core.Refresh.dll">
+      <PackagePath>$(PackageLayout)\Cyberduck.Core.Refresh.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Cyberduck.Protocols.dll">
       <PackagePath>$(PackageLayout)\Cyberduck.Protocols.dll</PackagePath>
@@ -146,12 +151,6 @@
     <LayoutFile Include="$(OutputPath)\StructureMap.dll">
       <PackagePath>$(PackageLayout)\StructureMap.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.dll">
-      <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.dll</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Microsoft.WindowsAPICodePack.Shell.dll">
-      <PackagePath>$(PackageLayout)\Microsoft.WindowsAPICodePack.Shell.dll</PackagePath>
-    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Microsoft.Toolkit.Uwp.Notifications.dll">
       <PackagePath>$(PackageLayout)\Microsoft.Toolkit.Uwp.Notifications.dll</PackagePath>
     </LayoutFile>
@@ -182,6 +181,46 @@
     <LayoutFile Include="$(OutputPath)\sunec.dll">
       <PackagePath>$(PackageLayout)\sunec.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\DotNetProjects.Wpf.Extended.Toolkit.dll">
+      <PackagePath>$(PackageLayout)\DotNetProjects.Wpf.Extended.Toolkit.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\DynamicData.dll">
+      <PackagePath>$(PackageLayout)\DynamicData.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.Fody.Helpers.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.Fody.Helpers.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ReactiveUI.Wpf.dll">
+      <PackagePath>$(PackageLayout)\ReactiveUI.Wpf.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\Splat.dll">
+      <PackagePath>$(PackageLayout)\Splat.dll</PackagePath>
+    </LayoutFile>
+
+    <LayoutFile Include="$(OutputPath)\System.Reactive.dll">
+      <PackagePath>$(PackageLayout)\System.Reactive.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Buffers.dll">
+      <PackagePath>$(PackageLayout)\System.Buffers.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Memory.dll">
+      <PackagePath>$(PackageLayout)\System.Memory.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Numerics.Vectors.dll">
+      <PackagePath>$(PackageLayout)\System.Numerics.Vectors.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Runtime.CompilerServices.Unsafe.dll">
+      <PackagePath>$(PackageLayout)\System.Runtime.CompilerServices.Unsafe.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.Threading.Tasks.Extensions.dll">
+      <PackagePath>$(PackageLayout)\System.Threading.Tasks.Extensions.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\System.ValueTuple.dll">
+      <PackagePath>$(PackageLayout)\System.ValueTuple.dll</PackagePath>
+    </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)Acknowledgments.rtf">
       <PackagePath>$(PackageLayout)\Acknowledgments.rtf</PackagePath>
@@ -190,59 +229,8 @@
       <PackagePath>$(PackageLayout)\License.txt</PackagePath>
     </LayoutFile>
 
-    <LayoutFile Include="$(OutputPath)profiles\Azure.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Azure.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\B2.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\B2.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\DAV.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\DAV.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\DRACOON (OAuth).cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\DRACOON (OAuth).cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\DAVS.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\DAVS.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Dropbox.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Dropbox.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\File.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\File.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\FTP.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\FTP.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\FTPS.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\FTPS.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Google Cloud Storage.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Google Cloud Storage.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Google Drive.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Google Drive.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Microsoft OneDrive.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Microsoft OneDrive.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Microsoft SharePoint.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Microsoft SharePoint.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Rackspace US.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Rackspace US.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\S3 (HTTPS).cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\S3 (HTTPS).cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\SFTP.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\SFTP.cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Openstack Swift (Keystone 2).cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Openstack Swift (Keystone 2).cyberduckprofile</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Openstack Swift (Keystone 3).cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Openstack Swift (Keystone 3).cyberduckprofile</PackagePath>
+    <LayoutFile Include="$(OutputPath)profiles\*.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\%(Filename)%(Extension)</PackagePath>
     </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)msvcr120.dll">

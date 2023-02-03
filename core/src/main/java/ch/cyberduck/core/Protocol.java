@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface Protocol extends Comparable<Protocol> {
+public interface Protocol extends Comparable<Protocol>, Serializable {
 
     /**
      * Check login credentials for validity for this protocol.
@@ -56,6 +56,9 @@ public interface Protocol extends Comparable<Protocol> {
      */
     Case getCaseSensitivity();
 
+    /**
+     * @return Server support for implicit timestamp update on parent directory when modifying contents
+     */
     DirectoryTimestamp getDirectoryTimestamp();
 
     /**
@@ -212,6 +215,12 @@ public interface Protocol extends Comparable<Protocol> {
     Set<Location.Name> getRegions();
 
     /**
+     * @param regions Available regions represented as strings from profile
+     * @return Localized region set
+     */
+    Set<Location.Name> getRegions(List<String> regions);
+
+    /**
      * @return Default region
      */
     String getRegion();
@@ -227,6 +236,11 @@ public interface Protocol extends Comparable<Protocol> {
     String icon();
 
     String favicon();
+
+    /**
+     * @return Host label
+     */
+    String getHostnamePlaceholder();
 
     /**
      * @return Username label
@@ -271,6 +285,11 @@ public interface Protocol extends Comparable<Protocol> {
     String getOAuthClientSecret();
 
     /**
+     * @return Allow use of Proof Key for Code Exchange (PKCE) for the OAuth2 Athorization Code Flow
+     */
+    boolean isOAuthPKCE();
+
+    /**
      * @return Custom connection protocol properties
      */
     Map<String, String> getProperties();
@@ -298,10 +317,12 @@ public interface Protocol extends Comparable<Protocol> {
         storegate,
         brick,
         nextcloud,
+        owncloud,
         manta,
-        gmxcloud,
+        eue,
         freenet,
-        ctera
+        ctera,
+        box
     }
 
     enum Case {

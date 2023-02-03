@@ -26,9 +26,10 @@ public class RenameExistingFilterTest {
 
     @Test
     public void testPrepare() throws Exception {
-        final DownloadFilterOptions options = new DownloadFilterOptions();
+        final Host host = new Host(new TestProtocol());
+        final DownloadFilterOptions options = new DownloadFilterOptions(host);
         options.icon = false;
-        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())),
+        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(host),
             options);
         final String name = new AsciiRandomStringService().random();
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), name) {

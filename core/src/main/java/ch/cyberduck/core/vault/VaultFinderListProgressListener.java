@@ -22,11 +22,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.HostPreferences;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.nio.charset.StandardCharsets;
 
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
-    private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
+    private static final Logger log = LogManager.getLogger(VaultFinderListProgressListener.class);
 
     private final Session<?> session;
     private final VaultLookupListener listener;
@@ -41,12 +45,15 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
-        if(DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME.equals(file.getName())) {
+        if(new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename").equals(file.getName())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found master key %s", file));
             }
             try {
-                final Vault vault = listener.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
+                final Vault vault = listener.load(session, directory,
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }

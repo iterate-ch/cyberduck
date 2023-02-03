@@ -1,7 +1,6 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -40,34 +39,34 @@ public class S3ProtocolTest {
     public void testEquals() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         assertEquals(new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Credentials from Instance Metadata).cyberduckprofile")),
-            new ProfilePlistReader(factory).read(
-                new Local("../profiles/S3 (Credentials from Instance Metadata).cyberduckprofile")));
+                        this.getClass().getResourceAsStream("/S3 (Credentials from Instance Metadata).cyberduckprofile")),
+                new ProfilePlistReader(factory).read(
+                        this.getClass().getResourceAsStream("/S3 (Credentials from Instance Metadata).cyberduckprofile")));
     }
 
     @Test
     public void testCompareTo() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         assertEquals(0, new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Credentials from Instance Metadata).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Credentials from Instance Metadata).cyberduckprofile"))));
+                this.getClass().getResourceAsStream("/S3 (Credentials from Instance Metadata).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 (Credentials from Instance Metadata).cyberduckprofile"))));
         assertNotEquals(0, new ProfilePlistReader(factory).read(
-            new Local("../profiles/S3 (Credentials from Instance Metadata).cyberduckprofile")).compareTo(new TestProtocol()));
+                this.getClass().getResourceAsStream("/S3 (Credentials from Instance Metadata).cyberduckprofile")).compareTo(new TestProtocol()));
     }
 
     @Test
     public void testCompareMultipleRegions() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        assertEquals(0, new ProfilePlistReader(factory).read(
-            new Local("../profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
-            new Local("../profiles/Verizon Cloud Storage (IAD3A).cyberduckprofile"))));
+        assertNotEquals(0, new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/Verizon Cloud Storage (AMS1A).cyberduckprofile")).compareTo(new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/Verizon Cloud Storage (IAD3A).cyberduckprofile"))));
     }
 
     @Test
     public void testScheme() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Verizon Cloud Storage (AMS1A).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Verizon Cloud Storage (AMS1A).cyberduckprofile"));
         assertTrue(profile.isSecure());
         assertEquals(Scheme.https, profile.getScheme());
     }

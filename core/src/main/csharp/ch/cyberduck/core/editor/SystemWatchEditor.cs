@@ -16,43 +16,43 @@
 // yves@cyberduck.ch
 // 
 
-using System;
-using System.IO;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.pool;
-using org.apache.log4j;
+using org.apache.logging.log4j;
+using System;
+using System.IO;
 using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core.Editor
 {
     public class SystemWatchEditor : AbstractEditor
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SystemWatchEditor).FullName);
-        private FileSystemWatcher _watcher;
+        private static readonly Logger Log = LogManager.getLogger(typeof(SystemWatchEditor).FullName);
 
-        public SystemWatchEditor(Application application, SessionPool session, Path file, ProgressListener listener)
-            : base(application, session, file, listener)
-        {
-        }
+        private readonly FileSystemWatcher _watcher;
 
-        protected override void watch(ch.cyberduck.core.Local file, FileWatcherListener listener)
+        public SystemWatchEditor(Host host, Path file, ProgressListener listener)
+            : base(host, file, listener)
         {
             _watcher = new FileSystemWatcher();
-            _watcher.Path = file.getParent().getAbsolute();
-            _watcher.Filter = file.getName();
+        }
+
+        protected override void watch(Application application, ch.cyberduck.core.Local temporary, FileWatcherListener listener, ApplicationQuitCallback quit)
+        {
+            _watcher.Path = temporary.getParent().getAbsolute();
+            _watcher.Filter = temporary.getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName |
                                     NotifyFilters.DirectoryName;
-            _watcher.Changed += delegate(object sender, FileSystemEventArgs e)
+            _watcher.Changed += delegate (object sender, FileSystemEventArgs e)
             {
                 Log.debug("HasChanged:" + e.FullPath);
-                listener.fileWritten(file);
+                listener.fileWritten(temporary);
             };
-            _watcher.Renamed += delegate(object sender, RenamedEventArgs e)
+            _watcher.Renamed += delegate (object sender, RenamedEventArgs e)
             {
                 Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
-                listener.fileWritten(file);
+                listener.fileWritten(temporary);
             };
             // Begin watching.
             _watcher.EnableRaisingEvents = true;

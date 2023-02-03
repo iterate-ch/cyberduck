@@ -20,11 +20,12 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.FinderLocal;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public class LibraryLogDirectoryFinder implements LogDirectoryFinder {
-    private static final Logger log = Logger.getLogger(LibraryLogDirectoryFinder.class);
+    private static final Logger log = LogManager.getLogger(LibraryLogDirectoryFinder.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

@@ -23,16 +23,15 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
 public class Host implements Serializable, Comparable<Host> {
-    private static final Logger log = Logger.getLogger(Host.class);
 
     /**
      * The credentials to authenticate with for the CDN
@@ -86,13 +85,13 @@ public class Host implements Serializable, Comparable<Host> {
      * The connect mode to use if FTP
      */
     private FTPConnectMode connectMode
-        = FTPConnectMode.unknown;
+            = FTPConnectMode.unknown;
 
     /**
      * The maximum number of concurrent sessions to this host
      */
     private TransferType transfer
-        = TransferType.unknown;
+            = TransferType.unknown;
 
     /**
      * The custom download folder
@@ -236,7 +235,7 @@ public class Host implements Serializable, Comparable<Host> {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(protocol.getIdentifier(), "Protocol");
         if(StringUtils.isNotBlank(protocol.getProvider())) {
             if(!StringUtils.equals(protocol.getProvider(), protocol.getIdentifier())) {
@@ -521,7 +520,17 @@ public class Host implements Serializable, Comparable<Host> {
      * @return Value for property key
      */
     public String getProperty(final String key) {
+        final Map<String, String> overrides = this.getCustom();
+        if(overrides.containsKey(key)) {
+            return overrides.get(key);
+        }
         return protocol.getProperties().get(key);
+    }
+
+    public void setProperty(final String key, final String value) {
+        final Map<String, String> overrides = new HashMap<>(this.getCustom());
+        overrides.put(key, value);
+        this.setCustom(overrides);
     }
 
     public String getRegion() {
@@ -533,6 +542,11 @@ public class Host implements Serializable, Comparable<Host> {
 
     public void setRegion(final String region) {
         this.region = region;
+    }
+
+    public Host withRegion(final String region) {
+        this.setRegion(region);
+        return this;
     }
 
     /**
@@ -655,13 +669,14 @@ public class Host implements Serializable, Comparable<Host> {
         else if(credentials.compareTo(o.credentials) > 0) {
             return 1;
         }
-        return 0;
+        return StringUtils.compare(defaultpath, o.defaultpath);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Host{");
         sb.append("protocol=").append(protocol);
+        sb.append(", region='").append(region).append('\'');
         sb.append(", port=").append(port);
         sb.append(", hostname='").append(hostname).append('\'');
         sb.append(", credentials=").append(credentials);
@@ -669,6 +684,7 @@ public class Host implements Serializable, Comparable<Host> {
         sb.append(", nickname='").append(nickname).append('\'');
         sb.append(", defaultpath='").append(defaultpath).append('\'');
         sb.append(", workdir=").append(workdir);
+        sb.append(", custom=").append(custom);
         sb.append(", labels=").append(labels);
         sb.append('}');
         return sb.toString();

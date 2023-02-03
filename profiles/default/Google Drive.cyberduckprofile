@@ -25,6 +25,8 @@
         <true/>
         <key>Default Hostname</key>
         <string>www.googleapis.com</string>
+        <key>Default Nickname</key>
+        <string>Google Drive</string>
         <key>OAuth Authorization Url</key>
         <string>https://accounts.google.com/o/oauth2/auth</string>
         <key>OAuth Token Url</key>
@@ -34,11 +36,9 @@
             <string>https://www.googleapis.com/auth/drive</string>
         </array>
         <key>OAuth Client ID</key>
-        <string>996125414232.apps.googleusercontent.com</string>
-        <key>OAuth Client Secret</key>
-        <string>YdaFjo2t74-Q0sThsXgeTv3l</string>
+        <string>996125414232-s922bvdt21nceeh5dq1gb6av8plpj7hr.apps.googleusercontent.com</string>
         <key>OAuth Redirect Url</key>
-        <string>urn:ietf:wg:oauth:2.0:oob</string>
+        <string>io.cyberduck:oauth</string>
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>

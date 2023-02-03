@@ -17,8 +17,13 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.shared.ListFilteringFeature;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CachingFindFeature implements Find {
+    private static final Logger log = LogManager.getLogger(CachingFindFeature.class);
 
     private final Cache<Path> cache;
     private final Find delegate;
@@ -30,13 +35,35 @@ public class CachingFindFeature implements Find {
 
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(!file.isRoot()) {
-            if(cache.isCached(file.getParent())) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                final Path found = list.find(new SimplePathPredicate(file));
-                return null != found;
-            }
+        if(file.isRoot()) {
+            return delegate.find(file, listener);
         }
-        return delegate.find(file, new CachingListProgressListener(cache));
+        if(cache.isValid(file.getParent())) {
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
+            if(found != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Found %s in cache", file));
+                }
+                return true;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cached directory listing does not contain %s", file));
+            }
+            return false;
+        }
+        final CachingListProgressListener caching = new CachingListProgressListener(cache);
+        final boolean found = delegate.find(file, new ProxyListProgressListener(listener, caching));
+        caching.cache();
+        return found;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CachingFindFeature{");
+        sb.append("cache=").append(cache);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

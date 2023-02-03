@@ -30,21 +30,23 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.error.CryptoException;
+import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class TripleCryptKeyPair {
-    private static final Logger log = Logger.getLogger(TripleCryptKeyPair.class);
+    private static final Logger log = LogManager.getLogger(TripleCryptKeyPair.class);
 
     private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
     public Credentials unlock(final PasswordCallback callback, final Host bookmark, final UserKeyPair keypair) throws CryptoException, BackgroundException {
-        final String passphrase = keychain.getPassword(this.getServiceName(bookmark, keypair.getUserPublicKey().getVersion()), this.getAccountName(bookmark));
+        final String passphrase = keychain.getPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()), toAccountName(bookmark));
         return this.unlock(callback, bookmark, keypair, passphrase);
     }
 
@@ -56,8 +58,8 @@ public class TripleCryptKeyPair {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
-                new LoginOptions()
-                    .icon(bookmark.getProtocol().disk())
+                    new LoginOptions()
+                            .icon(bookmark.getProtocol().disk())
             );
             if(credentials.getPassword() == null) {
                 throw new LoginCanceledException();
@@ -75,8 +77,8 @@ public class TripleCryptKeyPair {
                     log.info(String.format("Save encryption password for %s", bookmark));
                 }
                 try {
-                    keychain.addPassword(this.getServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
-                        this.getAccountName(bookmark), credentials.getPassword());
+                    keychain.addPassword(toServiceName(bookmark, keypair.getUserPublicKey().getVersion()),
+                            toAccountName(bookmark), credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
                     log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
@@ -86,11 +88,17 @@ public class TripleCryptKeyPair {
         }
     }
 
-    private String getServiceName(final Host bookmark, final UserKeyPair.Version version) {
+    protected static String toServiceName(final Host bookmark, final UserKeyPair.Version version) {
         return String.format("Triple-Crypt Encryption Password (%s) - Version (%s)", bookmark.getCredentials().getUsername(), version.getValue());
     }
 
-    private String getAccountName(final Host bookmark) {
+    protected static String toAccountName(final Host bookmark) {
         return new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl();
+    }
+
+    public static PlainDataContainer createPlainDataContainer(final byte[] bytes, final int len) {
+        final byte[] b = new byte[len];
+        System.arraycopy(bytes, 0, b, 0, len);
+        return new PlainDataContainer(b);
     }
 }

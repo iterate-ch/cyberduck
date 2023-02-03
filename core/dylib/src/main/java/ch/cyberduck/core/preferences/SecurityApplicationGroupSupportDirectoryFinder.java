@@ -29,14 +29,15 @@ import ch.cyberduck.core.local.features.Symlink;
 import ch.cyberduck.core.local.features.Trash;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.io.File;
 import java.io.IOException;
 
 public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDirectoryFinder {
-    private static final Logger log = Logger.getLogger(SecurityApplicationGroupSupportDirectoryFinder.class);
+    private static final Logger log = LogManager.getLogger(SecurityApplicationGroupSupportDirectoryFinder.class);
 
     private final String identifier;
 

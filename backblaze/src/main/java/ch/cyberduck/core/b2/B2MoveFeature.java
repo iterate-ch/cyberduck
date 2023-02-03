@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class B2MoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
-        final Path copy = proxy.copy(source, target, status.withLength(source.attributes().getSize()), callback);
+        final Path copy = proxy.copy(source, target, status.withLength(source.attributes().getSize()), callback, new DisabledStreamListener());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(source)), callback, delete);
         return copy;
     }

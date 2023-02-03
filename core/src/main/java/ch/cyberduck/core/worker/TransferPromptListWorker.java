@@ -27,7 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class TransferPromptListWorker extends Worker<List<TransferItem>> {
-    private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptListWorker.class);
 
     private final Path directory;
     private final Local local;

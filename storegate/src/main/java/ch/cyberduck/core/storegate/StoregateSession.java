@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -57,7 +59,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -81,7 +84,7 @@ import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIR
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class StoregateSession extends HttpSession<StoregateApiClient> {
-    private static final Logger log = Logger.getLogger(StoregateSession.class);
+    private static final Logger log = LogManager.getLogger(StoregateSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
     private List<RootFolder> roots = Collections.emptyList();
@@ -122,7 +125,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             .register(new JSON())
             .register(JacksonFeature.class)
             .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());
@@ -131,7 +134,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
+        authorizationService.authorize(host, controller, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
         try {
             final HttpRequestBase request = new HttpPost(
                 new HostUrlProvider().withUsername(false).withPath(true).get(
@@ -170,12 +173,12 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             finally {
                 EntityUtils.consume(response.getEntity());
             }
+            final Credentials credentials = host.getCredentials();
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated for user %s", me));
             }
-            final Credentials credentials = host.getCredentials();
             credentials.setUsername(me.getUsername());
             // Get root folders
             roots = new SettingsApi(client).settingsGetRootfolders();

@@ -26,13 +26,15 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
@@ -42,7 +44,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
 
 public final class DefaultFailureDiagnostics implements FailureDiagnostics<BackgroundException> {
-    private static final Logger log = Logger.getLogger(DefaultFailureDiagnostics.class);
+    private static final Logger log = LogManager.getLogger(DefaultFailureDiagnostics.class);
 
     @Override
     public Type determine(final BackgroundException failure) {
@@ -58,6 +60,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
             }
             if(cause instanceof ResolveFailedException) {
                 return Type.network;
+            }
+            if(failure instanceof TransferCanceledException) {
+                return Type.skip;
             }
             if(failure instanceof ConnectionCanceledException) {
                 return Type.cancel;

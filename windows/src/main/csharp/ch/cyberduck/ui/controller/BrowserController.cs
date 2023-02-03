@@ -16,16 +16,9 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
-using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
@@ -45,13 +38,20 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
+using System.Windows.Forms;
+using Windows.Win32;
+using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using Application = ch.cyberduck.core.local.Application;
 using Directory = ch.cyberduck.core.features.Directory;
 using Exception = System.Exception;
@@ -71,7 +71,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public delegate bool DialogCallbackDelegate(DialogResult result);
 
-        private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(BrowserController).FullName);
         protected static string DEFAULT = LocaleFactory.localizedString("Default");
         private readonly AbstractHostCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
@@ -80,6 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly ListProgressListener _limitListener;
         private readonly Navigation _navigation = new Navigation();
         private readonly IList<FileSystemWatcher> _temporaryWatcher = new List<FileSystemWatcher>();
+        private readonly IDictionary<Path, Editor> _editors = new Dictionary<Path, Editor>();
         private Comparator _comparator = new NullComparator();
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
@@ -158,6 +159,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateOpenWebUrl += View_ValidateOpenWebUrl;
             View.CreateShareLink += View_CreateShareLink;
             View.ValidateCreateShareLink += View_ValidateCreateShareLink;
+            View.RequestFiles += View_RequestFiles;
+            View.ValidateRequestFiles += View_ValidateRequestFiles;
             View.ValidateEditWith += View_ValidateEditWith;
             View.ShowInspector += View_ShowInspector;
             View.ValidateShowInspector += View_ValidateShowInspector;
@@ -276,6 +279,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelRegionGetter = _browserModel.GetRegion;
             View.ModelVersionGetter = _browserModel.GetVersion;
             View.ModelStorageClassGetter = _browserModel.GetStorageClass;
+            View.ModelChecksumGetter = _browserModel.GetChecksum;
 
             #endregion
 
@@ -316,10 +320,38 @@ namespace Ch.Cyberduck.Ui.Controller
             SetNavigation(false);
         }
 
+        private bool View_ValidateRequestFiles()
+        {
+            if (IsMounted())
+            {
+                var selected = SelectedPath ?? Workdir;
+                PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
+                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.upload);
+            }
+            return false;
+        }
+
+        private void View_RequestFiles()
+        {
+            var selected = SelectedPath ?? Workdir;
+            RequestFilesAction requestFiles = new RequestFilesAction(this, selected);
+            Background(requestFiles);
+        }
+
+        protected override void Invalidate()
+        {
+            foreach (KeyValuePair<Path, Editor> entry in _editors)
+            {
+                Editor editor = entry.Value;
+                editor.close();
+            }
+            base.Invalidate();
+        }
+
         private void View_LockUnlockVault()
         {
             Path directory = new UploadTargetFinder(Workdir).find(SelectedPath);
-            if( directory.attributes().getVault() != null)
+            if (directory.attributes().getVault() != null)
             {
                 // Lock and remove all open vaults
                 LockVaultAction lockVault = new LockVaultAction(this, Session.getVault(), directory.attributes().getVault());
@@ -335,21 +367,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CreateShareLink()
         {
-            ShareLinkAction share = new ShareLinkAction(this, SelectedPath);
+            var selected = SelectedPath ?? Workdir;
+            ShareLinkAction share = new ShareLinkAction(this, selected);
             Background(share);
         }
 
         private bool View_ValidateCreateShareLink()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
+            if (IsMounted())
             {
-                if (null == SelectedPath)
-                {
-                    return false;
-                }
-
-                PromptUrlProvider feature = (PromptUrlProvider) Session.getFeature(typeof(PromptUrlProvider));
-                return feature != null && feature.isSupported(SelectedPath, PromptUrlProvider.Type.download);
+                var selected = SelectedPath ?? Workdir;
+                PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
+                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.download);
             }
             return false;
         }
@@ -504,7 +533,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             String.Format(LocaleFactory.localizedString("Do you want to search in {0} recursively?"),
                                 Workdir.getName()), null, String.Format("{0}", LocaleFactory.localizedString("Search")),
                             true);
-                    if (result.CommandButtonResult == 0)
+                    if (result.Button == 0)
                     {
                         background(new SearchAction(this));
                     }
@@ -514,7 +543,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Expanding(object sender, PathArgs e)
         {
-            Reload(Workdir, new HashSet<Path>() {e.Path}, SelectedPaths, false);
+            Reload(Workdir, new HashSet<Path>() { e.Path }, SelectedPaths, false);
         }
 
         public void RemoveDonateButton()
@@ -593,7 +622,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (p.isFile())
                 {
-                    return Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors(p.getName()),
+                    return Utils.ConvertFromJavaList<Application>(EditorFactory.getEditors(p.getName()),
                         null);
                 }
             }
@@ -616,36 +645,18 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                UrlProvider urlProvider = ((UrlProvider) Session.getFeature(typeof(UrlProvider)));
+                UrlProvider urlProvider = ((UrlProvider)Session.getFeature(typeof(UrlProvider)));
                 if (urlProvider != null)
                 {
                     for (int i = 0; i < urlProvider.toUrl(SelectedPath).size(); i++)
                     {
-                        DescriptiveUrl descUrl = (DescriptiveUrl) urlProvider.toUrl(SelectedPath).toArray()[i];
+                        DescriptiveUrl descUrl = (DescriptiveUrl)urlProvider.toUrl(SelectedPath).toArray()[i];
                         KeyValuePair<String, List<String>> entry =
                             new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                         items.Add(entry);
                         foreach (Path path in selected)
                         {
-                            entry.Value.Add(((DescriptiveUrl) urlProvider.toUrl(path).toArray()[i]).getUrl());
-                        }
-                    }
-                }
-                UrlProvider distributionConfiguration =
-                    ((UrlProvider) Session.getFeature(typeof(DistributionConfiguration)));
-                if (distributionConfiguration != null)
-                {
-                    for (int i = 0; i < distributionConfiguration.toUrl(SelectedPath).size(); i++)
-                    {
-                        DescriptiveUrl descUrl =
-                            (DescriptiveUrl) distributionConfiguration.toUrl(SelectedPath).toArray()[i];
-                        KeyValuePair<String, List<String>> entry =
-                            new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
-                        items.Add(entry);
-                        foreach (Path path in selected)
-                        {
-                            entry.Value.Add(
-                                ((DescriptiveUrl) distributionConfiguration.toUrl(path).toArray()[i]).getUrl());
+                            entry.Value.Add(((DescriptiveUrl)urlProvider.toUrl(path).toArray()[i]).getUrl());
                         }
                     }
                 }
@@ -670,19 +681,19 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 DescriptiveUrlBag urls =
-                    ((UrlProvider) Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
+                    ((UrlProvider)Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
                     .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
                         DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated);
                 for (int i = 0; i < urls.size(); i++)
                 {
-                    DescriptiveUrl descUrl = (DescriptiveUrl) urls.toArray()[i];
+                    DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
                     KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
                         descUrl.getHelp(), new List<string>());
                     items.Add(entry);
 
                     foreach (Path path in selected)
                     {
-                        entry.Value.Add(((DescriptiveUrl) urls.toArray()[i]).getUrl());
+                        entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]).getUrl());
                     }
                 }
             }
@@ -720,7 +731,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Host host =
                     new HostDictionary().deserialize(
-                        ((Host) dropargs.SourceModels[0]).serialize(SerializerFactory.get()));
+                        ((Host)dropargs.SourceModels[0]).serialize(SerializerFactory.get()));
                 host.setUuid(null);
                 AddBookmark(host, destIndex);
             }
@@ -774,9 +785,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_HostDropped(OlvDropEventArgs e)
         {
-            if (e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
+            if (e.DataObject is DataObject && ((DataObject)e.DataObject).ContainsFileDropList())
             {
-                DataObject data = (DataObject) e.DataObject;
+                DataObject data = (DataObject)e.DataObject;
 
                 if (e.DropTargetLocation == DropTargetLocation.Item)
                 {
@@ -788,7 +799,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (!".duck".Equals(Utils.GetSafeExtension(filename)))
                         {
                             // The bookmark this file has been dropped onto
-                            Host destination = (Host) e.DropTargetItem.RowObject;
+                            Host destination = (Host)e.DropTargetItem.RowObject;
                             if (null == host)
                             {
                                 host = destination;
@@ -817,7 +828,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (e.DropTargetLocation == DropTargetLocation.AboveItem)
                 {
-                    Host destination = (Host) e.DropTargetItem.RowObject;
+                    Host destination = (Host)e.DropTargetItem.RowObject;
                     foreach (string file in data.GetFileDropList())
                     {
                         try
@@ -833,7 +844,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (e.DropTargetLocation == DropTargetLocation.BelowItem)
                 {
-                    Host destination = (Host) e.DropTargetItem.RowObject;
+                    Host destination = (Host)e.DropTargetItem.RowObject;
                     foreach (string file in data.GetFileDropList())
                     {
                         try
@@ -874,7 +885,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return;
             }
 
-            DataObject dataObject = (DataObject) args.DataObject;
+            DataObject dataObject = (DataObject)args.DataObject;
             if (dataObject.ContainsFileDropList())
             {
                 //check if all files are .duck files
@@ -887,8 +898,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.Effect = DragDropEffects.Copy;
                         if (args.DropTargetLocation == DropTargetLocation.Item)
                         {
-                            Host destination = (Host) args.DropTargetItem.RowObject;
-                            (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect,
+                            Host destination = (Host)args.DropTargetItem.RowObject;
+
+                            DropTargetHelper.SetDropDescription(dataObject, args.Effect,
                                 "Upload to %1", BookmarkNameProvider.toString(destination));
                         }
                         args.DropTargetLocation = DropTargetLocation.Item;
@@ -982,7 +994,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 switch (args.DropTargetLocation)
                 {
                     case DropTargetLocation.Item:
-                        destination = (Path) args.DropTargetItem.RowObject;
+                        destination = (Path)args.DropTargetItem.RowObject;
                         if (!destination.isDirectory())
                         {
                             //dragging over file
@@ -997,7 +1009,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                 }
-                Touch feature = (Touch) Session.getFeature(typeof(Touch));
+                Touch feature = (Touch)Session.getFeature(typeof(Touch));
                 if (!feature.isSupported(destination, String.Empty))
                 {
                     args.Effect = DragDropEffects.None;
@@ -1033,7 +1045,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (args.Effect == DragDropEffects.Move)
                     {
-                        Move move = (Move) Session.getFeature(typeof(Move));
+                        Move move = (Move)Session.getFeature(typeof(Move));
                         foreach (Path sourcePath in args.SourceModels)
                         {
                             if (!move.isSupported(sourcePath, destination))
@@ -1070,7 +1082,7 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (dropargs.DropTargetLocation)
             {
                 case DropTargetLocation.Item:
-                    destination = (Path) dropargs.DropTargetItem.RowObject;
+                    destination = (Path)dropargs.DropTargetItem.RowObject;
                     break;
                 case DropTargetLocation.Background:
                     destination = Workdir;
@@ -1128,7 +1140,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsBrowser() && IsMounted() && SelectedPaths.Count > 0)
             {
-                var feature = (Versioning) Session.getFeature(typeof(Versioning));
+                var feature = (Versioning)Session.getFeature(typeof(Versioning));
                 if (feature != null)
                 {
                     foreach (var path in SelectedPaths)
@@ -1148,7 +1160,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsBrowser() && IsMounted() && SelectedPaths.Count > 0)
             {
-                var feature = (Restore) Session.getFeature(typeof(Restore));
+                var feature = (Restore)Session.getFeature(typeof(Restore));
                 if (feature != null)
                 {
                     foreach (var path in SelectedPaths)
@@ -1413,7 +1425,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TaskDialogResult result = QuestionBox(LocaleFactory.localizedString("Delete Bookmark"),
                 LocaleFactory.localizedString("Do you want to delete the selected bookmark?"), alertText.ToString(),
                 String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (result.CommandButtonResult == 0)
+            if (result.Button == 0)
             {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }
@@ -1429,11 +1441,11 @@ namespace Ch.Cyberduck.Ui.Controller
             DescriptiveUrlBag list;
             if (SelectedPaths.Count == 1)
             {
-                list = ((UrlProvider) Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath);
+                list = ((UrlProvider)Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath);
             }
             else
             {
-                list = ((UrlProvider) Session.getFeature(typeof(UrlProvider))).toUrl(Workdir);
+                list = ((UrlProvider)Session.getFeature(typeof(UrlProvider))).toUrl(Workdir);
             }
             if (!list.isEmpty())
             {
@@ -1667,7 +1679,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Path parent = Workdir;
             for (int i = 0; i < _pasteboard.size(); i++)
             {
-                Path next = (Path) _pasteboard.get(i);
+                Path next = (Path)_pasteboard.get(i);
                 Path renamed = new Path(parent, next.getName(), next.getType(), new PathAttributes(next.attributes()));
                 files.Add(next, renamed);
             }
@@ -1779,7 +1791,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     continue;
                 }
-                if (CheckOverwrite(Utils.ConvertFromJavaList<Path>(archive.getExpanded(new ArrayList {selected}))))
+                if (CheckOverwrite(Utils.ConvertFromJavaList<Path>(archive.getExpanded(new ArrayList { selected }))))
                 {
                     background(new UnarchiveAction(this, archive, selected, expanded));
                 }
@@ -1814,7 +1826,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Archive archive = Archive.forName(createArchiveEventArgs.ArchiveName);
             IList<Path> selected = SelectedPaths;
-            if (CheckOverwrite(new List<Path> {archive.getArchive(Utils.ConvertToJavaList(selected))}))
+            if (CheckOverwrite(new List<Path> { archive.getArchive(Utils.ConvertToJavaList(selected)) }))
             {
                 background(new CreateArchiveAction(this, archive, selected));
             }
@@ -1867,14 +1879,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewFile()
         {
             return IsMounted() &&
-                   ((Touch) Session.getFeature(typeof(Touch))).isSupported(
+                   ((Touch)Session.getFeature(typeof(Touch))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
-                   ((Touch) Session.getFeature(typeof(Touch))).isSupported(
+                   ((Touch)Session.getFeature(typeof(Touch))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
@@ -1889,7 +1901,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool parentFound = false;
             Local parent = null;
             Path destination = new UploadTargetFinder(Workdir).find(SelectedPath);
-            List uploads = Utils.ConvertToJavaList(paths, delegate(string path)
+            List uploads = Utils.ConvertToJavaList(paths, delegate (string path)
             {
                 Local local = LocalFactory.get(path);
                 Local localParent = local.getParent();
@@ -2012,7 +2024,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return false;
                 }
-                return ((Move) Session.getFeature(typeof(Move))).isSupported(SelectedPath, SelectedPath);
+                return ((Move)Session.getFeature(typeof(Move))).isSupported(SelectedPath, SelectedPath);
             }
             return false;
         }
@@ -2035,7 +2047,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateNewFolder()
         {
             return IsMounted() &&
-                   ((Directory) Session.getFeature(typeof(Directory))).isSupported(
+                   ((Directory)Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
@@ -2043,7 +2055,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() && Session.getVault() != VaultRegistry.DISABLED &&
                    null == Workdir.attributes().getVault() &&
-                   ((Directory) Session.getFeature(typeof(Directory))).isSupported(
+                   ((Directory)Session.getFeature(typeof(Directory))).isSupported(
                        new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
@@ -2068,20 +2080,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewFolder()
         {
-            Location feature = (Location) Session.getFeature(typeof(Location));
+            Location feature = (Location)Session.getFeature(typeof(Location));
             FolderController fc = new FolderController(ObjectFactory.GetInstance<INewFolderPromptView>(), this,
                 feature != null
-                    ? (IList<Location.Name>) Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
+                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
                     : new List<Location.Name>(), feature != null ? feature.getDefault() : Location.unknown);
             fc.Show();
         }
 
         private void View_NewVault()
         {
-            Location feature = (Location) Session.getFeature(typeof(Location));
+            Location feature = (Location)Session.getFeature(typeof(Location));
             FolderController fc = new VaultController(ObjectFactory.GetInstance<INewVaultPromptView>(), this,
                 feature != null
-                    ? (IList<Location.Name>) Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
+                    ? (IList<Location.Name>)Utils.ConvertFromJavaList<Location.Name>(feature.getLocations())
                     : new List<Location.Name>(), feature != null ? feature.getDefault() : Location.unknown);
             fc.Show();
         }
@@ -2160,13 +2172,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_BrowserDropped(OlvDropEventArgs e)
         {
-            if (IsMounted() && e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
+            if (IsMounted() && e.DataObject is DataObject && ((DataObject)e.DataObject).ContainsFileDropList())
             {
                 Path destination;
                 switch (e.DropTargetLocation)
                 {
                     case DropTargetLocation.Item:
-                        destination = (Path) e.DropTargetItem.RowObject;
+                        destination = (Path)e.DropTargetItem.RowObject;
                         break;
                     case DropTargetLocation.Background:
                         destination = Workdir;
@@ -2216,13 +2228,13 @@ namespace Ch.Cyberduck.Ui.Controller
             Log.trace("Entering View_BrowserCanDrop with " + args.Effect);
             if (IsMounted() && !(args.DataObject is OLVDataObject))
             {
-                if (args.DataObject is DataObject && ((DataObject) args.DataObject).ContainsFileDropList())
+                if (args.DataObject is DataObject dataObject && dataObject.ContainsFileDropList())
                 {
                     Path destination;
                     switch (args.DropTargetLocation)
                     {
                         case DropTargetLocation.Item:
-                            destination = (Path) args.DropTargetItem.RowObject;
+                            destination = (Path)args.DropTargetItem.RowObject;
                             if (!destination.isDirectory())
                             {
                                 //dragging over file
@@ -2237,7 +2249,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             args.DropTargetLocation = DropTargetLocation.None;
                             return;
                     }
-                    Touch feature = (Touch) Session.getFeature(typeof(Touch));
+                    Touch feature = (Touch)Session.getFeature(typeof(Touch));
                     if (!feature.isSupported(destination, String.Empty))
                     {
                         Log.trace("Session does not allow file creation");
@@ -2255,15 +2267,21 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         args.DropTargetItem = args.ListView.ModelToItem(destination);
                     }
-                    (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
-                        destination.getName());
+                    DropTargetHelper.SetDropDescription(dataObject, args.Effect,
+                        "Copy to %1", destination.getName());
                 }
             }
         }
 
         private void View_ShowTransfers()
         {
-            TransferController.Instance.View.Show();
+            Guid currentDesktop = View.GetDesktopId();
+            ITransferView view = TransferController.Instance.View;
+            if (!view.IsOnCurrentDesktop())
+            {
+                view.MoveToDesktop(currentDesktop);
+            }
+            view.Show();
         }
 
         private void View_ShowInspector()
@@ -2291,32 +2309,30 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_EditEvent(string exe)
+        private void View_EditEvent(Application app)
         {
             foreach (Path selected in SelectedPaths)
             {
-                Editor editor;
-                if (Utils.IsBlank(exe))
-                {
-                    editor = EditorFactory.instance().create(this, Session, selected);
-                }
-                else
-                {
-                    editor = EditorFactory.instance().create(this, Session, new Application(exe, null), selected);
-                }
-                edit(editor, selected);
+                edit(app, selected);
             }
         }
 
         public void edit(Path file)
         {
-            edit(EditorFactory.instance().create(this, Session, file), file);
+            edit(EditorFactory.getEditor(file.getName()), file);
         }
 
-        public void edit(Editor editor, Path file)
+        public void edit(Application application, Path file)
         {
+            Editor editor;
+            if (!_editors.TryGetValue(file, out editor))
+            {
+                editor = EditorFactory.instance().create(Session.getHost(), file, this);
+            }
+            application ??= EditorFactory.getEditor(file.getAbsolute());
+            application ??= EditorFactory.getDefaultEditor();
             background(new WorkerBackgroundAction(this, Session,
-                editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
+                editor.open(application, new DisabledApplicationQuitCallback(),
                     new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
         }
 
@@ -2342,34 +2358,31 @@ namespace Ch.Cyberduck.Ui.Controller
                     folders.Add((Path)it.next());
                 }
                 _controller.Reload(_controller.Workdir, folders, Utils.ConvertFromJavaList<Path>(Collections.singletonList(_file),
-                    item => (Path) item), true);
+                    item => (Path)item), true);
             }
         }
 
         private void UpdateEditIcon()
         {
+            System.Drawing.Image image = Images.Pencil.Size(32);
             Path selected = SelectedPath;
             if (null != selected)
             {
                 if (IsEditable(selected))
                 {
-                    Application app = EditorFactory.instance().getEditor(selected.getName());
-                    string editCommand = app != null ? app.getIdentifier() : null;
-                    if (Utils.IsNotBlank(editCommand))
+                    Application app = EditorFactory.getEditor(selected.getName());
+                    if (IconProvider.GetApplication(app, 32) is System.Drawing.Image appIcon)
                     {
-                        View.EditIcon = IconCache.GetAppImage(
-                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
-                                IconCache.IconSize.Large);
-                        return;
+                        image = appIcon;
                     }
                 }
             }
-            View.EditIcon = IconCache.IconForName("pencil", 32);
+            View.EditIcon = image;
         }
 
         private void UpdateOpenIcon()
         {
-            View.OpenIcon = IconCache.GetDefaultBrowserIcon();
+            View.OpenIcon = IconProvider.DefaultBrowser();
         }
 
         private void View_BrowserSelectionChanged()
@@ -2473,7 +2486,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Mount(HostParser.parse(input));
             }
-            catch(HostParserException e)
+            catch (HostParserException e)
             {
                 Log.warn(e.getDetail());
             }
@@ -2492,10 +2505,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     selected = Workdir;
                 }
                 BrowserController c = MainController.NewBrowser(true);
-
-                Host host = new HostDictionary().deserialize(Session.getHost().serialize(SerializerFactory.get()));
-                host.setDefaultPath(selected.getAbsolute());
-                c.Mount(host);
+                Host duplicate = new HostDictionary().deserialize(Session.getHost().serialize(SerializerFactory.get()));
+                // Make sure a new UUID is assigned for duplicate
+                duplicate.setUuid(null);
+                duplicate.setDefaultPath(selected.getAbsolute());
+                c.Mount(duplicate);
             }
             else
             {
@@ -2506,9 +2520,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected void transfer(Transfer transfer)
         {
-            this.transfer(transfer, Utils.ConvertFromJavaList(transfer.getRoots(), delegate(object o)
+            this.transfer(transfer, Utils.ConvertFromJavaList(transfer.getRoots(), delegate (object o)
             {
-                TransferItem item = (TransferItem) o;
+                TransferItem item = (TransferItem)o;
                 return item.remote;
             }));
         }
@@ -2568,7 +2582,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                Reload(Workdir, new HashSet<Path> {Workdir}, SelectedPaths, false);
+                Reload(Workdir, new HashSet<Path> { Workdir }, SelectedPaths, false);
             }
             else
             {
@@ -2592,7 +2606,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Iterator it = set.iterator();
             while (it.hasNext())
             {
-                folders.Add((Path) it.next());
+                folders.Add((Path)it.next());
             }
             Reload(workdir, folders, selected, true);
         }
@@ -2689,7 +2703,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void SetWorkdir(Path directory, Path selected)
         {
-            SetWorkdir(directory, new List<Path> {selected});
+            SetWorkdir(directory, new List<Path> { selected });
         }
 
         /// <summary>
@@ -2710,7 +2724,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                Reload(directory, new HashSet<Path> {directory}, selected, false);
+                Reload(directory, new HashSet<Path> { directory }, selected, false);
             }
         }
 
@@ -2810,7 +2824,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (BrowserController controller in new List<BrowserController>(MainController.Browsers))
             {
                 BrowserController c = controller;
-                if (!controller.Unmount(delegate(DialogResult result)
+                if (!controller.Unmount(delegate (DialogResult result)
                 {
                     if (DialogResult.OK == result)
                     {
@@ -2863,7 +2877,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         LocaleFactory.localizedString("The connection will be closed."),
                         String.Format("{0}", LocaleFactory.localizedString("Disconnect")), true,
                         LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
-                        delegate(int option, bool verificationChecked)
+                        delegate (int option, bool verificationChecked)
                         {
                             if (verificationChecked)
                             {
@@ -2877,7 +2891,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     break;
                             }
                         });
-                    return result.Result != TaskDialogSimpleResult.Cancel;
+                    return result.Button != IDCANCEL;
                 }
             }
             UnmountImpl(disconnected);
@@ -2930,7 +2944,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="renamed">The renamed file</param>
         protected internal void RenamePath(Path path, Path renamed)
         {
-            RenamePaths(new Dictionary<Path, Path> {{path, renamed}});
+            RenamePaths(new Dictionary<Path, Path> { { path, renamed } });
         }
 
         /// <summary>
@@ -2956,7 +2970,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="destination">The destination of the duplicated file</param>
         protected internal void CopyPath(Path source, Path destination)
         {
-            CopyPaths(new Dictionary<Path, Path> {{source, destination}});
+            CopyPaths(new Dictionary<Path, Path> { { source, destination } });
         }
 
         protected internal void CopyPaths(IDictionary<Path, Path> selected)
@@ -3010,7 +3024,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             ? LocaleFactory.localizedString("Rename", "Transfer")
                             : LocaleFactory.localizedString("Move", "Transfer")), true,
                     LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
-                    delegate(int option, bool verificationChecked)
+                    delegate (int option, bool verificationChecked)
                     {
                         if (verificationChecked)
                         {
@@ -3060,7 +3074,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     String.Format("{0}",
                         LocaleFactory.localizedString("Copy", "Transfer")), true,
                     LocaleFactory.localizedString("Don't ask again", "Configuration"), TaskDialogIcon.Question,
-                    delegate(int option, bool verificationChecked)
+                    delegate (int option, bool verificationChecked)
                     {
                         if (verificationChecked)
                         {
@@ -3090,9 +3104,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 return;
             }
 
-            StringBuilder alertText =
-                new StringBuilder(
-                    String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.Count));
+            if (DeletePathsPrompt(normalized))
+            {
+                DeletePathsImpl(normalized);
+            }
+        }
+
+        public bool DeletePathsPrompt(ICollection<Path> selected)
+        {
+            string alertText = String.Format(LocaleFactory.localizedString("Delete {0} files"), selected.Count);
 
             StringBuilder content = new StringBuilder();
             int i = 0;
@@ -3109,12 +3129,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 content.Append("\n" + Character.toString('\u2022') + " ...)");
             }
-            TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText.ToString(),
+            TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Delete"), alertText,
                 content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Delete")), true);
-            if (r.CommandButtonResult == 0)
-            {
-                DeletePathsImpl(normalized);
-            }
+            return r.Button == 0;
         }
 
         private void DeletePathsImpl(ICollection<Path> files)
@@ -3172,7 +3189,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 TaskDialogResult r = QuestionBox(LocaleFactory.localizedString("Overwrite"), alertText.ToString(),
                     content.ToString(), String.Format("{0}", LocaleFactory.localizedString("Overwrite")), true);
-                return r.CommandButtonResult == 0;
+                return r.Button == 0;
             }
             else
             {
@@ -3304,7 +3321,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     base.cleanup(result);
-                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList) result));
+                    _controller.SetFilter(new RecursiveSearchFilter((AttributedList)result));
                     _controller.Reload();
                 }
             }
@@ -3326,7 +3343,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override object run(Session session)
             {
-                ((Compress) session.getFeature(typeof(Compress))).archive(_archive,
+                ((Compress)session.getFeature(typeof(Compress))).archive(_archive,
                     BrowserController.Workdir, _selectedJava, BrowserController, BrowserController);
                 return true;
             }
@@ -3340,7 +3357,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 base.cleanup();
                 BrowserController.Reload(BrowserController.Workdir, _selected,
-                    new List<Path> {_archive.getArchive(_selectedJava)});
+                    new List<Path> { _archive.getArchive(_selectedJava) });
             }
         }
 
@@ -3369,7 +3386,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly List _files;
 
                 public InnerDeleteWorker(BrowserController controller, LoginCallback prompt, List files)
-                    : base(prompt, files, controller._cache, controller)
+                    : base(prompt, files, controller)
                 {
                     _controller = controller;
                     _files = files;
@@ -3378,7 +3395,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object deleted)
                 {
                     base.cleanup(deleted);
-                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(_files),
+                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(_files),
                         new List<Path>());
                 }
             }
@@ -3438,7 +3455,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object wd)
                 {
                     base.cleanup(wd);
-                    Path workdir = (Path) wd;
+                    Path workdir = (Path)wd;
                     if (null == workdir)
                     {
                         _controller.Unmount();
@@ -3454,7 +3471,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.SecureConnection = _pool.getHost().getProtocol().isSecure();
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
-                        _controller._scheduler = (Scheduler) _pool.getFeature(typeof(Scheduler));
+                        _controller._scheduler = (Scheduler)_pool.getFeature(typeof(Scheduler));
                         _controller._scheduler?.repeat(_pool, PasswordCallbackFactory.get(_controller));
                     }
                 }
@@ -3478,7 +3495,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
                             ? SessionPoolFactory.create(controller, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
-{
+                {
                     _controller = controller;
                     _files = files;
                 }
@@ -3488,8 +3505,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     List changed = new ArrayList();
                     changed.addAll(_files.keySet());
                     changed.addAll(_files.values());
-                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(changed),
-                        (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
+                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(changed),
+                        (IList<Path>)Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
         }
@@ -3519,10 +3536,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object result)
                 {
                     List changed = new ArrayList();
-                    changed.addAll(((Map) result).keySet());
-                    changed.addAll(((Map) result).values());
-                    _controller.Reload(_controller.Workdir, (IList<Path>) Utils.ConvertFromJavaList<Path>(changed),
-                        (IList<Path>) Utils.ConvertFromJavaList<Path>(_files.values()));
+                    changed.addAll(((Map)result).keySet());
+                    changed.addAll(((Map)result).values());
+                    _controller.Reload(_controller.Workdir, (IList<Path>)Utils.ConvertFromJavaList<Path>(changed),
+                        (IList<Path>)Utils.ConvertFromJavaList<Path>(_files.values()));
                 }
             }
         }
@@ -3554,12 +3571,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override bool isValid()
                 {
-                    return base.isValid() && ((BrowserController) Controller).IsConnected();
+                    return base.isValid() && ((BrowserController)Controller).IsConnected();
                 }
 
                 public override void run()
                 {
-                    BrowserController c = (BrowserController) Controller;
+                    BrowserController c = (BrowserController)Controller;
                     c.Reload(c.Workdir, _changed, _changed);
                 }
             }
@@ -3584,7 +3601,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    IList<Path> files = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
+                    IList<Path> files = (IList<Path>)Utils.ConvertFromJavaList<Path>((List)result);
                     _controller.Reload(_controller.Workdir, files, files);
                 }
             }
@@ -3636,11 +3653,56 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object result)
                 {
-                    DescriptiveUrl url = (DescriptiveUrl) result;
+                    DescriptiveUrl url = (DescriptiveUrl)result;
                     // Display
                     if (!DescriptiveUrl.EMPTY.@equals(url))
                     {
-                        string title = LocaleFactory.localizedString("Create Download Share", "Share");
+                        string title = LocaleFactory.localizedString("Share…", "Main");
+                        string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Copy", "Main"));
+                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
+                            commandButtons,
+                            false, null, TaskDialogIcon.Information,
+                            delegate (int option, System.Boolean verificationChecked)
+                            {
+                                switch (option)
+                                {
+                                    case 1:
+                                        Clipboard.SetText(url.getUrl());
+                                        break;
+                                }
+                            });
+                    }
+                }
+            }
+        }
+
+        private class RequestFilesAction : WorkerBackgroundAction
+        {
+            public RequestFilesAction(BrowserController controller, Path file)
+                : base(controller, controller.Session, new InnerUploadShareWorker(controller, file))
+            {
+            }
+
+            private class InnerUploadShareWorker : UploadShareWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _file;
+
+                public InnerUploadShareWorker(BrowserController controller, Path file)
+                    : base(file, null, PasswordCallbackFactory.get(controller))
+                {
+                    _controller = controller;
+                    _file = file;
+                }
+
+                public override void cleanup(object result)
+                {
+                    DescriptiveUrl url = (DescriptiveUrl)result;
+                    // Display
+                    if (!DescriptiveUrl.EMPTY.@equals(url))
+                    {
+                        string title = LocaleFactory.localizedString("Share…", "Main");
                         string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
                             LocaleFactory.localizedString("Copy", "Main"));
                         _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()),
@@ -3681,8 +3743,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object vault)
                 {
-                    if (vault != null) {
-                        _controller.Reload((Path)vault, new HashSet<Path>(){(Path)vault}, new List<Path>(), true);
+                    if (vault != null)
+                    {
+                        _controller.Reload((Path)vault, new HashSet<Path>() { (Path)vault }, new List<Path>(), true);
                     }
                 }
             }
@@ -3709,8 +3772,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object vault)
                 {
-                    if (vault != null) {
-                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>(){ ((Vault)vault).getHome()}, new List<Path>(), true);
+                    if (vault != null)
+                    {
+                        _controller.Reload(((Vault)vault).getHome(), new HashSet<Path>() { ((Vault)vault).getHome() }, new List<Path>(), true);
                     }
                 }
             }
@@ -3732,7 +3796,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override object run(Session session)
             {
-                ((Compress) session.getFeature(typeof(Compress))).unarchive(_archive, _selected,
+                ((Compress)session.getFeature(typeof(Compress))).unarchive(_archive, _selected,
                     BrowserController, BrowserController);
                 return true;
             }
@@ -3745,8 +3809,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 base.cleanup();
-                _expanded.AddRange(Utils.ConvertFromJavaList<Path>(_archive.getExpanded(new ArrayList {_selected})));
-                BrowserController.Reload(BrowserController.Workdir, new List<Path> {_selected}, _expanded);
+                _expanded.AddRange(Utils.ConvertFromJavaList<Path>(_archive.getExpanded(new ArrayList { _selected })));
+                BrowserController.Reload(BrowserController.Workdir, new List<Path> { _selected }, _expanded);
             }
         }
     }

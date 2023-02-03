@@ -64,7 +64,7 @@ public class TransferDictionaryTest {
         Transfer t = new DownloadTransfer(new Host(new TestProtocol(), "t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         t.addSize(4L);
         t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -80,7 +80,7 @@ public class TransferDictionaryTest {
                 new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
         t.addSize(4L);
         t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -94,7 +94,7 @@ public class TransferDictionaryTest {
                 new TransferItem(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         t.addSize(4L);
         t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -113,7 +113,7 @@ public class TransferDictionaryTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         }));
         transfer.action(null, null, true, false, new DisabledTransferPrompt() {
@@ -122,7 +122,7 @@ public class TransferDictionaryTest {
                 return TransferAction.upload;
             }
         }, new DisabledListProgressListener());
-        final Transfer serialized = new TransferDictionary().deserialize(transfer.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>().deserialize(transfer.serialize(SerializerFactory.get()));
         assertNotSame(transfer, serialized);
         assertEquals(TransferAction.upload, serialized.action(null, null, true, false, new DisabledTransferPrompt() {
             @Override
@@ -168,7 +168,7 @@ public class TransferDictionaryTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
         assertTrue(t.isComplete());
-        final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertTrue(serialized.isComplete());
     }

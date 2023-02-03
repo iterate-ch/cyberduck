@@ -16,6 +16,7 @@ package ch.cyberduck.core.nextcloud;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public class NextcloudWriteFeature extends DAVWriteFeature {
 
-    public NextcloudWriteFeature(final NextcloudSession session) {
+    public NextcloudWriteFeature(final DAVSession session) {
         super(session);
     }
 
@@ -38,5 +39,10 @@ public class NextcloudWriteFeature extends DAVWriteFeature {
             headers.add(new BasicHeader("X-OC-Mtime", String.valueOf(status.getTimestamp() / 1000)));
         }
         return headers;
+    }
+
+    @Override
+    public boolean timestamp() {
+        return true;
     }
 }

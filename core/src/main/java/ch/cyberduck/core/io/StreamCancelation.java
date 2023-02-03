@@ -22,4 +22,11 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 public interface StreamCancelation {
 
     void validate() throws ConnectionCanceledException;
+
+    StreamCancelation noop = new StreamCancelation() {
+        @Override
+        public void validate() {
+            //
+        }
+    };
 }

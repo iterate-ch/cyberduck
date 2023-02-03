@@ -23,10 +23,11 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServiceManagementApplicationLoginRegistry implements ApplicationLoginRegistry {
-    private static final Logger log = Logger.getLogger(ServiceManagementApplicationLoginRegistry.class);
+    private static final Logger log = LogManager.getLogger(ServiceManagementApplicationLoginRegistry.class);
 
     private final LaunchServicesApplicationFinder finder
             = new LaunchServicesApplicationFinder();

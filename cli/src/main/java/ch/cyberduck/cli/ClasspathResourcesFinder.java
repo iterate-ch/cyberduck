@@ -19,14 +19,15 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.net.URI;
 
 public class ClasspathResourcesFinder implements ApplicationResourcesFinder {
 
-    private static final Logger log = Logger.getLogger(ClasspathResourcesFinder.class);
+    private static final Logger log = LogManager.getLogger(ClasspathResourcesFinder.class);
 
     @Override
     public Local find() {

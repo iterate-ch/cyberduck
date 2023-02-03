@@ -55,7 +55,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * If the credentials should be stored in the Keychain upon successful login
      */
-    private boolean persist = PreferencesFactory.get().getBoolean("connection.login.keychain");
+    private boolean persist = new LoginOptions().keychain;
 
     /**
      * Passed authentication successfully

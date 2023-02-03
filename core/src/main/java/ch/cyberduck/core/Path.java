@@ -23,7 +23,6 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
-import java.util.Objects;
 
 public class Path extends AbstractPath implements Referenceable, Serializable {
 
@@ -105,7 +104,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(String.valueOf(type), "Type");
         dict.setStringForKey(this.getAbsolute(), "Remote");
         if(symlink != null) {
@@ -266,9 +265,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
         return false;
     }
 
-    /**
-     * @return The absolute path name
-     */
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Path{");
@@ -287,23 +283,6 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
             // If a file we don't have any children at all
             return false;
         }
-        if(this.isRoot()) {
-            // Root cannot be a child of any other path
-            return false;
-        }
-        if(directory.isRoot()) {
-            // Any other path is a child
-            return true;
-        }
-        if(Objects.equals(this.getParent(), directory.getParent())) {
-            // Cannot be a child if the same parent
-            return false;
-        }
-        for(Path parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(new SimplePathPredicate(parent).test(directory)) {
-                return true;
-            }
-        }
-        return false;
+        return new SimplePathPredicate(this).isChild(new SimplePathPredicate(directory));
     }
 }

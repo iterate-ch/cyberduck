@@ -16,7 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.VersionIdProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
@@ -40,7 +41,8 @@ import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.shared.AbstractSchedulerFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -61,8 +63,16 @@ import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
 import static java.util.stream.Collectors.groupingBy;
 
-public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>, SDSApiClient> {
-    private static final Logger log = Logger.getLogger(SDSMissingFileKeysSchedulerFeature.class);
+public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature<List<UserFileKeySetRequest>> {
+    private static final Logger log = LogManager.getLogger(SDSMissingFileKeysSchedulerFeature.class);
+
+    private final PreferencesReader preferences = PreferencesFactory.get();
+
+    private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+
+    private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     public SDSMissingFileKeysSchedulerFeature() {
         this(PreferencesFactory.get().getLong("sds.encryption.missingkeys.scheduler.period"));
@@ -73,7 +83,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     }
 
     @Override
-    public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> client, final PasswordCallback callback, final Path file) throws BackgroundException {
+    public List<UserFileKeySetRequest> operate(final Session<?> client, final PasswordCallback callback, final Path file) throws BackgroundException {
         final SDSSession session = (SDSSession) client;
         final SDSNodeIdProvider nodeid = (SDSNodeIdProvider) session._getFeature(VersionIdProvider.class);
         try {
@@ -83,17 +93,17 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 return Collections.emptyList();
             }
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
-            final UserKeyPairContainer userKeyPairContainer = session.keyPair();
+            final UserKeyPairContainer userKeyPairContainer = this.keyPair(session);
             final UserKeyPair keyPair = TripleCryptConverter.toCryptoUserKeyPair(userKeyPairContainer);
             final TripleCryptKeyPair triplecrypt = new TripleCryptKeyPair();
             final Credentials passphrase = triplecrypt.unlock(callback, session.getHost(), keyPair);
-            final UserKeyPairContainer userKeyPairContainerDeprecated = session.keyPairDeprecated();
+            final UserKeyPairContainer userKeyPairContainerDeprecated = this.keyPairDeprecated(session);
             Credentials passphraseDeprecated = passphrase;
             if(userKeyPairContainerDeprecated != null) {
                 passphraseDeprecated = triplecrypt.unlock(callback, session.getHost(), TripleCryptConverter.toCryptoUserKeyPair(userKeyPairContainerDeprecated));
             }
             // Null when operating from scheduler. File reference is set for post upload.
-            final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())) : null;
+            final Long fileId = file != null ? Long.parseLong(nodeid.getVersionId(file)) : null;
             UserFileKeySetBatchRequest request;
             do {
                 if(log.isDebugEnabled()) {
@@ -101,7 +111,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                 }
                 request = new UserFileKeySetBatchRequest();
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
-                    null, null, null, fileId, null, null, null);
+                        null, null, null, fileId, null, null, null);
                 final Map<Long, List<UserUserPublicKey>> userPublicKeys = missingKeys.getUsers().stream().collect(groupingBy(UserUserPublicKey::getId));
                 final Map<Long, List<FileFileKeys>> files = missingKeys.getFiles().stream().collect(groupingBy(FileFileKeys::getId));
                 for(UserIdFileIdItem item : missingKeys.getItems()) {
@@ -110,13 +120,13 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
                         final UserKeyPairContainer keyPairForDecryption = session.getKeyPairForFileKey(encryptedFileKey.getVersion());
                         for(UserUserPublicKey userPublicKey : userPublicKeys.get(item.getUserId())) {
                             final EncryptedFileKey fk = this.encryptFileKey(
-                                TripleCryptConverter.toCryptoUserPrivateKey(keyPairForDecryption.getPrivateKeyContainer()),
-                                encryptedFileKey.getVersion() == EncryptedFileKey.Version.RSA2048_AES256GCM ? passphraseDeprecated : passphrase,
-                                userPublicKey, fileKey);
+                                    TripleCryptConverter.toCryptoUserPrivateKey(keyPairForDecryption.getPrivateKeyContainer()),
+                                    encryptedFileKey.getVersion() == EncryptedFileKey.Version.RSA2048_AES256GCM ? passphraseDeprecated : passphrase,
+                                    userPublicKey, fileKey);
                             final UserFileKeySetRequest keySetRequest = new UserFileKeySetRequest()
-                                .fileId(item.getFileId())
-                                .userId(item.getUserId())
-                                .fileKey(TripleCryptConverter.toSwaggerFileKey(fk));
+                                    .fileId(item.getFileId())
+                                    .userId(item.getUserId())
+                                    .fileKey(TripleCryptConverter.toSwaggerFileKey(fk));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Missing file key processed for file %d and user %d", item.getFileId(), item.getUserId()));
                             }
@@ -148,7 +158,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
         if(new HostPreferences(session.getHost()).getBoolean("sds.encryption.missingkeys.delete.deprecated")) {
             if(session.keyPairDeprecated() != null && !session.keyPairDeprecated().equals(session.keyPair())) {
                 final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).requestMissingFileKeys(
-                    null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
+                        null, 1, null, null, session.userAccount().getId(), "previous_user_key", null);
                 if(missingKeys.getItems().isEmpty()) {
                     log.debug("No more deprecated fileKeys to migrate - deleting deprecated key pair");
                     new UserApi(session.getClient()).removeUserKeyPair(session.keyPairDeprecated().getPublicKeyContainer().getVersion(), null);
@@ -160,10 +170,24 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
 
     private EncryptedFileKey encryptFileKey(final UserPrivateKey privateKey, final Credentials passphrase,
                                             final UserUserPublicKey pubkey, final FileFileKeys fileKeys)
-        throws InvalidFileKeyException, InvalidKeyPairException, InvalidPasswordException, CryptoSystemException, UnknownVersionException {
+            throws InvalidFileKeyException, InvalidKeyPairException, InvalidPasswordException, CryptoSystemException, UnknownVersionException {
         final PlainFileKey plainFileKey = Crypto.decryptFileKey(
-            TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
+                TripleCryptConverter.toCryptoEncryptedFileKey(fileKeys.getFileKeyContainer()), privateKey, passphrase.getPassword());
         return Crypto.encryptFileKey(
-            plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(pubkey.getPublicKeyContainer()));
+                plainFileKey, TripleCryptConverter.toCryptoUserPublicKey(pubkey.getPublicKeyContainer()));
+    }
+
+    private UserKeyPairContainer keyPair(final SDSSession session) throws BackgroundException {
+        if(keyPair.get() == null) {
+            keyPair.set(session.keyPair());
+        }
+        return keyPair.get();
+    }
+
+    public UserKeyPairContainer keyPairDeprecated(final SDSSession session) throws BackgroundException {
+        if(keyPairDeprecated.get() == null) {
+            keyPairDeprecated.set(session.keyPairDeprecated());
+        }
+        return keyPairDeprecated.get();
     }
 }

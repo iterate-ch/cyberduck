@@ -21,30 +21,43 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public final class Resolver {
-    private static final Logger log = Logger.getLogger(Resolver.class);
+    private static final Logger log = LogManager.getLogger(Resolver.class);
 
     private final ThreadFactory threadFactory
-        = new NamedThreadFactory("resolver");
+            = new NamedThreadFactory("resolver");
+
+    private final boolean preferIPv6;
+
+    public Resolver() {
+        this(PreferencesFactory.get().getBoolean("connection.dns.ipv6"));
+    }
+
+    public Resolver(final boolean preferIPv6) {
+        this.preferIPv6 = preferIPv6;
+    }
 
     /**
-     * This method is blocking until the hostname has been resolved or the lookup
-     * has been canceled using #cancel
+     * This method is blocking until the hostname has been resolved or the lookup has been canceled using #cancel
      *
      * @return The resolved IP address for this hostname
      * @throws ResolveFailedException   If the hostname cannot be resolved
@@ -58,10 +71,13 @@ public final class Resolver {
             @Override
             public void run() {
                 try {
-                    final InetAddress address = InetAddress.getByName(hostname);
-                    resolved.set(address);
+                    final InetAddress[] allByName = InetAddress.getAllByName(hostname);
+                    Arrays.stream(allByName).findFirst().ifPresent(resolved::set);
+                    if(preferIPv6) {
+                        Arrays.stream(allByName).filter(inetAddress -> inetAddress instanceof Inet6Address).findFirst().ifPresent(resolved::set);
+                    }
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Resolved %s to %s", hostname, address.getHostAddress()));
+                        log.info(String.format("Resolved %s to %s", hostname, resolved.get().getHostAddress()));
                     }
                 }
                 catch(UnknownHostException e) {
@@ -76,7 +92,7 @@ public final class Resolver {
         resolver.start();
         log.debug(String.format("Waiting for resolving of %s", hostname));
         // Wait for #run to finish
-        while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
+        while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofMillis(500))) {
             try {
                 callback.verify();
             }
@@ -96,7 +112,7 @@ public final class Resolver {
                 throw new ResolveCanceledException(MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname));
             }
             throw new ResolveFailedException(
-                MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), failure.get());
+                    MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), failure.get());
         }
         return resolved.get();
     }

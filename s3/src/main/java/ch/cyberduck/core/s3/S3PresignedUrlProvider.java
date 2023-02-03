@@ -18,6 +18,8 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.preferences.HostPreferences;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
@@ -62,8 +64,8 @@ public class S3PresignedUrlProvider {
                 //
             }
         }.createSignedUrlUsingSignatureVersion(
-            session.getSignatureVersion().toString(),
-            region, method, bucket, key, null, null, expiry / 1000, false, true,
-            session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
+                session.getSignatureVersion().toString(),
+                region, method, bucket, key, null, null, expiry / 1000, false, true,
+                new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable"));
     }
 }

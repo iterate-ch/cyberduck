@@ -18,8 +18,9 @@ package ch.cyberduck.core.transfer.upload;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 public final class UploadFilterOptions {
 
@@ -44,9 +45,9 @@ public final class UploadFilterOptions {
      */
     public boolean checksum;
 
-    public UploadFilterOptions() {
+    public UploadFilterOptions(final Host bookmark) {
         // Defaults
-        final Preferences preferences = PreferencesFactory.get();
+        final PreferencesReader preferences = new HostPreferences(bookmark);
         permissions = preferences.getBoolean("queue.upload.permissions.change");
         acl = preferences.getBoolean("queue.upload.acl.change");
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");

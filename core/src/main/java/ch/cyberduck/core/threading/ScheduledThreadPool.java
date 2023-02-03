@@ -18,7 +18,8 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,7 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ScheduledThreadPool {
-    private static final Logger log = Logger.getLogger(ScheduledThreadPool.class);
+    private static final Logger log = LogManager.getLogger(ScheduledThreadPool.class);
 
     private final ScheduledExecutorService pool;
 
@@ -34,14 +35,52 @@ public class ScheduledThreadPool {
      * With FIFO (first-in-first-out) ordered wait queue.
      */
     public ScheduledThreadPool() {
-        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer"));
+        this(new LoggingUncaughtExceptionHandler());
     }
 
-    public ScheduledFuture repeat(final Runnable runnable, final Long period, final TimeUnit unit) {
-        return pool.scheduleAtFixedRate(runnable, 0L, period, unit);
+    /**
+     * With FIFO (first-in-first-out) ordered wait queue.
+     *
+     * @param handler Uncaught exception handler
+     */
+    public ScheduledThreadPool(final Thread.UncaughtExceptionHandler handler) {
+        pool = Executors.newScheduledThreadPool(1, new NamedThreadFactory("timer", handler));
     }
 
-    public ScheduledFuture schedule(final Runnable runnable, final Long delay, final TimeUnit unit) {
+    /**
+     * Schedule at fixed rate with no delay
+     *
+     * @param runnable Task to run
+     * @param period   Repeat after
+     * @param unit     Unit for period
+     * @return Scheduled future
+     */
+    public ScheduledFuture<?> repeat(final Runnable runnable, final Long period, final TimeUnit unit) {
+        return this.repeat(runnable, 0L, period, unit);
+    }
+
+    /**
+     * Schedule at fixed rate with delay
+     *
+     * @param runnable Task to run
+     * @param delay    Delay prior starting at fixed rate
+     * @param period   Repeat after
+     * @param unit     Unit for period
+     * @return Scheduled future
+     */
+    public ScheduledFuture repeat(final Runnable runnable, final long delay, final Long period, final TimeUnit unit) {
+        return pool.scheduleAtFixedRate(runnable, delay, period, unit);
+    }
+
+    /**
+     * Schedule for single execution
+     *
+     * @param runnable Task to run
+     * @param delay    Delay prior running
+     * @param unit     Unit for delay
+     * @return Scheduled future
+     */
+    public ScheduledFuture<?> schedule(final Runnable runnable, final Long delay, final TimeUnit unit) {
         return pool.schedule(runnable, delay, unit);
     }
 
@@ -49,6 +88,6 @@ public class ScheduledThreadPool {
         if(log.isInfoEnabled()) {
             log.info(String.format("Shutdown pool %s", pool));
         }
-        pool.shutdownNow();
+        pool.shutdown();
     }
 }

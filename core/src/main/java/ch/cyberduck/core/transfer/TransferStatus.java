@@ -23,44 +23,47 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.TransferCanceledException;
+import ch.cyberduck.core.exception.TransferStatusCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.random.NonceGenerator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-
 public class TransferStatus implements StreamCancelation, StreamProgress {
-    private static final Logger log = Logger.getLogger(TransferStatus.class);
+    private static final Logger log = LogManager.getLogger(TransferStatus.class);
 
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
     public static final long GIGA = 1073741824; // 2^30
 
+    public static final long UNKNOWN_LENGTH = -1L;
+
     /**
      * Change target filename
      */
     private Rename rename
-        = new Rename();
+            = new Rename();
 
     /**
      * Temporary filename only used for transfer. Rename when file transfer is complete
      */
     private final Displayname displayname
-        = new Displayname();
+            = new Displayname();
 
     /**
      * Target file or directory already exists
@@ -93,7 +96,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Offset to read from input stream. Must be less or equals size.
      */
     private final AtomicLong offset
-        = new AtomicLong(0);
+            = new AtomicLong(0);
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
@@ -103,13 +106,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * The transfer has been canceled by the user.
      */
     private final AtomicBoolean canceled
-        = new AtomicBoolean();
+            = new AtomicBoolean();
 
     private final AtomicBoolean complete
-        = new AtomicBoolean();
+            = new AtomicBoolean();
 
     private final CountDownLatch done
-        = new CountDownLatch(1);
+            = new CountDownLatch(1);
 
     private Checksum checksum = Checksum.NONE;
 
@@ -122,6 +125,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Current remote attributes of existing file including UNIX permissions, timestamp and ACL
      */
     private PathAttributes remote = PathAttributes.EMPTY;
+
+    /**
+     * Remote attributes after upload completed to be set in write feature
+     */
+    private PathAttributes response = PathAttributes.EMPTY;
 
     /**
      * Target UNIX permissions to set when transfer is complete
@@ -146,13 +154,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Long timestamp;
 
     private Map<String, String> parameters
-        = Collections.emptyMap();
+            = Collections.emptyMap();
 
     private Map<String, String> metadata
-        = Collections.emptyMap();
+            = Collections.emptyMap();
 
     private List<TransferStatus> segments
-        = Collections.emptyList();
+            = Collections.emptyList();
 
     /**
      * Part number
@@ -208,6 +216,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.checksum = copy.checksum;
         this.mime = copy.mime;
         this.remote = copy.remote;
+        this.response = copy.response;
         this.permission = copy.permission;
         this.acl = copy.acl;
         this.encryption = copy.encryption;
@@ -230,9 +239,9 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      *
      * @return True if complete
      */
-    public boolean await() {
+    public boolean await() throws ConnectionCanceledException {
         // Lock until complete
-        Uninterruptibles.awaitUninterruptibly(done);
+        Interruptibles.await(done, ConnectionCanceledException.class);
         return complete.get();
     }
 
@@ -276,7 +285,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             segment.validate();
         }
         if(canceled.get()) {
-            throw new TransferCanceledException();
+            throw new TransferStatusCanceledException();
         }
     }
 
@@ -406,23 +415,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return displayname;
     }
 
-    public TransferStatus rename(final Path renamed) {
-        this.rename.remote = renamed;
+    public TransferStatus withRename(final Path renamed) {
+        this.rename.withRemote(renamed);
         return this;
     }
 
-    /**
-     * @param temporary Temporary file to open output stream to
-     * @param finalname Target name
-     */
-    public TransferStatus temporary(final Path temporary, final Path finalname) {
-        this.rename.remote = temporary;
-        this.displayname.remote = finalname;
-        return this;
-    }
-
-    public TransferStatus rename(final Local renamed) {
-        this.rename.local = renamed;
+    public TransferStatus withRename(final Local renamed) {
+        this.rename.withLocal(renamed);
         return this;
     }
 
@@ -430,7 +429,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * @param finalname Target filename to rename temporary file to
      */
     public TransferStatus withDisplayname(final Local finalname) {
-        this.displayname.local = finalname;
+        this.displayname.withLocal(finalname);
+        return this;
+    }
+
+    public TransferStatus withDisplayname(final Path finalname) {
+        this.displayname.withRemote(finalname);
         return this;
     }
 
@@ -474,6 +478,22 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public TransferStatus withRemote(final PathAttributes attributes) {
         this.setRemote(attributes);
+        return this;
+    }
+
+    /**
+     * @return Attributes on server after upload
+     */
+    public PathAttributes getResponse() {
+        return response;
+    }
+
+    public void setResponse(PathAttributes attributes) {
+        this.response = attributes;
+    }
+
+    public TransferStatus withResponse(final PathAttributes attributes) {
+        this.setResponse(attributes);
         return this;
     }
 
@@ -654,24 +674,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
             return false;
         }
         final TransferStatus that = (TransferStatus) o;
-        if(append != that.append) {
-            return false;
-        }
-        if(exists != that.exists) {
-            return false;
-        }
-        if(length != that.length) {
-            return false;
-        }
-        return true;
+        return length == that.length && Objects.equals(offset.longValue(), that.offset.longValue()) && Objects.equals(part, that.part);
     }
 
     @Override
     public int hashCode() {
-        int result = (exists ? 1 : 0);
-        result = 31 * result + (append ? 1 : 0);
-        result = 31 * result + (int) (length ^ (length >>> 32));
-        return result;
+        return Objects.hash(offset.longValue(), length, part);
     }
 
     @Override
@@ -694,6 +702,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", metadata=").append(metadata);
         sb.append(", lockId=").append(lockId);
         sb.append(", region=").append(region);
+        sb.append(", part=").append(part);
+        sb.append(", filekey=").append(filekey);
         sb.append('}');
         return sb.toString();
     }
@@ -710,6 +720,25 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
          * Target filename is temporary and file should be renamed to display name when transfer is complete
          */
         public Local local;
+        /**
+         * Target exists
+         */
+        public boolean exists;
+
+        public Displayname withRemote(final Path remote) {
+            this.remote = remote;
+            return this;
+        }
+
+        public Displayname withLocal(final Local local) {
+            this.local = local;
+            return this;
+        }
+
+        public Displayname exists(final boolean exists) {
+            this.exists = exists;
+            return this;
+        }
 
         @Override
         public String toString() {
@@ -732,6 +761,16 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
          * Renamed local target
          */
         public Local local;
+
+        public Rename withRemote(final Path remote) {
+            this.remote = remote;
+            return this;
+        }
+
+        public Rename withLocal(final Local local) {
+            this.local = local;
+            return this;
+        }
 
         @Override
         public String toString() {

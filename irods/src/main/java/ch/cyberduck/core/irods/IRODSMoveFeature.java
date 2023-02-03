@@ -34,7 +34,7 @@ import java.util.Collections;
 public class IRODSMoveFeature implements Move {
 
     private final IRODSSession session;
-    private Delete delete;
+    private final Delete delete;
 
     public IRODSMoveFeature(IRODSSession session) {
         this.session = session;

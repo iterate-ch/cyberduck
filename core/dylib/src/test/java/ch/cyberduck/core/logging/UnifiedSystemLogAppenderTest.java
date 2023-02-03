@@ -15,10 +15,9 @@ package ch.cyberduck.core.logging;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
+import org.apache.logging.log4j.message.SimpleMessage;
 import org.junit.Test;
 
 public class UnifiedSystemLogAppenderTest {
@@ -26,17 +25,13 @@ public class UnifiedSystemLogAppenderTest {
     @Test
     public void testAppend() {
         final UnifiedSystemLogAppender a = new UnifiedSystemLogAppender();
-        a.setLayout(new SimpleLayout());
-        a.append(new LoggingEvent("f", Logger.getLogger(UnifiedSystemLogAppender.class),
-            Level.DEBUG, "Test", new RuntimeException()));
-        a.append(new LoggingEvent("f", Logger.getLogger(UnifiedSystemLogAppender.class),
-            Level.ERROR, "Test", new RuntimeException()));
+        a.append(new Log4jLogEvent.Builder().setLoggerName(UnifiedSystemLogAppender.class.getCanonicalName()).setLevel(Level.DEBUG).setThrown(new RuntimeException()).setMessage(new SimpleMessage("Test")).build());
+        a.append(new Log4jLogEvent.Builder().setLoggerName(UnifiedSystemLogAppender.class.getCanonicalName()).setLevel(Level.ERROR).setThrown(new RuntimeException()).setMessage(new SimpleMessage("Test")).build());
     }
 
     @Test
     public void testAppend유준환() {
         final UnifiedSystemLogAppender a = new UnifiedSystemLogAppender();
-        a.setLayout(new SimpleLayout());
         a.log(UnifiedSystemLogAppender.OS_LOG_TYPE_INFO, "http-유준환.txt-1", "유준환");
     }
 }

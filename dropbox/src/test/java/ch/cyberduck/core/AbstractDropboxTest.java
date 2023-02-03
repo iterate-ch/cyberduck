@@ -21,6 +21,7 @@ import ch.cyberduck.core.dropbox.DropboxSession;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,13 +32,13 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractDropboxTest {
+public class AbstractDropboxTest extends VaultTest {
 
     protected DropboxSession session;
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
     }
 
     @Parameterized.Parameter
@@ -52,7 +53,7 @@ public class AbstractDropboxTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DropboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Dropbox.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Dropbox.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new DropboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
@@ -62,20 +63,45 @@ public class AbstractDropboxTest {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener());
+                new TestPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {
         @Override
-        public String getPassword(Scheme scheme, int port, String hostname, String user) {
-            if(user.equals("Dropbox (cyberduck) OAuth2 Access Token")) {
-                return System.getProperties().getProperty("dropbox.accesstoken");
-            }
-            if(user.equals("Dropbox (cyberduck) OAuth2 Refresh Token")) {
-                return System.getProperties().getProperty("dropbox.refreshtoken");
+        public String getPassword(final String serviceName, final String accountName) {
+            if(accountName.equals("Dropbox (cyberduck) OAuth2 Token Expiry")) {
+                return PROPERTIES.get("dropbox.tokenexpiry");
             }
             return null;
+        }
+
+        @Override
+        public String getPassword(Scheme scheme, int port, String hostname, String user) {
+            if(user.equals("Dropbox (cyberduck) OAuth2 Access Token")) {
+                return PROPERTIES.get("dropbox.accesstoken");
+            }
+            if(user.equals("Dropbox (cyberduck) OAuth2 Refresh Token")) {
+                return PROPERTIES.get("dropbox.refreshtoken");
+            }
+            return null;
+        }
+
+        @Override
+        public void addPassword(final String serviceName, final String accountName, final String password) {
+            if(accountName.equals("Dropbox (cyberduck) OAuth2 Token Expiry")) {
+                VaultTest.add("dropbox.tokenexpiry", password);
+            }
+        }
+
+        @Override
+        public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
+            if(user.equals("Dropbox (cyberduck) OAuth2 Access Token")) {
+                VaultTest.add("dropbox.accesstoken", password);
+            }
+            if(user.equals("Dropbox (cyberduck) OAuth2 Refresh Token")) {
+                VaultTest.add("dropbox.refreshtoken", password);
+            }
         }
     }
 }

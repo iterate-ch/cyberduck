@@ -21,12 +21,16 @@ import ch.cyberduck.core.onedrive.AbstractDriveListService;
 import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.types.Drive;
+import org.nuxeo.onedrive.client.types.GroupItem;
 
 import java.util.Iterator;
 
 public class GroupDrivesListService extends AbstractDriveListService {
+    private static final Logger log = LogManager.getLogger(GroupDrivesListService.class);
 
     private final AbstractSharepointSession session;
 
@@ -37,6 +41,10 @@ public class GroupDrivesListService extends AbstractDriveListService {
 
     @Override
     protected Iterator<Drive.Metadata> getIterator(final Path directory) throws BackgroundException {
-        return Drives.getDrives(session.getGroup(directory));
+        final GroupItem group = session.getGroup(directory);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return drives for group %s", group));
+        }
+        return Drives.getDrives(group);
     }
 }

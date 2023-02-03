@@ -1,4 +1,6 @@
-package ch.cyberduck.core.worker;/*
+package ch.cyberduck.core.worker;
+
+/*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -22,12 +24,13 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class AttributesWorker extends Worker<PathAttributes> {
-    private static final Logger log = Logger.getLogger(AttributesWorker.class.getName());
+    private static final Logger log = LogManager.getLogger(AttributesWorker.class.getName());
 
     private final Cache<Path> cache;
     private final Path file;

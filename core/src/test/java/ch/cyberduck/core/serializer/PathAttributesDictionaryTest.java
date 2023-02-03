@@ -15,12 +15,15 @@ package ch.cyberduck.core.serializer;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.io.Checksum;
 
 import org.junit.Test;
+
+import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,10 +32,15 @@ public class PathAttributesDictionaryTest {
     @Test
     public void testSerialize() {
         PathAttributes attributes = new PathAttributes();
-        PathAttributes clone = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
-
+        attributes.setOwner("u");
+        attributes.setGroup("g");
+        attributes.setModificationDate(System.currentTimeMillis());
+        attributes.setPermission(new Permission(Permission.Action.none, Permission.Action.write, Permission.Action.execute));
+        PathAttributes clone = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
         assertEquals(clone.getPermission(), attributes.getPermission());
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
+        assertEquals("u", clone.getOwner());
+        assertEquals("g", clone.getGroup());
     }
 
     @Test
@@ -41,8 +49,12 @@ public class PathAttributesDictionaryTest {
         attributes.setSize(3L);
         attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
         attributes.setModificationDate(5343L);
-        assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
-        assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
+        attributes.setLink(new DescriptiveUrl(URI.create("https://cyberduck.io/"), DescriptiveUrl.Type.signed));
+        final PathAttributes deserialized = new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get()));
+        assertEquals(attributes, deserialized);
+        assertEquals(attributes.hashCode(), deserialized.hashCode());
+        assertEquals(attributes.getLink(), deserialized.getLink());
+        assertEquals(attributes.getLink().getType(), deserialized.getLink().getType());
     }
 
     @Test
@@ -53,7 +65,7 @@ public class PathAttributesDictionaryTest {
         attributes.setVersionId("v-1");
         attributes.setFileId("myUniqueId");
         attributes.setModificationDate(System.currentTimeMillis());
-        assertEquals(attributes, new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())));
-        assertEquals(attributes.hashCode(), new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
+        assertEquals(attributes, new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get())));
+        assertEquals(attributes.hashCode(), new PathAttributesDictionary<>().deserialize(attributes.serialize(SerializerFactory.get())).hashCode());
     }
 }

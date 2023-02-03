@@ -22,12 +22,15 @@ import org.apache.commons.io.output.ProxyOutputStream;
 import java.io.OutputStream;
 
 public abstract class StatusOutputStream<Reply> extends ProxyOutputStream {
+
     public StatusOutputStream(final OutputStream proxy) {
         super(proxy);
     }
 
     /**
-     * @return Obtain server status response after closing stream
+     * Obtain server status response after closing stream. Must close the stream first to prevent deadlock.
+     *
+     * @return Return the response after closing the stream.
      */
     public abstract Reply getStatus() throws BackgroundException;
 }

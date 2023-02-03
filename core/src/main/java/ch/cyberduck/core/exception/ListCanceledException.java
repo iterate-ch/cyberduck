@@ -26,11 +26,6 @@ public class ListCanceledException extends ConnectionCanceledException {
 
     private final AttributedList<Path> chunk;
 
-    public ListCanceledException(final String detail, final AttributedList<Path> chunk) {
-        super(detail);
-        this.chunk = chunk;
-    }
-
     public ListCanceledException(final AttributedList<Path> chunk) {
         this.chunk = chunk;
     }

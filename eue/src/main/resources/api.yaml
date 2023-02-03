@@ -1,0 +1,1248 @@
+openapi: 3.0.1
+info:
+    title: ReSTFS
+    description: ReSTFS Open API 3.0 Spec
+    version: '1.0'
+servers:
+    - url: https://{gmxcloud}/{service}/fs/{username}
+      variables:
+          gmxcloud:
+              default: mc.gmx.net
+              description: gmxcloud
+          service:
+              default: restfs-1
+              description: serviceName
+          username:
+              default: username
+              description: username
+security:
+    - bearerAuth: []
+paths:
+    /userinfo:
+        get:
+            description: Retrieve the metadata of a file or of a container.
+            tags: [UserInfo]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: query
+                  name: option
+                  description: "decorator option (< string > array(csv))"
+                  schema:
+                      type: string
+                  explode: true
+            responses:
+                '200':
+                    description: metadata of a file or of a container
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/UserInfoResponseModel'
+                '401':
+                    description: UNAUTHORIZED, authentication failed
+                '404':
+                    description: NOT FOUND, User does not exist
+    /share:
+        get:
+            description: Retrieve the metadata of all shares of this user.
+            tags: [GetUserShares]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: query
+                  name: option
+                  description: "decorator option (< string > array(csv))"
+                  schema:
+                      type: string
+                  explode: true
+            responses:
+                '200':
+                    description: metadata of a file or of a container
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/UserSharesModel'
+    /resource/{resourceId}:
+        get:
+            description: Retrieve the metadata of a file or of a container.
+            tags: [ListResource]
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-None-Match
+                  description: optional If-None-Match header
+                  schema:
+                      type: string
+                - in: query
+                  name: downloadURIValidity
+                  description: "optional parameter to suggest a lifetime for downloadURIs received through the options 'open' and 'download'"
+                  schema:
+                      type: string
+                - in: query
+                  name: fields
+                  schema:
+                      type: string
+                - in: query
+                  name: length
+                  schema:
+                      type: integer
+                      format: int32
+                  description: "max number of items to return (containers only)"
+                - in: query
+                  name: offset
+                  description: "start offset (containers only)"
+                  schema:
+                      type: integer
+                      format: int32
+                - in: query
+                  name: option
+                  description: "decorator option (< string > array(csv))"
+                  schema:
+                      type: array
+                      items:
+                          type: string
+                - in: query
+                  name: sort
+                  description: "list of sort criteria (containers only)"
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: metadata of a file or of a container
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/UiFsModel'
+                '304':
+                    description: NOT MODIFIED Metadata not modified
+        post:
+            tags: [postResource]
+            description: Creates an upload URI for replacing the content of an existing file resource
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: query
+                  name: option
+                  description: "Optional parameter indicating if the upload should be with internal Uri"
+                  schema:
+                      $ref: '#/components/schemas/OptionsQueryParam'
+                  required: false
+                - in: query
+                  name: lockToken
+                  description: optional LockToken
+                  required: false
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                uploadType:
+                                    $ref: '#/components/schemas/uploadType'
+                                patch:
+                                    $ref: '#/components/schemas/ResourceUpdateModel'
+                                size:
+                                    type: integer
+                                    format: int64
+            responses:
+                '200':
+                    description: "success"
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/FileUpdateResponseRepresentation'
+                            examples:
+                                0:
+                                    value: |-
+                                        {"uploadURI":"https://someserver.example.com/data/testuser@gmx.de/resource/352/blob?token=1U_1384875407_ce...""}
+                '400':
+                    description: "BAD REQUEST, Wrong resource type"
+                '412':
+                    description: "PRECONDITION FAILED, non-matching Etag of 'If-Match' Header"
+                '423':
+                    description: "LOCKED, Resource is locked"
+        patch:
+            description: Change properties of resources.
+            tags: [updateResource]
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: query
+                  name: lockToken
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ResourceUpdateModel'
+                        examples:
+                            '0':
+                                value: |-
+                                    {
+                                        "update" : {
+                                            "ui:fs" : {
+                                              "name":  "karthik-folder3"
+                                            }
+                                        }
+                                    }
+            responses:
+              '207':
+                description: MULTI STATUS
+                content:
+                  application/json;charset=utf-8:
+                    schema:
+                      $ref: '#/components/schemas/ResourceMoveResponseEntries'
+        delete:
+            description: Delete a resource from trash
+            tags: [deleteResource]
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: success
+                '403':
+                    description: FORBIDDEN, Deletion not allowed
+                '409':
+                    description: CONFLICT, Resource already exists in trash
+                '412':
+                    description: PRECONDITION FAILED, non-matching Etag of 'If-Match' Header
+            servers:
+                - url: https://mc.gmx.net
+    /resource/{resourceId}/children:
+        post:
+            description: Prepare upload of files or create container/nested containers like "mkdir -p"
+            tags: [postChildren]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - rename or none (default)
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+                - name: option
+                  in: query
+                  description: Optional parameter indicating if the upload should be with internal Uri
+                  schema:
+                      $ref: '#/components/schemas/OptionsQueryParam'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ResourceCreationRepresentationArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     {\r\n         \"path\": \"test1/test2/test3\",\r\n         \"resourceType\": \"container\"\r\n     }\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceCreationResponseEntries'
+                '400':
+                    description: BAD REQUEST, No path provided, path too long or path contains illegal characters
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resource/{resourceId}/children/copy:
+        post:
+            description: Copy resources from one container to another.
+            tags: [copyChildren]
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - name: autoRename
+                  in: query
+                  description: (deprecated) flag for enforcing automatic rename on conflict
+                  schema:
+                      type: boolean
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - overwrite or rename
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CopyResourceUrlsArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     \"https://mc.gmx.net/resource/1017873547923559875\",\r\n     \"https://mc.gmx.net/resource/1017873547923559876\"\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceCopyResponseEntries'
+                '403':
+                    description: FORBIDDEN, Not allowed
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resource/{resourceId}/children/move:
+        post:
+            description: Move resources to a container
+            tags: [MoveChildren]
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - name: autoRename
+                  in: query
+                  description: (deprecated) flag for enforcing automatic rename on conflict
+                  schema:
+                      type: boolean
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - overwrite or rename
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CopyResourceUrlsArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     \"https://mc.gmx.net/resource/1017873844142086120\"\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
+                '403':
+                    description: FORBIDDEN, Not allowed
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resourceAlias/{alias}:
+        get:
+            description: Retrieve the metadata of a file or of a container.
+            tags: [ListResourceAlias]
+            parameters:
+                - in: path
+                  name: alias
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-None-Match
+                  description: optional If-None-Match header
+                  schema:
+                      type: string
+                - in: query
+                  name: downloadURIValidity
+                  description: "optional parameter to suggest a lifetime for downloadURIs received through the options 'open' and 'download'"
+                  schema:
+                      type: string
+                - in: query
+                  name: fields
+                  schema:
+                      type: string
+                - in: query
+                  name: length
+                  schema:
+                      type: integer
+                      format: int32
+                  description: "max number of items to return (containers only)"
+                - in: query
+                  name: offset
+                  description: "start offset (containers only)"
+                  schema:
+                      type: integer
+                      format: int32
+                - in: query
+                  name: option
+                  description: "decorator option (< string > array(csv))"
+                  schema:
+                      type: array
+                      items:
+                          type: string
+                - in: query
+                  name: sort
+                  description: "list of sort criteria (containers only)"
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    description: metadata of a file or of a container
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/UiFsModel'
+                '304':
+                    description: NOT MODIFIED Metadata not modified
+    /resourceAlias/{alias}/children:
+        post:
+            description: Prepare upload of files or create container/nested containers like "mkdir -p"
+            tags: [postChildrenForAlias]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: path
+                  name: alias
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - rename or none (default)
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+                - name: option
+                  in: query
+                  description: Optional parameter indicating if the upload should be with internal Uri
+                  schema:
+                      $ref: '#/components/schemas/OptionsQueryParam'
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ResourceCreationRepresentationArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     {\r\n         \"path\": \"test1/test2/test3\",\r\n         \"resourceType\": \"container\"\r\n     }\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceCreationResponseEntries'
+                '400':
+                    description: BAD REQUEST, No path provided, path too long or path contains illegal characters
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resourceAlias/{alias}/children/move:
+        post:
+            description: Move resources to a container
+            tags: [MoveChildrenForAliasApi]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: path
+                  name: alias
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - name: autoRename
+                  in: query
+                  description: (deprecated) flag for enforcing automatic rename on conflict
+                  schema:
+                      type: boolean
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - overwrite or rename
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CopyResourceUrlsArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     \"https://mc.gmx.net/resource/1017873844142086120\"\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceMoveResponseEntries'
+                '403':
+                    description: FORBIDDEN, Not allowed
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resourceAlias/{alias}/children/copy:
+        post:
+            description: Copy resources to a container
+            tags: [CopyChildrenForAliasApi]
+            parameters:
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: header
+                  name: If-Match
+                  description: ifMatchHeader
+                  schema:
+                      type: string
+                - in: path
+                  name: alias
+                  schema:
+                      type: string
+                  required: true
+                  description: id of the resource (resourceURI)
+                - name: autoRename
+                  in: query
+                  description: (deprecated) flag for enforcing automatic rename on conflict
+                  schema:
+                      type: boolean
+                - name: conflictResolution
+                  in: query
+                  description: conflictResolution - overwrite or rename
+                  schema:
+                      type: string
+                      enum:
+                          - RENAME
+                          - OVERWRITE
+                          - NONE
+                          - INVALID
+                - name: lockToken
+                  in: query
+                  description: the lock token used to access a locked resource
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CopyResourceUrlsArray'
+                        examples:
+                            '0':
+                                value: "[\r\n     \"https://mc.gmx.net/resource/1017873844142086120\"\r\n ]"
+            responses:
+                '207':
+                    description: MULTI STATUS
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ResourceCopyResponseEntries'
+                '403':
+                    description: FORBIDDEN, Not allowed
+                '409':
+                    description: CONFLICT, file resource already exists (inside of the multistatus)
+                '412':
+                    description: PRECONDITION, FAILED non-matching Etag of 'If-Match' Header
+                '423':
+                    description: LOCKED, Resource or parent resource is locked (inside of the multistatus)
+                '507':
+                    description: INSUFFICIENT STORAGE, insufficient storage or quotas exceeded (inside of the multistatus)
+    /resource/{resourceId}/share:
+        post:
+            description: Create a share for a file or container
+            tags: [CreateShare]
+            parameters:
+                - in: path
+                  name: resourceId
+                  schema:
+                      type: string
+                  required: true
+                - in: header
+                  name: cookie
+                  description: cookie
+                  schema:
+                      type: string
+                - in: query
+                  name: option
+                  description: options to specify additional resource data
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ShareCreationRequestModel'
+            responses:
+                '207':
+                    description: MULTI STATUS, One entry per guest
+                    content:
+                        application/json;charset=utf-8:
+                            schema:
+                                $ref: '#/components/schemas/ShareCreationResponseModel'
+                '404':
+                    description: NOT FOUND
+components:
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+    schemas:
+        Uifs:
+            properties:
+                creationMillis:
+                    type: integer
+                    format: int64
+                childrenSize:
+                    type: integer
+                    format: int64
+                metaETag:
+                    type: string
+                lastResourceOperation:
+                    type: string
+                resourceURI:
+                    type: string
+                version:
+                    type: integer
+                    format: int32
+                lastResourceOperationClient:
+                    type: string
+                size:
+                    type: integer
+                    format: int64
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Children'
+                name:
+                    type: string
+                modificationMillis:
+                    type: integer
+                    format: int64
+                childrenCount:
+                    type: integer
+                    format: int32
+                resourceType:
+                    type: string
+                cdash64:
+                    type: string
+                referenceId:
+                    type: string
+                storeId:
+                    type: string
+                guestModificationMillis:
+                    type: integer
+                    format: int64
+                originalParents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Uifs'
+                contentETag:
+                    type: string
+                parents:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Uifs'
+                UiMetaResource:
+                    properties:
+                        ui:meta:resource:
+                            $ref: '#/components/schemas/UiMetaResourceModel'
+        Children:
+            properties:
+                ui:fs:
+                    $ref: '#/components/schemas/Uifs'
+                ui:win32:
+                    $ref: '#/components/schemas/UiWin32'
+                ui:share:
+                    $ref: '#/components/schemas/UiShareModel'
+        UiWin32:
+            properties:
+                readOnly:
+                    type: boolean
+                hidden:
+                    type: boolean
+                system:
+                    type: boolean
+                creationMillis:
+                    type: integer
+                    format: int64
+                lastModificationMillis:
+                    type: integer
+                    format: int64
+                lastAccessMillis:
+                    type: integer
+                    format: int64
+        UiLink:
+            properties:
+                downloadURI:
+                    type: string
+                thumbnailURL:
+                    type: string
+        UiFsModel:
+            properties:
+                ui:fs:
+                    $ref: '#/components/schemas/Uifs'
+                ui:win32:
+                    $ref: '#/components/schemas/UiWin32'
+                ui:link:
+                    $ref: '#/components/schemas/UiLink'
+                ui:share:
+                    $ref: '#/components/schemas/UiShareModel'
+        UiMetaResourceModel:
+            properties:
+                mimetype:
+                    type: string
+        FileUpdateResponseRepresentation:
+            properties:
+                uploadURI:
+                    type: string
+        OptionsQueryParam:
+            type: string
+            enum:
+                - DEFAULT
+                - METADATA
+                - MIGRATIONMETADATA
+                - ADDITIONALMETADATA
+                - WIN32PROPERTIES
+                - PARENTS
+                - PROPERTIES
+                - DOWNLOAD
+                - INTERNALDOWNLOAD
+                - UPLOAD
+                - INTERNALUPLOAD
+                - OPEN
+                - SHARES
+                - THUMBNAILS
+                - DISPLAYRESOURCE
+                - SYNC
+                - INVALID
+                - FULLPATH
+                - TAGS
+        ResourceCreationRepresentationArray:
+            type: array
+            items:
+                type: object
+                properties:
+                    forceOverwrite:
+                        type: boolean
+                    ovewrite:
+                        type: boolean
+                    path:
+                        type: string
+                    resourceType:
+                        type: string
+                        enum:
+                            - CONTAINER
+                            - ALIASCONTAINER
+                            - FILE
+                    sha256:
+                        type: string
+                    size:
+                        type: integer
+                        format: int64
+                    uploadType:
+                        $ref: '#/components/schemas/uploadType'
+                    properties:
+                        $ref: '#/components/schemas/ResourceCreationPropertiesModel'
+                required:
+                    - overwrite
+                    - path
+                    - resourceType
+        ResourceCreationPropertiesModel:
+            properties:
+                ui:win32:
+                    $ref: '#/components/schemas/UiWin32'
+                ui:share:
+                    $ref: '#/components/schemas/UiShareModel'
+        ResourceCreationResponseEntry:
+            type: object
+            properties:
+                statusCode:
+                    type: integer
+                reason:
+                    type: string
+                entity:
+                    type: object
+                    properties:
+                        conflicting:
+                            properties:
+                                ui:fs:
+                                    $ref: '#/components/schemas/Uifs'
+                        uploadURI:
+                            type: string
+                headers:
+                    type: object
+                    properties:
+                        Location:
+                            type: string
+        ResourceCreationResponseEntries:
+            type: object
+            additionalProperties:
+                $ref: '#/components/schemas/ResourceCreationResponseEntry'
+        ResourceUpdateModel:
+            properties:
+                update:
+                    type: object
+                    properties:
+                        ui:fs:
+                            $ref: '#/components/schemas/Uifs'
+                        ui:win32:
+                            $ref: '#/components/schemas/UiWin32'
+        ResourceCopyResponseEntry:
+            type: object
+            properties:
+                statusCode:
+                    type: integer
+                reason:
+                    type: string
+                headers:
+                    type: object
+                    properties:
+                        Location:
+                            type: string
+        ResourceCopyResponseEntries:
+            type: object
+            additionalProperties:
+                $ref: '#/components/schemas/ResourceCopyResponseEntry'
+        ResourceMoveResponseEntry:
+            type: object
+            properties:
+                statusCode:
+                    type: integer
+                reason:
+                    type: string
+                entity:
+                    type: object
+                    properties:
+                        conflicting:
+                            properties:
+                                ui:fs:
+                                    $ref: '#/components/schemas/Uifs'
+                        uploadURI:
+                            type: string
+        ResourceMoveResponseEntries:
+            type: object
+            additionalProperties:
+                $ref: '#/components/schemas/ResourceMoveResponseEntry'
+        CopyResourceUrlsArray:
+            type: array
+            items:
+                type: string
+        Account:
+            properties:
+                lastAccessMillis:
+                    type: integer
+                    format: int64
+                language:
+                    type: string
+                schemaVersion:
+                    type: integer
+                    format: int32
+                systemVersion:
+                    type: integer
+                    format: int32
+                osServiceId:
+                    type: string
+        NumberResource:
+            properties:
+                max:
+                    type: integer
+                    format: int64
+                current:
+                    type: integer
+                    format: int64
+        ContentSize:
+            properties:
+                max:
+                    type: integer
+                    format: int64
+                current:
+                    type: integer
+                    format: int64
+        UserTrafficDownload:
+            properties:
+                max:
+                    type: integer
+                    format: int64
+                current:
+                    type: integer
+                    format: int64
+        UserTrafficUpload:
+            properties:
+                max:
+                    type: integer
+                    format: int64
+                current:
+                    type: integer
+                    format: int64
+        GuestTraffic:
+            properties:
+                max:
+                    type: integer
+                    format: int64
+                current:
+                    type: integer
+                    format: int64
+        Quotas:
+            properties:
+                numberResource:
+                    $ref: '#/components/schemas/NumberResource'
+                contentSize:
+                    $ref: '#/components/schemas/ContentSize'
+                userTrafficDownload:
+                    $ref: '#/components/schemas/UserTrafficDownload'
+                userTrafficUpload:
+                    $ref: '#/components/schemas/UserTrafficUpload'
+                guestTraffic:
+                    $ref: '#/components/schemas/GuestTraffic'
+        Limits:
+            properties:
+                fileSize:
+                    type: integer
+                    format: int64
+                resourcesPerContainer:
+                    type: integer
+                    format: int32
+                resourcesPerTrash:
+                    type: integer
+                    format: int32
+                pathLength:
+                    type: integer
+                    format: int32
+                maxGuestsPerRequest:
+                    type: integer
+                    format: int32
+        Aliases:
+            properties:
+                TRASH:
+                    type: string
+                ROOT:
+                    type: string
+        UiGeo:
+            properties:
+                databaseLatestUpdate:
+                    type: integer
+                    format: int64
+                reverseGeocodingFullyIndexed:
+                    type: boolean
+        UiShare:
+            properties:
+                credentialStoreFullyIndexed:
+                    type: boolean
+        Shares:
+            properties:
+                writableSharesMinimumProtection:
+                    type: string
+                    enum:
+                        - ANY
+                        - PIN
+                        - EXPIRATION
+                        - PIN_AND_EXPIRATION
+        Settings:
+            properties:
+                ui:geo:
+                    $ref: '#/components/schemas/UiGeo'
+                ui:share:
+                    $ref: '#/components/schemas/UiShare'
+                shares:
+                    $ref: '#/components/schemas/Shares'
+        UserInfoResponseModel:
+            properties:
+                account:
+                    $ref: '#/components/schemas/Account'
+                quotas:
+                    $ref: '#/components/schemas/Quotas'
+                limits:
+                    $ref: '#/components/schemas/Limits'
+                aliases:
+                    $ref: '#/components/schemas/Aliases'
+                settings:
+                    $ref: '#/components/schemas/Settings'
+        SharePermission:
+            properties:
+                readable:
+                    type: boolean
+                writable:
+                    type: boolean
+                deletable:
+                    type: boolean
+                notificationEnabled:
+                    type: boolean
+        ShareCreationRequestEntry:
+            type: object
+            properties:
+                guestEMail:
+                    type: string
+                name:
+                    type: string
+                permission:
+                    $ref: '#/components/schemas/SharePermission'
+                pin:
+                    type: string
+                hasPin:
+                    type: boolean
+                expirationMillis:
+                    type: integer
+                    format: int64
+                unmountable:
+                    type: boolean
+        ShareCreationRequestModel:
+            type: array
+            items:
+                $ref: '#/components/schemas/ShareCreationRequestEntry'
+        ShareCreationResponseEntity:
+            type: object
+            properties:
+                resourceURI:
+                    type: string
+                shareURI:
+                    type: string
+                guestURI:
+                    type: string
+                creationMillis:
+                    type: integer
+                    format: int64
+                guestEMail:
+                    type: string
+                pin:
+                    type: string
+                unmountable:
+                    type: boolean
+                name:
+                    type: string
+                resource:
+                    properties:
+                        ui:fs:
+                            $ref: '#/components/schemas/Uifs'
+                permission:
+                    $ref: '#/components/schemas/SharePermission'
+                displayName:
+                    type: string
+                hasPin:
+                    type: boolean
+        ShareCreationResponseEntry:
+            type: object
+            properties:
+                statusCode:
+                    type: integer
+                    format: int32
+                reason:
+                    type: string
+                entity:
+                    $ref: '#/components/schemas/ShareCreationResponseEntity'
+        ShareCreationResponseModel:
+            type: object
+            additionalProperties:
+                $ref: '#/components/schemas/ShareCreationResponseEntry'
+        uploadType:
+            type: string
+            enum:
+                - SIMPLE
+                - SIMPLECHUNK
+                - CHUNKED
+                - URI
+                - FORM
+        UiShareModel:
+            properties:
+                share:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ShareModel'
+        ShareModel:
+            properties:
+                ownerName:
+                    type: string
+                name:
+                    type: string
+                expirationMillis:
+                    type: integer
+                    format: int64
+                resourcePermission:
+                    $ref: '#/components/schemas/SharePermission'
+                hasPin:
+                    type: boolean
+        UserSharesModel:
+            type: array
+            items:
+                $ref: '#/components/schemas/ShareCreationResponseEntity'

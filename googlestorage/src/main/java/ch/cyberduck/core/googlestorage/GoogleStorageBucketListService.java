@@ -26,6 +26,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.Buckets;
 
@@ -46,14 +47,14 @@ public class GoogleStorageBucketListService implements ListService {
             Buckets response;
             String page = null;
             do {
-                response = session.getClient().buckets().list(session.getHost().getCredentials().getUsername())
-                    .setMaxResults(new HostPreferences(session.getHost()).getLong("googlestorage.listing.chunksize"))
-                    .setPageToken(page)
-                    .execute();
+                final Storage.Buckets.List request = session.getClient().buckets().list(session.getHost().getCredentials().getUsername())
+                        .setMaxResults(new HostPreferences(session.getHost()).getLong("googlestorage.listing.chunksize"))
+                        .setPageToken(page);
+                response = request.execute();
                 if(null != response.getItems()) {
                     for(Bucket item : response.getItems()) {
                         final Path bucket = new Path(PathNormalizer.normalize(item.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory),
-                            attributes.toAttributes(item)
+                                attributes.toAttributes(item)
                         );
                         buckets.add(bucket);
                         listener.chunk(directory, buckets);

@@ -25,19 +25,18 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class DeserializerFactory<T> extends Factory<Deserializer> {
+/**
+ * @param <T> Serialized object type
+ */
+public class DeserializerFactory<T> extends Factory<Deserializer<T>> {
 
     public DeserializerFactory() {
         super("factory.deserializer.class");
     }
 
-    public DeserializerFactory(final Class<Deserializer> impl) {
-        super(impl);
-    }
-
     public Deserializer<T> create(final T dict) {
         try {
-            final Constructor<Deserializer> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, dict.getClass());
+            final Constructor<? extends Deserializer<T>> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, dict.getClass());
             return constructor.newInstance(dict);
         }
         catch(InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -46,6 +45,6 @@ public class DeserializerFactory<T> extends Factory<Deserializer> {
     }
 
     public static <T> Deserializer<T> get() {
-        return new DeserializerFactory<>().create();
+        return new DeserializerFactory<T>().create();
     }
 }

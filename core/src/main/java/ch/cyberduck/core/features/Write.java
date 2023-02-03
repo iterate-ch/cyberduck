@@ -45,13 +45,6 @@ public interface Write<Reply> {
     Append append(Path file, TransferStatus status) throws BackgroundException;
 
     /**
-     * @return True if temporary upload filename can be used
-     */
-    default boolean temporary() {
-        return true;
-    }
-
-    /**
      * @return True if supporting random writes with arbitrary offset and length
      */
     default boolean random() {
@@ -100,7 +93,7 @@ public interface Write<Reply> {
         }
 
         public Append withStatus(final TransferStatus status) {
-            return this.withSize(-1L == status.getRemote().getSize() ? 0L : status.getRemote().getSize()).withChecksum(status.getRemote().getChecksum());
+            return this.withSize(TransferStatus.UNKNOWN_LENGTH == status.getRemote().getSize() ? 0L : status.getRemote().getSize()).withChecksum(status.getRemote().getChecksum());
         }
 
         @Override

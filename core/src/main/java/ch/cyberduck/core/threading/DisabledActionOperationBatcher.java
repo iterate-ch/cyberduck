@@ -19,6 +19,7 @@ package ch.cyberduck.core.threading;
  */
 
 public class DisabledActionOperationBatcher implements ActionOperationBatcher {
+    @Override
     public void operate() {
         //
     }

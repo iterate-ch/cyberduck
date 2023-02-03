@@ -27,7 +27,8 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.util.Collections;
@@ -44,7 +45,7 @@ import ch.iterate.openstack.swift.method.Authentication3UsernamePasswordProjectR
 import ch.iterate.openstack.swift.method.AuthenticationRequest;
 
 public class SwiftAuthenticationService {
-    private static final Logger log = Logger.getLogger(SwiftAuthenticationService.class);
+    private static final Logger log = LogManager.getLogger(SwiftAuthenticationService.class);
 
     public Set<? extends AuthenticationRequest> getRequest(final Host bookmark, final LoginCallback prompt)
             throws LoginCanceledException {

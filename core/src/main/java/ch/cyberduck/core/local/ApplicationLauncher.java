@@ -22,11 +22,36 @@ import ch.cyberduck.core.Local;
 
 public interface ApplicationLauncher {
 
+    /**
+     * Open file with default application registered for given file type
+     *
+     * @param file File on disk
+     * @return True if application has been launched
+     */
     boolean open(Local file);
 
-    boolean open(Local file, Application application, ApplicationQuitCallback callback);
+    /**
+     * Open file with specific application installed
+     *
+     * @param file        File on disk
+     * @param application Application reference
+     * @return True if application has been launched
+     */
+    boolean open(Local file, Application application);
 
+    /**
+     * Open application with given arguments
+     *
+     * @param application Application reference
+     * @param args        Launch arguments
+     * @return True if application has been launched
+     */
     boolean open(Application application, String args);
 
+    /**
+     * Post notifiation for file
+     *
+     * @param file File on disk
+     */
     void bounce(Local file);
 }

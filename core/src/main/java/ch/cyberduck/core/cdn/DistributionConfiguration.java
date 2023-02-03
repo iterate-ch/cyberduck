@@ -21,7 +21,6 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.List;
 /**
  * CDN configuration actions.
  */
-public interface DistributionConfiguration extends UrlProvider {
+public interface DistributionConfiguration {
 
     /**
      * Write distribution configuration for origin.
@@ -58,22 +57,11 @@ public interface DistributionConfiguration extends UrlProvider {
     List<Distribution.Method> getMethods(Path container);
 
     /**
-     * @return Hostname and port
-     */
-    String getHostname();
-
-    /**
      * Marketing name for the distribution service
      *
      * @return Localized description
      */
     String getName();
-
-    /**
-     * @param method Distribution method
-     * @return CDN name
-     */
-    String getName(Distribution.Method method);
 
     <T> T getFeature(Class<T> type, Distribution.Method method);
 }

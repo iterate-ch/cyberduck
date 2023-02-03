@@ -22,7 +22,7 @@ using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.lang;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Exception = System.Exception;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public delegate void SyncDelegate();
 
-        private static readonly Logger Log = Logger.getLogger(typeof (AsyncController).Name);
+        private static readonly Logger Log = LogManager.getLogger(typeof (AsyncController).Name);
 
         public virtual IView View { get; set; }
 

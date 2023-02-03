@@ -25,10 +25,9 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
-using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Core.Date;
 using java.util;
+using static Ch.Cyberduck.ImageHelper;
+using ch.cyberduck.core.io;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -37,14 +36,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly PathCache _cache;
         private readonly BrowserController _controller;
         private readonly FileDescriptor _descriptor = FileDescriptorFactory.get();
-        private readonly ListProgressListener _listener;
         private readonly string _unknown = LocaleFactory.localizedString("Unknown");
 
         public TreeBrowserModel(BrowserController controller, PathCache cache, ListProgressListener listener)
         {
             _controller = controller;
             _cache = cache;
-            _listener = listener;
         }
 
         public bool CanExpand(object path)
@@ -69,12 +66,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetIcon(Path path)
         {
-            if (path.isVolume())
+            if (_controller.IsMounted() && path.isVolume())
             {
-                return IconCache.GetProtocolDisk(_controller.Session.getHost().getProtocol(),
-                    IconCache.IconSize.Small);
+                return IconProvider.GetDisk(_controller.Session.getHost().getProtocol(), 16);
             }
-            return IconCache.IconForPath(path, IconCache.IconSize.Small);
+            return IconProvider.GetPath(path, 16);
         }
 
         public object GetModified(Path path)
@@ -168,6 +164,14 @@ namespace Ch.Cyberduck.Ui.Controller
             return Utils.IsNotBlank(path.attributes().getVersionId())
                 ? path.attributes().getVersionId()
                 : LocaleFactory.localizedString("None");
+        }
+        public object GetChecksum(Path path)
+        {
+            return !Checksum.NONE.equals(path.attributes().getChecksum())
+                ? path.attributes().getChecksum().hash
+                : Utils.IsNotBlank(path.attributes().getETag())
+                                  ? path.attributes().getETag()
+                                  : LocaleFactory.localizedString("None");
         }
 
         public bool GetActive(Path path)

@@ -17,17 +17,18 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.cache.LRUCache;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
-    private static final Logger log = Logger.getLogger(ReverseLookupCache.class);
+    private static final Logger log = LogManager.getLogger(ReverseLookupCache.class);
 
     private final Cache<T> proxy;
-    private final LRUCache<CacheReference, Referenceable> reverse;
+    private final LRUCache<CacheReference<T>, T> reverse;
 
-    private final Referenceable MISSING_ITEM = new Referenceable() {
+    private static final Referenceable MISSING_ITEM = new Referenceable() {
     };
 
     public ReverseLookupCache(final Cache<T> proxy, final int size) {
@@ -41,16 +42,16 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
         }
     }
 
-    private Referenceable load(final CacheReference key) {
-        final Referenceable value = proxy.lookup(key);
+    private T load(final CacheReference<T> key) {
+        final T value = proxy.lookup(key);
         if(null == value) {
-            return MISSING_ITEM;
+            return (T) MISSING_ITEM;
         }
         return value;
     }
 
     @Override
-    public CacheReference<?> reference(final T object) {
+    public CacheReference<T> reference(final T object) {
         return proxy.reference(object);
     }
 
@@ -90,13 +91,13 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
      * @return Null if the path is not in the cache
      * @see ch.cyberduck.core.AttributedList#get(Referenceable)
      */
-    public T lookup(final CacheReference reference) {
-        final Referenceable value = reverse.get(reference);
+    public T lookup(final CacheReference<T> reference) {
+        final T value = reverse.get(reference);
         if(MISSING_ITEM == value) {
             log.warn(String.format("Lookup failed for %s in reverse cache", reference));
             return null;
         }
-        return (T) value;
+        return value;
     }
 
     public AttributedList<T> remove(final T reference) {
@@ -108,7 +109,7 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     }
 
     @Override
-    public Map<T, AttributedList<T>> asMap() {
+    public Map<CacheReference<T>, AttributedList<T>> asMap() {
         return proxy.asMap();
     }
 

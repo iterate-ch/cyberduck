@@ -24,7 +24,7 @@ public class DefaultPathContainerService implements PathContainerService {
         if(file.isRoot()) {
             return false;
         }
-        return file.getParent().isRoot();
+        return file.isDirectory() && file.getParent().isRoot();
     }
 
     @Override
@@ -35,6 +35,7 @@ public class DefaultPathContainerService implements PathContainerService {
         if(this.isContainer(file)) {
             return null;
         }
-        return PathRelativizer.relativize(this.getContainer(file).getAbsolute(), file.getAbsolute());
+        final Path container = this.getContainer(file);
+        return PathRelativizer.relativize(container.getAbsolute(), file.getAbsolute());
     }
 }

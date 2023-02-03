@@ -18,33 +18,30 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 
 import java.net.URI;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-public class PathAttributesDictionary {
+public class PathAttributesDictionary<T> {
 
-    private final DeserializerFactory factory;
+    private final DeserializerFactory<T> factory;
 
     public PathAttributesDictionary() {
-        this.factory = new DeserializerFactory();
+        this.factory = new DeserializerFactory<>();
     }
 
-    public PathAttributesDictionary(final DeserializerFactory factory) {
+    public PathAttributesDictionary(final DeserializerFactory<T> factory) {
         this.factory = factory;
     }
 
-    public <T> PathAttributes deserialize(T serialized) {
-        final Deserializer dict = factory.create(serialized);
+    public PathAttributes deserialize(final T serialized) {
+        final Deserializer<T> dict = factory.create(serialized);
         final PathAttributes attributes = new PathAttributes();
         final String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
@@ -58,33 +55,37 @@ public class PathAttributesDictionary {
         if(modifiedObj != null) {
             attributes.setModificationDate(Long.parseLong(modifiedObj));
         }
+        final String createdObj = dict.stringForKey("Created");
+        if(createdObj != null) {
+            attributes.setCreationDate(Long.parseLong(createdObj));
+        }
         final String revisionObj = dict.stringForKey("Revision");
         if(revisionObj != null) {
             attributes.setRevision(Long.parseLong(revisionObj));
         }
-        final List<T> versionsObj = dict.listForKey("Versions");
-        if(versionsObj != null) {
-            final AttributedList<Path> versions = new AttributedList<>();
-            for(T versionDict : versionsObj) {
-                versions.add(new PathDictionary(factory).deserialize(versionDict));
-            }
-            attributes.setVersions(versions);
-        }
         final String etagObj = dict.stringForKey("ETag");
         if(etagObj != null) {
-            attributes.setETag(dict.stringForKey("ETag"));
+            attributes.setETag(etagObj);
         }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
-            attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
+            attributes.setPermission(new PermissionDictionary<>().deserialize(permissionObj));
         }
+        attributes.setOwner(dict.stringForKey("Owner"));
+        attributes.setGroup(dict.stringForKey("Group"));
         final Object aclObj = dict.objectForKey("Acl");
         if(aclObj != null) {
-            attributes.setAcl(new AclDictionary().deserialize(aclObj));
+            attributes.setAcl(new AclDictionary<>().deserialize(aclObj));
         }
-        final Object linkObj = dict.stringForKey("Link");
-        if(linkObj != null) {
-            attributes.setLink(new DescriptiveUrl(URI.create(dict.stringForKey("Link")), DescriptiveUrl.Type.http));
+        if(dict.mapForKey("Link") != null) {
+            final Map<String, String> link = dict.mapForKey("Link");
+            attributes.setLink(new DescriptiveUrl(URI.create(link.get("Url")), DescriptiveUrl.Type.valueOf(link.get("Type"))));
+        }
+        else {
+            final String linkObj = dict.stringForKey("Link");
+            if(linkObj != null) {
+                attributes.setLink(new DescriptiveUrl(URI.create(linkObj), DescriptiveUrl.Type.http));
+            }
         }
         if(dict.mapForKey("Checksum") != null) {
             final Map<String, String> checksum = dict.mapForKey("Checksum");
@@ -107,9 +108,9 @@ public class PathAttributesDictionary {
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));
-        final Object vaultObj = dict.objectForKey("Vault");
+        final T vaultObj = dict.objectForKey("Vault");
         if(vaultObj != null) {
-            attributes.setVault(new PathDictionary(factory).deserialize(vaultObj));
+            attributes.setVault(new PathDictionary<>(factory).deserialize(vaultObj));
         }
         final Map<String, String> customObj = dict.mapForKey("Custom");
         if(customObj != null) {

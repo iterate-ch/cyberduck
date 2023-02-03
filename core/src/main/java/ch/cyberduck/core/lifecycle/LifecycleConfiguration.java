@@ -25,17 +25,21 @@ public class LifecycleConfiguration {
         return new LifecycleConfiguration();
     }
 
+    /**
+     * Number of days until to transition file to different storage class
+     */
     private Integer transition;
+    /**
+     * Number of days until to permanently delete file
+     */
     private Integer expiration;
-    private String storageClass;
 
     public LifecycleConfiguration() {
         //
     }
 
-    public LifecycleConfiguration(final Integer transition, final String storageClass, final Integer expiration) {
+    public LifecycleConfiguration(final Integer transition, final Integer expiration) {
         this.transition = transition;
-        this.storageClass = storageClass;
         this.expiration = expiration;
     }
 
@@ -45,10 +49,6 @@ public class LifecycleConfiguration {
 
     public Integer getExpiration() {
         return expiration;
-    }
-
-    public String getStorageClass() {
-        return storageClass;
     }
 
     @Override

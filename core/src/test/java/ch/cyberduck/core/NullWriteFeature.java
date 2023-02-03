@@ -31,9 +31,4 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         return new VoidStatusOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
     }
-
-    @Override
-    public boolean temporary() {
-        return false;
-    }
 }

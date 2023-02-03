@@ -17,10 +17,11 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DisabledProgressListener implements ProgressListener {
-    private static final Logger log = Logger.getLogger(DisabledProgressListener.class);
+    private static final Logger log = LogManager.getLogger(DisabledProgressListener.class);
 
     @Override
     public void message(final String message) {

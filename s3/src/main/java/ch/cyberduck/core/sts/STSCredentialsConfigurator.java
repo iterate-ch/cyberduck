@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -32,9 +33,13 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,9 +62,16 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
 
 public class STSCredentialsConfigurator {
-    private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
+    private static final Logger log = LogManager.getLogger(STSCredentialsConfigurator.class);
 
     private final X509TrustManager trust;
     private final X509KeyManager key;
@@ -73,26 +85,41 @@ public class STSCredentialsConfigurator {
 
     public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
-        // Find matching profile name or AWS access key in ~/.aws/credentials
-        final Local file = LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".aws"), "credentials");
-        // Profile can be null – the default profile from the configuration will be loaded
+        // See https://docs.aws.amazon.com/sdkref/latest/guide/creds-config-files.html for configuration behavior
+        final Local awsDirectory = LocalFactory.get(LocalFactory.get(), ".aws");
+        final Local configFile = LocalFactory.get(awsDirectory, "config");
+        final Local credentialsFile = LocalFactory.get(awsDirectory, "credentials");
+        // Profile can be null. The default profile from the configuration will be loaded
         final String profile = host.getCredentials().getUsername();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Look for profile name %s in %s", profile, file));
-        }
-        if(!file.exists()) {
-            log.warn("Missing configuration file ~/.aws/credentials. Skip auto configuration");
-            return host.getCredentials();
+            log.debug(String.format("Look for profile name %s in %s and %s", profile, configFile, credentialsFile));
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
-        final Map<String, Map<String, String>> allProfileProperties;
+        final Map<String, Map<String, String>> allProfileProperties = new HashMap<>();
         try {
-            allProfileProperties = new ProfilesConfigFileLoaderHelper()
-                .parseProfileProperties(new Scanner(file.getInputStream(), StandardCharsets.UTF_8.name()));
+            final Map<String, Map<String, String>> credentialsFileProfileProperties = new ProfilesConfigFileLoaderHelper()
+                    .parseProfileProperties(credentialsFile);
+            allProfileProperties.putAll(credentialsFileProfileProperties);
+            final Map<String, Map<String, String>> configFileProfileProperties = new ProfilesConfigFileLoaderHelper()
+                    .parseProfileProperties(configFile);
+            for(Map.Entry<String, Map<String, String>> entry : configFileProfileProperties.entrySet()) {
+                final String profileName = entry.getKey();
+                final Map<String, String> configFileProperties = entry.getValue();
+                final Map<String, String> credentialsFileProperties = allProfileProperties.get(profileName);
+                // If the credentials file had properties, then merge them in
+                if(credentialsFileProperties != null) {
+                    configFileProperties.putAll(credentialsFileProperties);
+                }
+                allProfileProperties.put(profileName, configFileProperties);
+            }
         }
-        catch(AccessDeniedException | IllegalArgumentException e) {
-            log.warn(String.format("Failure reading %s", file), e);
+        catch(AccessDeniedException | IllegalArgumentException | IOException e) {
+            log.warn(String.format("Failure reading %s and %s", configFile, credentialsFile), e);
             return credentials;
+        }
+        if(allProfileProperties.isEmpty()) {
+            log.warn("Missing configuration file ~/.aws/credentials or ~/.aws/config. Skip auto configuration");
+            return host.getCredentials();
         }
         // Convert the loaded property map to credential objects
         final Map<String, BasicProfile> profilesByName = new LinkedHashMap<>();
@@ -135,18 +162,18 @@ public class STSCredentialsConfigurator {
                     final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
                     // If a profile defines the role_arn property then the profile is treated as an assume role profile
                     final AWSSecurityTokenService service = this.getTokenService(host,
-                        host.getRegion(),
-                        sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
+                            host.getRegion(),
+                            sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
                     final String tokenCode;
                     if(basicProfile.getProperties().containsKey("mfa_serial")) {
                         tokenCode = prompt.prompt(
-                            host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                basicProfile.getPropertyValue("mfa_serial")),
-                            new LoginOptions(host.getProtocol())
-                                .password(true)
-                                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                                .keychain(false)
+                                host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                                String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                                        basicProfile.getPropertyValue("mfa_serial")),
+                                new LoginOptions(host.getProtocol())
+                                        .password(true)
+                                        .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                                        .keychain(false)
                         ).getPassword();
                     }
                     else {
@@ -162,23 +189,23 @@ public class STSCredentialsConfigurator {
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
-                        .withExternalId(basicProfile.getRoleExternalId())
-                        .withRoleArn(basicProfile.getRoleArn())
-                        // Specify this value if the IAM user has a policy that requires MFA authentication
-                        .withSerialNumber(basicProfile.getPropertyValue("mfa_serial"))
-                        // The value provided by the MFA device, if MFA is required
-                        .withTokenCode(tokenCode
-                            // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
-                            // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
-                            // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
-                            // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
-                        )
-                        .withRoleSessionName(new AsciiRandomStringService().random())
-                        .withDurationSeconds(durationSeconds
-                            // duration_seconds - Specifies the maximum duration of the role session, in seconds. The value can range from 900 seconds
-                            // (15 minutes) up to the maximum session duration setting for the role (which can be a maximum of 43200). This is an
-                            // optional parameter and by default, the value is set to 3600 seconds.
-                        );
+                            .withExternalId(basicProfile.getRoleExternalId())
+                            .withRoleArn(basicProfile.getRoleArn())
+                            // Specify this value if the IAM user has a policy that requires MFA authentication
+                            .withSerialNumber(basicProfile.getPropertyValue("mfa_serial"))
+                            // The value provided by the MFA device, if MFA is required
+                            .withTokenCode(tokenCode
+                                    // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
+                                    // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
+                                    // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
+                                    // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
+                            )
+                            .withRoleSessionName(basicProfile.getRoleSessionName() == null ? new AsciiRandomStringService().random() : basicProfile.getRoleSessionName())
+                            .withDurationSeconds(durationSeconds
+                                    // duration_seconds - Specifies the maximum duration of the role session, in seconds. The value can range from 900 seconds
+                                    // (15 minutes) up to the maximum session duration setting for the role (which can be a maximum of 43200). This is an
+                                    // optional parameter and by default, the value is set to 3600 seconds.
+                            );
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }
@@ -200,7 +227,15 @@ public class STSCredentialsConfigurator {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
                 }
-                if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
+                final Map<String, String> profileProperties = basicProfile.getProperties();
+                if(profileProperties.containsKey("sso_start_url")) {
+                    // Read cached SSO credentials
+                    final CachedCredential cached = this.fetchSsoCredentials(profileProperties, awsDirectory);
+                    credentials.setUsername(cached.accessKey);
+                    credentials.setPassword(cached.secretKey);
+                    credentials.setToken(cached.sessionToken);
+                }
+                else if(StringUtils.isNotBlank(basicProfile.getAwsSessionToken())) {
                     // No need to obtain session token if preconfigured in profile
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Set session token credentials from profile %s", profile));
@@ -216,8 +251,10 @@ public class STSCredentialsConfigurator {
                             log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
                         }
                         final AWSSecurityTokenService service = this.getTokenService(host,
-                            host.getRegion(),
-                            basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey(), basicProfile.getAwsSessionToken());
+                                host.getRegion(),
+                                basicProfile.getAwsAccessIdKey(),
+                                basicProfile.getAwsSecretAccessKey(),
+                                basicProfile.getAwsSessionToken());
                         final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest();
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Request %s from %s", sessionTokenRequest, service));
@@ -248,38 +285,99 @@ public class STSCredentialsConfigurator {
         return credentials;
     }
 
+    /**
+     * Read SSO credentials from cache file of AWS CLI
+     *
+     * @throws LoginFailureException Error reading from file
+     * @throws ExpiredTokenException Expired SSO credentials in cache
+     */
+    private CachedCredential fetchSsoCredentials(final Map<String, String> properties, final Local awsDirectory)
+            throws LoginFailureException {
+        // See https://github.com/boto/botocore/blob/23ee17f5446c78167ff442302471f9928c3b4b7c/botocore/credentials.py#L2004
+        try {
+            final String ssoStartUrl = properties.get("sso_start_url");
+            final String ssoAccountId = properties.get("sso_account_id");
+            final String ssoRoleName = properties.get("sso_role_name");
+            final String cacheKey = String.format("{\"accountId\":\"%s\",\"roleName\":\"%s\",\"startUrl\":\"%s\"}",
+                    ssoAccountId, ssoRoleName, ssoStartUrl);
+            final HashCode hashCode = Hashing.sha1().newHasher().putString(cacheKey, Charsets.UTF_8).hash();
+            final String hash = BaseEncoding.base16().lowerCase().encode(hashCode.asBytes());
+            final String cachedCredentialsJson = String.format("%s.json", hash);
+            final Local cachedCredentialsFile =
+                    LocalFactory.get(LocalFactory.get(LocalFactory.get(awsDirectory, "cli"), "cache"), cachedCredentialsJson);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempting to read SSO credentials from %s", cachedCredentialsFile.getAbsolute()));
+            }
+            if(!cachedCredentialsFile.exists()) {
+                throw new LoginFailureException(String.format("Missing file %s with cached SSO credentials.", cachedCredentialsFile.getAbsolute()));
+            }
+            try (InputStream in = cachedCredentialsFile.getInputStream()) {
+                final ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                final CachedCredentials cached = mapper.readValue(in, CachedCredentials.class);
+                if(null == cached.credentials) {
+                    throw new LoginFailureException("Failure parsing SSO credentials.");
+                }
+                final Instant expiration = Instant.parse(cached.credentials.expiration);
+                if(expiration.isBefore(Instant.now())) {
+                    throw new ExpiredTokenException("Expired AWS SSO credentials.");
+                }
+                return cached.credentials;
+            }
+        }
+        catch(IOException | AccessDeniedException e) {
+            throw new LoginFailureException("Failure retrieving SSO credentials.", e);
+        }
+    }
+
+    private static class CachedCredentials {
+        @JsonProperty("Credentials")
+        private CachedCredential credentials;
+    }
+
+    private static class CachedCredential {
+        @JsonProperty("AccessKeyId")
+        private String accessKey;
+        @JsonProperty("SecretAccessKey")
+        private String secretKey;
+        @JsonProperty("SessionToken")
+        private String sessionToken;
+        @JsonProperty("Expiration")
+        private String expiration;
+    }
+
     protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
         final ClientConfiguration configuration = new CustomClientConfiguration(host,
-            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
         return AWSSecurityTokenServiceClientBuilder.standard()
-            .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
-                @Override
-                public String getAWSAccessKeyId() {
-                    return accessKey;
-                }
+                .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return accessKey;
+                    }
 
-                @Override
-                public String getAWSSecretKey() {
-                    return secretKey;
-                }
-            } : new AWSSessionCredentials() {
-                @Override
-                public String getAWSAccessKeyId() {
-                    return accessKey;
-                }
+                    @Override
+                    public String getAWSSecretKey() {
+                        return secretKey;
+                    }
+                } : new AWSSessionCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return accessKey;
+                    }
 
-                @Override
-                public String getAWSSecretKey() {
-                    return secretKey;
-                }
+                    @Override
+                    public String getAWSSecretKey() {
+                        return secretKey;
+                    }
 
-                @Override
-                public String getSessionToken() {
-                    return sessionToken;
-                }
-            }))
-            .withClientConfiguration(configuration)
-            .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.DEFAULT_REGION).build();
+                    @Override
+                    public String getSessionToken() {
+                        return sessionToken;
+                    }
+                }))
+                .withClientConfiguration(configuration)
+                .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.DEFAULT_REGION).build();
     }
 
     /**
@@ -291,15 +389,27 @@ public class STSCredentialsConfigurator {
         /**
          * Map from the parsed profile name to the map of all the property values included the specific profile
          */
-        protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<>();
+        private final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<>();
 
         /**
          * Parses the input and returns a map of all the profile properties.
          */
-        public Map<String, Map<String, String>> parseProfileProperties(Scanner scanner) {
-            allProfileProperties.clear();
-            run(scanner);
-            return new LinkedHashMap<>(allProfileProperties);
+        public Map<String, Map<String, String>> parseProfileProperties(Local file) throws AccessDeniedException, IOException {
+            if(!file.exists()) {
+                return new LinkedHashMap<>();
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reading AWS file %s", file));
+            }
+            try (InputStream inputStream = file.getInputStream(); Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+                run(scanner);
+                return new LinkedHashMap<>(allProfileProperties);
+            }
+        }
+
+        private String sanitizeProfile(String profileName) {
+            // The config file has sections that start with `profile `
+            return profileName.replaceAll("^profile ", "");
         }
 
         @Override
@@ -311,7 +421,7 @@ public class STSCredentialsConfigurator {
         protected void onProfileStartingLine(String newProfileName, String line) {
             // If the same profile name has already been declared, clobber the
             // previous one
-            allProfileProperties.put(newProfileName, new HashMap<>());
+            allProfileProperties.put(sanitizeProfile(newProfileName), new HashMap<>());
         }
 
         @Override
@@ -323,6 +433,7 @@ public class STSCredentialsConfigurator {
         protected void onProfileProperty(String profileName, String propertyKey,
                                          String propertyValue, boolean isSupportedProperty,
                                          String line) {
+            profileName = sanitizeProfile(profileName);
             Map<String, String> properties = allProfileProperties.get(profileName);
 
             if(properties.containsKey(propertyKey)) {

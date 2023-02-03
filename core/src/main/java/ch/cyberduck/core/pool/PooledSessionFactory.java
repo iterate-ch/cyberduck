@@ -30,10 +30,11 @@ import ch.cyberduck.core.vault.VaultRegistry;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
-    private static final Logger log = Logger.getLogger(PooledSessionFactory.class);
+    private static final Logger log = LogManager.getLogger(PooledSessionFactory.class);
 
     private final ConnectionService connect;
     private final X509TrustManager trust;
@@ -60,7 +61,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
 
     @Override
     public PooledObject<Session> wrap(final Session session) {
-        return new DefaultPooledObject<Session>(session);
+        return new DefaultPooledObject<>(session);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Destroy session %s", session));
         }
-        session.close();
+        connect.close(session);
     }
 
     @Override

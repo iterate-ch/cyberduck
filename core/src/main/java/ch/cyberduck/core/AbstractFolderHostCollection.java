@@ -23,44 +23,17 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
-    private static final Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
-
-    public static final Comparator<Host> SORT_BY_NICKNAME = new Comparator<Host>() {
-        @Override
-        public int compare(Host o1, Host o2) {
-            return new DefaultLexicographicOrderComparator().compare(
-                BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
-            );
-        }
-    };
-
-    public static final Comparator<Host> SORT_BY_HOSTNAME = new Comparator<Host>() {
-        @Override
-        public int compare(Host o1, Host o2) {
-            return new DefaultLexicographicOrderComparator().compare(o1.getHostname(), o2.getHostname());
-        }
-    };
-
-    public static final Comparator<Host> SORT_BY_PROTOCOL = new Comparator<Host>() {
-        @Override
-        public int compare(Host o1, Host o2) {
-            return new DefaultLexicographicOrderComparator().compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
-        }
-    };
-
-    private final Preferences preferences = PreferencesFactory.get();
+    private static final Logger log = LogManager.getLogger(AbstractFolderHostCollection.class);
 
     private final Writer<Host> writer = HostWriterFactory.get();
     private final Reader<Host> reader = HostReaderFactory.get();

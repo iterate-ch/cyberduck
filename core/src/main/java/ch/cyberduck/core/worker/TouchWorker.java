@@ -20,9 +20,11 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
@@ -31,14 +33,15 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.SearchFilterFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
 public class TouchWorker extends Worker<Path> {
-    private static final Logger log = Logger.getLogger(TouchWorker.class);
+    private static final Logger log = LogManager.getLogger(TouchWorker.class);
 
     private final Path file;
 
@@ -53,11 +56,12 @@ public class TouchWorker extends Worker<Path> {
             log.debug(String.format("Run with feature %s", feature));
         }
         final TransferStatus status = new TransferStatus()
-            .hidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
-            .exists(false)
-            .withLength(0L)
-            .withMime(new MappingMimeTypeService().getMime(file.getName()))
-            .withLockId(this.getLockId(file));
+                .withTimestamp(System.currentTimeMillis())
+                .hidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
+                .exists(false)
+                .withLength(0L)
+                .withMime(new MappingMimeTypeService().getMime(file.getName()))
+                .withLockId(this.getLockId(file));
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));
@@ -77,7 +81,11 @@ public class TouchWorker extends Worker<Path> {
                 status.setAcl(acl.getDefault(EnumSet.of(Path.Type.file)));
             }
         }
-        return feature.touch(file, status);
+        final Path result = feature.touch(file, status);
+        if(PathAttributes.EMPTY.equals(result.attributes())) {
+            return result.withAttributes(session.getFeature(AttributesFinder.class).find(result));
+        }
+        return result;
     }
 
     protected String getLockId(final Path file) {
@@ -92,7 +100,7 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-            file.getName());
+                file.getName());
     }
 
     @Override

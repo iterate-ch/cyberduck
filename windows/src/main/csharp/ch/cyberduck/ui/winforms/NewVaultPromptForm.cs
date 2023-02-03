@@ -16,13 +16,15 @@
 // feedback@cyberduck.io
 // 
 
+using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
+using Windows.Win32.Foundation;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -50,6 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             passphraseTextBox.Location = new Point(84, 70);
             passphraseTextBox.Name = "passphraseTextBox";
             passphraseTextBox.Size = new Size(121, 23);
+            passphraseTextBox.Margin = new Padding(6);
             passphraseTextBox.UseSystemPasswordChar = true;
             passphraseTextBox.TabIndex = 4;
             passphraseTextBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
@@ -64,11 +67,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.RowStyles.Insert(2 + offset, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.Controls.Add(passphraseTextBox, 1, 2 + offset);
             tableLayoutPanel.SetColumnSpan(passphraseTextBox, 3);
-            NativeMethods.SendMessage(passphraseTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
-                LocaleFactory.localizedString("Passphrase", "Cryptomator"));
+            SendMessage((HWND)passphraseTextBox.Handle, EM_SETCUEBANNER, 0, 
+                LocaleFactory.localizedString("Passphrase", "Cryptomator Key"));
 
             strengthIndicator = new PasswordStrengthIndicator();
             strengthIndicator.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
+            strengthIndicator.Margin = new Padding(6);
             tableLayoutPanel.RowCount++;
             tableLayoutPanel.RowStyles.Insert(3 + offset, new RowStyle(SizeType.AutoSize));
             tableLayoutPanel.Controls.Add(strengthIndicator, 1, 3 + offset);
@@ -79,6 +83,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             passphraseConfirmTextBox.Location = new Point(84, 70);
             passphraseConfirmTextBox.Name = "passphraseConfirmTextBox";
             passphraseConfirmTextBox.Size = new Size(121, 23);
+            passphraseConfirmTextBox.Margin = new Padding(6);
             passphraseConfirmTextBox.UseSystemPasswordChar = true;
             passphraseConfirmTextBox.TabIndex = 4;
             passphraseConfirmTextBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
@@ -88,7 +93,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             tableLayoutPanel.SetColumnSpan(passphraseConfirmTextBox, 3);
             tableLayoutPanel.SetRow(okButton, 5 + offset);
             tableLayoutPanel.SetRow(cancelButton, 5 + offset);
-            NativeMethods.SendMessage(passphraseConfirmTextBox.Handle, NativeConstants.EM_SETCUEBANNER, 0,
+            SendMessage((HWND)passphraseConfirmTextBox.Handle, EM_SETCUEBANNER, 0, 
                 LocaleFactory.localizedString("Confirm Passphrase", "Cryptomator"));
         }
     }

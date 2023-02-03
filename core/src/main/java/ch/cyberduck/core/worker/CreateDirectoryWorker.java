@@ -24,19 +24,19 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
-import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
 public class CreateDirectoryWorker extends Worker<Path> {
-    private static final Logger log = Logger.getLogger(CreateDirectoryWorker.class);
+    private static final Logger log = LogManager.getLogger(CreateDirectoryWorker.class);
 
     private final Path folder;
     private final String region;
@@ -56,10 +56,6 @@ public class CreateDirectoryWorker extends Worker<Path> {
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(folder));
-        }
-        final Redundancy redundancy = session.getFeature(Redundancy.class);
-        if(redundancy != null) {
-            status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
         if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {

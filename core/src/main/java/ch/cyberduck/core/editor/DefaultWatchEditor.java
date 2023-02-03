@@ -18,48 +18,43 @@ package ch.cyberduck.core.editor;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationFinder;
-import ch.cyberduck.core.local.ApplicationLauncher;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.pool.SessionPool;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 
+/**
+ * An editor listing for file system notifications on a particular folder
+ */
 public class DefaultWatchEditor extends AbstractEditor {
-    private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
+    private static final Logger log = LogManager.getLogger(DefaultWatchEditor.class);
 
-    private final FileWatcher monitor
-        = new FileWatcher(new NIOEventWatchService());
+    private final FileWatcher monitor;
 
-    public DefaultWatchEditor(final Application application,
-                              final SessionPool session,
-                              final Path file,
-                              final ProgressListener listener) {
-        super(application, session, file, listener);
+    public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener) {
+        this(host, file, listener, new FileWatcher(new NIOEventWatchService()));
     }
 
-    public DefaultWatchEditor(final Application application,
-                              final SessionPool session,
-                              final Path file,
-                              final ApplicationLauncher launcher,
-                              final ApplicationFinder finder,
-                              final ProgressListener listener) {
-        super(application, session, file, launcher, finder, listener);
+    public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener, final FileWatcher monitor) {
+        super(host, file, listener);
+        this.monitor = monitor;
     }
 
     @Override
-    protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(local.getParent(), new FileWatcher.DefaultFileFilter(local), listener));
+    protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
+        Uninterruptibles.awaitUninterruptibly(monitor.register(temporary, listener));
     }
 
     @Override

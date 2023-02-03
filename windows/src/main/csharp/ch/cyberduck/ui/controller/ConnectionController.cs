@@ -22,7 +22,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Core;
 using java.lang;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly IDictionary<WindowController, ConnectionController> Controllers =
             new Dictionary<WindowController, ConnectionController>();
 
-        private static readonly Logger Log = Logger.getLogger(typeof(ConnectionController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(ConnectionController).FullName);
 
         private ConnectionController(Host bookmark) : this(bookmark,
             new LoginOptions(bookmark.getProtocol()))

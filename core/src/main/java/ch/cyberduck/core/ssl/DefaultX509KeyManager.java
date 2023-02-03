@@ -18,7 +18,8 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -40,7 +41,7 @@ import java.util.List;
  * Default implementation to choose certificates from key store.
  */
 public class DefaultX509KeyManager extends AbstractX509KeyManager implements X509KeyManager {
-    private static final Logger log = Logger.getLogger(DefaultX509KeyManager.class);
+    private static final Logger log = LogManager.getLogger(DefaultX509KeyManager.class);
 
     private javax.net.ssl.X509KeyManager _manager;
 
@@ -91,7 +92,7 @@ public class DefaultX509KeyManager extends AbstractX509KeyManager implements X50
 
     @Override
     public List<String> list() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         try {
             final javax.net.ssl.X509KeyManager manager = this.getKeystore();
             {

@@ -18,6 +18,7 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -47,7 +48,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.list.FTPListService;
 import ch.cyberduck.core.idna.PunycodeConverter;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -64,19 +64,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.Locale;
 import java.util.TimeZone;
 
 public class FTPSession extends SSLSession<FTPClient> {
-    private static final Logger log = Logger.getLogger(FTPSession.class);
+    private static final Logger log = LogManager.getLogger(FTPSession.class);
 
     private final PreferencesReader preferences
-        = new HostPreferences(host, PreferencesFactory.get());
+            = new HostPreferences(host);
 
     private Timestamp timestamp;
     private UnixPermission permission;
@@ -138,10 +140,13 @@ public class FTPSession extends SSLSession<FTPClient> {
         client.setProtocol(host.getProtocol());
         client.setSocketFactory(new ProxySocketFactory(host));
         client.setControlEncoding(host.getEncoding());
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setDefaultTimeout(timeout);
-        client.setDataTimeout(timeout);
+        client.setDataTimeout(Duration.ofMillis(timeout));
+        client.setControlKeepAliveTimeout(Duration.ofMillis(timeout));
+        client.setControlKeepAliveReplyTimeout(Duration.ofMillis(timeout));
+        client.setUseEPSVwithIPv4(preferences.getBoolean("ftp.datachannel.epsv"));
         client.setDefaultPort(host.getProtocol().getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(preferences.getBoolean("ftp.datachannel.verify"));

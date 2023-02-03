@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2022 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -28,16 +28,18 @@ using java.io;
 using java.security;
 using java.security.cert;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
+using static Windows.Win32.UI.WindowsAndMessaging.MESSAGEBOX_RESULT;
 using X509Certificate = java.security.cert.X509Certificate;
 
 namespace Ch.Cyberduck.Core
 {
     public class SystemCertificateStore : CertificateStore
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SystemCertificateStore).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(SystemCertificateStore).FullName);
 
-        public X509Certificate choose(CertificateIdentityCallback prompt, string[] keyTypes, Principal[] issuers, Host bookmark)
+        public X509Certificate choose(CertificateIdentityCallback prompt, string[] keyTypes, Principal[] issuers,
+            Host bookmark)
         {
             X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try
@@ -46,7 +48,7 @@ namespace Ch.Cyberduck.Core
                 X509Certificate2Collection found = new X509Certificate2Collection();
                 foreach (Principal issuer in issuers)
                 {
-                    // JBA 20141028, windows is expecting EMAILADDRESS in issuer name, but the rfc1779 emmits it as an OID, which makes it not match
+                    // JBA 20141028, windows is expecting EMAILADDRESS in issuer name, but the rfc1779 emits it as an OID, which makes it not match
                     // this is not the best way to fix the issue, but I can't find anyway to get an X500Principal to not emit EMAILADDRESS as an OID
                     string rfc1779 = issuer.toString()
                         .Replace("EMAILADDRESS=", "E=")
@@ -62,17 +64,19 @@ namespace Ch.Cyberduck.Core
                         Log.debug("Found certificate with DN " + certificate.IssuerName.Name);
                     }
                 }
+
                 if (found.Count > 0)
                 {
                     X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
                         LocaleFactory.localizedString("Choose"), string.Format(LocaleFactory.localizedString(
-                             "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
-                             bookmark.getHostname()), X509SelectionFlag.SingleSelection);
+                                "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
+                            bookmark.getHostname()), X509SelectionFlag.SingleSelection);
                     foreach (X509Certificate2 c in selected)
                     {
                         return ConvertCertificate(c);
                     }
                 }
+
                 throw new ConnectionCanceledException();
             }
             finally
@@ -96,6 +100,7 @@ namespace Ch.Cyberduck.Core
             {
                 chain.ChainPolicy.ExtraStore.Add(ConvertCertificate(certs.get(index) as X509Certificate));
             }
+
             chain.Build(serverCert);
 
             bool isException = CheckForException(hostName, serverCert);
@@ -131,57 +136,53 @@ namespace Ch.Cyberduck.Core
                 // Main Icon: Warning
                 // Footer Icon: Information
 
-                TaskDialogResult result =
-                    TaskDialog.TaskDialog.Show(
-                        title: LocaleFactory.localizedString("Certificate Error", "Keychain"),
-                        mainInstruction: LocaleFactory.localizedString("Certificate Error", "Keychain"),
-                        verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
-                        content: errorFromChainStatus,
-                        commandLinks:
-                        new string[]
-                        {
-                            LocaleFactory.localizedString("Continue", "Credentials"),
-                            LocaleFactory.localizedString("Disconnect"),
-                            LocaleFactory.localizedString("Show Certificate", "Keychain")
-                        },
-                        mainIcon: TaskDialogIcon.Warning, footerIcon: TaskDialogIcon.Information,
-                        callback: (dialog, args, data) =>
-                        {
-                            switch (args.Notification)
-                            {
-                                case TaskDialogNotification.ButtonClicked:
-                                    if (args.ButtonIndex == 2)
-                                    {
-                                        X509Certificate2UI.DisplayCertificate(serverCert);
-                                        return true;
-                                    }
-                                    break;
-                            }
-                            return false;
-                        });
-
-                if (result.Result == TaskDialogSimpleResult.Command)
-                {
-                    if (result.CommandButtonResult == 0)
+                var result = TaskDialog.TaskDialog.Create()
+                    .Title(LocaleFactory.localizedString("Certificate Error", "Keychain"))
+                    .Instruction(LocaleFactory.localizedString("Certificate Error", "Keychain"))
+                    .VerificationText(LocaleFactory.localizedString("Always Trust", "Keychain"), false)
+                    .Content(errorFromChainStatus)
+                    .CommandLinks(c =>
                     {
-                        if (result.VerificationChecked == true)
+                        c(IDCONTINUE, LocaleFactory.localizedString("Continue", "Credentials"), false);
+                        c(IDABORT, LocaleFactory.localizedString("Disconnect"), true);
+                        c(IDHELP, LocaleFactory.localizedString("Show Certificate", "Keychain"), false);
+                    })
+                    .Callback((sender, e) =>
+                    {
+                        if (e is TaskDialogButtonClickedEventArgs buttonClicked)
                         {
-                            if (certError)
+                            if (buttonClicked.ButtonId == (int)IDHELP)
                             {
-                                //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
-                                AddCertificate(serverCert, StoreName.Root);
+                                X509Certificate2UI.DisplayCertificate(serverCert);
+                                return true;
                             }
-                            PreferencesFactory.get()
-                                .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                         }
-                        return true;
-                    }
-                    if (result.CommandButtonResult == 1)
-                    {
+
                         return false;
+                    })
+                    .Show();
+                if (result.Button == IDCONTINUE)
+                {
+                    if (result.VerificationChecked == true)
+                    {
+                        if (certError)
+                        {
+                            //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
+                            AddCertificate(serverCert, StoreName.Root);
+                        }
+
+                        PreferencesFactory.get()
+                            .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                     }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
+
             return true;
         }
 
@@ -194,13 +195,16 @@ namespace Ch.Cyberduck.Core
                 store.Open(OpenFlags.ReadOnly);
                 foreach (X509Certificate2 certificate in store.Certificates)
                 {
-                    certs.Add(certificate.GetNameInfo(X509NameType.SimpleName, false));
+                    certs.Add(String.IsNullOrEmpty(certificate.FriendlyName)
+                        ? certificate.GetNameInfo(X509NameType.SimpleName, false)
+                        : certificate.FriendlyName);
                 }
             }
             finally
             {
                 store.Close();
             }
+
             return certs;
         }
 
@@ -212,7 +216,7 @@ namespace Ch.Cyberduck.Core
         public static X509Certificate ConvertCertificate(X509Certificate2 certificate)
         {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
+            return (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(certificate.RawData));
         }
 
         private void AddCertificate(X509Certificate2 cert, StoreName storeName)
@@ -237,6 +241,7 @@ namespace Ch.Cyberduck.Core
             {
                 return accCert.Equals(cert.Thumbprint);
             }
+
             return false;
         }
 
@@ -253,6 +258,7 @@ namespace Ch.Cyberduck.Core
                     //due to the offline revocation check
                     continue;
                 }
+
                 if ((status.Status & X509ChainStatusFlags.NotTimeValid) == X509ChainStatusFlags.NotTimeValid)
                 {
                     //certificate is expired, CSSM_CERT_STATUS_EXPIRED
@@ -262,6 +268,7 @@ namespace Ch.Cyberduck.Core
                             "Keychain"), hostName);
                     return error;
                 }
+
                 if (((status.Status & X509ChainStatusFlags.UntrustedRoot) == X509ChainStatusFlags.UntrustedRoot) ||
                     (status.Status & X509ChainStatusFlags.PartialChain) == X509ChainStatusFlags.PartialChain)
                 {
@@ -280,6 +287,7 @@ namespace Ch.Cyberduck.Core
                         "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
                         "Keychain"), hostName);
             }
+
             return error;
         }
     }

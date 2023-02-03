@@ -24,11 +24,9 @@
         <key>Bundled</key>
         <true/>
         <key>Description</key>
-        <string>Nextcloud &amp; ownCloud</string>
+        <string>Nextcloud</string>
         <key>Default Nickname</key>
         <string>Nextcloud</string>
-        <key>Default Path</key>
-        <string>/remote.php/webdav/</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>
@@ -42,6 +40,6 @@
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>
-        <false/>
+        <true/>
     </dict>
 </plist>

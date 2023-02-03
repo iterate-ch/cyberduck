@@ -16,22 +16,23 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.EnumSet;
 
 public class LocalListService implements ListService {
-    private static final Logger log = Logger.getLogger(LocalListService.class);
+    private static final Logger log = LogManager.getLogger(LocalListService.class);
 
     private final LocalSession session;
     private final LocalAttributesFinderFeature feature;
@@ -44,28 +45,33 @@ public class LocalListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<ch.cyberduck.core.Path> paths = new AttributedList<>();
-        try (DirectoryStream<java.nio.file.Path> directoryStream = Files.newDirectoryStream(session.toPath(directory))) {
-            for(java.nio.file.Path path : directoryStream) {
-                if(null == path.getFileName()) {
+        final java.nio.file.Path p = session.toPath(directory);
+        if(!Files.exists(p)) {
+            throw new LocalExceptionMappingService().map("Listing directory {0} failed",
+                    new NoSuchFileException(directory.getAbsolute()), directory);
+        }
+        try (DirectoryStream<java.nio.file.Path> stream = Files.newDirectoryStream(p)) {
+            for(java.nio.file.Path n : stream) {
+                if(null == n.getFileName()) {
                     continue;
                 }
                 try {
-                    final PathAttributes attributes = feature.convert(path);
+                    final PathAttributes attributes = feature.toAttributes(n);
                     final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                    if(Files.isDirectory(path)) {
+                    if(Files.isDirectory(n)) {
                         type.add(Path.Type.directory);
                     }
                     else {
                         type.add(Path.Type.file);
                     }
-                    final Path file = new Path(directory, path.getFileName().toString(), type, attributes);
-                    if(this.post(path, file)) {
+                    final Path file = new Path(directory, n.getFileName().toString(), type, attributes);
+                    if(this.post(n, file)) {
                         paths.add(file);
                         listener.chunk(directory, paths);
                     }
                 }
                 catch(IOException e) {
-                    log.warn(String.format("Failure reading attributes for %s", path));
+                    log.warn(String.format("Failure reading attributes for %s", n));
                 }
             }
         }

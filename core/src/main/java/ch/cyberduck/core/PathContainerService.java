@@ -41,6 +41,9 @@ public interface PathContainerService {
         Path container = file;
         while(!this.isContainer(container)) {
             container = container.getParent();
+            if(container.isRoot()) {
+                return container;
+            }
         }
         return container;
     }

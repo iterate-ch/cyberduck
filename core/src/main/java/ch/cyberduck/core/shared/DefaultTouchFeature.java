@@ -18,55 +18,52 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 public class DefaultTouchFeature<T> implements Touch<T> {
-    private static final Logger log = Logger.getLogger(DefaultTouchFeature.class);
+    private static final Logger log = LogManager.getLogger(DefaultTouchFeature.class);
 
-    private final Upload<T> feature;
-    private final AttributesFinder attributes;
+    protected Write<T> write;
 
-    public DefaultTouchFeature(final Upload<T> upload, final AttributesFinder attributes) {
-        this.feature = upload;
-        this.attributes = attributes;
+    public DefaultTouchFeature(final Write<T> writer) {
+        this.write = writer;
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        final Local temp = TemporaryFileServiceFactory.get().create(file);
-        LocalTouchFactory.get().touch(temp);
         try {
-
-            final T reply = feature.upload(file, temp,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledConnectionCallback());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Received reply %s for creating file %s", reply, file));
+            final StatusOutputStream<T> writer = write.write(file, status, new DisabledConnectionCallback());
+            writer.close();
+            if(!PathAttributes.EMPTY.equals(status.getResponse())) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Received reply %s for creating file %s", status.getResponse(), file));
+                }
+                return new Path(file).withAttributes(status.getResponse());
             }
-            return new Path(file.getParent(), file.getName(), file.getType(), attributes.find(file));
+            log.warn(String.format("Missing status from writer %s", writer));
+            return file;
         }
-        finally {
-            temp.delete();
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);
         }
     }
 
     @Override
-    public DefaultTouchFeature<T> withWriter(final Write<T> writer) {
-        feature.withWriter(writer);
+    public DefaultTouchFeature<T> withWriter(final Write<T> write) {
+        this.write = write;
         return this;
     }
 }

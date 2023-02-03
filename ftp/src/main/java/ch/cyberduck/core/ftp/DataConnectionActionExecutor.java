@@ -25,12 +25,13 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 public class DataConnectionActionExecutor {
-    private static final Logger log = Logger.getLogger(DataConnectionActionExecutor.class);
+    private static final Logger log = LogManager.getLogger(DataConnectionActionExecutor.class);
 
     private final FTPSession session;
     private final boolean enabled;

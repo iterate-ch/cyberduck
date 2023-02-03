@@ -21,30 +21,30 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Profile implements Protocol, Serializable {
-    private static final Logger log = Logger.getLogger(Profile.class);
+public class Profile implements Protocol {
+    private static final Logger log = LogManager.getLogger(Profile.class);
 
-    private final Deserializer<String> dict;
+    private final Deserializer<?> dict;
     /**
      * The actual protocol implementation registered
      */
@@ -53,7 +53,7 @@ public class Profile implements Protocol, Serializable {
     private Local disk;
     private Local icon;
 
-    public Profile(final Protocol parent, final Deserializer<String> dict) {
+    public Profile(final Protocol parent, final Deserializer<?> dict) {
         this.parent = parent;
         this.dict = dict;
         this.disk = this.write(this.value("Disk"));
@@ -61,8 +61,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
-        throw new UnsupportedOperationException();
+    public <T> T serialize(final Serializer<T> serializer) {
+        for(String key : dict.keys()) {
+            serializer.setStringForKey(dict.stringForKey(key), key);
+        }
+        return serializer.getSerialized();
     }
 
     public Protocol getProtocol() {
@@ -79,8 +82,20 @@ public class Profile implements Protocol, Serializable {
      */
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(this.value("Protocol"))
-            && StringUtils.isNotBlank(this.value("Vendor"));
+        if(this.isBundled()) {
+            return true;
+        }
+        final String protocol = this.value("Protocol");
+        final String vendor = this.value("Vendor");
+        if(StringUtils.isNotBlank(protocol) && StringUtils.isNotBlank(vendor)) {
+            final String property = PreferencesFactory.get().getProperty(StringUtils.lowerCase(String.format("profiles.%s.%s.enabled", protocol, vendor)));
+            if(null == property) {
+                // Not previously configured. Assume enabled
+                return true;
+            }
+            return Boolean.parseBoolean(property);
+        }
+        return false;
     }
 
     @Override
@@ -111,6 +126,15 @@ public class Profile implements Protocol, Serializable {
     @Override
     public Type getType() {
         return parent.getType();
+    }
+
+    @Override
+    public String getHostnamePlaceholder() {
+        final String v = this.value("Hostname Placeholder");
+        if(StringUtils.isBlank(v)) {
+            return parent.getHostnamePlaceholder();
+        }
+        return v;
     }
 
     @Override
@@ -161,7 +185,7 @@ public class Profile implements Protocol, Serializable {
     public boolean isBundled() {
         final String v = this.value("Bundled");
         if(StringUtils.isBlank(v)) {
-            return parent.isBundled();
+            return false;
         }
         return Boolean.parseBoolean(v);
     }
@@ -271,7 +295,6 @@ public class Profile implements Protocol, Serializable {
         final byte[] favicon = Base64.decodeBase64(icon);
         final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         try {
-            new DefaultLocalTouchFeature().touch(file);
             try (final OutputStream out = file.getOutputStream(false)) {
                 IOUtils.write(favicon, out);
             }
@@ -361,11 +384,12 @@ public class Profile implements Protocol, Serializable {
         if(regions.isEmpty()) {
             return parent.getRegions();
         }
-        final Set<Location.Name> set = new HashSet<>();
-        for(String region : regions) {
-            set.add(new Location.Name(region));
-        }
-        return set;
+        return parent.getRegions(regions);
+    }
+
+    @Override
+    public Set<Location.Name> getRegions(final List<String> regions) {
+        return parent.getRegions(regions);
     }
 
     @Override
@@ -505,14 +529,22 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isOAuthPKCE() {
+        if(StringUtils.isBlank(this.value("OAuth PKCE"))) {
+            return parent.isOAuthPKCE();
+        }
+        return this.bool("OAuth PKCE");
+    }
+
+    @Override
     public Map<String, String> getProperties() {
         final List<String> properties = this.list("Properties");
         if(properties.isEmpty()) {
             return parent.getProperties();
         }
-        return properties.stream().collect(Collectors.toMap(
-            property -> 2 == StringUtils.split(property, '=').length ? StringUtils.split(property, '=')[0] : property,
-            property -> 2 == StringUtils.split(property, '=').length ? StringUtils.split(property, '=')[1] : StringUtils.EMPTY));
+        return properties.stream().distinct().collect(Collectors.toMap(
+                property -> StringUtils.contains(property, '=') ? StringUtils.substringBefore(property, '=') : property,
+                property -> StringUtils.contains(property, '=') ? StringUtils.substringAfter(property, '=') : StringUtils.EMPTY));
     }
 
     @Override
@@ -593,7 +625,7 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public int compareTo(final Protocol o) {
-        return this.getIdentifier().compareTo(o.getIdentifier());
+        return new ProtocolComparator(this).compareTo(o);
     }
 
     @Override

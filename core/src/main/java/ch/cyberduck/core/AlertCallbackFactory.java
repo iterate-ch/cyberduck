@@ -19,15 +19,16 @@ import ch.cyberduck.core.threading.AlertCallback;
 import ch.cyberduck.core.threading.DisabledAlertCallback;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class AlertCallbackFactory extends Factory<AlertCallback> {
-    private static final Logger log = Logger.getLogger(AlertCallbackFactory.class);
+    private static final Logger log = LogManager.getLogger(AlertCallbackFactory.class);
 
-    private Constructor<AlertCallback> constructor;
+    private Constructor<? extends AlertCallback> constructor;
 
     protected AlertCallbackFactory() {
         super("factory.alertcallback.class");
@@ -41,11 +42,11 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(controller);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledAlertCallback();
         }

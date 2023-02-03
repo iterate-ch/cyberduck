@@ -18,48 +18,35 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.jets3t.service.model.S3Object;
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.StorageObject;
 
-public class S3TouchFeature implements Touch<StorageObject> {
+public class S3TouchFeature extends DefaultTouchFeature<StorageObject> {
 
     private final S3Session session;
-    private Write<StorageObject> writer;
 
-    public S3TouchFeature(final S3Session session) {
+    public S3TouchFeature(final S3Session session, final S3AccessControlListFeature acl) {
+        super(new S3WriteFeature(session, acl));
         this.session = session;
-        this.writer = new S3WriteFeature(session);
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
-        status.setLength(0L);
-        final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
-        new DefaultStreamCloser().close(out);
-        final S3Object metadata = (S3Object) out.getStatus();
-        return file.withAttributes(new S3AttributesFinderFeature(session).toAttributes(metadata));
+        return super.touch(file, status.withChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
-        // Creating files is only possible inside a bucket.
-        return !workdir.isRoot();
-    }
-
-    @Override
-    public Touch<StorageObject> withWriter(final Write<StorageObject> writer) {
-        this.writer = writer;
-        return this;
+        if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            // Creating files is only possible inside a bucket.
+            return !workdir.isRoot();
+        }
+        return true;
     }
 }

@@ -18,7 +18,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 public class SimplePathPredicate implements CacheReference<Path> {
 
@@ -51,12 +51,27 @@ public class SimplePathPredicate implements CacheReference<Path> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, path);
+        return this.toString().hashCode();
     }
 
     @Override
     public boolean test(final Path test) {
         return this.equals(new SimplePathPredicate(test));
+    }
+
+    /**
+     * @param directory Parent directory
+     * @return True if this is child of parameter based on path comparison
+     */
+    public boolean isChild(final SimplePathPredicate directory) {
+        if(StringUtils.equals(PathNormalizer.parent(path, Path.DELIMITER),
+                PathNormalizer.parent(directory.path, Path.DELIMITER))) {
+            return false;
+        }
+        if(directory.path.equals(String.valueOf(Path.DELIMITER))) {
+            return true;
+        }
+        return StringUtils.startsWith(path, directory.path);
     }
 
     @Override

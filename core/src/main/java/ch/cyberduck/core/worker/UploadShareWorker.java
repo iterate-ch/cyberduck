@@ -23,17 +23,18 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
 
 public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
-    private static final Logger log = Logger.getLogger(UploadShareWorker.class);
+    private static final Logger log = LogManager.getLogger(UploadShareWorker.class);
 
     private final Path file;
     private final Options options;
-    private PasswordCallback callback;
+    private final PasswordCallback callback;
 
     public UploadShareWorker(final Path file, final Options options, final PasswordCallback callback) {
         this.file = file;
@@ -48,6 +49,11 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
             log.debug(String.format("Run with feature %s", provider));
         }
         return provider.toUploadUrl(file, options, callback);
+    }
+
+    @Override
+    public DescriptiveUrl initialize() {
+        return DescriptiveUrl.EMPTY;
     }
 
     @Override

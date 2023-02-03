@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -23,7 +22,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.types.Drive;
 
 import java.util.Deque;
@@ -31,7 +31,7 @@ import java.util.Deque;
 import static ch.cyberduck.core.onedrive.SharepointListService.*;
 
 public class SharepointSession extends AbstractSharepointSession {
-    private static final Logger log = Logger.getLogger(SharepointSession.class);
+    private static final Logger log = LogManager.getLogger(SharepointSession.class);
 
     public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -44,7 +44,7 @@ public class SharepointSession extends AbstractSharepointSession {
 
     @Override
     protected Drive findDrive(final ContainerItem driveContainer) throws BackgroundException {
-        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get());
         final GraphSession.ContainerItem parentContainer = getContainer(driveContainer.getContainerPath().get().getParent());
         if(parentContainer.getCollectionPath().map(p -> SharepointListService.GROUPS_CONTAINER.equals(p.getName())).orElse(false)) {
             return new Drive(getGroup(parentContainer.getContainerPath().get()), driveId);
@@ -57,9 +57,10 @@ public class SharepointSession extends AbstractSharepointSession {
             // finds:
             // Sites/<site name>
             final GraphSession.ContainerItem containerItem = getContainer(parentContainer.getContainerPath().get());
-            if (containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
+            if(containerItem.getCollectionPath().map(p -> SharepointListService.SITES_CONTAINER.equals(p.getName())).orElse(false)) {
                 return new Drive(getSite(containerItem.getContainerPath().get()), driveId);
-            } else {
+            }
+            else {
                 return null;
             }
         }

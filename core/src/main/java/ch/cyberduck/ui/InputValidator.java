@@ -21,5 +21,5 @@ public interface InputValidator {
      *
      * @return true if a valid input has been given
      */
-    boolean validate();
+    boolean validate(final int option);
 }

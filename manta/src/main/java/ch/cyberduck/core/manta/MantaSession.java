@@ -40,7 +40,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -56,7 +57,7 @@ import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
 
 public class MantaSession extends HttpSession<MantaClient> {
-    private static final Logger log = Logger.getLogger(MantaSession.class);
+    private static final Logger log = LogManager.getLogger(MantaSession.class);
 
     private final AuthAwareConfigContext config;
 
@@ -86,7 +87,7 @@ public class MantaSession extends HttpSession<MantaClient> {
             if(host.getCredentials().isPublicKeyAuthentication()) {
                 config.setMantaKeyId(new MantaPublicKeyAuthentication(this).authenticate(host, prompt, cancel));
             }
-            else {
+            if(host.getCredentials().isPasswordAuthentication()) {
                 config.setPassword(host.getCredentials().getPassword());
             }
             config.setNoAuth(false);

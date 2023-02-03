@@ -37,7 +37,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(new Path("/t/c", EnumSet.of(Path.Type.file)));
                 return children;
             }
@@ -58,7 +58,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(new Path("/t/c", EnumSet.of(Path.Type.file)));
                 children.add(new Path("/t/c.html", EnumSet.of(Path.Type.file)));
                 return children;
@@ -120,7 +120,7 @@ public class DownloadTransferTest {
             new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().exists(true),
-            TransferAction.overwrite
+                TransferAction.overwrite
         );
     }
 
@@ -151,7 +151,7 @@ public class DownloadTransferTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, testLocal, new TransferStatus().exists(true),
-            TransferAction.overwrite
+                TransferAction.overwrite
         );
         final TransferStatus status = new TransferStatus();
         status.setExists(false);
@@ -179,7 +179,7 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> d, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(source.getFeature(Read.class)) {
+                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(host), new DefaultDownloadFeature(source.getFeature(Read.class)) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;
@@ -188,15 +188,16 @@ public class DownloadTransferTest {
             }
         };
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
-            new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
-        worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.resume);
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
+        worker.prepare(test, local, new TransferStatus().exists(true),
+                TransferAction.resume);
         final TransferStatus status = new TransferStatus();
         status.setExists(true);
         final TransferStatus expected = new TransferStatus();
@@ -220,7 +221,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -245,7 +246,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -271,7 +272,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -297,7 +298,7 @@ public class DownloadTransferTest {
 
             @Override
             public AttributedList<Local> list() {
-                return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
+                return new AttributedList<>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
         final AtomicBoolean prompt = new AtomicBoolean();
@@ -340,7 +341,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> l = new AttributedList<Path>();
+                final AttributedList<Path> l = new AttributedList<>();
                 l.add(new Path("/t/.DS_Store", EnumSet.of(Path.Type.file)));
                 l.add(new Path("/t/t", EnumSet.of(Path.Type.file)));
                 return l;
@@ -360,7 +361,7 @@ public class DownloadTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> l = new AttributedList<Path>();
+                final AttributedList<Path> l = new AttributedList<>();
                 // File first in list
                 l.add(new Path("/f", EnumSet.of(Path.Type.file)));
                 l.add(new Path("/f", EnumSet.of(Path.Type.directory)));

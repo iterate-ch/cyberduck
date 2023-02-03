@@ -57,7 +57,7 @@ public class Customer {
     @JsonCreator
     public static CustomerContractTypeEnum fromValue(String text) {
       for (CustomerContractTypeEnum b : CustomerContractTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

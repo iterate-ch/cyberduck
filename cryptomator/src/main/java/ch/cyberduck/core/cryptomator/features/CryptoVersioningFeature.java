@@ -15,15 +15,16 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.vault.DecryptingListProgressListener;
 
 public class CryptoVersioningFeature implements Versioning {
 
@@ -58,8 +59,8 @@ public class CryptoVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
-        return delegate.getToken(mfaSerial, callback);
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return delegate.list(vault.encrypt(session, file), new DecryptingListProgressListener(session, vault, listener));
     }
 
     @Override

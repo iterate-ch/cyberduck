@@ -19,6 +19,17 @@ import org.apache.commons.text.CharacterPredicate;
 import org.apache.commons.text.RandomStringGenerator;
 
 public class AlphanumericRandomStringService implements RandomStringService {
+
+    private final int length;
+
+    public AlphanumericRandomStringService() {
+        this(8);
+    }
+
+    public AlphanumericRandomStringService(final int length) {
+        this.length = length;
+    }
+
     @Override
     public String random() {
         return new RandomStringGenerator.Builder().withinRange('0', 'z').filteredBy(new CharacterPredicate() {
@@ -26,6 +37,6 @@ public class AlphanumericRandomStringService implements RandomStringService {
             public boolean test(final int codePoint) {
                 return Character.isAlphabetic(codePoint) || Character.isDigit(codePoint);
             }
-        }).build().generate(8);
+        }).build().generate(length);
     }
 }

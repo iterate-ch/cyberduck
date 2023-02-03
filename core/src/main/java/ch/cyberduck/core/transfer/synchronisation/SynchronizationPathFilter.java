@@ -28,14 +28,14 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SynchronizationPathFilter implements TransferPathFilter {
-    private static final Logger log = Logger.getLogger(SynchronizationPathFilter.class);
+    private static final Logger log = LogManager.getLogger(SynchronizationPathFilter.class);
 
     private final ComparePathFilter comparison;
 
@@ -121,14 +121,14 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     }
 
     @Override
-    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
+    public void complete(final Path file, final Local local, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
         switch(comparison.compare(file, local, listener)) {
             case remote:
-                downloadFilter.complete(file, local, options, status, listener);
+                downloadFilter.complete(file, local, status, listener);
                 break;
             case local:
-                uploadFilter.complete(file, local, options, status, listener);
+                uploadFilter.complete(file, local, status, listener);
         }
     }
 

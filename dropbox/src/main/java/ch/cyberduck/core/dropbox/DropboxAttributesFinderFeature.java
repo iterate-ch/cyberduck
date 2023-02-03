@@ -20,9 +20,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
@@ -32,8 +37,8 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
-public class DropboxAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DropboxAttributesFinderFeature.class);
+public class DropboxAttributesFinderFeature implements AttributesFinder, AttributesAdapter<Metadata> {
+    private static final Logger log = LogManager.getLogger(DropboxAttributesFinderFeature.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;
@@ -48,7 +53,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
         try {
             // Metadata for the root folder is unsupported
             if(file.isRoot()) {
-                // Retrieve he namespace ID for a users home folder and team root folder
+                // Retrieve the namespace ID for a users home folder and team root folder
                 final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Set root namespace %s", account.getRootInfo().getRootNamespaceId()));
@@ -56,6 +61,16 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
                 return new PathAttributes().withFileId(account.getRootInfo().getRootNamespaceId());
             }
             final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
+            if(metadata instanceof FileMetadata) {
+                if(file.isDirectory()) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+            }
+            if(metadata instanceof FolderMetadata) {
+                if(file.isFile()) {
+                    throw new NotfoundException(file.getAbsolute());
+                }
+            }
             return this.toAttributes(metadata);
         }
         catch(DbxException e) {
@@ -63,7 +78,8 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final Metadata metadata) {
+    @Override
+    public PathAttributes toAttributes(final Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         if(metadata instanceof FileMetadata) {
             final FileMetadata file = (FileMetadata) metadata;
@@ -72,11 +88,19 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
             if(file.getFileLockInfo() != null) {
                 attributes.setLockId(String.valueOf(file.getFileLockInfo().getIsLockholder()));
             }
+            attributes.setChecksum(new Checksum(HashAlgorithm.dropbox_content_hash, file.getContentHash()));
+            attributes.setVersionId(file.getRev());
         }
         if(metadata instanceof FolderMetadata) {
             final FolderMetadata folder = (FolderMetadata) metadata;
             // All shared folders have a shared_folder_id. This value is identical to the namespace ID for that shared folder
-            attributes.setFileId(folder.getSharedFolderId());
+            final String sharedFolderId = folder.getSharedFolderId();
+            if(sharedFolderId != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set file id %s for shared folder %s", sharedFolderId, folder));
+                }
+                attributes.setFileId(sharedFolderId);
+            }
         }
         return attributes;
     }

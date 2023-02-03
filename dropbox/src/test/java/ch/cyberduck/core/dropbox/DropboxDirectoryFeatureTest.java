@@ -19,9 +19,11 @@ import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -30,6 +32,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -39,11 +42,12 @@ public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
     public void testDirectory() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path level1 = new DropboxDirectoryFeature(session).mkdir(new Path(home,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level1));
         assertTrue(new DropboxFindFeature(session).find(level1));
+        assertThrows(ConflictException.class, () -> new DropboxDirectoryFeature(session).mkdir(level1, new TransferStatus()));
         final Path level2 = new DropboxDirectoryFeature(session).mkdir(new Path(level1,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null);
         assertTrue(new DefaultFindFeature(session).find(level2));
         assertTrue(new DropboxFindFeature(session).find(level2));
         new DropboxDeleteFeature(session).delete(Arrays.asList(level1), new DisabledLoginCallback(), new Delete.DisabledCallback());

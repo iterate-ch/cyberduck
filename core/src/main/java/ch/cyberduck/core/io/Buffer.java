@@ -51,7 +51,7 @@ public interface Buffer {
         Buffer create(Path file);
     }
 
-    Buffer NULL = new Buffer() {
+    Buffer noop = new Buffer() {
         @Override
         public int write(final byte[] chunk, final Long offset) throws IOException {
             throw new IOException();

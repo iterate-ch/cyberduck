@@ -30,14 +30,15 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
+
+import static org.junit.Assert.assertFalse;
 
 @Category(IntegrationTest.class)
 public class DropboxDeleteFeatureTest extends AbstractDropboxTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -50,8 +51,11 @@ public class DropboxDeleteFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testDeleteDirectory() throws Exception {
-        final Path file = new DropboxDirectoryFeature(session).mkdir(
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), new TransferStatus());
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(
+                new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new DropboxFindFeature(session).find(file));
     }
 }

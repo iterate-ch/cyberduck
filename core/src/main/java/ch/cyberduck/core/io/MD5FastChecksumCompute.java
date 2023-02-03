@@ -15,7 +15,8 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumCanceledException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -24,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.ClosedChannelException;
 
 import com.twmacinta.util.MD5;
 
@@ -35,14 +37,13 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
     }
 
     @Override
-    public Checksum compute(final InputStream in, final TransferStatus status) throws ChecksumException {
+    public Checksum compute(final InputStream in, final TransferStatus status) throws BackgroundException {
         return new Checksum(HashAlgorithm.md5, Hex.encodeHexString(this.digest("MD5",
-            this.normalize(in, status))));
+                this.normalize(in, status), status)));
     }
 
-    protected byte[] digest(final String algorithm, final InputStream in) throws ChecksumException {
+    protected byte[] digest(final String algorithm, final InputStream in, final StreamCancelation cancelation) throws ChecksumException, ChecksumCanceledException {
         final MD5 md = new MD5();
-
         try {
             byte[] buffer = new byte[16384];
             int bytesRead;
@@ -50,8 +51,11 @@ public class MD5FastChecksumCompute extends AbstractChecksumCompute {
                 md.Update(buffer, 0, bytesRead);
             }
         }
+        catch(ClosedChannelException e) {
+            throw new ChecksumCanceledException(e);
+        }
         catch(IOException e) {
-            throw new ChecksumException(LocaleFactory.localizedString("Checksum failure", "Error"), e.getMessage(), e);
+            throw new ChecksumException(e);
         }
         finally {
             IOUtils.closeQuietly(in);

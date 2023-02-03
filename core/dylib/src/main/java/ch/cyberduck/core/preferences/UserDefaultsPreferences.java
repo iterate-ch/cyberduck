@@ -30,11 +30,11 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Sandbox;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ import com.sun.jna.platform.mac.SystemB;
  * @see ch.cyberduck.binding.foundation.NSUserDefaults
  */
 public class UserDefaultsPreferences extends DefaultPreferences {
-    private static final Logger log = Logger.getLogger(UserDefaultsPreferences.class);
+    private static final Logger log = LogManager.getLogger(UserDefaultsPreferences.class);
 
     private final NSBundle bundle = new BundleApplicationResourcesFinder().bundle();
 
@@ -219,20 +219,12 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("bookmark.import.expandrive5.location", "~/Library/Application Support/ExpanDrive/expandrive5.favorites.js");
         this.setDefault("bookmark.import.expandrive6.location", "~/Library/Application Support/ExpanDrive/expandrive6.favorites.js");
         this.setDefault("bookmark.import.cloudmounter.location", "~/Library/Preferences/com.eltima.cloudmounter.plist");
-        if(new FinderLocal("~/Downloads").exists()) {
-            // For 10.5+ this usually exists and should be preferrred
-            this.setDefault("queue.download.folder", "~/Downloads");
-        }
-        else {
-            this.setDefault("queue.download.folder", "~/Desktop");
-        }
+
         this.setDefault("browser.filesize.decimal", String.valueOf(true));
 
         // SSL Keystore
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");
         this.setDefault("connection.ssl.keystore.provider", "Apple");
-
-        this.setDefault("network.interface.blacklist", "awdl0 utun0 utun1 utun2 utun3 utun4");
 
         this.setDefault("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
         // Allow to show transfers in browser window as tab

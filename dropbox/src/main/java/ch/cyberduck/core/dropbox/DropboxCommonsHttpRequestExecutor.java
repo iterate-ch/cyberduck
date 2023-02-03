@@ -28,7 +28,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -43,10 +44,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.dropbox.core.http.HttpRequestor;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
-    private static final Logger log = Logger.getLogger(DropboxCommonsHttpRequestExecutor.class);
+    private static final Logger log = LogManager.getLogger(DropboxCommonsHttpRequestExecutor.class);
 
     private final CloseableHttpClient client;
 
@@ -97,8 +99,8 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             }
             request.addHeader(new BasicHeader(header.getKey(), header.getValue()));
         }
-        final CountDownLatch entry = new CountDownLatch(1);
-        final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
+        final CountDownLatch requestExecuted = new CountDownLatch(1);
+        final DelayedHttpEntity entity = new DelayedHttpEntity(requestExecuted) {
             @Override
             public long getContentLength() {
                 for(Header header : headers) {
@@ -111,7 +113,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             }
         };
         request.setEntity(entity);
-        final DefaultThreadPool executor = new DefaultThreadPool(String.format("http-%s", url), 1);
+        final DefaultThreadPool executor = new DefaultThreadPool(String.format("httpexecutor-%s", url), 1);
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
@@ -119,7 +121,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
                     return client.execute(request);
                 }
                 finally {
-                    entry.countDown();
+                    requestExecuted.countDown();
                 }
             }
         });
@@ -127,7 +129,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             @Override
             public OutputStream getBody() {
                 // Await execution of HTTP request to make stream available
-                Uninterruptibles.awaitUninterruptibly(entry);
+                Uninterruptibles.awaitUninterruptibly(requestExecuted);
                 return entity.getStream();
             }
 
@@ -151,12 +153,10 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             public Response finish() throws IOException {
                 final CloseableHttpResponse response;
                 try {
-                    response = future.get();
-                }
-                catch(InterruptedException e) {
-                    throw new IOException(e);
+                    response = Uninterruptibles.getUninterruptibly(future);
                 }
                 catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(e, IOException.class);
                     throw new IOException(e.getCause());
                 }
                 finally {

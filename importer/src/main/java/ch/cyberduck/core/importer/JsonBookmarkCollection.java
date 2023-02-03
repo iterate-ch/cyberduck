@@ -15,7 +15,8 @@ package ch.cyberduck.core.importer;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -23,7 +24,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
 public abstract class JsonBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(JsonBookmarkCollection.class);
+    private static final Logger log = LogManager.getLogger(JsonBookmarkCollection.class);
 
     protected String readNext(final String name, final JsonReader reader) throws IOException {
         if(reader.peek() != JsonToken.NULL) {

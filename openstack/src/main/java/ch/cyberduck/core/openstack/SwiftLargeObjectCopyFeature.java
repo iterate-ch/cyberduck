@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -58,8 +59,8 @@ public class SwiftLargeObjectCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return copy(source, segmentService.list(source), target, status, callback);
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
+        return copy(source, segmentService.list(source), target, status, callback, listener);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class SwiftLargeObjectCopyFeature implements Copy {
     }
 
     public Path copy(final Path source, final List<Path> sourceParts, final Path target, final TransferStatus status,
-                     final ConnectionCallback callback) throws BackgroundException {
+                     final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         final List<Path> completed = new ArrayList<>();
         final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target);
         for(final Path copyPart : sourceParts) {
@@ -77,6 +78,7 @@ public class SwiftLargeObjectCopyFeature implements Copy {
                 session.getClient().copyObject(regionService.lookup(copyPart),
                     containerService.getContainer(copyPart).getName(), containerService.getKey(copyPart),
                     containerService.getContainer(target).getName(), containerService.getKey(destination));
+                listener.sent(copyPart.attributes().getSize());
 
                 // copy attributes from source. Should be same?
                 destination.setAttributes(copyPart.attributes());

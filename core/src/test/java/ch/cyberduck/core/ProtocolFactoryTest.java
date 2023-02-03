@@ -16,6 +16,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.preferences.MemoryPreferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
@@ -48,7 +51,7 @@ public class ProtocolFactoryTest {
             }
         };
         final ProtocolFactory f = new ProtocolFactory(new HashSet<>(
-            Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
+                Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
         final List<Protocol> protocols = f.find();
         assertTrue(protocols.contains(defaultProtocol));
         assertTrue(protocols.contains(providerProtocol));
@@ -95,7 +98,12 @@ public class ProtocolFactoryTest {
 
             @Override
             public String getProvider() {
-                return "provider_1";
+                return "default";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return true;
             }
         };
         final TestProtocol dav_provider2 = new TestProtocol(Scheme.dav) {
@@ -111,7 +119,7 @@ public class ProtocolFactoryTest {
         };
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav_provider1, dav_provider2)));
         assertEquals(dav_provider1, f.forName("dav"));
-        assertEquals(dav_provider1, f.forName("dav", "provider_1"));
+        assertEquals(dav_provider1, f.forName("dav", "default"));
         assertEquals(dav_provider1, f.forName("dav", "g"));
         assertEquals(dav_provider2, f.forName("dav", "provider_2"));
     }
@@ -142,7 +150,7 @@ public class ProtocolFactoryTest {
                 return Type.dav;
             }
         }))).read(
-            new Local("src/test/resources/Unknown.cyberduckprofile")
+                new Local("src/test/resources/Unknown.cyberduckprofile")
         );
     }
 
@@ -192,5 +200,80 @@ public class ProtocolFactoryTest {
         final ProtocolFactory f = new ProtocolFactory(Stream.of(baseProtocol, overrideProtocol).collect(Collectors.toSet()));
         assertEquals(overrideProtocol, f.forName("test", "test-provider2"));
         assertEquals(baseProtocol, f.forName("test", "test-provider1"));
+    }
+
+    @Test
+    public void testPrioritizeNonDeprecatedWithTypeLookup() {
+        final TestProtocol first = new TestProtocol(Scheme.http) {
+            @Override
+            public Type getType() {
+                return Type.dracoon;
+            }
+
+            @Override
+            public String getProvider() {
+                return "test-provider1";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+
+            @Override
+            public boolean isDeprecated() {
+                return true;
+            }
+        };
+        final TestProtocol second = new TestProtocol(Scheme.http) {
+            @Override
+            public Type getType() {
+                return Type.dracoon;
+            }
+
+            @Override
+            public String getProvider() {
+                return "test-provider2";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(first, second)));
+        assertEquals(second, f.forName("test", "test-provider2"));
+        assertEquals(first, f.forName("test", "test-provider1"));
+        assertEquals(second, f.forName("dracoon"));
+    }
+
+    @Test
+    public void testRegisterUnregisterIsEnabled() throws Exception {
+        Preferences preferences = new MemoryPreferences();
+        PreferencesFactory.set(preferences);
+        final ProtocolFactory factory = new ProtocolFactory(Stream.of(new TestProtocol() {
+            @Override
+            public Type getType() {
+                return Type.s3;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return true;
+            }
+
+            @Override
+            public boolean isBundled() {
+                return true;
+            }
+        }).collect(Collectors.toSet()));
+        final ProfilePlistReader reader = new ProfilePlistReader(factory);
+        final Local file = new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile");
+        final Profile profile = reader.read(file);
+        factory.register(file);
+        assertTrue(profile.isEnabled());
+        factory.unregister(profile);
+        assertFalse(profile.isEnabled());
+        assertTrue(file.exists());
     }
 }

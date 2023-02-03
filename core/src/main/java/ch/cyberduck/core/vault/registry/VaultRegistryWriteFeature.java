@@ -49,11 +49,6 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
-    public boolean temporary() {
-        return proxy.temporary();
-    }
-
-    @Override
     public boolean random() {
         return proxy.random();
     }

@@ -54,6 +54,7 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_NOT_ACCEPTABLE:
                 return new AccessDeniedException(buffer.toString(), failure);
             case HttpStatus.SC_CONFLICT:
+            case HttpStatus.SC_METHOD_NOT_ALLOWED:
                 return new ConflictException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
             case HttpStatus.SC_GONE:
@@ -63,12 +64,6 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_INSUFFICIENT_STORAGE:
             case HttpStatus.SC_PAYMENT_REQUIRED:
                 return new QuotaException(buffer.toString(), failure);
-            case HttpStatus.SC_UNPROCESSABLE_ENTITY:
-            case HttpStatus.SC_BAD_REQUEST:
-            case HttpStatus.SC_REQUEST_URI_TOO_LONG:
-            case HttpStatus.SC_METHOD_NOT_ALLOWED:
-            case HttpStatus.SC_NOT_IMPLEMENTED:
-                return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_REQUEST_TIMEOUT:
             case HttpStatus.SC_GATEWAY_TIMEOUT:
                 return new ConnectionTimeoutException(buffer.toString(), failure);

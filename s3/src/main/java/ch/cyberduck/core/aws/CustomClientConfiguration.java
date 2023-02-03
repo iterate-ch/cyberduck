@@ -15,6 +15,7 @@ package ch.cyberduck.core.aws;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -60,7 +61,7 @@ public class CustomClientConfiguration extends ClientConfiguration {
                 }
             }
         });
-        final int timeout = new HostPreferences(host).getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(host).getTimeout() * 1000;
         this.setConnectionTimeout(timeout);
         this.setSocketTimeout(timeout);
         final UseragentProvider ua = new PreferencesUseragentProvider();

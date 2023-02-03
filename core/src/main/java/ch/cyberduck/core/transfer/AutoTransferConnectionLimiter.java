@@ -32,7 +32,7 @@ public class AutoTransferConnectionLimiter implements TransferConnectionLimiter 
         if(TransferConnectionLimiter.AUTO == preferences.getInteger("queue.connections.limit")) {
             // Determine number of connections depending on protocol
             final int limit = preferences.getInteger(String.format("queue.connections.limit.%s",
-                host.getProtocol().getType()));
+                    host.getProtocol().getType().name()));
             if(-1 == limit) {
                 // No explicit setting for protocol
                 return preferences.getInteger("queue.connections.limit.default");

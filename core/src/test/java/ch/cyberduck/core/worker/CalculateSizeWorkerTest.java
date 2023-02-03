@@ -18,7 +18,7 @@ public class CalculateSizeWorkerTest {
 
     @Test
     public void testRun() throws Exception {
-        final List<Path> files = new ArrayList<Path>();
+        final List<Path> files = new ArrayList<>();
         final Path a = new Path("a", EnumSet.of(Path.Type.file));
         a.attributes().setSize(1L);
         files.add(a);

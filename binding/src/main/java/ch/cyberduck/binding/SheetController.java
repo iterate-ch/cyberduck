@@ -22,11 +22,12 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.ui.InputValidator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 
 public abstract class SheetController extends WindowController implements SheetCallback, InputValidator {
-    private static final Logger log = Logger.getLogger(SheetController.class);
+    private static final Logger log = LogManager.getLogger(SheetController.class);
 
     private final NSApplication application = NSApplication.sharedApplication();
 
@@ -43,7 +44,7 @@ public abstract class SheetController extends WindowController implements SheetC
     public SheetController() {
         this(new InputValidator() {
             @Override
-            public boolean validate() {
+            public boolean validate(final int option) {
                 return true;
             }
         });
@@ -62,8 +63,8 @@ public abstract class SheetController extends WindowController implements SheetC
     }
 
     @Override
-    public boolean validate() {
-        return validator.validate();
+    public boolean validate(final int option) {
+        return validator.validate(option);
     }
 
     /**
@@ -84,7 +85,7 @@ public abstract class SheetController extends WindowController implements SheetC
     public void closeSheetWithOption(final int option) {
         window.endEditingFor(null);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
-            if(!this.validate()) {
+            if(!this.validate(option)) {
                 AppKitFunctionsLibrary.beep();
                 return;
             }

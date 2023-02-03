@@ -16,10 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-// Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
-// 
-
 using System;
 using System.Globalization;
 using System.Net;
@@ -35,11 +31,6 @@ namespace Ch.Cyberduck.Core.Proxy
 
         public override ch.cyberduck.core.proxy.Proxy find(string host)
         {
-            if (!PreferencesFactory.get().getBoolean("connection.proxy.enable"))
-            {
-                return ch.cyberduck.core.proxy.Proxy.DIRECT;
-            }
-
             Uri target;
             try
             {
@@ -54,9 +45,6 @@ namespace Ch.Cyberduck.Core.Proxy
             {
                 return ch.cyberduck.core.proxy.Proxy.DIRECT;
             }
-
-            // Hack to make Secur32/IWA work. With a non-us locale we get an invalid codepage (1) exception when using the native library.
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 
             Uri proxy = _system.GetProxy(target);
             return new ch.cyberduck.core.proxy.Proxy(ch.cyberduck.core.proxy.Proxy.Type.valueOf(proxy.Scheme.ToUpper()),

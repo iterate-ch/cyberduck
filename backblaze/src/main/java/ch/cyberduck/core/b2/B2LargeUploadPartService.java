@@ -16,13 +16,14 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import synapticloop.b2.response.B2ListPartsResponse;
 import synapticloop.b2.response.B2UploadPartResponse;
 
 public class B2LargeUploadPartService {
-    private static final Logger log = Logger.getLogger(B2LargeUploadPartService.class);
+    private static final Logger log = LogManager.getLogger(B2LargeUploadPartService.class);
 
     private final PathContainerService containerService
             = new B2PathContainerService();
@@ -68,11 +69,11 @@ public class B2LargeUploadPartService {
             do {
                 final B2ListFilesResponse chunk;
                 chunk = session.getClient().listUnfinishedLargeFiles(
-                    fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()), startFileId, null);
+                    fileid.getVersionId(containerService.getContainer(file)), startFileId, null);
                 for(B2FileInfoResponse upload : chunk.getFiles()) {
                     if(file.isDirectory()) {
                         final Path parent = new Path(containerService.getContainer(file), upload.getFileName(), EnumSet.of(Path.Type.file)).getParent();
-                        if(parent.equals(file)) {
+                        if(new SimplePathPredicate(parent).test(file)) {
                             uploads.add(upload);
                         }
                     }

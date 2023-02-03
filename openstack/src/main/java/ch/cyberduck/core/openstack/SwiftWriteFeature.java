@@ -37,17 +37,19 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import ch.iterate.openstack.swift.Constants;
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
-    private static final Logger log = Logger.getLogger(SwiftSession.class);
+    private static final Logger log = LogManager.getLogger(SwiftSession.class);
 
     private final PathContainerService containerService
         = new DefaultPathContainerService();
@@ -56,6 +58,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private final SwiftRegionService regionService;
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
+        super(new SwiftAttributesFinderFeature(session, regionService));
         this.session = session;
         this.regionService = regionService;
     }
@@ -63,7 +66,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         // Submit store run to background thread
-        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             /**
              * @return The ETag returned by the server for the uploaded object
              */
@@ -72,11 +75,15 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                 try {
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
+                    if(status.isExists()) {
+                        // Remove any large object header read from metadata of existing file
+                        headers.remove(Constants.X_STATIC_LARGE_OBJECT);
+                    }
                     final Checksum checksum = status.getChecksum();
                     final String etag = session.getClient().storeObject(
-                        regionService.lookup(file),
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
-                        entity, headers, checksum.algorithm == HashAlgorithm.md5 ? checksum.hash : null);
+                            regionService.lookup(file),
+                            containerService.getContainer(file).getName(), containerService.getKey(file),
+                            entity, headers, checksum.algorithm == HashAlgorithm.md5 ? checksum.hash : null);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, etag));
                     }
@@ -119,11 +126,6 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
             size += segment.attributes().getSize();
         }
         return new Append(true).withStatus(status).withSize(size);
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
     }
 
     @Override

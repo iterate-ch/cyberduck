@@ -73,20 +73,20 @@ public class DefaultSessionPoolTest {
             }
         };
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
-            new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), bookmark,
-            new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
-                @Override
-                public Session create() {
-                    return new NullSession(bookmark) {
-                        @Override
-                        public void interrupt() throws BackgroundException {
-                            interrupt.set(true);
-                            super.interrupt();
-                        }
-                    };
-                }
-            }));
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), bookmark,
+                new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                    @Override
+                    public Session create() {
+                        return new NullSession(bookmark) {
+                            @Override
+                            public void interrupt() throws BackgroundException {
+                                interrupt.set(true);
+                                super.interrupt();
+                            }
+                        };
+                    }
+                }));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", new SocketException("m")));
         assertTrue(interrupt.get());
@@ -103,20 +103,20 @@ public class DefaultSessionPoolTest {
             }
         };
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
-            new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), bookmark,
-            new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
-                @Override
-                public Session create() {
-                    return new NullSession(bookmark) {
-                        @Override
-                        public void interrupt() throws BackgroundException {
-                            interrupt.set(true);
-                            super.interrupt();
-                        }
-                    };
-                }
-            }));
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), bookmark,
+                new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                        bookmark, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                    @Override
+                    public Session create() {
+                        return new NullSession(bookmark) {
+                            @Override
+                            public void interrupt() throws BackgroundException {
+                                interrupt.set(true);
+                                super.interrupt();
+                            }
+                        };
+                    }
+                }));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", "d"));
         assertFalse(interrupt.get());

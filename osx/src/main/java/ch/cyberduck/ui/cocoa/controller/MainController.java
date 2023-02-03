@@ -52,22 +52,22 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.NotificationRendezvousListener;
 import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
-import ch.cyberduck.core.ctera.CTERAProtocol;
+import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.importer.*;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
+import ch.cyberduck.core.profiles.ProfilesUpdater;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -78,6 +78,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.updater.PeriodicUpdateChecker;
 import ch.cyberduck.core.updater.PeriodicUpdateCheckerFactory;
+import ch.cyberduck.core.urlhandler.SchemeHandler;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -91,7 +92,8 @@ import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -120,7 +122,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
  * Setting the main menu and implements application delegate methods
  */
 public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
-    private static final Logger log = Logger.getLogger(MainController.class);
+    private static final Logger log = LogManager.getLogger(MainController.class);
 
     /**
      * Apple event constants<br> **********************************************************************************************<br>
@@ -145,6 +147,9 @@ public class MainController extends BundleController implements NSApplication.De
 
     private final PeriodicUpdateChecker updater
         = PeriodicUpdateCheckerFactory.get(this);
+
+    private final ProfilesUpdater profiles
+        = new PeriodicProfilesUpdater(this);
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     /**
@@ -315,6 +320,7 @@ public class MainController extends BundleController implements NSApplication.De
         columns.put(String.format("browser.column.%s", BrowserColumn.permission.name()), BrowserColumn.permission.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.region.name()), BrowserColumn.region.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.version.name()), BrowserColumn.version.toString());
+        columns.put(String.format("browser.column.%s", BrowserColumn.checksum.name()), BrowserColumn.checksum.toString());
         columns.put(String.format("browser.column.%s", BrowserColumn.storageclass.name()), BrowserColumn.storageclass.toString());
         for(Map.Entry<String, String> entry : columns.entrySet()) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
@@ -482,14 +488,16 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void aboutMenuClicked(final ID sender) {
         final NSDictionary dict = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                preferences.getProperty("application.name"),
-                preferences.getProperty("application.version"),
-                preferences.getProperty("application.revision")),
-            NSArray.arrayWithObjects(
-                "ApplicationName",
-                "ApplicationVersion",
-                "Version")
+                NSArray.arrayWithObjects(
+                        preferences.getProperty("application.name"),
+                        preferences.getProperty("application.version"),
+                        preferences.getProperty("application.revision"),
+                        preferences.getProperty("application.copyright")),
+                NSArray.arrayWithObjects(
+                        "ApplicationName",
+                        "ApplicationVersion",
+                        "Version",
+                        "Copyright")
         );
         NSApplication.sharedApplication().orderFrontStandardAboutPanelWithOptions(dict);
     }
@@ -634,21 +642,14 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
-                    final Protocol profile = ProfileReaderFactory.get().read(f);
-                    if(profile.isEnabled()) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Register profile %s", profile));
-                        }
-                        ProtocolFactory.get().register(profile);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Register profile %s", f));
+                    }
+                    final Local copy = ProtocolFactory.get().register(f);
+                    if(copy != null) {
+                        final Profile profile = ProfileReaderFactory.get().read(copy);
                         final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         newDocument().addBookmark(host);
-                        // Register in application support
-                        final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                            preferences.getProperty("profiles.folder.name"));
-                        if(!profiles.exists()) {
-                            new DefaultLocalDirectoryFeature().mkdir(profiles);
-                        }
-                        f.copy(LocalFactory.get(profiles, f.getName()));
                     }
                 }
                 catch(AccessDeniedException e) {
@@ -790,7 +791,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
 
             @Override
-            public boolean validate() {
+            public boolean validate(final int option) {
                 return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
             }
         };
@@ -976,7 +977,8 @@ public class MainController extends BundleController implements NSApplication.De
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
         if(preferences.getBoolean("defaulthandler.reminder")
             && preferences.getInteger("uses") > 0) {
-            if(!SchemeHandlerFactory.get().isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
+            final SchemeHandler schemeHandler = SchemeHandlerFactory.get();
+            if(!schemeHandler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                 new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
@@ -995,7 +997,7 @@ public class MainController extends BundleController implements NSApplication.De
                     preferences.setProperty("defaulthandler.reminder", false);
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
-                    SchemeHandlerFactory.get().setDefaultHandler(
+                    schemeHandler.setDefaultHandler(
                         new Application(preferences.getProperty("application.identifier")),
                         Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name())
                     );
@@ -1045,15 +1047,12 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.register();
             }
         }
-        // Register OAuth handler
-        final String handler = preferences.getProperty("oauth.handler.scheme");
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Register OAuth handler %s", handler));
+        if(preferences.getBoolean("profiles.discovery.updater.enable")) {
+            // Synchronize and register timer
+            profiles.register();
         }
-        SchemeHandlerFactory.get().setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
-            Collections.singletonList(handler));
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
-            this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
+                this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
 
     /**
@@ -1103,7 +1102,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(browser.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
                     final Host serialized
-                        = new HostDictionary().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
+                            = new HostDictionary<>().deserialize(browser.getSession().getHost().serialize(SerializerFactory.get()));
                     serialized.setWorkdir(browser.workdir());
                     sessions.add(serialized);
                     browser.window().saveFrameUsingName(serialized.getUuid());
@@ -1210,6 +1209,7 @@ public class MainController extends BundleController implements NSApplication.De
         NotificationServiceFactory.get().unregister();
         // Disable update
         updater.unregister();
+        profiles.unregister();
         //Writing usage info
         preferences.setProperty("uses", preferences.getInteger("uses") + 1);
         preferences.save();
@@ -1256,8 +1256,11 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.check(false);
                 break;
             default:
-                if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
-                    final String action = StringUtils.removeStart(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                if(StringUtils.contains(url, ":oauth")) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Handle %s as OAuth callback", url));
+                    }
+                    final String action = StringUtils.substringAfter(url, ":oauth");
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
@@ -1272,7 +1275,7 @@ public class MainController extends BundleController implements NSApplication.De
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     oauth.notify(state, code);
                 }
-                else if(StringUtils.startsWith(url, CTERAProtocol.CTERA_REDIRECT_URI)) {
+                else if(StringUtils.startsWith(url, CteraProtocol.CTERA_REDIRECT_URI)) {
                     final String action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String code = StringUtils.EMPTY;
@@ -1296,10 +1299,12 @@ public class MainController extends BundleController implements NSApplication.De
                         else {
                             for(BrowserController browser : MainController.getBrowsers()) {
                                 if(browser.isMounted()) {
-                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                        new HostUrlProvider().get(h))) {
+                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(new HostUrlProvider().get(h))) {
                                         // Handle browser window already connected to the same host. #4215
                                         browser.window().makeKeyAndOrderFront(null);
+                                        if(Path.Type.directory == detector.detect(h.getDefaultPath())) {
+                                            browser.setWorkdir(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)));
+                                        }
                                         return;
                                     }
                                 }

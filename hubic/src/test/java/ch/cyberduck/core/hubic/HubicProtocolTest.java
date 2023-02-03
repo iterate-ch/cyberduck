@@ -15,8 +15,8 @@ package ch.cyberduck.core.hubic;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
@@ -31,6 +31,12 @@ import static org.junit.Assert.assertFalse;
 public class HubicProtocolTest {
 
     @Test
+    public void testFeatures() {
+        assertEquals(Protocol.Case.sensitive, new HubicProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.explicit, new HubicProtocol().getDirectoryTimestamp());
+    }
+
+    @Test
     public void testPrefix() {
         assertEquals("ch.cyberduck.core.hubic.Hubic", new HubicProtocol().getPrefix());
     }
@@ -39,7 +45,7 @@ public class HubicProtocolTest {
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new HubicProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/hubiC.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/hubiC.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertFalse(profile.isUsernameConfigurable());

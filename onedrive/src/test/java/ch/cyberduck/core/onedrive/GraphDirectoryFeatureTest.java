@@ -47,6 +47,8 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).find(target);
         assertNotNull(attributes.getETag());
         assertEquals(target.attributes().getFileId(), attributes.getFileId());
+        // Can create again regardless if exists
+        new GraphDirectoryFeature(session, fileid).mkdir(target, new TransferStatus());
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

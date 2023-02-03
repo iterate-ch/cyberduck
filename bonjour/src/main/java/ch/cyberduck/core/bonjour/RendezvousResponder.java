@@ -29,13 +29,14 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class RendezvousResponder extends AbstractRendezvous implements BrowseListener, ResolveListener {
-    private static final Logger log = Logger.getLogger(RendezvousResponder.class);
+    private static final Logger log = LogManager.getLogger(RendezvousResponder.class);
 
     private final Map<String, DNSSDService> browsers;
 

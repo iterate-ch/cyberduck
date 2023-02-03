@@ -18,7 +18,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.5.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
@@ -139,12 +139,27 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
+            <artifactId>owncloud</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
             <artifactId>ctera</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>freenet</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>eue</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>box</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

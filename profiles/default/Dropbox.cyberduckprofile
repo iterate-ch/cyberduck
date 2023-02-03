@@ -25,16 +25,16 @@
         <true/>
         <key>Default Hostname</key>
         <string>www.dropbox.com</string>
+        <key>Default Nickname</key>
+        <string>Dropbox</string>
         <key>OAuth Authorization Url</key>
         <string>https://www.dropbox.com/1/oauth2/authorize</string>
         <key>OAuth Token Url</key>
         <string>https://api.dropboxapi.com/1/oauth2/token</string>
         <key>OAuth Client ID</key>
         <string>rjqgs45ntjp1va9</string>
-        <key>OAuth Client Secret</key>
-        <string>yg1uopbf5c1h1rk</string>
         <key>OAuth Redirect Url</key>
-        <string>https://cyberduck.io/oauth</string>
+        <string>x-cyberduck-action:oauth</string>
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>

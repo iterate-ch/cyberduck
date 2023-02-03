@@ -29,7 +29,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ import java.util.List;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftThresholdUploadService implements Upload<StorageObject> {
-    private static final Logger log = Logger.getLogger(SwiftThresholdUploadService.class);
+    private static final Logger log = LogManager.getLogger(SwiftThresholdUploadService.class);
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;

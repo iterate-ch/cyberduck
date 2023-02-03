@@ -3,7 +3,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -130,7 +129,7 @@ public class SwiftAuthenticationServiceTest {
         final SwiftAuthenticationService s = new SwiftAuthenticationService();
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Rackspace UK.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Rackspace UK.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         assertEquals("/v2.0/tokens", profile.getContext());
         assertEquals(URI.create("https://lon.identity.api.rackspacecloud.com/v2.0/tokens"), s.getRequest(host, new DisabledLoginCallback()).iterator().next().getURI());

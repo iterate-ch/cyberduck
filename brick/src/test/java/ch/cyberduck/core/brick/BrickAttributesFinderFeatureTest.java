@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,14 +59,20 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
 
     @Test
     public void testFindFile() throws Exception {
-        final Path folder = new BrickDirectoryFeature(session).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new BrickTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final BrickAttributesFinderFeature f = new BrickAttributesFinderFeature(session);
+        final Path root = new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final PathAttributes rootAttributes = f.find(root);
+        final Path folder = new BrickDirectoryFeature(session).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final long folderTimestamp = f.find(folder).getModificationDate();
+        final Path test = new BrickTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, session.getHost().getProtocol().getDirectoryTimestamp());
+        assertNotEquals(folderTimestamp, f.find(folder).getModificationDate());
+        assertNotEquals(rootAttributes, f.find(root));
+        assertNotEquals(rootAttributes.getModificationDate(), f.find(root).getModificationDate());
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         // Test wrong type
@@ -88,7 +95,6 @@ public class BrickAttributesFinderFeatureTest extends AbstractBrickTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
-        assertNull(attributes.getChecksum().algorithm);
         assertTrue(attributes.getPermission().isReadable());
         assertTrue(attributes.getPermission().isWritable());
         assertTrue(attributes.getPermission().isExecutable());

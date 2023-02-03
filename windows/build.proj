@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.Build.Traversal">
+  <PropertyGroup>
+    <SetAny Condition=" '$(BuildModule)'!='' ">True</SetAny>
+
+    <BuildProject Condition=" '$(SetAny)'=='' ">True</BuildProject>
+    <BuildProject Condition=" '$(BuildModule)'=='Project' ">True</BuildProject>
+
+    <BuildInstaller Condition=" '$(SetAny)'=='' ">True</BuildInstaller>
+    <BuildInstaller Condition=" '$(BuildModule)'=='Installer' ">True</BuildInstaller>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(BuildProject)'=='True' ">
+    <ProjectReference Include="src\main\csharp\Cyberduck.csproj" />
+    <ProjectReference Include="src\test\csharp\Cyberduck.Test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(BuildInstaller)'=='True' ">
+    <ProjectReference Include="src\main\wix\WindowsVersionCustomAction\WindowsVersionCustomAction.vcxproj" SetPlatform="Platform=Win32" />
+    <ProjectReference Include="src\main\wix\Bundle\Cyberduck.Bundle.wixproj" />
+    <ProjectReference Include="src\main\wix\Bootstrapper\Cyberduck.Bootstrapper.wixproj" />
+    <ProjectReference Include="src\main\appx\Cyberduck.Package.proj" />
+  </ItemGroup>
+</Project>

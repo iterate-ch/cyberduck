@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.dav.DAVSession;
 
 import java.net.URI;
 import java.text.MessageFormat;
@@ -29,9 +30,9 @@ import java.util.Locale;
 
 public class NextcloudUrlProvider implements UrlProvider {
 
-    private final NextcloudSession session;
+    private final DAVSession session;
 
-    public NextcloudUrlProvider(final NextcloudSession session) {
+    public NextcloudUrlProvider(final DAVSession session) {
         this.session = session;
     }
 

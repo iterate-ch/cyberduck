@@ -21,7 +21,8 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -34,7 +35,7 @@ import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 
 public class OpenSSHPrivateKeyConfigurator {
-    private static final Logger log = Logger.getLogger(OpenSSHPrivateKeyConfigurator.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHPrivateKeyConfigurator.class);
 
     private final Local directory;
 
@@ -63,14 +64,13 @@ public class OpenSSHPrivateKeyConfigurator {
                 final KeyFormat format;
                 try {
                     format = KeyProviderUtil.detectKeyFileFormat(
-                        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), true);
+                            new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), true);
                 }
                 catch(AccessDeniedException | IOException e) {
                     log.debug(String.format("Ignore file %s with unknown format. %s", file, e.getMessage()));
                     continue;
                 }
                 switch(format) {
-                    case PKCS5:
                     case PKCS8:
                     case OpenSSH:
                     case OpenSSHv1:

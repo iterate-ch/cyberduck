@@ -19,28 +19,32 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.comparator.TimestampComparator;
+import ch.cyberduck.ui.comparator.VersionsComparator;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -54,7 +58,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
-    private static final Logger log = Logger.getLogger(MoveWorker.class);
+    private static final Logger log = LogManager.getLogger(MoveWorker.class);
 
     private final Map<Path, Path> files;
     private final SessionPool target;
@@ -89,7 +93,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 log.debug(String.format("Run with feature %s", feature));
             }
             final ListService list = session.getFeature(ListService.class);
-            // sort ascending by timestamp to move older versions first
+            // Sort ascending by timestamp to move older versions first
             final Map<Path, Path> sorted = new TreeMap<>(new VersionsComparator(true));
             sorted.putAll(files);
             final Map<Path, Path> result = new HashMap<>();
@@ -106,27 +110,37 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         log.warn(String.format("Move operation is not recursive. Create directory %s", r.getValue()));
                         // Create directory unless copy implementation is recursive
                         result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(),
-                            new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
+                                new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
-                        final TransferStatus status = this.status(session, r);
-                        result.put(r.getKey(), feature.move(r.getKey(), r.getValue(), status,
-                            new Delete.Callback() {
-                                @Override
-                                public void delete(final Path file) {
-                                    listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                        file.getName()));
-                                }
-                            }, callback)
-                        );
+                        final TransferStatus status = new TransferStatus()
+                                .withLockId(this.getLockId(r.getKey()))
+                                .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                                .withLength(r.getKey().attributes().getSize());
+                        if(status.isExists()) {
+                            status.withRemote(new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
+                        }
+                        final Path moved = feature.move(r.getKey(), r.getValue(), status,
+                                new Delete.Callback() {
+                                    @Override
+                                    public void delete(final Path file) {
+                                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                                file.getName()));
+                                    }
+                                }, callback);
+                        if(PathAttributes.EMPTY.equals(moved.attributes())) {
+                            moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
+                        }
+                        result.put(r.getKey(), moved);
                     }
                 }
                 // Find previous folders to be deleted
                 final List<Path> folders = recursive.entrySet().stream()
-                    .filter(f -> !feature.isRecursive(f.getKey(), f.getValue()))
-                    .collect(Collectors.toCollection(ArrayList::new)).stream()
-                    .map(Map.Entry::getKey).filter(Path::isDirectory)
-                    .collect(Collectors.toCollection(ArrayList::new));
+                        .filter(f -> !feature.isRecursive(f.getKey(), f.getValue()))
+                        .collect(Collectors.toCollection(ArrayList::new)).stream()
+                        .map(Map.Entry::getKey).filter(Path::isDirectory)
+                        .collect(Collectors.toCollection(ArrayList::new));
                 if(!folders.isEmpty()) {
                     // Must delete inverse
                     Collections.reverse(folders);
@@ -145,14 +159,6 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         }
     }
 
-    protected TransferStatus status(final Session<?> session, final Map.Entry<Path, Path> r) throws BackgroundException {
-        return new TransferStatus()
-            .withLockId(this.getLockId(r.getKey()))
-            .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
-            .withLength(r.getKey().attributes().getSize());
-    }
-
     protected String getLockId(final Path file) {
         return null;
     }
@@ -165,7 +171,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             if(!move.isRecursive(source, target)) {
                 // sort ascending by timestamp to move older versions first
                 final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener))
-                    .filter(new VersionsComparator(true));
+                        .filter(new VersionsComparator(true));
                 for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
@@ -177,31 +183,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         return recursive;
     }
 
-    private static final class VersionsComparator extends TimestampComparator {
-        public VersionsComparator(final boolean ascending) {
-            super(ascending);
-        }
-
-        @Override
-        protected int compareFirst(final Path p1, final Path p2) {
-            final int result = super.compareFirst(p1, p2);
-            if(0 == result) {
-                // Version with no duplicate flag first
-                final int duplicate = Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
-                if(0 == duplicate) {
-                    return StringUtils.compare(p1.attributes().getVersionId(), p2.attributes().getVersionId());
-                }
-                return duplicate;
-
-            }
-            return result;
-        }
-    }
-
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Renaming {0} to {1}", "Status"),
-            files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
+                files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 
     @Override

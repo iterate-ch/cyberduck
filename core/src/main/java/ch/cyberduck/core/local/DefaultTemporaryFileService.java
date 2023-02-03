@@ -18,22 +18,19 @@ package ch.cyberduck.core.local;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 
 public class DefaultTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
 
-    private final String delimiter
-        = PreferencesFactory.get().getProperty("local.delimiter");
+    private final Preferences preferences = PreferencesFactory.get();
+    private final String delimiter = preferences.getProperty("local.delimiter");
 
     @Override
     public Local create(final Path file) {
@@ -42,7 +39,7 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
 
     @Override
     public Local create(final String name) {
-        return this.create(new UUIDRandomStringService().random(), name);
+        return this.create(LocalFactory.get(preferences.getProperty("tmp.dir"), new UUIDRandomStringService().random()), name);
     }
 
     /**
@@ -54,38 +51,15 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
         $1%s: Delimiter
         $2%s: UID
         $3%s: Path
-        $4%s: Region
+        $4%s: Attributes Hash
          */
         final String pathFormat = "%2$s%1$s%3$s%1$s%4$s";
         final String normalizedPathFormat = pathFormat + "%1$s%5$s";
-
-        String attributes = StringUtils.EMPTY;
-        if(StringUtils.isNotBlank(file.attributes().getRegion())) {
-            if(new DefaultPathContainerService().isContainer(file)) {
-                attributes += file.attributes().getRegion();
-            }
-        }
-        if(file.isFile()) {
-            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                attributes += file.attributes().getVersionId();
-            }
-        }
-        final String normalizedFileName = PathNormalizer.name(file.getAbsolute());
-
-        final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, normalizedFileName));
-        final int shortenLength = PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold") - shortenTestPath.getAbsolutePath().length();
-        if(shortenLength < 0) {
-            // should throw Exception or warn user that this operation might result in CD crash
-        }
-
-        final String shortenedPath = this.shorten(file.getParent().getAbsolute(), shortenLength);
-        final String folder = String.format(pathFormat, delimiter, uid, shortenedPath, attributes);
-        return this.create(folder, normalizedFileName);
-    }
-
-    private Local create(final String folder, final String name) {
-        final Local file = LocalFactory.get(new File(PreferencesFactory.get().getProperty("tmp.dir"), folder).getAbsolutePath(), name);
-        this.delete(file.getParent());
-        return this.delete(file);
+        final String attributes = String.valueOf(file.attributes().hashCode());
+        final int limit = preferences.getInteger("local.temporaryfiles.shortening.threshold") -
+                new File(preferences.getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, file.getName())).getAbsolutePath().length();
+        final Local folder = LocalFactory.get(preferences.getProperty("tmp.dir"), String.format(pathFormat, delimiter, uid,
+                this.shorten(file.getParent().getAbsolute(), limit), attributes));
+        return this.create(folder, file.getName());
     }
 }

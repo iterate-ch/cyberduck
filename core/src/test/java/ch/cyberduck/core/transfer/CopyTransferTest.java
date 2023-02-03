@@ -49,7 +49,7 @@ public class CopyTransferTest {
                 new Host(new TestProtocol()), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));
         t.addSize(4L);
         t.addTransferred(3L);
-        final Transfer serialized = new TransferDictionary(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
+        final Transfer serialized = new TransferDictionary<>(new ProtocolFactory(Collections.singleton(new TestProtocol()))).deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);
         assertEquals(t.roots, serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
@@ -93,7 +93,7 @@ public class CopyTransferTest {
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                final AttributedList<Path> children = new AttributedList<Path>();
+                final AttributedList<Path> children = new AttributedList<>();
                 children.add(new Path("/s/c", EnumSet.of(Path.Type.file)));
                 return children;
             }

@@ -22,7 +22,6 @@ import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -38,7 +37,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2SearchFeature implements Search {
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -67,14 +66,14 @@ public class B2SearchFeature implements Search {
                 String startFilename = prefix;
                 do {
                     final B2ListFilesResponse response = session.getClient().listFileNames(
-                        fileid.getVersionId(container, listener),
-                        startFilename,
-                        new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"),
-                        prefix, null);
+                            fileid.getVersionId(container),
+                            startFilename,
+                            new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"),
+                            prefix, null);
                     for(B2FileInfoResponse info : response.getFiles()) {
-                        if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
-                            list.add(new Path(String.format("%s%s%s", container.getAbsolute(),
-                                Path.DELIMITER, info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session, fileid).parse(info)));
+                        final Path f = new Path(String.format("%s%s%s", container.getAbsolute(), Path.DELIMITER, info.getFileName()), EnumSet.of(Path.Type.file));
+                        if(regex.accept(f)) {
+                            list.add(f.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(info)));
                         }
                     }
                     startFilename = response.getNextFileName();

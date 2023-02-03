@@ -17,15 +17,28 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CachingAttributesFinderFeature;
+import ch.cyberduck.core.CachingFindFeature;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DelegateStreamListener;
@@ -45,7 +58,9 @@ import ch.cyberduck.core.transfer.upload.SkipFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -54,21 +69,23 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class UploadTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(UploadTransfer.class);
+    private static final Logger log = LogManager.getLogger(UploadTransfer.class);
 
     private final Filter<Local> filter;
     private final Comparator<Local> comparator;
 
     private Cache<Path> cache
-        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private UploadFilterOptions options = new UploadFilterOptions();
+    private UploadFilterOptions options = new UploadFilterOptions(host);
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
-            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
+                PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
     }
 
     public UploadTransfer(final Host host, final Path root, final Local local, final Filter<Local> f) {
@@ -77,7 +94,7 @@ public class UploadTransfer extends Transfer {
 
     public UploadTransfer(final Host host, final List<TransferItem> roots) {
         this(host, roots,
-            PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
+                PreferencesFactory.get().getBoolean("queue.upload.skip.enable") ? new UploadRegexFilter() : new NullFilter<>());
     }
 
     public UploadTransfer(final Host host, final List<TransferItem> roots, final Filter<Local> f) {
@@ -126,7 +143,7 @@ public class UploadTransfer extends Transfer {
         final List<TransferItem> children = new ArrayList<>();
         for(Local local : directory.list().filter(comparator, filter)) {
             children.add(new TransferItem(new Path(remote, local.getName(),
-                local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
+                    local.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file)), local));
         }
         return children;
     }
@@ -138,13 +155,20 @@ public class UploadTransfer extends Transfer {
         }
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        if(options.temporary) {
-            options.withTemporary(source.getFeature(Write.class).temporary());
+        final Find find;
+        final AttributesFinder attributes;
+        if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
+            find = new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
+            attributes = new CachingAttributesFinderFeature(cache,
+                    source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
-        final Find find = new CachingFindFeature(cache,
-            source.getFeature(Find.class, new DefaultFindFeature(source)));
-        final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
-            source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+        else {
+            find = new CachingFindFeature(cache, source.getFeature(Find.class));
+            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class));
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined features %s and %s", find, attributes));
+        }
         if(action.equals(TransferAction.resume)) {
             return new ResumeFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
@@ -167,7 +191,7 @@ public class UploadTransfer extends Transfer {
     public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+            log.debug(String.format("Find transfer action with prompt %s", prompt));
         }
         if(resumeRequested) {
             // Force resume by user or retry of failed transfer
@@ -176,12 +200,12 @@ public class UploadTransfer extends Transfer {
         final TransferAction action;
         if(reloadRequested) {
             action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.upload.reload.action"));
+                    PreferencesFactory.get().getProperty("queue.upload.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.upload.action"));
+                    PreferencesFactory.get().getProperty("queue.upload.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
@@ -204,20 +228,91 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                    final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener progress, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         final Object id = feature.pre(Type.upload, files, callback);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
-        super.pre(source, destination, files, callback);
+        super.pre(source, destination, files, filter, error, progress, callback);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Filter for directories in transfer %s", this));
+        }
+        // Create all directories first
+        final List<Map.Entry<TransferItem, TransferStatus>> directories = files.entrySet().stream()
+                .filter(item -> item.getKey().remote.isDirectory())
+                .filter(item -> !item.getValue().isExists())
+                .sorted(new Comparator<Map.Entry<TransferItem, TransferStatus>>() {
+                    @Override
+                    public int compare(final Map.Entry<TransferItem, TransferStatus> o1, final Map.Entry<TransferItem, TransferStatus> o2) {
+                        if(o1.getKey().remote.isChild(o2.getKey().remote)) {
+                            return 1;
+                        }
+                        if(o2.getKey().remote.isChild(o1.getKey().remote)) {
+                            return -1;
+                        }
+                        // Same parent
+                        return Integer.compare(StringUtils.countMatches(o1.getKey().remote.getAbsolute(), Path.DELIMITER),
+                                StringUtils.countMatches(o2.getKey().remote.getAbsolute(), Path.DELIMITER));
+                    }
+                }).collect(Collectors.toList());
+        final Directory mkdir = source.getFeature(Directory.class);
+        for(Map.Entry<TransferItem, TransferStatus> entry : directories) {
+            final Path file = entry.getKey().remote;
+            final TransferStatus status = entry.getValue();
+            if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Skip existing directory %s", file));
+                }
+                continue;
+            }
+            status.validate();
+            progress.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"), file.getName()));
+            try {
+                mkdir.mkdir(file, status);
+                // Post process of file
+                filter.complete(
+                        status.getRename().remote != null ? status.getRename().remote : entry.getKey().remote,
+                        status.getRename().local != null ? status.getRename().local : entry.getKey().local,
+                        status.complete(), progress);
+            }
+            catch(BackgroundException e) {
+                if(error.prompt(entry.getKey(), status, e, files.size())) {
+                    // Continue
+                    log.warn(String.format("Ignore transfer failure %s", e));
+                }
+                else {
+                    throw new TransferCanceledException(e);
+                }
+            }
+        }
     }
 
     @Override
-    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files,
+                     final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
-        feature.post(Type.upload, files, callback);
-        super.post(source, destination, files, callback);
+        try {
+            feature.post(Type.upload, files, callback);
+            super.post(source, destination, files, error, listener, callback);
+        }
+        catch(BackgroundException e) {
+            final Optional<Map.Entry<TransferItem, TransferStatus>> entry = files.entrySet().stream().findFirst();
+            if(entry.isPresent()) {
+                final Map.Entry<TransferItem, TransferStatus> item = entry.get();
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Prompt with failure %s for item %s only", e, item.getKey()));
+                }
+                if(error.prompt(item.getKey(), item.getValue(), e, files.size())) {
+                    // Continue
+                    log.warn(String.format("Ignore transfer failure %s", e));
+                }
+                else {
+                    throw new TransferCanceledException(e);
+                }
+            }
+        }
     }
 
     @Override
@@ -230,11 +325,11 @@ public class UploadTransfer extends Transfer {
         if(local.isSymbolicLink()) {
             final Symlink feature = source.getFeature(Symlink.class);
             final UploadSymlinkResolver symlinkResolver
-                = new UploadSymlinkResolver(feature, roots);
+                    = new UploadSymlinkResolver(feature, roots);
             if(symlinkResolver.resolve(local)) {
                 // Make relative symbolic link
                 final String target = symlinkResolver.relativize(local.getAbsolute(),
-                    local.getSymlinkTarget().getAbsolute());
+                        local.getSymlinkTarget().getAbsolute());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Create symbolic link from %s to %s", file, target));
                 }
@@ -244,21 +339,10 @@ public class UploadTransfer extends Transfer {
         }
         if(file.isFile()) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                file.getName()));
+                    file.getName()));
             // Transfer
             final Upload upload = source.getFeature(Upload.class);
             final Object reply = upload.upload(file, local, bandwidth, new UploadStreamListener(this, streamListener), segment, connectionCallback);
-        }
-        else if(file.isDirectory()) {
-            if(!segment.isExists()) {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                    file.getName()));
-                final Directory feature = source.getFeature(Directory.class);
-                final AttributedList<Path> list = new AttributedList<>(cache.get(file.getParent()));
-                list.add(feature.mkdir(file, segment));
-                cache.put(file.getParent(), list);
-                segment.setComplete();
-            }
         }
     }
 

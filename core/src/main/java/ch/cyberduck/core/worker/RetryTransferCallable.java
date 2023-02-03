@@ -16,17 +16,15 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.AbstractRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public abstract class RetryTransferCallable extends AbstractRetryCallable<TransferStatus>
-        implements TransferWorker.TransferCallable {
+    implements TransferWorker.TransferCallable {
 
     public RetryTransferCallable(final Host host) {
-        super(host);
-    }
-
-    public RetryTransferCallable(final Host host, final int retry, final int delay) {
-        super(host, retry, delay);
+        super(host, PreferencesFactory.get().getInteger("transfer.connection.retry"),
+            PreferencesFactory.get().getInteger("transfer.connection.retry.delay"));
     }
 }

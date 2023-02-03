@@ -36,13 +36,14 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferOptions;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
 public class DownloadController extends AlertController {
-    private static final Logger log = Logger.getLogger(DownloadController.class);
+    private static final Logger log = LogManager.getLogger(DownloadController.class);
 
     protected final NSTextField urlField
         = NSTextField.textfieldWithFrame(new NSRect(0, 22));
@@ -104,7 +105,7 @@ public class DownloadController extends AlertController {
     }
 
     @Override
-    public boolean validate() {
+    public boolean validate(final int option) {
         final Host host;
         try {
             host = HostParser.parse(urlField.stringValue());

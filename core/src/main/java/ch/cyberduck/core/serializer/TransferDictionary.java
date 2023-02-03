@@ -32,7 +32,8 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,10 +41,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TransferDictionary {
-    private static final Logger log = Logger.getLogger(TransferDictionary.class);
+public class TransferDictionary<T> {
+    private static final Logger log = LogManager.getLogger(TransferDictionary.class);
 
-    private final DeserializerFactory factory;
+    private final DeserializerFactory<T> factory;
     private final ProtocolFactory protocols;
 
     public TransferDictionary() {
@@ -51,36 +52,36 @@ public class TransferDictionary {
     }
 
     public TransferDictionary(final ProtocolFactory protocols) {
-        this(protocols, new DeserializerFactory());
+        this(protocols, new DeserializerFactory<>());
     }
 
-    public TransferDictionary(final DeserializerFactory factory) {
+    public TransferDictionary(final DeserializerFactory<T> factory) {
         this(ProtocolFactory.get(), factory);
     }
 
-    public TransferDictionary(final ProtocolFactory protocols, final DeserializerFactory factory) {
+    public TransferDictionary(final ProtocolFactory protocols, final DeserializerFactory<T> factory) {
         this.protocols = protocols;
         this.factory = factory;
     }
 
-    public <T> Transfer deserialize(final T serialized) {
-        final Deserializer dict = factory.create(serialized);
-        final Object hostObj = dict.objectForKey("Host");
+    public Transfer deserialize(final T serialized) {
+        final Deserializer<T> dict = factory.create(serialized);
+        final T hostObj = dict.objectForKey("Host");
         if(null == hostObj) {
             log.warn("Missing host in transfer");
             return null;
         }
-        final Host host = new HostDictionary(protocols, factory).deserialize(hostObj);
+        final Host host = new HostDictionary<>(protocols, factory).deserialize(hostObj);
         if(null == host) {
             log.warn("Invalid host in transfer");
             return null;
         }
         host.setWorkdir(null);
         final List<T> itemsObj = dict.listForKey("Items");
-        final List<TransferItem> roots = new ArrayList<TransferItem>();
+        final List<TransferItem> roots = new ArrayList<>();
         if(itemsObj != null) {
             for(T rootDict : itemsObj) {
-                final TransferItem item = new TransferItemDictionary(factory).deserialize(rootDict);
+                final TransferItem item = new TransferItemDictionary<>(factory).deserialize(rootDict);
                 if(null == item) {
                     log.warn("Invalid item in transfer");
                     continue;
@@ -92,7 +93,7 @@ public class TransferDictionary {
         final List<T> rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
             for(T rootDict : rootsObj) {
-                final Path remote = new PathDictionary(factory).deserialize(rootDict);
+                final Path remote = new PathDictionary<>(factory).deserialize(rootDict);
                 if(null == remote) {
                     log.warn("Invalid remote in transfer");
                     continue;
@@ -105,10 +106,10 @@ public class TransferDictionary {
                     Local local = LocalFactory.get(localObjDeprecated);
                     item.setLocal(local);
                 }
-                final Object localObj
-                    = factory.create(rootDict).objectForKey("Local Dictionary");
+                final T localObj
+                        = factory.create(rootDict).objectForKey("Local Dictionary");
                 if(localObj != null) {
-                    Local local = new LocalDictionary(factory).deserialize(localObj);
+                    Local local = new LocalDictionary<>(factory).deserialize(localObj);
                     if(null == local) {
                         log.warn("Invalid local in transfer item");
                         continue;
@@ -171,7 +172,7 @@ public class TransferDictionary {
                 }
                 break;
             case copy:
-                Object destinationObj = dict.objectForKey("Destination");
+                final T destinationObj = dict.objectForKey("Destination");
                 if(null == destinationObj) {
                     log.warn("Missing destination for copy transfer");
                     return null;
@@ -182,15 +183,15 @@ public class TransferDictionary {
                     return null;
                 }
                 if(roots.size() == destinations.size()) {
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    final Map<Path, Path> files = new HashMap<>();
                     for(int i = 0; i < roots.size(); i++) {
-                        final Path target = new PathDictionary(factory).deserialize(destinations.get(i));
+                        final Path target = new PathDictionary<>(factory).deserialize(destinations.get(i));
                         if(null == target) {
                             continue;
                         }
                         files.put(roots.get(i).remote, target);
                     }
-                    final Host target = new HostDictionary(protocols, factory).deserialize(destinationObj);
+                    final Host target = new HostDictionary<>(protocols, factory).deserialize(destinationObj);
                     if(null == target) {
                         log.warn("Missing target host in copy transfer");
                         return null;

@@ -20,27 +20,31 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.s3.S3DisabledMultipartService;
-import ch.cyberduck.core.s3.S3MultipleDeleteFeature;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.spectralogic.ds3client.Ds3Client;
+import com.spectralogic.ds3client.commands.DeleteObjectsRequest;
 import com.spectralogic.ds3client.commands.spectrads3.DeleteBucketSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.DeleteFolderRecursivelySpectraS3Request;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
-public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
+public class SpectraDeleteFeature implements Delete {
 
     private final SpectraSession session;
     private final PathContainerService containerService;
 
     public SpectraDeleteFeature(final SpectraSession session) {
-        super(session, new S3DisabledMultipartService());
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
     }
@@ -48,25 +52,37 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
+            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
             final Map<Path, TransferStatus> filtered = new LinkedHashMap<>(files);
             for(Iterator<Map.Entry<Path, TransferStatus>> iter = filtered.entrySet().iterator(); iter.hasNext(); ) {
                 final Map.Entry<Path, TransferStatus> file = iter.next();
                 if(containerService.isContainer(file.getKey())) {
-                    final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
                     client.deleteBucketSpectraS3(
-                        new DeleteBucketSpectraS3Request(containerService.getContainer(file.getKey()).getName()).withForce(true));
+                            new DeleteBucketSpectraS3Request(containerService.getContainer(file.getKey()).getName()).withForce(true));
                     iter.remove();
                 }
                 else if(file.getKey().isDirectory()) {
-                    final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
                     client.deleteFolderRecursivelySpectraS3(
-                        new DeleteFolderRecursivelySpectraS3Request(
-                            containerService.getContainer(file.getKey()).getName(),
-                            containerService.getKey(file.getKey())));
+                            new DeleteFolderRecursivelySpectraS3Request(
+                                    containerService.getContainer(file.getKey()).getName(),
+                                    containerService.getKey(file.getKey())));
                     iter.remove();
                 }
             }
-            super.delete(filtered, prompt, callback);
+            final Map<Path, List<Path>> containers = new HashMap<>();
+            for(Path file : filtered.keySet()) {
+                final Path bucket = containerService.getContainer(file);
+                if(containers.containsKey(bucket)) {
+                    containers.get(bucket).add(file);
+                }
+                else {
+                    containers.put(bucket, new ArrayList<>(Collections.singletonList(file)));
+                }
+            }
+            for(Map.Entry<Path, List<Path>> entry : containers.entrySet()) {
+                final List<String> keys = entry.getValue().stream().map(containerService::getKey).collect(Collectors.toList());
+                client.deleteObjects(new DeleteObjectsRequest(containerService.getContainer(entry.getKey()).getName(), keys));
+            }
         }
         catch(FailedRequestException e) {
             throw new SpectraExceptionMappingService().map(e);

@@ -41,8 +41,6 @@ public class AzureSessionTest extends AbstractAzureTest {
     @Test
     public void testConnect() throws Exception {
         assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
     }
 
     @Test
@@ -69,7 +67,7 @@ public class AzureSessionTest extends AbstractAzureTest {
             new DisabledPasswordStore(), new DisabledProgressListener());
         connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
-        session.close();
+        connect.close(session);
         assertFalse(session.isConnected());
     }
 
@@ -111,14 +109,14 @@ public class AzureSessionTest extends AbstractAzureTest {
             new DisabledPasswordStore(), new DisabledProgressListener());
         connect.connect(session, new DisabledCancelCallback());
         assertTrue(session.isConnected());
-        session.close();
+        connect.close(session);
         assertFalse(session.isConnected());
     }
 
     @Test(expected = LoginCanceledException.class)
     public void testConnectInvalidKey() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
+                PROPERTIES.get("azure.user"), "6h9BmTcabGajIE/AVGzgu9JcC15JjrzkjdAIe+2daRK8XlyVdYT6zHtFMwXOtrlCw74jX9R0w4GN56vKQjOpVA=="
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -134,7 +132,7 @@ public class AzureSessionTest extends AbstractAzureTest {
     @Test(expected = LoginCanceledException.class)
     public void testConnectKeyNotBase64() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-            System.getProperties().getProperty("azure.account"), "6h9B"
+                PROPERTIES.get("azure.user"), "6h9B"
         ));
         final AzureSession session = new AzureSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {

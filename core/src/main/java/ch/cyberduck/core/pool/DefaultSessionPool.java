@@ -38,12 +38,14 @@ import org.apache.commons.pool2.impl.EvictionConfig;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.NoSuchElementException;
 
 public class DefaultSessionPool implements SessionPool {
-    private static final Logger log = Logger.getLogger(DefaultSessionPool.class);
+    private static final Logger log = LogManager.getLogger(DefaultSessionPool.class);
 
     private static final long BORROW_MAX_WAIT_INTERVAL = 1000L;
     private static final int POOL_WARNING_THRESHOLD = 5;
@@ -68,12 +70,12 @@ public class DefaultSessionPool implements SessionPool {
         this.registry = registry;
         this.bookmark = bookmark;
         this.transcript = transcript;
-        final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<Session>();
+        final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<>();
         configuration.setJmxEnabled(false);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);
-        configuration.setMaxWaitMillis(BORROW_MAX_WAIT_INTERVAL);
-        this.pool = new GenericObjectPool<Session>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration);
+        configuration.setMaxWait(Duration.ofMillis(BORROW_MAX_WAIT_INTERVAL));
+        this.pool = new GenericObjectPool<>(new PooledSessionFactory(connect, trust, key, bookmark, registry), configuration);
         final AbandonedConfig abandon = new AbandonedConfig();
         abandon.setUseUsageTracking(true);
         this.pool.setAbandonedConfig(abandon);
@@ -126,7 +128,7 @@ public class DefaultSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-        final Integer numActive = pool.getNumActive();
+        final int numActive = pool.getNumActive();
         if(numActive > POOL_WARNING_THRESHOLD) {
             log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, this));
         }
@@ -193,21 +195,14 @@ public class DefaultSessionPool implements SessionPool {
             log.info(String.format("Release session %s to pool", session));
         }
         try {
-            if(failure != null && diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                log.warn(String.format("Invalidate session %s in pool after failure %s", session, failure));
                 try {
-                    session.interrupt();
+                    // Activation of this method decrements the active count and attempts to destroy the instance
+                    pool.invalidateObject(session.removeListener(transcript));
                 }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e));
-                }
-                finally {
-                    try {
-                        // Activation of this method decrements the active count and attempts to destroy the instance
-                        pool.invalidateObject(session.removeListener(transcript));
-                    }
-                    catch(Exception e) {
-                        log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
-                    }
+                catch(Exception e) {
+                    log.warn(String.format("Failure invalidating session %s in pool. %s", session, e.getMessage()));
                 }
             }
             else {

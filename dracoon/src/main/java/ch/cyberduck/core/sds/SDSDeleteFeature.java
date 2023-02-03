@@ -15,30 +15,27 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeleteDeletedNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class SDSDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(SDSDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(SDSDeleteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
 
     public SDSDeleteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -50,27 +47,22 @@ public class SDSDeleteFeature implements Delete {
         for(Path file : files.keySet()) {
             callback.delete(file);
             try {
-                new NodesApi(session.getClient()).removeNode(
-                    Long.parseLong(nodeid.getVersionId(file, new DisabledListProgressListener())), StringUtils.EMPTY);
+                if(file.attributes().isDuplicate()) {
+                    // Already trashed
+                    log.warn(String.format("Delete file %s already in trash", file));
+                    new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
+                            Long.parseLong(nodeid.getVersionId(file)))), StringUtils.EMPTY);
+                }
+                else {
+                    new NodesApi(session.getClient()).removeNode(
+                            Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
+                }
                 nodeid.cache(file, null);
             }
             catch(ApiException e) {
                 throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, file);
             }
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path file) {
-        if(containerService.isContainer(file)) {
-            if(new HostPreferences(session.getHost()).getBoolean("sds.delete.dataroom.enable")) {
-                // Need the query permission on the parent data room if file itself is subroom
-                return new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
-                    SDSPermissionsFeature.MANAGE_ROLE);
-            }
-            return false;
-        }
-        return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DELETE_ROLE);
     }
 
     @Override

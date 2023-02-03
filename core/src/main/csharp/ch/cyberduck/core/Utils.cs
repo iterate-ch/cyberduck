@@ -16,22 +16,23 @@
 // yves@cyberduck.ch
 // 
 
+using ch.cyberduck.core.local;
+using Ch.Cyberduck.Core.Local;
+using java.util;
+using org.apache.logging.log4j;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using ch.cyberduck.core;
-using ch.cyberduck.core.local;
-using java.util;
-using Microsoft.Win32;
-using org.apache.commons.io;
-using org.apache.log4j;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.UI.Shell.ASSOCIATIONLEVEL;
+using static Windows.Win32.UI.Shell.ASSOCIATIONTYPE;
+using static Windows.Win32.UI.Shell.ASSOCSTR;
 using Collection = java.util.Collection;
 using Path = ch.cyberduck.core.Path;
 
@@ -42,9 +43,6 @@ namespace Ch.Cyberduck.Core
         public delegate object ApplyPerItemForwardDelegate<T>(T item);
 
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-        static extern int GetCurrentPackageFullName(ref int packageFullNameLength, ref StringBuilder packageFullName);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
         {
@@ -91,9 +89,8 @@ namespace Ch.Cyberduck.Core
                     return false;
                 try
                 {
-                    StringBuilder sb = new StringBuilder(1024);
-                    int length = 0;
-                    int result = GetCurrentPackageFullName(ref length, ref sb);
+                    uint length = 0;
+                    int result = GetCurrentPackageFullName(ref length, default);
                     return result != 15700;
                 }
                 catch (EntryPointNotFoundException entryPointNotFoundException) // Fix for MD-3274
@@ -104,7 +101,7 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(Utils).FullName);
 
         public static bool IsBlank(string value)
         {
@@ -217,8 +214,8 @@ namespace Ch.Cyberduck.Core
             Iterator iterator = javaMap.entrySet().iterator();
             while (iterator.hasNext())
             {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                result.Add((K) entry.getKey(), (V) entry.getValue());
+                Map.Entry entry = (Map.Entry)iterator.next();
+                result.Add((K)entry.getKey(), (V)entry.getValue());
             }
             return result;
         }
@@ -240,7 +237,7 @@ namespace Ch.Cyberduck.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <returns>A List<typeparamref name="T"/></returns>
-        public static ICollection<T> ConvertFromJavaList<T>(Collection collection)
+        public static IList<T> ConvertFromJavaList<T>(Collection collection)
         {
             return ConvertFromJavaList<T>(collection, null);
         }
@@ -263,169 +260,9 @@ namespace Ch.Cyberduck.Core
                     result.Add(applyPerItem(next));
                     continue;
                 }
-                result.Add((T) next);
+                result.Add((T)next);
             }
             return result;
-        }
-
-        public static IList<KeyValuePair<string, string>> OpenWithListForExtension(String ext)
-        {
-            IList<String> progs = new List<string>();
-            List<KeyValuePair<string, string>> map = new List<KeyValuePair<string, string>>();
-
-            if (IsBlank(ext)) return map;
-
-            if (!ext.StartsWith(".")) ext = "." + ext;
-            using (RegistryKey clsExt = Registry.ClassesRoot.OpenSubKey(ext))
-            {
-                IList<string> rootList = OpenWithListForExtension(ext, clsExt);
-                foreach (string s in rootList)
-                {
-                    progs.Add(s);
-                }
-            }
-            using (
-                RegistryKey clsExt =
-                    Registry.CurrentUser.OpenSubKey(
-                        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + ext))
-            {
-                IList<string> explorerList = OpenWithListForExtension(ext, clsExt);
-                foreach (string s in explorerList)
-                {
-                    progs.Add(s);
-                }
-            }
-
-            foreach (string exe in progs.Distinct())
-            {
-                ApplicationFinder finder = ApplicationFinderFactory.get();
-                Application application = finder.getDescription(exe);
-                if (finder.isInstalled(application))
-                {
-                    map.Add(new KeyValuePair<string, string>(application.getName(), exe));
-                }
-                else
-                {
-                    map.Add(new KeyValuePair<string, string>(LocalFactory.get(exe).getName(), exe));
-                }
-            }
-            map.Sort(
-                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2)
-                {
-                    return pair1.Key.CompareTo(pair2.Key);
-                });
-
-            return map;
-        }
-
-        public static IList<String> OpenWithListForExtension(String ext, RegistryKey rootKey)
-        {
-            IList<String> result = new List<string>();
-
-            if (null != rootKey)
-            {
-                //PerceivedType
-                String perceivedType = (String) rootKey.GetValue("PerceivedType");
-                if (null != perceivedType)
-                {
-                    using (
-                        RegistryKey openWithKey =
-                            Registry.ClassesRoot.OpenSubKey("SystemFileAssociations\\" + perceivedType +
-                                                            "\\OpenWithList"))
-                    {
-                        IList<String> appCmds = GetApplicationCmdsFromOpenWithList(openWithKey);
-                        foreach (string appCmd in appCmds)
-                        {
-                            result.Add(appCmd);
-                        }
-                    }
-                }
-
-                //OpenWithProgIds
-                using (RegistryKey key = rootKey.OpenSubKey("OpenWithProgIds"))
-                {
-                    IList<String> appCmds = GetApplicationCmdsFromOpenWithProgIds(key);
-                    foreach (string appCmd in appCmds)
-                    {
-                        result.Add(appCmd);
-                    }
-                }
-
-                //OpenWithList
-                using (RegistryKey openWithKey = rootKey.OpenSubKey("OpenWithList"))
-                {
-                    IList<String> appCmds = GetApplicationCmdsFromOpenWithList(openWithKey);
-                    foreach (string appCmd in appCmds)
-                    {
-                        result.Add(appCmd);
-                    }
-                }
-            }
-            return result;
-        }
-
-        private static IList<String> GetApplicationCmdsFromOpenWithList(RegistryKey openWithKey)
-        {
-            IList<String> appCmds = new List<string>();
-            if (openWithKey != null)
-            {
-                //all subkeys
-                string[] exes = openWithKey.GetSubKeyNames();
-                IList<String> cands = exes.ToList();
-                //all values);
-                string[] values = openWithKey.GetValueNames();
-                foreach (string value in values)
-                {
-                    object o = openWithKey.GetValue(value);
-                    if (o is String)
-                    {
-                        cands.Add(o as String);
-                    }
-                }
-
-
-                foreach (string s in exes)
-                {
-                    cands.Add(s);
-                }
-
-                foreach (string progid in cands)
-                {
-                    using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("Applications\\" + progid))
-                    {
-                        String cmd = GetExeFromOpenCommand(key);
-                        if (!String.IsNullOrEmpty(cmd))
-                        {
-                            appCmds.Add(cmd);
-                        }
-                    }
-                }
-            }
-            return appCmds;
-        }
-
-        private static IList<String> GetApplicationCmdsFromOpenWithProgIds(RegistryKey key)
-        {
-            IList<String> appCmds = new List<string>();
-            if (key != null)
-            {
-                string[] progids = key.GetValueNames();
-                foreach (string progid in progids)
-                {
-                    if (!string.IsNullOrEmpty(progid))
-                    {
-                        using (RegistryKey clsProgid = Registry.ClassesRoot.OpenSubKey(progid))
-                        {
-                            String cmd = GetExeFromOpenCommand(clsProgid);
-                            if (!String.IsNullOrEmpty(cmd))
-                            {
-                                appCmds.Add(cmd);
-                            }
-                        }
-                    }
-                }
-            }
-            return appCmds;
         }
 
         public static bool StartProcess(Process process)
@@ -446,118 +283,43 @@ namespace Ch.Cyberduck.Core
             return false;
         }
 
-        public static string ExtractApplicationPath(string cmd)
-        {
-            if (!String.IsNullOrEmpty(cmd) && !cmd.Contains("rundll32.exe"))
-            {
-                String command = null;
-                if (cmd.StartsWith("\""))
-                {
-                    int i = cmd.IndexOf("\"", 1);
-                    if (i > 2)
-                        command = cmd.Substring(1, i - 1);
-                }
-                else
-                {
-                    int i = cmd.IndexOf(" ");
-                    if (i > 0)
-                        command = cmd.Substring(0, i);
-                }
-
-                if (File.Exists(command))
-                {
-                    return command;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Extract open command
-        /// </summary>
-        /// <param name="root">expected substructure is shell/open/command</param>
-        /// <returns>null if not found</returns>
-        public static string GetExeFromOpenCommand(RegistryKey root)
-        {
-            if (null != root)
-            {
-                using (var editSk = root.OpenSubKey("shell\\open\\command"))
-                {
-                    if (null != editSk)
-                    {
-                        String cmd = (String) editSk.GetValue(String.Empty);
-                        return ExtractApplicationPath(cmd);
-                    }
-                }
-            }
-            return null;
-        }
-
         /// <summary>
         /// method for retrieving the users default web browser
         /// </summary>
         /// <returns></returns>
-        public static string GetSystemDefaultBrowser()
+        public unsafe static Application GetSystemDefaultBrowser()
         {
+            if (SHCreateAssociationRegistration(out IApplicationAssociationRegistration reg).Failed)
+            {
+                return Application.notfound;
+            }
+
+            PWSTR defaultQuery = default;
             try
             {
-                //for Vista and later we first check the UserChoice
-                using (
-                    var uc =
-                        Registry.CurrentUser.OpenSubKey(
-                            @"HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice")
-                    )
+                reg.QueryCurrentDefault("http", AT_URLPROTOCOL, AL_EFFECTIVE, out defaultQuery);
+
+                var qa = (IQueryAssociations)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_QueryAssociations));
+                qa.Init(0, defaultQuery, default, default);
+                if (!qa.GetString(ASSOCSTR_FRIENDLYAPPNAME, "open", out var friendlyAppName))
                 {
-                    if (null != uc)
-                    {
-                        string progid = (string) uc.GetValue("Progid");
-                        if (null != progid)
-                        {
-                            string exe = GetExeFromOpenCommand(Registry.ClassesRoot);
-                            if (null != exe)
-                            {
-                                return exe;
-                            }
-                        }
-                    }
+                    return Application.notfound;
+                }
+                if (!qa.GetString(ASSOCSTR_DEFAULTICON, "open", out var defaultIcon))
+                {
+                    return Application.notfound;
                 }
 
-                //set the registry key we want to open
-                using (var regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false))
-                {
-                    return ExtractExeFromCommand((string) regKey.GetValue(null));
-                }
+                return new ShellApplicationFinder.ProgIdApplication(defaultQuery.ToString(), friendlyAppName, defaultIcon);
             }
-            catch (Exception)
+            catch
             {
-                return null;
+                return Application.notfound;
             }
-        }
-
-        public static string ExtractExeFromCommand(string command)
-        {
-            if (!String.IsNullOrEmpty(command))
+            finally
             {
-                String cmd = null;
-                if (command.StartsWith("\""))
-                {
-                    int i = command.IndexOf("\"", 1);
-                    if (i > 2)
-                        cmd = command.Substring(1, i - 1);
-                }
-                else
-                {
-                    int i = command.IndexOf(" ");
-                    if (i > 0)
-                        cmd = command.Substring(0, i);
-                }
-
-                if (null != cmd && LocalFactory.get(cmd).exists())
-                {
-                    return cmd;
-                }
+                CoTaskMemFree(defaultQuery.Value);
             }
-            return null;
         }
 
         public static class OSVersion

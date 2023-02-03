@@ -22,6 +22,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.openstack.SwiftExceptionMappingService;
@@ -32,7 +33,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
@@ -40,7 +42,7 @@ import ch.iterate.openstack.swift.Client;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class HubicSession extends SwiftSession {
-    private static final Logger log = Logger.getLogger(HubicSession.class);
+    private static final Logger log = LogManager.getLogger(HubicSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
 
@@ -51,8 +53,8 @@ public class HubicSession extends SwiftSession {
     @Override
     protected Client connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host)
+                .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         return new Client(configuration.build());
@@ -60,7 +62,7 @@ public class HubicSession extends SwiftSession {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final OAuthTokens tokens = authorizationService.authorize(host, prompt, cancel);
+        final OAuthTokens tokens = authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Attempt authentication with %s", tokens));

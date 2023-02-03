@@ -15,20 +15,22 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.util.Map;
 
-import com.google.api.services.drive.model.File;
-
 public class DriveDeleteFeature implements Delete {
+    private static final Logger log = LogManager.getLogger(DriveDeleteFeature.class);
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -40,38 +42,35 @@ public class DriveDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files.keySet()) {
-            if(file.getType().contains(Path.Type.placeholder)) {
+        for(Path f : files.keySet()) {
+            if(f.isPlaceholder()) {
+                log.warn(String.format("Ignore placeholder %s", f));
                 continue;
             }
-            callback.delete(file);
+            callback.delete(f);
             try {
-                if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
-                    session.getClient().teamdrives().delete(fileid.getFileId(file, new DisabledListProgressListener())).execute();
+                if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(f.getParent())) {
+                    session.getClient().teamdrives().delete(fileid.getFileId(f)).execute();
                 }
                 else {
-                    if(new HostPreferences(session.getHost()).getBoolean("googledrive.delete.trash")) {
-                        final File properties = new File();
-                        properties.setTrashed(true);
-                        session.getClient().files().update(fileid.getFileId(file, new DisabledListProgressListener()), properties)
-                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                    if(f.attributes().isDuplicate()) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Delete file %s already in trash", f));
+                        }
+                        // Permanently deletes a file version
+                        session.getClient().revisions().delete(fileid.getFileId(f), f.attributes().getVersionId()).execute();
                     }
                     else {
-                        session.getClient().files().delete(fileid.getFileId(file, new DisabledListProgressListener()))
-                            .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                        session.getClient().files().delete(fileid.getFileId(f))
+                                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
                     }
                 }
-                fileid.cache(file, null);
+                fileid.cache(f, null);
             }
             catch(IOException e) {
-                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
+                throw new DriveExceptionMappingService(fileid).map("Cannot delete {0}", e, f);
             }
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path file) {
-        return !file.getType().contains(Path.Type.shared);
     }
 
     @Override

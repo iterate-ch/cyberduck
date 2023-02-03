@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -36,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -47,55 +47,79 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     @Test
     public void testDeleteFile() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(test));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+    }
+
+    @Test
+    public void testDeleteFileBackslash() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(container, String.format("%s\\%s", new AlphanumericRandomStringService().random(),
+                new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+        new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
+    }
+
+    @Test
+    public void testDeleteFileVirtualHost() throws Exception {
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3TouchFeature(virtualhost, acl).touch(test, new TransferStatus());
+        assertTrue(new S3FindFeature(virtualhost, acl).find(test));
+        new S3MultipleDeleteFeature(virtualhost, acl).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(virtualhost, acl).find(test));
     }
 
     @Test
     public void testDeletePlaceholder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(test));
+        new S3MultipleDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new S3FindFeature(session, acl).find(test));
     }
 
     @Test
     public void testDeleteVersionedPlaceholder() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         {
-            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-                new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
-            assertTrue(new S3FindFeature(session).find(test));
+            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
+                    new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+            assertTrue(new S3FindFeature(session, acl).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
-            new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            assertFalse(new S3FindFeature(session).find(test));
+            new S3MultipleDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            assertFalse(new S3FindFeature(session, acl).find(test));
         }
         {
-            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
-                new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
-            assertTrue(new S3FindFeature(session).find(test));
+            final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
+                    new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+            assertTrue(new S3FindFeature(session, acl).find(test));
             assertTrue(new DefaultFindFeature(session).find(test));
-            new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            assertFalse(new S3FindFeature(session).find(test));
+            new S3MultipleDeleteFeature(session, acl).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            assertFalse(new S3FindFeature(session, acl).find(test));
         }
-        assertFalse(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(
-            new Path(container, name, EnumSet.of(Path.Type.directory))));
+        assertFalse(new S3VersionedObjectListService(session, acl).list(container, new DisabledListProgressListener()).contains(
+                new Path(container, name, EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testDeleteContainer() throws Exception {
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(container, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(container));
-        new S3MultipleDeleteFeature(session).delete(Arrays.asList(container,
-            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path container = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(container, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(container));
+        new S3MultipleDeleteFeature(session, acl).delete(Arrays.asList(container,
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -103,14 +127,20 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
         for(int i = 0; i < 1010; i++) {
-            keys.add(new ObjectKeyAndVersion(UUID.randomUUID().toString()));
+            keys.add(new ObjectKeyAndVersion(new AlphanumericRandomStringService().random()));
         }
-        new S3MultipleDeleteFeature(session).delete(container, keys, new DisabledLoginCallback());
+        new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(container, keys, new DisabledLoginCallback());
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFoundBucketDnsNameCompatible() throws Exception {
+        final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new S3MultipleDeleteFeature(session, new S3AccessControlListFeature(session)).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

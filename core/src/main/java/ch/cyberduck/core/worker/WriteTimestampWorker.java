@@ -26,13 +26,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public class WriteTimestampWorker extends Worker<Boolean> {
-    private static final Logger log = Logger.getLogger(WriteTimestampWorker.class);
+    private static final Logger log = LogManager.getLogger(WriteTimestampWorker.class);
 
     private final Path file;
     private final Long timestamp;

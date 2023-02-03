@@ -46,12 +46,12 @@ public final class CustomDbxRawClientV2 extends DbxRawClientV2 {
     }
 
     @Override
-    boolean canRefreshAccessToken() {
+    protected boolean canRefreshAccessToken() {
         return false;
     }
 
     @Override
-    boolean needsRefreshAccessToken() {
+    protected boolean needsRefreshAccessToken() {
         return false;
     }
 
@@ -61,10 +61,10 @@ public final class CustomDbxRawClientV2 extends DbxRawClientV2 {
             return this;
         }
         return new CustomDbxRawClientV2(
-            this.getRequestConfig(),
-            this.getHost(),
-            this.getUserId(),
-            root
+                this.getRequestConfig(),
+                this.getHost(),
+                this.getUserId(),
+                root
         );
     }
 }

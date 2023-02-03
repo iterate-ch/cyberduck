@@ -16,7 +16,6 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -28,14 +27,15 @@ import ch.cyberduck.core.ftp.FTPSession;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FTPStatListService implements ListService {
-    private static final Logger log = Logger.getLogger(FTPListService.class);
+    private static final Logger log = LogManager.getLogger(FTPListService.class);
 
     private final FTPSession session;
     private final FTPDataResponseReader reader;

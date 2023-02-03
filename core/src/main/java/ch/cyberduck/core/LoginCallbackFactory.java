@@ -20,15 +20,16 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class LoginCallbackFactory extends Factory<LoginCallback> {
-    private static final Logger log = Logger.getLogger(LoginCallbackFactory.class);
+    private static final Logger log = LogManager.getLogger(LoginCallbackFactory.class);
 
-    private Constructor<LoginCallback> constructor;
+    private Constructor<? extends LoginCallback> constructor;
 
     protected LoginCallbackFactory() {
         super("factory.logincallback.class");
@@ -42,11 +43,11 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(controller);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledLoginCallback();
         }

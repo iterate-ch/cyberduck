@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.5.6-SNAPSHOT</version>
     </parent>
     <artifactId>core</artifactId>
     <packaging>jar</packaging>
@@ -40,6 +40,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>defaults</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>ch.iterate.s3</groupId>
             <artifactId>jets3t</artifactId>
@@ -97,8 +102,8 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -107,7 +112,7 @@
         <dependency>
             <groupId>com.googlecode.plist</groupId>
             <artifactId>dd-plist</artifactId>
-            <version>1.23</version>
+            <version>1.26</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -128,7 +133,7 @@
         <dependency>
             <groupId>com.nulab-inc</groupId>
             <artifactId>zxcvbn</artifactId>
-            <version>1.5.2</version>
+            <version>1.7.0</version>
         </dependency>
         <dependency>
             <groupId>com.joyent.util</groupId>
@@ -138,6 +143,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bettercloud</groupId>
+            <artifactId>vault-java-driver</artifactId>
+            <version>5.1.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

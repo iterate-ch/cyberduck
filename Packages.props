@@ -15,19 +15,32 @@
   -->
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <ItemGroup>
-        <PackageReference Update="ExceptionReporter " Version="2.4.2" />
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-        <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="2.0.0" />
-        <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.18362.2002-preview" />
-        <PackageReference Update="NUnit.Runners" Version="2.7.0" GeneratePathProperty="true" />
-        <PackageReference Update="nunit" Version="2.7.0" />
-        <PackageReference Update="NUnitTestAdapter" Version="2.2.0" />
-        <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
-        <PackageReference Update="StructureMap" Version="2.6.1" />
-        <PackageReference Update="WindowsAPICodePack-Core" Version="1.1.2" />
-        <PackageReference Update="WindowsAPICodePack-Shell" Version="1.1.1" />
+  <ItemGroup>
+    <PackageReference Update="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.100" />
+    <PackageReference Update="ExceptionReporter " Version="2.4.2" />
+    <PackageReference Update="Fody" Version="6.6.0" PrivateAssets="all" />
+    <PackageReference Update="InlineIL.Fody" Version="1.7.1" PrivateAssets="all" />
+    <PackageReference Update="Microsoft.Build.Utilities.Core" Version="17.1.0" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.1.0" />
+    <PackageReference Update="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
+    <PackageReference Update="Microsoft.Windows.SDK.Contracts" Version="10.0.22000.196" />
+    <PackageReference Update="NUnit" Version="3.13.3" />
+    <PackageReference Update="NUnit.Console" Version="3.16.0" />
+    <PackageReference Update="NUnit.ConsoleRunner" Version="3.16.0" GeneratePathProperty="true" />
+    <PackageReference Update="NUnit3TestAdapter" Version="4.3.1" />
+    <PackageReference Update="ObjectListView.Official" Version="2.9.1" />
+    <PackageReference Update="ReactiveUI.Fody" Version="17.1.50" />
+    <PackageReference Update="ReactiveUI.WPF" Version="17.1.50" />
+    <PackageReference Update="StructureMap" Version="2.6.4.1" />
+    <PackageReference Update="System.Memory" Version="4.5.4" />
+    <PackageReference Update="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 
-        <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
-    </ItemGroup>
+    <!-- Build-Supports -->
+    <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.647-beta">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
+  </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
-package ch.cyberduck.core.googlestorage;/*
+package ch.cyberduck.core.googlestorage;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -13,20 +15,23 @@ package ch.cyberduck.core.googlestorage;/*
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageVersioningFeature implements Versioning {
@@ -50,7 +55,11 @@ public class GoogleStorageVersioningFeature implements Versioning {
             return cache.get(container);
         }
         try {
-            final Bucket.Versioning versioning = session.getClient().buckets().get(container.getName()).execute().getVersioning();
+            final Storage.Buckets.Get request = session.getClient().buckets().get(container.getName());
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket.Versioning versioning = request.execute().getVersioning();
             final VersioningConfiguration configuration = new VersioningConfiguration(versioning != null && versioning.getEnabled());
             cache.put(container, configuration);
             return configuration;
@@ -64,8 +73,12 @@ public class GoogleStorageVersioningFeature implements Versioning {
     public void setConfiguration(final Path file, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         try {
-            session.getClient().buckets().patch(container.getName(),
-                new Bucket().setVersioning(new Bucket.Versioning().setEnabled(configuration.isEnabled()))).execute().getVersioning();
+            final Storage.Buckets.Patch request = session.getClient().buckets().patch(container.getName(),
+                    new Bucket().setVersioning(new Bucket.Versioning().setEnabled(configuration.isEnabled())));
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            request.execute();
             cache.remove(container);
         }
         catch(IOException e) {
@@ -75,7 +88,7 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), new DisabledConnectionCallback());
+        new GoogleStorageCopyFeature(session).copy(file, file, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
     }
 
     @Override
@@ -84,7 +97,12 @@ public class GoogleStorageVersioningFeature implements Versioning {
     }
 
     @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
-        return null;
+    public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return new GoogleStorageObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
+            @Override
+            public boolean accept(final Path file) {
+                return file.attributes().isDuplicate();
+            }
+        });
     }
 }

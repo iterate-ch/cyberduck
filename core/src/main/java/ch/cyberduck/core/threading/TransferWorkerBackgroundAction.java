@@ -22,12 +22,13 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.worker.TransferWorker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
 public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
-    private static final Logger log = Logger.getLogger(TransferWorkerBackgroundAction.class);
+    private static final Logger log = LogManager.getLogger(TransferWorkerBackgroundAction.class);
 
     private final SessionPool pool;
     protected final TransferWorker<T> worker;
@@ -37,12 +38,6 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
         super(controller, pool);
         this.pool = pool;
         this.worker = worker;
-    }
-
-    @Override
-    protected void reset() throws BackgroundException {
-        worker.reset();
-        super.reset();
     }
 
     @Override

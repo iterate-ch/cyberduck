@@ -30,5 +30,9 @@ public enum TerminalAction {
     copy,
     synchronize,
     delete,
-    mkdir
+    mkdir,
+    /**
+     * Purge files in CDN
+     */
+    purge
 }

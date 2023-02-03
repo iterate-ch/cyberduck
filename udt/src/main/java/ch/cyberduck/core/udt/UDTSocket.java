@@ -20,7 +20,8 @@ package ch.cyberduck.core.udt;
 
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -34,7 +35,7 @@ import com.barchart.udt.ExceptionUDT;
 import com.barchart.udt.net.NetSocketUDT;
 
 public class UDTSocket extends NetSocketUDT {
-    private static final Logger log = Logger.getLogger(UDTSocket.class);
+    private static final Logger log = LogManager.getLogger(UDTSocket.class);
 
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("connect");

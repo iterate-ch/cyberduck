@@ -58,7 +58,7 @@ public class RoomGroup {
     @JsonCreator
     public static NewGroupMemberAcceptanceEnum fromValue(String text) {
       for (NewGroupMemberAcceptanceEnum b : NewGroupMemberAcceptanceEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

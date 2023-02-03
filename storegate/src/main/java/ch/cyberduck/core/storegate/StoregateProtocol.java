@@ -65,7 +65,17 @@ public class StoregateProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isOAuthPKCE() {
+        return false;
+    }
+
+    @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
+    }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
     }
 }

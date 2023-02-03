@@ -27,14 +27,15 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPReply;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FTPReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(FTPReadFeature.class);
+    private static final Logger log = LogManager.getLogger(FTPReadFeature.class);
 
     private final FTPSession session;
 

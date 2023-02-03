@@ -15,10 +15,11 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -43,12 +44,16 @@ public class DriveTouchFeature implements Touch<VersionId> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
+            if(new DriveFindFeature(session, fileid).find(file)) {
+                throw new ConflictException(file.getAbsolute());
+            }
             final Drive.Files.Create insert = session.getClient().files().create(new File()
-                .setName(file.getName())
-                .setMimeType(status.getMime())
-                .setParents(Collections.singletonList(fileid.getFileId(file.getParent(), new DisabledListProgressListener()))));
-            final File execute = insert.setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
-            execute.setVersion(1L);
+                    .setName(file.getName())
+                    .setMimeType(status.getMime())
+                    .setParents(Collections.singletonList(fileid.getFileId(file.getParent()))));
+            final File execute = insert
+                    .setFields(DriveAttributesFinderFeature.DEFAULT_FIELDS)
+                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
             fileid.cache(file, execute.getId());
             return file.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
         }
@@ -67,7 +72,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
         if(workdir.isRoot()) {
             return false;
         }
-        else if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(workdir)) {
+        else if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(workdir)) {
             return false;
         }
         return true;

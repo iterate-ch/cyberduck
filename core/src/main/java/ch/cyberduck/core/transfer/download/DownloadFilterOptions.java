@@ -18,8 +18,10 @@ package ch.cyberduck.core.transfer.download;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.PreferencesReader;
 
 public final class DownloadFilterOptions {
 
@@ -38,8 +40,8 @@ public final class DownloadFilterOptions {
     public boolean quarantine;
     public boolean open;
 
-    public DownloadFilterOptions() {
-        final Preferences preferences = PreferencesFactory.get();
+    public DownloadFilterOptions(final Host bookmark) {
+        final PreferencesReader preferences = new HostPreferences(bookmark);
         segments = preferences.getBoolean("queue.download.segments");
         permissions = preferences.getBoolean("queue.download.permissions.change");
         timestamp = preferences.getBoolean("queue.download.timestamp.change");

@@ -16,16 +16,20 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 
 public class DefaultBackgroundExecutor implements BackgroundExecutor {
-    private static final Logger log = Logger.getLogger(DefaultBackgroundExecutor.class);
+    private static final Logger log = LogManager.getLogger(DefaultBackgroundExecutor.class);
 
     private static final DefaultBackgroundExecutor DEFAULT = new DefaultBackgroundExecutor();
 
@@ -40,15 +44,19 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
     }
 
     public DefaultBackgroundExecutor(final Thread.UncaughtExceptionHandler handler) {
-        this(ThreadPool.DEFAULT_THREAD_NAME_PREFIX, handler);
+        this(ThreadPool.DEFAULT_THREAD_NAME_PREFIX, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
     }
 
     public DefaultBackgroundExecutor(final String prefix) {
-        this(prefix, new LoggingUncaughtExceptionHandler());
+        this(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), new LoggingUncaughtExceptionHandler());
     }
 
-    public DefaultBackgroundExecutor(final String prefix, final Thread.UncaughtExceptionHandler handler) {
-        this(ThreadPoolFactory.get(prefix, handler));
+    public DefaultBackgroundExecutor(final String prefix, final int size) {
+        this(prefix, size, new LoggingUncaughtExceptionHandler());
+    }
+
+    public DefaultBackgroundExecutor(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
+        this(ThreadPoolFactory.get(prefix, size, ThreadPool.Priority.norm, new LinkedBlockingQueue<>(Integer.MAX_VALUE), handler));
     }
 
     public DefaultBackgroundExecutor(final ThreadPool concurrentExecutor) {
@@ -62,9 +70,15 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         }
         // Add action to registry of controller. Will be removed automatically when stopped
         registry.add(action);
-        action.init();
+        try {
+            action.init();
+        }
+        catch(BackgroundException e) {
+            action.alert(e);
+            return ConcurrentUtils.constantFuture(null);
+        }
         // Start background task
-        final Callable<T> command = new BackgroundCallable<T>(action, controller);
+        final Callable<T> command = new BackgroundCallable<>(action, controller);
         try {
             final Future<T> task = concurrentExecutor.execute(command);
             if(log.isInfoEnabled()) {

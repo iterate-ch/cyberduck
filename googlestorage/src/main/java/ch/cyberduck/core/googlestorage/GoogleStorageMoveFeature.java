@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class GoogleStorageMoveFeature implements Move {
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new GoogleStorageCopyFeature(session).copy(source, target, status, connectionCallback);
+        final Path copy = new GoogleStorageCopyFeature(session).copy(source, target, status, connectionCallback, new DisabledStreamListener());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonMap(source, status), connectionCallback, callback);
         return copy;
     }

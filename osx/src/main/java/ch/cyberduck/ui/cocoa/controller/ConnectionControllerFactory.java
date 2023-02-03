@@ -56,4 +56,8 @@ public final class ConnectionControllerFactory {
             }
         }
     }
+
+    public static void remove(final BrowserController controller) {
+        open.remove(controller);
+    }
 }

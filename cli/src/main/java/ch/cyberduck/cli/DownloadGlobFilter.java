@@ -19,48 +19,16 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
+import ch.cyberduck.ui.browser.SearchFilter;
 
-import org.apache.log4j.Logger;
-
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class DownloadGlobFilter extends DownloadDuplicateFilter {
-    private static final Logger log = Logger.getLogger(DownloadGlobFilter.class);
 
-    private final Pattern pattern;
+    private final SearchFilter proxy;
 
-    public DownloadGlobFilter(final String glob) {
-        this.pattern = this.compile(glob);
-    }
-
-    /**
-     * Compile glob to regular expression
-     *
-     * @param glob Glob pattern of files to include
-     * @return Regular expression that excludes all other files
-     */
-    protected Pattern compile(final String glob) {
-        final StringBuilder pattern = new StringBuilder();
-        pattern.append("\\A");
-        for(int i = 0; i < glob.length(); i++) {
-            char ch = glob.charAt(i);
-            if(ch == '?') {
-                pattern.append('.');
-            }
-            else if(ch == '*') {
-                pattern.append(".*");
-            }
-            else if("\\[]^.-$+(){}|".indexOf(ch) != -1) {
-                pattern.append('\\');
-                pattern.append(ch);
-            }
-            else {
-                pattern.append(ch);
-            }
-        }
-        pattern.append("\\z");
-        return Pattern.compile(pattern.toString());
+    public DownloadGlobFilter(final String input) {
+        proxy = new SearchFilter(input);
     }
 
     @Override
@@ -68,42 +36,19 @@ public class DownloadGlobFilter extends DownloadDuplicateFilter {
         if(!super.accept(file)) {
             return false;
         }
-        if(pattern.matcher(file.getName()).matches()) {
-            return true;
-        }
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Skip %s excluded with regex", file.getAbsolute()));
-        }
-        return false;
+        return proxy.accept(file);
     }
 
     @Override
     public Pattern toPattern() {
-        return pattern;
+        return proxy.toPattern();
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("DownloadGlobFilter{");
-        sb.append("pattern=").append(pattern);
+        sb.append("proxy=").append(proxy);
         sb.append('}');
         return sb.toString();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof DownloadGlobFilter)) {
-            return false;
-        }
-        final DownloadGlobFilter that = (DownloadGlobFilter) o;
-        return Objects.equals(pattern, that.pattern);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pattern);
     }
 }

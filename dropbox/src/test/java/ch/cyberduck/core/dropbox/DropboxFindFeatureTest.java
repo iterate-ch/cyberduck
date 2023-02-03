@@ -49,8 +49,9 @@ public class DropboxFindFeatureTest extends AbstractDropboxTest {
     @Test
     public void testFindDirectory() throws Exception {
         final Path folder = new DropboxDirectoryFeature(session).mkdir(
-            new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(folder));
+        assertFalse(new DropboxFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -59,6 +60,7 @@ public class DropboxFindFeatureTest extends AbstractDropboxTest {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
+        assertFalse(new DropboxFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

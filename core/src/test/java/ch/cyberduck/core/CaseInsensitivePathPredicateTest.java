@@ -19,8 +19,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CaseInsensitivePathPredicateTest {
 
@@ -28,7 +27,9 @@ public class CaseInsensitivePathPredicateTest {
     public void testPredicateTest() {
         final Path t = new Path("/f", EnumSet.of(Path.Type.file));
         assertTrue(new CaseInsensitivePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file))));
+        assertEquals(new CaseInsensitivePathPredicate(t).hashCode(), new CaseInsensitivePathPredicate(new Path("/f", EnumSet.of(Path.Type.file))).hashCode());
         assertTrue(new CaseInsensitivePathPredicate(t).test(new Path("/F", EnumSet.of(Path.Type.file))));
+        assertEquals(new CaseInsensitivePathPredicate(t).hashCode(), new CaseInsensitivePathPredicate(new Path("/F", EnumSet.of(Path.Type.file))).hashCode());
         assertFalse(new CaseInsensitivePathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
         assertFalse(new CaseInsensitivePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
     }

@@ -1,4 +1,6 @@
-package ch.cyberduck.core.brick;/*
+package ch.cyberduck.core.brick;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -21,12 +23,13 @@ import ch.cyberduck.core.brick.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class BrickAttributesFinderFeature implements AttributesFinder {
+public class BrickAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileEntity> {
 
     private final BrickSession session;
 
@@ -37,7 +40,7 @@ public class BrickAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            final FileEntity entity = new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient()))
+            final FileEntity entity = new FilesApi(new BrickApiClient(session))
                 .download(StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)),
                     "stat", null, false, false);
             switch(entity.getType()) {
@@ -58,7 +61,8 @@ public class BrickAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final FileEntity entity) {
+    @Override
+    public PathAttributes toAttributes(final FileEntity entity) {
         final PathAttributes attr = new PathAttributes();
         attr.setChecksum(Checksum.parse(entity.getMd5()));
         attr.setRegion(entity.getRegion());

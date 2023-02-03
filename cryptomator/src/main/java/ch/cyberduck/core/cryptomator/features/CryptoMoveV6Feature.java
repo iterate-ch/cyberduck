@@ -40,13 +40,15 @@ public class CryptoMoveV6Feature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         // Move inside vault moves actual files and only metadata files for directories but not the actual directories
         final Path target = proxy.move(
-            vault.encrypt(session, file, file.isDirectory()),
-            vault.encrypt(session, renamed, file.isDirectory()),
-            status, callback, connectionCallback);
+                vault.encrypt(session, file, file.isDirectory()),
+                vault.encrypt(session, renamed, file.isDirectory()), status, callback, connectionCallback);
         if(file.isDirectory()) {
             vault.getDirectoryProvider().delete(file);
         }
-        return vault.decrypt(session, target);
+        if(vault.contains(target)) {
+            return vault.decrypt(session, target);
+        }
+        return target;
     }
 
     @Override

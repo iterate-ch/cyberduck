@@ -16,16 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
@@ -38,17 +28,30 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang3;
-using org.apache.log4j;
+using org.apache.logging.log4j;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using ch.cyberduck.ui.browser;
+using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
-using StructureMap;
-using Ch.Cyberduck.Ui.Core.Contracts;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -63,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Winforms
     public partial class BrowserForm : BaseForm, IBrowserView
     {
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
-        private static readonly Logger Log = Logger.getLogger(typeof(BrowserForm).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(BrowserForm).FullName);
         private static readonly TypeConverter ShortcutConverter = TypeDescriptor.GetConverter(typeof(Keys));
         private bool _browserStateRestored;
         private BrowserView _currentView;
@@ -75,30 +78,63 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            toolStripProgress.Image = Images.TryGet(_ => _.Throbber);
+
+            deleteBookmarkToolStripButton.Image = Images.TryGet(_ => _.Remove).Size(22);
+            editBookmarkToolStripButton.Image = Images.TryGet(_ => _.Edit).Size(22);
+            newBookmarkToolStripButton.Image = Images.TryGet(_ => _.Add).Size(22);
+
+            historyBackButton.Image = Images.TryGet(_ => _.NavBackward).Size(11);
+            historyForwardButton.Image = Images.TryGet(_ => _.NavForward).Size(11);
+            parentPathButton.Image = Images.TryGet(_ => _.NavUp).Size(11);
+
+            bonjourToolStripMenuItem.Image = Images.TryGet(_ => _.Rendezvous);
+            historyToolStripMenuItem.Image = Images.TryGet(_ => _.History);
+
+            actionToolStripDropDownButton.Image = Images.TryGet(_ => _.Advanced).Size(32);
+            bonjourToolStripButton.Image = Images.TryGet(_ => _.Rendezvous).Size(32);
+            bookmarksToolStripButton.Image = Images.TryGet(_ => _.Bookmarks).Size(32);
+            browserToolStripButton.Image = Images.TryGet(_ => _.Outline).Size(32);
+            cryptomatorToolStripButton.Image = Images.TryGet(_ => _.Cryptomator).Size(32);
+            deleteToolStripButton.Image = Images.TryGet(_ => _.Delete).Size(32);
+            disconnectStripButton.Image = Images.TryGet(_ => _.Eject).Size(32);
+            downloadToolStripButton.Image = Images.TryGet(_ => _.Download).Size(32);
+            editToolStripSplitButton.Image = Images.TryGet(_ => _.Pencil).Size(32);
+            historyToolStripButton.Image = Images.TryGet(_ => _.History).Size(32);
+            infoToolStripButton.Image = Images.TryGet(_ => _.Info).Size(32);
+            logToolStripButton.Image = Images.TryGet(_ => _.Log).Size(32);
+            openConnectionToolStripButton.Image = Images.TryGet(_ => _.Connect).Size(32);
+            openInBrowserToolStripButton.Image = Images.TryGet(_ => _.Browser).Size(32);
+            refreshToolStripButton.Image = Images.TryGet(_ => _.Reload).Size(32);
+            transfersToolStripButton.Image = Images.TryGet(_ => _.Queue).Size(32);
+            uploadToolStripButton.Image = Images.TryGet(_ => _.Upload).Size(32);
+
+            securityToolStripStatusLabel.Image = Images.TryGet(_ => _.Locked);
+
             ToolStripManager.RenderMode = ToolStripManagerRenderMode.System;
 
             BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this,
-                ProtocolIconsImageList().Images);
+                IconProvider.ProtocolList.Images);
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
                 LocaleFactory.localizedString("None"),
-                ProtocolIconsImageList().Images);
+                IconProvider.ProtocolList.Images);
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
             MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
                 RendezvousCollection.defaultCollection(),
                 LocaleFactory.localizedString("None"),
-                ProtocolIconsImageList().Images);
+                IconProvider.ProtocolList.Images);
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
             if (!DesignMode)
             {
-                vistaMenu1.SetImage(newBookmarkMainMenuItem, IconCache.IconForName("bookmark", 16));
-                vistaMenu1.SetImage(historyMainMenuItem, IconCache.IconForName("history", 16));
-                vistaMenu1.SetImage(bonjourMainMenuItem, IconCache.IconForName("rendezvous", 16));
-                vistaMenu1.SetImage(transfersMainMenuItem, IconCache.IconForName("queue", 16));
+                vistaMenu1.SetImage(newBookmarkMainMenuItem, Images.Bookmark.Size(16));
+                vistaMenu1.SetImage(historyMainMenuItem, Images.History.Size(16));
+                vistaMenu1.SetImage(bonjourMainMenuItem, Images.Rendezvous.Size(16));
+                vistaMenu1.SetImage(transfersMainMenuItem, Images.Queue.Size(16));
 
-                newFolderToolStripButton.Image = IconCache.IconForName("folderplus", 32);
+                newFolderToolStripButton.Image = Images.FolderPlus.Size(32);
             }
 
             toolBar.ContextMenu = toolbarContextMenu1;
@@ -156,18 +192,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             archiveMenuStrip.Items.Add(string.Empty);
 
             archiveMenuStrip.Opening += OnArchiveMenuStripOpening;
-            createArchiveMainMenuItem.MenuItems.Add(string.Empty);
-            createArchiveMainMenuItem.Popup += OnArchiveMenuItemOnPopup;
-            createArchiveBrowserContextMenuItem.MenuItems.Add(string.Empty);
-            createArchiveBrowserContextMenuItem.Popup += OnArchiveMenuItemOnPopup;
-            copyUrlMainMenuItem.MenuItems.Add(string.Empty);
-            copyUrlMainMenuItem.Popup += OnCopyUrlMenuItemPopup;
-            copyUrlBrowserContextMenuItem.MenuItems.Add(string.Empty);
-            copyUrlBrowserContextMenuItem.Popup += OnCopyUrlMenuItemPopup;
-            openUrlMainMenuItem.MenuItems.Add(string.Empty);
-            openUrlMainMenuItem.Popup += OnOpenUrlMenuItemPopup;
-            openUrlBrowserContextMenuItem.MenuItems.Add(string.Empty);
-            openUrlBrowserContextMenuItem.Popup += OnOpenUrlMenuItemPopup;
+            createArchiveMainMenuItem.Select += OnArchiveMenuItemOnPopup;
+            createArchiveBrowserContextMenuItem.Select += OnArchiveMenuItemOnPopup;
+            copyUrlMainMenuItem.Select += OnCopyUrlMenuItemPopup;
+            copyUrlBrowserContextMenuItem.Select += OnCopyUrlMenuItemPopup;
+            openUrlMainMenuItem.Select += OnOpenUrlMenuItemPopup;
+            openUrlBrowserContextMenuItem.Select += OnOpenUrlMenuItemPopup;
 
             textEncodingMenuStrip.Items.Add(string.Empty);
             textEncodingMainMenuItem.MenuItems.Add(string.Empty);
@@ -179,9 +209,9 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             UpdateBookmarks();
 
-            newBookmarkToolStripButton.Tag = ResourcesBundle.addPressed;
-            editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
-            deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
+            newBookmarkToolStripButton.Tag = (Image)Images.AddPressed.Size(22);
+            editBookmarkToolStripButton.Tag = (Image)Images.EditPressed.Size(22);
+            deleteBookmarkToolStripButton.Tag = (Image)Images.RemovePressed.Size(22);
 
             browserToolStripButton.ToolTipText = LocaleFactory.localizedString("Browser", "Preferences");
             bookmarksToolStripButton.ToolTipText = LocaleFactory.localizedString("Bookmarks", "Browser");
@@ -198,7 +228,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             openInTerminalToolStripMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
             ;
             openInTerminalToolbarMenuItem.Text = String.Format(LocaleFactory.localizedString("Open in {0}"), file);
-            openInTerminalToolStripButton.Image = IconCache.IconForFilename(command, IconCache.IconSize.Large);
+            openInTerminalToolStripButton.Image = IconProvider.GetFileIcon(command, false, true, true);
 
             ConfigureToolbar();
             ConfigureFileCommands();
@@ -288,7 +318,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateOpenWebUrl;
         public event ValidateCommand ValidateEditWith;
         public event ValidateCommand ValidateCreateShareLink;
+        public event ValidateCommand ValidateRequestFiles;
         public event VoidHandler CreateShareLink;
+        public event VoidHandler RequestFiles;
         public event ValidateCommand ValidateDelete;
         public event ArchivesHandler GetArchives;
         public event CopyUrlHandler GetCopyUrls;
@@ -482,7 +514,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             catch (Exception e)
             {
-                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, TaskDialogCommonButtons.OK,
+                MessageBox(LocaleFactory.localizedString("Error"), null, e.Message, Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS.TDCBF_OK_BUTTON,
                     TaskDialogIcon.Error);
                 Log.error("Exception while upload selection", e);
             }
@@ -562,14 +594,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 if (_lastActivityRunning != value)
                 {
-                    if (value && disconnectStripButton.Image != ResourcesBundle.stop)
+                    if (value && disconnectStripButton.Image != (Image)Images.Stop)
                     {
-                        disconnectStripButton.Image = ResourcesBundle.stop;
+                        disconnectStripButton.Image = Images.Stop;
                         disconnectStripButton.Text = LocaleFactory.localizedString("Stop");
                     }
-                    else if (!value && disconnectStripButton.Image != ResourcesBundle.eject)
+                    else if (!value && disconnectStripButton.Image != (Image)Images.Eject)
                     {
-                        disconnectStripButton.Image = ResourcesBundle.eject;
+                        disconnectStripButton.Image = Images.Eject;
                         disconnectStripButton.Text = LocaleFactory.localizedString("Disconnect");
                     }
                     _lastActivityRunning = value;
@@ -717,6 +749,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         public TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter
         {
             set { new TypedColumn<Path>(treeColumnVersion) {AspectGetter = value}; }
+        }
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelChecksumGetter
+        {
+            set { new TypedColumn<Path>(treeColumnChecksum) {AspectGetter = value}; }
         }
 
         public MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter
@@ -1049,7 +1085,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool SecureConnection
         {
-            set { securityToolStripStatusLabel.Image = IconCache.IconForName(value ? "locked" : "unlocked"); }
+            set { securityToolStripStatusLabel.Image = value ? Images.Locked : Images.Unlocked; }
         }
 
         private void AddContextMenu(RichTextBox rtb)
@@ -1066,7 +1102,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void ScrollToBottom(RichTextBox richTextBox)
         {
-            NativeMethods.SendMessage(richTextBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage((HWND)richTextBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
         }
         
         private void SetupComparators()
@@ -1085,6 +1121,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             treeColumnRegion.ComparatorGetter = (SortOrder order) => new RegionComparator(order == SortOrder.Ascending);
             treeColumnVersion.ComparatorGetter =
                 (SortOrder order) => new VersionComparator(order == SortOrder.Ascending);
+            treeColumnStorageClass.ComparatorGetter =
+                (SortOrder order) => new StorageClassComparator(order == SortOrder.Ascending);
+            treeColumnChecksum.ComparatorGetter =
+                (SortOrder order) => new ChecksumComparator(order == SortOrder.Ascending);
         }
 
         private void BeforeSorting(object sender, BeforeSortingEventArgs args)
@@ -1112,7 +1152,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(LocaleFactory.localizedString("Default"));
                 item.Click += delegate { EditEvent(null); };
                 //todo refactor! no direct IconCache access.
-                vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, 16));
+                vistaMenu1.SetImage(item, IconProvider.ResizeImageDangerous(editToolStripSplitButton.Image, 16));
                 SetShortcutText(item, editWithToolStripMenuItem, null);
             }
             IList<Application> editors = GetEditorsForSelection();
@@ -1123,11 +1163,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Application app in editors)
             {
                 MenuItem item = mainItem.MenuItems.Add(app.getName());
-                item.Tag = app.getIdentifier();
-                item.Click += delegate { EditEvent(item.Tag as String); };
+                item.Click += delegate { EditEvent(app); };
                 vistaMenu1.UpdateParent(mainItem);
-                vistaMenu1.SetImage(item,
-                    IconCache.GetAppImage(app.getIdentifier(), IconCache.IconSize.Small));
+                vistaMenu1.SetImage(item, IconProvider.GetApplication(app, 16));
             }
             vistaMenu1.UpdateParent(browserContextMenu);
         }
@@ -1150,9 +1188,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Application app in GetEditorsForSelection())
             {
                 ToolStripItem item = new ToolStripMenuItem(app.getName());
-                item.Tag = app.getIdentifier();
-                item.Image = IconCache.GetAppImage(app.getIdentifier(), IconCache.IconSize.Small);
-                item.Click += (o, args) => EditEvent(item.Tag as String);
+                item.Image = IconProvider.GetApplication(app, 16);
+                item.Click += (o, args) => EditEvent(app);
                 editorMenuStrip.Items.Add(item);
             }
             if (editorMenuStrip.Items.Count == 0)
@@ -1256,14 +1293,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        void IView.BringToFront()
-        {
-            var desktopManager = ObjectFactory.GetInstance<IVirtualDesktopManager>();
-            desktopManager.BringToCurrentDesktop(this);
-
-            this.BringToFront();
-        }
-
         private void SetShortcutText(MenuItem target, ToolStripMenuItem source, string shortCutText)
         {
             if (-1 == target.Text.IndexOf('\t'))
@@ -1274,8 +1303,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureActionlessCommands()
         {
-            Commands.Add(pathComboBox, () => ValidatePathsCombobox());
-            Commands.Add(searchTextBox, () => ValidateSearchField());
+            Commands.Add(pathComboBox, _ => ValidatePathsCombobox());
+            Commands.Add(searchTextBox, _ => ValidateSearchField());
         }
 
         private void UpdateSeparators()
@@ -1611,16 +1640,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureBookmarkCommands()
         {
             Commands.Add(new ToolStripItem[] {viewBookmarksToolStripMenuItem}, new[] {toggleBookmarksMainMenuItem},
-                (sender, args) => ToggleBookmarks(), () => true);
+                (sender, args) => ToggleBookmarks(), Commands.True);
             Commands.Add(new ToolStripItem[] { },
                 new[] {sortByHostnameMainMenuItem, sortByHostnameBookmarkContextMenuItem},
-                (sender, args) => SortBookmarksByHostname(), () => true);
+                (sender, args) => SortBookmarksByHostname(), Commands.True);
             Commands.Add(new ToolStripItem[] { },
                 new[] {sortByNicknameMainMenuItem, sortByNicknameBookmarkContextMenuItem},
-                (sender, args) => SortBookmarksByNickname(), () => true);
+                (sender, args) => SortBookmarksByNickname(), Commands.True);
             Commands.Add(new ToolStripItem[] { },
                 new[] {sortByProtocolMainMenuItem, sortByProtocolBookmarkContextMenuItem},
-                (sender, args) => SortBookmarksByProtocol(), () => true);
+                (sender, args) => SortBookmarksByProtocol(), Commands.True);
             Commands.Add(new ToolStripItem[] {connectBookmarkContextToolStripMenuItem,},
                 new[] {connectBookmarkContextMenuItem},
                 (sender, args) =>
@@ -1704,6 +1733,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             r.NotesFont = f;
             r.UrlNotesSpace = 3;
 
+            if (previous != null)
+            {
+                r.HostnameAspectGetter = previous.HostnameAspectGetter;
+                r.NotesAspectGetter = previous.NotesAspectGetter;
+                r.UsernameAspectGetter = previous.UsernameAspectGetter;
+            }
+
             descColumn.Renderer = r;
             descColumn.FillsFreeSpace = true;
 
@@ -1714,14 +1750,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             activeColumn.CellVerticalAlignment = StringAlignment.Center;
             activeColumn.Renderer = new FixedImageRenderer();
-
-            if (previous != null)
-            {
-                r.HostnameAspectGetter = previous.HostnameAspectGetter;
-                r.NotesAspectGetter = previous.NotesAspectGetter;
-                r.UsernameAspectGetter = previous.UsernameAspectGetter;
-                l.RebuildColumns();
-            }
+            
+            l.RebuildColumns();
         }
 
         private void EnableViewToolStripButton(ToolStripButton cb)
@@ -1740,30 +1770,30 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {acknowledgmentsToolStripMenuItem}, new[] {acknowledgmentsMainMenuItem},
                 (sender, args) =>
                     BrowserLauncherFactory.get()
-                        .open(PreferencesFactory.get().getProperty("website.acknowledgments")), () => true);
+                        .open(PreferencesFactory.get().getProperty("website.acknowledgments")), Commands.True);
             Commands.Add(new ToolStripItem[] { privacyPolicyToolStripMenuItem }, new[] { privacyPolicyMainMenuItem },
                 (sender, args) =>
                     BrowserLauncherFactory.get()
-                        .open(PreferencesFactory.get().getProperty("website.privacypolicy")), () => true);
+                        .open(PreferencesFactory.get().getProperty("website.privacypolicy")), Commands.True);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                 (sender, args) =>
                     BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help()),
-                () => true);
+                Commands.True);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
                 (sender, args) =>
                     BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.donate")),
-                () => true);
+                Commands.True);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                 (sender, args) =>
                     BrowserLauncherFactory.get()
                         .open(String.Format(PreferencesFactory.get().getProperty("website.bug"),
-                            PreferencesFactory.get().getProperty("application.version"))), () => true);
+                            PreferencesFactory.get().getProperty("application.version"))), Commands.True);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
-                (sender, args) => new AboutBox().ShowDialog(), () => true);
+                (sender, args) => new AboutBox().ShowDialog(), Commands.True);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                 (sender, args) =>
                     BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.license")),
-                () => true);
+                Commands.True);
             bool HasUpdatePrivilges = PeriodicUpdateCheckerFactory.get().hasUpdatePrivileges();
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
                 (sender, args) => PeriodicUpdateCheckerFactory.get().check(false), () => HasUpdatePrivilges);
@@ -1797,33 +1827,33 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {disconnectToolStripMenuItem, disconnectStripButton},
                 new[] {disconnectMainMenuItem}, (sender, args) => Disconnect(), () => ValidateDisconnect());
 
-            vistaMenu1.SetImage(refreshMainMenuItem, IconCache.IconForName("reload", 16));
-            vistaMenu1.SetImage(refreshBrowserContextMenuItem, IconCache.IconForName("reload", 16));
-            refreshContextToolStripMenuItem.Image = IconCache.IconForName("reload", 16);
-            vistaMenu1.SetImage(stopMainMenuItem, IconCache.IconForName("stop", 16));
-            vistaMenu1.SetImage(disconnectMainMenuItem, IconCache.IconForName("eject", 16));
+            vistaMenu1.SetImage(refreshMainMenuItem, Images.Reload.Size(16));
+            vistaMenu1.SetImage(refreshBrowserContextMenuItem, Images.Reload.Size(16));
+            refreshContextToolStripMenuItem.Image = Images.Reload.Size(16);
+            vistaMenu1.SetImage(stopMainMenuItem, Images.Stop.Size(16));
+            vistaMenu1.SetImage(disconnectMainMenuItem, Images.Eject.Size(16));
         }
 
         private void ConfigureViewCommands()
         {
             Commands.Add(new ToolStripItem[] {toggleToolbarToolStripMenuItem}, new[] {toggleToolbarMainMenuItem},
-                (sender, args) => ToggleToolbar(), () => true);
+                (sender, args) => ToggleToolbar(), Commands.True);
             Commands.Add(new ToolStripItem[] {showHiddenFilesToolStripMenuItem}, new[] {showHiddenFilesMainMenuItem},
-                (sender, args) => ShowHiddenFiles(), () => true);
+                (sender, args) => ShowHiddenFiles(), Commands.True);
             Commands.Add(new ToolStripItem[] {textEncodingToolStripMenuItem}, new[] {textEncodingMainMenuItem}, null,
                 () => ValidateTextEncoding());
             Commands.Add(new ToolStripItem[] {toggleLogDrawerToolStripMenuItem, logToolStripButton},
-                new[] {toggleLogDrawerMainMenuItem}, (sender, args) => ToggleLogDrawer(), () => true);
+                new[] {toggleLogDrawerMainMenuItem}, (sender, args) => ToggleLogDrawer(), Commands.True);
         }
 
         private void ConfigureWindowCommands()
         {
             Commands.Add(new ToolStripItem[] {transfersToolStripMenuItem, transfersToolStripButton},
-                new[] {transfersMainMenuItem}, (sender, args) => ShowTransfers(), () => true);
+                new[] {transfersMainMenuItem}, (sender, args) => ShowTransfers(), Commands.True);
             Commands.Add(new ToolStripItem[] {activitiyToolStripMenuItem,}, new[] {activityMainMenuItem},
                 (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => false);
             Commands.Add(new ToolStripItem[] {minimizeToolStripMenuItem,}, new[] {minimizeMainMenuItem},
-                (sender, args) => WindowState = FormWindowState.Minimized, () => true);
+                (sender, args) => WindowState = FormWindowState.Minimized, Commands.True);
         }
 
         private void ConfigureEditCommands()
@@ -1842,7 +1872,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         browser.CopySelectionToClipboard();
                     }
                 },
-                delegate
+                delegate()
                 {
                     if (transcriptBox.Focused)
                     {
@@ -1853,9 +1883,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {pasteToolStripMenuItem}, new[] {pasteMainMenuItem},
                 (sender, args) => Paste(), () => ValidatePaste() && !browser.IsCellEditing);
             Commands.Add(new ToolStripItem[] {selectAllToolStripMenuItem}, new[] {selectAllMainMenuItem},
-                (o, eventArgs) => SelectAll(), () => true);
+                (o, eventArgs) => SelectAll(), Commands.True);
             Commands.Add(new ToolStripItem[] {preferencesToolStripMenuItem}, new[] {preferencesMainMenuItem},
-                (o, eventArgs) => ShowPreferences(), () => true);
+                (o, eventArgs) => ShowPreferences(), Commands.True);
         }
 
         private void SelectAll()
@@ -2053,7 +2083,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureFileCommands()
         {
             Commands.Add(new ToolStripItem[] {newBrowserToolStripMenuItem}, new[] {newBrowserMainMenuItem},
-                (sender, args) => NewBrowser(this, new NewBrowserEventArgs(false)), () => true);
+                (sender, args) => NewBrowser(this, new NewBrowserEventArgs(false)), Commands.True);
             Commands.Add(new ToolStripItem[] {newBrowserContextToolStripMenuItem},
                 new[] {newBrowserBrowserContextMenuItem},
                 (sender, args) => NewBrowser(this, new NewBrowserEventArgs(true)), () => ValidateNewBrowser());
@@ -2106,7 +2136,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                 new ToolStripItem[] { shareToolStripMenuItem, shareContextToolStripMenuItem },
                 new[] { shareMainMenuItem, shareBrowserContextMenuItem }, (sender, args) => CreateShareLink(),
                 () => ValidateCreateShareLink());
-            Commands.Add(new ToolStripItem[] {downloadToolStripMenuItem, downloadContextToolStripMenuItem},
+            Commands.Add(
+                new ToolStripItem[] { requestFilesToolStripMenuItem, requestFilesContextToolStripMenuItem },
+                new[] { requestFilesMainMenuItem, requestFilesBrowserContextMenuItem }, (sender, args) => RequestFiles(),
+                () => ValidateRequestFiles());
+            Commands.Add(new ToolStripItem[] {downloadToolStripMenuItem, downloadContextToolStripMenuItem, downloadToolStripButton},
                 new[] {downloadMainMenuItem, downloadBrowserContextMenuItem}, (sender, args) => Download(),
                 () => ValidateDownload());
             Commands.Add(new ToolStripItem[] {downloadAsToolStripMenuItem, downloadAsContextToolStripMenuItem},
@@ -2114,7 +2148,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 () => ValidateDownloadAs());
             Commands.Add(
                 new ToolStripItem[]
-                    {downloadToToolStripMenuItem, downloadToContextToolStripMenuItem, downloadToolStripButton},
+                    {downloadToToolStripMenuItem, downloadToContextToolStripMenuItem},
                 new[] {downloadToMainMenuItem, downloadToBrowserContextMenuItem}, (sender, args) => DownloadTo(),
                 () => ValidateDownloadTo());
             Commands.Add(
@@ -2146,33 +2180,33 @@ namespace Ch.Cyberduck.Ui.Winforms
                 () => ValidateExpandArchive());
             Commands.Add(new ToolStripItem[] {exitToolStripMenuItem}, new[] {exitMainMenuItem},
                 (sender, args) => Exit(),
-                () => true);
+                Commands.True);
 
-            vistaMenu1.SetImage(openConnectionMainMenuItem, IconCache.IconForName("connect", 16));
-            vistaMenu1.SetImage(infoMainMenuItem, IconCache.IconForName("info", 16));
-            vistaMenu1.SetImage(infoBrowserContextMenuItem, IconCache.IconForName("info", 16));
-            infoContextToolStripMenuItem.Image = IconCache.IconForName("info", 16);
-            vistaMenu1.SetImage(editMainMenuItem, IconCache.IconForName("pencil", 16));
-            vistaMenu1.SetImage(editBrowserContextMenuItem, IconCache.IconForName("pencil", 16));
-            editContextToolStripMenuItem.Image = IconCache.IconForName("pencil", 16);
-            vistaMenu1.SetImage(deleteMainMenuItem, IconCache.IconForName("delete", 16));
-            vistaMenu1.SetImage(deleteBrowserContextMenuItem, IconCache.IconForName("delete", 16));
-            deleteContextToolStripMenuItem.Image = IconCache.IconForName("delete", 16);
-            vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.IconForName("folderplus", 16));
-            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.IconForName("folderplus", 16));
-            newFolderContextToolStripMenuItem.Image = IconCache.IconForName("folderplus", 16);
-            vistaMenu1.SetImage(newVaultMainMenuItem, IconCache.IconForName("cryptomator", 16));
-            vistaMenu1.SetImage(newVaultBrowserContextMenuItem, IconCache.IconForName("cryptomator", 16));
-            newVaultContextToolStripMenuItem.Image = IconCache.IconForName("cryptomator", 16);
-            vistaMenu1.SetImage(downloadMainMenuItem, IconCache.IconForName("download", 16));
-            vistaMenu1.SetImage(downloadBrowserContextMenuItem, IconCache.IconForName("download", 16));
-            downloadContextToolStripMenuItem.Image = IconCache.IconForName("download", 16);
-            vistaMenu1.SetImage(uploadMainMenuItem, IconCache.IconForName("upload", 16));
-            vistaMenu1.SetImage(uploadBrowserContextMenuItem, IconCache.IconForName("upload", 16));
-            uploadContextToolStripMenuItem.Image = IconCache.IconForName("upload", 16);
-            vistaMenu1.SetImage(synchronizeMainMenuItem, IconCache.IconForName("sync", 16));
-            vistaMenu1.SetImage(synchronizeBrowserContextMenuItem, IconCache.IconForName("sync", 16));
-            synchronizeContextToolStripMenuItem.Image = IconCache.IconForName("sync", 16);
+            vistaMenu1.SetImage(openConnectionMainMenuItem, Images.Connect.Size(16));
+            vistaMenu1.SetImage(infoMainMenuItem, Images.Info.Size(16));
+            vistaMenu1.SetImage(infoBrowserContextMenuItem, Images.Info.Size(16));
+            infoContextToolStripMenuItem.Image = Images.Info.Size(16);
+            vistaMenu1.SetImage(editMainMenuItem, Images.Pencil.Size(16));
+            vistaMenu1.SetImage(editBrowserContextMenuItem, Images.Pencil.Size(16));
+            editContextToolStripMenuItem.Image = Images.Pencil.Size(16);
+            vistaMenu1.SetImage(deleteMainMenuItem, Images.Delete.Size(16));
+            vistaMenu1.SetImage(deleteBrowserContextMenuItem, Images.Delete.Size(16));
+            deleteContextToolStripMenuItem.Image = Images.Delete.Size(16);
+            vistaMenu1.SetImage(newFolderMainMenuItem, Images.FolderPlus.Size(16));
+            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, Images.FolderPlus.Size(16));
+            newFolderContextToolStripMenuItem.Image = Images.FolderPlus.Size(16);
+            vistaMenu1.SetImage(newVaultMainMenuItem, Images.Cryptomator.Size( 16));
+            vistaMenu1.SetImage(newVaultBrowserContextMenuItem, Images.Cryptomator.Size(16));
+            newVaultContextToolStripMenuItem.Image = Images.Cryptomator.Size(16);
+            vistaMenu1.SetImage(downloadMainMenuItem, Images.Download.Size( 16));
+            vistaMenu1.SetImage(downloadBrowserContextMenuItem, Images.Download.Size(16));
+            downloadContextToolStripMenuItem.Image = Images.Download.Size(16);
+            vistaMenu1.SetImage(uploadMainMenuItem, Images.Upload.Size(16));
+            vistaMenu1.SetImage(uploadBrowserContextMenuItem, Images.Upload.Size(16));
+            uploadContextToolStripMenuItem.Image = Images.Upload.Size(16);
+            vistaMenu1.SetImage(synchronizeMainMenuItem, Images.Sync.Size(16));
+            vistaMenu1.SetImage(synchronizeBrowserContextMenuItem, Images.Sync.Size(16));
+            synchronizeContextToolStripMenuItem.Image = Images.Sync.Size(16);
         }
 
         private void SaveUiSettings()
@@ -2354,7 +2388,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarkToolStripMenuItem.DropDownItems.Clear();
             bookmarkToolStripMenuItem.DropDownItems.AddRange(fix.ToArray());
 
-            ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
+            ImageList.ImageCollection icons = IconProvider.ProtocolList.Images;
 
             List<ToolStripItem> items = new List<ToolStripItem>();
             foreach (Host bookmark in bookmarks)
@@ -2375,7 +2409,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             historyMenuStrip.Items.Clear();
             if (history.Count > 0)
             {
-                ImageList.ImageCollection icons = ProtocolIconsImageList().Images;
+                ImageList.ImageCollection icons = IconProvider.ProtocolList.Images;
 
                 List<ToolStripItem> items = new List<ToolStripItem>();
                 foreach (Host h in history)
@@ -2445,7 +2479,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (ToolStripMenuItem item in columnContextMenu.Items)
             {
                 ToolStripMenuItem item1 = item;
-                MenuItem nItem = new MenuItem(LocaleFactory.localizedString(item.Text),
+                string tag = ((ColumnHeader)item.Tag).Tag as string;
+                MenuItem nItem = new MenuItem(null != tag ? BrowserColumn.valueOf(tag).ToString() : LocaleFactory.localizedString(item.Text),
                     delegate { item1.PerformClick(); });
                 //forward click event
                 nItem.Checked = item.Checked;

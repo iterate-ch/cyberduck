@@ -25,7 +25,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartUpload;
 
@@ -34,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 public class S3DefaultDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(S3DefaultDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3DefaultDeleteFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -51,18 +53,19 @@ public class S3DefaultDeleteFeature implements Delete {
     }
 
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final List<Path> containers = new ArrayList<Path>();
+        final List<Path> containers = new ArrayList<>();
         for(Path file : files.keySet()) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
             }
             else {
                 callback.delete(file);
+                final Path bucket = containerService.getContainer(file);
                 if(file.getType().contains(Path.Type.upload)) {
                     // In-progress multipart upload
                     try {
                         multipartService.delete(new MultipartUpload(file.attributes().getVersionId(),
-                            containerService.getContainer(file).getName(), containerService.getKey(file)));
+                                bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file)));
                     }
                     catch(NotfoundException ignored) {
                         log.warn(String.format("Ignore failure deleting multipart upload %s", file));
@@ -72,7 +75,7 @@ public class S3DefaultDeleteFeature implements Delete {
                     try {
                         // Always returning 204 even if the key does not exist. Does not return 404 for non-existing keys
                         session.getClient().deleteVersionedObject(
-                            file.attributes().getVersionId(), containerService.getContainer(file).getName(), containerService.getKey(file));
+                                file.attributes().getVersionId(), bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(file));
                     }
                     catch(ServiceException e) {
                         throw new S3ExceptionMappingService().map("Cannot delete {0}", e, file);

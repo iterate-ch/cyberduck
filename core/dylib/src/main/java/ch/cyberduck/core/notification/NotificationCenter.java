@@ -28,7 +28,8 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.util.Collections;
@@ -36,20 +37,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NotificationCenter extends ProxyController implements NotificationService, NSUserNotificationCenter.Delegate {
-    private static final Logger log = Logger.getLogger(NotificationCenter.class);
+    private static final Logger log = LogManager.getLogger(NotificationCenter.class);
 
     /**
      * Methods involve talking to a server process, so calling them repeatedly can have a negative effect on
      * performance.
      */
     private final NSUserNotificationCenter center
-        = NSUserNotificationCenter.defaultUserNotificationCenter();
+            = NSUserNotificationCenter.defaultUserNotificationCenter();
 
     private final Set<NotificationService.Listener> listeners =
-        Collections.synchronizedSet(new HashSet<NotificationService.Listener>());
+            Collections.synchronizedSet(new HashSet<NotificationService.Listener>());
 
     private final NotificationFilterService filter
-        = NotificationFilterService.Factory.get();
+            = NotificationFilterService.Factory.get();
 
     @Override
     public NotificationService setup() {
@@ -72,8 +73,10 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
-        if (filter.shouldSuppress()) {
-            log.debug(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
+        if(filter.shouldSuppress()) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
+            }
             return;
         }
         final NSUserNotification notification = NSUserNotification.notification();
@@ -88,13 +91,18 @@ public class NotificationCenter extends ProxyController implements NotificationS
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
         notification.setHasActionButton(false);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Schedule notification %s", notification));
+        }
         center.scheduleNotification(notification);
     }
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description, final String action) {
-        if (filter.shouldSuppress()) {
-            log.debug(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
+        if(filter.shouldSuppress()) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
+            }
             return;
         }
         final NSUserNotification notification = NSUserNotification.notification();
@@ -112,6 +120,9 @@ public class NotificationCenter extends ProxyController implements NotificationS
         notification.setInformativeText(description);
         notification.setHasActionButton(true);
         notification.setActionButtonTitle(action);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Schedule notification %s", notification));
+        }
         center.scheduleNotification(notification);
     }
 

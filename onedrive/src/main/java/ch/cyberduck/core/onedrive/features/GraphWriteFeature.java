@@ -20,10 +20,12 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -31,7 +33,8 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveJsonObject;
@@ -42,9 +45,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class GraphWriteFeature implements Write<Void> {
-    private static final Logger log = Logger.getLogger(GraphWriteFeature.class);
+public class GraphWriteFeature implements Write<DriveItem.Metadata> {
+    private static final Logger log = LogManager.getLogger(GraphWriteFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -55,18 +59,27 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<DriveItem.Metadata> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(status.getLength() == TransferStatus.UNKNOWN_LENGTH) {
+                throw new UnsupportedException("Content-Range with unknown file size is not supported");
+            }
             final DriveItem folder = session.getItem(file.getParent());
-            final DriveItem oneDriveFile = new DriveItem(folder, URIEncoder.encode(file.getName()));
-            final UploadSession upload = Files.createUploadSession(oneDriveFile);
+            final DriveItem item;
+            if(status.isExists()) {
+                item = session.getItem(file);
+            }
+            else {
+                item = new DriveItem(folder, URIEncoder.encode(file.getName()));
+            }
+            final UploadSession upload = Files.createUploadSession(item);
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.minimum")
-                * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
-            return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy, partsize)) {
+                    * new HostPreferences(session.getHost()).getInteger("onedrive.upload.multipart.partsize.factor");
+            return new HttpResponseOutputStream<DriveItem.Metadata>(new MemorySegementingOutputStream(proxy, partsize), new GraphAttributesFinderFeature(session, fileid), status) {
                 @Override
-                public Void getStatus() {
-                    return null;
+                public DriveItem.Metadata getStatus() {
+                    return proxy.getStatus();
                 }
             };
         }
@@ -83,16 +96,12 @@ public class GraphWriteFeature implements Write<Void> {
         return new Append(false).withStatus(status);
     }
 
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
     private final class ChunkedOutputStream extends OutputStream {
         private final UploadSession upload;
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<DriveItem.Metadata> response = new AtomicReference<>();
 
         private Long offset = 0L;
         private final Long length;
@@ -113,23 +122,20 @@ public class GraphWriteFeature implements Write<Void> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             final byte[] content = Arrays.copyOfRange(b, off, len);
             final HttpRange range = HttpRange.byLength(offset, content.length);
-            final String header;
-            if(overall.getLength() == -1L) {
-                header = String.format("%d-%d/*", range.getStart(), range.getEnd());
-            }
-            else {
-                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
-            }
+            final String header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
             try {
                 new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         try {
-                            final OneDriveJsonObject response = upload.uploadFragment(header, content);
-                            if(response instanceof DriveItem.Metadata) {
-                                log.info(String.format("Completed upload for %s", file));
-                                final String id = session.getFileId(((DriveItem.Metadata) response));
+                            final OneDriveJsonObject reply = upload.uploadFragment(header, content);
+                            if(reply instanceof DriveItem.Metadata) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Completed upload for %s", file));
+                                }
+                                final String id = session.getFileId(((DriveItem.Metadata) reply));
                                 fileid.cache(file, id);
+                                response.set((DriveItem.Metadata) reply);
                             }
                             else {
                                 log.debug(String.format("Uploaded fragment %s for file %s", header, file));
@@ -162,7 +168,7 @@ public class GraphWriteFeature implements Write<Void> {
                     log.warn(String.format("Abort upload session %s with no completed parts", upload));
                     // Use touch feature for empty file upload
                     upload.cancelUpload();
-                    new GraphTouchFeature(session, fileid).touch(file, new TransferStatus());
+                    new GraphTouchFeature(session, fileid).touch(file, overall);
                 }
             }
             catch(BackgroundException e) {
@@ -171,6 +177,10 @@ public class GraphWriteFeature implements Write<Void> {
             finally {
                 close.set(true);
             }
+        }
+
+        public DriveItem.Metadata getStatus() {
+            return response.get();
         }
     }
 }

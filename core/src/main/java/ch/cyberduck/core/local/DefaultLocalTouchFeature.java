@@ -23,7 +23,8 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.features.Touch;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -33,7 +34,7 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 
 public class DefaultLocalTouchFeature implements Touch {
-    private static final Logger log = Logger.getLogger(DefaultLocalTouchFeature.class);
+    private static final Logger log = LogManager.getLogger(DefaultLocalTouchFeature.class);
 
     @Override
     public void touch(final Local file) throws AccessDeniedException {

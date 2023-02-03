@@ -29,10 +29,12 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class S3ReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(S3ReadFeature.class);
+    private static final Logger log = LogManager.getLogger(S3ReadFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;
@@ -66,7 +68,7 @@ public class S3ReadFeature implements Read {
             }
             if(status.isAppend()) {
                 final String header;
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {
@@ -77,9 +79,10 @@ public class S3ReadFeature implements Read {
                 }
                 requestHeaders.put(HttpHeaders.RANGE, header);
             }
-            final HttpResponse response = client.performRestGet(containerService.getContainer(file).getName(),
-                containerService.getKey(file), requestParameters, requestHeaders, new int[]{HttpStatus.SC_PARTIAL_CONTENT, HttpStatus.SC_OK});
-            return new HttpMethodReleaseInputStream(response);
+            final Path bucket = containerService.getContainer(file);
+            final HttpResponse response = client.performRestGet(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                    containerService.getKey(file), requestParameters, requestHeaders, new int[]{HttpStatus.SC_PARTIAL_CONTENT, HttpStatus.SC_OK});
+            return new HttpMethodReleaseInputStream(response, status);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Download {0} failed", e, file);

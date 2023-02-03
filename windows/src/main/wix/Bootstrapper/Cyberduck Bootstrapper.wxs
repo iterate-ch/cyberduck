@@ -14,14 +14,8 @@
     <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
     <Variable Name="Autostart" bal:Overridable="yes" Type="numeric" Value="0" />
 
-    <bal:Condition Message="Windows 7 SP1, Windows Server 2008 R2 or later is required to run this application.">
-      <![CDATA[VersionNT >= v6.1 AND (VersionNT <> v6.1 OR ServicePackLevel >= 1 OR MsiNTProductType <> 1)]]>
-    </bal:Condition>
-    <bal:Condition Message="Installation on Windows 8 is not supported.">
-      <![CDATA[VersionNT <> v6.2 OR MsiNTProductType <> 1]]>
-    </bal:Condition>
     <bal:Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
-      <![CDATA[VersionNT < v10.0 OR CBNumber >= 14393]]>
+      <![CDATA[VersionNT >= v10.0 AND CBNumber >= 14393]]>
     </bal:Condition>
 
     <Chain>

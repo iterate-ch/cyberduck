@@ -19,6 +19,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -41,6 +42,8 @@ import com.dropbox.core.RetryException;
 import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.auth.AccessError;
 import com.dropbox.core.v2.files.*;
+import com.dropbox.core.v2.sharing.CreateSharedLinkWithSettingsError;
+import com.dropbox.core.v2.sharing.CreateSharedLinkWithSettingsErrorException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -134,8 +137,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     case MALFORMED_PATH:
                     case DISALLOWED_NAME:
                     case NO_WRITE_PERMISSION:
-                    case CONFLICT:
                         return new AccessDeniedException(buffer.toString(), failure);
+                    case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
                     case INSUFFICIENT_SPACE:
                         return new QuotaException(buffer.toString(), failure);
                 }
@@ -184,6 +188,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 this.parse(buffer, lookup.toString());
                 switch(lookup.getReason().tag()) {
                     case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
                     case NO_WRITE_PERMISSION:
                     case DISALLOWED_NAME:
                         return new AccessDeniedException(buffer.toString(), failure);
@@ -203,10 +208,11 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 switch(lookup.tag()) {
                     case OTHER:
                         return new InteroperabilityException(buffer.toString(), failure);
+                    case CONFLICT:
+                        return new ConflictException(buffer.toString(), failure);
                     case MALFORMED_PATH:
                     case DISALLOWED_NAME:
                     case NO_WRITE_PERMISSION:
-                    case CONFLICT:
                         return new AccessDeniedException(buffer.toString(), failure);
                     case INSUFFICIENT_SPACE:
                         return new QuotaException(buffer.toString(), failure);
@@ -254,6 +260,15 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             this.parse(buffer, error.toString());
             // File locking is not supported for user
             return new UnsupportedException(buffer.toString(), failure);
+        }
+        if(failure instanceof CreateSharedLinkWithSettingsErrorException) {
+            final CreateSharedLinkWithSettingsError error = ((CreateSharedLinkWithSettingsErrorException) failure).errorValue;
+            switch(error.tag()) {
+                case SHARED_LINK_ALREADY_EXISTS:
+                    return new ConflictException(buffer.toString(), failure);
+                case ACCESS_DENIED:
+                    return new AccessDeniedException(buffer.toString(), failure);
+            }
         }
         return new InteroperabilityException(buffer.toString(), failure);
     }

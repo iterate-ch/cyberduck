@@ -21,20 +21,20 @@ package ch.cyberduck.core.serializer;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Permission;
 
-public class PermissionDictionary {
+public class PermissionDictionary<T> {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<T> deserializer;
 
     public PermissionDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this.deserializer = new DeserializerFactory<>();
     }
 
-    public PermissionDictionary(final DeserializerFactory deserializer) {
+    public PermissionDictionary(final DeserializerFactory<T> deserializer) {
         this.deserializer = deserializer;
     }
 
-    public <T> Permission deserialize(T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
+    public Permission deserialize(T serialized) {
+        final Deserializer<T> dict = deserializer.create(serialized);
         return new Permission(dict.stringForKey("Mask"));
     }
 }

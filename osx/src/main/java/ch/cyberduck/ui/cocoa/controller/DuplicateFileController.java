@@ -21,6 +21,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -48,7 +49,8 @@ public class DuplicateFileController extends FileController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setMessageText(LocaleFactory.localizedString("Duplicate File", "Duplicate"));
-        alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new file", "Duplicate"));
+        final String message = LocaleFactory.localizedString("Enter the name for the new file", "Duplicate");
+        alert.setInformativeText(new StringAppender().append(message).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Duplicate", "Duplicate"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Duplicate"));
         alert.setIcon(IconCacheFactory.<NSImage>get().fileIcon(selected, 64));

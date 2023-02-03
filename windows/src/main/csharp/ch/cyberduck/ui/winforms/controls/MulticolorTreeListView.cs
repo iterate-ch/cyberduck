@@ -107,9 +107,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
         protected override void OnCellEditStarting(CellEditEventArgs e)
         {
-            e.Control.AutoSize = false;
-            e.Control.Bounds = new Rectangle(e.Control.Bounds.X + IconSize, e.Control.Bounds.Y,
-                e.Control.Bounds.Width - IconSize, e.Control.Bounds.Height);
             if (e.Control is TextBox)
             {
                 //Only select filename part w/o extension (Explorer like behavior)

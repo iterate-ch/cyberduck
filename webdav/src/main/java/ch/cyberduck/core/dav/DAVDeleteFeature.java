@@ -27,14 +27,16 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpRequestBase;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class DAVDeleteFeature implements Delete {
 
@@ -47,10 +49,11 @@ public class DAVDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
-        for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
+        for(Map.Entry<Path, TransferStatus> entry : files.entrySet()) {
             boolean skip = false;
+            final Path file = entry.getKey();
             for(Path d : deleted) {
-                if(file.getKey().isChild(d)) {
+                if(file.isChild(d)) {
                     skip = true;
                     break;
                 }
@@ -58,25 +61,28 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            deleted.add(file.getKey());
-            callback.delete(file.getKey());
+            deleted.add(file);
+            callback.delete(file);
             try {
-                if(session.getFeature(Lock.class) != null && file.getValue().getLockId() != null) {
-                    // Indicate that the client has knowledge of that state token
-                    session.getClient().delete(new DAVPathEncoder().encode(file.getKey()),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", file.getValue().getLockId())));
-                }
-                else {
-                    session.getClient().delete(new DAVPathEncoder().encode(file.getKey()));
-                }
+                final TransferStatus status = entry.getValue();
+                session.getClient().execute(this.toRequest(file, status), new VoidResponseHandler());
             }
             catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file.getKey());
+                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
             }
             catch(IOException e) {
-                throw new HttpExceptionMappingService().map(e, file.getKey());
+                throw new HttpExceptionMappingService().map(e, file);
             }
         }
+    }
+
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+        final HttpDelete request = new HttpDelete(new DAVPathEncoder().encode(file));
+        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
+            // Indicate that the client has knowledge of that state token
+            request.setHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
+        }
+        return request;
     }
 
     @Override

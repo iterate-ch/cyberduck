@@ -19,8 +19,11 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 
 import java.security.MessageDigest;
 
-public class DriveUploadFeature extends HttpUploadFeature<String, MessageDigest> {
-    public DriveUploadFeature(final DriveWriteFeature writer) {
-        super(writer);
+import com.google.api.services.drive.model.File;
+
+public class DriveUploadFeature extends HttpUploadFeature<File, MessageDigest> {
+
+    public DriveUploadFeature(final DriveSession session, final DriveFileIdProvider fileid) {
+        super(new DriveWriteFeature(session, fileid));
     }
 }

@@ -21,7 +21,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.concurrent.TimedSemaphore;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -29,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class LimitedRendezvousListener implements RendezvousListener {
-    private static final Logger log = Logger.getLogger(LimitedRendezvousListener.class);
+    private static final Logger log = LogManager.getLogger(LimitedRendezvousListener.class);
 
     /**
      * Rate limit for notifications

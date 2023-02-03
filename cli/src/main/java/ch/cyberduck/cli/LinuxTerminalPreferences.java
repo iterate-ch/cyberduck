@@ -27,14 +27,15 @@ import ch.cyberduck.core.proxy.EnvironmentVariableProxyFinder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 public class LinuxTerminalPreferences extends TerminalPreferences {
-    private static final Logger log = Logger.getLogger(LinuxTerminalPreferences.class);
+    private static final Logger log = LogManager.getLogger(LinuxTerminalPreferences.class);
 
     public LinuxTerminalPreferences() {
         super(new MemoryPreferences());

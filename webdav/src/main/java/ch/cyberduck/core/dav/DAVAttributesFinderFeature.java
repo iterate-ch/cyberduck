@@ -23,6 +23,7 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.io.Checksum;
@@ -31,7 +32,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -45,13 +47,13 @@ import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.HeadersResponseHandler;
 
-public class DAVAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DAVAttributesFinderFeature.class);
+public class DAVAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DavResource> {
+    private static final Logger log = LogManager.getLogger(DAVAttributesFinderFeature.class);
 
     private final DAVSession session;
 
     private final RFC1123DateFormatter rfc1123
-        = new RFC1123DateFormatter();
+            = new RFC1123DateFormatter();
 
     public DAVAttributesFinderFeature(DAVSession session) {
         this.session = session;
@@ -67,12 +69,14 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                 for(final DavResource resource : this.list(file)) {
                     if(resource.isDirectory()) {
                         if(!file.getType().contains(Path.Type.directory)) {
-                            throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                            throw new NotfoundException(String.format("File %s has set MIME type %s",
+                                    file.getAbsolute(), DavResource.HTTPD_UNIX_DIRECTORY_CONTENT_TYPE));
                         }
                     }
                     else {
                         if(!file.getType().contains(Path.Type.file)) {
-                            throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                            throw new NotfoundException(String.format("File %s has set MIME type %s",
+                                    file.getAbsolute(), resource.getContentType()));
                         }
                     }
                     return this.toAttributes(resource);
@@ -85,29 +89,14 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                 }
                 catch(InteroperabilityException i) {
                     // PROPFIND Method not allowed
-                    log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
-                    final Map<String, String> headers = session.getClient().execute(
-                        new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
-                    final PathAttributes attributes = new PathAttributes();
-                    try {
-                        attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
                     }
-                    catch(InvalidDateException p) {
-                        log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
+                    final PathAttributes attr = this.head(file);
+                    if(PathAttributes.EMPTY == attr) {
+                        throw i;
                     }
-                    if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
-                        // Set size unless response is compressed
-                        attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
-                    }
-                    if(headers.containsKey(HttpHeaders.ETAG)) {
-                        attributes.setETag(headers.get(HttpHeaders.ETAG));
-                        // Setting checksum is disabled. See #8798
-                        // attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
-                    }
-                    if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
-                        attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
-                    }
-                    return attributes;
+                    return attr;
                 }
             }
         }
@@ -119,16 +108,42 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    protected PathAttributes head(final Path file) throws IOException {
+        final Map<String, String> headers = session.getClient().execute(
+                new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
+        final PathAttributes attributes = new PathAttributes();
+        try {
+            attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+        }
+        catch(InvalidDateException p) {
+            log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
+        }
+        if(!headers.containsKey(HttpHeaders.CONTENT_ENCODING)) {
+            // Set size unless response is compressed
+            attributes.setSize(NumberUtils.toLong(headers.get(HttpHeaders.CONTENT_LENGTH), -1));
+        }
+        if(headers.containsKey(HttpHeaders.ETAG)) {
+            attributes.setETag(headers.get(HttpHeaders.ETAG));
+            // Setting checksum is disabled. See #8798
+            // attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.ETAG)));
+        }
+        if(headers.containsKey(HttpHeaders.CONTENT_MD5)) {
+            attributes.setChecksum(Checksum.parse(headers.get(HttpHeaders.CONTENT_MD5)));
+        }
+        return attributes;
+    }
+
     protected List<DavResource> list(final Path file) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(file), 0,
-            Stream.of(
-                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                collect(Collectors.toSet())
+                Stream.of(
+                                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                        collect(Collectors.toSet())
         );
     }
 
-    protected PathAttributes toAttributes(final DavResource resource) {
+    @Override
+    public PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = new PathAttributes();
         final Map<QName, String> properties = resource.getCustomPropsNS();
         if(null != properties && properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE)) {
@@ -142,7 +157,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                             if(server.equals(resource.getModified())) {
                                 // file not touched with a different client
                                 attributes.setModificationDate(
-                                    rfc1123.parse(value).getTime());
+                                        rfc1123.parse(value).getTime());
                             }
                             else {
                                 // file touched with a different client, use default modified date from server
@@ -162,7 +177,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     }
                     else {
                         attributes.setModificationDate(
-                            rfc1123.parse(value).getTime());
+                                rfc1123.parse(value).getTime());
                     }
                 }
                 catch(InvalidDateException e) {

@@ -16,12 +16,6 @@
 // feedback@cyberduck.io
 // 
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
 using ch.cyberduck.core.exception;
@@ -33,36 +27,45 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
+using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
+using Splat;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Net;
+using System.Text.RegularExpressions;
+using System.Threading;
+using static Ch.Cyberduck.ImageHelper;
 using Path = System.IO.Path;
 using Timer = System.Threading.Timer;
 using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
+    using System.Reactive.Linq;
+
     public abstract class BookmarkController<T> : WindowController<T> where T : IBookmarkView
     {
-        private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
-        public const int SmallBookmarkSize = 16;
-        public const int MediumBookmarkSize = 32;
         public const int LargeBookmarkSize = 64;
+        public const int MediumBookmarkSize = 32;
+        public const int SmallBookmarkSize = 16;
+        protected readonly Host _host;
+        protected readonly LoginOptions _options;
+        protected readonly LoginInputValidator _validator;
+        private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         private static readonly string Default = LocaleFactory.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController<>).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(BookmarkController<>).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
-
-        protected readonly Host _host;
         private readonly HostPasswordStore _keychain = PasswordStoreFactory.get();
-        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
-        protected readonly LoginOptions _options;
-
+        private readonly List<string> _keys = new List<string> { LocaleFactory.localizedString("None") };
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
-        protected readonly LoginInputValidator _validator;
+        private readonly IDisposable profileObserver;
 
         protected BookmarkController(Host host) : this(host,
             new LoginOptions(host.getProtocol()))
@@ -95,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OptionsVisible = PreferencesFactory.get().getBoolean(ToggleProperty);
 
             //set default favicon
-            View.Favicon = IconCache.IconForName("site", 16);
+            View.Favicon = Images.Site.Size(16);
 
             InitProtocols();
             InitPrivateKeys();
@@ -129,72 +132,43 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
             View.OpenUrl += View_OpenUrl;
             View.OpenWebUrl += View_OpenWebUrl;
+
+            ProfileListObserver observer = Locator.Current.GetService<ProfileListObserver>();
+            profileObserver = Observable.FromEventPattern<EventHandler, EventArgs>(
+                h => observer.ProfilesChanged += h,
+                h => observer.ProfilesChanged -= h)
+                .Subscribe(_ =>
+                {
+                    InitProtocols();
+                    Update();
+                });
         }
 
         protected virtual String ToggleProperty => "bookmark.toggle.options";
 
         public Host Bookmark() => _host;
 
-        private void OnFavicon(object state)
+        public void ReadPasswordFromKeychain()
         {
-            Log.debug("OnFavicon");
-            background(new FaviconAction(this, _host));
-        }
-
-        private void OnRechability(object state)
-        {
-            Log.debug("OnRechability");
-            background(new ReachabilityAction(this, _host));
-        }
-
-        private void View_ToggleOptions()
-        {
-            View.OptionsVisible = !View.OptionsVisible;
-        }
-
-        protected override void Invalidate()
-        {
-            _ticklerReachability.Change(Timeout.Infinite, Timeout.Infinite);
-            _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
-            PreferencesFactory.get().setProperty(ToggleProperty, View.OptionsVisible);
-            BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
-            base.Invalidate();
-        }
-
-        private void InitTransferModes()
-        {
-            List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
-            Host.TransferType unknown = Host.TransferType.unknown;
-            modes.Add(new KeyValuePair<string, Host.TransferType>(unknown.toString(), unknown));
-            foreach (
-                String name in
-                Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
+            if (_options.keychain() && _options.password())
             {
-                Host.TransferType t = Host.TransferType.valueOf(name);
-                modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
+                if (string.IsNullOrEmpty(_host.getHostname()))
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(_host.getCredentials().getUsername()))
+                {
+                    return;
+                }
+                string password = _keychain.getPassword(_host.getProtocol().getScheme(),
+                    _host.getPort(),
+                    _host.getHostname(),
+                    _host.getCredentials().getUsername());
+                if (!string.IsNullOrWhiteSpace(password))
+                {
+                    View.Password = password;
+                }
             }
-
-            View.PopulateTransferModes(modes);
-        }
-
-        private void View_ChangedCommentEvent()
-        {
-            _host.setComment(View.Notes);
-            ItemChanged();
-        }
-
-        private void View_ChangedWebURLEvent()
-        {
-            _host.setWebURL(View.WebURL);
-            UpdateFavicon();
-            ItemChanged();
-        }
-
-        private void View_ChangedNicknameEvent()
-        {
-            _host.setNickname(View.Nickname);
-            ItemChanged();
-            Update();
         }
 
         internal void View_ChangedPathEvent()
@@ -219,74 +193,6 @@ namespace Ch.Cyberduck.Ui.Controller
             ItemChanged();
             Update();
             Reachable();
-        }
-
-        private void View_OpenPrivateKeyBrowserEvent()
-        {
-            string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
-            if (null != _host.getCredentials().getIdentity())
-            {
-                selectedKeyFile = Path.GetDirectoryName(_host.getCredentials().getIdentity().getAbsolute());
-            }
-
-            View.ShowPrivateKeyBrowser(selectedKeyFile);
-        }
-
-        private void View_ChangedTransferEvent()
-        {
-            _host.setTransfer(View.SelectedTransferMode);
-            ItemChanged();
-        }
-
-        private void View_ChangedConnectModeEvent()
-        {
-            _host.setFTPConnectMode(View.SelectedConnectMode);
-            ItemChanged();
-        }
-
-        private void View_ChangedTimezoneEvent()
-        {
-            string selected = View.SelectedTimezone;
-            string[] ids = TimeZone.getAvailableIDs();
-            foreach (string id in ids)
-            {
-                TimeZone tz;
-                if ((tz = TimeZone.getTimeZone(id)).getID().Equals(selected))
-                {
-                    _host.setTimezone(tz);
-                    break;
-                }
-            }
-
-            ItemChanged();
-        }
-
-        private void View_OpenWebUrl()
-        {
-            BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(_host).getUrl());
-        }
-
-        private void View_ChangedEncodingEvent()
-        {
-            if (View.SelectedEncoding.Equals(Default))
-            {
-                _host.setEncoding(null);
-            }
-            else
-            {
-                _host.setEncoding(View.SelectedEncoding);
-            }
-
-            ItemChanged();
-        }
-
-        private void UpdateFavicon()
-        {
-            if (PreferencesFactory.get().getBoolean("bookmark.favicon.download"))
-            {
-                // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
-                _ticklerFavicon.Change(2000, Timeout.Infinite);
-            }
         }
 
         internal void View_ChangedServerEvent()
@@ -318,104 +224,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Reachable();
         }
 
-        private void InitEncodings()
-        {
-            List<string> encodings = new List<string> {Default};
-            encodings.AddRange(new DefaultCharsetProvider().availableCharsets());
-            View.PopulateEncodings(encodings);
-        }
-
-        private void InitTimezones()
-        {
-            List<string> timezones = new List<string> {UTC.getID()};
-
-            string[] allTimezones = TimeZone.getAvailableIDs();
-            Array.Sort(allTimezones);
-
-            foreach (string timezone in allTimezones)
-            {
-                if (Regex.IsMatch(timezone, TimezoneIdPrefixes))
-                {
-                    timezones.Add(TimeZone.getTimeZone(timezone).getID());
-                }
-            }
-
-            View.PopulateTimezones(timezones);
-        }
-
-        private void InitConnectModes()
-        {
-            List<KeyValuePair<string, FTPConnectMode>> modes = new List<KeyValuePair<string, FTPConnectMode>>();
-            foreach (FTPConnectMode m in FTPConnectMode.values())
-            {
-                modes.Add(new KeyValuePair<string, FTPConnectMode>(m.toString(), m));
-            }
-
-            View.PopulateConnectModes(modes);
-        }
-
-        private void View_ChangedProtocolEvent()
-        {
-            Protocol selected = View.SelectedProtocol;
-            _host.setPort(selected.getDefaultPort());
-            if (!_host.getProtocol().isHostnameConfigurable())
-            {
-                // Previously selected protocol had a default hostname. Change to default
-                // of newly selected protocol.
-                _host.setHostname(selected.getDefaultHostname());
-            }
-
-            if (!selected.isHostnameConfigurable())
-            {
-                // Hostname of newly selected protocol is not configurable. Change to default.
-                _host.setHostname(selected.getDefaultHostname());
-            }
-
-            if (Utils.IsNotBlank(selected.getDefaultHostname()))
-            {
-                // Prefill with default hostname
-                _host.setHostname(selected.getDefaultHostname());
-            }
-
-            if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
-                !selected.isPathConfigurable())
-            {
-                _host.setDefaultPath(selected.getDefaultPath());
-            }
-
-            _host.setProtocol(selected);
-            int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
-            if (port != -1)
-            {
-                // External configuration found
-                _host.setPort(port);
-            }
-
-            _options.configure(selected);
-            _validator.configure(selected);
-            ItemChanged();
-            Update();
-            Reachable();
-        }
-
-        protected virtual void ItemChanged()
-        {
-            BookmarkCollection.defaultCollection().collectionItemChanged(_host);
-        }
-
-        private void Reachable()
-        {
-            if (Utils.IsNotBlank(_host.getHostname()))
-            {
-                // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
-                _ticklerReachability.Change(2000, Timeout.Infinite);
-            }
-            else
-            {
-                View.AlertIconEnabled = false;
-            }
-        }
-
         internal void View_ChangedUsernameEvent()
         {
             _host.getCredentials().setUsername(View.Username);
@@ -423,179 +231,18 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
         }
 
-        public void ReadPasswordFromKeychain()
+        protected override void Invalidate()
         {
-            if (_options.keychain() && _options.password())
-            {
-                if (string.IsNullOrEmpty(_host.getHostname()))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(_host.getCredentials().getUsername()))
-                {
-                    return;
-                }
-                string password = _keychain.getPassword(_host.getProtocol().getScheme(),
-                    _host.getPort(),
-                    _host.getHostname(),
-                    _host.getCredentials().getUsername());
-                if (Utils.IsNotBlank(password))
-                {
-                    View.Password = password;
-                }
-            }
+            _ticklerReachability.Change(Timeout.Infinite, Timeout.Infinite);
+            _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
+            PreferencesFactory.get().setProperty(ToggleProperty, View.OptionsVisible);
+            BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
+            base.Invalidate();
         }
 
-        private void View_ChangedClientCertificateEvent()
+        protected virtual void ItemChanged()
         {
-            _host.getCredentials().setCertificate(View.SelectedClientCertificate);
-            ItemChanged();
-        }
-
-        private void InitPrivateKeys()
-        {
-            foreach (
-                Local key in
-                Utils.ConvertFromJavaList<Local>(
-                    new OpenSSHPrivateKeyConfigurator(
-                        LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home"), ".ssh")).list()))
-            {
-                _keys.Add(key.getAbsolute());
-            }
-
-            View.PopulatePrivateKeys(_keys);
-        }
-
-        private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
-        {
-            _host.getCredentials()
-                .setIdentity(null == e.KeyFile || e.KeyFile.Equals(LocaleFactory.localizedString("None"))
-                    ? null
-                    : LocalFactory.get(e.KeyFile));
-            Update();
-            ItemChanged();
-        }
-
-        private void View_OpenUrl()
-        {
-            BrowserLauncherFactory.get().open(new HostUrlProvider().get(_host));
-        }
-
-        private void View_OpenDownloadFolderEvent()
-        {
-            Local folder = new DownloadDirectoryFinder().find(_host);
-            ApplicationLauncherFactory.get().open(LocalFactory.get(folder.getAbsolute()));
-        }
-
-        private void View_ChangedAnonymousCheckboxEvent()
-        {
-            if (View.AnonymousChecked)
-            {
-                View.UsernameEnabled = false;
-                View.Username = PreferencesFactory.get().getProperty("connection.login.anon.name");
-            }
-            else
-            {
-                View.UsernameEnabled = true;
-                if (
-                    PreferencesFactory.get()
-                        .getProperty("connection.login.name")
-                        .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
-                {
-                    View.Username = String.Empty;
-                }
-                else
-                {
-                    View.Username = PreferencesFactory.get().getProperty("connection.login.name");
-                }
-            }
-
-            ItemChanged();
-            Update();
-        }
-
-        private void View_OpenDownloadFolderBrowserEvent()
-        {
-            Local folder = new DownloadDirectoryFinder().find(_host);
-            View.ShowDownloadFolderBrowser(folder.getAbsolute());
-        }
-
-        private void View_ChangedBrowserDownloadPathEvent()
-        {
-            _host.setDownloadFolder(LocalFactory.get(View.SelectedDownloadFolder));
-            ItemChanged();
-            Update();
-        }
-
-        private void InitProtocols()
-        {
-            List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            ProtocolFactory p = ProtocolFactory.get();
-            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
-            {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.disk()));
-            }
-
-            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2,
-                    Protocol.Type.googlestorage))).toArray(new Protocol[] { }))
-            {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.disk()));
-            }
-
-            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.dracoon, Protocol.Type.brick)))
-                .toArray(new Protocol[] { }))
-            {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.disk()));
-            }
-
-            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
-            {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.disk()));
-            }
-
-            foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
-            {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
-                    protocol.disk()));
-            }
-
-            View.PopulateProtocols(protocols);
-        }
-
-        /// <summary>
-        /// Gets the image from URL.
-        /// </summary>
-        /// <param name="url">The URL.</param>
-        /// <returns></returns>
-        private static Image GetImageFromUrl(string url)
-        {
-            try
-            {
-                // Note: First call takes a long time since proxy settings are being detected
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
-                request.Proxy = null; // disable proxy auto-detection
-                request.Timeout = 5000;
-                request.ReadWriteTimeout = 10000;
-                HttpWebResponse response = (HttpWebResponse) request.GetResponse();
-                if (request.HaveResponse)
-                {
-                    return Image.FromStream(response.GetResponseStream());
-                }
-
-                return null;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            BookmarkCollection.defaultCollection().collectionItemChanged(_host);
         }
 
         protected virtual void Update()
@@ -643,7 +290,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             View.ClientCertificateFieldEnabled = _options.certificate();
-            List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
+            List<string> keys = new List<string> { LocaleFactory.localizedString("None") };
             if (_options.certificate())
             {
                 foreach (String certificate in SystemCertificateStore.ListAliases())
@@ -684,6 +331,382 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        /// <summary>
+        /// Gets the image from URL.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <returns></returns>
+        private static Image GetImageFromUrl(string url)
+        {
+            try
+            {
+                // Note: First call takes a long time since proxy settings are being detected
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Proxy = null; // disable proxy auto-detection
+                request.Timeout = 5000;
+                request.ReadWriteTimeout = 10000;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                if (request.HaveResponse)
+                {
+                    return Image.FromStream(response.GetResponseStream());
+                }
+
+                return null;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private void InitConnectModes()
+        {
+            List<KeyValuePair<string, FTPConnectMode>> modes = new List<KeyValuePair<string, FTPConnectMode>>();
+            foreach (FTPConnectMode m in FTPConnectMode.values())
+            {
+                modes.Add(new KeyValuePair<string, FTPConnectMode>(m.toString(), m));
+            }
+
+            View.PopulateConnectModes(modes);
+        }
+
+        private void InitEncodings()
+        {
+            List<string> encodings = new List<string> { Default };
+            encodings.AddRange(new DefaultCharsetProvider().availableCharsets());
+            View.PopulateEncodings(encodings);
+        }
+
+        private void InitPrivateKeys()
+        {
+            foreach (
+                Local key in
+                Utils.ConvertFromJavaList<Local>(
+                    new OpenSSHPrivateKeyConfigurator(
+                        LocalFactory.get(PreferencesFactory.get().getProperty("local.user.home"), ".ssh")).list()))
+            {
+                _keys.Add(key.getAbsolute());
+            }
+
+            View.PopulatePrivateKeys(_keys);
+        }
+
+        private void InitProtocols()
+        {
+            List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
+            ProtocolFactory p = ProtocolFactory.get();
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.disk()));
+            }
+
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2,
+                    Protocol.Type.googlestorage))).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.disk()));
+            }
+
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.box, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))
+                .toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.disk()));
+            }
+
+            foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
+                EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.disk()));
+            }
+
+            foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
+            {
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
+                    protocol.disk()));
+            }
+            protocols.Add(new KeyValueIconTriple<Protocol, string>(null,
+                LocaleFactory.localizedString("More Options", "Bookmark") + '\u2026', null));
+
+            View.PopulateProtocols(protocols);
+        }
+
+        private void InitTimezones()
+        {
+            List<string> timezones = new List<string> { UTC.getID() };
+
+            string[] allTimezones = TimeZone.getAvailableIDs();
+            Array.Sort(allTimezones);
+
+            foreach (string timezone in allTimezones)
+            {
+                if (Regex.IsMatch(timezone, TimezoneIdPrefixes))
+                {
+                    timezones.Add(TimeZone.getTimeZone(timezone).getID());
+                }
+            }
+
+            View.PopulateTimezones(timezones);
+        }
+
+        private void InitTransferModes()
+        {
+            List<KeyValuePair<string, Host.TransferType>> modes = new List<KeyValuePair<string, Host.TransferType>>();
+            Host.TransferType unknown = Host.TransferType.unknown;
+            modes.Add(new KeyValuePair<string, Host.TransferType>(unknown.toString(), unknown));
+            foreach (
+                String name in
+                Utils.ConvertFromJavaList<String>(PreferencesFactory.get().getList("queue.transfer.type.enabled")))
+            {
+                Host.TransferType t = Host.TransferType.valueOf(name);
+                modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
+            }
+
+            View.PopulateTransferModes(modes);
+        }
+
+        private void OnFavicon(object state)
+        {
+            Log.debug("OnFavicon");
+            background(new FaviconAction(this, _host));
+        }
+
+        private void OnRechability(object state)
+        {
+            Log.debug("OnRechability");
+            background(new ReachabilityAction(this, _host));
+        }
+
+        private void Reachable()
+        {
+            if (Utils.IsNotBlank(_host.getHostname()))
+            {
+                // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
+                _ticklerReachability.Change(2000, Timeout.Infinite);
+            }
+            else
+            {
+                View.AlertIconEnabled = false;
+            }
+        }
+
+        private void UpdateFavicon()
+        {
+            if (PreferencesFactory.get().getBoolean("bookmark.favicon.download"))
+            {
+                // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
+                _ticklerFavicon.Change(2000, Timeout.Infinite);
+            }
+        }
+
+        private void View_ChangedAnonymousCheckboxEvent()
+        {
+            if (View.AnonymousChecked)
+            {
+                View.UsernameEnabled = false;
+                View.Username = PreferencesFactory.get().getProperty("connection.login.anon.name");
+            }
+            else
+            {
+                View.UsernameEnabled = true;
+                if (
+                    PreferencesFactory.get()
+                        .getProperty("connection.login.name")
+                        .Equals(PreferencesFactory.get().getProperty("connection.login.anon.name")))
+                {
+                    View.Username = String.Empty;
+                }
+                else
+                {
+                    View.Username = PreferencesFactory.get().getProperty("connection.login.name");
+                }
+            }
+
+            ItemChanged();
+            Update();
+        }
+
+        private void View_ChangedBrowserDownloadPathEvent()
+        {
+            _host.setDownloadFolder(LocalFactory.get(View.SelectedDownloadFolder));
+            ItemChanged();
+            Update();
+        }
+
+        private void View_ChangedClientCertificateEvent()
+        {
+            _host.getCredentials().setCertificate(View.SelectedClientCertificate);
+            ItemChanged();
+        }
+
+        private void View_ChangedCommentEvent()
+        {
+            _host.setComment(View.Notes);
+            ItemChanged();
+        }
+
+        private void View_ChangedConnectModeEvent()
+        {
+            _host.setFTPConnectMode(View.SelectedConnectMode);
+            ItemChanged();
+        }
+
+        private void View_ChangedEncodingEvent()
+        {
+            if (View.SelectedEncoding.Equals(Default))
+            {
+                _host.setEncoding(null);
+            }
+            else
+            {
+                _host.setEncoding(View.SelectedEncoding);
+            }
+
+            ItemChanged();
+        }
+
+        private void View_ChangedNicknameEvent()
+        {
+            _host.setNickname(View.Nickname);
+            ItemChanged();
+            Update();
+        }
+
+        private void View_ChangedPrivateKeyEvent(object sender, PrivateKeyArgs e)
+        {
+            _host.getCredentials()
+                .setIdentity(null == e.KeyFile || e.KeyFile.Equals(LocaleFactory.localizedString("None"))
+                    ? null
+                    : LocalFactory.get(e.KeyFile));
+            Update();
+            ItemChanged();
+        }
+
+        private void View_ChangedProtocolEvent()
+        {
+            Protocol selected = View.SelectedProtocol;
+            if (selected == null)
+            {
+                // More options entry
+                var view = PreferencesController.Instance.View;
+                view.SelectProfilesTab();
+                view.Show();
+                return;
+            }
+
+            _host.setPort(selected.getDefaultPort());
+            if (!_host.getProtocol().isHostnameConfigurable())
+            {
+                // Previously selected protocol had a default hostname. Change to default
+                // of newly selected protocol.
+                _host.setHostname(selected.getDefaultHostname());
+            }
+
+            if (!selected.isHostnameConfigurable())
+            {
+                // Hostname of newly selected protocol is not configurable. Change to default.
+                _host.setHostname(selected.getDefaultHostname());
+            }
+
+            if (Utils.IsNotBlank(selected.getDefaultHostname()))
+            {
+                // Prefill with default hostname
+                _host.setHostname(selected.getDefaultHostname());
+            }
+
+            if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
+                !selected.isPathConfigurable())
+            {
+                _host.setDefaultPath(selected.getDefaultPath());
+            }
+
+            _host.setProtocol(selected);
+            int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
+            if (port != -1)
+            {
+                // External configuration found
+                _host.setPort(port);
+            }
+
+            _options.configure(selected);
+            _validator.configure(selected);
+            ItemChanged();
+            Update();
+            Reachable();
+        }
+
+        private void View_ChangedTimezoneEvent()
+        {
+            string selected = View.SelectedTimezone;
+            string[] ids = TimeZone.getAvailableIDs();
+            foreach (string id in ids)
+            {
+                TimeZone tz;
+                if ((tz = TimeZone.getTimeZone(id)).getID().Equals(selected))
+                {
+                    _host.setTimezone(tz);
+                    break;
+                }
+            }
+
+            ItemChanged();
+        }
+
+        private void View_ChangedTransferEvent()
+        {
+            _host.setTransfer(View.SelectedTransferMode);
+            ItemChanged();
+        }
+
+        private void View_ChangedWebURLEvent()
+        {
+            _host.setWebURL(View.WebURL);
+            UpdateFavicon();
+            ItemChanged();
+        }
+
+        private void View_OpenDownloadFolderBrowserEvent()
+        {
+            Local folder = new DownloadDirectoryFinder().find(_host);
+            View.ShowDownloadFolderBrowser(folder.getAbsolute());
+        }
+
+        private void View_OpenDownloadFolderEvent()
+        {
+            Local folder = new DownloadDirectoryFinder().find(_host);
+            ApplicationLauncherFactory.get().open(LocalFactory.get(folder.getAbsolute()));
+        }
+
+        private void View_OpenPrivateKeyBrowserEvent()
+        {
+            string selectedKeyFile = PreferencesFactory.get().getProperty("local.user.home");
+            if (null != _host.getCredentials().getIdentity())
+            {
+                selectedKeyFile = Path.GetDirectoryName(_host.getCredentials().getIdentity().getAbsolute());
+            }
+
+            View.ShowPrivateKeyBrowser(selectedKeyFile);
+        }
+
+        private void View_OpenUrl()
+        {
+            BrowserLauncherFactory.get().open(new HostUrlProvider().get(_host));
+        }
+
+        private void View_OpenWebUrl()
+        {
+            BrowserLauncherFactory.get().open(new DefaultWebUrlProvider().toUrl(_host).getUrl());
+        }
+
+        private void View_ToggleOptions()
+        {
+            View.OptionsVisible = !View.OptionsVisible;
+        }
         private class FaviconAction : AbstractBackgroundAction
         {
             private readonly BookmarkController<T> _controller;
@@ -694,6 +717,18 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _controller = controller;
                 _host = host;
+            }
+
+            public override void cleanup()
+            {
+                if (null != _favicon)
+                {
+                    _controller.View.Favicon = _favicon;
+                }
+                else
+                {
+                    _controller.View.Favicon = Images.Site.Size(16);
+                }
             }
 
             public override object run()
@@ -712,18 +747,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 return true;
             }
-
-            public override void cleanup()
-            {
-                if (null != _favicon)
-                {
-                    _controller.View.Favicon = _favicon;
-                }
-                else
-                {
-                    _controller.View.Favicon = IconCache.IconForName("site", 16);
-                }
-            }
         }
 
         private class ReachabilityAction : AbstractBackgroundAction
@@ -738,15 +761,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host = host;
             }
 
+            public override void cleanup()
+            {
+                _controller.View.AlertIconEnabled = !_reachable;
+            }
+
             public override object run()
             {
                 _reachable = ReachabilityFactory.get().isReachable(_host);
                 return true;
-            }
-
-            public override void cleanup()
-            {
-                _controller.View.AlertIconEnabled = !_reachable;
             }
         }
 

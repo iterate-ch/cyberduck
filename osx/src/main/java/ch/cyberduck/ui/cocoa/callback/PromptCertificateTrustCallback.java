@@ -32,7 +32,8 @@ import ch.cyberduck.core.keychain.SecTrustRef;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.security.cert.X509Certificate;
@@ -42,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.sun.jna.ptr.PointerByReference;
 
 public class PromptCertificateTrustCallback implements CertificateTrustCallback {
-    private static final Logger log = Logger.getLogger(PromptCertificateTrustCallback.class);
+    private static final Logger log = LogManager.getLogger(PromptCertificateTrustCallback.class);
 
     private final Controller controller;
 

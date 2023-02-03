@@ -9,6 +9,14 @@
     <MediaTemplate EmbedCab="yes" />
     <Property Id="REINSTALLMODE" Value="dmus"/>
 
+    <Property Id="BUILDVERSION" Value="0">
+      <RegistrySearch Id="BuildVersion" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Type="raw" Name="CurrentBuild" />
+    </Property>
+
+    <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
+      <![CDATA[BUILDVERSION >= 14393]]>
+    </Condition>
+
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="INSTALLFOLDER" Name="Cyberduck CLI">
@@ -23,17 +31,20 @@
                          System="yes"
                          Value="[INSTALLFOLDER]" />
           </Component>
-         <Directory Id="PROFILES" Name="profiles"/>
+          <Directory Id="PROFILES" Name="profiles"/>
         </Directory>
       </Directory>
     </Directory>
 
     <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-    <Component Id="InstallLocationRegistrySearch">
+      <Component Id="InstallLocationRegistrySearch">
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
         <File Id="product.exe" Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="ProductExe.Config" Guid="CFC37A9B-0CD5-439B-BFB5-A3176D6500A1">
+        <File Source="$(var.CLI.TargetPath).config" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
         <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />
@@ -110,21 +121,34 @@
       <Component Id="ikvm.management" Guid="898A68A4-7883-4EBF-94A4-BE3D127D6D38">
         <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Management.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-        <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
-            <File Source="$(var.CLI.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="ikvm.misc" Guid="1F57FEE7-5278-44C8-9C30-CBDAC2019304">
-            <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
-            <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
-            <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
-        <Component Id="msvcr120">
-            <File Source="$(var.CLI.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
-        </Component>
+      <Component Id="ikvm.native" Guid="975906E0-033F-4B86-84B7-5B969278EC55">
+        <File Source="$(var.CLI.TargetDir)/ikvm-native-win32-x64.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="ikvm.misc" Guid="1F57FEE7-5278-44C8-9C30-CBDAC2019304">
+        <File Source="$(var.CLI.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="jnidispatch" Guid="B6621775-1A9A-461E-83B8-BB1EE34B5965">
+        <File Source="$(var.CLI.TargetDir)/jnidispatch.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="mscapi" Guid="1E4C2512-F9C0-40FB-88E2-B16BA572040D">
+        <File Source="$(var.CLI.TargetDir)/sunmscapi.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="msvcr120">
+        <File Source="$(var.CLI.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+
+      <Component Id="System.Buffers">
+        <File Source="$(var.CLI.TargetDir)/System.Buffers.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Memory">
+        <File Source="$(var.CLI.TargetDir)/System.Memory.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Numerics.Vectors">
+        <File Source="$(var.CLI.TargetDir)/System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="System.Runtime.CompilerServices.Unsafe">
+        <File Source="$(var.CLI.TargetDir)/System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes" />
+      </Component>
     </ComponentGroup>
 
     <ComponentGroup Id="profiles" Directory="PROFILES">
@@ -181,6 +205,9 @@
       </Component>
       <Component Id="swiftv3.cyberduckprofile">
         <File Source="$(var.CLI.TargetDir)/profiles/Openstack Swift (Keystone 3).cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="box.cyberduckprofile">
+        <File Source="$(var.CLI.TargetDir)/profiles/Box.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 

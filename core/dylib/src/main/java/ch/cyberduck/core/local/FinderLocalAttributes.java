@@ -31,7 +31,8 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
@@ -42,7 +43,7 @@ import org.rococoa.cocoa.foundation.NSError;
  * @see ch.cyberduck.binding.foundation.NSFileManager
  */
 public class FinderLocalAttributes extends LocalAttributes {
-    private static final Logger log = Logger.getLogger(FinderLocalAttributes.class);
+    private static final Logger log = LogManager.getLogger(FinderLocalAttributes.class);
 
     private final FinderLocal local;
 

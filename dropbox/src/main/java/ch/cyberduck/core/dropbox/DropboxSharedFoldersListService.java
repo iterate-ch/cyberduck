@@ -24,7 +24,8 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
@@ -34,7 +35,7 @@ import com.dropbox.core.v2.sharing.ListFoldersResult;
 import com.dropbox.core.v2.sharing.SharedFolderMetadata;
 
 public class DropboxSharedFoldersListService implements ListService {
-    private static final Logger log = Logger.getLogger(DropboxSharedFoldersListService.class);
+    private static final Logger log = LogManager.getLogger(DropboxSharedFoldersListService.class);
 
     private final DropboxSession session;
 

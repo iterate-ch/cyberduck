@@ -21,7 +21,8 @@ import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.SharepointSession;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Groups;
 import org.nuxeo.onedrive.client.types.GroupItem;
 import org.nuxeo.onedrive.client.types.User;
@@ -30,7 +31,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 
 public class GroupListService extends AbstractListService<GroupItem.Metadata> {
-    private static final Logger log = Logger.getLogger(GroupListService.class);
+    private static final Logger log = LogManager.getLogger(GroupListService.class);
 
     private final SharepointSession session;
 
@@ -41,7 +42,11 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
 
     @Override
     protected Iterator<GroupItem.Metadata> getIterator(final Path directory) {
-        return Groups.getMemberOfGroups(User.getCurrent(session.getClient()));
+        final User user = User.getCurrent(session.getClient());
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Return groups for user %s", user));
+        }
+        return Groups.getMemberOfGroups(user);
     }
 
     @Override

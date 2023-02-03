@@ -49,7 +49,8 @@ import ch.cyberduck.ui.cocoa.controller.BrowserController;
 import ch.cyberduck.ui.cocoa.controller.TransferControllerFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -64,7 +65,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class BookmarkTableDataSource extends ListDataSource {
-    private static final Logger log = Logger.getLogger(BookmarkTableDataSource.class);
+    private static final Logger log = LogManager.getLogger(BookmarkTableDataSource.class);
 
     protected final BrowserController controller;
 
@@ -412,7 +413,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 List<Host> duplicates = new ArrayList<Host>();
                 for(Host bookmark : pasteboard) {
-                    final Host duplicate = new HostDictionary().deserialize(bookmark.serialize(SerializerFactory.get()));
+                    final Host duplicate = new HostDictionary<>().deserialize(bookmark.serialize(SerializerFactory.get()));
                     // Make sure a new UUID is assigned for duplicate
                     duplicate.setUuid(null);
                     source.add(row.intValue(), duplicate);

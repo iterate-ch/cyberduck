@@ -26,17 +26,17 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.pool.SessionPool;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
-    private static final Logger log = Logger.getLogger(CopyURLMenuDelegate.class);
+    private static final Logger log = LogManager.getLogger(CopyURLMenuDelegate.class);
 
     @Override
     protected String getKeyEquivalent() {
@@ -55,10 +55,6 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
         final UrlProvider provider = pool.getFeature(UrlProvider.class);
         if(provider != null) {
             list.addAll(provider.toUrl(selected));
-        }
-        final DistributionConfiguration feature = pool.getFeature(DistributionConfiguration.class);
-        if(feature != null) {
-            list.addAll(feature.toUrl(selected));
         }
         return list;
     }

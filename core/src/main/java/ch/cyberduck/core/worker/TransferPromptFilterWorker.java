@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -32,7 +33,8 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -41,7 +43,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
-    private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptFilterWorker.class);
 
     private final Transfer transfer;
     private final TransferAction action;
@@ -64,7 +66,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
         // Unordered list
-        for(Map.Entry<TransferItem, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {
+        for(Map.Entry<CacheReference<TransferItem>, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }

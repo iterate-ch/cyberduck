@@ -15,18 +15,22 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA1ChecksumCompute;
+import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -62,7 +66,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(new B2ObjectListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -86,8 +90,9 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
         final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
         assertNotNull(list.find(new SimplePathPredicate(file)));
-        assertEquals(Long.valueOf(1L), list.find(new SimplePathPredicate(file)).attributes().getRevision());
+        assertNull(list.find(new SimplePathPredicate(file)).attributes().getRevision());
         assertEquals(0L, list.find(new SimplePathPredicate(file)).attributes().getSize());
+        assertSame(bucket, list.find(new SimplePathPredicate(file)).getParent());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).contains(file));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -103,7 +108,6 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         final AttributedList<Path> list = new B2ObjectListService(session, fileid, 1).list(bucket, new DisabledListProgressListener());
         assertTrue(list.contains(file1));
         assertTrue(list.contains(file2));
-
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -112,23 +116,23 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AsciiRandomStringService().random();
-        final Path file1 = new Path(bucket, name, EnumSet.of(Path.Type.file));
-        final Path file2 = new Path(bucket, name, EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));
         {
             final byte[] content = RandomUtils.nextBytes(1);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file1, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
-            final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
+            final B2FileResponse response = (B2FileResponse) out.getStatus();
+            assertEquals(response.getFileId(), file.attributes().getVersionId());
+            file.attributes().setVersionId(response.getFileId());
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
-            file1.attributes().setVersionId(resopnse.getFileId());
-            assertTrue(list.contains(file1));
-            assertEquals(Long.valueOf(1L), list.find(new SimplePathPredicate(file1)).attributes().getRevision());
-            assertEquals(content.length, list.find(new SimplePathPredicate(file1)).attributes().getSize());
-            assertEquals(bucket, list.find(new SimplePathPredicate(file1)).getParent());
+            assertTrue(list.contains(file));
+            assertNull(list.find(new SimplePathPredicate(file)).attributes().getRevision());
+            assertEquals(content.length, list.find(new SimplePathPredicate(file)).attributes().getSize());
+            assertEquals(bucket, list.find(new SimplePathPredicate(file)).getParent());
         }
         // Replace
         {
@@ -136,27 +140,46 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file2, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
-            final B2FileResponse resopnse = (B2FileResponse) out.getStatus();
+            final B2FileResponse response = (B2FileResponse) out.getStatus();
+            assertEquals(response.getFileId(), file.attributes().getVersionId());
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
-            file2.attributes().setVersionId(resopnse.getFileId());
-            assertTrue(list.contains(file2));
-            assertEquals(Long.valueOf(1L), list.get(file2).attributes().getRevision());
-            assertFalse(list.get(file2).attributes().isDuplicate());
-            assertTrue(list.contains(file1));
-            assertEquals(Long.valueOf(2L), list.get(file1).attributes().getRevision());
-            assertTrue(list.get(file1).attributes().isDuplicate());
-            assertEquals(bucket, list.get(file1).getParent());
+            assertEquals(2, list.size());
+            assertTrue(list.contains(file));
+            assertEquals(bucket, list.get(file).getParent());
+            assertNull(list.get(file).attributes().getRevision());
+            assertEquals(Long.valueOf(1L), list.find(path -> path.attributes().isDuplicate()).attributes().getRevision());
         }
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(file1, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // Add hide marker
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
-            assertNull(list.find(new SimplePathPredicate(file1)));
-            assertNull(list.find(new SimplePathPredicate(file2)));
+            assertEquals(3, list.size());
+            for(Path f : list) {
+                assertTrue(f.attributes().isDuplicate());
+            }
         }
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new B2FindFeature(session, fileid).find(file));
+        assertFalse(new DefaultFindFeature(session).find(file));
+        try {
+            new B2AttributesFinderFeature(session, fileid).find(file);
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
+        assertEquals(list, new B2VersioningFeature(session, fileid).list(file, new DisabledListProgressListener()));
+        final Path other = new B2TouchFeature(session, fileid).touch(new Path(bucket, name + new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> versions = new B2VersioningFeature(session, fileid).list(file, new DisabledListProgressListener());
+        assertEquals(list, versions);
+        assertFalse(versions.contains(other));
+        for(Path f : list) {
+            new B2DeleteFeature(session, fileid).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(other, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -178,8 +201,8 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         assertNotNull(list.find(new SimplePathPredicate(folder2)));
         assertNull(list.find(new SimplePathPredicate(file2)));
         assertNull(list.find(new SimplePathPredicate(folder1)));
-        assertEquals(folder1, list.find(new SimplePathPredicate(file1)).getParent());
-        assertEquals(folder1, list.find(new SimplePathPredicate(folder2)).getParent());
+        assertSame(folder1, list.find(new SimplePathPredicate(file1)).getParent());
+        assertSame(folder1, list.find(new SimplePathPredicate(folder2)).getParent());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, folder1, file1, folder2, file2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -237,16 +260,26 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
     public void testListLexicographicSortOrderAssumption() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid).mkdir(
-            new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         assertTrue(new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).isEmpty());
         final List<String> files = Arrays.asList(
-            "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+                "Z", "aa", "0a", "a", "AAA", "B", "~$a", ".c"
         );
         for(String f : files) {
             new B2TouchFeature(session, fileid).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
         files.sort(session.getHost().getProtocol().getListComparator());
-        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener());
+        final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(directory, new IndexedListProgressListener() {
+            @Override
+            public void message(final String message) {
+                //
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path file) {
+                assertEquals(files.get(index), file.getName());
+            }
+        });
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
             new B2DeleteFeature(session, fileid).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());

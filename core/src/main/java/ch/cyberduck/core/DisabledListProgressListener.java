@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
 
 public class DisabledListProgressListener implements ListProgressListener {
@@ -27,7 +28,7 @@ public class DisabledListProgressListener implements ListProgressListener {
     }
 
     @Override
-    public ListProgressListener reset() {
+    public ListProgressListener reset() throws ConnectionCanceledException {
         return this;
     }
 

@@ -25,5 +25,7 @@
         <true/>
         <key>Default Hostname</key>
         <string>storageaccount.blob.core.windows.net</string>
+        <key>Default Nickname</key>
+        <string>Windows Azure Blob Storage</string>
     </dict>
 </plist>

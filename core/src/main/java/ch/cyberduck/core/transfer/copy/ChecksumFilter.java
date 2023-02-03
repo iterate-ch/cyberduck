@@ -26,13 +26,14 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 import java.util.Objects;
 
 public class ChecksumFilter extends AbstractCopyFilter {
-    private static final Logger log = Logger.getLogger(ChecksumFilter.class);
+    private static final Logger log = LogManager.getLogger(ChecksumFilter.class);
 
     public ChecksumFilter(final Session<?> source, final Session<?> destination, final Map<Path, Path> files) {
         super(source, destination, files);

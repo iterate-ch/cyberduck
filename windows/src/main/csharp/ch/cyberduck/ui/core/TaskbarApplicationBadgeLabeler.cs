@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Core
         {
             if (Cyberduck.Core.Utils.IsBlank(text))
             {
-                TransferController.Instance.TaskbarOverlayIcon(null, String.Empty);
+                clear();
             }
             else
             {
@@ -53,6 +53,11 @@ namespace Ch.Cyberduck.Ui.Core
                     TransferController.Instance.TaskbarOverlayIcon(Icon.FromHandle(bm.GetHicon()), text);
                 }
             }
+        }
+
+        public void clear()
+        {
+            TransferController.Instance.TaskbarOverlayIcon(null, String.Empty);
         }
     }
 }

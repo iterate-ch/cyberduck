@@ -23,7 +23,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
 using ch.cyberduck.core.threading;
 using java.lang;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using Exception = System.Exception;
 using Object = System.Object;
 
@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal sealed class ActivityController : WindowController<IActivityView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (ActivityController).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (ActivityController).FullName);
 
         private static readonly object SyncRoot = new Object();
         private static volatile ActivityController _instance;
@@ -126,7 +126,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class AddTaskAction : WindowMainAction
             {
-                private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).FullName);
+                private static readonly Logger Log = LogManager.getLogger(typeof (AddTaskAction).FullName);
                 private readonly BackgroundAction _action;
                 private readonly ActivityController _controller;
 
@@ -145,7 +145,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class RemoveTaskAction : WindowMainAction
             {
-                private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).FullName);
+                private static readonly Logger Log = LogManager.getLogger(typeof (AddTaskAction).FullName);
                 private readonly BackgroundAction _action;
                 private readonly ActivityController _controller;
 

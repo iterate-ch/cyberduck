@@ -47,14 +47,15 @@ import ch.cyberduck.core.shared.DisabledQuotaFeature;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Session<C> implements TranscriptListener {
-    private static final Logger log = Logger.getLogger(Session.class);
+    private static final Logger log = LogManager.getLogger(Session.class);
 
     /**
      * Append HTTP transcript to logger
@@ -220,7 +221,6 @@ public abstract class Session<C> implements TranscriptListener {
     protected void disconnect() {
         state = State.closed;
         listeners.clear();
-        client = null;
     }
 
     /**

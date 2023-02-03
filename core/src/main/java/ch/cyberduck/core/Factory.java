@@ -21,18 +21,21 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 
 public abstract class Factory<T> {
+    private static final Logger log = LogManager.getLogger(Factory.class);
 
-    protected final Class<T> clazz;
+    protected final Class<? extends T> clazz;
 
     public Factory() {
         this.clazz = null;
     }
 
-    public Factory(final Class<T> clazz) {
+    public Factory(final Class<? extends T> clazz) {
         this.clazz = clazz;
     }
 
@@ -42,10 +45,13 @@ public abstract class Factory<T> {
     protected Factory(final String name) {
         try {
             final String c = PreferencesFactory.get().getProperty(name);
-            if(null == c) {
-                throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
+            if(null != c) {
+                this.clazz = (Class<? extends T>) Class.forName(c);
             }
-            this.clazz = (Class<T>) Class.forName(c);
+            else {
+                log.warn(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
+                this.clazz = null;
+            }
         }
         catch(ClassNotFoundException e) {
             throw new FactoryException(e.getMessage(), e);
@@ -68,6 +74,9 @@ public abstract class Factory<T> {
         }
     }
 
+    public boolean isAvailable() {
+        return null != clazz;
+    }
 
     public enum Platform {
         osname {

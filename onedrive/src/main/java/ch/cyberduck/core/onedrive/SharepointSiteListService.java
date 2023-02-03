@@ -13,7 +13,7 @@ public class SharepointSiteListService extends AbstractSharepointListService {
     }
 
     @Override
-    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return addSiteItems(directory, listener);
     }
 }

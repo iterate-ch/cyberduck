@@ -25,15 +25,17 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
@@ -48,38 +50,45 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class S3VersionedObjectListService extends S3AbstractListService implements ListService {
-    private static final Logger log = Logger.getLogger(S3VersionedObjectListService.class);
+    private static final Logger log = LogManager.getLogger(S3VersionedObjectListService.class);
 
     public static final String KEY_DELETE_MARKER = "delete_marker";
 
     private final PathContainerService containerService;
     private final S3Session session;
+    private final S3AttributesFinderFeature attributes;
     private final Integer concurrency;
-    private final boolean references;
 
-    public S3VersionedObjectListService(final S3Session session) {
-        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"),
-            new HostPreferences(session.getHost()).getBoolean("s3.versioning.references.enable"));
+    /**
+     * Use HEAD request for every object found to add complete metadata in file attributes
+     */
+    private final boolean metadata;
+
+    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl) {
+        this(session, acl, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"));
     }
 
-    public S3VersionedObjectListService(final S3Session session, final boolean references) {
-        this(session, new HostPreferences(session.getHost()).getInteger("s3.listing.concurrency"), references);
+    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency) {
+        this(session, acl, concurrency, new HostPreferences(session.getHost()).getBoolean("s3.listing.metadata.enable"));
     }
 
     /**
      * @param session     Connection
+     * @param acl
      * @param concurrency Number of threads to handle prefixes
-     * @param references  Set references of previous versions in file attributes
      */
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references) {
+    public S3VersionedObjectListService(final S3Session session, final S3AccessControlListFeature acl, final Integer concurrency, final boolean metadata) {
         super(session);
         this.session = session;
+        this.attributes = new S3AttributesFinderFeature(session, acl);
         this.concurrency = concurrency;
-        this.references = references;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.metadata = metadata;
     }
 
     @Override
@@ -88,121 +97,114 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         try {
             final String prefix = this.createPrefix(directory);
             final Path bucket = containerService.getContainer(directory);
-            final AttributedList<Path> children = new AttributedList<>();
-            final List<Future<Path>> folders = new ArrayList<>();
+            final AttributedList<Path> objects = new AttributedList<>();
             String priorLastKey = null;
             String priorLastVersionId = null;
             long revision = 0L;
             String lastKey = null;
-            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
+            boolean hasDirectoryPlaceholder = bucket.isRoot() || containerService.isContainer(directory);
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                    bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
-                    new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"),
-                    priorLastKey, priorLastVersionId, false);
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
+                        new HostPreferences(session.getHost()).getInteger("s3.listing.chunksize"),
+                        priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
-                    final String key = PathNormalizer.normalize(URIEncoder.decode(marker.getKey()));
-                    if(String.valueOf(Path.DELIMITER).equals(key)) {
+                    final String key = URIEncoder.decode(marker.getKey());
+                    if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
                     }
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         // Placeholder object, skip
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setVersionId(marker.getVersionId());
+                    final PathAttributes attr = new PathAttributes();
+                    attr.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
                     }
-                    attributes.setRevision(++revision);
-                    attributes.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
+                    attr.setRevision(++revision);
+                    attr.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
-                        attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
+                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, String.valueOf(true)));
                     }
-                    attributes.setModificationDate(marker.getLastModified().getTime());
-                    attributes.setRegion(bucket.attributes().getRegion());
+                    attr.setModificationDate(marker.getLastModified().getTime());
+                    attr.setRegion(bucket.attributes().getRegion());
                     if(marker instanceof S3Version) {
                         final S3Version object = (S3Version) marker;
-                        attributes.setSize(object.getSize());
+                        attr.setSize(object.getSize());
                         if(StringUtils.isNotBlank(object.getEtag())) {
-                            attributes.setETag(object.getEtag());
+                            attr.setETag(StringUtils.remove(object.getEtag(), "\""));
+                            // The ETag will only be the MD5 of the object data when the object is stored as plaintext or encrypted
+                            // using SSE-S3. If the object is encrypted using another method (such as SSE-C or SSE-KMS) the ETag is
+                            // not the MD5 of the object data.
+                            attr.setChecksum(Checksum.parse(StringUtils.remove(object.getEtag(), "\"")));
                         }
                         if(StringUtils.isNotBlank(object.getStorageClass())) {
-                            attributes.setStorageClass(object.getStorageClass());
+                            attr.setStorageClass(object.getStorageClass());
                         }
                     }
                     final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(),
-                        PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
-                    children.add(f);
+                            PathNormalizer.name(key), EnumSet.of(Path.Type.file), attr);
+                    if(metadata) {
+                        f.withAttributes(attributes.find(f));
+                    }
+                    objects.add(f);
                     lastKey = key;
                 }
-                if(references) {
-                    for(Path f : children) {
-                        if(f.attributes().isDuplicate()) {
-                            final Path latest = children.find(new LatestVersionPathPredicate(f));
-                            if(latest != null) {
-                                // Reference version
-                                final AttributedList<Path> versions = new AttributedList<>(latest.attributes().getVersions());
-                                versions.add(f);
-                                latest.attributes().setVersions(versions);
-                            }
-                            else {
-                                log.warn(String.format("No current version found for %s", f));
-                            }
-                        }
-                    }
-                }
                 final String[] prefixes = chunk.getCommonPrefixes();
+                final List<Future<Path>> folders = new ArrayList<>();
                 for(String common : prefixes) {
                     if(String.valueOf(Path.DELIMITER).equals(common)) {
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }
                     final String key = PathNormalizer.normalize(URIEncoder.decode(common));
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
                         continue;
                     }
                     folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(common)));
                 }
+                for(Future<Path> f : folders) {
+                    try {
+                        objects.add(Uninterruptibles.getUninterruptibly(f));
+                    }
+                    catch(ExecutionException e) {
+                        log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
+                        Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                        throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+                    }
+                }
                 priorLastKey = null != chunk.getNextKeyMarker() ? URIEncoder.decode(chunk.getNextKeyMarker()) : null;
                 priorLastVersionId = chunk.getNextVersionIdMarker();
-                listener.chunk(directory, children);
+                listener.chunk(directory, objects);
             }
             while(priorLastKey != null);
-            for(Future<Path> future : folders) {
-                try {
-                    children.add(future.get());
-                }
-                catch(InterruptedException e) {
-                    log.error("Listing versioned objects failed with interrupt failure");
-                    throw new ConnectionCanceledException(e);
-                }
-                catch(ExecutionException e) {
-                    log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
-                    if(e.getCause() instanceof BackgroundException) {
-                        throw (BackgroundException) e.getCause();
-                    }
-                    throw new BackgroundException(e.getCause());
-                }
-            }
-            listener.chunk(directory, children);
-            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+            if(!hasDirectoryPlaceholder && objects.isEmpty()) {
                 // Only for AWS
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    throw new NotfoundException(directory.getAbsolute());
+                    if(StringUtils.isEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("No placeholder found for directory %s", directory));
+                        }
+                        throw new NotfoundException(directory.getAbsolute());
+                    }
                 }
-                // Handle missing prefix for directory placeholders in Minio
-                final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), String.valueOf(Path.DELIMITER), 1, null, null, false);
-                if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
-                    throw new NotfoundException(directory.getAbsolute());
+                else {
+                    // Handle missing prefix for directory placeholders in Minio
+                    final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(),
+                            String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()),
+                            String.valueOf(Path.DELIMITER), 1, null, null, false);
+                    if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
+                        throw new NotfoundException(directory.getAbsolute());
+                    }
                 }
             }
-            return children;
+            return objects;
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
@@ -217,27 +219,28 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setRegion(bucket.attributes().getRegion());
+                final PathAttributes attr = new PathAttributes();
+                attr.setRegion(bucket.attributes().getRegion());
                 final Path prefix = new Path(directory, PathNormalizer.name(common),
-                    EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                        bucket.getName(), common, null, 1,
-                        null, null, false);
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), common, null, 1,
+                            null, null, false);
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(URIEncoder.decode(version.getKey()).equals(common)) {
-                            attributes.setVersionId(version.getVersionId());
+                            attr.setVersionId(version.getVersionId());
                             if(version.isDeleteMarker()) {
-                                attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                attr.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                             }
                         }
                         // no placeholder but objects inside - need to check if all of them are deleted
-                        final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                            null, 1, null, false);
+                        final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(
+                                bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), common,
+                                null, 1, null, false);
                         if(unversioned.getObjects().length == 0) {
-                            attributes.setDuplicate(true);
+                            attr.setDuplicate(true);
                         }
                     }
                     return prefix;
@@ -247,19 +250,5 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 }
             }
         });
-    }
-
-    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
-        public LatestVersionPathPredicate(final Path f) {
-            super(f);
-        }
-
-        @Override
-        public boolean test(final Path test) {
-            if(super.test(test)) {
-                return !test.attributes().isDuplicate();
-            }
-            return false;
-        }
     }
 }

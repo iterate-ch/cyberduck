@@ -20,8 +20,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
-using Ch.Cyberduck.Ui.Core.Resources;
 using java.util;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual Image IconView
         {
-            get { return IconCache.IconForFilename("_unknown", IconCache.IconSize.Large); }
+            get { return IconProvider.GetFileIcon("_unknown", false, true, false); }
         }
 
         public virtual Path Workdir

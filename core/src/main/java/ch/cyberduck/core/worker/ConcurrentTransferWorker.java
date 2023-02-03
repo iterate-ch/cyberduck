@@ -38,16 +38,20 @@ import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.Throwables;
+
 public class ConcurrentTransferWorker extends AbstractTransferWorker {
-    private static final Logger log = Logger.getLogger(ConcurrentTransferWorker.class);
+    private static final Logger log = LogManager.getLogger(ConcurrentTransferWorker.class);
 
     private final SessionPool source;
     private final SessionPool destination;
@@ -69,7 +73,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final StreamListener streamListener,
                                     final NotificationService notification) {
         this(source, destination, transfer, ThreadPool.Priority.norm, options, meter, prompt, error,
-            connect, progressListener, streamListener, notification);
+                connect, progressListener, streamListener, notification);
     }
 
     public ConcurrentTransferWorker(final SessionPool source,
@@ -88,7 +92,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-            new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority);
+                new AutoTransferConnectionLimiter().getLimit(transfer.getSource()), priority, new LinkedBlockingQueue<>(Integer.MAX_VALUE));
         this.completion = new ExecutorCompletionService<>(pool.executor());
     }
 
@@ -163,12 +167,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                 log.warn(String.format("Unhandled failure %s", e));
                 throw new ConnectionCanceledException(e);
             }
-
             catch(ExecutionException e) {
-                if(e.getCause() instanceof BackgroundException) {
-                    throw (BackgroundException) e.getCause();
-                }
-                throw new DefaultExceptionMappingService().map(e.getCause());
+                Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
             }
             finally {
                 size.decrementAndGet();
@@ -177,8 +178,9 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public void cleanup(final Boolean result) {
-        pool.shutdown(result);
+    protected void shutdown() {
+        // Always shutdown gracefully allowing the threads to return after checking transfer status
+        pool.shutdown(true);
     }
 
     @Override

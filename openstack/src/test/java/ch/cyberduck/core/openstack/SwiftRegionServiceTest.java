@@ -2,7 +2,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -39,12 +38,12 @@ public class SwiftRegionServiceTest extends AbstractSwiftTest {
     public void testFindDefaultLocationInBookmark() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Rackspace US (IAD).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Rackspace US (IAD).cyberduckprofile"));
         final SwiftSession session = new SwiftSession(
-            new Host(profile, "identity.api.rackspacecloud.com",
-                new Credentials(
-                    System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                )), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+                new Host(profile, "identity.api.rackspacecloud.com",
+                        new Credentials(
+                                PROPERTIES.get("rackspace.user"), PROPERTIES.get("rackspace.password")
+                        )), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
 
         };
         assertEquals("IAD", session.getHost().getRegion());

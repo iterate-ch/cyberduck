@@ -29,7 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class WritePermissionWorker extends Worker<Boolean> {
-    private static final Logger log = Logger.getLogger(WritePermissionWorker.class);
+    private static final Logger log = LogManager.getLogger(WritePermissionWorker.class);
 
     /**
      * Selected files.

@@ -20,24 +20,26 @@ package ch.cyberduck.core.serializer.impl.dd;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
 
 import com.dd.plist.NSDictionary;
 
 public class HostPlistReader extends PlistReader<Host> {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<NSDictionary> deserializer = new DeserializerFactory<>();
+    private final ProtocolFactory protocols;
 
     public HostPlistReader() {
-        this.deserializer = new DeserializerFactory();
+        this(ProtocolFactory.get());
     }
 
-    public HostPlistReader(final DeserializerFactory deserializer) {
-        this.deserializer = deserializer;
+    public HostPlistReader(final ProtocolFactory protocols) {
+        this.protocols = protocols;
     }
 
     @Override
     public Host deserialize(final NSDictionary dict) {
-        return new HostDictionary(deserializer).deserialize(dict);
+        return new HostDictionary<>(protocols, deserializer).deserialize(dict);
     }
 }

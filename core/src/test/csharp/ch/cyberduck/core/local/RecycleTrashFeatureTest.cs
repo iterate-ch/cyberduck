@@ -17,7 +17,7 @@ namespace Ch.Cyberduck.Core.Local
         private Touch touch;
         private Trash trash;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             temp = new Local(Path.GetTempPath());
@@ -47,7 +47,7 @@ namespace Ch.Cyberduck.Core.Local
             trash.trash(trashee);
         }
 
-        [Test, ExpectedException(typeof(LocalAccessDeniedException))]
+        [Test]
         public void testTrashOpenFile()
         {
             Local trashee = new Local(temp, Path.GetRandomFileName());
@@ -59,11 +59,11 @@ namespace Ch.Cyberduck.Core.Local
 
             using (file.getOutputStream(false))
             {
-                trash.trash(trashee);
+                Assert.Throws<LocalAccessDeniedException>(() => trash.trash(trashee));
             }
         }
 
-        [Ignore, Test, ExpectedException(typeof(LocalAccessDeniedException))]
+        [Ignore("Unknown."), Test]
         public void testTrashOpenDirectoryEnumeration()
         {
             Local trashee = new Local(temp, Path.GetRandomFileName());
@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Core.Local
 
             using (Files.newDirectoryStream(Paths.get(file.getAbsolute())))
             {
-                trash.trash(trashee);
+                Assert.Throws<LocalAccessDeniedException>(() => trash.trash(trashee));
             }
         }
     }

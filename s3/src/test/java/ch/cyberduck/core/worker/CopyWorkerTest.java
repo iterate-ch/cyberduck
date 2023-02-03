@@ -51,49 +51,48 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(source, new TransferStatus().withMime("application/cyberduck"));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(source, new TransferStatus().withMime("application/cyberduck"));
         new S3AccessControlListFeature(session).setPermission(source, new Acl(
-            new Acl.UserAndRole(
-                new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
-            ),
-            new Acl.UserAndRole(
-                new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
-            )
+                new Acl.UserAndRole(
+                        new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL)
+                ),
+                new Acl.UserAndRole(
+                        new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
+                )
         ));
-        assertTrue(new S3FindFeature(session).find(source));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new S3FindFeature(session).find(source));
-        assertTrue(new S3FindFeature(session).find(target));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(source));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(target));
         assertEquals("application/cyberduck",
-            new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(target).get("Content-Type"));
+                new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(target).get("Content-Type"));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
-            new Acl.UserAndRole(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL))
+                new Acl.UserAndRole(new Acl.Owner("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6"), new Acl.Role(Acl.Role.FULL))
         ));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
-            new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
+                new Acl.UserAndRole(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ))
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
     }
 
     @Test
     public void testCopyFileToDirectory() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(sourceFile, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(sourceFile));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3TouchFeature(session, acl).touch(sourceFile, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(targetFolder, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(targetFolder));
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(targetFolder, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new S3FindFeature(session).find(sourceFile));
-        assertTrue(new S3FindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
+        assertTrue(new S3FindFeature(session, acl).find(sourceFile));
+        assertTrue(new S3FindFeature(session, acl).find(targetFile));
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
     }
 
     @Test
@@ -101,20 +100,20 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(folder, new TransferStatus());
-        new S3TouchFeature(session).touch(sourceFile, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(folder));
-        assertTrue(new S3FindFeature(session).find(sourceFile));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(folder, new TransferStatus());
+        new S3TouchFeature(session, acl).touch(sourceFile, new TransferStatus());
+        assertTrue(new S3FindFeature(session, acl).find(folder));
+        assertTrue(new S3FindFeature(session, acl).find(sourceFile));
         // move directory into vault
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new S3FindFeature(session).find(targetFolder));
-        assertTrue(new S3FindFeature(session).find(targetFile));
-        assertTrue(new S3FindFeature(session).find(folder));
-        assertTrue(new S3FindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
-        session.close();
+        assertTrue(new S3FindFeature(session, acl).find(targetFolder));
+        assertTrue(new S3FindFeature(session, acl).find(targetFile));
+        assertTrue(new S3FindFeature(session, acl).find(folder));
+        assertTrue(new S3FindFeature(session, acl).find(sourceFile));
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
     }
 }

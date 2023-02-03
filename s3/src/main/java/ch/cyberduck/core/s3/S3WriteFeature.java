@@ -33,11 +33,13 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.MultipartPart;
 import org.jets3t.service.model.MultipartUpload;
@@ -49,33 +51,39 @@ import java.util.List;
 import java.util.Map;
 
 public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> implements Write<StorageObject> {
-    private static final Logger log = Logger.getLogger(S3WriteFeature.class);
+    private static final Logger log = LogManager.getLogger(S3WriteFeature.class);
 
     private final PathContainerService containerService;
+    private final S3AccessControlListFeature acl;
     private final S3Session session;
 
-    public S3WriteFeature(final S3Session session) {
+    public S3WriteFeature(final S3Session session, final S3AccessControlListFeature acl) {
+        super(new S3AttributesAdapter());
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
     public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Object object = this.getDetails(file, status);
-        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+        final DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>(file) {
             @Override
             public StorageObject call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final RequestEntityRestStorageService client = session.getClient();
+                    final Path bucket = containerService.getContainer(file);
                     client.putObjectWithRequestEntityImpl(
-                        containerService.getContainer(file).getName(), object, entity, status.getParameters());
+                            bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), object, entity, status.getParameters());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }
-                    file.attributes().setVersionId(object.getVersionId());
                 }
                 catch(ServiceException e) {
                     throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
+                }
+                if(status.getTimestamp() != null) {
+                    object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
                 }
                 return object;
             }
@@ -91,7 +99,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     /**
      * Add default metadata
      */
-    protected S3Object getDetails(final Path file, final TransferStatus status) throws BackgroundException {
+    protected S3Object getDetails(final Path file, final TransferStatus status) {
         final S3Object object = new S3Object(containerService.getKey(file));
         final String mime = status.getMime();
         if(StringUtils.isNotBlank(mime)) {
@@ -109,10 +117,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
             }
         }
         if(StringUtils.isNotBlank(status.getStorageClass())) {
-            if(!S3Object.STORAGE_CLASS_STANDARD.equals(status.getStorageClass())) {
-                // The default setting is STANDARD.
-                object.setStorageClass(status.getStorageClass());
-            }
+            object.setStorageClass(status.getStorageClass());
         }
         final Encryption.Algorithm encryption = status.getEncryption();
         object.setServerSideEncryptionAlgorithm(encryption.algorithm);
@@ -124,36 +129,48 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(!Acl.EMPTY.equals(status.getAcl())) {
             if(status.getAcl().isCanned()) {
-                object.setAcl(new S3AccessControlListFeature(session).toAcl(file, status.getAcl()));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set canned ACL %s for %s", status.getAcl(), file));
+                }
+                object.setAcl(acl.toAcl(status.getAcl()));
                 // Reset in status to skip setting ACL in upload filter already applied as canned ACL
                 status.setAcl(Acl.EMPTY);
             }
+        }
+        if(status.getTimestamp() != null) {
+            // Interoperable with rsync
+            object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+        }
+        if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
+            object.setContentLength(status.getLength());
         }
         return object;
     }
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
-            final List<MultipartUpload> upload = multipartService.find(file);
-            if(!upload.isEmpty()) {
-                Long size = 0L;
-                for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
-                    size += completed.getSize();
+        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
+            try {
+                final S3DefaultMultipartService multipartService = new S3DefaultMultipartService(session);
+                final List<MultipartUpload> upload = multipartService.find(file);
+                if(!upload.isEmpty()) {
+                    Long size = 0L;
+                    for(MultipartPart completed : multipartService.list(upload.iterator().next())) {
+                        size += completed.getSize();
+                    }
+                    return new Append(true).withStatus(status).withSize(size);
                 }
-                return new Append(true).withStatus(status).withSize(size);
             }
-        }
-        catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+            }
         }
         return Write.override;
     }
 
     @Override
-    public boolean temporary() {
-        return false;
+    public boolean timestamp() {
+        return true;
     }
 
     @Override

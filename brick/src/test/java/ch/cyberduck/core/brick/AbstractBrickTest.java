@@ -26,21 +26,32 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractBrickTest {
+public class AbstractBrickTest extends VaultTest {
 
     protected BrickSession session;
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {
@@ -51,9 +62,9 @@ public class AbstractBrickTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new BrickProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Brick.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/Brick.cyberduckprofile"));
         final Host host = new Host(profile, "mountainduck.files.com", new Credentials(
-            System.getProperties().getProperty("brick.user"), System.getProperties().getProperty("brick.password")
+                PROPERTIES.get("brick.user"), PROPERTIES.get("brick.password")
         ));
         session = new BrickSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {

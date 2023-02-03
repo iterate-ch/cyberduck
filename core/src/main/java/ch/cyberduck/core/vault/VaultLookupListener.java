@@ -20,5 +20,5 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
 
 public interface VaultLookupListener {
-    Vault load(final Session session, Path directory, String masterkey, byte[] pepper) throws VaultUnlockCancelException;
+    Vault load(final Session session, Path directory, String masterkey, final String config, byte[] pepper) throws VaultUnlockCancelException;
 }

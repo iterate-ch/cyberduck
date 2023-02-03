@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
@@ -20,13 +19,12 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.BackgroundException;
 
 import java.security.PublicKey;
 
 public interface HostKeyCallback {
 
-    boolean verify(Host hostname, PublicKey key) throws ConnectionCanceledException, ChecksumException;
+    boolean verify(Host hostname, PublicKey key) throws BackgroundException;
 
 }

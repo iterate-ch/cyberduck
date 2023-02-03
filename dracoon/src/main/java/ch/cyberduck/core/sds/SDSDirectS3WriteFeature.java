@@ -26,6 +26,7 @@ import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,24 +38,26 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
-    private static final Logger log = Logger.getLogger(SDSDirectS3WriteFeature.class);
+public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Node> {
+    private static final Logger log = LogManager.getLogger(SDSDirectS3WriteFeature.class);
 
     private final SDSSession session;
 
     public SDSDirectS3WriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        super(new SDSAttributesAdapter(session));
         this.session = session;
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        return this.write(file, status, new DelayedHttpEntityCallable<Void>() {
+    public HttpResponseOutputStream<Node> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return this.write(file, status, new DelayedHttpEntityCallable<Node>(file) {
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public Node call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(status.getUrl());
                     request.setEntity(entity);
@@ -69,8 +72,9 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
                                     if(log.isInfoEnabled()) {
                                         log.info(String.format("Received response %s for part number %d", response, status.getPart()));
                                     }
-                                    status.setChecksum(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')));
-                                    return null;
+                                    return new Node()
+                                            .type(Node.TypeEnum.FILE)
+                                            .hash(Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"')).hash);
                                 }
                                 else {
                                     log.error(String.format("Missing ETag in response %s", response));
@@ -104,11 +108,6 @@ public class SDSDirectS3WriteFeature extends AbstractHttpWriteFeature<Void> {
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
     }
 
     @Override

@@ -46,5 +46,5 @@ public interface ConnectionService {
      *
      * @param session Connection
      */
-    void close(Session<?> session);
+    void close(Session<?> session) throws BackgroundException;
 }

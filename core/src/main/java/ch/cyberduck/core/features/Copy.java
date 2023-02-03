@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Copy {
@@ -27,9 +28,10 @@ public interface Copy {
      * @param target   Target file or folder
      * @param status   Write status
      * @param callback Prompt
+     * @param listener
      * @return Target file
      */
-    Path copy(Path source, Path target, TransferStatus status, ConnectionCallback callback) throws BackgroundException;
+    Path copy(Path source, Path target, TransferStatus status, ConnectionCallback callback, final StreamListener listener) throws BackgroundException;
 
     /**
      * @param source Source file or folder

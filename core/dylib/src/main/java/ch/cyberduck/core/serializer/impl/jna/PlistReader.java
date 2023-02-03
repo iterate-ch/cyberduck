@@ -18,48 +18,14 @@ package ch.cyberduck.core.serializer.impl.jna;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSEnumerator;
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.serializer.Reader;
 
-import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
-
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
-    private static final Logger log = Logger.getLogger(PlistReader.class);
-
-    @Override
-    public Collection<S> readCollection(final Local file) throws AccessDeniedException {
-        if(!file.exists()) {
-            throw new LocalAccessDeniedException(file.getAbsolute());
-        }
-        final Collection<S> c = new Collection<S>();
-        NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
-        if(null == list) {
-            log.error(String.format("Invalid bookmark file %s", file));
-            return c;
-        }
-        final NSEnumerator i = list.objectEnumerator();
-        NSObject next;
-        while((next = i.nextObject()) != null) {
-            if(next.isKindOfClass(NSDictionary.CLASS)) {
-                final NSDictionary dict = Rococoa.cast(next, NSDictionary.class);
-                final S object = this.deserialize(dict);
-                if(null == object) {
-                    continue;
-                }
-                c.add(object);
-            }
-        }
-        return c;
-    }
 
     /**
      * @param file A valid bookmark dictionary

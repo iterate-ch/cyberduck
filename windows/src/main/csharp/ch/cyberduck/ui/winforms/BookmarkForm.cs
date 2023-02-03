@@ -24,6 +24,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -35,10 +36,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            alertIcon.Image = Images.TryGet(_ => _.Alert);
+            buttonWebURL.Image = Images.TryGet(_ => _.Site);
+
             //focus nickname
             Load += (sender, args) => textBoxNickname.Focus();
 
-            protocol.ICImageList = ProtocolIconsImageList();
+            protocol.ICImageList = IconProvider.ProtocolList;
 
             toggleOptionsLabel.Text = "        " + LocaleFactory.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
@@ -69,7 +73,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Password
         {
-            get { return textBoxPassword.Text; }
+            get { return textBoxPassword.Text.Trim(); }
             set { textBoxPassword.Text = value; }
         }
 
@@ -324,7 +328,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Username
         {
-            get { return textBoxUsername.Text; }
+            get { return textBoxUsername.Text.Trim(); }
             set { textBoxUsername.Text = value; }
         }
 

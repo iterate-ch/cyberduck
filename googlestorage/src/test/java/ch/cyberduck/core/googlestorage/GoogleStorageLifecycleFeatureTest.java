@@ -15,7 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -29,6 +29,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -36,21 +37,15 @@ import static org.junit.Assert.assertEquals;
 public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testGetEmptyConfiguration() throws Exception {
-        assertEquals(LifecycleConfiguration.empty(), new GoogleStorageLifecycleFeature(session).getConfiguration(
-            new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory))));
-    }
-
-    @Test
     public void testSetConfiguration() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(),
+                new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(test, new TransferStatus());
         final GoogleStorageLifecycleFeature feature = new GoogleStorageLifecycleFeature(session);
         assertEquals(LifecycleConfiguration.empty(), feature.getConfiguration(test));
-        feature.setConfiguration(test, new LifecycleConfiguration(1, "COLDLINE", 2));
+        feature.setConfiguration(test, new LifecycleConfiguration(1, 2));
         final LifecycleConfiguration read = feature.getConfiguration(test);
         assertEquals(1, read.getTransition(), 0L);
-        assertEquals("COLDLINE", read.getStorageClass());
         assertEquals(2, read.getExpiration(), 0L);
         feature.setConfiguration(test, LifecycleConfiguration.empty());
         assertEquals(LifecycleConfiguration.empty(), feature.getConfiguration(test));
@@ -60,7 +55,7 @@ public class GoogleStorageLifecycleFeatureTest extends AbstractGoogleStorageTest
     @Test
     public void testGetConfigurationAccessDenied() throws Exception {
         assertEquals(LifecycleConfiguration.empty(), new GoogleStorageLifecycleFeature(session).getConfiguration(
-            new Path("bucket", EnumSet.of(Path.Type.directory))
+                new Path("bucket", EnumSet.of(Path.Type.directory))
         ));
     }
 }

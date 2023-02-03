@@ -18,7 +18,8 @@ package ch.cyberduck.core.io.watchservice;
  * feedback@cyberduck.io
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -29,7 +30,7 @@ import java.nio.file.Watchable;
 import java.util.concurrent.TimeUnit;
 
 public class NIOEventWatchService implements RegisterWatchService {
-    private static final Logger log = Logger.getLogger(NIOEventWatchService.class);
+    private static final Logger log = LogManager.getLogger(NIOEventWatchService.class);
 
     private WatchService monitor;
 

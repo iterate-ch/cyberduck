@@ -28,6 +28,9 @@ import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.dracoon.sdk.crypto.model.UserPublicKey;
 
+/**
+ * Conversion between Swagger data model and TripleCrypt SDK classes
+ */
 public class TripleCryptConverter {
     public static FileKey toSwaggerFileKey(final EncryptedFileKey k) {
         return new FileKey().key(k.getKey()).iv(k.getIv()).tag(k.getTag()).version(k.getVersion().getValue());
@@ -46,9 +49,9 @@ public class TripleCryptConverter {
 
     public static UserKeyPair toCryptoUserKeyPair(final UserKeyPairContainer c) throws UnknownVersionException {
         final UserPrivateKey privateKey = new UserPrivateKey(UserKeyPair.Version.getByValue(c.getPrivateKeyContainer().getVersion()),
-            c.getPrivateKeyContainer().getPrivateKey());
+                c.getPrivateKeyContainer().getPrivateKey());
         final UserPublicKey publicKey = new UserPublicKey(UserKeyPair.Version.getByValue(c.getPublicKeyContainer().getVersion()),
-            c.getPublicKeyContainer().getPublicKey());
+                c.getPublicKeyContainer().getPublicKey());
         return new UserKeyPair(privateKey, publicKey);
     }
 

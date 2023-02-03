@@ -26,9 +26,11 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.Map;
 import ch.iterate.openstack.swift.exception.GenericException;
 
 public class SwiftDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(SwiftDeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftDeleteFeature.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();
@@ -61,7 +63,7 @@ public class SwiftDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        this.delete(files, prompt, callback, true);
+        this.delete(files, prompt, callback, new HostPreferences(session.getHost()).getBoolean("openstack.delete.largeobject.segments"));
     }
 
     /**

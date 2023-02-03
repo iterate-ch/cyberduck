@@ -1,0 +1,10 @@
+git:
+  filters:
+    - filter_type: dir
+      file_format: STRINGS
+      source_language: en
+      source_file_dir: i18n/src/main/resources
+      source_file_extension: strings
+      translation_files_expression: 'i18n/src/main/resources/<lang>.lproj'
+  settings:
+    pr_branch_name: transifex/<br_unique_id>

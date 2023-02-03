@@ -41,22 +41,20 @@ public class SFTPTouchFeature implements Touch<Void> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        if(file.isFile()) {
-            try {
-                final FileAttributes attrs;
-                if(Permission.EMPTY != status.getPermission()) {
-                    attrs = new FileAttributes.Builder().withPermissions(Integer.parseInt(status.getPermission().getMode(), 8)).build();
-                }
-                else {
-                    attrs = FileAttributes.EMPTY;
-                }
-                final RemoteFile handle = session.sftp().open(file.getAbsolute(),
+        try {
+            final FileAttributes attrs;
+            if(Permission.EMPTY != status.getPermission()) {
+                attrs = new FileAttributes.Builder().withPermissions(Integer.parseInt(status.getPermission().getMode(), 8)).build();
+            }
+            else {
+                attrs = FileAttributes.EMPTY;
+            }
+            final RemoteFile handle = session.sftp().open(file.getAbsolute(),
                     EnumSet.of(OpenMode.CREAT, OpenMode.TRUNC, OpenMode.WRITE), attrs);
-                handle.close();
-            }
-            catch(IOException e) {
-                throw new SFTPExceptionMappingService().map("Cannot create {0}", e, file);
-            }
+            handle.close();
+        }
+        catch(IOException e) {
+            throw new SFTPExceptionMappingService().map("Cannot create {0}", e, file);
         }
         return file.withAttributes(new SFTPAttributesFinderFeature(session).find(file));
     }

@@ -24,15 +24,17 @@ import ch.cyberduck.core.brick.io.swagger.client.model.FileActionEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 
 public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy {
-    private static final Logger log = Logger.getLogger(BrickCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickCopyFeature.class);
 
     private final BrickSession session;
 
@@ -41,15 +43,19 @@ public class BrickCopyFeature extends BrickFileMigrationFeature implements Copy 
     }
 
     @Override
-    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path file, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final BrickApiClient client = new BrickApiClient(session.getApiKey(), session.getClient());
+            final BrickApiClient client = new BrickApiClient(session);
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Delete file %s to be replaced with %s", target, file));
+                }
                 new BrickDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             final FileActionEntity entity = new FileActionsApi(client)
                 .copy(new CopyPathBody().destination(StringUtils.removeStart(target.getAbsolute(), String.valueOf(Path.DELIMITER))),
                     StringUtils.removeStart(file.getAbsolute(), String.valueOf(Path.DELIMITER)));
+            listener.sent(status.getLength());
             if(entity.getFileMigrationId() != null) {
                 this.poll(client, entity);
             }

@@ -35,14 +35,41 @@ import static org.junit.Assert.assertEquals;
 public class SDSTimestampFeatureTest extends AbstractSDSTest {
 
     @Test
-    public void testWriteTimestamp() throws Exception {
+    public void testWriteTimestampFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final TransferStatus status = new TransferStatus().withTimestamp(1599047952805L);
+        new SDSTimestampFeature(session, nodeid).setTimestamp(test, status);
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
+        final PathAttributes attributes = f.find(test);
+        assertEquals(1599047952805L, attributes.getModificationDate());
+        assertEquals(status.getResponse(), attributes);
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteTimestampFolder() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new SDSTimestampFeature(session, nodeid).setTimestamp(test, 1599047952805L);
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         final PathAttributes attributes = f.find(test);
+        assertEquals(1599047952805L, attributes.getModificationDate());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteTimestampRoom() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        new SDSTimestampFeature(session, nodeid).setTimestamp(room, 1599047952805L);
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
+        final PathAttributes attributes = f.find(room);
         assertEquals(1599047952805L, attributes.getModificationDate());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

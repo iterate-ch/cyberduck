@@ -1,85 +1,11 @@
 version: 2
 updates:
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
 - package-ecosystem: maven
   directory: "/"
   schedule:
-    interval: daily
-    time: "04:00"
+    interval: "daily"
   open-pull-requests-limit: 99
-  ignore:
-  - dependency-name: com.amazonaws:aws-java-sdk-bom
-    versions:
-    - "> 1.11.750"
-  - dependency-name: com.dropbox.core:dropbox-core-sdk
-    versions:
-    - ">= 3.1.1.a, < 3.1.2"
-  - dependency-name: com.fasterxml.jackson.core:jackson-annotations
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.core:jackson-core
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.core:jackson-databind
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.core:jackson-module-jaxb-annotations
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.dataformat:jackson-dataformat-xml
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.datatype:jackson-datatype-joda
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.datatype:jackson-datatype-jsr310
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider
-    versions:
-    - ">= 2.11.a, < 2.12"
-  - dependency-name: org.codehaus.groovy:groovy-all
-    versions:
-    - "> 3.0.3, < 3.1"
-  - dependency-name: org.fusesource.jansi:jansi
-    versions:
-    - "> 1.17.1"
-  - dependency-name: org.glassfish.jersey.connectors:jersey-apache-connector
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: org.glassfish.jersey.core:jersey-client
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: org.glassfish.jersey.inject:jersey-hk2
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: org.glassfish.jersey.media:jersey-media-json-jackson
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: org.glassfish.jersey.media:jersey-media-multipart
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: org.mockito:mockito-core
-    versions:
-    - ">= 3.a, < 4"
-  - dependency-name: de.swiesend:secret-service
-    versions:
-    - 1.4.0
-    - 1.5.0
-    - 1.6.1
-  - dependency-name: io.milton:milton-server-ce
-    versions:
-    - 3.0.0.180
-    - 3.0.0.93
-  - dependency-name: io.milton:milton-api
-    versions:
-    - 3.0.0.180
-    - 3.0.0.93
-  - dependency-name: org.bouncycastle:bcpkix-jdk15on
-    versions:
-    - 169b01
-  - dependency-name: org.bouncycastle:bcprov-jdk15on
-    versions:
-    - 169b01

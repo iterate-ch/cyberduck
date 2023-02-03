@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.Build.Traversal">
+  <ItemGroup>
+    <ProjectReference Include="..\i18n-gen\i18n-gen.csproj" />
+    <ProjectReference Include="..\src\main\csharp\Cyberduck.Core.Native.csproj" />
+    <ProjectReference Include="..\src\test\csharp\Cyberduck.Core.Test.csproj" />
+  </ItemGroup>
+</Project>

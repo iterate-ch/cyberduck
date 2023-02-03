@@ -16,16 +16,47 @@
 
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <CustomAfterCentralPackageVersionsTargets>$(MSBuildThisFileDirectory)MSBuildTasks.targets</CustomAfterCentralPackageVersionsTargets>
-    </PropertyGroup>
-
     <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.41" />
 
     <ItemGroup>
-        <Reference Include="@(CyberduckReference->'Cyberduck.%(Identity)')">
+        <CyberduckReference Update="Core.Native">
+            <ProjectPath>$(CyberduckDir)core\src\main\csharp\Cyberduck.Core.Native.csproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Core.Refresh">
+            <ProjectPath>$(CyberduckDir)core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Bonjour.Native">
+            <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
+        </CyberduckReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='True' " />
+        <CyberduckLibraryReferences Include="@(CyberduckReference)" />
+        <CyberduckLibraryReferences Remove="@(CyberduckProjectReferences)" />
+
+        <ProjectReference Include="@(CyberduckProjectReferences->'%(ProjectPath)')">
+            <Name>Cyberduck.%(Identity)</Name>
+        </ProjectReference>
+        <Reference Include="@(CyberduckLibraryReferences->'Cyberduck.%(Identity)')">
             <HintPath>$(TargetBuildDir)%(Identity).dll</HintPath>
         </Reference>
     </ItemGroup>
+
+    <PropertyGroup Condition=" '$(NETCoreSdkVersion)'!='' ">
+        <!-- Treat SDK 6.0.301 as last known to work. -->
+        <NETSDKBeforeFeature>$([MSBuild]::VersionLessThanOrEquals('$(NETCoreSdkVersion)', '6.0.301'))</NETSDKBeforeFeature>
+        <NETSDKAfterFix>$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '6.0.401'))</NETSDKAfterFix>
+        <CoreCompileDependsOn Condition="!($(NETSDKBeforeFeature) or $(NETSDKAfterFix))">SDKFix_RemoveDuplicateAnalyzers;$(CoreCompileDependsOn)</CoreCompileDependsOn>
+    </PropertyGroup>
+
+    <Target Name="SDKFix_RemoveDuplicateAnalyzers">
+        <ItemGroup>
+          <FilteredAnalyzer Include="@(Analyzer-&gt;Distinct())" />
+          <Analyzer Remove="@(Analyzer)" />
+          <Analyzer Include="@(FilteredAnalyzer)" />
+          <FilteredAnalyzer Remove="@(FilteredAnalyzer)" />
+      </ItemGroup>
+  </Target>
 
 </Project>

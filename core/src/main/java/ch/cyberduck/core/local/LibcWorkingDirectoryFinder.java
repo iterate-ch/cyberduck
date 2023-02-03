@@ -20,14 +20,15 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
 public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
-    private static final Logger log = Logger.getLogger(LibcWorkingDirectoryFinder.class);
+    private static final Logger log = LogManager.getLogger(LibcWorkingDirectoryFinder.class);
 
     private static final CLibrary library = Native.load("c", CLibrary.class);
 

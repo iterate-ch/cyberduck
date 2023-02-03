@@ -44,7 +44,8 @@ public class DropboxReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DownloadBuilder builder = new DbxUserFilesRequests(session.getClient(file)).downloadBuilder(containerService.getKey(file));
+            final DownloadBuilder builder = new DbxUserFilesRequests(session.getClient(file))
+                    .downloadBuilder(containerService.getKey(file)).withRev(file.attributes().getVersionId());
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 builder.range(range.getStart());

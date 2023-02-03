@@ -29,20 +29,9 @@ import static org.junit.Assert.assertEquals;
 public class HostParserTest {
 
     @Test
-    public void testParseUsernameFromUrlEvent() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
-        assertEquals(0, new Host(new SDSProtocol(), "duck.dracoon.com", 443, "/key", new Credentials(
-            "post@iterate.ch"
-        ))
-            .compareTo(new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
-                "dracoon://post%40iterate.ch@duck.dracoon.com/key")));
-    }
-
-    @Test
     public void testParseDefaultPath() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         assertEquals("/room/key", new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
             "dracoon://duck.dracoon.com/room/key").getDefaultPath());
     }
@@ -50,7 +39,7 @@ public class HostParserTest {
     @Test
     public void testParseDefaultPathUmlautPercentEncoding() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         assertEquals("/home/ä-test", new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
             "dracoon://duck.dracoon.com/home%2F%C3%A4-test").getDefaultPath());
     }

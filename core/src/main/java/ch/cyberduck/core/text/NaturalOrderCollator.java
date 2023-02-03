@@ -13,7 +13,8 @@ package ch.cyberduck.core.text;
  * Werner Randelshofer. For details see accompanying license terms. 
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.CollationKey;
 import java.text.Collator;
@@ -44,7 +45,7 @@ import java.util.Locale;
  * @author Werner Randelshofer
  */
 public class NaturalOrderCollator extends Collator implements java.io.Serializable {
-    private static final Logger log = Logger.getLogger(NaturalOrderCollator.class);
+    private static final Logger log = LogManager.getLogger(NaturalOrderCollator.class);
 
     private static final long serialVersionUID = -7074910013839273765L;
 

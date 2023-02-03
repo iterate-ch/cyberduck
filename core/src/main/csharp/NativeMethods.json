@@ -1,0 +1,11 @@
+﻿{
+  "$schema": "https://aka.ms/CsWin32.schema.json",
+  "public": true,
+  "className": "CorePInvoke",
+  "comInterop": {
+    "preserveSigMethods": [
+      "IAssocHandler.IsRecommended",
+      "IAssocHandlerInvoker.SupportsSelection"
+    ]
+  }
+}

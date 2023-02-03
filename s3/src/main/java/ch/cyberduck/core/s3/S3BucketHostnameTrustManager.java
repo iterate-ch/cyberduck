@@ -18,13 +18,14 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class S3BucketHostnameTrustManager extends ThreadLocalHostnameDelegatingTrustManager {
-    private static final Logger log = Logger.getLogger(S3BucketHostnameTrustManager.class);
+    private static final Logger log = LogManager.getLogger(S3BucketHostnameTrustManager.class);
 
     /**
      * Test for pattern of bucket name containing dot

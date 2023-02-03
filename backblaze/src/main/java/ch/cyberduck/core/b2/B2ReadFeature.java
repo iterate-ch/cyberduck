@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -26,8 +25,6 @@ import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,22 +51,14 @@ public class B2ReadFeature implements Read {
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 return session.getClient().downloadFileRangeByIdToStream(
-                    fileid.getVersionId(file, new DisabledListProgressListener()),
+                    fileid.getVersionId(file),
                     range.getStart(), range.getEnd()
                 );
             }
-            final B2DownloadFileResponse response = session.getClient().downloadFileById(fileid.getVersionId(file, new DisabledListProgressListener()));
-            return new HttpMethodReleaseInputStream(response.getResponse());
+            final B2DownloadFileResponse response = session.getClient().downloadFileById(fileid.getVersionId(file));
+            return new HttpMethodReleaseInputStream(response.getResponse(), status);
         }
         catch(B2ApiException e) {
-            if(StringUtils.equals("file_state_none", e.getMessage())) {
-                // Pending large file upload
-                return new NullInputStream(0L);
-            }
-            switch(e.getStatus()) {
-                case HttpStatus.SC_NOT_FOUND:
-                    fileid.cache(file, null);
-            }
             throw new B2ExceptionMappingService(fileid).map("Download {0} failed", e, file);
         }
         catch(IOException e) {

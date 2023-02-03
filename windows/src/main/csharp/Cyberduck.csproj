@@ -1,112 +1,104 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-    <PropertyGroup>
-        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
 
-    <Import Project="Sdk.props" Sdk="Microsoft.Net.Sdk.WindowsDesktop" />
+    <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
+    <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
+    <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <OutputType>WinExe</OutputType>
-        <TargetFramework>net47</TargetFramework>
-        <UseWindowsForms>true</UseWindowsForms>
-        <Platforms>x64;x86</Platforms>
+  <ItemGroup>
+    <CyberduckReference Include="Core;Core.Native;Core.Refresh;Bonjour;Bonjour.Native;Protocols;Importer;Cryptomator" />
+  </ItemGroup>
 
-        <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
-        <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
-        <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
-        <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-    </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(CyberduckDir)Acknowledgments.rtf">
+      <Link>$(Filename)$(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
+      <Link>$(Filename)$(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
+      <Link>$(Filename)$(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
 
-    <ItemGroup>
-        <CyberduckReference Include="Core;Core.Native;Bonjour;Bonjour.Native;Protocols;Importer;Cryptomator" />
-    </ItemGroup>
+    <Content Include="$(CyberduckDir)bookmarks/*.duck">
+      <Link>bookmarks/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CyberduckDir)profiles/default/*.cyberduckprofile">
+      <Link>profiles/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="$(CyberduckDir)Acknowledgments.rtf">
-            <Link>$(Filename)$(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
-            <Link>$(Filename)$(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
-            <Link>$(Filename)$(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+  <ItemGroup>
+    <None Include="$(CyberduckDir)App.config" Link="App.config" />
+  </ItemGroup>
 
-        <Content Include="$(CyberduckDir)bookmarks/*.duck">
-            <Link>bookmarks/%(Filename)%(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="$(CyberduckDir)profiles/default/*.cyberduckprofile">
-            <Link>profiles/%(Filename)%(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="@(IKVMReferences)" />
+    <Reference Include="CustomOpenFileFolderDialog">
+      <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Include="$(CyberduckDir)App.config" Link="App.config" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" />
+    <PackageReference Include="ExceptionReporter" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
+    <PackageReference Include="ObjectListView.Official" />
+    <PackageReference Include="ReactiveUI.Fody" />
+    <PackageReference Include="ReactiveUI.WPF" />
+    <PackageReference Include="StructureMap" />
+    <PackageReference Include="System.Memory" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="@(IKVMReferences)" />
-        <Reference Include="CustomOpenFileFolderDialog">
-            <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
-        </Reference>
-        <Reference Include="ObjectListView">
-            <HintPath>$(TargetBuildDir)ObjectListView.dll</HintPath>
-        </Reference>
-        <Reference Include="PresentationFramework" />
-        <Reference Include="System.Design" />
-        <Reference Include="System.Security" />
-        <Reference Include="System.ServiceModel" />
-        <Reference Include="System.Web" />
-    </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Bonjour">
+      <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="ExceptionReporter" />
-        <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
-        <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
-        <PackageReference Include="StructureMap" />
-        <PackageReference Include="WindowsAPICodePack-Core" />
-        <PackageReference Include="WindowsAPICodePack-Shell" />
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="ch\cyberduck\ui\winforms\*.resx">
+      <LogicalName>Ch.Cyberduck.Ui.Winforms.%(Filename).resources</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
 
-    <ItemGroup>
-        <COMReference Include="Bonjour">
-            <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
-            <VersionMajor>1</VersionMajor>
-            <VersionMinor>0</VersionMinor>
-            <Lcid>0</Lcid>
-            <WrapperTool>tlbimp</WrapperTool>
-            <Isolated>False</Isolated>
-        </COMReference>
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ResourcesBundle.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Update="ch\cyberduck\ui\winforms\*.resx">
-            <LogicalName>Ch.Cyberduck.Ui.Winforms.%(Filename).resources</LogicalName>
-        </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ResourcesBundle.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
-        <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
-        <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
-        <Generator>PublicResXFileCodeGenerator</Generator>
-      </EmbeddedResource>
-    </ItemGroup>
-
-    <Import Project="Sdk.targets" Sdk="Microsoft.Net.Sdk.WindowsDesktop" />
+  <ItemGroup>
+    <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
+      <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
+      <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>

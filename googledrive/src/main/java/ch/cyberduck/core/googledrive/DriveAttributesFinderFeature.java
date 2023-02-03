@@ -25,13 +25,16 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.shared.ListFilteringFeature;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -42,10 +45,10 @@ import com.google.api.services.drive.model.File;
 
 import static ch.cyberduck.core.googledrive.AbstractDriveListService.*;
 
-public class DriveAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(DriveAttributesFinderFeature.class);
+public class DriveAttributesFinderFeature implements AttributesFinder, AttributesAdapter<File> {
+    private static final Logger log = LogManager.getLogger(DriveAttributesFinderFeature.class);
 
-    protected static final String DEFAULT_FIELDS = "createdTime,explicitlyTrashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
+    protected static final String DEFAULT_FIELDS = "createdTime,trashed,id,md5Checksum,mimeType,modifiedTime,name,size,webViewLink,shortcutDetails,version";
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
@@ -64,20 +67,20 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         final Path query;
-        if(file.getType().contains(Path.Type.placeholder)) {
+        if(file.isPlaceholder()) {
             query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
         }
         else {
             query = file;
         }
         final AttributedList<Path> list;
-        if(DriveHomeFinderService.SHARED_DRIVES_NAME.equals(file.getParent())) {
+        if(new SimplePathPredicate(DriveHomeFinderService.SHARED_DRIVES_NAME).test(file.getParent())) {
             list = new DriveTeamDrivesListService(session, fileid).list(file.getParent(), listener);
         }
         else {
             list = new FileidDriveListService(session, fileid, query).list(file.getParent(), listener);
         }
-        final Path found = list.find(new SimplePathPredicate(file));
+        final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(session.getCaseSensitivity(), file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
@@ -85,7 +88,8 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
 
     }
 
-    protected PathAttributes toAttributes(final File f) throws IOException {
+    @Override
+    public PathAttributes toAttributes(final File f) {
         if(DRIVE_SHORTCUT.equals(f.getMimeType())) {
             final File.ShortcutDetails shortcutDetails = f.getShortcutDetails();
             try {
@@ -98,8 +102,8 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         }
         final PathAttributes attributes = new PathAttributes();
         attributes.setFileId(f.getId());
-        if(null != f.getExplicitlyTrashed()) {
-            if(f.getExplicitlyTrashed()) {
+        if(null != f.getTrashed()) {
+            if(f.getTrashed()) {
                 // Mark as hidden
                 attributes.setHidden(true);
             }
@@ -108,9 +112,6 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             if(!DRIVE_FOLDER.equals(f.getMimeType()) && !StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(f.getSize());
             }
-        }
-        if(f.getVersion() != null) {
-            attributes.setVersionId(String.valueOf(f.getVersion()));
         }
         if(f.getModifiedTime() != null) {
             attributes.setModificationDate(f.getModifiedTime().getValue());
@@ -121,14 +122,13 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         attributes.setChecksum(Checksum.parse(f.getMd5Checksum()));
         if(StringUtils.isNotBlank(f.getWebViewLink())) {
             attributes.setLink(new DescriptiveUrl(URI.create(f.getWebViewLink()),
-                DescriptiveUrl.Type.http,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
+                    DescriptiveUrl.Type.http,
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "HTTP")));
             if(!DRIVE_FOLDER.equals(f.getMimeType()) && !DRIVE_SHORTCUT.equals(f.getMimeType()) && StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)) {
                 attributes.setSize(UrlFileWriterFactory.get().write(new DescriptiveUrl(URI.create(f.getWebViewLink())))
-                    .getBytes(Charset.defaultCharset()).length);
+                        .getBytes(Charset.defaultCharset()).length);
             }
         }
         return attributes;
     }
-
 }

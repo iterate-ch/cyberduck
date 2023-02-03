@@ -36,6 +36,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -48,7 +49,8 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -63,7 +65,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BookmarkController extends SheetController implements CollectionListener {
-    private static final Logger log = Logger.getLogger(BookmarkController.class);
+    private static final Logger log = LogManager.getLogger(BookmarkController.class);
 
     private static NSPoint cascade = new NSPoint(0, 0);
 
@@ -140,6 +142,17 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.setAutoenablesItems(false);
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                // Reload protocols which may have changed due to profile selection in Preferences
+                loadProtocols();
+                protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
+            }
+        });
+    }
+
+    private void loadProtocols() {
         this.protocolPopup.removeAllItems();
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
             this.addProtocol(protocol);
@@ -149,7 +162,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.dracoon, Protocol.Type.brick)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.box, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -160,12 +173,10 @@ public class BookmarkController extends SheetController implements CollectionLis
         for(Protocol protocol : protocols.find(new ProfileProtocolPredicate())) {
             this.addProtocol(protocol);
         }
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                protocolPopup.selectItemAtIndex(protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(bookmark.getProtocol().hashCode())));
-            }
-        });
+        if(preferences.getBoolean("preferences.profiles.enable")) {
+            this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
+            this.protocolPopup.addItemWithTitle(String.format("%s%s", LocaleFactory.localizedString("More Options", "Bookmark"), "…"));
+        }
     }
 
     private void addProtocol(final Protocol protocol) {
@@ -180,37 +191,44 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
-        final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Protocol selection changed to %s", selected));
+        if(null == sender.selectedItem().representedObject()) {
+            final PreferencesController controller = PreferencesControllerFactory.instance();
+            controller.window().makeKeyAndOrderFront(null);
+            controller.setSelectedPanel(PreferencesController.PreferencesToolbarItem.profiles.name());
         }
-        bookmark.setPort(selected.getDefaultPort());
-        if(!bookmark.getProtocol().isHostnameConfigurable()) {
-            // Previously selected protocol had a default hostname. Change to default
-            // of newly selected protocol.
-            bookmark.setHostname(selected.getDefaultHostname());
+        else {
+            final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Protocol selection changed to %s", selected));
+            }
+            bookmark.setPort(selected.getDefaultPort());
+            if(!bookmark.getProtocol().isHostnameConfigurable()) {
+                // Previously selected protocol had a default hostname. Change to default
+                // of newly selected protocol.
+                bookmark.setHostname(selected.getDefaultHostname());
+            }
+            if(!selected.isHostnameConfigurable()) {
+                // Hostname of newly selected protocol is not configurable. Change to default.
+                bookmark.setHostname(selected.getDefaultHostname());
+            }
+            if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
+                // Prefill with default hostname
+                bookmark.setHostname(selected.getDefaultHostname());
+            }
+            if(Objects.equals(bookmark.getDefaultPath(), bookmark.getProtocol().getDefaultPath()) ||
+                !selected.isPathConfigurable()) {
+                bookmark.setDefaultPath(selected.getDefaultPath());
+            }
+            bookmark.setProtocol(selected);
+            final int port = HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname());
+            if(port != -1) {
+                // External configuration found
+                bookmark.setPort(port);
+            }
+            options.configure(selected);
+            validator.configure(selected);
+            this.update();
         }
-        if(!selected.isHostnameConfigurable()) {
-            // Hostname of newly selected protocol is not configurable. Change to default.
-            bookmark.setHostname(selected.getDefaultHostname());
-        }
-        if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
-            // Prefill with default hostname
-            bookmark.setHostname(selected.getDefaultHostname());
-        }
-        if(Objects.equals(bookmark.getDefaultPath(), bookmark.getProtocol().getDefaultPath()) ||
-            !selected.isPathConfigurable()) {
-            bookmark.setDefaultPath(selected.getDefaultPath());
-        }
-        bookmark.setProtocol(selected);
-        final int port = HostnameConfiguratorFactory.get(selected).getPort(bookmark.getHostname());
-        if(port != -1) {
-            // External configuration found
-            bookmark.setPort(port);
-        }
-        options.configure(selected);
-        validator.configure(selected);
-        this.update();
     }
 
     public void setHostField(final NSTextField field) {
@@ -224,7 +242,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 updateField(hostField, bookmark.getHostname());
                 hostField.setEnabled(bookmark.getProtocol().isHostnameConfigurable());
-                hostField.cell().setPlaceholderString(bookmark.getProtocol().getDefaultHostname());
+                hostField.cell().setPlaceholderString(bookmark.getProtocol().getHostnamePlaceholder());
             }
         });
     }
@@ -260,7 +278,9 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.alertIcon.setEnabled(false);
         this.alertIcon.setImage(null);
         this.alertIcon.setTarget(this.id());
-        this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
+        if(new ReachabilityDiagnosticsFactory().isAvailable()) {
+            this.alertIcon.setAction(Foundation.selector("launchNetworkAssistant:"));
+        }
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
@@ -290,7 +310,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void launchNetworkAssistant(final NSButton sender) {
-        ReachabilityFactory.get().diagnose(bookmark);
+        ReachabilityDiagnosticsFactory.get().diagnose(bookmark);
     }
 
     public void setPortField(final NSTextField field) {
@@ -311,7 +331,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Action
     public void portInputDidChange(final NSNotification sender) {
         try {
-            bookmark.setPort(Integer.valueOf(portField.stringValue()));
+            bookmark.setPort(Integer.parseInt(portField.stringValue()));
         }
         catch(NumberFormatException e) {
             bookmark.setPort(-1);
@@ -370,7 +390,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void usernameInputDidChange(final NSNotification sender) {
-        bookmark.getCredentials().setUsername(usernameField.stringValue());
+        bookmark.getCredentials().setUsername(StringUtils.trim(usernameField.stringValue()));
         this.update();
     }
 

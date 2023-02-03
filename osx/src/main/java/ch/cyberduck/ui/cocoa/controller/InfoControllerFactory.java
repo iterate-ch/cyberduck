@@ -27,7 +27,7 @@ import java.util.Map;
 public final class InfoControllerFactory {
 
     private static final Map<BrowserController, InfoController> open
-            = new HashMap<BrowserController, InfoController>();
+            = new HashMap<>();
 
     private static final Preferences preferences = PreferencesFactory.get();
 
@@ -35,15 +35,20 @@ public final class InfoControllerFactory {
         //
     }
 
-    public static InfoController create(final BrowserController controller, final List<Path> files) {
+    public static InfoController create(final BrowserController controller, final List<Path> selected) {
         if(preferences.getBoolean("browser.info.inspector")) {
             if(open.containsKey(controller)) {
                 final InfoController c = open.get(controller);
-                c.setFiles(files);
+                c.setFiles(selected);
                 return c;
             }
         }
-        final InfoController info = new InfoController(controller, controller.getSession(), files) {
+        final InfoController info = new InfoController(controller, controller.getSession(), selected, new ReloadCallback() {
+            @Override
+            public void done(final List<Path> files) {
+                controller.reload(controller.workdir(), selected, selected);
+            }
+        }) {
             @Override
             public void windowWillClose(final NSNotification notification) {
                 open.remove(controller);
@@ -61,5 +66,9 @@ public final class InfoControllerFactory {
      */
     public static InfoController get(final BrowserController controller) {
         return open.get(controller);
+    }
+
+    public static void remove(final BrowserController controller) {
+        open.remove(controller);
     }
 }

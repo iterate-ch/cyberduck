@@ -23,13 +23,16 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
@@ -86,11 +89,18 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                         // Create directory unless copy implementation is recursive
                         final Directory directory = session.getFeature(Directory.class);
                         result.put(r.getKey(), directory.mkdir(r.getValue(),
-                            new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
+                                new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
-                        final TransferStatus status = this.status(session, r);
-                        result.put(r.getKey(), copy.copy(r.getKey(), r.getValue(), status, callback));
+                        final TransferStatus status = new TransferStatus()
+                                .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
+                                .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(r.getValue()))
+                                .withLength(r.getKey().attributes().getSize());
+                        final Path copied = copy.copy(r.getKey(), r.getValue(), status, callback, new DisabledStreamListener());
+                        if(PathAttributes.EMPTY.equals(copied.attributes())) {
+                            copied.withAttributes(session.getFeature(AttributesFinder.class).find(copied));
+                        }
+                        result.put(r.getKey(), copied);
                     }
                 }
             }
@@ -99,13 +109,6 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
         finally {
             target.release(destination, null);
         }
-    }
-
-    protected TransferStatus status(final Session<?> session, final Map.Entry<Path, Path> entry) throws BackgroundException {
-        return new TransferStatus()
-            .withMime(new MappingMimeTypeService().getMime(entry.getValue().getName()))
-            .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(entry.getValue()))
-            .withLength(entry.getKey().attributes().getSize());
     }
 
     protected Map<Path, Path> compile(final Copy copy, final ListService list, final Path source, final Path target) throws BackgroundException {
@@ -120,7 +123,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
             if(!copy.isRecursive(source, target)) {
                 // sort ascending by timestamp to copy older versions first
                 final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener)).
-                    filter(new TimestampComparator(true));
+                        filter(new TimestampComparator(true));
                 for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
@@ -135,7 +138,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Copying {0} to {1}", "Status"),
-            files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
+                files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 
     @Override

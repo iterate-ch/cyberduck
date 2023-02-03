@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -64,9 +63,9 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
     public void setPermission(final Path file, final Acl acl) throws BackgroundException {
         if(containerService.isContainer(file)) {
             try {
-                BucketType bucketType = this.convert(acl);
-                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file), new DisabledListProgressListener()),
-                    bucketType);
+                final BucketType bucketType = this.toBucketType(acl);
+                session.getClient().updateBucket(fileid.getVersionId(containerService.getContainer(file)),
+                        bucketType);
             }
             catch(B2ApiException e) {
                 throw new B2ExceptionMappingService(fileid).map("Cannot change permissions of {0}", e, file);
@@ -77,30 +76,24 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
         }
     }
 
-    protected BucketType convert(final Acl acl) {
-        BucketType bucketType = BucketType.allPrivate;
-        for(Acl.UserAndRole userAndRole : acl.asList()) {
-            if(userAndRole.getUser() instanceof Acl.GroupUser) {
-                if(userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE)) {
-                    bucketType = BucketType.allPublic;
-                    break;
-                }
-            }
-        }
-        return bucketType;
+    protected BucketType toBucketType(final Acl acl) {
+        return acl.asList().stream()
+                .filter(userAndRole -> userAndRole.getUser() instanceof Acl.GroupUser)
+                .filter(userAndRole -> userAndRole.getUser().getIdentifier().equals(Acl.GroupUser.EVERYONE))
+                .findAny().isPresent() ? BucketType.allPublic : BucketType.allPrivate;
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Collections.singletonList(
-            new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
+        return new ArrayList<>(Collections.singletonList(
+                new Acl.GroupUser(Acl.GroupUser.EVERYONE, false))
         );
     }
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return Collections.singletonList(
-            new Acl.Role(Permission.PERMISSION_READ.toString()));
+                new Acl.Role(Permission.PERMISSION_READ.toString()));
     }
 
     @Override
@@ -110,26 +103,19 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
 
     @Override
     public Set<Name> getLocations() {
-        final Set<Name> types = new LinkedHashSet<Name>();
+        final Set<Name> types = new LinkedHashSet<>();
         types.add(new B2BucketTypeName(BucketType.allPrivate));
         types.add(new B2BucketTypeName(BucketType.allPublic));
         return types;
     }
 
     @Override
-    public Name getLocation(final Path file) {
+    public Name getLocation(final Path file) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         if(container.isRoot()) {
             return unknown;
         }
-        for(Acl.UserAndRole role : container.attributes().getAcl().asList()) {
-            if(role.getUser().equals(new Acl.GroupUser(Acl.GroupUser.EVERYONE))) {
-                if(role.getRole().equals(new Acl.Role(Acl.Role.READ))) {
-                    return new B2BucketTypeName(BucketType.allPublic);
-                }
-            }
-        }
-        return new B2BucketTypeName(BucketType.allPrivate);
+        return new B2BucketTypeName(BucketType.valueOf(new B2AttributesFinderFeature(session, fileid).find(container).getRegion()));
     }
 
     public static final class B2BucketTypeName extends Name {

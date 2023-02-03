@@ -59,12 +59,12 @@ public class CryptoAclPermission implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Local file) {
-        return delegate.getDefault(file);
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
+        return delegate.getDefault(file, local);
     }
 
     @Override
-    public Acl getDefault(final EnumSet<Path.Type> type) {
+    public Acl getDefault(final EnumSet<Path.Type> type) throws BackgroundException {
         return delegate.getDefault(type);
     }
 

@@ -13,7 +13,7 @@ public class CollectionTest {
 
     @Test
     public void testClear() {
-        Collection<Object> c = new Collection<Object>();
+        Collection<Object> c = new Collection<>();
         c.add(new Object());
         c.clear();
         assertTrue(c.isEmpty());
@@ -21,7 +21,7 @@ public class CollectionTest {
 
     @Test
     public void testRemoveAll() {
-        Collection<Object> collection = new Collection<Object>();
+        Collection<Object> collection = new Collection<>();
         final Object a = new Object();
         collection.add(a);
         final Object b = new Object();
@@ -36,7 +36,7 @@ public class CollectionTest {
 
     @Test
     public void testRemoveIterator() {
-        Collection<Object> collection = new Collection<Object>();
+        Collection<Object> collection = new Collection<>();
         final Object a = new Object();
         collection.add(a);
         final Object b = new Object();
@@ -51,7 +51,7 @@ public class CollectionTest {
 
     @Test
     public void testRemoveLambda() {
-        Collection<Object> collection = new Collection<Object>();
+        Collection<Object> collection = new Collection<>();
         final Object a = new Object();
         collection.add(a);
         final Object b = new Object();

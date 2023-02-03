@@ -18,32 +18,45 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SizeComparisonService implements ComparisonService {
-    private static final Logger log = Logger.getLogger(SizeComparisonService.class);
+    private static final Logger log = LogManager.getLogger(SizeComparisonService.class);
 
     @Override
-    public Comparison compare(final Attributes remote, final Attributes local) {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Compare size for %s with %s", remote, local));
+    public Comparison compare(final Path.Type type, final PathAttributes local, final PathAttributes remote) {
+        if(TransferStatus.UNKNOWN_LENGTH != local.getSize() && TransferStatus.UNKNOWN_LENGTH != remote.getSize()) {
+            if(local.getSize() == remote.getSize()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Equal size %s", remote.getSize()));
+                }
+                return Comparison.equal;
+            }
+            if(remote.getSize() == 0) {
+                return Comparison.local;
+            }
+            if(local.getSize() == 0) {
+                return Comparison.remote;
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Local size %s not equal remote %s", local.getSize(), remote.getSize()));
+            }
+            // Different file size
+            return Comparison.notequal;
         }
-        //fist make sure both files are larger than 0 bytes
-        if(remote.getSize() == 0 && local.getSize() == 0) {
-            return Comparison.equal;
+        return Comparison.unknown;
+    }
+
+    @Override
+    public int hashCode(final Path.Type type, final PathAttributes attr) {
+        if(TransferStatus.UNKNOWN_LENGTH == attr.getSize()) {
+            return 0;
         }
-        if(remote.getSize() == 0) {
-            return Comparison.local;
-        }
-        if(local.getSize() == 0) {
-            return Comparison.remote;
-        }
-        if(remote.getSize() == local.getSize()) {
-            return Comparison.equal;
-        }
-        // Different file size
-        return Comparison.notequal;
+        return Long.valueOf(attr.getSize()).hashCode();
     }
 }

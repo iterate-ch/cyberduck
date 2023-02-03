@@ -1,4 +1,6 @@
-package ch.cyberduck.core.sds;/*
+package ch.cyberduck.core.sds;
+
+/*
  * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -15,7 +17,15 @@ package ch.cyberduck.core.sds;/*
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.CredentialsCleanupService;
+import ch.cyberduck.core.features.DelegatingPairingFeature;
+import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Scheduler;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
+import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.synchronization.DefaultComparisonService;
+import ch.cyberduck.core.synchronization.RevisionComparisonService;
+import ch.cyberduck.core.synchronization.VersionIdComparisonService;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +62,7 @@ public class SDSProtocol extends AbstractProtocol {
 
     @Override
     public String getAuthorization() {
-        return Authorization.sql.name();
+        return Authorization.oauth.name();
     }
 
     @Override
@@ -97,7 +107,8 @@ public class SDSProtocol extends AbstractProtocol {
         sql,
         radius,
         active_directory,
-        oauth
+        oauth,
+        password
     }
 
     @Override
@@ -105,6 +116,12 @@ public class SDSProtocol extends AbstractProtocol {
     public <T> T getFeature(final Class<T> type) {
         if(type == Scheduler.class) {
             return (T) new SDSMissingFileKeysSchedulerFeature();
+        }
+        if(type == Pairing.class) {
+            return (T) new DelegatingPairingFeature(new CredentialsCleanupService(), new TripleCryptCleanupFeature());
+        }
+        if(type == ComparisonService.class) {
+            return (T) new DefaultComparisonService(new VersionIdComparisonService(), new RevisionComparisonService());
         }
         return super.getFeature(type);
     }

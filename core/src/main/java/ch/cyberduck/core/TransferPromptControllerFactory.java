@@ -24,13 +24,14 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
-    private static final Logger log = Logger.getLogger(TransferPromptControllerFactory.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptControllerFactory.class);
 
     public TransferPrompt create(final Controller c, final Transfer transfer, final SessionPool source, final SessionPool destination) {
         final String clazz = PreferencesFactory.get().getProperty(
@@ -45,11 +46,11 @@ public class TransferPromptControllerFactory extends Factory<TransferPrompt> {
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
-                return name.newInstance();
+                return name.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(c, transfer, source, destination);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledTransferPrompt();
         }

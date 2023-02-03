@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -50,7 +51,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, nodeid).touch(copy, status);
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
-        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, nodeid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, nodeid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(copy));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -63,7 +64,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
             String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new StoregateTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(new StoregateDirectoryFeature(session, fileid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus()), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(copy));
         new StoregateDeleteFeature(session, fileid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -83,7 +84,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         new StoregateTouchFeature(session, fileid).touch(copy, new TransferStatus());
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, fileid);
         assertTrue(feature.isSupported(test, copy));
-        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(targetFolder, new DisabledListProgressListener());
         assertTrue(find.find(copy));
@@ -100,7 +101,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         final Path test = new StoregateTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path test2 = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, fileid).touch(test2, new TransferStatus());
-        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getFileId());
+        assertNotEquals(test.attributes().getFileId(), new StoregateCopyFeature(session, fileid).copy(test, test2, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener()).attributes().getFileId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new StoregateListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
@@ -121,7 +122,7 @@ public class StoregateCopyFeatureTest extends AbstractStoregateTest {
         final Path target = new Path(target_parent, directory.getName(), EnumSet.of(Path.Type.directory));
         final StoregateCopyFeature feature = new StoregateCopyFeature(session, fileid);
         assertTrue(feature.isSupported(directory, target));
-        final Path copy = new StoregateCopyFeature(session, fileid).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback());
+        final Path copy = new StoregateCopyFeature(session, fileid).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertNotEquals(file.attributes().getFileId(), copy.attributes().getFileId());
         assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(target));

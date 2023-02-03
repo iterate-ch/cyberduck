@@ -24,10 +24,11 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.serializer.PathDictionary;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WorkdirHomeFeature extends AbstractHomeFeature {
-    private static final Logger log = Logger.getLogger(WorkdirHomeFeature.class);
+    private static final Logger log = LogManager.getLogger(WorkdirHomeFeature.class);
 
     private final Host host;
 
@@ -38,7 +39,7 @@ public class WorkdirHomeFeature extends AbstractHomeFeature {
     @Override
     public Path find() throws BackgroundException {
         if(host.getWorkdir() != null) {
-            return new PathDictionary().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
+            return new PathDictionary<>().deserialize(host.getWorkdir().serialize(SerializerFactory.get()));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("No workdir set for bookmark %s", host));

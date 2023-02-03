@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
-import ch.cyberduck.binding.application.NSText;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.ui.cocoa.datasource.SyncPromptDataSource;
@@ -48,7 +47,7 @@ public class SyncPromptController extends TransferPromptController {
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             view.addTableColumn(c);
         }
         {
@@ -60,7 +59,7 @@ public class SyncPromptController extends TransferPromptController {
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             c.setDataCell(imageCellPrototype);
-            c.dataCell().setAlignment(NSText.NSCenterTextAlignment);
+            c.dataCell().setAlignment(TEXT_ALIGNMENT_CENTER);
             view.addTableColumn(c);
         }
         view.sizeToFit();

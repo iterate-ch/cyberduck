@@ -16,11 +16,15 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.shared.ListFilteringFeature;
 
-import java.util.Collections;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CachingAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = LogManager.getLogger(CachingAttributesFinderFeature.class);
 
     private final Cache<Path> cache;
     private final AttributesFinder delegate;
@@ -32,25 +36,41 @@ public class CachingAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(cache.isCached(file.getParent())) {
+        if(file.isRoot()) {
+            return delegate.find(file, listener);
+        }
+        if(cache.isValid(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
+            final Path found = list.find(new ListFilteringFeature.ListFilteringPredicate(Protocol.Case.sensitive, file));
             if(null != found) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Return cached attributes %s for %s", found.attributes(), file));
+                }
                 return found.attributes();
             }
-        }
-        final PathAttributes attributes = delegate.find(file, new CachingListProgressListener(cache));
-        if(!file.isRoot()) {
-            if(cache != PathCache.empty()) {
-                final AttributedList<Path> list = cache.get(file.getParent());
-                if(list == AttributedList.<Path>emptyList()) {
-                    cache.put(file.getParent(), new AttributedList<>(Collections.singletonList(file.withAttributes(attributes))));
-                }
-                else {
-                    list.add(file.withAttributes(attributes));
-                }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cached directory listing does not contain %s", file));
             }
+            throw new NotfoundException(file.getAbsolute());
         }
-        return attributes;
+        final CachingListProgressListener caching = new CachingListProgressListener(cache);
+        try {
+            final PathAttributes attr = delegate.find(file, new ProxyListProgressListener(listener, caching));
+            caching.cache();
+            return attr;
+        }
+        catch(NotfoundException e) {
+            caching.cache();
+            throw e;
+        }
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CachingAttributesFinderFeature{");
+        sb.append("cache=").append(cache);
+        sb.append(", delegate=").append(delegate);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -40,8 +40,8 @@ public class S3PublicUrlProviderTest extends AbstractS3Test {
     public void toDownloadUrl() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
-        final S3PublicUrlProvider provider = new S3PublicUrlProvider(session);
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus());
+        final S3PublicUrlProvider provider = new S3PublicUrlProvider(session, new S3AccessControlListFeature(session));
         assertFalse(provider.isSupported(bucket, PromptUrlProvider.Type.download));
         assertTrue(provider.isSupported(test, PromptUrlProvider.Type.download));
         final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());

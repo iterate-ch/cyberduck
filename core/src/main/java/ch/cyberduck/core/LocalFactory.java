@@ -27,8 +27,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class LocalFactory extends Factory<Local> {
 
-    private final Constructor<Local> constructor
-        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
+    private final Constructor<? extends Local> constructor
+            = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
 
     protected LocalFactory() {
         super("factory.local.class");
@@ -50,7 +50,7 @@ public final class LocalFactory extends Factory<Local> {
 
     protected Local create(final Local parent, final String path) {
         try {
-            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
+            final Constructor<? extends Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
             return constructor.newInstance(parent, path);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {

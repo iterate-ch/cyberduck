@@ -30,6 +30,9 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class TerminalLoginCallback extends TerminalPasswordCallback implements LoginCallback {
 
@@ -53,6 +56,12 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
             // Switch protocol
             throw new LoginCanceledException();
         }
+    }
+
+    @Override
+    public void await(final CountDownLatch signal, final Host bookmark, final String title, final String message) {
+        console.printf("%n%s", message);
+        Uninterruptibles.awaitUninterruptibly(signal);
     }
 
     @Override

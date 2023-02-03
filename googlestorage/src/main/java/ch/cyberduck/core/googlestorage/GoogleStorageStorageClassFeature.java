@@ -20,14 +20,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.HostPreferences;
-
-import org.jets3t.service.model.S3Object;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.RewriteResponse;
 import com.google.api.services.storage.model.StorageObject;
@@ -36,14 +35,6 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     private final GoogleStorageSession session;
     private final PathContainerService containerService;
-
-    public static final LinkedHashSet<String> STORAGE_CLASS_LIST = new LinkedHashSet<>(Arrays.asList(
-        S3Object.STORAGE_CLASS_STANDARD,
-        "MULTI_REGIONAL",
-        "REGIONAL",
-        "NEARLINE",
-        "COLDLINE")
-    );
 
     public GoogleStorageStorageClassFeature(final GoogleStorageSession session) {
         this.session = session;
@@ -57,7 +48,8 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     @Override
     public Set<String> getClasses() {
-        return STORAGE_CLASS_LIST;
+        return new LinkedHashSet<>(
+                PreferencesFactory.get().getList("googlestorage.storage.class.options"));
     }
 
     @Override
@@ -70,15 +62,22 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
         try {
             if(containerService.isContainer(file)) {
                 // Changing the default storage class of a bucket
-                session.getClient().buckets().patch(containerService.getContainer(file).getName(),
-                    new Bucket().setStorageClass(redundancy)
-                ).execute();
+                final Storage.Buckets.Patch request = session.getClient().buckets().patch(containerService.getContainer(file).getName(),
+                        new Bucket().setStorageClass(redundancy));
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                request.execute();
             }
             else {
-                final RewriteResponse response = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
-                    containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setStorageClass(redundancy)
-                ).execute();
+                final Storage.Objects.Rewrite request = session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
+                        containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
+                        new StorageObject().setStorageClass(redundancy)
+                );
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                final RewriteResponse response = request.execute();
                 file.attributes().setVersionId(String.valueOf(response.getResource().getGeneration()));
             }
         }

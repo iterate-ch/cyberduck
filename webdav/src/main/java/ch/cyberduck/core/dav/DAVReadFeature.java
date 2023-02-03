@@ -23,14 +23,19 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,9 +46,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class DAVReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(DAVReadFeature.class);
+    private static final Logger log = LogManager.getLogger(DAVReadFeature.class);
 
     private final DAVSession session;
 
@@ -57,7 +63,7 @@ public class DAVReadFeature implements Read {
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
             final String header;
-            if(-1 == range.getEnd()) {
+            if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                 header = String.format("bytes=%d-", range.getStart());
             }
             else {
@@ -71,27 +77,34 @@ public class DAVReadFeature implements Read {
             headers.add(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         try {
-            final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
-            if(!status.getParameters().isEmpty()) {
-                resource.append("?");
+            final HttpRequestBase request = this.toRequest(file, status);
+            for(Header header : headers) {
+                request.addHeader(header);
             }
-            for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
-                if(!resource.toString().endsWith("?")) {
-                    resource.append("&");
+            final HttpResponse response = session.getClient().execute(request);
+            final VoidResponseHandler handler = new VoidResponseHandler();
+            try {
+                handler.handleResponse(response);
+                // Will abort the read when closed before EOF.
+                final ContentLengthStatusInputStream stream = new ContentLengthStatusInputStream(new HttpMethodReleaseInputStream(response, status),
+                        response.getEntity().getContentLength(),
+                        response.getStatusLine().getStatusCode());
+                if(status.isAppend()) {
+                    if(stream.getCode() == HttpStatus.SC_OK) {
+                        if(TransferStatus.UNKNOWN_LENGTH != status.getLength()) {
+                            if(stream.getLength() != status.getLength()) {
+                                log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
+                                stream.skip(status.getOffset());
+                            }
+                        }
+                    }
                 }
-                resource.append(URIEncoder.encode(parameter.getKey()))
-                    .append("=")
-                    .append(URIEncoder.encode(parameter.getValue()));
-
+                return stream;
             }
-            final ContentLengthStatusInputStream stream = session.getClient().get(resource.toString(), headers);
-            if(status.isAppend()) {
-                if(stream.getCode() == HttpStatus.SC_OK) {
-                    log.warn(String.format("Range header not supported. Skipping %d bytes in file %s.", status.getOffset(), file));
-                    stream.skip(status.getOffset());
-                }
+            catch(IOException ex) {
+                request.abort();
+                throw ex;
             }
-            return stream;
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Download {0} failed", e, file);
@@ -99,6 +112,23 @@ public class DAVReadFeature implements Read {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Download {0} failed", e, file);
         }
+    }
+
+    protected HttpRequestBase toRequest(final Path file, final TransferStatus status) {
+        final StringBuilder resource = new StringBuilder(new DAVPathEncoder().encode(file));
+        if(!status.getParameters().isEmpty()) {
+            resource.append("?");
+        }
+        for(Map.Entry<String, String> parameter : status.getParameters().entrySet()) {
+            if(!resource.toString().endsWith("?")) {
+                resource.append("&");
+            }
+            resource.append(URIEncoder.encode(parameter.getKey()))
+                    .append("=")
+                    .append(URIEncoder.encode(parameter.getValue()));
+
+        }
+        return new HttpGet(resource.toString());
     }
 
     public Set<Header> headers() {

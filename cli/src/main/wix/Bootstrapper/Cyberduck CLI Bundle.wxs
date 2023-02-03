@@ -4,12 +4,18 @@
   <Bundle Name="Cyberduck CLI" Version="!(bind.packageVersion.Setup)" Manufacturer="iterate GmbH"
           UpgradeCode="46C3FB4E-2B23-4728-8196-BEA25ADE868A" IconSourceFile="$(var.CyberduckDir)cyberduck-application.ico">
     <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.HyperlinkSidebarLicense">
-      <bal:WixStandardBootstrapperApplication LicenseUrl=""      
+      <bal:WixStandardBootstrapperApplication LicenseUrl=""
         LogoFile="$(var.SetupDir)banner.png" LogoSideFile="$(var.SetupDir)welcome.bmp" />
     </BootstrapperApplicationRef>
     <Variable Name="InstallFolder" Type="string" Value="[ProgramFiles64Folder]Cyberduck CLI" />
     <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
+    <util:RegistrySearch Id="CurrentBuild" Variable="CBNumber" Result="value" Root="HKLM" Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion" Value="CurrentBuildNumber"/>
     <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
+
+    <bal:Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
+      <![CDATA[VersionNT >= v10.0 AND CBNumber >= 14393]]>
+    </bal:Condition>
+
     <Chain>
       <PackageGroupRef Id="NetFx472Web" />
       <RollbackBoundary />

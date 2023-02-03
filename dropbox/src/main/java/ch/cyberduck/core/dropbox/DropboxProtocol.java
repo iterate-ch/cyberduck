@@ -47,6 +47,11 @@ public class DropboxProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public boolean isPasswordConfigurable() {
         // Only provide account email
         return false;

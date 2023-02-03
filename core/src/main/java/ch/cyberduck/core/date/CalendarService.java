@@ -17,13 +17,14 @@ package ch.cyberduck.core.date;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
 public class CalendarService implements DateDomainService<Calendar> {
-    private static final Logger log = Logger.getLogger(CalendarService.class);
+    private static final Logger log = LogManager.getLogger(CalendarService.class);
 
     private final TimeZone tz;
 

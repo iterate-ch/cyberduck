@@ -37,11 +37,10 @@ public class FTPUTIMETimestampFeatureTest extends AbstractFTPTest {
     @Test(expected = BackgroundException.class)
     public void testSetTimestamp() throws Exception {
         final FTPWorkdirService workdir = new FTPWorkdirService(session);
-        final Path home = workdir.find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         new FTPUTIMETimestampFeature(session).setTimestamp(test, modified);
-        new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

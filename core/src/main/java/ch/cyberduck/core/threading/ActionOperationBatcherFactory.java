@@ -21,13 +21,14 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Factory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
-    private static final Logger log = Logger.getLogger(ActionOperationBatcherFactory.class);
+    private static final Logger log = LogManager.getLogger(ActionOperationBatcherFactory.class);
 
     public ActionOperationBatcherFactory() {
         super("factory.autorelease.class");
@@ -35,15 +36,15 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
 
     public ActionOperationBatcher create(final Integer batchsize) {
         try {
-            final Constructor<ActionOperationBatcher> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
+            final Constructor<? extends ActionOperationBatcher> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", batchsize.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(batchsize);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledActionOperationBatcher();
         }

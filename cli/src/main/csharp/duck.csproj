@@ -1,55 +1,49 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.Net.Sdk">
 
-    <PropertyGroup>
-        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net472</TargetFramework>
+  </PropertyGroup>
 
-    <Import Project="Sdk.props" Sdk="Microsoft.Net.Sdk" />
+  <ItemGroup>
+    <CyberduckReference Include="Core;Core.Native;Protocols;Cli;Cryptomator" />
+  </ItemGroup>
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net47</TargetFramework>
-        <Platforms>x64;x86</Platforms>
-        
-        <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
-    </PropertyGroup>
+  <ItemGroup>
+    <Content Include="$(CyberduckDir)Acknowledgments.rtf">
+      <Link>$(Filename)$(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
+      <Link>$(Filename)$(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
+      <Link>$(Filename)$(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
 
-    <ItemGroup>
-        <CyberduckReference Include="Core;Core.Native;Protocols;Cli" />
-    </ItemGroup>
+    <Content Include="$(CyberduckDir)bookmarks/*.duck">
+      <Link>bookmarks/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(CyberduckDir)profiles/default/*.cyberduckprofile">
+      <Link>profiles/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
-    <ItemGroup>
-        <Content Include="$(CyberduckDir)Acknowledgments.rtf">
-            <Link>$(Filename)$(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="$(CyberduckDir)i18n/src/main/resources/en.lproj/License.txt">
-            <Link>$(Filename)$(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="$(TargetBuildDir)ikvm/bin/ikvm-native-win32-*.dll">
-            <Link>$(Filename)$(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+  <ItemGroup>
+    <None Include="$(CyberduckDir)App.config" Link="App.config" />
+  </ItemGroup>
 
-        <Content Include="$(CyberduckDir)bookmarks/*.duck">
-            <Link>bookmarks/%(Filename)%(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="$(CyberduckDir)profiles/default/*.cyberduckprofile">
-            <Link>profiles/%(Filename)%(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <Reference Include="@(IKVMReferences)" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Include="$(CyberduckDir)App.config" Link="App.config" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="@(IKVMReferences)" />
-    </ItemGroup>
-
-    <Import Project="Sdk.targets" Sdk="Microsoft.Net.Sdk" />
+  <ItemGroup>
+    <PackageReference Include="System.Memory" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
+  </ItemGroup>
 
 </Project>

@@ -15,13 +15,12 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteAttributesFinder;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.onedrive.features.sharepoint.SharepointSiteFileIdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -44,7 +43,7 @@ public class SharepointSiteSession extends AbstractSharepointSession {
 
     @Override
     protected Drive findDrive(final ContainerItem driveContainer) throws BackgroundException {
-        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get(), new DisabledListProgressListener());
+        final String driveId = fileid.getFileId(driveContainer.getContainerPath().get());
         final Path container = driveContainer.getCollectionPath().get().getParent();
 
         return new Drive(getSite(container), driveId);
@@ -56,8 +55,8 @@ public class SharepointSiteSession extends AbstractSharepointSession {
         if(type == ListService.class) {
             return (T) new SharepointSiteListService(this, fileid);
         }
-        if(type == AttributesFinder.class) {
-            return (T) new SharepointSiteAttributesFinder(this, fileid);
+        if(type == GraphFileIdProvider.class) {
+            return (T) new SharepointSiteFileIdProvider(this);
         }
         return super._getFeature(type);
     }

@@ -1,5 +1,6 @@
 {
-    "msbuild-sdks": {
-        "Microsoft.Build.NoTargets": "1.0.80"
-    }
+  "msbuild-sdks": {
+    "Microsoft.Build.NoTargets": "3.3.0",
+    "Microsoft.Build.Traversal": "3.1.6"
+  }
 }

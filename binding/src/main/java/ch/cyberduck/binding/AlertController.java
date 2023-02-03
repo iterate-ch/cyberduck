@@ -26,14 +26,15 @@ import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.InputValidator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSRect;
 
 public abstract class AlertController extends SheetController implements SheetCallback, InputValidator {
-    private static final Logger log = Logger.getLogger(AlertController.class);
+    private static final Logger log = LogManager.getLogger(AlertController.class);
 
     protected static final int SUBVIEWS_VERTICAL_SPACE = 4;
 

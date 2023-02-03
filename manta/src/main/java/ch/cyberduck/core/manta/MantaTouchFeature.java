@@ -43,7 +43,7 @@ public class MantaTouchFeature implements Touch {
                 session.getClient().putDirectory(file.getParent().getAbsolute());
             }
             final MantaObjectResponse response = session.getClient().put(file.getAbsolute(), new byte[0]);
-            return file.withAttributes(new MantaObjectAttributeAdapter(session).convert(response));
+            return file.withAttributes(new MantaObjectAttributeAdapter(session).toAttributes(response));
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map("Cannot create {0}", e, file);

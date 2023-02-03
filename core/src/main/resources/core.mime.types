@@ -47,7 +47,7 @@ application/cdmi-queue				cdmiq
 application/cu-seeme				cu
 # application/cybercash
 application/davmount+xml			davmount
-application/dash+xml			mpd
+application/dash+xml				mpd
 # application/dca-rft
 # application/dec-dx
 # application/dialog-info+xml
@@ -152,7 +152,7 @@ application/mxf					mxf
 # application/nss
 # application/ocsp-request
 # application/ocsp-response
-application/octet-stream	bin dms lha lrf lzh so iso dmg dist distz pkg bpk dump elc deploy
+application/octet-stream			bin dms lha lrf lzh so iso dmg dist distz pkg bpk dump elc deploy
 application/oda					oda
 application/oebps-package+xml			opf
 application/ogg					ogx
@@ -1035,7 +1035,7 @@ application/x-cpio				cpio
 application/x-csh				csh
 application/x-debian-package			deb udeb
 application/x-dgc-compressed			dgc
-application/x-director			dir dcr dxr cst cct cxt w3d fgd swa
+application/x-director				dir dcr dxr cst cct cxt w3d fgd swa
 application/x-doom				wad
 application/x-dtbncx+xml			ncx
 application/x-dtbook+xml			dtb
@@ -1153,7 +1153,7 @@ application/zip					zip
 # audio/32kadpcm
 # audio/3gpp
 # audio/3gpp2
-# audio/ac3
+audio/ac3           				ac3
 audio/adpcm					adp
 # audio/amr
 # audio/amr-wb
@@ -1175,7 +1175,7 @@ audio/basic					au snd
 # audio/dsr-es202212
 # audio/dv
 # audio/dvi4
-# audio/eac3
+audio/eac3					eac3
 # audio/evrc
 # audio/evrc-qcp
 # audio/evrc0
@@ -1222,7 +1222,7 @@ audio/mpeg					mpga mp2 mp2a mp3 m2a m3a
 # audio/mpeg4-generic
 # audio/musepack
 audio/ogg					oga ogg spx
-# audio/opus
+audio/opus					opus
 # audio/parityfec
 # audio/pcma
 # audio/pcma-wb
@@ -1247,6 +1247,7 @@ audio/silk					sil
 # audio/tone
 # audio/uemclip
 # audio/ulpfec
+audio/usac					usac
 # audio/vdvi
 # audio/vmr-wb
 # audio/vnd.3gpp.iufp
@@ -1310,6 +1311,11 @@ chemical/x-cml					cml
 chemical/x-csml					csml
 # chemical/x-pdb
 chemical/x-xyz					xyz
+font/otf					otf
+font/sfnt					sfnt
+font/ttf					ttf
+font/woff					woff
+font/woff2					woff2
 image/bmp					bmp
 image/cgm					cgm
 # image/example
@@ -1486,6 +1492,8 @@ text/vnd.sun.j2me.app-descriptor		jad
 # text/vnd.wap.sl
 text/vnd.wap.wml				wml
 text/vnd.wap.wmlscript				wmls
+text/vtt					vtt
+text/x-ass					ass
 text/x-asm					s asm
 text/x-c					c cc cxx cpp h hh dic
 text/x-fortran					f for f77 f90

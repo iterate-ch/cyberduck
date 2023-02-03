@@ -59,7 +59,7 @@ public class OAuthClient {
     @JsonCreator
     public static ClientTypeEnum fromValue(String text) {
       for (ClientTypeEnum b : ClientTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
@@ -105,7 +105,7 @@ public class OAuthClient {
     @JsonCreator
     public static GrantTypesEnum fromValue(String text) {
       for (GrantTypesEnum b : GrantTypesEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

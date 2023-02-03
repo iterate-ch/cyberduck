@@ -20,8 +20,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,9 +27,12 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import javax.xml.namespace.QName;
 import java.util.Arrays;
@@ -40,7 +41,6 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.github.sardine.DavResource;
 
@@ -49,17 +49,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Category(IntegrationTest.class)
+@RunWith(Parameterized.class)
 public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
+        final Path test = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         try {
             f.find(test);
         }
         catch(NotfoundException e) {
-            assertEquals("Unexpected response (404 OK). Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertTrue(StringUtils.startsWith(e.getDetail(), "Unexpected response"));
             throw e;
         }
     }
@@ -67,7 +68,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testFindFile() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -75,33 +76,33 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory)));
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        session.close();
+        finally {
+            new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
     }
 
     @Test
     public void testFindDirectory() throws Exception {
         final Path test = new DAVDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
-        assertEquals(-1, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path("/trunk", EnumSet.of(Path.Type.file)));
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
-        session.close();
     }
 
     @Test
@@ -166,15 +167,20 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         assertEquals(modified.getTime(), attrs.getModificationDate());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testFindLock() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         assertNull(f.find(test).getLockId());
-        final String lockId = new DAVLockFeature(session).lock(test);
-        assertNotNull(f.find(test).getLockId());
-        new DAVLockFeature(session).unlock(test, lockId);
+        try {
+            final String lockId = new DAVLockFeature(session).lock(test);
+            assertNotNull(f.find(test).getLockId());
+            new DAVLockFeature(session).unlock(test, lockId);
+        }
+        catch(InteroperabilityException e) {
+            // No lock support
+        }
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -183,11 +189,10 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DefaultUploadFeature<String>(new DAVWriteFeature(session)),
-            new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(
-            new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new CryptoTouchFeature<>(session, new DAVTouchFeature(session), new DAVWriteFeature(session), cryptomator).touch(
+                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setSize(0L);
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes);
@@ -205,6 +210,5 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);
         assertNotNull(attributes);
-        session.close();
     }
 }

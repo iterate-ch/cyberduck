@@ -22,13 +22,14 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public final class SessionFactory {
-    private static final Logger log = Logger.getLogger(SessionFactory.class);
+    private static final Logger log = LogManager.getLogger(SessionFactory.class);
 
     private SessionFactory() {
         //
@@ -40,7 +41,9 @@ public final class SessionFactory {
         }
         final Protocol protocol = host.getProtocol();
         final String prefix = protocol.getPrefix();
-
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Load class with prefix %s", prefix));
+        }
         try {
             final Class<Session> name = (Class<Session>) Class.forName(String.format("%sSession", prefix));
             final Constructor<Session> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,

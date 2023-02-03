@@ -16,13 +16,61 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.http.HttpUploadFeature;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-public class DropboxUploadFeature extends HttpUploadFeature<String, MessageDigest> {
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.Metadata;
 
-    public DropboxUploadFeature(final DropboxWriteFeature writer) {
+public class DropboxUploadFeature extends HttpUploadFeature<Metadata, MessageDigest> {
+    private static final Logger log = LogManager.getLogger(DropboxUploadFeature.class);
+
+    final DropboxSession session;
+
+    public DropboxUploadFeature(final DropboxSession session, final DropboxWriteFeature writer) {
         super(writer);
+        this.session = session;
+    }
+
+    @Override
+    protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+        if(null == digest) {
+            log.warn("Checksum calculation disabled");
+            return super.decorate(in, null);
+        }
+        else {
+            return new DigestInputStream(in, digest);
+        }
+    }
+
+    @Override
+    protected MessageDigest digest() throws IOException {
+        MessageDigest digest = null;
+        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.checksum.calculate")) {
+            try {
+                digest = new DropboxContentHasher(MessageDigest.getInstance("SHA-256"), MessageDigest.getInstance("SHA-256"), 0);
+            }
+            catch(NoSuchAlgorithmException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+        }
+        return digest;
+    }
+
+    @Override
+    protected void post(final Path file, final MessageDigest digest, final Metadata response) throws BackgroundException {
+        this.verify(file, digest, Checksum.parse(((FileMetadata) response).getContentHash()));
     }
 }

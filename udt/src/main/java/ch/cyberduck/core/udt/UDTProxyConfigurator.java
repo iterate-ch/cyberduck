@@ -55,7 +55,8 @@ import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestExecutor;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -65,7 +66,7 @@ import java.util.List;
 import com.barchart.udt.ResourceUDT;
 
 public class UDTProxyConfigurator implements TrustManagerHostnameCallback {
-    private static final Logger log = Logger.getLogger(UDTProxyConfigurator.class);
+    private static final Logger log = LogManager.getLogger(UDTProxyConfigurator.class);
 
     private Location.Name location;
 

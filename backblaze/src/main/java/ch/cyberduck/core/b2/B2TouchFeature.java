@@ -15,52 +15,29 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
-import synapticloop.b2.response.B2FileResponse;
 import synapticloop.b2.response.BaseB2Response;
 
-public class B2TouchFeature implements Touch<BaseB2Response> {
-
-    private final B2Session session;
-    private final B2VersionIdProvider fileid;
-    private Write<BaseB2Response> writer;
+public class B2TouchFeature extends DefaultTouchFeature<BaseB2Response> {
 
     public B2TouchFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        this.session = session;
-        this.fileid = fileid;
-        this.writer = new B2WriteFeature(session, fileid);
+        super(new B2WriteFeature(session, fileid));
     }
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
-        status.setTimestamp(System.currentTimeMillis());
-        final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
-        new DefaultStreamCloser().close(out);
-        final B2FileResponse response = (B2FileResponse) out.getStatus();
-        fileid.cache(file, response.getFileId());
-        return file.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
+        return super.touch(file, status.withChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status)));
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
-    }
-
-    @Override
-    public B2TouchFeature withWriter(final Write<BaseB2Response> writer) {
-        this.writer = writer;
-        return this;
     }
 }

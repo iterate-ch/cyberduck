@@ -18,7 +18,9 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.WindowsIntegratedCredentialsConfigurator;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -71,5 +73,15 @@ public class DAVSSLProtocol extends AbstractProtocol {
     @Override
     public boolean isAnonymousConfigurable() {
         return true;
+    }
+
+    @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return new WindowsIntegratedCredentialsConfigurator();
+    }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
     }
 }

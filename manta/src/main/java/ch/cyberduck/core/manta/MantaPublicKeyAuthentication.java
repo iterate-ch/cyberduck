@@ -32,7 +32,8 @@ import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.openssl.EncryptionException;
 import org.bouncycastle.openssl.PasswordException;
 
@@ -47,14 +48,13 @@ import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
-import net.schmizz.sshj.userauth.keyprovider.PKCS5KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class MantaPublicKeyAuthentication implements AuthenticationProvider<String> {
-    private static final Logger log = Logger.getLogger(MantaPublicKeyAuthentication.class);
+    private static final Logger log = LogManager.getLogger(MantaPublicKeyAuthentication.class);
 
     private final MantaSession session;
 
@@ -75,39 +75,39 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             log.info(String.format("Reading private key %s with key format %s", identity, format));
         }
         provider.init(
-            new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
-            new PasswordFinder() {
-                @Override
-                public char[] reqPassword(Resource<?> resource) {
-                    if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
-                        try {
-                            // Use password prompt
-                            final Credentials input = prompt.prompt(bookmark,
-                                LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                String.format("%s (%s)",
-                                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                    identity.getAbbreviatedPath()),
-                                new LoginOptions()
-                                    .icon(bookmark.getProtocol().disk())
-                                    .user(false).password(true)
-                            );
-                            credentials.setSaved(input.isSaved());
-                            credentials.setIdentityPassphrase(input.getPassword());
+                new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8),
+                new PasswordFinder() {
+                    @Override
+                    public char[] reqPassword(Resource<?> resource) {
+                        if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
+                            try {
+                                // Use password prompt
+                                final Credentials input = prompt.prompt(bookmark,
+                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                        String.format("%s (%s)",
+                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                                identity.getAbbreviatedPath()),
+                                        new LoginOptions()
+                                                .icon(bookmark.getProtocol().disk())
+                                                .user(false).password(true)
+                                );
+                                credentials.setSaved(input.isSaved());
+                                credentials.setIdentityPassphrase(input.getPassword());
+                            }
+                            catch(LoginCanceledException e) {
+                                // Return null if user cancels
+                                return StringUtils.EMPTY.toCharArray();
+                            }
                         }
-                        catch(LoginCanceledException e) {
-                            // Return null if user cancels
-                            return StringUtils.EMPTY.toCharArray();
-                        }
+                        config.setPassword(credentials.getIdentityPassphrase());
+                        return credentials.getIdentityPassphrase().toCharArray();
                     }
-                    config.setPassword(credentials.getIdentityPassphrase());
-                    return credentials.getIdentityPassphrase().toCharArray();
-                }
 
-                @Override
-                public boolean shouldRetry(Resource<?> resource) {
-                    return false;
+                    @Override
+                    public boolean shouldRetry(Resource<?> resource) {
+                        return false;
+                    }
                 }
-            }
         );
         return this.computeFingerprint(provider);
     }
@@ -136,8 +136,6 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
 
     private FileKeyProvider buildProvider(final Local identity, final KeyFormat format) throws InteroperabilityException {
         switch(format) {
-            case PKCS5:
-                return new PKCS5KeyFile.Factory().create();
             case PKCS8:
                 return new PKCS8KeyFile.Factory().create();
             case OpenSSH:
@@ -155,8 +153,8 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         final KeyFormat format;
         try (InputStream is = identity.getInputStream()) {
             format = KeyProviderUtil.detectKeyFileFormat(
-                new InputStreamReader(is, StandardCharsets.UTF_8),
-                true);
+                    new InputStreamReader(is, StandardCharsets.UTF_8),
+                    true);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

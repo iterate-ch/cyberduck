@@ -24,12 +24,13 @@ import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.threading.MainAction;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Future;
 
 public abstract class AbstractController implements Controller {
-    private static final Logger log = Logger.getLogger(AbstractController.class);
+    private static final Logger log = LogManager.getLogger(AbstractController.class);
 
     /**
      * List of pending background tasks or this browser

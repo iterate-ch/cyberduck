@@ -20,7 +20,7 @@ using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using java.lang;
 using java.util;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 using ArrayList = System.Collections.ArrayList;
 using Exception = System.Exception;
 using String = System.String;
@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Core.Ssl
 {
     public class HostnameVerifier
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (HostnameVerifier).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof (HostnameVerifier).FullName);
 
         /// <summary>
         // RFC2818 - HTTP Over TLS, Section 3.1

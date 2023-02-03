@@ -22,14 +22,15 @@ import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.CertificateTrustCallback;
 import ch.cyberduck.core.LocaleFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
-    private static final Logger log = Logger.getLogger(CertificateStoreX509TrustManager.class);
+    private static final Logger log = LogManager.getLogger(CertificateStoreX509TrustManager.class);
 
     private final CertificateTrustCallback prompt;
     private final TrustManagerHostnameCallback callback;

@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -36,6 +35,8 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftDirectoryFeature implements Directory<StorageObject> {
+
+    public static final String DIRECTORY_MIME_TYPE = "application/directory";
 
     private final PathContainerService containerService = new DefaultPathContainerService();
     private final SwiftSession session;
@@ -67,12 +68,10 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).find(folder));
             }
             else {
-                status.setMime("application/directory");
+                status.setMime(DIRECTORY_MIME_TYPE);
                 status.setLength(0L);
-                final StatusOutputStream<StorageObject> out = writer.write(folder, status, new DisabledConnectionCallback());
-                new DefaultStreamCloser().close(out);
-                final StorageObject metadata = out.getStatus();
-                return folder.withAttributes(new SwiftAttributesFinderFeature(session, regionService).toAttributes(metadata));
+                new DefaultStreamCloser().close(writer.write(folder, status, new DisabledConnectionCallback()));
+                return folder.withAttributes(status.getResponse());
             }
         }
         catch(GenericException e) {

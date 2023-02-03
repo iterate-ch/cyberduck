@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -27,16 +26,15 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import synapticloop.b2.Action;
@@ -44,13 +42,11 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
-import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
-
 public class B2ObjectListService implements ListService {
-    private static final Logger log = Logger.getLogger(B2ObjectListService.class);
+    private static final Logger log = LogManager.getLogger(B2ObjectListService.class);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final B2Session session;
 
@@ -71,14 +67,8 @@ public class B2ObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> objects = new AttributedList<>();
-            Marker marker;
-            if(containerService.isContainer(directory)) {
-                marker = new Marker(null, null);
-            }
-            else {
-                marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
-            }
-            final String containerId = fileid.getVersionId(containerService.getContainer(directory), new DisabledListProgressListener());
+            Marker marker = new Marker(this.createPrefix(directory), null);
+            final String containerId = fileid.getVersionId(containerService.getContainer(directory));
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
@@ -89,10 +79,10 @@ public class B2ObjectListService implements ListService {
                 // In alphabetical order by file name, and by reverse of date/time uploaded for
                 // versions of files with the same name.
                 final B2ListFilesResponse response = session.getClient().listFileVersions(
-                    containerId,
-                    marker.nextFilename, marker.nextFileId, chunksize,
-                    containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), Path.DELIMITER),
-                    String.valueOf(Path.DELIMITER));
+                        containerId,
+                        marker.nextFilename, marker.nextFileId, chunksize,
+                        this.createPrefix(directory),
+                        String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {
                     if(!response.getFiles().isEmpty()) {
@@ -103,6 +93,9 @@ public class B2ObjectListService implements ListService {
             }
             while(marker.hasNext());
             if(!hasDirectoryPlaceholder && objects.isEmpty()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No placeholder found for directory %s", directory));
+                }
                 throw new NotfoundException(directory.getAbsolute());
             }
             return objects;
@@ -115,68 +108,48 @@ public class B2ObjectListService implements ListService {
         }
     }
 
-    protected Marker parse(final Path directory, final AttributedList<Path> objects,
-                           final B2ListFilesResponse response, final Map<String, Long> revisions) {
+    private String createPrefix(final Path directory) {
+        return containerService.isContainer(directory) ? StringUtils.EMPTY :
+                directory.isDirectory() ? String.format("%s%s", containerService.getKey(directory), Path.DELIMITER) : containerService.getKey(directory);
+    }
+
+    private Marker parse(final Path directory, final AttributedList<Path> objects,
+                         final B2ListFilesResponse response, final Map<String, Long> revisions) {
+        final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
                 continue;
             }
+            if(directory.isFile()) {
+                if(!StringUtils.equals(directory.getName(), PathNormalizer.name(info.getFileName()))) {
+                    log.warn(String.format("Skip %s not matching %s", info, directory.getName()));
+                    continue;
+                }
+            }
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
-                final Path placeholder = new Path(directory, PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 objects.add(placeholder);
                 continue;
             }
-            final PathAttributes attributes = this.parse(info);
-            final long revision;
+            final PathAttributes attributes = attr.toAttributes(info);
+            long revision = 0;
             if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
                 revision = revisions.get(info.getFileName()) + 1L;
-            }
-            else {
-                revision = 1L;
+                attributes.setRevision(revision);
             }
             revisions.put(info.getFileName(), revision);
-            attributes.setRevision(revision);
-            objects.add(new Path(directory, PathNormalizer.name(info.getFileName()),
-                info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes));
+            final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(info.getFileName()),
+                    info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes);
+            fileid.cache(f, info.getFileId());
+            objects.add(f);
         }
         if(null == response.getNextFileName()) {
             return new Marker(response.getNextFileName(), response.getNextFileId());
         }
         return new Marker(response.getNextFileName(), response.getNextFileId());
-    }
-
-    /**
-     * @param response List filenames response from server
-     * @return Null when respone filename is not child of working directory directory
-     */
-    protected PathAttributes parse(final B2FileInfoResponse response) {
-        final PathAttributes attributes = new PathAttributes();
-        attributes.setChecksum(
-            Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:"))
-        );
-        final long timestamp = response.getUploadTimestamp();
-        if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
-        }
-        else {
-            attributes.setModificationDate(timestamp);
-        }
-        attributes.setVersionId(response.getFileId());
-        switch(response.getAction()) {
-            case hide:
-                // File version marking the file as hidden, so that it will not show up in b2_list_file_names
-            case start:
-                // Large file has been started, but not finished or canceled
-                attributes.setDuplicate(true);
-                break;
-            default:
-                attributes.setSize(response.getContentLength());
-                break;
-        }
-        return attributes;
     }
 
     private static final class Marker {

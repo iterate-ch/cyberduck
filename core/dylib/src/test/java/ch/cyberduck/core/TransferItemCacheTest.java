@@ -32,7 +32,7 @@ public class TransferItemCacheTest {
 
     @Test
     public void testLookup() {
-        final Cache<TransferItem> c = new ReverseLookupCache<TransferItem>(new TransferItemCache(1), 1);
+        final Cache<TransferItem> c = new ReverseLookupCache<>(new TransferItemCache(1), 1);
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
         c.put(new TransferItem(new Path("/r", EnumSet.of(Path.Type.directory)), new Local("/l")), list);

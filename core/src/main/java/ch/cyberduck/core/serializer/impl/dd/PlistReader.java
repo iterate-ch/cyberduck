@@ -18,14 +18,12 @@ package ch.cyberduck.core.serializer.impl.dd;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.serializer.Reader;
 
-import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,36 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 
-import com.dd.plist.NSArray;
 import com.dd.plist.NSDictionary;
 import com.dd.plist.NSObject;
 import com.dd.plist.PropertyListFormatException;
-import com.dd.plist.XMLPropertyListParser;
+import com.dd.plist.PropertyListParser;
 
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
-    private static final Logger log = Logger.getLogger(PlistReader.class);
-
-    @Override
-    public Collection<S> readCollection(final Local file) throws AccessDeniedException {
-        final Collection<S> c = new Collection<S>();
-        final NSArray list = (NSArray) this.parse(file.getInputStream());
-        if(null == list) {
-            log.error(String.format("Invalid bookmark file %s", file));
-            return c;
-        }
-        for(int i = 0; i < list.count(); i++) {
-            NSObject next = list.objectAtIndex(i);
-            if(next instanceof NSDictionary) {
-                final NSDictionary dict = (NSDictionary) next;
-                final S object = this.deserialize(dict);
-                if(null == object) {
-                    continue;
-                }
-                c.add(object);
-            }
-        }
-        return c;
-    }
 
     /**
      * @param file A valid bookmark dictionary
@@ -84,16 +58,18 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         return deserialized;
     }
 
+    @Override
     public S read(final InputStream in) throws AccessDeniedException {
         final NSDictionary dict = (NSDictionary) this.parse(in);
-        return this.deserialize(dict);
+        return dict != null ? this.deserialize(dict) : null;
     }
 
     private NSObject parse(final InputStream in) throws AccessDeniedException {
         try {
-            return XMLPropertyListParser.parse(in);
+            return PropertyListParser.parse(in);
         }
-        catch(ParserConfigurationException | IOException | SAXException | ParseException | PropertyListFormatException e) {
+        catch(ParserConfigurationException | IOException | SAXException | ParseException |
+              PropertyListFormatException e) {
             throw new AccessDeniedException("Failure parsing XML property list", e);
         }
     }

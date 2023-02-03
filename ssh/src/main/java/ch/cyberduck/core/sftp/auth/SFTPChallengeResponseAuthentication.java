@@ -29,7 +29,8 @@ import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -44,7 +45,7 @@ import net.schmizz.sshj.userauth.method.ChallengeResponseProvider;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class SFTPChallengeResponseAuthentication implements AuthenticationProvider<Boolean> {
-    private static final Logger log = Logger.getLogger(SFTPChallengeResponseAuthentication.class);
+    private static final Logger log = LogManager.getLogger(SFTPChallengeResponseAuthentication.class);
 
     private static final Pattern DEFAULT_PROMPT_PATTERN = Pattern.compile(".*[pP]assword.*", Pattern.DOTALL);
 
@@ -74,10 +75,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
 
                 @Override
                 public void init(final Resource resource, final String name, final String instruction) {
-                    if(StringUtils.isNoneBlank(instruction)) {
+                    if(StringUtils.isNotBlank(instruction)) {
                         this.instruction = instruction;
                     }
-                    if(StringUtils.isNoneBlank(name)) {
+                    if(StringUtils.isNotBlank(name)) {
                         this.name = name;
                     }
                 }
@@ -119,9 +120,9 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                         // be able to display at least 30 characters for the name and prompts.
                         final Credentials additional;
                         try {
-                            final StringAppender title = new StringAppender().append(name).append(
-                                LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
-                            );
+                            final StringAppender title = new StringAppender().append(
+                                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
+                            ).append(name);
                             additional = callback.prompt(bookmark, title.toString(),
                                 message.toString(), new LoginOptions()
                                     .icon(bookmark.getProtocol().disk())

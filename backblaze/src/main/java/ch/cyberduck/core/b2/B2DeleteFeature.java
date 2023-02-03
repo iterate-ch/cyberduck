@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -25,7 +24,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
 import synapticloop.b2.exception.B2ApiException;
 
 public class B2DeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(B2DeleteFeature.class);
+    private static final Logger log = LogManager.getLogger(B2DeleteFeature.class);
 
     private final PathContainerService containerService
         = new B2PathContainerService();
@@ -59,16 +59,16 @@ public class B2DeleteFeature implements Delete {
             else {
                 if(file.isDirectory()) {
                     // Delete /.bzEmpty if any
-                    final String fileid;
+                    final String placeholder;
                     try {
-                        fileid = this.fileid.getVersionId(file, new DisabledListProgressListener());
+                        placeholder = fileid.getVersionId(file);
                     }
                     catch(NotfoundException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
                         continue;
                     }
                     try {
-                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid);
+                        session.getClient().deleteFileVersion(containerService.getKey(file), placeholder);
                     }
                     catch(B2ApiException e) {
                         log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getMessage(), file));
@@ -79,7 +79,20 @@ public class B2DeleteFeature implements Delete {
                 }
                 else if(file.isFile()) {
                     try {
-                        session.getClient().deleteFileVersion(containerService.getKey(file), fileid.getVersionId(file, new DisabledListProgressListener()));
+                        if(null == file.attributes().getVersionId()) {
+                            // Add hide marker
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Add hide marker %s of %s", file.attributes().getVersionId(), file));
+                            }
+                            session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file)), containerService.getKey(file));
+                        }
+                        else {
+                            // Delete specific version
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Delete version %s of %s", file.attributes().getVersionId(), file));
+                            }
+                            session.getClient().deleteFileVersion(containerService.getKey(file), file.attributes().getVersionId());
+                        }
                     }
                     catch(B2ApiException e) {
                         throw new B2ExceptionMappingService(fileid).map("Cannot delete {0}", e, file);
@@ -96,7 +109,7 @@ public class B2DeleteFeature implements Delete {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);
                     // Finally delete bucket itself
-                    session.getClient().deleteBucket(fileid.getVersionId(file, new DisabledListProgressListener()));
+                    session.getClient().deleteBucket(fileid.getVersionId(file));
                 }
             }
             catch(B2ApiException e) {

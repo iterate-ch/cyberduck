@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -27,6 +28,8 @@ import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.PatchOperation;
@@ -39,6 +42,7 @@ import java.time.ZoneOffset;
 import java.util.Collections;
 
 public class GraphMoveFeature implements Move {
+    private static final Logger logger = LogManager.getLogger(GraphMoveFeature.class);
 
     private final GraphSession session;
     private final Delete delete;
@@ -53,13 +57,16 @@ public class GraphMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
+            if(logger.isWarnEnabled()) {
+                logger.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
+            }
             delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
         }
         final PatchOperation patchOperation = new PatchOperation();
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
             patchOperation.rename(renamed.getName());
         }
-        if(!file.getParent().equals(renamed.getParent())) {
+        if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
             final DriveItem moveTarget = session.getItem(renamed.getParent());
             patchOperation.move(moveTarget);
         }
@@ -70,7 +77,7 @@ public class GraphMoveFeature implements Move {
         final DriveItem item = session.getItem(file);
         try {
             Files.patch(item, patchOperation);
-            final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(item.getMetadata());
+            final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(session.getMetadata(item, null));
             fileid.cache(file, null);
             fileid.cache(renamed, attributes.getFileId());
             return renamed.withAttributes(attributes);
@@ -90,6 +97,9 @@ public class GraphMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        if(!session.isAccessible(target, true)) {
+            return false;
+        }
         if(!session.isAccessible(source, false)) {
             return false;
         }

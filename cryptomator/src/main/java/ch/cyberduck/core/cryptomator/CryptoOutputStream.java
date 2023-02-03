@@ -15,9 +15,7 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
-import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.random.NonceGenerator;
 
 import org.apache.commons.io.output.ProxyOutputStream;
@@ -30,25 +28,17 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
+public class CryptoOutputStream extends ProxyOutputStream {
 
-    private final StatusOutputStream<Reply> proxy;
-
-    public CryptoOutputStream(final StatusOutputStream<Reply> proxy, final FileContentCryptor cryptor, final FileHeader header,
+    public CryptoOutputStream(final OutputStream proxy, final FileContentCryptor cryptor, final FileHeader header,
                               final NonceGenerator nonces, final long chunkIndexOffset) {
         super(new MemorySegementingOutputStream(new EncryptingOutputStream(proxy, cryptor, header, nonces, chunkIndexOffset),
-            cryptor.cleartextChunkSize()));
-        this.proxy = proxy;
+                cryptor.cleartextChunkSize()));
     }
 
     @Override
     public void write(final int b) throws IOException {
         throw new IOException(new UnsupportedOperationException());
-    }
-
-    @Override
-    public Reply getStatus() throws BackgroundException {
-        return proxy.getStatus();
     }
 
     @Override
@@ -86,7 +76,9 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
                     final ByteBuffer encryptedChunk = cryptor.encryptChunk(
                         ByteBuffer.wrap(Arrays.copyOfRange(b, chunkOffset, chunkOffset + chunkLen)),
                         chunkIndexOffset++, header, nonces.next());
-                    super.write(encryptedChunk.array());
+                    final byte[] encrypted = new byte[encryptedChunk.remaining()];
+                    encryptedChunk.get(encrypted);
+                    super.write(encrypted);
                 }
             }
             catch(CryptoException e) {

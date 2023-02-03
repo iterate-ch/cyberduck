@@ -20,13 +20,19 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Protocol;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class SFTPProtocolTest {
+
+    @Test
+    public void testFeatures() {
+        assertEquals(Protocol.Case.sensitive, new SFTPProtocol().getCaseSensitivity());
+        assertEquals(Protocol.DirectoryTimestamp.implicit, new SFTPProtocol().getDirectoryTimestamp());
+    }
 
     @Test
     public void testValidateToken() {

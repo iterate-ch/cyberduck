@@ -33,7 +33,6 @@ import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class StatelessSessionPoolTest {
 
@@ -54,7 +53,7 @@ public class StatelessSessionPoolTest {
         }, new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()));
         final Session<?> session = pool.borrow(BackgroundActionState.running);
         pool.release(session, new BackgroundException("m", new SocketException("m")));
-        assertTrue(interrupt.get());
+        assertFalse(interrupt.get());
     }
 
     @Test

@@ -53,7 +53,7 @@ public class UserInfo {
     @JsonCreator
     public static UserTypeEnum fromValue(String text) {
       for (UserTypeEnum b : UserTypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

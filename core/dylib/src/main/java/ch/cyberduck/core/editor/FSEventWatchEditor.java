@@ -18,50 +18,87 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.Proxy;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.foundation.NSNotification;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.io.watchservice.FSEventWatchService;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.pool.SessionPool;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.rococoa.Foundation;
 
 import java.io.IOException;
-
-import com.google.common.util.concurrent.Uninterruptibles;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * An editor listing for file system notifications on a particular folder
+ * Using FSEvents API and WorkspaceDidTerminateApplicationNotification
  */
-public class FSEventWatchEditor extends AbstractEditor {
-    private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
+public class FSEventWatchEditor extends DefaultWatchEditor {
+    private static final Logger log = LogManager.getLogger(FSEventWatchEditor.class);
 
-    private final FileWatcher monitor
-        = new FileWatcher(new FSEventWatchService());
+    private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 
     /**
-     * With custom editor for file type.
-     *
-     * @param application Editor application
-     * @param file        Remote file
+     * Registered callbacks
      */
-    public FSEventWatchEditor(final Application application, final SessionPool session,
-                              final Path file, final ProgressListener listener) {
-        super(application, session, file, listener);
+    private final Map<Application, Set<ApplicationQuitCallback>> registered = new HashMap<>();
+
+    private final Proxy terminate = new Proxy() {
+        public void terminated(final NSNotification notification) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Received notification %s from workspace", notification.userInfo()));
+            }
+            if(notification.userInfo().objectForKey("NSApplicationBundleIdentifier") == null) {
+                log.warn("Missing NSApplicationBundleIdentifier in notification dictionary");
+                return;
+            }
+            final Application application = new Application(notification.userInfo().objectForKey(
+                    "NSApplicationBundleIdentifier").toString());
+            // Do cleanup if application matches
+            for(ApplicationQuitCallback callback : registered.getOrDefault(application, Collections.emptySet())) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Run quit callback %s for application %s", callback, application));
+                }
+                callback.callback();
+            }
+        }
+    };
+
+    public FSEventWatchEditor(final Host host, final Path file, final ProgressListener listener) {
+        super(host, file, listener, new FileWatcher(new FSEventWatchService()));
+        workspace.notificationCenter().addObserver(terminate.id(),
+                Foundation.selector("terminated:"),
+                NSWorkspace.WorkspaceDidTerminateApplicationNotification,
+                null);
     }
 
-    public void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(local.getParent(), new FileWatcher.DefaultFileFilter(local), listener));
+    @Override
+    protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register application %s for terminate callback %s", application, quit));
+        }
+        final Set<ApplicationQuitCallback> callbacks = registered.getOrDefault(application, new HashSet<>());
+        callbacks.add(quit);
+        registered.putIfAbsent(application, callbacks);
+        super.watch(application, temporary, listener, quit);
     }
 
     @Override
     public void close() {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Close monitor %s", monitor));
-        }
-        monitor.close();
+        log.warn(String.format("Remove observer %s", terminate));
+        workspace.notificationCenter().removeObserver(terminate.id());
+        super.close();
     }
 }

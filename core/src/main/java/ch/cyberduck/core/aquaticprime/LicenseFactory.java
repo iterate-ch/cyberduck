@@ -30,14 +30,16 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public abstract class LicenseFactory extends Factory<License> {
-    private static final Logger log = Logger.getLogger(LicenseFactory.class);
+    private static final Logger log = LogManager.getLogger(LicenseFactory.class);
 
     private static final Preferences preferences
         = PreferencesFactory.get();
@@ -92,7 +94,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected abstract License open(Local file);
 
     public List<License> open() throws AccessDeniedException {
-        final List<License> keys = new ArrayList<License>();
+        final List<License> keys = new ArrayList<>();
         if(folder.exists()) {
             for(Local key : folder.list().filter(filter)) {
                 keys.add(this.open(key));
@@ -112,9 +114,9 @@ public abstract class LicenseFactory extends Factory<License> {
         }
         try {
             final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-            return name.newInstance().open(file);
+            return name.getDeclaredConstructor().newInstance().open(file);
         }
-        catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
@@ -132,14 +134,14 @@ public abstract class LicenseFactory extends Factory<License> {
             final String clazz = preferences.getProperty("factory.licensefactory.class");
             try {
                 final Class<LicenseFactory> name = (Class<LicenseFactory>) Class.forName(clazz);
-                final List<License> list = new ArrayList<License>(name.newInstance().open());
+                final List<License> list = new ArrayList<>(name.getDeclaredConstructor().newInstance().open());
                 list.removeIf(key -> !key.verify(callback));
                 if(list.isEmpty()) {
                     return LicenseFactory.EMPTY_LICENSE;
                 }
                 return list.iterator().next();
             }
-            catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
+            catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new FactoryException(e.getMessage(), e);
             }
         }
@@ -190,6 +192,8 @@ public abstract class LicenseFactory extends Factory<License> {
     };
 
     protected static final class LicenseFilter implements Filter<Local> {
+        private final Pattern pattern = Pattern.compile(".*\\.cyberducklicense");
+
         @Override
         public boolean accept(final Local file) {
             return "cyberducklicense".equalsIgnoreCase(Path.getExtension(file.getName()));
@@ -197,7 +201,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public Pattern toPattern() {
-            return Pattern.compile(".*\\.cyberducklicense");
+            return pattern;
         }
     }
 }

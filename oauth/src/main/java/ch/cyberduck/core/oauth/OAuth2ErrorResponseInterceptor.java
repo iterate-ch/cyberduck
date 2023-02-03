@@ -27,10 +27,11 @@ import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
-    private static final Logger log = Logger.getLogger(OAuth2ErrorResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(OAuth2ErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
@@ -38,8 +39,9 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
     private final OAuth2RequestInterceptor service;
     private final LoginCallback prompt;
 
-    public OAuth2ErrorResponseInterceptor(final Host bookmark
-        , final OAuth2RequestInterceptor service, final LoginCallback prompt) {
+    public OAuth2ErrorResponseInterceptor(final Host bookmark,
+                                          final OAuth2RequestInterceptor service,
+                                          final LoginCallback prompt) {
         this.bookmark = bookmark;
         this.service = service;
         this.prompt = prompt;
@@ -52,21 +54,24 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                 if(executionCount <= MAX_RETRIES) {
                     try {
                         try {
-                            log.info(String.format("Attempt to refresh OAuth tokens for failure %s", response));
-                            service.setTokens(service.refresh());
+                            log.warn(String.format("Attempt to refresh OAuth tokens for failure %s", response));
+                            service.save(service.refresh());
                         }
                         catch(InteroperabilityException | LoginFailureException e) {
-                            log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
+                            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                             // Reset OAuth Tokens
                             bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
-                            service.setTokens(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
+                            service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode));
                         }
                         // Try again
                         return true;
                     }
                     catch(BackgroundException e) {
-                        log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
+                        log.warn(String.format("Failure %s refreshing OAuth tokens", e));
                     }
+                }
+                else {
+                    log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
                 }
                 break;
         }

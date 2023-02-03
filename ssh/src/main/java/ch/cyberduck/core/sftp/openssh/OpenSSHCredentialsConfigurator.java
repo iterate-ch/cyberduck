@@ -25,10 +25,11 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
-    private static final Logger log = Logger.getLogger(OpenSSHCredentialsConfigurator.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHCredentialsConfigurator.class);
 
     private final OpenSshConfig configuration;
 
@@ -42,8 +43,8 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials credentials = new Credentials(host.getCredentials());
         if(StringUtils.isNotBlank(host.getHostname())) {
+            final Credentials credentials = new Credentials(host.getCredentials());
             configuration.refresh();
             // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
             final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
@@ -84,8 +85,9 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                     }
                 }
             }
+            return credentials;
         }
-        return credentials;
+        return host.getCredentials();
     }
 
     @Override

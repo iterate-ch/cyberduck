@@ -20,53 +20,40 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
-import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class EditorFactory extends Factory<EditorFactory> {
-    private static final Logger log = Logger.getLogger(EditorFactory.class);
+    private static final Logger log = LogManager.getLogger(EditorFactory.class);
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
-    private final ApplicationFinder applicationFinder;
-
-    public EditorFactory() {
-        this(ApplicationFinderFactory.get());
-    }
-
-    public EditorFactory(final ApplicationFinder applicationFinder) {
-        this.applicationFinder = applicationFinder;
-    }
-
-    private static EditorFactory factory;
+    private static final Preferences preferences = PreferencesFactory.get();
+    private static final ApplicationFinder finder = ApplicationFinderFactory.get();
 
     public static synchronized EditorFactory instance() {
-        if(null == factory) {
-            try {
-                final String clazz = PreferencesFactory.get().getProperty("factory.editorfactory.class");
-                if(null == clazz) {
-                    throw new FactoryException();
-                }
-                final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(clazz);
-                factory = name.newInstance();
+        try {
+            final String clazz = PreferencesFactory.get().getProperty("factory.editorfactory.class");
+            if(null == clazz) {
+                throw new FactoryException();
             }
-            catch(InstantiationException | ClassNotFoundException | IllegalAccessException e) {
-                throw new FactoryException(e.getMessage(), e);
-            }
+            final Class<EditorFactory> name = (Class<EditorFactory>) Class.forName(clazz);
+            return name.getDeclaredConstructor().newInstance();
         }
-        return factory;
+        catch(InstantiationException | ClassNotFoundException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -75,11 +62,11 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     protected abstract List<Application> getConfigured();
 
     public List<Application> getEditors() {
-        final List<Application> editors = new ArrayList<Application>(this.getConfigured());
+        final List<Application> editors = new ArrayList<>(getConfigured());
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
-        final Application defaultEditor = this.getDefaultEditor();
-        if(applicationFinder.isInstalled(defaultEditor)) {
+        final Application defaultEditor = getDefaultEditor();
+        if(finder.isInstalled(defaultEditor)) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);
             }
@@ -88,32 +75,23 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
     }
 
     /**
+     * @param host     Bookmark
+     * @param file     Remote file to download
      * @param listener Controller
-     * @param path     File to edit
      * @return New editor instance for the given file type.
      */
-    public Editor create(final ProgressListener listener, final SessionPool session, final Path path) {
-        return this.create(listener, session, this.getEditor(path.getName()), path);
-    }
-
-    /**
-     * @param listener    Controller
-     * @param application The application bundle identifier of the editor to use
-     * @param path        File to edit
-     * @return New editor instance for the given file type.
-     */
-    public abstract Editor create(ProgressListener listener, SessionPool session, Application application, Path path);
+    public abstract Editor create(final Host host, Path file, ProgressListener listener);
 
     /**
      * Determine the default editor set
      *
-     * @return The bundle identifier of the default editor configured in
-     * Preferences or com.apple.TextEdit if not installed.
+     * @return The bundle identifier of the default editor configured in Preferences or com.apple.TextEdit if not
+     * installed.
      */
-    public Application getDefaultEditor() {
-        final Application application = applicationFinder.getDescription(
+    public static Application getDefaultEditor() {
+        final Application application = finder.getDescription(
                 preferences.getProperty("editor.bundleIdentifier"));
-        if(applicationFinder.isInstalled(application)) {
+        if(finder.isInstalled(application)) {
             return application;
         }
         return Application.notfound;
@@ -121,17 +99,17 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
 
     /**
      * @param filename File type
-     * @return The bundle identifier of the application for this file or null if no
-     * suitable and installed editor is found.
+     * @return The bundle identifier of the application for this file or null if no suitable and installed editor is
+     * found.
      */
-    public Application getEditor(final String filename) {
-        final Application application = this.getDefaultEditor();
+    public static Application getEditor(final String filename) {
+        final Application application = getDefaultEditor();
         if(preferences.getBoolean("editor.alwaysUseDefault")) {
             return application;
         }
         // The default application set by launch services to open files of the given type
-        final Application editor = applicationFinder.find(filename);
-        if(!applicationFinder.isInstalled(editor)) {
+        final Application editor = finder.find(filename);
+        if(!finder.isInstalled(editor)) {
             log.warn(String.format("No editor found for %s", filename));
             // Use default editor if not applicable application found which handles this file type
             return application;
@@ -142,19 +120,19 @@ public abstract class EditorFactory extends Factory<EditorFactory> {
 
     /**
      * @param filename File type
-     * @return Installed applications suitable to edit the given file type. Does always include
-     * the default editor set in the Preferences
+     * @return Installed applications suitable to edit the given file type. Does always include the default editor set
+     * in the Preferences
      */
-    public List<Application> getEditors(final String filename) {
+    public static List<Application> getEditors(final String filename) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Find installed editors for file %s", filename));
         }
-        final List<Application> editors = new ArrayList<Application>(
-                applicationFinder.findAll(filename));
+        final List<Application> editors = new ArrayList<>(
+                finder.findAll(filename));
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
-        final Application defaultEditor = this.getDefaultEditor();
-        if(applicationFinder.isInstalled(defaultEditor)) {
+        final Application defaultEditor = getDefaultEditor();
+        if(finder.isInstalled(defaultEditor)) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);
             }

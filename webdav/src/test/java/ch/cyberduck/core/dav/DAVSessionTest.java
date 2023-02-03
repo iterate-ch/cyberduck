@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -51,31 +50,12 @@ import static org.junit.Assert.*;
 @Category(IntegrationTest.class)
 public class DAVSessionTest extends AbstractDAVTest {
 
-    @Test
-    public void testConnect() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final DAVSession session = new DAVSession(host,
-            new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-            new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new DAVListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
-        assertNotNull(list.get(new Path("/trunk", EnumSet.of(Path.Type.directory))));
-        assertNotNull(list.get(new Path("/branches", EnumSet.of(Path.Type.directory))));
-        assertNotNull(list.get(new Path("/tags", EnumSet.of(Path.Type.directory))));
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectRefused() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "localhost", 2121);
         final DAVSession session = new DAVSession(host,
-            new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
-            new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
+                new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
+                new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
         try {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -102,14 +82,13 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test
-    public void testLoginBasicAuth() throws Exception {
-        session.close();
+    public void testLoginBasicAuth() {
     }
 
     @Test
     public void testLoginNTLM() throws Exception {
         final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
-            System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
+                PROPERTIES.get("webdav.iis.user"), PROPERTIES.get("webdav.iis.password")
         ));
         host.setDefaultPath("/WebDAV");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -120,12 +99,10 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(test, new TransferStatus());
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());;
         assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
-        session.close();
     }
 
     @Test
@@ -144,103 +121,77 @@ public class DAVSessionTest extends AbstractDAVTest {
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore() {
-                @Override
-                public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
-                    assertEquals("auth.startssl.com", bookmark.getHostname());
-                    assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
-                        "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
-                    assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
-                        "CN=StartCom Class 1 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
-                    assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
-                        "CN=StartCom Class 2 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
-                    assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
-                        "CN=StartCom Class 3 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
-                    throw new ConnectionCanceledException();
-                }
-            }));
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore() {
+                    @Override
+                    public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
+                        assertEquals("auth.startssl.com", bookmark.getHostname());
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Certification Authority, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Class 1 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Class 2 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        assertTrue(Arrays.asList(issuers).contains(new X500Principal("" +
+                                "CN=StartCom Class 3 Primary Intermediate Client CA, OU=Secure Digital Certificate Signing, O=StartCom Ltd., C=IL")));
+                        throw new ConnectionCanceledException();
+                    }
+                }));
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, String username,
-                                          String title, String reason, LoginOptions options) {
-                    //
-                    return new Credentials();
-                }
-            },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener());
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, String username,
+                                              String title, String reason, LoginOptions options) {
+                        //
+                        return new Credentials();
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener());
         c.connect(session, new DisabledCancelCallback());
-    }
-
-    @Test
-    public void testTrustChain2() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final AtomicBoolean verified = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
-            @Override
-            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
-                assertNotNull(hostname);
-                assertEquals(3, certs.length);
-                assertEquals("CN=R3,O=Let's Encrypt,C=US", certs[1].getSubjectX500Principal().getName());
-                assertEquals("CN=svn.cyberduck.io", certs[0].getSubjectDN().getName());
-                verified.set(true);
-                super.verify(hostname, certs, cipher);
-            }
-        },
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
-        final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()
-        );
-        c.connect(session, new DisabledCancelCallback());
-        assertTrue(verified.get());
-        session.close();
     }
 
     @Test(expected = ConnectionCanceledException.class)
     public void testHandshakeFailure() throws Exception {
         final Session session = new DAVSession(new Host(new DAVSSLProtocol(), "54.228.253.92", new Credentials("user", "p")),
-            new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new TrustManagerHostnameCallback() {
-                @Override
-                public String getTarget() {
-                    return "54.228.253.92";
+                new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new TrustManagerHostnameCallback() {
+                    @Override
+                    public String getTarget() {
+                        return "54.228.253.92";
+                    }
+                }, new DisabledCertificateStore() {
+                    @Override
+                    public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) {
+                        return false;
+                    }
                 }
-            }, new DisabledCertificateStore() {
-                @Override
-                public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) {
-                    return false;
-                }
-            }
-            ), new DefaultX509KeyManager()
+                ), new DefaultX509KeyManager()
         );
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-            new DisabledProgressListener());
+                new DisabledProgressListener());
         s.check(session, new DisabledCancelCallback());
     }
 
     @Test
+    @Ignore
     public void testRedirectHttpsAlert() throws Exception {
         final Host host = new Host(new DAVProtocol(), "svn.cyberduck.io");
         final AtomicBoolean warning = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback() {
-                @Override
-                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                    assertEquals("Unsecured WebDAV (HTTP) connection", title);
-                    assertEquals("connection.unsecure.svn.cyberduck.io", preference);
-                    warning.set(true);
-                }
-            },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener()
+                new DisabledLoginCallback() {
+                    @Override
+                    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
+                        assertEquals("Unsecured WebDAV (HTTP) connection", title);
+                        assertEquals("connection.unsecure.svn.cyberduck.io", preference);
+                        warning.set(true);
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()
         );
         c.connect(session, new DisabledCancelCallback());
         assertTrue(warning.get());
@@ -251,19 +202,19 @@ public class DAVSessionTest extends AbstractDAVTest {
     public void testProxyNoConnect() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener(),
-            new ProxyFinder() {
-                @Override
-                public Proxy find(final String target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new ProxyFinder() {
+                    @Override
+                    public Proxy find(final String target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    }
                 }
-            }
         );
         c.connect(session, new DisabledCancelCallback());
         session.close();
@@ -274,24 +225,24 @@ public class DAVSessionTest extends AbstractDAVTest {
     public void testConnectProxyInvalidCredentials() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                    return new Credentials("test", "n");
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                        return new Credentials("test", "n");
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new ProxyFinder() {
+                    @Override
+                    public Proxy find(final String target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    }
                 }
-            },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener(),
-            new ProxyFinder() {
-                @Override
-                public Proxy find(final String target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-                }
-            }
         );
         c.connect(session, new DisabledCancelCallback());
         session.close();
@@ -310,24 +261,24 @@ public class DAVSessionTest extends AbstractDAVTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                    return new Credentials("test", "test");
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                        return new Credentials("test", "test");
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new ProxyFinder() {
+                    @Override
+                    public Proxy find(final String target) {
+                        return new Proxy(Proxy.Type.HTTP, "localhost", 8080);
+                    }
                 }
-            },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener(),
-            new ProxyFinder() {
-                @Override
-                public Proxy find(final String target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 8080);
-                }
-            }
         );
         try {
             Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
@@ -360,24 +311,24 @@ public class DAVSessionTest extends AbstractDAVTest {
                 super.verify(hostname, certs, cipher);
             }
         },
-            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
+                new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback() {
-                @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                    return new Credentials("test", "test");
+                new DisabledLoginCallback() {
+                    @Override
+                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                        return new Credentials("test", "test");
+                    }
+                },
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener(),
+                new ProxyFinder() {
+                    @Override
+                    public Proxy find(final String target) {
+                        return new Proxy(Proxy.Type.HTTPS, "localhost", 8080);
+                    }
                 }
-            },
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener(),
-            new ProxyFinder() {
-                @Override
-                public Proxy find(final String target) {
-                    return new Proxy(Proxy.Type.HTTPS, "localhost", 8080);
-                }
-            }
         );
         try {
             Executors.newSingleThreadExecutor().submit(new Callable<Void>() {

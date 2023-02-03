@@ -16,18 +16,68 @@ package ch.cyberduck.core.freenet;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.MacUniqueIdService;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.log4j.Logger;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FreenetSession extends DAVSession {
-    private static final Logger log = Logger.getLogger(FreenetSession.class);
+    private static final Logger log = LogManager.getLogger(FreenetSession.class);
 
     public FreenetSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    @Override
+    protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        // Always inject new pool to builder on connect because the pool is shutdown on disconnect
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
+        configuration.setUserAgent(new FreenetUserAgentProvider().get());
+        try {
+            final String hash = new MD5ChecksumCompute().compute(new MacUniqueIdService().getUUID()).hash;
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    request.addHeader(new BasicHeader("X-Freenet-Insid", hash));
+                }
+            });
+        }
+        catch(LocalAccessDeniedException | ChecksumException e) {
+            log.warn(String.format("Failure %s retrieving MAC address", e));
+            final String identifier = new MD5ChecksumCompute().compute(System.getProperty("user.name")).hash;
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    request.addHeader(new BasicHeader("X-Freenet-Insid", identifier));
+                }
+            });
+        }
+        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
     }
 
     @Override
@@ -35,6 +85,15 @@ public class FreenetSession extends DAVSession {
     public <T> T getFeature(final Class<T> type) {
         if(type == UrlProvider.class) {
             return (T) new FreenetUrlProvider(host);
+        }
+        if(type == Find.class) {
+            return (T) new FreenetFindFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return null;
+        }
+        if(type == Metadata.class) {
+            return null;
         }
         return super.getFeature(type);
     }

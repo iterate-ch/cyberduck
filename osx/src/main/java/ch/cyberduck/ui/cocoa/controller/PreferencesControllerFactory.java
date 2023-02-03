@@ -31,6 +31,7 @@ public final class PreferencesControllerFactory {
                 shared = new PreferencesController() {
                     @Override
                     public void invalidate() {
+                        super.invalidate();
                         shared = null;
                     }
                 };

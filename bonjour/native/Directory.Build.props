@@ -19,4 +19,6 @@
         <ModulePath>$(MSBuildThisFileDirectory)</ModulePath>
     </PropertyGroup>
 
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />
+
 </Project>

@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -38,10 +39,12 @@ public class S3EncryptionFeature implements Encryption {
 
     private final PathContainerService containerService;
     private final S3Session session;
+    private final S3AccessControlListFeature acl;
 
-    public S3EncryptionFeature(final S3Session session) {
+    public S3EncryptionFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
+        this.acl = acl;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class S3EncryptionFeature implements Encryption {
      */
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
-        return new S3AttributesFinderFeature(session).find(file).getEncryption();
+        return new S3AttributesFinderFeature(session, acl).find(file).getEncryption();
     }
 
     /**
@@ -87,17 +90,17 @@ public class S3EncryptionFeature implements Encryption {
             final String key = String.format("s3.encryption.key.%s", containerService.getContainer(file).getName());
             PreferencesFactory.get().setProperty(key, setting.toString());
         }
-        if(file.isFile() || file.isPlaceholder()) {
+        else {
             try {
                 final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
                 // Copy item in place to write new attributes
                 final TransferStatus status = new TransferStatus();
                 status.setEncryption(setting);
                 status.setLength(file.attributes().getSize());
-                copy.copy(file, file, status, new DisabledConnectionCallback());
+                copy.copy(file, file, status, new DisabledConnectionCallback(), new DisabledStreamListener());
             }
             catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
+                if(file.isDirectory()) {
                     // No placeholder file may exist but we just have a common prefix
                     return;
                 }

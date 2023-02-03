@@ -22,28 +22,28 @@ import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferItem;
 
-public class TransferItemDictionary {
+public class TransferItemDictionary<T> {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory<T> deserializer;
 
     public TransferItemDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this.deserializer = new DeserializerFactory<>();
     }
 
-    public TransferItemDictionary(final DeserializerFactory deserializer) {
+    public TransferItemDictionary(final DeserializerFactory<T> deserializer) {
         this.deserializer = deserializer;
     }
 
-    public <T> TransferItem deserialize(T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
-        final Path remote = new PathDictionary(deserializer).deserialize(dict.objectForKey("Remote"));
+    public TransferItem deserialize(T serialized) {
+        final Deserializer<T> dict = deserializer.create(serialized);
+        final Path remote = new PathDictionary<>(deserializer).deserialize(dict.objectForKey("Remote"));
         if(null == remote) {
             return null;
         }
         final TransferItem item = new TransferItem(remote);
-        final Object localObj = dict.objectForKey("Local Dictionary");
+        final T localObj = dict.objectForKey("Local Dictionary");
         if(localObj != null) {
-            item.setLocal(new LocalDictionary(deserializer).deserialize((localObj)));
+            item.setLocal(new LocalDictionary<>(deserializer).deserialize((localObj)));
         }
         return item;
     }

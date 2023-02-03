@@ -1,741 +1,583 @@
-﻿using System;
+﻿//
+// Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+// http://cyberduck.io/
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// Bug fixes, suggestions and comments should be sent to:
+// feedback@cyberduck.io
+//
+
+using System;
+using System.Buffers;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Controls;
+using Windows.Win32.UI.WindowsAndMessaging;
+using static System.Runtime.CompilerServices.Unsafe;
+using static System.Runtime.InteropServices.MemoryMarshal;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.UI.Controls.TASKDIALOG_COMMON_BUTTON_FLAGS;
+using static Windows.Win32.UI.Controls.TASKDIALOG_FLAGS;
+using static Windows.Win32.UI.Controls.TASKDIALOG_NOTIFICATIONS;
 
 namespace Ch.Cyberduck.Core.TaskDialog
 {
-	/// <summary>
-	/// Provides static methods for showing dialog boxes that can be used to display information and receive simple input from the user.
-	/// </summary>
-	/// <remarks>
-	/// To use, call one of the various Show methods. If you are using this in an MVVM pattern, you may want to create
-	/// a simple TaskDialogService or something to provide a bit of decoupling from my specific implementation.
-	/// </remarks>
-	public static class TaskDialog
-	{
-		private const string HtmlHyperlinkPattern = "<a href=\"[^>]+\">[^<]+<\\/a>";
-		private const string HtmlHyperlinkCapturePattern = "<a href=\"(?<link>[^>]+)\">(?<text>[^<]+)<\\/a>";
+    public enum TaskDialogIcon
+    {
+        Warning,
+        Error,
+        Information,
+        Shield,
+        Question
+    }
 
-		internal static readonly Regex HyperlinkRegex = new Regex(HtmlHyperlinkPattern, RegexOptions.IgnoreCase);
-		internal static readonly Regex HyperlinkCaptureRegex = new Regex(HtmlHyperlinkCapturePattern, RegexOptions.IgnoreCase);
+    public readonly struct TaskDialogResult
+    {
+        public readonly MESSAGEBOX_RESULT Button;
+        public readonly int? RadioButton;
+        public readonly bool? VerificationChecked;
 
-		internal const int CommandButtonIDOffset = 2000;
-		internal const int RadioButtonIDOffset = 1000;
-		internal const int CustomButtonIDOffset = 500;
-		
-		/// <summary>
-		/// Occurs when a task dialog is about to show.
-		/// </summary>
-		/// <remarks>
-		/// Use this event for both notification and modification of all task
-		/// dialog showings. Changes made to the configuration options will be
-		/// persisted.
-		/// </remarks>
-		public static event TaskDialogShowingEventHandler Showing;
-		/// <summary>
-		/// Occurs when a task dialog has been closed.
-		/// </summary>
-		public static event TaskDialogClosedEventHandler Closed;
+        public TaskDialogResult(MESSAGEBOX_RESULT button, int? radioButton, bool? verificationChecked)
+        {
+            Button = button;
+            RadioButton = radioButton;
+            VerificationChecked = verificationChecked;
+        }
+    }
 
-		/// <summary>
-		/// Displays a task dialog with the given configuration options.
-		/// </summary>
-		/// <param name="allowDialogCancellation">Indicates that the dialog should be able to be closed using Alt-F4,
-		/// Escape, and the title bar's close button even if no cancel button
-		/// is specified the CommonButtons.</param>
-		/// <param name="callback">A callback that receives messages from the Task Dialog when
-		/// various events occur.</param>
-		/// <param name="callbackData">Reference object that is passed to the callback.</param>
-		/// <param name="commandLinks">Command links.</param>
-		/// <param name="commonButtons">Standard push buttons.</param>
-		/// <param name="content">Supplemental text that expands on the principal text.</param>
-		/// <param name="customButtons">Buttons that are not from the set of standard buttons. Use an
-		/// ampersand to denote an access key.</param>
-		/// <param name="customFooterIcon">A small 16x16 icon that signifies the purpose of the footer text,
-		/// using a custom Icon resource. If defined <paramref name="footerIcon"/>
-		/// will be ignored.</param>
-		/// <param name="customMainIcon">A large 32x32 icon that signifies the purpose of the dialog, using
-		/// a custom Icon resource. If defined <paramref name="mainIcon"/> will be
-		/// ignored.</param>
-		/// <param name="defaultButtonIndex">Zero-based index of the button to have focus by default.</param>
-		/// <param name="enableCallbackTimer">Indicates that the task dialog's callback is to be called
-		/// approximately every 200 milliseconds.</param>
-		/// <param name="expandedByDefault">Indicates that the expanded info should be displayed when the
-		/// dialog is initially displayed.</param>
-		/// <param name="expandedInfo">Extra text that will be hidden by default.</param>
-		/// <param name="expandToFooter">Indicates that the expanded info should be displayed at the bottom
-		/// of the dialog's footer area instead of immediately after the
-		/// dialog's content.</param>
-		/// <param name="footerIcon">A small 16x16 icon that signifies the purpose of the footer text,
-		/// using one of the built-in system icons.</param>
-		/// <param name="footerText">Additional footer text.</param>
-		/// <param name="mainIcon">A large 32x32 icon that signifies the purpose of the dialog, using
-		/// one of the built-in system icons.</param>
-		/// <param name="mainInstruction">Principal text.</param>
-		/// <param name="owner">The owner window of the task dialog box.</param>
-		/// <param name="radioButtons">Application-defined options for the user.</param>
-		/// <param name="showMarqueeProgressBar">Indicates that an Marquee Progress Bar is to be displayed.</param>
-		/// <param name="showProgressBar">Indicates that a Progress Bar is to be displayed.</param>
-		/// <param name="title">Caption of the window.</param>
-		/// <param name="verificationByDefault">Indicates that the verification checkbox in the dialog is checked
-		/// when the dialog is initially displayed.</param>
-		/// <param name="verificationText">Text accompanied by a checkbox, typically for user feedback such as
-		/// Do-not-show-this-dialog-again options.</param>
-		/// <returns>
-		/// A <see cref="T:TaskDialogInterop.TaskDialogResult"/> value that specifies
-		/// which button is clicked by the user.
-		/// </returns>
-		/// <remarks>
-		/// Use of this method will ignore any TaskDialogOptions.Default settings.
-		/// If you want to make use of defaults, create your own TaskDialogOptions starting with TaskDialogOptions.Default
-		/// and pass it into the Show method.
-		/// </remarks>
-		public static TaskDialogResult Show(
-			bool allowDialogCancellation = false,
-			TaskDialogCallback callback = null,
-			object callbackData = null,
-			string[] commandLinks = null,
-			TaskDialogCommonButtons commonButtons = TaskDialogCommonButtons.None,
-			string content = null,
-			string[] customButtons = null,
-			System.Drawing.Icon customFooterIcon = null,
-			System.Drawing.Icon customMainIcon = null,
-			int? defaultButtonIndex = null,
-			bool enableCallbackTimer = false,
-			bool expandedByDefault = false,
-			string expandedInfo = null,
-			bool expandToFooter = false,
-			TaskDialogIcon footerIcon = TaskDialogIcon.None,
-			string footerText = null,
-			TaskDialogIcon mainIcon = TaskDialogIcon.None,
-			string mainInstruction = null,
-			IntPtr owner = default(IntPtr),
-			string[] radioButtons = null,
-			bool showMarqueeProgressBar = false,
-			bool showProgressBar = false,
-			string title = null,
-			bool verificationByDefault = false,
-			string verificationText = null)
-		{
-			TaskDialogOptions options = new TaskDialogOptions()
-			{
-				AllowDialogCancellation = allowDialogCancellation,
-				Callback = callback,
-				CallbackData = callbackData,
-				CommandLinks = commandLinks,
-				CommonButtons = commonButtons,
-				Content = content,
-				CustomButtons = customButtons,
-				CustomFooterIcon = customFooterIcon,
-				CustomMainIcon = customMainIcon,
-				DefaultButtonIndex = defaultButtonIndex,
-				EnableCallbackTimer = enableCallbackTimer,
-				ExpandedByDefault = expandedByDefault,
-				ExpandedInfo = expandedInfo,
-				ExpandToFooter = expandToFooter,
-				FooterIcon = footerIcon,
-				FooterText = footerText,
-				MainIcon = mainIcon,
-				MainInstruction = mainInstruction,
-				Owner = owner,
-				RadioButtons = radioButtons,
-				ShowMarqueeProgressBar = showMarqueeProgressBar,
-				ShowProgressBar = showProgressBar,
-				Title = title,
-				VerificationByDefault = verificationByDefault,
-				VerificationText = verificationText
-			};
+    public sealed class TaskDialog : IDisposable
+    {
+        private readonly List<TASKDIALOG_BUTTON> buttons = new();
+        private readonly List<TASKDIALOG_BUTTON> radioButtons = new();
+        private readonly GCRegistry registry = new();
+        private bool buttonsConfigured = false;
+        private TaskDialogHandler callback;
+        private TASKDIALOGCONFIG config;
+        private bool disposedValue;
+        private bool footerIconConfigured = false;
+        private bool hasVerification = false;
+        private bool mainIconConfigured = false;
+        private bool radioButtonsConfigured = false;
 
-			return TaskDialog.Show(options);
-		}
-		/// <summary>
-		/// Displays a task dialog with the given configuration options.
-		/// </summary>
-		/// <param name="options">
-		/// A <see cref="T:TaskDialogInterop.TaskDialogOptions"/> that specifies the
-		/// configuration options for the dialog.
-		/// </param>
-		/// <returns>
-		/// A <see cref="T:TaskDialogInterop.TaskDialogResult"/> value that specifies
-		/// which button is clicked by the user.
-		/// </returns>
-		public static TaskDialogResult Show(TaskDialogOptions options)
-		{
-			TaskDialogResult result = TaskDialogResult.Empty;
+        private static readonly PFTASKDIALOGCALLBACK s_callbackProcDelegate;
 
-			// Make a copy since we'll let Showing event possibly modify them
-			TaskDialogOptions configOptions = options;
+        static TaskDialog()
+        {
+            s_callbackProcDelegate = (hwnd, msg, wParam, lParam, lpRefData) =>
+            ((TaskDialog)GCHandle.FromIntPtr(lpRefData).Target).Handler(hwnd, msg, wParam, lParam);
+        }
 
+        private TaskDialog()
+        {
+            config.cbSize = (uint)SizeOf<TASKDIALOGCONFIG>();
+        }
 
-			if (NativeTaskDialog.IsAvailableOnThisOS)
-			{
-				try
-				{
-					OnShowing(new TaskDialogShowingEventArgs(ref configOptions));
-					result = ShowTaskDialog(configOptions);
-				}
-				catch (EntryPointNotFoundException)
-				{
-					// HACK: Not available? Just crash. Need investigation.
-					// HACK: Removed every Emulated-Task-Dialog Thingy.
-					throw;
-					//// This can happen on some machines, usually when running Vista/7 x64
-					//// When it does, we'll work around the issue by forcing emulated mode
-					//// http://www.codeproject.com/Messages/3257715/How-to-get-it-to-work-on-Windows-7-64-bit.aspx
-					//ForceEmulationMode = true;
-					//result = ShowEmulatedTaskDialog(configOptions);
-				}
-				finally
-				{
-					OnClosed(new TaskDialogClosedEventArgs(result));
-				}
-			}
-			else
-			{
-				throw new Exception("Old System");
-			}
+        ~TaskDialog()
+        {
+            Dispose(disposing: false);
+        }
 
+        public delegate void AddButtonCallback(MESSAGEBOX_RESULT id, in string title, bool @default);
 
-			return result;
-		}
+        public delegate bool TaskDialogHandler(object sender, EventArgs e);
 
-		/// <summary>
-		/// Displays a task dialog that has a message and that returns a result.
-		/// </summary>
-		/// <param name="owner">
-		/// The <see cref="T:System.Windows.Window"/> that owns this dialog.
-		/// </param>
-		/// <param name="messageText">
-		/// A <see cref="T:System.String"/> that specifies the text to display.
-		/// </param>
-		/// <returns>
-		/// A <see cref="T:TaskDialogInterop.TaskDialogSimpleResult"/> value that
-		/// specifies which button is clicked by the user.
-		/// </returns>
-		public static TaskDialogSimpleResult ShowMessage(IntPtr owner, string messageText)
-		{
-			TaskDialogOptions options = TaskDialogOptions.Default;
+        public static event EventHandler Closed;
 
-			options.Owner = owner;
-			options.Content = messageText;
-			options.CommonButtons = TaskDialogCommonButtons.Close;
+        public static event EventHandler Showing;
 
-			return Show(options).Result;
-		}
-		/// <summary>
-		/// Displays a task dialog that has a message and that returns a result.
-		/// </summary>
-		/// <param name="owner">
-		/// The <see cref="T:System.Windows.Window"/> that owns this dialog.
-		/// </param>
-		/// <param name="messageText">
-		/// A <see cref="T:System.String"/> that specifies the text to display.
-		/// </param>
-		/// <param name="caption">
-		/// A <see cref="T:System.String"/> that specifies the title bar
-		/// caption to display.
-		/// </param>
-		/// <returns>
-		/// A <see cref="T:TaskDialogInterop.TaskDialogSimpleResult"/> value that
-		/// specifies which button is clicked by the user.
-		/// </returns>
-		public static TaskDialogSimpleResult ShowMessage(IntPtr owner, string messageText, string caption)
-		{
-			return ShowMessage(owner, messageText, caption, TaskDialogCommonButtons.Close);
-		}
-		/// <summary>
-		/// Displays a task dialog that has a message and that returns a result.
-		/// </summary>
-		/// <param name="owner">
-		/// The <see cref="T:System.Windows.Window"/> that owns this dialog.
-		/// </param>
-		/// <param name="messageText">
-		/// A <see cref="T:System.String"/> that specifies the text to display.
-		/// </param>
-		/// <param name="caption">
-		/// A <see cref="T:System.String"/> that specifies the title bar
-		/// caption to display.
-		/// </param>
-		/// <param name="buttons">
-		/// A <see cref="T:TaskDialogInterop.TaskDialogCommonButtons"/> value that
-		/// specifies which button or buttons to display.
-		/// </param>
-		/// <returns>
-		/// A <see cref="T:TaskDialogInterop.TaskDialogSimpleResult"/> value that
-		/// specifies which button is clicked by the user.
-		/// </returns>
-		public static TaskDialogSimpleResult ShowMessage(IntPtr owner, string messageText, string caption, TaskDialogCommonButtons buttons)
-		{
-			return ShowMessage(owner, messageText, caption, buttons, TaskDialogIcon.None);
-		}
-		/// <summary>
-		/// Displays a task dialog that has a message and that returns a result.
-		/// </summary>
-		/// <param name="owner">
-		/// The <see cref="T:System.Windows.Window"/> that owns this dialog.
-		/// </param>
-		/// <param name="messageText">
-		/// A <see cref="T:System.String"/> that specifies the text to display.
-		/// </param>
-		/// <param name="caption">
-		/// A <see cref="T:System.String"/> that specifies the title bar
-		/// caption to display.
-		/// </param>
-		/// <param name="buttons">
-		/// A <see cref="T:TaskDialogInterop.TaskDialogCommonButtons"/> value that
-		/// specifies which button or buttons to display.
-		/// </param>
-		/// <param name="icon">
-		/// A <see cref="T:TaskDialogInterop.VistaTaskDialogIcon"/> that specifies the
-		/// icon to display.
-		/// </param>
-		/// <returns>
-		/// A <see cref="T:TaskDialogInterop.TaskDialogSimpleResult"/> value that
-		/// specifies which button is clicked by the user.
-		/// </returns>
-		public static TaskDialogSimpleResult ShowMessage(IntPtr owner, string messageText, string caption, TaskDialogCommonButtons buttons, TaskDialogIcon icon)
-		{
-			TaskDialogOptions options = TaskDialogOptions.Default;
+        internal interface ITaskDialog
+        {
+            HWND HWND { get; }
+        }
 
-			options.Owner = owner;
-			options.Title = caption;
-			options.Content = messageText;
-			options.CommonButtons = buttons;
-			options.MainIcon = icon;
+        public static TaskDialog Create() => new();
 
-			return Show(options).Result;
-		}
-		/// <summary>
-		/// Displays a task dialog that has a message and that returns a result.
-		/// </summary>
-		/// <param name="owner">
-		/// The <see cref="T:System.Windows.Window"/> that owns this dialog.
-		/// </param>
-		/// <param name="title">
-		/// A <see cref="T:System.String"/> that specifies the title bar
-		/// caption to display.
-		/// </param>
-		/// <param name="mainInstruction">
-		/// A <see cref="T:System.String"/> that specifies the main text to display.
-		/// </param>
-		/// <param name="content">
-		/// A <see cref="T:System.String"/> that specifies the body text to display.
-		/// </param>
-		/// <param name="expandedInfo">
-		/// A <see cref="T:System.String"/> that specifies the expanded text to display when toggled.
-		/// </param>
-		/// <param name="verificationText">
-		/// A <see cref="T:System.String"/> that specifies the text to display next to a checkbox.
-		/// </param>
-		/// <param name="footerText">
-		/// A <see cref="T:System.String"/> that specifies the footer text to display.
-		/// </param>
-		/// <param name="buttons">
-		/// A <see cref="T:TaskDialogInterop.TaskDialogCommonButtons"/> value that
-		/// specifies which button or buttons to display.
-		/// </param>
-		/// <param name="mainIcon">
-		/// A <see cref="T:TaskDialogInterop.VistaTaskDialogIcon"/> that specifies the
-		/// main icon to display.
-		/// </param>
-		/// <param name="footerIcon">
-		/// A <see cref="T:TaskDialogInterop.VistaTaskDialogIcon"/> that specifies the
-		/// footer icon to display.
-		/// </param>
-		/// <returns></returns>
-		public static TaskDialogSimpleResult ShowMessage(IntPtr owner, string title, string mainInstruction, string content, string expandedInfo, string verificationText, string footerText, TaskDialogCommonButtons buttons, TaskDialogIcon mainIcon, TaskDialogIcon footerIcon)
-		{
-			TaskDialogOptions options = TaskDialogOptions.Default;
+        public TaskDialog AllowCancellation()
+        {
+            config.dwFlags |= TDF_ALLOW_DIALOG_CANCELLATION;
+            return this;
+        }
 
-			if (owner != IntPtr.Zero)
-				options.Owner = owner;
-			if (!String.IsNullOrEmpty(title))
-				options.Title = title;
-			if (!String.IsNullOrEmpty(mainInstruction))
-				options.MainInstruction = mainInstruction;
-			if (!String.IsNullOrEmpty(content))
-				options.Content = content;
-			if (!String.IsNullOrEmpty(expandedInfo))
-				options.ExpandedInfo = expandedInfo;
-			if (!String.IsNullOrEmpty(verificationText))
-				options.VerificationText = verificationText;
-			if (!String.IsNullOrEmpty(footerText))
-				options.FooterText = footerText;
-			options.CommonButtons = buttons;
-			options.MainIcon = mainIcon;
-			options.FooterIcon = footerIcon;
+        public TaskDialog Callback(TaskDialogHandler handler)
+        {
+            callback = handler;
+            return this;
+        }
 
-			return Show(options).Result;
-		}
+        public TaskDialog CommandLinks(Action<AddButtonCallback> configure, bool noIcon = false)
+        {
+            if (buttonsConfigured)
+                throw new InvalidOperationException();
+            buttonsConfigured = true;
+            config.dwFlags |= noIcon ? TDF_USE_COMMAND_LINKS_NO_ICON : TDF_USE_COMMAND_LINKS;
+            DoButtons(configure, config.nDefaultButton, out config.cButtons);
+            return this;
+        }
 
-		/// <summary>
-		/// Gets the zero-based index for a common button.
-		/// </summary>
-		/// <param name="commonButtons">The common button set to use.</param>
-		/// <param name="buttonId">The button's id.</param>
-		/// <returns>An integer representing the button index, or -1 if not found.</returns>
-		/// <remarks>
-		/// When Alt+F4, Esc, and other non-button close commands are issued, the dialog
-		/// will simulate a Cancel button click. In this case, -1 for index and a buttonid
-		/// of Cancel will let you know how the user closed the dialog.
-		/// </remarks>
-		public static int GetButtonIndexForCommonButton(TaskDialogCommonButtons commonButtons, int buttonId)
-		{
-			int index = -1;
+        public TaskDialog CommonButtons(TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons, MESSAGEBOX_RESULT? optionalDefaultButton = default)
+        {
+            config.dwCommonButtons = commonButtons;
+            if ((commonButtons & (TDCBF_CLOSE_BUTTON | TDCBF_CANCEL_BUTTON)) > 0)
+            {
+                config.dwFlags |= TDF_ALLOW_DIALOG_CANCELLATION;
+            }
+            if (optionalDefaultButton is MESSAGEBOX_RESULT defaultButton)
+            {
+                config.nDefaultButton = (int)defaultButton;
+            }
+            return this;
+        }
 
-			switch (commonButtons)
-			{
-				default:
-				case TaskDialogCommonButtons.None:
-					index = -1;
-					break;
-				case TaskDialogCommonButtons.Close:
-					index = 0;
-					break;
-				case TaskDialogCommonButtons.OKCancel:
-					if (buttonId == (int)TaskDialogSimpleResult.Ok
-						|| buttonId == (int)TaskDialogCommonButtons.OK)
-						index = 0;
-					else if (buttonId == (int)TaskDialogSimpleResult.Cancel
-						|| buttonId == (int)TaskDialogCommonButtons.Cancel)
-						index = 1;
-					break;
-				case TaskDialogCommonButtons.RetryCancel:
-					if (buttonId == (int)TaskDialogSimpleResult.Retry
-						|| buttonId == (int)TaskDialogCommonButtons.Retry)
-						index = 0;
-					else if (buttonId == (int)TaskDialogSimpleResult.Cancel
-						|| buttonId == (int)TaskDialogCommonButtons.Cancel)
-						index = 1;
-					break;
-				case TaskDialogCommonButtons.YesNo:
-					if (buttonId == (int)TaskDialogSimpleResult.Yes
-						|| buttonId == (int)TaskDialogCommonButtons.Yes)
-						index = 0;
-					else if (buttonId == (int)TaskDialogSimpleResult.No
-						|| buttonId == (int)TaskDialogCommonButtons.No)
-						index = 1;
-					break;
-				case TaskDialogCommonButtons.YesNoCancel:
-					if (buttonId == (int)TaskDialogSimpleResult.Yes
-						|| buttonId == (int)TaskDialogCommonButtons.Yes)
-						index = 0;
-					else if (buttonId == (int)TaskDialogSimpleResult.No
-						|| buttonId == (int)TaskDialogCommonButtons.No)
-						index = 1;
-					else if (buttonId == (int)TaskDialogSimpleResult.Cancel
-						|| buttonId == (int)TaskDialogCommonButtons.Cancel)
-						index = 2;
-					break;
-			}
+        public TaskDialog Content(in string content)
+        {
+            PinValue(out config.pszContent, content, registry);
+            return this;
+        }
 
-			return index;
-		}
-		/// <summary>
-		/// Gets the buttonId for a common button. If the common button set includes more than
-		/// one button, the index number specifies which.
-		/// </summary>
-		/// <param name="commonButtons">The common button set to use.</param>
-		/// <param name="index">The zero-based index into the button set.</param>
-		/// <returns>An integer representing the button, used for example with callbacks and the ClickButton method.</returns>
-		public static int GetButtonIdForCommonButton(TaskDialogCommonButtons commonButtons, int index)
-		{
-			int buttonId = 0;
+        public TaskDialog CustomButtons(Action<AddButtonCallback> configure)
+        {
+            if (buttonsConfigured)
+                throw new InvalidOperationException();
+            buttonsConfigured = true;
+            DoButtons(configure, config.nDefaultButton, out config.cButtons);
+            return this;
+        }
 
-			switch (commonButtons)
-			{
-				default:
-				case TaskDialogCommonButtons.None:
-				case TaskDialogCommonButtons.Close:
-					// We'll set to 0 even for Close, as it doesn't matter that we
-					//get the value right since there is only one button anyway
-					buttonId = 0;
-					break;
-				case TaskDialogCommonButtons.OKCancel:
-					if (index == 0)
-						buttonId = (int)TaskDialogCommonButtons.OK;
-					else if (index == 1)
-						buttonId = (int)TaskDialogCommonButtons.Cancel;
-					else
-						buttonId = 0;
-					break;
-				case TaskDialogCommonButtons.RetryCancel:
-					if (index == 0)
-						buttonId = (int)TaskDialogCommonButtons.Retry;
-					else if (index == 1)
-						buttonId = (int)TaskDialogCommonButtons.Cancel;
-					else
-						buttonId = 0;
-					break;
-				case TaskDialogCommonButtons.YesNo:
-					if (index == 0)
-						buttonId = (int)TaskDialogCommonButtons.Yes;
-					else if (index == 1)
-						buttonId = (int)TaskDialogCommonButtons.No;
-					else
-						buttonId = 0;
-					break;
-				case TaskDialogCommonButtons.YesNoCancel:
-					if (index == 0)
-						buttonId = (int)TaskDialogCommonButtons.Yes;
-					else if (index == 1)
-						buttonId = (int)TaskDialogCommonButtons.No;
-					else if (index == 2)
-						buttonId = (int)TaskDialogCommonButtons.Cancel;
-					else
-						buttonId = 0;
-					break;
-			}
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
 
-			return buttonId;
-		}
-		/// <summary>
-		/// Gets the buttonId for a command button.
-		/// </summary>
-		/// <param name="index">The zero-based index into the array of command buttons.</param>
-		/// <returns>An integer representing the button, used for example with callbacks and the ClickButton method.</returns>
-		/// <remarks>
-		/// When creating the config options for the dialog and specifying command buttons,
-		/// typically you pass in an array of button label strings. The index specifies which
-		/// button to get an id for. If you passed in Save, Don't Save, and Cancel, then index 2
-		/// specifies the Cancel button.
-		/// </remarks>
-		public static int GetButtonIdForCommandButton(int index)
-		{
-			return CommandButtonIDOffset + index;
-		}
-		/// <summary>
-		/// Gets the buttonId for a radio button.
-		/// </summary>
-		/// <param name="index">The zero-based index into the array of radio buttons.</param>
-		/// <returns>An integer representing the button, used for example with callbacks and the ClickButton method.</returns>
-		/// <remarks>
-		/// When creating the config options for the dialog and specifying radio buttons,
-		/// typically you pass in an array of radio label strings. The index specifies which
-		/// button to get an id for. If you passed in Automatic, Manual, and Disabled, then index 1
-		/// specifies the Manual radio button.
-		/// </remarks>
-		public static int GetButtonIdForRadioButton(int index)
-		{
-			return RadioButtonIDOffset + index;
-		}
-		/// <summary>
-		/// Gets the buttonId for a custom button.
-		/// </summary>
-		/// <param name="index">The zero-based index into the array of custom buttons.</param>
-		/// <returns>An integer representing the button, used for example with callbacks and the ClickButton method.</returns>
-		/// <remarks>
-		/// When creating the config options for the dialog and specifying custom buttons,
-		/// typically you pass in an array of button label strings. The index specifies which
-		/// button to get an id for. If you passed in Save, Don't Save, and Cancel, then index 2
-		/// specifies the Cancel custom button.
-		/// </remarks>
-		public static int GetButtonIdForCustomButton(int index)
-		{
-			return CustomButtonIDOffset + index;
-		}
+        public TaskDialog EnableCallbackTimer()
+        {
+            config.dwFlags |= TDF_CALLBACK_TIMER;
+            return this;
+        }
 
-		/// <summary>
-		/// Raises the <see cref="E:Showing"/> event.
-		/// </summary>
-		/// <param name="e">The <see cref="TaskDialogInterop.TaskDialogShowingEventArgs"/> instance containing the event data.</param>
-		private static void OnShowing(TaskDialogShowingEventArgs e)
-		{
-			if (Showing != null)
-			{
-				Showing(null, e);
-			}
-		}
-		/// <summary>
-		/// Raises the <see cref="E:Closed"/> event.
-		/// </summary>
-		/// <param name="e">The <see cref="TaskDialogInterop.TaskDialogClosedEventArgs"/> instance containing the event data.</param>
-		private static void OnClosed(TaskDialogClosedEventArgs e)
-		{
-			if (Closed != null)
-			{
-				Closed(null, e);
-			}
-		}
-		private static TaskDialogResult ShowTaskDialog(TaskDialogOptions options)
-		{
-			var td = new NativeTaskDialog();
+        public TaskDialog ExpandedByDefault()
+        {
+            config.dwFlags |= TDF_EXPANDED_BY_DEFAULT;
+            return this;
+        }
 
-			td.WindowTitle = options.Title;
-			td.MainInstruction = options.MainInstruction;
-			td.Content = options.Content;
-			td.ExpandedInformation = options.ExpandedInfo;
-			td.Footer = options.FooterText;
+        public TaskDialog ExpandedInformation(in string expandedInformation)
+        {
+            PinValue(out config.pszExpandedInformation, expandedInformation, registry);
+            return this;
+        }
 
-			bool hasCustomCancel = false;
+        public TaskDialog ExpandedInformation(in string controlText, in string expandedInformation) => ExpandedInformation(controlText, controlText, expandedInformation);
 
-			// Use of Command Links overrides any custom defined buttons
-			if (options.CommandLinks != null && options.CommandLinks.Length > 0)
-			{
-				List<TaskDialogButton> lst = new List<TaskDialogButton>();
-				for (int i = 0; i < options.CommandLinks.Length; i++)
-				{
-					try
-					{
-						TaskDialogButton button = new TaskDialogButton();
-						button.ButtonId = GetButtonIdForCommandButton(i);
-						button.ButtonText = options.CommandLinks[i];
-						lst.Add(button);
-					}
-					catch (FormatException)
-					{
-					}
-				}
-				td.Buttons = lst.ToArray();
-				if (options.DefaultButtonIndex.HasValue
-					&& options.DefaultButtonIndex >= 0
-					&& options.DefaultButtonIndex.Value < td.Buttons.Length)
-					td.DefaultButton = td.Buttons[options.DefaultButtonIndex.Value].ButtonId;
-			}
-			else if (options.CustomButtons != null && options.CustomButtons.Length > 0)
-			{
-				List<TaskDialogButton> lst = new List<TaskDialogButton>();
-				for (int i = 0; i < options.CustomButtons.Length; i++)
-				{
-					try
-					{
-						TaskDialogButton button = new TaskDialogButton();
-						button.ButtonId = GetButtonIdForCustomButton(i);
-						button.ButtonText = options.CustomButtons[i];
+        public TaskDialog ExpandedInformation(in string expandedControlText, in string collapsedControlText, in string expandedInformation)
+        {
+            PinValue(out config.pszExpandedControlText, expandedControlText, registry);
+            PinValue(out config.pszCollapsedControlText, collapsedControlText, registry);
+            PinValue(out config.pszExpandedInformation, expandedInformation, registry);
+            return this;
+        }
 
-						if (!hasCustomCancel)
-						{
-							hasCustomCancel =
-								(button.ButtonText == TaskDialogOptions.LocalizedStrings.CommonButton_Close
-								|| button.ButtonText == TaskDialogOptions.LocalizedStrings.CommonButton_Cancel);
-						}
+        public TaskDialog ExpandToFooter()
+        {
+            config.dwFlags |= TDF_EXPAND_FOOTER_AREA;
+            return this;
+        }
 
-						lst.Add(button);
-					}
-					catch (FormatException)
-					{
-					}
-				}
+        public TaskDialog FooterIcon(Icon icon)
+        {
+            if (footerIconConfigured)
+                throw new InvalidOperationException();
+            footerIconConfigured = true;
 
-				td.Buttons = lst.ToArray();
-				if (options.DefaultButtonIndex.HasValue
-					&& options.DefaultButtonIndex.Value >= 0
-					&& options.DefaultButtonIndex.Value < td.Buttons.Length)
-					td.DefaultButton = td.Buttons[options.DefaultButtonIndex.Value].ButtonId;
-				td.CommonButtons = TaskDialogCommonButtons.None;
-			}
-			
-			if (options.RadioButtons != null && options.RadioButtons.Length > 0)
-			{
-				List<TaskDialogButton> lst = new List<TaskDialogButton>();
-				for (int i = 0; i < options.RadioButtons.Length; i++)
-				{
-					try
-					{
-						TaskDialogButton button = new TaskDialogButton();
-						button.ButtonId = GetButtonIdForRadioButton(i);
-						button.ButtonText = options.RadioButtons[i];
-						lst.Add(button);
-					}
-					catch (FormatException)
-					{
-					}
-				}
-				td.RadioButtons = lst.ToArray();
-				td.NoDefaultRadioButton = (!options.DefaultButtonIndex.HasValue || options.DefaultButtonIndex.Value == -1);
-				if (options.DefaultButtonIndex.HasValue
-					&& options.DefaultButtonIndex >= 0
-					&& options.DefaultButtonIndex.Value < td.RadioButtons.Length)
-					td.DefaultButton = td.RadioButtons[options.DefaultButtonIndex.Value].ButtonId;
-			}
+            config.dwFlags |= TDF_USE_HICON_FOOTER;
+            config.Anonymous2.hFooterIcon = (HICON)icon.Handle;
+            return this;
+        }
 
-			if (options.CommonButtons != TaskDialogCommonButtons.None)
-			{
-				td.CommonButtons = options.CommonButtons;
+        public TaskDialog FooterIcon(TaskDialogIcon icon)
+        {
+            if (footerIconConfigured)
+                throw new InvalidOperationException();
+            footerIconConfigured = true;
 
-				if (options.DefaultButtonIndex.HasValue
-					&& options.DefaultButtonIndex >= 0)
-					td.DefaultButton = GetButtonIdForCommonButton(options.CommonButtons, options.DefaultButtonIndex.Value);
-			}
+            config.Anonymous2.pszFooterIcon = ToIcon(icon);
+            return this;
+        }
 
-			td.MainIcon = options.MainIcon;
-			td.CustomMainIcon = options.CustomMainIcon;
-			td.FooterIcon = options.FooterIcon;
-			td.CustomFooterIcon = options.CustomFooterIcon;
-			td.EnableHyperlinks = DetectHyperlinks(options.Content, options.ExpandedInfo, options.FooterText);
-			td.AllowDialogCancellation =
-				(options.AllowDialogCancellation
-				|| hasCustomCancel
-				|| options.CommonButtons.HasFlag(TaskDialogCommonButtons.Close)
-				|| options.CommonButtons.HasFlag(TaskDialogCommonButtons.Cancel));
-			td.CallbackTimer = options.EnableCallbackTimer;
-			td.ExpandedByDefault = options.ExpandedByDefault;
-			td.ExpandFooterArea = options.ExpandToFooter;
-			td.PositionRelativeToWindow = true;
-			td.RightToLeftLayout = false;
-			td.NoDefaultRadioButton = false;
-			td.CanBeMinimized = false;
-			td.ShowProgressBar = options.ShowProgressBar;
-			td.ShowMarqueeProgressBar = options.ShowMarqueeProgressBar;
-			td.UseCommandLinks = (options.CommandLinks != null && options.CommandLinks.Length > 0);
-			td.UseCommandLinksNoIcon = false;
-			td.VerificationText = options.VerificationText;
-			td.VerificationFlagChecked = options.VerificationByDefault;
-			td.ExpandedControlText = "Hide details";
-			td.CollapsedControlText = "Show details";
-			td.Callback = options.Callback;
-			td.CallbackData = options.CallbackData;
-			td.Config = options;
+        public TaskDialog FooterText(string text)
+        {
+            PinValue(out config.pszFooter, text, registry);
+            return this;
+        }
 
-			TaskDialogResult result;
-			int diagResult = 0;
-			TaskDialogSimpleResult simpResult = TaskDialogSimpleResult.None;
-			bool verificationChecked = false;
-			int radioButtonResult = -1;
-			int? commandButtonResult = null;
-			int? customButtonResult = null;
+        public TaskDialog Instance(in HINSTANCE instance)
+        {
+            config.hInstance = instance;
+            return this;
+        }
 
-			diagResult = td.Show(options.Owner, out verificationChecked, out radioButtonResult);
+        public TaskDialog Instruction(in string instruction)
+        {
+            PinValue(out config.pszMainInstruction, instruction, registry);
+            return this;
+        }
 
-			if (radioButtonResult >= RadioButtonIDOffset)
-			{
-				simpResult = (TaskDialogSimpleResult)diagResult;
-				radioButtonResult -= RadioButtonIDOffset;
-			}
+        public TaskDialog MainIcon(TaskDialogIcon icon)
+        {
+            if (mainIconConfigured)
+                throw new InvalidOperationException();
+            mainIconConfigured = true;
 
-			if (diagResult >= CommandButtonIDOffset)
-			{
-				simpResult = TaskDialogSimpleResult.Command;
-				commandButtonResult = diagResult - CommandButtonIDOffset;
-			}
-			else if (diagResult >= CustomButtonIDOffset)
-			{
-				simpResult = TaskDialogSimpleResult.Custom;
-				customButtonResult = diagResult - CustomButtonIDOffset;
-			}
-			else
-			{
-				simpResult = (TaskDialogSimpleResult)diagResult;
-			}
+            config.Anonymous1.pszMainIcon = ToIcon(icon);
+            return this;
+        }
 
-			result = new TaskDialogResult(
-				simpResult,
-				(String.IsNullOrEmpty(options.VerificationText) ? null : (bool?)verificationChecked),
-				((options.RadioButtons == null || options.RadioButtons.Length == 0) ? null : (int?)radioButtonResult),
-				((options.CommandLinks == null || options.CommandLinks.Length == 0) ? null : commandButtonResult),
-				((options.CustomButtons == null || options.CustomButtons.Length == 0) ? null : customButtonResult));
+        public TaskDialog MainIcon(Icon icon)
+        {
+            if (mainIconConfigured)
+                throw new InvalidOperationException();
+            mainIconConfigured = true;
 
-			return result;
-		}
-		private static bool DetectHyperlinks(string content, string expandedInfo, string footerText)
-		{
-			return DetectHyperlinks(content) || DetectHyperlinks(expandedInfo) || DetectHyperlinks(footerText);
-		}
-		private static bool DetectHyperlinks(string text)
-		{
-			if (String.IsNullOrEmpty(text))
-				return false;
-			return HyperlinkRegex.IsMatch(text);
-		}
-	}
+            config.dwFlags |= TDF_USE_HICON_MAIN;
+            config.Anonymous1.hMainIcon = (HICON)icon.Handle;
+            return this;
+        }
+
+        public TaskDialog Parent(in HWND parent)
+        {
+            config.hwndParent = parent;
+            return this;
+        }
+
+        public TaskDialog RadioButtons(Action<AddButtonCallback> configure)
+        {
+            if (radioButtonsConfigured)
+                throw new InvalidOperationException();
+            radioButtonsConfigured = true;
+
+            DoButtons(radioButtons, configure, config.nDefaultRadioButton, out config.cRadioButtons);
+            return this;
+        }
+
+        /// <summary>
+        /// Shows this TaskDialog instance, and disposes any allocated resources immediately
+        /// </summary>
+        public unsafe TaskDialogResult Show()
+        {
+            int button = default;
+            int radioButton = default;
+            BOOL verificationChecked = default;
+            HRESULT result;
+
+            unsafe static void CopyButtons(ref TASKDIALOG_BUTTON target, List<TASKDIALOG_BUTTON> buttons, out TASKDIALOG_BUTTON* first)
+            {
+                first = (TASKDIALOG_BUTTON*)AsPointer(ref target);
+                ref TASKDIALOG_BUTTON next = ref target;
+                foreach (var item in buttons)
+                {
+                    next = item;
+                    next = ref Add(ref next, 1);
+                }
+            }
+
+            int buttonCount = buttons.Count;
+            int radioButtonCount = radioButtons.Count;
+            using var buttonMemory = MemoryPool<TASKDIALOG_BUTTON>.Shared.Rent(buttonCount + radioButtonCount);
+            registry.Register(buttonMemory.Memory.Pin());
+            CopyButtons(ref GetReference(buttonMemory.Memory.Slice(0, buttonCount).Span), buttons, out config.pButtons);
+            CopyButtons(ref GetReference(buttonMemory.Memory.Slice(buttonCount, radioButtonCount).Span), radioButtons, out config.pRadioButtons);
+
+            GCHandle handle = default;
+            try
+            {
+                Showing?.Invoke(this, EventArgs.Empty);
+                TASKDIALOGCONFIG copy = config;
+                config = default;
+                copy.pfCallback = s_callbackProcDelegate;
+
+                handle = GCHandle.Alloc(this, GCHandleType.Normal);
+                copy.lpCallbackData = GCHandle.ToIntPtr(handle);
+
+                result = TaskDialogIndirect(copy, &button, &radioButton, &verificationChecked);
+            }
+            finally
+            {
+                if (handle.IsAllocated)
+                {
+                    handle.Free();
+                }
+                Closed?.Invoke(this, EventArgs.Empty);
+                this.Dispose();
+            }
+            if (button == 0)
+                Marshal.ThrowExceptionForHR(result);
+
+            return new(
+                (MESSAGEBOX_RESULT)button,
+                radioButtonsConfigured ? radioButton : default,
+                hasVerification ? verificationChecked : default);
+        }
+
+        public TaskDialog ShowProgressbar(bool marquee)
+        {
+            config.dwFlags |= marquee ? TDF_SHOW_MARQUEE_PROGRESS_BAR : TDF_SHOW_PROGRESS_BAR;
+            return this;
+        }
+
+        public TaskDialog Title(in string title)
+        {
+            PinValue(out config.pszWindowTitle, title, registry);
+            return this;
+        }
+
+        public TaskDialog UseHyperlinks()
+        {
+            config.dwFlags |= TDF_ENABLE_HYPERLINKS;
+            return this;
+        }
+
+        public TaskDialog VerificationText(in string verificationText, bool verificationChecked)
+        {
+            hasVerification = true;
+            PinValue(out config.pszVerificationText, verificationText, registry);
+            if (verificationChecked)
+            {
+                config.dwFlags |= TDF_VERIFICATION_FLAG_CHECKED;
+            }
+            return this;
+        }
+
+        private static unsafe void PinValue(out PCWSTR pcwstr, string value, in GCRegistry registry)
+        {
+            PinValue(out char* ptr, value, registry);
+            pcwstr = ptr;
+        }
+
+        private static unsafe void PinValue<TIn, TOut>(out TOut* ptr, TIn value, in GCRegistry registry)
+            where TIn : class
+            where TOut : unmanaged
+        {
+            PinValue(out void* temp, value, registry);
+            ptr = (TOut*)temp;
+        }
+
+        private static unsafe void PinValue<TIn>(out nint ptr, TIn value, in GCRegistry registry)
+            where TIn : class
+        {
+            PinValue(out void* temp, value, registry);
+            ptr = (nint)temp;
+        }
+
+        private static unsafe void PinValue<TIn>(out void* ptr, TIn value, in GCRegistry registry)
+            where TIn : class
+        {
+            var alloc = GCHandle.Alloc(value, GCHandleType.Pinned);
+            var handle = new MemoryHandle((void*)alloc.AddrOfPinnedObject(), alloc);
+            registry.Register(handle);
+            ptr = handle.Pointer;
+        }
+
+        private static PCWSTR ToIcon(TaskDialogIcon icon) => icon switch
+        {
+            TaskDialogIcon.Warning => TD_WARNING_ICON,
+            TaskDialogIcon.Error => TD_ERROR_ICON,
+            TaskDialogIcon.Information => TD_INFORMATION_ICON,
+            TaskDialogIcon.Shield => TD_SHIELD_ICON,
+            TaskDialogIcon.Question => TD_QUESTION_ICON,
+            _ => throw new ArgumentOutOfRangeException(nameof(icon))
+        };
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                disposedValue = true;
+                registry.Dispose();
+            }
+        }
+
+        private void DoButtons(Action<AddButtonCallback> configure, in int defaultButton, out uint count) => DoButtons(buttons, configure, defaultButton, out count);
+
+        private unsafe void DoButtons(List<TASKDIALOG_BUTTON> target, Action<AddButtonCallback> configure, in int defaultButton, out uint count)
+        {
+            MESSAGEBOX_RESULT? value = default;
+            configure((MESSAGEBOX_RESULT id, in string title, bool @default) =>
+            {
+                PinValue(out char* pinned, title, registry);
+                target.Add(new() { nButtonID = (int)id, pszButtonText = pinned });
+                if (value.HasValue)
+                {
+                    value = id;
+                }
+                else
+                {
+                    value = 0;
+                }
+            });
+            count = (uint)target.Count;
+            if (value is MESSAGEBOX_RESULT button && button != 0)
+            {
+                AsRef(defaultButton) = (int)button;
+            }
+        }
+
+        private unsafe HRESULT Handler(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
+        {
+            var notification = (TASKDIALOG_NOTIFICATIONS)msg;
+
+            EventArgs args = (TASKDIALOG_NOTIFICATIONS)msg switch
+            {
+                TDN_CREATED => new TaskDialogCreatedEventArgs(hwnd),
+                TDN_NAVIGATED => new TaskDialogNavigatedEventArgs(hwnd),
+                TDN_BUTTON_CLICKED => new TaskDialogButtonClickedEventArgs(hwnd, (int)wParam.Value),
+                TDN_HYPERLINK_CLICKED => new TaskDialogHyperlinkClickedEventArgs(hwnd, ((PWSTR)(char*)lParam.Value).ToString()),
+                TDN_TIMER => new TaskDialogTimerEventArgs(hwnd, TimeSpan.FromMilliseconds(wParam.Value)),
+                TDN_DESTROYED => new TaskDialogDestroyedEventArgs(hwnd),
+                TDN_RADIO_BUTTON_CLICKED => new TaskDialogRadioButtonClickedEventArgs(hwnd, (int)wParam.Value),
+                TDN_DIALOG_CONSTRUCTED => new TaskDialogConstructedEventArgs(hwnd),
+                TDN_VERIFICATION_CLICKED => new TaskDialogVerificationClickedEventArgs(hwnd, wParam.Value != 0),
+                TDN_HELP => new TaskDialogHelpEventArgs(hwnd),
+                TDN_EXPANDO_BUTTON_CLICKED => new TaskDialogExpandoButtonClickedEventArgs(hwnd, wParam.Value != 0),
+                _ => default
+            };
+            return callback?.Invoke(this, args) == true ? S_FALSE : S_OK;
+        }
+
+        private struct GCRegistry : IDisposable
+        {
+            private readonly LinkedList<MemoryHandle> disposables = new();
+
+            public GCRegistry()
+            { }
+
+            public void Dispose()
+            {
+                while (disposables.Last is LinkedListNode<MemoryHandle> node)
+                {
+                    node.Value.Dispose();
+                    disposables.Remove(node);
+                }
+            }
+
+            public void Register(in MemoryHandle handle) => disposables.AddLast(handle);
+        }
+    }
+
+    public class TaskDialogButtonClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogButtonClickedEventArgs(HWND hwnd, int buttonId) : base(hwnd)
+        {
+            ButtonId = buttonId;
+        }
+
+        public int ButtonId { get; }
+    }
+
+    public class TaskDialogConstructedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogConstructedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogCreatedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogCreatedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogDestroyedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogDestroyedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogEventArgs : EventArgs, TaskDialog.ITaskDialog
+    {
+        private readonly HWND hwnd;
+
+        public TaskDialogEventArgs(HWND hwnd)
+        {
+            this.hwnd = hwnd;
+        }
+
+        HWND TaskDialog.ITaskDialog.HWND => hwnd;
+    }
+
+    public class TaskDialogExpandoButtonClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogExpandoButtonClickedEventArgs(HWND hwnd, bool expanded) : base(hwnd)
+        {
+            Expanded = expanded;
+        }
+
+        public bool Expanded { get; }
+    }
+
+    public class TaskDialogHelpEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogHelpEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogHyperlinkClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogHyperlinkClickedEventArgs(HWND hwnd, string url) : base(hwnd)
+        {
+            Url = url;
+        }
+
+        public string Url { get; }
+    }
+
+    public class TaskDialogNavigatedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogNavigatedEventArgs(HWND hwnd) : base(hwnd)
+        {
+        }
+    }
+
+    public class TaskDialogRadioButtonClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogRadioButtonClickedEventArgs(HWND hwnd, int radioButtonId) : base(hwnd)
+        {
+            RadioButtonId = radioButtonId;
+        }
+
+        public int RadioButtonId { get; }
+    }
+
+    public class TaskDialogTimerEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogTimerEventArgs(HWND hwnd, TimeSpan time) : base(hwnd)
+        {
+            Time = time;
+        }
+
+        public TimeSpan Time { get; }
+    }
+
+    public class TaskDialogVerificationClickedEventArgs : TaskDialogEventArgs
+    {
+        public TaskDialogVerificationClickedEventArgs(HWND hwnd, bool @checked) : base(hwnd)
+        {
+            Checked = @checked;
+        }
+
+        public bool Checked { get; }
+    }
 }

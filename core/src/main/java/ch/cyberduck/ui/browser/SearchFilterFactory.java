@@ -26,7 +26,7 @@ public class SearchFilterFactory {
     /**
      * No file filter.
      */
-    public static final Filter<Path> NULL_FILTER = new NullFilter<Path>();
+    public static final Filter<Path> NULL_FILTER = new NullFilter<>();
 
     /**
      * Filter hidden files.

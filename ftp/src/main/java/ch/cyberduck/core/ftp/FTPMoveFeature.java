@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -32,8 +31,7 @@ import java.util.Collections;
 public class FTPMoveFeature implements Move {
 
     private final FTPSession session;
-
-    private Delete delete;
+    private final Delete delete;
 
     public FTPMoveFeature(final FTPSession session) {
         this.session = session;

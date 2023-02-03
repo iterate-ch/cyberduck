@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.5.6-SNAPSHOT</version>
     </parent>
     <artifactId>dracoon</artifactId>
 
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>com.dracoon</groupId>
             <artifactId>dracoon-crypto-sdk</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.bouncycastle</groupId>
@@ -61,17 +61,6 @@
             <artifactId>swagger-annotations</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <compilerArguments combine.self="override" />
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <profiles>
         <profile>
@@ -92,18 +81,6 @@
                                     <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.sds.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.sds.io.swagger.client.api</apiPackage>
-                                    <configOptions>
-                                        <sourceFolder>src/main/java</sourceFolder>
-                                        <library>jersey2</library>
-                                        <dateLibrary>joda</dateLibrary>
-                                        <java8>true</java8>
-                                    </configOptions>
-                                    <environmentVariables>
-                                        <generateApiTests>false</generateApiTests>
-                                        <generateModelTests>false</generateModelTests>
-                                        <generateApiDocumentation>false</generateApiDocumentation>
-                                        <generateSupportingFiles>false</generateSupportingFiles>
-                                    </environmentVariables>
                                 </configuration>
                             </execution>
                         </executions>

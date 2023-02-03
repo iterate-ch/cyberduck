@@ -30,13 +30,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
 
 import java.io.IOException;
 
 public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
-    private static final Logger log = Logger.getLogger(S3TokenExpiredResponseInterceptor.class);
+    private static final Logger log = LogManager.getLogger(S3TokenExpiredResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
@@ -54,15 +55,15 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_BAD_REQUEST:
-                if(executionCount <= MAX_RETRIES) {
+        if(executionCount <= MAX_RETRIES) {
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_BAD_REQUEST:
                     final S3ServiceException failure;
                     try {
                         if(null != response.getEntity()) {
                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                             failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
-                                EntityUtils.toString(response.getEntity()));
+                                    EntityUtils.toString(response.getEntity()));
                             if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
                                 try {
                                     host.setCredentials(new STSCredentialsConfigurator(trust, key, prompt).configure(host));
@@ -77,7 +78,12 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                     catch(IOException e) {
                         log.warn(String.format("Failure parsing response entity from %s", response));
                     }
-                }
+            }
+        }
+        else {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
+            }
         }
         return false;
     }

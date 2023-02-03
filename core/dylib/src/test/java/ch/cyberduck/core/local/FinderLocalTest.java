@@ -15,6 +15,7 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -25,12 +26,30 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
 public class FinderLocalTest {
+
+    @Test
+    public void testWriteNewFile() throws Exception {
+        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final OutputStream out = file.getOutputStream(false);
+        out.close();
+        file.delete();
+    }
+
+    @Test
+    public void testWriteExistingFile() throws Exception {
+        final FinderLocal file = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        new DefaultLocalTouchFeature().touch(file);
+        final OutputStream out = file.getOutputStream(false);
+        out.close();
+        file.delete();
+    }
 
     @Test
     public void testEqual() throws Exception {
@@ -115,7 +134,7 @@ public class FinderLocalTest {
 
     @Test
     public void testBookmark() throws Exception {
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
+        FinderLocal l = new FinderLocal(System.getProperty("user.dir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
         assertNull(l.getBookmark());
         new DefaultLocalTouchFeature().touch(l);
         assertNotNull(l.getBookmark());
@@ -182,7 +201,7 @@ public class FinderLocalTest {
     @Test
     public void testReleaseSecurityScopeBookmarkInputStreamClose() throws Exception {
         final AtomicBoolean released = new AtomicBoolean(false);
-        final FinderLocal l = new FinderLocal(System.getProperty("user.home"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
+        final FinderLocal l = new FinderLocal(System.getProperty("user.dir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
             @Override
             public NSURL lock(final boolean interactive) throws AccessDeniedException {
                 final NSURL lock = super.lock(interactive);

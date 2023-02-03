@@ -59,7 +59,7 @@ public class DeletedNode {
     @JsonCreator
     public static TypeEnum fromValue(String text) {
       for (TypeEnum b : TypeEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }
@@ -111,9 +111,9 @@ public class DeletedNode {
       return String.valueOf(value);
     }
     @JsonCreator
-    public static ClassificationEnum fromValue(String text) {
+    public static ClassificationEnum fromValue(Integer text) {
       for (ClassificationEnum b : ClassificationEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

@@ -20,8 +20,12 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -74,18 +78,26 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        super(createExecutor(prefix, size, priority, new LinkedBlockingQueue<>(), handler));
+        this(prefix, size, priority, new LinkedBlockingQueue<>(size), new CustomCallerPolicy(), handler);
     }
 
-    public DefaultThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
-        super(createExecutor(prefix, size, priority, queue, handler));
+    public DefaultThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue,
+                             final Thread.UncaughtExceptionHandler handler) {
+        this(prefix, size, priority, queue, new CustomCallerPolicy(), handler);
     }
 
-    public static ThreadPoolExecutor createExecutor(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
+    public DefaultThreadPool(final String prefix, final int size, final Priority priority, final BlockingQueue<Runnable> queue,
+                             final RejectedExecutionHandler policy, final Thread.UncaughtExceptionHandler handler) {
+        super(createExecutor(prefix, size, priority, queue, policy, handler));
+    }
+
+    public static ThreadPoolExecutor createExecutor(final String prefix, final int size, final Priority priority,
+                                                    final BlockingQueue<Runnable> queue,
+                                                    final RejectedExecutionHandler policy,
+                                                    final Thread.UncaughtExceptionHandler handler) {
         return new ThreadPoolExecutor(size, size,
-            PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
-            queue,
-            new NamedThreadFactory(prefix, priority, handler)) {
+                PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
+                queue, new NamedThreadFactory(prefix, priority, handler), policy) {
             @Override
             protected void afterExecute(final Runnable r, final Throwable t) {
                 if(t != null) {
@@ -94,4 +106,22 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
             }
         };
     }
+
+    public static final class CustomCallerPolicy extends ThreadPoolExecutor.AbortPolicy {
+        private static final Logger log = LogManager.getLogger(CustomCallerPolicy.class);
+
+        @Override
+        public void rejectedExecution(final Runnable r, final ThreadPoolExecutor e) {
+            if(!e.isShutdown()) {
+                log.warn(String.format("Run %s on caller thread", r));
+                r.run();
+            }
+            else {
+                log.error(String.format("Rejected execution of %s", r));
+                // Reject
+                super.rejectedExecution(r, e);
+            }
+        }
+    }
+
 }

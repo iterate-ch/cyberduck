@@ -55,7 +55,7 @@ public class MoveNodesRequest {
     @JsonCreator
     public static ResolutionStrategyEnum fromValue(String text) {
       for (ResolutionStrategyEnum b : ResolutionStrategyEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
+        if (b.value.equals(text)) {
           return b;
         }
       }

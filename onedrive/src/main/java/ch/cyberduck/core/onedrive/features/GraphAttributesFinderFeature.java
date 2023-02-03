@@ -22,15 +22,19 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.types.DriveItem;
+import org.nuxeo.onedrive.client.types.DriveItemVersion;
 import org.nuxeo.onedrive.client.types.FileSystemInfo;
+import org.nuxeo.onedrive.client.types.Publication;
 
 import java.io.IOException;
 import java.net.URI;
@@ -38,8 +42,9 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-public class GraphAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
+
+public class GraphAttributesFinderFeature implements AttributesFinder, AttributesAdapter<DriveItem.Metadata> {
+    private static final Logger log = LogManager.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
     private final GraphFileIdProvider fileid;
@@ -49,9 +54,20 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         this.fileid = fileid;
     }
 
+    static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
+        DescriptiveUrl url = null;
+        try {
+            url = new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http);
+        }
+        catch(URISyntaxException e) {
+            log.warn(String.format("Cannot create URI of WebURL: %s", metadata.getWebUrl()), e);
+        }
+        return Optional.ofNullable(url);
+    }
+
     @Override
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(file.isRoot()) {
+        if(!session.isAccessible(file)) {
             return PathAttributes.EMPTY;
         }
         final DriveItem item = session.getItem(file);
@@ -65,7 +81,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
 
     private DriveItem.Metadata toMetadata(final Path file, final DriveItem item) throws BackgroundException {
         try {
-            return item.getMetadata();
+            return session.getMetadata(item, null);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
@@ -75,6 +91,7 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    @Override
     public PathAttributes toAttributes(final DriveItem.Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setETag(metadata.getETag());
@@ -106,21 +123,23 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
+        final Publication publication = metadata.getPublication();
+        if(null != publication && publication.getLevel() == Publication.State.checkout) {
+            attributes.setLockId(publication.getVersionId());
+        }
+        return attributes;
+    }
+
+    public PathAttributes toAttributes(final DriveItem.Metadata metadata, final DriveItemVersion version) {
+        final PathAttributes attributes = toAttributes(metadata);
+        attributes.setVersionId(version.getId());
+        attributes.setDuplicate(true);
+        attributes.setSize(version.getSize());
+        attributes.setModificationDate(version.getLastModifiedDateTime().toInstant().toEpochMilli());
         return attributes;
     }
 
     private void setId(final PathAttributes attributes, final String id) {
         attributes.setFileId(id);
-    }
-
-    static Optional<DescriptiveUrl> getWebUrl(final DriveItem.Metadata metadata) {
-        DescriptiveUrl url = null;
-        try {
-            url = new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http);
-        }
-        catch(URISyntaxException e) {
-            log.warn(String.format("Cannot create URI of WebURL: %s", metadata.getWebUrl()), e);
-        }
-        return Optional.ofNullable(url);
     }
 }

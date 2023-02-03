@@ -20,10 +20,10 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.brick.io.swagger.client.model.FileEntity;
 import ch.cyberduck.core.brick.io.swagger.client.model.FileUploadPartEntity;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -44,24 +44,26 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
-    private static final Logger log = Logger.getLogger(BrickWriteFeature.class);
+public class BrickWriteFeature extends AbstractHttpWriteFeature<FileEntity> {
+    private static final Logger log = LogManager.getLogger(BrickWriteFeature.class);
 
     private final BrickSession session;
 
     public BrickWriteFeature(final BrickSession session) {
+        super(new BrickAttributesFinderFeature(session));
         this.session = session;
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<FileEntity> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final String uploadUri;
         FileUploadPartEntity uploadPartEntity = null;
         if(StringUtils.isBlank(status.getUrl())) {
@@ -71,9 +73,9 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
         else {
             uploadUri = status.getUrl();
         }
-        final HttpResponseOutputStream<Void> stream = this.write(file, status, new DelayedHttpEntityCallable<Void>() {
+        final HttpResponseOutputStream<FileEntity> stream = this.write(file, status, new DelayedHttpEntityCallable<FileEntity>(file) {
             @Override
-            public Void call(final AbstractHttpEntity entity) throws BackgroundException {
+            public FileEntity call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final HttpPut request = new HttpPut(uploadUri);
                     request.setEntity(entity);
@@ -92,20 +94,21 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
                                         final Checksum etag = Checksum.parse(StringUtils.remove(response.getFirstHeader("ETag").getValue(), '"'));
                                         if(!status.getChecksum().equals(etag)) {
                                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                                MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
-                                                    etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
+                                                    MessageFormat.format("Mismatch between {0} hash {1} of uploaded data and ETag {2} returned by the server",
+                                                            etag.algorithm.toString(), status.getChecksum().hash, etag.hash));
                                         }
                                     }
-                                    return null;
                                 }
                                 else {
-                                    log.error(String.format("Missing ETag in response %s", response));
-                                    throw new InteroperabilityException(response.getStatusLine().getReasonPhrase());
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("No ETag header in response available");
+                                    }
                                 }
+                                return null;
                             default:
                                 EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                 throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
                     finally {
@@ -127,11 +130,12 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
         });
         if(StringUtils.isBlank(status.getUrl())) {
             final String ref = uploadPartEntity.getRef();
-            return new HttpResponseOutputStream<Void>(new ProxyOutputStream(stream)) {
+            return new HttpResponseOutputStream<FileEntity>(new ProxyOutputStream(stream),
+                    new BrickAttributesFinderFeature(session), status) {
                 private final AtomicBoolean close = new AtomicBoolean();
 
                 @Override
-                public Void getStatus() throws BackgroundException {
+                public FileEntity getStatus() throws BackgroundException {
                     return stream.getStatus();
                 }
 
@@ -144,7 +148,7 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
                     super.close();
                     try {
                         new BrickUploadFeature(session, BrickWriteFeature.this)
-                            .completeUpload(file, ref, status, Collections.singletonList(status));
+                                .completeUpload(file, ref, status, Collections.singletonList(status));
                     }
                     catch(BackgroundException e) {
                         throw new IOException(e.getMessage(), e);
@@ -161,11 +165,6 @@ public class BrickWriteFeature extends AbstractHttpWriteFeature<Void> {
     @Override
     public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new MD5ChecksumCompute();
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
     }
 
     @Override

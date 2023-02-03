@@ -6,7 +6,7 @@ import java.util.List;
 public class DefaultCharsetProvider implements CharsetProvider {
     @Override
     public String[] availableCharsets() {
-        List<String> charsets = new Collection<String>();
+        List<String> charsets = new Collection<>();
         for(Charset charset : Charset.availableCharsets().values()) {
             final String name = charset.displayName();
             if(!(name.startsWith("IBM") || ((name.startsWith("x-") && !name.startsWith("x-Mac"))))) {

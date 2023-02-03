@@ -20,7 +20,8 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.security.ProviderCredentials;
 
 import com.amazonaws.SdkClientException;
@@ -31,7 +32,7 @@ import com.amazonaws.auth.AWSSessionCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 
 public class AWSCredentialsConfigurator implements CredentialsConfigurator {
-    private static final Logger log = Logger.getLogger(AWSCredentialsConfigurator.class);
+    private static final Logger log = LogManager.getLogger(AWSCredentialsConfigurator.class);
 
     private final AWSCredentialsProvider[] providers;
 
@@ -41,8 +42,8 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials credentials = new Credentials(host.getCredentials());
-        if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+        if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+            final Credentials credentials = new Credentials(host.getCredentials());
             // Lookup from default profile if no access key is set in bookmark
             for(AWSCredentialsProvider provider : providers) {
                 try {
@@ -59,8 +60,9 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
                     // Continue searching with next provider
                 }
             }
+            return credentials;
         }
-        return credentials;
+        return host.getCredentials();
     }
 
     @Override

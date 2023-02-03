@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,8 +33,8 @@ public class CryptoVersionIdProvider implements VersionIdProvider {
     }
 
     @Override
-    public String getVersionId(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return delegate.getVersionId(vault.encrypt(session, file), listener);
+    public String getVersionId(final Path file) throws BackgroundException {
+        return delegate.getVersionId(vault.encrypt(session, file));
     }
 
     @Override

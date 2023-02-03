@@ -20,7 +20,8 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Collection;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -28,9 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public final class BackgroundActionRegistry extends Collection<BackgroundAction> implements BackgroundActionListener {
-    private static final Logger log = Logger.getLogger(BackgroundActionRegistry.class);
-
-    private static final long serialVersionUID = 1721336643608575003L;
+    private static final Logger log = LogManager.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry global = null;
 
@@ -108,6 +107,10 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         return true;
     }
 
+    @Override
+    public synchronized void clear() {
+        super.clear();
+    }
 
     @Override
     public boolean equals(final Object o) {

@@ -23,10 +23,10 @@
 
     <import file="../../build.xml"/>
 
-    <property name="app.runtime.archs" value="x86_64"/>
-    <property name="app.runtime.system.min" value="10.9"/>
+    <property name="app.runtime.archs" value="'x86_64 arm64'"/>
+    <property name="app.runtime.system.min" value="10.12"/>
     <property name="build.xcodeoptions"
-              value="JAVA_HOME=${java.home} OTHER_LDFLAGS=-headerpad_max_install_names SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+              value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JAVA_HOME=${java.home} OTHER_LDFLAGS=-headerpad_max_install_names SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="libcore"/>

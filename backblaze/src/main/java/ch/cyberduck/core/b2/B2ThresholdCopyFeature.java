@@ -19,13 +19,15 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class B2ThresholdCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(B2ThresholdCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(B2ThresholdCopyFeature.class);
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -42,12 +44,12 @@ public class B2ThresholdCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         if(new B2ThresholdUploadService(session, fileid, threshold).threshold(status.getLength())) {
-            return new B2LargeCopyFeature(session, fileid).copy(source, target, status, callback);
+            return new B2LargeCopyFeature(session, fileid).copy(source, target, status, callback, listener);
         }
         else {
-            return new B2CopyFeature(session, fileid).copy(source, target, status, callback);
+            return new B2CopyFeature(session, fileid).copy(source, target, status, callback, listener);
         }
     }
 

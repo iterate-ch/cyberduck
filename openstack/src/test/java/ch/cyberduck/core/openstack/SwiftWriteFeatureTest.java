@@ -8,6 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -23,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
+
+import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
 
@@ -40,10 +43,11 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         status.setMetadata(Collections.singletonMap("C", "duck"));
-        final OutputStream out = new SwiftWriteFeature(session, regionService).write(test, status, new DisabledConnectionCallback());
+        final StatusOutputStream<StorageObject> out = new SwiftWriteFeature(session, regionService).write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
+        assertEquals(new SwiftAttributesFinderFeature(session).toAttributes(out.getStatus()).getChecksum(), new SwiftAttributesFinderFeature(session).find(test).getChecksum());
         assertTrue(new SwiftFindFeature(session).find(test));
         final PathAttributes attributes = new SwiftListService(session, regionService).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());

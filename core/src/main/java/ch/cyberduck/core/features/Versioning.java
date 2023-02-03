@@ -15,12 +15,12 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 public interface Versioning {
 
@@ -60,12 +60,12 @@ public interface Versioning {
     boolean isRevertable(Path file);
 
     /**
-     * Prompt for MFA Authentication Code
+     * Find all versions for path. Should not include latest version but only previous.
      *
-     * @param mfaSerial Serial number of device
-     * @param callback  Prompt
-     * @return MFA Code entered in prompt
-     * @throws ConnectionCanceledException Prompt dismissed
+     * @param file     File on server
+     * @param listener Progress notification callback
+     * @return List of versions or singleton list if no other versions found on server. List must be sorted with the newest version first
+     * @throws BackgroundException Failure reading versions from server
      */
-    Credentials getToken(String mfaSerial, PasswordCallback callback) throws ConnectionCanceledException;
+    AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
 }

@@ -19,11 +19,33 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 
 public interface TemporaryFileService {
+    /**
+     * Derive temporary file name on disk with default prefix. The file is not touched.
+     *
+     * @param file File to derive temporary filename from
+     * @return Path in temporary directory
+     */
     Local create(Path file);
 
+    /**
+     * Derive temporary file name on disk with custom prefix. The file is not touched.
+     *
+     * @param uid  Folder name prefix
+     * @param file File to derive temporary filename from
+     * @return Path in temporary directory
+     */
     Local create(String uid, Path file);
 
+    /**
+     * Derive temporary file name on disk.
+     *
+     * @param name Filename
+     * @return Path in temporary directory
+     */
     Local create(String name);
 
+    /**
+     * Delete temporary files
+     */
     void shutdown();
 }

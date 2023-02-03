@@ -18,7 +18,6 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -32,10 +31,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Trash;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.browser.PathReloadFinder;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -47,32 +48,65 @@ import java.util.Objects;
 
 public class DeleteWorker extends Worker<List<Path>> {
 
-    private static final Logger log = Logger.getLogger(DeleteWorker.class);
+    private static final Logger log = LogManager.getLogger(DeleteWorker.class);
 
     /**
      * Selected files.
      */
     private final List<Path> files;
     private final LoginCallback prompt;
-    private final Cache<Path> cache;
     private final ProgressListener listener;
     private final Filter<Path> filter;
+    /**
+     * Trash instead of delete files if feature is available
+     */
+    private final boolean trash;
+    private final Delete.Callback callback;
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
-        this(prompt, files, cache, new NullFilter<Path>(), listener);
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
+        this(prompt, files, listener, new NullFilter<>());
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final Filter<Path> filter, final ProgressListener listener) {
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final Filter<Path> filter) {
+        this(prompt, files, listener, filter, PreferencesFactory.get().getBoolean("browser.delete.trash"));
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final boolean trash) {
+        this(prompt, files, listener, new NullFilter<>(), trash);
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final Filter<Path> filter, final boolean trash) {
+        this(prompt, files, listener, filter, trash, new Delete.DisabledCallback());
+    }
+
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener,
+                        final Filter<Path> filter, final boolean trash, final Delete.Callback callback) {
         this.files = files;
         this.prompt = prompt;
-        this.cache = cache;
         this.listener = listener;
         this.filter = filter;
+        this.trash = trash;
+        this.callback = callback;
     }
 
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
-        final Delete delete = session.getFeature(Delete.class);
+        final Delete delete;
+        if(trash) {
+            if(null == session.getFeature(Trash.class)) {
+                log.warn(String.format("No trash feature available for %s", session));
+                delete = session.getFeature(Delete.class);
+            }
+            else {
+                delete = session.getFeature(Trash.class);
+            }
+        }
+        else {
+            delete = session.getFeature(Delete.class);
+        }
         final ListService list = session.getFeature(ListService.class);
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         for(Path file : files) {
@@ -81,11 +115,20 @@ public class DeleteWorker extends Worker<List<Path>> {
             }
             recursive.putAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
         }
+        // Iterate again to delete any files that can be omitted when recursive operation is supported
+        if(delete.isRecursive()) {
+            recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
+        }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
             public void delete(final Path file) {
-                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                    file.getName()));
+                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"), file.getName()));
+                callback.delete(file);
+                if(file.isDirectory()) {
+                    if(delete.isRecursive()) {
+                        files.stream().filter(f -> f.isChild(file)).forEach(callback::delete);
+                    }
+                }
             }
         });
         return new ArrayList<>(recursive.keySet());
@@ -95,18 +138,23 @@ public class DeleteWorker extends Worker<List<Path>> {
         // Compile recursive list
         final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
-            final Path copy = new Path(file);
-            switch(host.getProtocol().getType()) {
-                case s3:
-                    if(!file.attributes().isDuplicate()) {
-                        if(!file.getType().contains(Path.Type.upload)) {
-                            // Add delete marker
-                            log.debug(String.format("Nullify version to add delete marker for %s", file));
-                            copy.attributes().setVersionId(null);
-                        }
+            if(null != file.attributes().getVersionId()) {
+                if(file.attributes().isDuplicate()) {
+                    // Delete previous versions or pending upload
+                    log.warn(String.format("Delete version %s", file));
+                }
+                else {
+                    if(file.getType().contains(Path.Type.upload)) {
+                        log.warn(String.format("Delete pending upload %s", file));
                     }
+                    else {
+                        // Add delete marker
+                        log.warn(String.format("Nullify version to add delete marker for %s", file));
+                        file.attributes().setVersionId(null);
+                    }
+                }
             }
-            recursive.put(copy, new TransferStatus().withLockId(this.getLockId(copy)));
+            recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
@@ -128,16 +176,9 @@ public class DeleteWorker extends Worker<List<Path>> {
     }
 
     @Override
-    public void cleanup(final List<Path> deleted) {
-        for(Path folder : new PathReloadFinder().find(new ArrayList<>(deleted))) {
-            cache.invalidate(folder);
-        }
-    }
-
-    @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-            this.toString(files));
+                this.toString(files));
     }
 
     @Override

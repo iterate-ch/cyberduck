@@ -17,11 +17,16 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocaleFactory;
+
 public class ChecksumException extends BackgroundException {
-    private static final long serialVersionUID = 3459390972588992492L;
+
+    public ChecksumException(final Throwable cause) {
+        super(LocaleFactory.localizedString("Checksum failure", "Error"), cause);
+    }
 
     public ChecksumException(final String detail, final Throwable cause) {
-        super(detail, cause);
+        super(LocaleFactory.localizedString("Checksum failure", "Error"), detail, cause);
     }
 
     public ChecksumException(final String message, final String detail) {

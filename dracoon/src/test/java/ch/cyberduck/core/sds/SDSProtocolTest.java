@@ -15,9 +15,11 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -32,25 +34,10 @@ import static org.junit.Assert.*;
 public class SDSProtocolTest {
 
     @Test
-    public void testParse() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
-        assertTrue(profile.isHostnameConfigurable());
-        assertTrue(profile.isPortConfigurable());
-        assertTrue(profile.isUsernameConfigurable());
-        assertTrue(profile.isPasswordConfigurable());
-        factory.register(profile);
-        final Host host = new HostParser(factory).get("dracoon://duck");
-        assertNotNull(host);
-        assertEquals(profile, host.getProtocol());
-    }
-
-    @Test
     public void testParseOAuth() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertFalse(profile.isUsernameConfigurable());
@@ -59,5 +46,15 @@ public class SDSProtocolTest {
         final Host host = new HostParser(factory).get("dracoon-oauth://duck");
         assertNotNull(host);
         assertEquals(profile, host.getProtocol());
+    }
+
+    @Test
+    public void testValidate() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/DRACOON (OAuth).cyberduckprofile"));
+        final Credentials c = new Credentials("Dracoon OpenID\\u@dracoon.com");
+        c.setOauth(new OAuthTokens("t", "r", -1L));
+        c.validate(profile, new LoginOptions(profile));
     }
 }

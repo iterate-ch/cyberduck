@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
-using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Core.Contracts
 {
@@ -18,7 +13,7 @@ namespace Ch.Cyberduck.Ui.Core.Contracts
         void NewInstance();
 
         [OperationContract]
-        void OAuth(string state, string code);
+        bool OAuth(Uri result);
 
         [OperationContract]
         void QuickConnect(string url);

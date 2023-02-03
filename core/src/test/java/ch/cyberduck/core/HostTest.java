@@ -83,8 +83,8 @@ public class HostTest {
 
         assertEquals(0, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))
             .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))));
-        assertEquals(0, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))
-            .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, "/path", new Credentials("u"))));
+        assertEquals(-1, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))
+                .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, "/path", new Credentials("u"))));
         assertEquals(-1, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials())
             .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))));
         assertEquals(1, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))

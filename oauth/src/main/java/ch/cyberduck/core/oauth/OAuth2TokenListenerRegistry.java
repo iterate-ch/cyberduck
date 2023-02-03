@@ -15,13 +15,14 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class OAuth2TokenListenerRegistry {
-    private static final Logger log = Logger.getLogger(OAuth2TokenListenerRegistry.class);
+    private static final Logger log = LogManager.getLogger(OAuth2TokenListenerRegistry.class);
 
     private static final OAuth2TokenListenerRegistry global = new OAuth2TokenListenerRegistry();
 
@@ -32,6 +33,9 @@ public class OAuth2TokenListenerRegistry {
     private final Map<String, OAuth2TokenListener> listeners = new HashMap<>();
 
     public void register(final String state, final OAuth2TokenListener listener) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Register listener for state %s", state));
+        }
         listeners.put(state, listener);
     }
 
@@ -42,6 +46,9 @@ public class OAuth2TokenListenerRegistry {
             return;
         }
         listeners.remove(state);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Notify listener for state %s with token %s", state, token));
+        }
         listener.callback(token);
     }
 

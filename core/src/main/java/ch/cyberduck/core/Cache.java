@@ -23,7 +23,7 @@ public interface Cache<T extends Referenceable> {
      * @param object Value object
      * @return Key used for internal comparison in map
      */
-    CacheReference<?> reference(T object);
+    CacheReference<T> reference(T object);
 
     /**
      * @param parent Directory
@@ -38,6 +38,10 @@ public interface Cache<T extends Referenceable> {
      */
     boolean isEmpty();
 
+    /**
+     * @param item Directory
+     * @return True if directory is cached and cache is not invalidated
+     */
     boolean isValid(T item);
 
     /**
@@ -59,7 +63,7 @@ public interface Cache<T extends Referenceable> {
     /**
      * @return Map representation for cached entries
      */
-    Map<T, AttributedList<T>> asMap();
+    Map<CacheReference<T>, AttributedList<T>> asMap();
 
     /**
      * Remove from cache

@@ -19,7 +19,6 @@ package ch.cyberduck.core.date;
 
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.time.Instant;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -34,7 +33,7 @@ public class RFC3339DateFormatter implements DateFormatter {
 
     @Override
     public String format(final long milliseconds, final TimeZone zone) {
-        return ISO8601Utils.format(Date.from(Instant.ofEpochMilli(milliseconds)), true, zone);
+        return ISO8601Utils.format(new Date(milliseconds), true, zone);
     }
 
     @Override

@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -53,7 +52,6 @@ public class B2LifecycleFeature implements Lifecycle {
             for(LifecycleRule rule : lifecycleRules) {
                 return new LifecycleConfiguration(
                     null == rule.getDaysFromUploadingToHiding() ? null : rule.getDaysFromUploadingToHiding().intValue(),
-                    null,
                     null == rule.getDaysFromHidingToDeleting() ? null : rule.getDaysFromHidingToDeleting().intValue());
             }
             return LifecycleConfiguration.empty();
@@ -71,18 +69,18 @@ public class B2LifecycleFeature implements Lifecycle {
         try {
             if(LifecycleConfiguration.empty().equals(configuration)) {
                 session.getClient().updateBucket(
-                    fileid.getVersionId(containerService.getContainer(container), new DisabledListProgressListener()),
-                    new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl())
+                    fileid.getVersionId(containerService.getContainer(container)),
+                    new B2BucketTypeFeature(session, fileid).toBucketType(container.attributes().getAcl())
                 );
             }
             else {
                 session.getClient().updateBucket(
-                    fileid.getVersionId(containerService.getContainer(container), new DisabledListProgressListener()),
-                    new B2BucketTypeFeature(session, fileid).convert(container.attributes().getAcl()),
-                    new LifecycleRule(
-                        null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
-                        null == configuration.getTransition() ? null : configuration.getTransition().longValue(),
-                        StringUtils.EMPTY)
+                        fileid.getVersionId(containerService.getContainer(container)),
+                        new B2BucketTypeFeature(session, fileid).toBucketType(container.attributes().getAcl()),
+                        new LifecycleRule(
+                                null == configuration.getExpiration() ? null : configuration.getExpiration().longValue(),
+                                null == configuration.getTransition() ? null : configuration.getTransition().longValue(),
+                                StringUtils.EMPTY)
                 );
             }
         }

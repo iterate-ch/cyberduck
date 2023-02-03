@@ -17,25 +17,24 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.diagnostics.ReachabilityDiagnosticsFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.threading.FailureDiagnostics;
 
 public class BackgroundExceptionAlertController extends AlertController {
+
     private final BackgroundException failure;
     private final Host host;
-
-    public final String defaultButton;
-    public final String cancelButton;
+    private final String defaultButton;
+    private final String cancelButton;
 
     public BackgroundExceptionAlertController(final BackgroundException failure, final Host host) {
-        this.failure = failure;
-        this.host = host;
-        this.defaultButton = LocaleFactory.localizedString("Try Again", "Alert");
-        this.cancelButton = LocaleFactory.localizedString("Cancel", "Alert");
+        this(failure, host, LocaleFactory.localizedString("Try Again", "Alert"), LocaleFactory.localizedString("Cancel", "Alert"));
     }
 
     public BackgroundExceptionAlertController(final BackgroundException failure, final Host host, final String defaultButton, final String cancelButton) {
@@ -48,14 +47,17 @@ public class BackgroundExceptionAlertController extends AlertController {
     @Override
     public void loadBundle() {
         final NSAlert alert = NSAlert.alert();
-        alert.setMessageText(null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage());
+        alert.setMessageText(String.format("%s (%s)", null == failure.getMessage() ? LocaleFactory.localizedString("Unknown") : failure.getMessage(),
+                BookmarkNameProvider.toString(host)));
         alert.setInformativeText(null == failure.getDetail() ? LocaleFactory.localizedString("Unknown") : failure.getDetail());
         alert.addButtonWithTitle(defaultButton);
         alert.addButtonWithTitle(cancelButton);
         final FailureDiagnostics.Type type = new DefaultFailureDiagnostics().determine(failure);
         switch(type) {
             case network:
-                alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                if(new ReachabilityDiagnosticsFactory().isAvailable()) {
+                    alert.addButtonWithTitle(LocaleFactory.localizedString("Network Diagnostics", "Alert"));
+                }
                 break;
             case quota:
                 alert.addButtonWithTitle(LocaleFactory.localizedString("Help", "Main"));

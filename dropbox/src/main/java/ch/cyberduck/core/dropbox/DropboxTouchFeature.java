@@ -20,15 +20,17 @@ import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class DropboxTouchFeature extends DefaultTouchFeature<String> {
+import com.dropbox.core.v2.files.Metadata;
+
+public class DropboxTouchFeature extends DefaultTouchFeature<Metadata> {
 
     public DropboxTouchFeature(final DropboxSession session) {
-        super(new DropboxUploadFeature(new DropboxWriteFeature(session)), new DropboxAttributesFinderFeature(session));
+        super(new DropboxWriteFeature(session));
     }
 
     /**
-     * Name begins with ~$ (a tilde and dollar sign) or .~ (a period and tilde)
-     * Name begins with a tilde and ends in .tmp, such as ~myfile.tmp
+     * Name begins with ~$ (a tilde and dollar sign) or .~ (a period and tilde) Name begins with a tilde and ends in
+     * .tmp, such as ~myfile.tmp
      *
      * @param workdir  Working directory
      * @param filename Filename

@@ -26,13 +26,14 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferItem;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Map;
 
 public class CachingComparePathFilter implements ComparePathFilter {
-    private static final Logger log = Logger.getLogger(CachingComparePathFilter.class);
+    private static final Logger log = LogManager.getLogger(CachingComparePathFilter.class);
 
     private Map<TransferItem, Comparison> cache = Collections.emptyMap();
 

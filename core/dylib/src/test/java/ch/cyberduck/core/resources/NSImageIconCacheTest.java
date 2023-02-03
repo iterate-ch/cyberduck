@@ -20,6 +20,7 @@ package ch.cyberduck.core.resources;
 
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
@@ -33,6 +34,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeFalse;
 
 public class NSImageIconCacheTest {
 
@@ -249,5 +251,12 @@ public class NSImageIconCacheTest {
     public void testIconNotfound() {
         final NSImageIconCache cache = new NSImageIconCache();
         assertNull(cache.iconNamed(null, 64));
+    }
+
+    @Test
+    public void testSymbol() {
+        assumeFalse(Factory.Platform.osversion.matches("10\\.(12|13|14|15).*"));
+        final NSImageIconCache cache = new NSImageIconCache();
+        assertNotNull(cache.iconNamed("bell.badge", 64));
     }
 }

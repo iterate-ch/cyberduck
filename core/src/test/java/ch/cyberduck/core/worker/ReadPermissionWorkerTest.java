@@ -41,7 +41,7 @@ public class ReadPermissionWorkerTest {
     @Test
     public void testRun() throws Exception {
         final ReadPermissionWorker worker = new ReadPermissionWorker(
-                Arrays.<Path>asList(
+                Arrays.asList(
                         new Path("/a", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all, Permission.Action.all, Permission.Action.none)),
                         new Path("/b", EnumSet.of(Path.Type.file), new TestPermissionAttributes(Permission.Action.all, Permission.Action.read_write, Permission.Action.read)))) {
             @Override

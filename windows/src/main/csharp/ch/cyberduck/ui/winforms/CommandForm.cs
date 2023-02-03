@@ -16,11 +16,13 @@
 // feedback@cyberduck.io
 // 
 
+using Ch.Cyberduck.Ui.Controller;
 using System;
 using System.Drawing;
-using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Core.Resources;
+using Windows.Win32.Foundation;
+using static Ch.Cyberduck.ImageHelper;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -32,9 +34,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
-            pictureBox.Image =
-                IconCache.GetAppImage(
-                    Environment.ExpandEnvironmentVariables(@"%windir%\system32\cmd.exe"), IconCache.IconSize.Large);
+            pictureBox.Image = IconProvider.GetFileIcon(
+                Environment.ExpandEnvironmentVariables(@"%windir%\system32\cmd.exe"), false, true, true);
         }
 
         public override string[] BundleNames
@@ -53,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             transcriptBox.SelectionColor = Color.Black;
             transcriptBox.SelectedText = message + Environment.NewLine;
             transcriptBox.Select(transcriptBox.TextLength, transcriptBox.TextLength);
-            NativeMethods.SendMessage(transcriptBox.Handle, NativeConstants.WM_VSCROLL, NativeConstants.SB_BOTTOM, 0);
+            SendMessage((HWND)transcriptBox.Handle, WM_VSCROLL, (nuint)SB_BOTTOM, 0);
         }
 
         public void StartActivityAnimation()

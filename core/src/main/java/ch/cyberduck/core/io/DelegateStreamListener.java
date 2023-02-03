@@ -15,7 +15,7 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-public abstract class DelegateStreamListener implements StreamListener {
+public class DelegateStreamListener implements StreamListener {
 
     private final StreamListener delegate;
 

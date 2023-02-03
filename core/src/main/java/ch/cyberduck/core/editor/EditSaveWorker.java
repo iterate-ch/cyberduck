@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -42,26 +43,30 @@ import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.worker.SingleTransferWorker;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Objects;
 
 public class EditSaveWorker extends Worker<Transfer> {
-    private static final Logger log = Logger.getLogger(EditSaveWorker.class);
+    private static final Logger log = LogManager.getLogger(EditSaveWorker.class);
 
     private final AbstractEditor editor;
     private final Transfer upload;
+    private final Path file;
     private final TransferErrorCallback callback;
     private final NotificationService notification;
     private final ProgressListener listener;
 
     public EditSaveWorker(final Host bookmark, final AbstractEditor editor,
+                          final Path file, final Local local,
                           final TransferErrorCallback callback, final ProgressListener listener, final NotificationService notification) {
         this.editor = editor;
+        this.file = file;
         this.callback = callback;
         this.notification = notification;
-        this.upload = new UploadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new NullFilter<Local>()) {
+        this.upload = new UploadTransfer(bookmark, file, local, new NullFilter<>()) {
             @Override
             public TransferAction action(final Session<?> source,
                                          final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
@@ -71,9 +76,9 @@ public class EditSaveWorker extends Worker<Transfer> {
 
             @Override
             public AbstractUploadFilter filter(final Session<?> session, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-                return super.filter(session, destination, action, listener).withOptions(new UploadFilterOptions()
-                        .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
-                        .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
+                return super.filter(session, destination, action, listener).withOptions(new UploadFilterOptions(host)
+                    .withTemporary(PreferencesFactory.get().getBoolean("queue.upload.file.temporary"))
+                    .withPermission(PreferencesFactory.get().getBoolean("editor.upload.permissions.change")));
             }
         };
         this.listener = listener;
@@ -90,11 +95,11 @@ public class EditSaveWorker extends Worker<Transfer> {
             listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!upload.isComplete()) {
-            log.warn(String.format("File size changed for %s", editor.getRemote()));
+            log.warn(String.format("File size changed for %s", file));
         }
         else {
             // Update known remote file size
-            editor.getRemote().attributes().setSize(upload.getTransferred());
+            file.attributes().setSize(upload.getTransferred());
         }
         return upload;
     }
@@ -107,7 +112,7 @@ public class EditSaveWorker extends Worker<Transfer> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                editor.getRemote().getName());
+                file.getName());
     }
 
     @Override

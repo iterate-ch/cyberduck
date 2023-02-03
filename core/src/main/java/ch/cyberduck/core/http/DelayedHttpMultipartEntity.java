@@ -16,6 +16,7 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.MimeTypeService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.output.NullOutputStream;
@@ -23,7 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.entity.mime.MIME;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.ByteArrayBuffer;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -33,10 +35,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.util.concurrent.Uninterruptibles;
-
 public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
-    private static final Logger log = Logger.getLogger(DelayedHttpMultipartEntity.class);
+    private static final Logger log = LogManager.getLogger(DelayedHttpMultipartEntity.class);
 
     public static final String DEFAULT_BOUNDARY = "------------------------d8ad73fe428d737a";
 
@@ -149,12 +149,12 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
             stream.write(header);
         }
         finally {
-            final CountDownLatch entry = this.getEntry();
+            final CountDownLatch entry = this.getStreamOpen();
             // Signal stream is ready for writing
             entry.countDown();
         }
         // Wait for signal when content has been written to the pipe
-        Uninterruptibles.awaitUninterruptibly(exit);
+        Interruptibles.await(exit, IOException.class);
         // Entity written to server
         consumed = true;
     }

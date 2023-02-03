@@ -58,6 +58,11 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
+    @Override
     public boolean isHostnameConfigurable() {
         return true;
     }
@@ -83,6 +88,7 @@ public class SpectraProtocol extends AbstractProtocol {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T getFeature(final Class<T> type) {
         if(type == PathContainerService.class) {
             return (T) new DirectoryDelimiterPathContainerService();

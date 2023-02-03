@@ -21,8 +21,8 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Core.Resources;
 using StructureMap;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -50,16 +50,26 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Title = title;
                 View.Reason = new StringAppender().append(reason).toString();
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
-                View.IconView = IconCache.IconForName(options.icon(), 64);
+                View.SkipButtonText = LocaleFactory.localizedString("Skip", "Transfer");
+                View.IconView = Images.Get(options.icon()).Size(64);
                 View.SavePasswordEnabled = options.keychain();
                 View.SavePasswordState = credentials.isSaved();
+                View.CanSkip = options.anonymous();
 
                 View.ValidateInput += ValidateInputEventHandler;
-                if (DialogResult.Cancel == View.ShowDialog(_browser.View))
+                switch (View.ShowDialog(_browser.View))
                 {
-                    throw new LoginCanceledException();
+                    case DialogResult.Cancel:
+                        throw new LoginCanceledException();
+
+                    case DialogResult.Ignore:
+                        credentials.setPassword(string.Empty);
+                        break;
+
+                    default:
+                        credentials.setPassword(View.InputText.Trim());
+                        break;
                 }
-                credentials.setPassword(View.InputText);
                 credentials.setSaved(View.SavePasswordState);
             };
             _browser.Invoke(d);
@@ -68,7 +78,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool ValidateInputEventHandler()
         {
-            return Utils.IsNotBlank(View.InputText);
+            return !string.IsNullOrWhiteSpace(View.InputText);
         }
     }
 }

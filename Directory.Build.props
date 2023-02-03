@@ -31,10 +31,13 @@
         <OutputPath>$(BaseOutputPath)</OutputPath>
 
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemDefinitionGroup>
-        <CyberduckReference />
+        <CyberduckReference>
+            <ProjectPath />
+        </CyberduckReference>
     </ItemDefinitionGroup>
 
     <ItemGroup>

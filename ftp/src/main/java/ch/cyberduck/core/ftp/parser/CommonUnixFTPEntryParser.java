@@ -22,12 +22,13 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl;
 import org.apache.commons.net.ftp.parser.FTPTimestampParser;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.ParseException;
 
 public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
-    private static final Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
+    private static final Logger log = LogManager.getLogger(CommonUnixFTPEntryParser.class);
 
     /**
      * @param regex Line regular expression

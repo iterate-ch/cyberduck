@@ -16,10 +16,10 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CopyFileRequest;
@@ -37,14 +37,15 @@ public class StoregateCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final CopyFileRequest copy = new CopyFileRequest()
                 .name(target.getName())
-                .parentID(fileid.getFileId(target.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileId(target.getParent()))
                 .mode(1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
-                fileid.getFileId(source, new DisabledListProgressListener()), copy);
+                fileid.getFileId(source), copy);
+            listener.sent(status.getLength());
             fileid.cache(target, file.getId());
             return target.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
         }

@@ -1,66 +1,49 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
+using ch.cyberduck.core;
+using org.apache.logging.log4j;
 using System;
 using System.IO;
-using System.Text;
-using ch.cyberduck.core;
-using org.apache.commons.io;
-using org.apache.commons.lang3;
-using org.apache.log4j;
+using CoreLocal = ch.cyberduck.core.Local;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Local
 {
-    public class SystemLocal : ch.cyberduck.core.Local
+    public class SystemLocal : CoreLocal
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(SystemLocal).FullName);
+        private static readonly char[] INVALID_CHARS = Path.GetInvalidFileNameChars();
+        private static readonly Logger Log = LogManager.getLogger(typeof(SystemLocal).FullName);
+        private static readonly char[] PATH_SEPARATORS = new[] { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
 
         public SystemLocal(string parent, string name)
-            : base(parent, MakeValidFilename(name))
+            : base(parent, name)
         {
         }
 
-        public SystemLocal(ch.cyberduck.core.Local parent, string name)
-            : base(parent, MakeValidFilename(name))
+        public SystemLocal(CoreLocal parent, string name)
+            : base(parent, name)
         {
         }
 
         public SystemLocal(string path)
-            : base(
-                Path.Combine(FilenameUtils.getPrefix(path), MakeValidPath(FilenameUtils.getPath(path))) +
-                MakeValidFilename(FilenameUtils.getName(path)))
+            : base(Sanitize(path))
         {
-        }
-
-        public override char getDelimiter()
-        {
-            return '\\';
-        }
-
-        public override bool isRoot()
-        {
-            return getAbsolute().Equals(Directory.GetDirectoryRoot(getAbsolute()));
-        }
-
-        public override String getAbbreviatedPath()
-        {
-            return getAbsolute();
         }
 
         public override bool exists()
@@ -78,67 +61,135 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
+        public override String getAbbreviatedPath()
+        {
+            return getAbsolute();
+        }
+
+        public override char getDelimiter()
+        {
+            return '\\';
+        }
+
+        public override CoreLocal getVolume() => LocalFactory.get(Path.GetPathRoot(getAbsolute()));
+
+        public override bool isRoot() => getAbsolute().Equals(Path.GetPathRoot(getAbsolute()));
+
         public override bool isSymbolicLink()
         {
             return false;
         }
 
-        private static string MakeValidPath(string path)
+        private static string Sanitize(string name)
         {
-            if (Utils.IsNotBlank(path))
+            if (string.IsNullOrWhiteSpace(name))
             {
-                path = FilenameUtils.separatorsToSystem(path);
-                string prefix = FilenameUtils.getPrefix(path);
-                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-                {
-                    path = path + Path.DirectorySeparatorChar;
-                }
+                return "";
+            }
+            using StringWriter writer = new();
 
-                path = FilenameUtils.getPath(path);
-                StringBuilder sb = new StringBuilder();
-                if (Utils.IsNotBlank(prefix))
+            var namespan = name.AsSpan();
+            int? leadingSeparators = 0;
+            bool hasUnc = false, nextDriveLetter = true;
+            for (int lastSegment = 0, index = 0; index != -1; lastSegment = index + 1)
+            {
+                index = name.IndexOfAny(PATH_SEPARATORS, lastSegment);
+                ReadOnlySpan<char> segment = (index switch
                 {
-                    sb.Append(prefix);
-                }
+                    -1 => namespan.Slice(lastSegment),
+                    _ => namespan.Slice(lastSegment, index - lastSegment)
+                }).Trim();
 
-                path = FilenameUtils.separatorsToSystem(path);
-                string[] parts = path.Split(Path.DirectorySeparatorChar);
-                foreach (string part in parts)
+                if (segment.IsEmpty && leadingSeparators is int lead)
                 {
-                    string cleanpart = part.Trim();
-                    char[] invalidChars = Path.GetInvalidFileNameChars();
-                    if (StringUtils.containsAny(cleanpart, invalidChars))
+                    // handles up to first two leading separators, that is "\" and "\\"
+                    leadingSeparators = ++lead;
+                    if (lead == 2)
                     {
-                        foreach (char c in invalidChars)
+                        // in the case this is "\\" continue with assuming UNC
+                        // thus a drive letter _must not_ follow
+                        hasUnc = true;
+                        nextDriveLetter = false;
+                        leadingSeparators = null;
+                        writer.Write(Path.DirectorySeparatorChar);
+                        writer.Write(Path.DirectorySeparatorChar);
+                    }
+                    // hereafter (after "\\" has been read) every empty segment is skipped "\\\" -> "\"
+                    // or after anything except "\\" has been read, every empty segment is skipped, "\\" -> "\"
+                }
+                else if (!segment.IsEmpty)
+                {
+                    var firstChanceDriveLetter = nextDriveLetter;
+                    nextDriveLetter = false;
+                    if (hasUnc)
+                    {
+                        // ignore UNC, whatever is in as first value segment is passed-through as is
+                        // there is no need to validate hostnames here, would bail out somewhere else
+                        // handles all cases of "\\*\"
+                        // including, but not limited to: wsl$, wsl.localhost, \\?\ (MAX_PATH bypass), any network share
+                        Append(segment, writer);
+                        nextDriveLetter = segment.Length == 1 && (segment[0] == '?' || segment[0] == '.');
+                    }
+                    else if (firstChanceDriveLetter && segment.Length == 2 && segment[1] == Path.VolumeSeparatorChar)
+                    {
+                        // _only_ if there is a two-letter segment, that is ending in ':' (VolumeSeparatorChar)
+                        // is this thing here run.
+                        // If there is _anything_ wrong (that is not "[A-Z]:") return empty value
+
+                        /// <see cref="System.Char.IsLetter(char)" />
+                        var letter = (segment[0] | 0x20) - 'a';
+                        if (letter < 0 || letter > 25)
                         {
-                            cleanpart = cleanpart.Replace(c.ToString(), URIEncoder.encode(c.ToString()));
+                            // letter is not in range A to Z.
+                            return "";
+                        }
+                        // check above is simplified only, this passes raw input through
+                        // check is 'a' but segment is 'A:', then 'A:' is written to output
+                        Append(segment, writer);
+                        // additionally, this strips away all leading separator characters before the drive letter
+                        // "/C:" becomes "C:".
+                    }
+                    else
+                    {
+                        if (leadingSeparators > 0)
+                        {
+                            // workaround.
+                            // there may be input that is leading with one separator, but contains no
+                            writer.Write(Path.DirectorySeparatorChar);
+                        }
+
+                        // pass through segment sanitized from path invalid characters
+                        foreach (ref readonly var c in segment)
+                        {
+                            writer.Write(Array.IndexOf(INVALID_CHARS, c) switch
+                            {
+                                -1 => c,
+                                _ => '_'
+                            });
                         }
                     }
+                    hasUnc = false;
+                    leadingSeparators = null;
 
-                    sb.Append(cleanpart);
-                    if (!parts[parts.Length - 1].Equals(part))
+                    if (index != -1)
                     {
-                        sb.Append(Path.DirectorySeparatorChar);
+                        // allow for input of "C:\Abc" and "C:\Abc\", preserve trailing separators, where
+                        // (1) return "C:\Abc"
+                        // (2) return "C:\Abc\"
+                        writer.Write(Path.DirectorySeparatorChar);
                     }
                 }
-
-                return sb.ToString();
             }
+            return writer.ToString();
 
-            return path;
-        }
-
-        private static string MakeValidFilename(string name)
-        {
-            if (Utils.IsNotBlank(name))
+            static void Append(in ReadOnlySpan<char> range, StringWriter writer)
             {
-                foreach (char c in Path.GetInvalidFileNameChars())
+                // skip any allocation of strings or arrays.
+                foreach (ref readonly var c in range)
                 {
-                    name = name.Replace(c.ToString(), "_");
+                    writer.Write(c);
                 }
             }
-
-            return name.Trim();
         }
     }
 }

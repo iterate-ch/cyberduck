@@ -1,33 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net47</TargetFramework>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Platforms>x64</Platforms>
-        <PlatformTarget>x64</PlatformTarget>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <CyberduckReference Include="Bonjour" />
-    </ItemGroup>
+  <ItemGroup>
+    <CyberduckReference Include="Bonjour" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Reference Include="Microsoft.VisualBasic" />
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="System.Windows.Forms" />
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Windows.Forms" />
 
-        <Reference Include="@(IKVMReferences)" />
-    </ItemGroup>
+    <Reference Include="@(IKVMReferences)" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <COMReference Include="Bonjour">
-            <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
-            <VersionMajor>1</VersionMajor>
-            <VersionMinor>0</VersionMinor>
-            <Lcid>0</Lcid>
-            <WrapperTool>tlbimp</WrapperTool>
-            <Isolated>False</Isolated>
-        </COMReference>
-    </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Bonjour">
+      <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
 
 </Project>

@@ -22,6 +22,7 @@ package ch.cyberduck.core.sftp.openssh;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.local.LocalTouchFactory;
@@ -30,7 +31,8 @@ import ch.cyberduck.core.sftp.PreferencesHostKeyVerifier;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -48,7 +50,7 @@ import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
-    private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHHostKeyVerifier.class);
 
     /**
      * It is a thread safe implementation, therefore, you need only to instantiate one
@@ -83,7 +85,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     }
 
     @Override
-    public boolean verify(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
         if(null == database) {
             log.warn(String.format("Missing database %s", database));
             return super.verify(host, key);
@@ -132,8 +134,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         else {
             try {
                 // Add the host key to the in-memory database
+                final KeyType type = KeyType.fromKey(key);
+                switch(type) {
+                    case UNKNOWN:
+                        log.warn(String.format("Unknown key type %s", key));
+                        return;
+                }
                 final OpenSSHKnownHosts.HostEntry entry
-                    = new OpenSSHKnownHosts.HostEntry(null, format(host), KeyType.fromKey(key), key);
+                        = new OpenSSHKnownHosts.HostEntry(null, format(host), type, key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {

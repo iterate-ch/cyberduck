@@ -29,13 +29,9 @@ import java.io.IOException;
 
 public class StoregateTouchFeature implements Touch<FileMetadata> {
 
-    private final StoregateSession session;
-    private final StoregateIdProvider fileid;
     private Write<FileMetadata> writer;
 
     public StoregateTouchFeature(final StoregateSession session, final StoregateIdProvider fileid) {
-        this.session = session;
-        this.fileid = fileid;
         this.writer = new StoregateWriteFeature(session, fileid);
     }
 
@@ -44,9 +40,7 @@ public class StoregateTouchFeature implements Touch<FileMetadata> {
         try {
             final StatusOutputStream<FileMetadata> out = writer.write(file, status, new DisabledConnectionCallback());
             out.close();
-            final FileMetadata metadata = out.getStatus();
-            fileid.cache(file, metadata.getId());
-            return file.withAttributes(new StoregateAttributesFinderFeature(session, fileid).toAttributes(metadata));
+            return file.withAttributes(status.getResponse());
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot create {0}", e, file);

@@ -1,5 +1,6 @@
 package ch.cyberduck.core.dav;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -14,7 +15,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -24,18 +24,24 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testDeleteFileWithLock() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(test, new TransferStatus());
-        final String lock = new DAVLockFeature(session).lock(test);
+        String lock = null;
+        try {
+            lock = new DAVLockFeature(session).lock(test);
+        }
+        catch(InteroperabilityException e) {
+            // Not supported
+        }
         assertTrue(new DAVFindFeature(session).find(test));
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
@@ -43,17 +49,17 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testDeleteDirectory() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(test));
-        new DAVTouchFeature(session).touch(new Path(test, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new DAVTouchFeature(session).touch(new Path(test, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFound() throws Exception {
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus()), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -22,34 +22,33 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Vault;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.vault.VaultFinderListProgressListener;
 import ch.cyberduck.core.vault.VaultFinderListService;
 import ch.cyberduck.core.vault.VaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class VaultRegistryListService implements ListService {
-    private static final Logger log = Logger.getLogger(VaultRegistryListService.class);
-
-    private final Preferences preferences = PreferencesFactory.get();
+    private static final Logger log = LogManager.getLogger(VaultRegistryListService.class);
 
     private final VaultRegistry registry;
     private final VaultLookupListener lookup;
     private final Session<?> session;
     private final ListService proxy;
 
-    private boolean autodetect = preferences.getBoolean("cryptomator.vault.autodetect")
-        && preferences.getBoolean("cryptomator.enable");
+    private boolean autodetect;
 
     public VaultRegistryListService(final Session<?> session, final ListService proxy, final VaultRegistry registry, final VaultLookupListener lookup) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;
         this.lookup = lookup;
+        this.autodetect = new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
+                && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
     }
 
     @Override
@@ -71,7 +70,7 @@ public class VaultRegistryListService implements ListService {
     }
 
     public VaultRegistryListService withAutodetect(final boolean autodetect) {
-        this.autodetect = autodetect && preferences.getBoolean("cryptomator.enable");
+        this.autodetect = autodetect && new HostPreferences(session.getHost()).getBoolean("cryptomator.enable");
         return this;
     }
 

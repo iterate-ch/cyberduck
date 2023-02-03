@@ -1,6 +1,7 @@
 package ch.cyberduck.core.io;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +35,7 @@ import com.google.common.util.concurrent.Uninterruptibles;
  * class from the Freenet project.  It has been simplified and better documented.<p>
  */
 public final class BandwidthThrottle {
-    private static final Logger log = Logger.getLogger(BandwidthThrottle.class);
+    private static final Logger log = LogManager.getLogger(BandwidthThrottle.class);
 
     /**
      * The number of windows per second.

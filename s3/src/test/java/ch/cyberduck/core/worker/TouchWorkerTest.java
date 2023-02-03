@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
@@ -43,14 +44,14 @@ public class TouchWorkerTest extends AbstractS3Test {
     @Test
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
         ));
         final S3Session session = new S3Session(host) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Encryption.class) {
-                    return (T) new S3EncryptionFeature(this) {
+                    return (T) new S3EncryptionFeature(this, new S3AccessControlListFeature(this)) {
                         @Override
                         public Algorithm getDefault(final Path file) {
                             return S3EncryptionFeature.SSE_AES256;

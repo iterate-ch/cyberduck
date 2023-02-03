@@ -17,21 +17,21 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
+import ch.cyberduck.core.transfer.CancelTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
+import ch.cyberduck.core.transfer.FailFastTransferErrorCallback;
+import ch.cyberduck.core.transfer.SynchronizedTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.core.transfer.TransferItem;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
-    private static final Logger log = Logger.getLogger(TransferErrorCallbackControllerFactory.class);
+    private static final Logger log = LogManager.getLogger(TransferErrorCallbackControllerFactory.class);
 
     public TransferErrorCallbackControllerFactory() {
         super("factory.transfererrorcallback.class");
@@ -39,15 +39,15 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
 
     public TransferErrorCallback create(final Controller c) {
         try {
-            final Constructor<TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
+            final Constructor<? extends TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(c);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
             return new DisabledTransferErrorCallback();
         }
@@ -58,27 +58,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
      * @return Login controller instance for the current platform.
      */
     public static TransferErrorCallback get(final Controller c) {
-        final TransferErrorCallback proxy = new TransferErrorCallbackControllerFactory().create(c);
-        return new TransferErrorCallback() {
-            @Override
-            public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
-                switch(new DefaultFailureDiagnostics().determine(failure)) {
-                    case cancel:
-                        // Interrupt transfer
-                        return false;
-                }
-                if(pending == 0) {
-                    // Fail fast when first item in queue fails preparing
-                    throw failure;
-                }
-                if(pending == 1) {
-                    // Fail fast when transferring single file
-                    throw failure;
-                }
-                synchronized(proxy) {
-                    return proxy.prompt(item, status, failure, pending);
-                }
-            }
-        };
+        return new SynchronizedTransferErrorCallback(new CancelTransferErrorCallback(new FailFastTransferErrorCallback(
+                new TransferErrorCallbackControllerFactory().create(c))));
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -252,6 +252,12 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Dotazovat se na soubory…" id="GnH-xE-vqc">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="requestFilesButtonClicked:" target="-1" id="Tw9-ZC-2SW"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="275"/>
@@ -559,6 +565,6 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="19" height="12"/>
+        <image name="NSQuickLookTemplate" width="20" height="13"/>
     </resources>
 </document>

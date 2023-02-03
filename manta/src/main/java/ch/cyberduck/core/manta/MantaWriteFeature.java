@@ -19,7 +19,8 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.OutputStream;
@@ -39,14 +40,9 @@ public class MantaWriteFeature implements Write<Void> {
      * {@inheritDoc}
      */
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final OutputStream putStream = session.getClient().putAsOutputStream(file.getAbsolute());
-        return new HttpResponseOutputStream<Void>(putStream) {
-            @Override
-            public Void getStatus() {
-                return null;
-            }
-        };
+        return new VoidStatusOutputStream(putStream);
     }
 
     /**
@@ -55,10 +51,5 @@ public class MantaWriteFeature implements Write<Void> {
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
         return new Append(false).withStatus(status);
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
     }
 }

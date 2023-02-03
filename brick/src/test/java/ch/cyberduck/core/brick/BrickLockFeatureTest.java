@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -54,7 +53,7 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
         out.close();
         status.setLength(content.length);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Upload<Void> upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
+        final BrickUploadFeature upload = new BrickUploadFeature(session, new BrickWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(new BrickFindFeature(session).find(test));

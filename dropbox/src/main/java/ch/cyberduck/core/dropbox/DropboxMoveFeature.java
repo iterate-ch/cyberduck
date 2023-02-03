@@ -23,6 +23,9 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Collections;
 
 import com.dropbox.core.DbxException;
@@ -30,6 +33,7 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.RelocationResult;
 
 public class DropboxMoveFeature implements Move {
+    private static final Logger log = LogManager.getLogger(DropboxMoveFeature.class);
 
     private final DropboxSession session;
     private final PathContainerService containerService;
@@ -43,10 +47,12 @@ public class DropboxMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("Delete file %s to be replaced with %s", renamed, file));
+                }
                 new DropboxDeleteFeature(session).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             final RelocationResult result = new DbxUserFilesRequests(session.getClient(file)).moveV2(containerService.getKey(file), containerService.getKey(renamed));
-            // Copy original file attributes
             return renamed.withAttributes(new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
@@ -56,6 +62,11 @@ public class DropboxMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
         return true;
     }
 }

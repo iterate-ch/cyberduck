@@ -27,13 +27,14 @@ import ch.cyberduck.core.proxy.ProxyHostUrlProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Date;
 
 public class LoginConnectionService implements ConnectionService {
-    private static final Logger log = Logger.getLogger(LoginConnectionService.class);
+    private static final Logger log = LogManager.getLogger(LoginConnectionService.class);
 
     private final Resolver resolver = new Resolver();
     private final HostKeyCallback key;
@@ -94,33 +95,18 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Obtain password from keychain or prompt
         synchronized(login) {
-            final LoginOptions options = new LoginOptions(bookmark.getProtocol());
-            final StringAppender message = new StringAppender();
-            if(options.password) {
-                message.append(MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)));
-            }
-            if(options.publickey) {
-                message.append(LocaleFactory.localizedString(
-                    "Select the private key in PEM or PuTTY format", "Credentials"));
-            }
-            login.validate(bookmark, message.toString(), prompt, options);
+            login.validate(bookmark, prompt, new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, callback);
         return true;
     }
 
     @Override
-    public void close(final Session<?> session) {
+    public void close(final Session<?> session) throws BackgroundException {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
             session.getHost().getHostname()));
-        try {
-            // Close the underlying socket first
-            session.interrupt();
-        }
-        catch(BackgroundException e) {
-            log.warn(String.format("Ignore failure closing connection %s", e.getMessage()));
-        }
+        // Close the underlying socket first
+        session.interrupt();
     }
 
     @Override

@@ -21,7 +21,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -30,7 +31,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.Region;
 
 public class SwiftQuotaFeature implements Quota {
-    private static final Logger log = Logger.getLogger(SwiftQuotaFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftQuotaFeature.class);
 
     private final SwiftSession session;
 

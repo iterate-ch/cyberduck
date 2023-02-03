@@ -43,14 +43,15 @@ public interface AclPermission {
     List<Acl.Role> getAvailableAclRoles(List<Path> files);
 
     /**
-     * @param file File on local disk
+     * @param file  Remote file
+     * @param local File on local disk
      * @return Default ACL to set for file
      */
-    Acl getDefault(Local file);
+    Acl getDefault(Path file, Local local) throws BackgroundException;
 
     /**
      * @param type File or folder
      * @return Default ACL for new file or folder
      */
-    Acl getDefault(EnumSet<Path.Type> type);
+    Acl getDefault(EnumSet<Path.Type> type) throws BackgroundException;
 }

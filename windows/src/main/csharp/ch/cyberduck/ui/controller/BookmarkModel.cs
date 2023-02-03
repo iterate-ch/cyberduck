@@ -19,7 +19,8 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Ui.Core.Resources;
+using System.Drawing;
+using static Ch.Cyberduck.ImageHelper;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -83,7 +84,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetBookmarkImage(object host)
         {
             Host h = (Host) host;
-            return IconCache.GetProtocolDisk(h.getProtocol(),
+            return IconProvider.GetDisk(h.getProtocol(),
                 PreferencesFactory.get().getInteger("bookmark.icon.size"));
         }
 
@@ -111,12 +112,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (session.getState().Equals(Session.State.open))
                 {
-                    return IconCache.IconForName("statusGreen", 16);
+                    return (Image)Images.StatusGreen.Size(16);
                 }
                 if (session.getState().Equals(Session.State.closing) ||
                     session.getState().Equals(Session.State.opening))
                 {
-                    return IconCache.IconForName("statusYellow", 16);
+                    return (Image)Images.StatusYellow.Size(16);
                 }
             }
             return null;

@@ -18,8 +18,19 @@ package ch.cyberduck.core;
 import org.apache.commons.text.RandomStringGenerator;
 
 public class AsciiRandomStringService implements RandomStringService {
+
+    private final int length;
+
+    public AsciiRandomStringService() {
+        this(8);
+    }
+
+    public AsciiRandomStringService(final int length) {
+        this.length = length;
+    }
+
     @Override
     public String random() {
-        return new RandomStringGenerator.Builder().withinRange('a', 'z').build().generate(8);
+        return new RandomStringGenerator.Builder().withinRange('a', 'z').build().generate(length);
     }
 }

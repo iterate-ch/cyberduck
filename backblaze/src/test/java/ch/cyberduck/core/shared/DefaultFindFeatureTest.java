@@ -38,7 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import synapticloop.b2.response.B2StartLargeFileResponse;
+import synapticloop.b2.response.BaseB2Response;
 
 import static org.junit.Assert.assertTrue;
 
@@ -50,9 +50,10 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
-        new DefaultFindFeature(session).find(file);
+        assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -60,7 +61,7 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final StatusOutputStream<B2StartLargeFileResponse> out = new B2LargeUploadWriteFeature(session, new B2VersionIdProvider(session)).write(file, new TransferStatus(), new DisabledConnectionCallback());
+        final StatusOutputStream<BaseB2Response> out = new B2LargeUploadWriteFeature(session, new B2VersionIdProvider(session)).write(file, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
         out.close();
         assertTrue(new DefaultFindFeature(session).find(file));

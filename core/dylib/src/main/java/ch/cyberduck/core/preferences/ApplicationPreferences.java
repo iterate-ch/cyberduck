@@ -16,10 +16,12 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.ApplescriptTerminalService;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainCertificateStore;
 import ch.cyberduck.core.KeychainPasswordStore;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
+import ch.cyberduck.core.diagnostics.SystemConfigurationDiagnostics;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleRegexLocale;
@@ -40,11 +42,14 @@ import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
+import ch.cyberduck.core.proxy.SystemPreferencesProxyConfiguration;
+import ch.cyberduck.core.proxy.SystemSettingsProxyConfiguration;
 import ch.cyberduck.core.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
+import ch.cyberduck.core.urlhandler.WorkspaceSchemeHandler;
 import ch.cyberduck.core.webloc.WeblocFileWriter;
 
 public class ApplicationPreferences extends UserDefaultsPreferences {
@@ -64,9 +69,18 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.passwordstore.class", KeychainPasswordStore.class.getName());
         this.setDefault("factory.certificatestore.class", KeychainCertificateStore.class.getName());
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
+        if(Factory.Platform.osversion.matches("(10|11.12)\\..*")) {
+            this.setDefault("factory.proxy.configuration.class", SystemPreferencesProxyConfiguration.class.getName());
+        }
+        else {
+            this.setDefault("factory.proxy.configuration.class", SystemSettingsProxyConfiguration.class.getName());
+        }
         this.setDefault("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
         this.setDefault("factory.reachability.class", SystemConfigurationReachability.class.getName());
-
+        if(Factory.Platform.osversion.matches("(10|11|12)\\..*")) {
+            // Disabled on macOS 13 and later
+            this.setDefault("factory.reachability.diagnostics.class", SystemConfigurationDiagnostics.class.getName());
+        }
         this.setDefault("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
         this.setDefault("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
         this.setDefault("factory.browserlauncher.class", WorkspaceBrowserLauncher.class.getName());
@@ -84,7 +98,13 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.notification.class", NotificationCenter.class.getName());
         this.setDefault("factory.iconservice.class", WorkspaceIconService.class.getName());
         this.setDefault("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
-        this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
+        if(Factory.Platform.osversion.matches("(10|11)\\..*")) {
+            this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
+        }
+        else {
+            // macOS 12 and later
+            this.setDefault("factory.schemehandler.class", WorkspaceSchemeHandler.class.getName());
+        }
         this.setDefault("factory.iconcache.class", NSImageIconCache.class.getName());
         this.setDefault("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
         if(Sandbox.get().isSandboxed()) {

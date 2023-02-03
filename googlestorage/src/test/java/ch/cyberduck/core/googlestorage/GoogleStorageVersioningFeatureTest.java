@@ -31,6 +31,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import static org.junit.Assert.assertTrue;
 
@@ -39,7 +40,7 @@ public class GoogleStorageVersioningFeatureTest extends AbstractGoogleStorageTes
 
     @Test
     public void testSetConfiguration() throws Exception {
-        final Path container = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path(new AsciiRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session).mkdir(container, new TransferStatus());
         final Versioning feature = new GoogleStorageVersioningFeature(session);
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));

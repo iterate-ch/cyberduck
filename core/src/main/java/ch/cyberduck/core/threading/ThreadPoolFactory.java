@@ -20,7 +20,8 @@ import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,30 +31,37 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static ch.cyberduck.core.threading.ThreadPool.DEFAULT_THREAD_NAME_PREFIX;
 
 public class ThreadPoolFactory extends Factory<ThreadPool> {
-    private static final Logger log = Logger.getLogger(ThreadPoolFactory.class);
+    private static final Logger log = LogManager.getLogger(ThreadPoolFactory.class);
 
     public ThreadPoolFactory() {
         super("factory.threadpool.class");
     }
 
+    public ThreadPoolFactory(final Class<? extends ThreadPool> clazz) {
+        super(clazz);
+    }
+
     /**
+     * @param prefix   Thread name
      * @param size     Maximum pool size
      * @param priority Thread priority
+     * @param queue    Queue with pending tasks
      * @param handler  Uncaught thread exception handler
+     * @return Thread pool
      */
     protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority,
                                 final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         try {
-            final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
-                prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
+            final Constructor<? extends ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
+                    prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
                 // Call default constructor for disabled implementations
-                return clazz.newInstance();
+                return clazz.getDeclaredConstructor().newInstance();
             }
             return constructor.newInstance(prefix, size, priority, queue, handler);
         }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
@@ -99,7 +107,11 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        return get(prefix, size, priority, new LinkedBlockingQueue<>(), handler);
+        return get(prefix, size, priority, new LinkedBlockingQueue<>(size), handler);
+    }
+
+    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue) {
+        return get(prefix, size, priority, queue, new LoggingUncaughtExceptionHandler());
     }
 
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {

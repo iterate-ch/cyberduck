@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>8.0.0-SNAPSHOT</version>
+        <version>8.5.6-SNAPSHOT</version>
     </parent>
     <artifactId>ftp</artifactId>
     <packaging>jar</packaging>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.apache.ftpserver</groupId>
             <artifactId>ftpserver</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0</version>
             <type>pom</type>
             <exclusions>
                 <exclusion>

@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
@@ -23,13 +24,16 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +41,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
-public class CryptoDeleteV7Feature implements Delete {
-    private static final Logger log = Logger.getLogger(CryptoDeleteV7Feature.class);
+public class CryptoDeleteV7Feature implements Delete, Trash {
+    private static final Logger log = LogManager.getLogger(CryptoDeleteV7Feature.class);
 
     private final Session<?> session;
     private final Delete proxy;
@@ -58,10 +62,25 @@ public class CryptoDeleteV7Feature implements Delete {
             final List<Path> metadataFiles = new ArrayList<>();
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
+                if(f.isDirectory()) {
+                    final Path backup = new Path(encrypt, CryptoDirectoryV7Provider.BACKUP_DIRECTORY_METADATAFILE,
+                            EnumSet.of(AbstractPath.Type.file));
+                    try {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Deleting directory id backup file %s", backup));
+                        }
+                        proxy.delete(Collections.singletonList(backup), prompt, callback);
+                    }
+                    catch(NotfoundException | AccessDeniedException e) {
+                        if(log.isDebugEnabled()) {
+                            log.error(String.format("Failure %s deleting directory id backup file %s", e, encrypt));
+                        }
+                    }
+                }
                 try {
                     proxy.delete(Collections.singletonList(encrypt), prompt, callback);
                 }
-                catch(NotfoundException e) {
+                catch(NotfoundException | AccessDeniedException e) {
                     if(f.isDirectory()) {
                         log.error(String.format("Failure %s deleting directory %s", e, encrypt));
                     }
@@ -115,6 +134,9 @@ public class CryptoDeleteV7Feature implements Delete {
                         metadata.add(dataRoot);
                     }
                     metadata.add(vault.getMasterkey());
+                    if(find.find(vault.getConfig())) {
+                        metadata.add(vault.getConfig());
+                    }
                 }
                 metadata.add(f);
                 proxy.delete(metadata, prompt, callback);

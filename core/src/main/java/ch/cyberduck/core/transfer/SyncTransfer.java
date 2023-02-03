@@ -45,7 +45,8 @@ import ch.cyberduck.core.synchronization.DefaultComparePathFilter;
 import ch.cyberduck.core.transfer.synchronisation.SynchronizationPathFilter;
 
 import org.apache.commons.collections4.map.LRUMap;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +57,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class SyncTransfer extends Transfer {
-    private static final Logger log = Logger.getLogger(SyncTransfer.class);
+    private static final Logger log = LogManager.getLogger(SyncTransfer.class);
 
     /**
      * The delegate for files to upload
@@ -102,7 +103,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
@@ -154,10 +155,10 @@ public class SyncTransfer extends Transfer {
         final AttributesFinder attributes = new CachingAttributesFinderFeature(cache,
             source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         // Set chosen action (upload, download, mirror) from prompt
-        comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source, host.getTimezone()))
-            .withCache(comparisons)
-            .withAttributes(attributes)
-            .withFinder(find);
+        comparison = new CachingComparePathFilter(new DefaultComparePathFilter(source))
+                .withCache(comparisons)
+                .withAttributes(attributes)
+                .withFinder(find);
         return new SynchronizationPathFilter(comparison,
             download.filter(source, destination, TransferAction.overwrite, listener)
                 .withAttributes(attributes)
@@ -170,7 +171,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final TransferPathFilter filter, final TransferErrorCallback error, final ProgressListener listener, final ConnectionCallback callback) throws BackgroundException {
         final Map<TransferItem, TransferStatus> downloads = new HashMap<>();
         final Map<TransferItem, TransferStatus> uploads = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
@@ -183,8 +184,8 @@ public class SyncTransfer extends Transfer {
                     break;
             }
         }
-        download.pre(source, destination, downloads, callback);
-        upload.pre(source, destination, uploads, callback);
+        download.pre(source, destination, downloads, filter, error, listener, callback);
+        upload.pre(source, destination, uploads, filter, error, listener, callback);
     }
 
     @Override
@@ -208,7 +209,7 @@ public class SyncTransfer extends Transfer {
     public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+            log.debug(String.format("Find transfer action with prompt %s", prompt));
         }
         if(resumeRequested) {
             if(action.equals(TransferAction.callback)) {

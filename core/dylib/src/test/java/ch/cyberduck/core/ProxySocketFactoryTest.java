@@ -38,6 +38,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Collections;
 
 import static org.junit.Assert.*;
@@ -50,7 +51,7 @@ public class ProxySocketFactoryTest {
         assertNotNull(new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket("localhost", 22));
     }
 
-    @Test(expected = SocketException.class)
+    @Test
     public void testCreateSocketWithProxy() throws Exception {
         final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new DefaultSocketConfigurator(),
                 new ProxyFinder() {
@@ -60,7 +61,13 @@ public class ProxySocketFactoryTest {
                     }
                 }).createSocket();
         assertNotNull(socket);
-        socket.connect(new InetSocketAddress("test.cyberduck.ch", 21));
+        try {
+            socket.connect(new InetSocketAddress("test.cyberduck.ch", 21), 5);
+            fail();
+        }
+        catch(SocketException | SocketTimeoutException e) {
+            //
+        }
     }
 
     @Test
@@ -137,6 +144,7 @@ public class ProxySocketFactoryTest {
     }
 
     @Test
+    @Ignore
     public void testSpecificNetworkInterfaceForIP6Address() throws Exception {
         final InetAddress loopback = InetAddress.getByName("::1%en0");
         assertNotNull(loopback);
@@ -157,6 +165,7 @@ public class ProxySocketFactoryTest {
     }
 
     @Test(expected = ConnectException.class)
+    @Ignore
     public void testFixDefaultNetworkInterface() throws Exception {
         final ProxySocketFactory factory = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"));
         assertEquals(

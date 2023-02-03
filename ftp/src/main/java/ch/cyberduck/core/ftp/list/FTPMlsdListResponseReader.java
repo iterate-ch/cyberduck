@@ -1,19 +1,19 @@
 package ch.cyberduck.core.ftp.list;
 
-    /*
-     * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
-     * https://cyberduck.io/
-     *
-     * This program is free software; you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License as published by
-     * the Free Software Foundation, either version 3 of the License, or
-     * (at your option) any later version.
-     *
-     * This program is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     * GNU General Public License for more details.
-     */
+/*
+ * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
@@ -26,7 +26,8 @@ import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
@@ -38,7 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FTPMlsdListResponseReader implements FTPDataResponseReader {
-    private static final Logger log = Logger.getLogger(FTPMlsdListResponseReader.class);
+    private static final Logger log = LogManager.getLogger(FTPMlsdListResponseReader.class);
 
     public FTPMlsdListResponseReader() {
         //
@@ -47,6 +48,9 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     @Override
     public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener) throws FTPInvalidListException {
         final AttributedList<Path> children = new AttributedList<>();
+        if(replies.isEmpty()) {
+            return children;
+        }
         // At least one entry successfully parsed
         boolean success = false;
         for(String line : replies) {

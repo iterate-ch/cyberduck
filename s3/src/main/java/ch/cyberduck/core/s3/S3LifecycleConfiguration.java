@@ -25,15 +25,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.LifecycleConfig;
 
 public class S3LifecycleConfiguration implements Lifecycle {
-    private static final Logger log = Logger.getLogger(S3LifecycleConfiguration.class);
+    private static final Logger log = LogManager.getLogger(S3LifecycleConfiguration.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -45,65 +47,68 @@ public class S3LifecycleConfiguration implements Lifecycle {
 
     @Override
     public void setConfiguration(final Path file, final LifecycleConfiguration configuration) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
+        final Path bucket = containerService.getContainer(file);
         try {
             if(configuration.getTransition() != null || configuration.getExpiration() != null) {
                 final LifecycleConfig config = new LifecycleConfig();
                 // Unique identifier for the rule. The value cannot be longer than 255 characters. When you specify an empty prefix, the rule applies to all objects in the bucket
                 final LifecycleConfig.Rule rule = config.newRule(
-                        String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random()), StringUtils.EMPTY, true);
+                        String.format("%s-%s", PreferencesFactory.get().getProperty("application.name"), new AlphanumericRandomStringService().random()),
+                        StringUtils.EMPTY, true);
                 if(configuration.getTransition() != null) {
-                    rule.newTransition().setDays(configuration.getTransition());
+                    final LifecycleConfig.Transition transition = rule.newTransition();
+                    transition.setDays(configuration.getTransition());
+                    transition.setStorageClass(new HostPreferences(session.getHost()).getProperty("s3.lifecycle.transition.class"));
                 }
                 if(configuration.getExpiration() != null) {
-                    rule.newExpiration().setDays(configuration.getExpiration());
+                    final LifecycleConfig.Expiration expiration = rule.newExpiration();
+                    expiration.setDays(configuration.getExpiration());
                 }
-                session.getClient().setLifecycleConfig(container.getName(), config);
+                session.getClient().setLifecycleConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), config);
             }
             else {
-                session.getClient().deleteLifecycleConfig(container.getName());
+                session.getClient().deleteLifecycleConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
             }
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, bucket);
         }
     }
 
 
     @Override
     public LifecycleConfiguration getConfiguration(final Path file) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
-        if(container.isRoot()) {
-            return LifecycleConfiguration.empty();
-        }
+        final Path bucket = containerService.getContainer(file);
         if(file.getType().contains(Path.Type.upload)) {
             return LifecycleConfiguration.empty();
         }
         try {
-            final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
-            if(null != status) {
-                Integer transition = null;
-                Integer expiration = null;
-                String storageClass = null;
-                for(LifecycleConfig.Rule rule : status.getRules()) {
+            final LifecycleConfig status = session.getClient().getLifecycleConfig(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
+            if(null == status) {
+                log.warn(String.format("Failure parsing lifecycle config for %s", bucket));
+                return LifecycleConfiguration.empty();
+            }
+            Integer transition = null;
+            Integer expiration = null;
+            String storageClass = null;
+            for(LifecycleConfig.Rule rule : status.getRules()) {
+                if(StringUtils.isBlank(rule.getPrefix())) {
                     if(rule.getTransition() != null) {
-                        storageClass = rule.getTransition().getStorageClass();
                         transition = rule.getTransition().getDays();
                     }
                     if(rule.getExpiration() != null) {
                         expiration = rule.getExpiration().getDays();
                     }
                 }
-                return new LifecycleConfiguration(transition, storageClass, expiration);
             }
-            return LifecycleConfiguration.empty();
+            return new LifecycleConfiguration(transition, expiration);
         }
         catch(ServiceException e) {
             try {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, container);
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(AccessDeniedException | InteroperabilityException l) {
-                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", container, e.getMessage()));
+                log.warn(String.format("Missing permission to read lifecycle configuration for %s %s", bucket, e.getMessage()));
                 return LifecycleConfiguration.empty();
             }
         }

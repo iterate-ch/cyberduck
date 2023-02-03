@@ -1,4 +1,6 @@
-package ch.cyberduck.core.brick;/*
+package ch.cyberduck.core.brick;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -21,29 +23,43 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 public class BrickFileMigrationFeature {
-    private static final Logger log = Logger.getLogger(BrickFileMigrationFeature.class);
+    private static final Logger log = LogManager.getLogger(BrickFileMigrationFeature.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
     protected void poll(final BrickApiClient client, final FileActionEntity entity) throws BackgroundException {
         final CountDownLatch signal = new CountDownLatch(1);
-        final ScheduledThreadPool scheduler = new ScheduledThreadPool();
+        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
+        final ScheduledThreadPool scheduler = new ScheduledThreadPool(new LoggingUncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(final Thread t, final Throwable e) {
+                super.uncaughtException(t, e);
+                failure.set(new BackgroundException(e));
+                signal.countDown();
+            }
+        });
         final long timeout = preferences.getLong("brick.migration.interrupt.ms");
         final long start = System.currentTimeMillis();
-        final AtomicReference<BackgroundException> failure = new AtomicReference<>();
         try {
-            scheduler.repeat(() -> {
+            final ScheduledFuture<?> f = scheduler.repeat(() -> {
                 try {
                     if(System.currentTimeMillis() - start > timeout) {
                         failure.set(new ConnectionCanceledException(String.format("Interrupt polling for migration key after %d", timeout)));
@@ -52,9 +68,9 @@ public class BrickFileMigrationFeature {
                     }
                     // Poll status
                     final FileMigrationEntity.StatusEnum migration = new FileMigrationsApi(client)
-                        .getFileMigrationsId(entity.getFileMigrationId()).getStatus();
+                            .getFileMigrationsId(entity.getFileMigrationId()).getStatus();
                     switch(migration) {
-                        case COMPLETE:
+                        case COMPLETED:
                             signal.countDown();
                             return;
                         default:
@@ -68,7 +84,17 @@ public class BrickFileMigrationFeature {
                     signal.countDown();
                 }
             }, preferences.getLong("brick.migration.interval.ms"), TimeUnit.MILLISECONDS);
-            Uninterruptibles.awaitUninterruptibly(signal);
+            while(!Uninterruptibles.awaitUninterruptibly(signal, Duration.ofSeconds(1))) {
+                try {
+                    if(f.isDone()) {
+                        Uninterruptibles.getUninterruptibly(f);
+                    }
+                }
+                catch(ExecutionException e) {
+                    Throwables.throwIfInstanceOf(Throwables.getRootCause(e), BackgroundException.class);
+                    throw new DefaultExceptionMappingService().map(Throwables.getRootCause(e));
+                }
+            }
             if(null != failure.get()) {
                 throw failure.get();
             }

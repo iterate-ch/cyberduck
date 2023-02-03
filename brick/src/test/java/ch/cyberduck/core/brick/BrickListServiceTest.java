@@ -38,19 +38,51 @@ import static org.junit.Assert.*;
 public class BrickListServiceTest extends AbstractBrickTest {
 
     @Test
-    public void testListRoot() throws Exception {
-        final AttributedList<Path> list = new BrickListService(session).list(
-            new Path("/", EnumSet.of(directory)), new DisabledListProgressListener());
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+    public void testListRootDefaultChunkSize() throws Exception {
+        final AttributedList<Path> list = new BrickListService(session).list(new Path("/", EnumSet.of(directory)), new DisabledListProgressListener());
+        assertNotSame(AttributedList.emptyList(), list);
     }
 
     @Test
-    public void testList() throws Exception {
+    public void testListEmptyDirectory() throws Exception {
         final Path directory = new BrickDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
         final AttributedList<Path> list = new BrickListService(session).list(directory, new DisabledListProgressListener());
-        assertNotNull(list);
+        assertNotSame(AttributedList.emptyList(), list);
         assertTrue(list.isEmpty());
+        new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListEqualChunkSize() throws Exception {
+        final Path directory = new BrickDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path f1 = new BrickTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        final Path f2 = new BrickTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new BrickListService(session).list(directory, new DisabledListProgressListener(), 2);
+        assertNotSame(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        assertEquals(2, list.size());
+        for(Path f : list) {
+            assertSame(directory, f.getParent());
+        }
+        assertTrue(list.contains(f1));
+        assertTrue(list.contains(f2));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListChunking() throws Exception {
+        final Path directory = new BrickDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.directory)), new TransferStatus());
+        final Path f1 = new BrickTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        final Path f2 = new BrickTouchFeature(session).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(AbstractPath.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new BrickListService(session).list(directory, new DisabledListProgressListener(), 1);
+        assertNotSame(AttributedList.emptyList(), list);
+        assertFalse(list.isEmpty());
+        assertEquals(2, list.size());
+        for(Path f : list) {
+            assertSame(directory, f.getParent());
+        }
+        assertTrue(list.contains(f1));
+        assertTrue(list.contains(f2));
         new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

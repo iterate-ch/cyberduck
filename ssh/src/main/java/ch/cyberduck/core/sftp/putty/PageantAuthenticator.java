@@ -20,7 +20,8 @@ package ch.cyberduck.core.sftp.putty;
 
 import ch.cyberduck.core.sftp.auth.AgentAuthenticator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +37,7 @@ import com.jcraft.jsch.agentproxy.connector.PageantConnector;
  * SSH authentication agent for PuTTY
  */
 public class PageantAuthenticator extends AgentAuthenticator {
-    private static final Logger log = Logger.getLogger(PageantAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(PageantAuthenticator.class);
 
     private AgentProxy proxy;
 

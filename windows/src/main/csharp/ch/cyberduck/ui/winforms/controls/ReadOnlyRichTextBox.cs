@@ -19,7 +19,9 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
+using Windows.Win32.Foundation;
+using static Windows.Win32.CorePInvoke;
+using static Windows.Win32.PInvoke;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -30,9 +32,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             ReadOnly = true;
             //set the BackColor back to White since ReadOnly=true makes the background grey
             BackColor = Color.White;
-            NativeMethods.SendMessage(Handle, NativeConstants.EM_SETTYPOGRAPHYOPTIONS,
-                                      NativeConstants.TO_ADVANCEDTYPOGRAPHY,
-                                      NativeConstants.TO_ADVANCEDTYPOGRAPHY);
+            SendMessage((HWND)Handle, EM_SETTYPOGRAPHYOPTIONS,
+                                      (nuint)TO_ADVANCEDTYPOGRAPHY,
+                                      (nint)TO_ADVANCEDTYPOGRAPHY);
         }
 
         protected override CreateParams CreateParams
@@ -40,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             get
             {
                 CreateParams p = base.CreateParams;
-                if (LoadLibrary("msftedit.dll") != IntPtr.Zero)
+                if (!LoadLibrary("msftedit.dll").IsInvalid)
                 {
                     p.ClassName = "RICHEDIT50W";
                 }
@@ -48,13 +50,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             }
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        private static extern IntPtr LoadLibrary(string lpFileName);
-
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
-            NativeMethods.HideCaret(Handle);
+            HideCaret((HWND)Handle);
         }
     }
 }

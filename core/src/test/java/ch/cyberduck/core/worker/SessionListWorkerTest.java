@@ -52,9 +52,9 @@ public class SessionListWorkerTest {
                 runnable.run();
             }
         };
-        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new StatelessSessionPool(
-            new TestLoginConnectionService(), session,
-            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
+        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<>(c, new StatelessSessionPool(
+                new TestLoginConnectionService(), session,
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertTrue(task.get().isEmpty());
     }
 
@@ -64,7 +64,7 @@ public class SessionListWorkerTest {
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-                throw new ListCanceledException(AttributedList.<Path>emptyList());
+                throw new ListCanceledException(AttributedList.emptyList());
             }
         };
         final PathCache cache = new PathCache(1);
@@ -79,9 +79,9 @@ public class SessionListWorkerTest {
                 runnable.run();
             }
         };
-        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<AttributedList<Path>>(c, new StatelessSessionPool(
-            new TestLoginConnectionService(), session,
-            new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
+        final Future<AttributedList<Path>> task = c.background(new WorkerBackgroundAction<>(c, new StatelessSessionPool(
+                new TestLoginConnectionService(), session,
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertNotNull(task.get());
         assertTrue(cache.containsKey(directory));
         assertEquals(1, cache.get(directory).size());

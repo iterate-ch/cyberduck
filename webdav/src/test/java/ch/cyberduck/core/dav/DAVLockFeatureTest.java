@@ -15,10 +15,13 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -32,25 +35,33 @@ import org.junit.experimental.categories.Category;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 @Category(IntegrationTest.class)
 public class DAVLockFeatureTest extends AbstractDAVTest {
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testLockNotSupported() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
         status.setLength(content.length);
-        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final HttpUploadFeature upload = new DAVUploadFeature(session);
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledConnectionCallback());
-        new DAVLockFeature(session).lock(test);
+                new DisabledStreamListener(), status, new DisabledConnectionCallback());
+        String lock = null;
+        try {
+            lock = new DAVLockFeature(session).lock(test);
+        }
+        catch(InteroperabilityException e) {
+            // Expected
+        }
+        local.delete();
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lock)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

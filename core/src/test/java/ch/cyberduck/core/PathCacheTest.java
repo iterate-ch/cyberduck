@@ -9,25 +9,10 @@ import static org.junit.Assert.*;
 public class PathCacheTest {
 
     @Test
-    public void testLookup() {
-        final Cache<Path> cache = new ReverseLookupCache<Path>(new PathCache(1), 1);
-        assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
-        final AttributedList<Path> list = new AttributedList<Path>();
-        final Path directory = new Path("p", EnumSet.of(Path.Type.directory));
-        final Path file1 = new Path(directory, "name1", EnumSet.of(Path.Type.file));
-        list.add(file1);
-        final Path file2 = new Path(directory, "name2", EnumSet.of(Path.Type.file));
-        list.add(file2);
-        cache.put(directory, list);
-        assertNotNull(cache.lookup(new DefaultPathPredicate(file1)));
-        assertNotNull(cache.lookup(new DefaultPathPredicate(file2)));
-    }
-
-    @Test
     public void testIsEmpty() {
         final PathCache cache = new PathCache(1);
         assertTrue(cache.isEmpty());
-        cache.put(new Path("/", EnumSet.of(Path.Type.directory)), new AttributedList<Path>());
+        cache.put(new Path("/", EnumSet.of(Path.Type.directory)), new AttributedList<>());
         assertFalse(cache.isEmpty());
     }
 
@@ -36,8 +21,7 @@ public class PathCacheTest {
         final PathCache cache = new PathCache(1);
         final Path f = new Path("/", EnumSet.of(Path.Type.directory));
         assertFalse(cache.containsKey(f));
-        cache.put(f, new AttributedList<Path>());
-        final CacheReference reference = new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)));
+        cache.put(f, new AttributedList<>());
         assertTrue(cache.containsKey(f));
         assertTrue(cache.isCached(f));
     }
@@ -45,7 +29,7 @@ public class PathCacheTest {
     @Test
     public void testInvalidate() {
         final PathCache cache = new PathCache(1);
-        final AttributedList<Path> list = new AttributedList<Path>();
+        final AttributedList<Path> list = new AttributedList<>();
         final Path f = new Path("/t", EnumSet.of(Path.Type.directory));
         cache.put(f, list);
         assertFalse(cache.get(f).attributes().isInvalid());
@@ -64,11 +48,50 @@ public class PathCacheTest {
     }
 
     @Test
+    public void testGetNull() {
+        final PathCache cache = new PathCache(1);
+        final Path file = new Path("name", EnumSet.of(Path.Type.file));
+        final AttributedList<Path> list = new AttributedList<>();
+        list.add(file);
+        cache.put(null, list);
+        assertEquals(list, cache.get(null));
+    }
+
+    @Test
     public void testDisabledCache() {
         PathCache cache = PathCache.empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
-        cache.put(file, AttributedList.<Path>emptyList());
+        cache.put(file, AttributedList.emptyList());
         assertFalse(cache.containsKey(file));
         assertEquals(0, cache.size());
+    }
+
+    @Test
+    public void testDirectoryWithFileIdDefaultPredicate() {
+        final PathCache cache = new PathCache(1);
+        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withFileId("1"));
+        assertFalse(cache.containsKey(f));
+        cache.put(f, new AttributedList<>());
+        assertTrue(cache.containsKey(f));
+        assertTrue(cache.isCached(f));
+        assertFalse(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertFalse(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testDirectoryWithFileIdSimplePredicate() {
+        final PathCache cache = new PathCache(1) {
+            @Override
+            public CacheReference<Path> reference(final Path file) {
+                return new SimplePathPredicate(file);
+            }
+        };
+        final Path f = new Path("/", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withFileId("1"));
+        assertFalse(cache.containsKey(f));
+        cache.put(f, new AttributedList<>());
+        assertTrue(cache.containsKey(f));
+        assertTrue(cache.isCached(f));
+        assertTrue(cache.containsKey(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(cache.isCached(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

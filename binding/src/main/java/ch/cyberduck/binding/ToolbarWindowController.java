@@ -15,6 +15,7 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSTabView;
 import ch.cyberduck.binding.application.NSTabViewItem;
 import ch.cyberduck.binding.application.NSToolbar;
@@ -29,8 +30,10 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -41,19 +44,20 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A window controller with a toolbar populated from a tabbed view.
  */
 public abstract class ToolbarWindowController extends WindowController implements NSToolbar.Delegate, NSTabView.Delegate {
-    private static final Logger log = Logger.getLogger(ToolbarWindowController.class);
+    private static final Logger log = LogManager.getLogger(ToolbarWindowController.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
     /**
      * Static window title
      */
-    private String title;
+    private String windowName;
 
     protected NSTabView tabView;
     private final NSToolbar toolbar = NSToolbar.toolbarWithIdentifier(this.getToolbarName());
@@ -69,13 +73,32 @@ public abstract class ToolbarWindowController extends WindowController implement
         super.windowDidBecomeKey(notification);
     }
 
-    protected static final class Label {
+    protected static class Label {
         public String identifier;
         public String label;
+        public String image;
 
-        public Label(final String identifier, final String label) {
+        public Label(final String identifier, final String label, final String image) {
             this.identifier = identifier;
             this.label = label;
+            this.image = image;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(!(o instanceof Label)) {
+                return false;
+            }
+            final Label label = (Label) o;
+            return Objects.equals(identifier, label.identifier);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(identifier);
         }
     }
 
@@ -88,17 +111,19 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void awakeFromNib() {
         // Reset
-        NSEnumerator items = this.tabView.tabViewItems().objectEnumerator();
+        NSEnumerator items = tabView.tabViewItems().objectEnumerator();
         NSObject object;
         while((object = items.nextObject()) != null) {
             this.tabView.removeTabViewItem(Rococoa.cast(object, NSTabViewItem.class));
         }
         // Insert all panels into tab view
-        for(Map.Entry<Label, NSView> tab : this.getPanels().entrySet()) {
-            final NSTabViewItem item = NSTabViewItem.itemWithIdentifier(tab.getKey().identifier);
+        final Map<Label, NSView> panels = this.getPanels();
+        for(Map.Entry<Label, NSView> tab : panels.entrySet()) {
+            final Label label = tab.getKey();
+            final NSTabViewItem item = NSTabViewItem.itemWithIdentifier(label.identifier);
             item.setView(tab.getValue());
-            item.setLabel(tab.getKey().label);
-            this.tabView.addTabViewItem(item);
+            item.setLabel(label.label);
+            tabView.addTabViewItem(item);
         }
         // Set up toolbar properties: Allow customization, give a default display mode, and remember state in user defaults
         toolbar.setAllowsUserCustomization(false);
@@ -108,9 +133,13 @@ public abstract class ToolbarWindowController extends WindowController implement
         window.setToolbar(toolbar);
         // Change selection to last selected item in preferences
         final int index = preferences.getInteger(String.format("%s.selected", this.getToolbarName()));
-        this.setSelectedPanel(index < this.getPanels().size() ? index : 0);
-        this.setTitle(this.getTitle(tabView.selectedTabViewItem()));
+        this.setSelectedPanel(index < panels.size() ? index : 0);
+        this.setWindowTitle(this.getWindowTitleForSelectedTab(tabView.selectedTabViewItem()));
         super.awakeFromNib();
+    }
+
+    public void setSelectedPanel(final String identifier) {
+        this.setSelectedPanel(tabView.indexOfTabViewItemWithIdentifier(identifier));
     }
 
     /**
@@ -155,7 +184,7 @@ public abstract class ToolbarWindowController extends WindowController implement
 
     @Override
     public void setWindow(final NSWindow window) {
-        this.title = window.title();
+        this.windowName = window.title();
         window.setShowsToolbarButton(false);
         super.setWindow(window);
     }
@@ -191,6 +220,9 @@ public abstract class ToolbarWindowController extends WindowController implement
             log.warn(String.format("No tab for toolbar item %s", itemIdentifier));
             return null;
         }
+        final Map<Label, NSView> panels = this.getPanels();
+        final Label label = panels.keySet().stream().filter(item -> item.identifier.equals(itemIdentifier)).findAny().get();
+        toolbarItem.setImage(IconCacheFactory.<NSImage>get().iconNamed(label.image));
         toolbarItem.setLabel(tab.label());
         toolbarItem.setPaletteLabel(tab.label());
         toolbarItem.setToolTip(tab.label());
@@ -202,7 +234,8 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public NSArray toolbarAllowedItemIdentifiers(final NSToolbar toolbar) {
         final NSMutableArray identifiers = NSMutableArray.array();
-        for(Label label : this.getPanels().keySet()) {
+        final Map<Label, NSView> panels = this.getPanels();
+        for(Label label : panels.keySet()) {
             identifiers.addObject(label.identifier);
         }
         return identifiers;
@@ -227,7 +260,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         return true;
     }
 
-    protected String getTitle(final NSTabViewItem item) {
+    protected String getWindowTitleForSelectedTab(final NSTabViewItem item) {
         return item.label();
     }
 
@@ -262,19 +295,19 @@ public abstract class ToolbarWindowController extends WindowController implement
     @Override
     public void tabView_didSelectTabViewItem(final NSTabView view, final NSTabViewItem item) {
         if(awaked) {
-            this.setTitle(this.getTitle(item));
+            this.setWindowTitle(this.getWindowTitleForSelectedTab(item));
             this.resize();
             preferences.setProperty(String.format("%s.selected", this.getToolbarName()), view.indexOfTabViewItem(item));
         }
     }
 
-    protected void setTitle(final String title) {
+    protected void setWindowTitle(final String title) {
         if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
-            window.setTitle(this.title);
+            window.setTitle(windowName);
             window.setSubtitle(title);
         }
         else {
-            window.setTitle(String.format("%s – %s", this.title, title));
+            window.setTitle(String.format("%s – %s", windowName, title));
         }
     }
 

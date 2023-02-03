@@ -33,7 +33,7 @@ public abstract class AbstractWatchService implements RegisterWatchService {
 
     // signaled keys waiting to be dequeued
     private final LinkedBlockingDeque<WatchKey> pendingKeys =
-        new LinkedBlockingDeque<WatchKey>();
+            new LinkedBlockingDeque<>();
 
     // special key to indicate that watch service is closed
     private final WatchKey CLOSE_KEY = new AbstractWatchKey(null) {

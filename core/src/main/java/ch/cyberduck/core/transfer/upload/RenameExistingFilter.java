@@ -32,17 +32,18 @@ import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
 public class RenameExistingFilter extends AbstractUploadFilter {
-    private static final Logger log = Logger.getLogger(RenameExistingFilter.class);
+    private static final Logger log = LogManager.getLogger(RenameExistingFilter.class);
 
     private final Move move;
 
     public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session) {
-        this(symlinkResolver, session, new UploadFilterOptions());
+        this(symlinkResolver, session, new UploadFilterOptions(session.getHost()));
     }
 
     public RenameExistingFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
@@ -75,7 +76,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Clear exist flag for file %s", file));
             }
-            status.setExists(false);
+            status.exists(false).getDisplayname().exists(false);
         }
         super.apply(file, local, status, listener);
     }

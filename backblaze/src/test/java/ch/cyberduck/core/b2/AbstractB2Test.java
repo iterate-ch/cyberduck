@@ -30,6 +30,7 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,13 +41,13 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractB2Test {
+public class AbstractB2Test extends VaultTest {
 
     protected B2Session session;
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
     }
 
     @Parameterized.Parameter
@@ -61,12 +62,12 @@ public class AbstractB2Test {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new B2Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/B2.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/B2.cyberduckprofile"));
         session = new B2Session(
-            new Host(profile, profile.getDefaultHostname(),
-                new Credentials(
-                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                )), new DefaultX509TrustManager(), new DefaultX509KeyManager());
+                new Host(profile, profile.getDefaultHostname(),
+                        new Credentials(
+                                PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
+                        )), new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -74,7 +75,7 @@ public class AbstractB2Test {
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
+                new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, new DisabledCancelCallback());
     }
 }

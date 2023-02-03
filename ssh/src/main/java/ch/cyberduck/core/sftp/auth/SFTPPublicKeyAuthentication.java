@@ -29,7 +29,8 @@ import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,7 +43,6 @@ import net.schmizz.sshj.userauth.keyprovider.FileKeyProvider;
 import net.schmizz.sshj.userauth.keyprovider.KeyFormat;
 import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 import net.schmizz.sshj.userauth.keyprovider.OpenSSHKeyFile;
-import net.schmizz.sshj.userauth.keyprovider.PKCS5KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PKCS8KeyFile;
 import net.schmizz.sshj.userauth.keyprovider.PuTTYKeyFile;
 import net.schmizz.sshj.userauth.method.AuthPublickey;
@@ -50,7 +50,7 @@ import net.schmizz.sshj.userauth.password.PasswordFinder;
 import net.schmizz.sshj.userauth.password.Resource;
 
 public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boolean> {
-    private static final Logger log = Logger.getLogger(SFTPPublicKeyAuthentication.class);
+    private static final Logger log = LogManager.getLogger(SFTPPublicKeyAuthentication.class);
 
     private final SSHClient client;
 
@@ -70,14 +70,11 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             final AtomicBoolean canceled = new AtomicBoolean();
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
-                    new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
+                        new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Reading private key %s with key format %s", identity, format));
                 }
                 switch(format) {
-                    case PKCS5:
-                        provider = new PKCS5KeyFile.Factory().create();
-                        break;
                     case PKCS8:
                         provider = new PKCS8KeyFile.Factory().create();
                         break;
@@ -100,13 +97,13 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                             try {
                                 // Use password prompt
                                 final Credentials input = prompt.prompt(bookmark,
-                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                                    String.format("%s (%s)",
-                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                        identity.getAbbreviatedPath()),
-                                    new LoginOptions()
-                                        .icon(bookmark.getProtocol().disk())
-                                        .user(false).password(true)
+                                        LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                        String.format("%s (%s)",
+                                                LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                                identity.getAbbreviatedPath()),
+                                        new LoginOptions()
+                                                .icon(bookmark.getProtocol().disk())
+                                                .user(false).password(true)
                                 );
                                 credentials.setSaved(input.isSaved());
                                 credentials.setIdentityPassphrase(input.getPassword());

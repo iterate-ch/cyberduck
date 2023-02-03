@@ -18,18 +18,43 @@ package ch.cyberduck.core.io;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumCanceledException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 public interface ChecksumCompute {
 
     /**
-     * @param in   Stream that will be closed when the checksum is computed
+     * Implementation for given algorithm
+     *
+     * @param in     Stream that will be closed when the checksum is computed
+     * @param status Offset and limit to read from stream
      * @return Calculated fingerprint
+     * @throws ChecksumException         Error calculating checksum
+     * @throws ChecksumCanceledException Calculating checksum was interrrupted
      */
-    Checksum compute(InputStream in, TransferStatus status) throws ChecksumException;
+    Checksum compute(InputStream in, TransferStatus status) throws BackgroundException;
 
-    Checksum compute(String data, TransferStatus status) throws ChecksumException;
+    /**
+     * @param data Hex encoded string
+     * @return Calculated fingerprint
+     * @throws ChecksumException         Error calculating checksum
+     * @throws ChecksumCanceledException Calculating checksum was interrrupted
+     */
+    default Checksum compute(final String data) throws BackgroundException {
+        try {
+            return this.compute(new ByteArrayInputStream(Hex.decodeHex(data.toCharArray())),
+                    new TransferStatus());
+        }
+        catch(DecoderException e) {
+            throw new ChecksumException(e);
+        }
+    }
 }

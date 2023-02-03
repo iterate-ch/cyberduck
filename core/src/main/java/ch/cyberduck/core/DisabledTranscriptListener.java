@@ -17,10 +17,11 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DisabledTranscriptListener implements TranscriptListener {
-    private static final Logger log = Logger.getLogger(DisabledTranscriptListener.class);
+    private static final Logger log = LogManager.getLogger(DisabledTranscriptListener.class);
 
     @Override
     public void log(final Type request, final String message) {

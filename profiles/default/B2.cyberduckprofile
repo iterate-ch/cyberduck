@@ -25,6 +25,8 @@
         <true/>
         <key>Description</key>
         <string>Backblaze B2 Cloud Storage</string>
+        <key>Default Nickname</key>
+        <string>Backblaze B2</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>

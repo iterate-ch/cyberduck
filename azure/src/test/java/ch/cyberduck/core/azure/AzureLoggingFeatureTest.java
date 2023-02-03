@@ -23,6 +23,5 @@ public class AzureLoggingFeatureTest extends AbstractAzureTest {
         assertFalse(feature.getConfiguration(container).isEnabled());
         feature.setConfiguration(container, new LoggingConfiguration(true));
         assertTrue(feature.getConfiguration(container).isEnabled());
-        session.close();
     }
 }

@@ -18,7 +18,8 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.utils.Mimetypes;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ import java.net.URL;
 import java.util.Enumeration;
 
 public class MappingMimeTypeService implements MimeTypeService {
-    private static final Logger log = Logger.getLogger(MappingMimeTypeService.class);
+    private static final Logger log = LogManager.getLogger(MappingMimeTypeService.class);
 
     private static final Mimetypes types
         = Mimetypes.getInstance();

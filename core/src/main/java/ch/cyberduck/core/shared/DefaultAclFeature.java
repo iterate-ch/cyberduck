@@ -19,6 +19,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,12 +44,12 @@ public abstract class DefaultAclFeature implements AclPermission {
     }
 
     @Override
-    public Acl getDefault(final Local file) {
+    public Acl getDefault(final Path file, final Local local) throws BackgroundException {
         if(preferences.getBoolean("queue.upload.permissions.default")) {
-            return this.getDefault(file.getType());
+            return this.getDefault(local.getType());
         }
         // Read permissions from local file
-        return this.toAcl(file.attributes().getPermission());
+        return this.toAcl(local.attributes().getPermission());
     }
 
     private Acl toAcl(final Permission permission) {

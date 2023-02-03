@@ -16,18 +16,19 @@ package ch.cyberduck.core.logging;
  */
 
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.helpers.LogLog;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.status.StatusLogger;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class LoggerPrintStream extends PrintStream {
-    private static final Logger log = Logger.getLogger(LoggerPrintStream.class);
+    private static final Logger log = LogManager.getLogger(LoggerPrintStream.class);
 
     static {
-        LogLog.setQuietMode(true);
+        StatusLogger.getLogger().setLevel(Level.OFF);
     }
 
     private final Level level;

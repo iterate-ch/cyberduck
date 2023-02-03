@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Profile;
@@ -38,10 +37,11 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.text.RandomStringGenerator;
+import org.irods.jargon.core.pub.domain.ObjStat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -57,15 +57,15 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class IRODSWriteFeatureTest {
+public class IRODSWriteFeatureTest extends VaultTest {
 
     @Test
     public void testWriteConcurrent() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
@@ -109,9 +109,9 @@ public class IRODSWriteFeatureTest {
     public void testWriteThreaded() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session1 = new IRODSSession(host);
@@ -215,9 +215,9 @@ public class IRODSWriteFeatureTest {
     public void testWrite() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -227,17 +227,17 @@ public class IRODSWriteFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(100).getBytes();
+        final byte[] content = RandomUtils.nextBytes(100);
+        final IRODSWriteFeature feature = new IRODSWriteFeature(session);
         {
             final TransferStatus status = new TransferStatus();
             status.setAppend(false);
             status.setLength(content.length);
 
-            assertEquals(0L, new IRODSWriteFeature(session).append(test, status).size, 0L);
+            assertEquals(0L, feature.append(test, status).size, 0L);
 
-            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<ObjStat> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
-            assertNotNull(out.getStatus());
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             assertTrue(session.getFeature(Find.class).find(test));
@@ -252,24 +252,25 @@ public class IRODSWriteFeatureTest {
             assertArrayEquals(content, buffer);
         }
         {
-            final byte[] newcontent = new RandomStringGenerator.Builder().build().generate(10).getBytes();
+            final byte[] newcontent = RandomUtils.nextBytes(10);
 
             final TransferStatus status = new TransferStatus();
             status.setAppend(false);
             status.setLength(newcontent.length);
+            status.setRemote(new IRODSAttributesFinderFeature(session).find(test));
 
-            assertTrue(new IRODSWriteFeature(session).append(test, status).append);
-            assertEquals(content.length, new IRODSWriteFeature(session).append(test, status).size, 0L);
+            assertTrue(feature.append(test, status).append);
+            assertEquals(content.length, feature.append(test, status).size, 0L);
 
-            final StatusOutputStream<Integer> out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<ObjStat> out = feature.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
-            assertNotNull(out.getStatus());
 
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(newcontent), out);
             assertTrue(session.getFeature(Find.class).find(test));
 
             final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
             assertEquals(newcontent.length, attributes.getSize());
+            assertEquals(new IRODSAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
 
             final InputStream in = session.getFeature(Read.class).read(test, new TransferStatus(), new DisabledConnectionCallback());
             final byte[] buffer = new byte[newcontent.length];
@@ -287,9 +288,9 @@ public class IRODSWriteFeatureTest {
     public void testWriteAppend() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new IRODSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/iRODS (iPlant Collaborative).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/iRODS (iPlant Collaborative).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("irods.key"), System.getProperties().getProperty("irods.secret")
+                PROPERTIES.get("irods.key"), PROPERTIES.get("irods.secret")
         ));
 
         final IRODSSession session = new IRODSSession(host);
@@ -299,15 +300,16 @@ public class IRODSWriteFeatureTest {
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(session.getFeature(Find.class).find(test));
 
-        final byte[] content = new RandomStringGenerator.Builder().build().generate((int) (Math.random() * 100)).getBytes();
+        final byte[] content = RandomUtils.nextBytes(100);
 
         final TransferStatus status = new TransferStatus();
         status.setAppend(true);
         status.setLength(content.length);
 
-        assertEquals(0L, new IRODSWriteFeature(session).append(test, status).size, 0L);
+        final IRODSWriteFeature feature = new IRODSWriteFeature(session);
+        assertEquals(0L, feature.append(test, status).size, 0L);
 
-        final OutputStream out = new IRODSWriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        final OutputStream out = feature.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -324,16 +326,17 @@ public class IRODSWriteFeatureTest {
 
         // Append
 
-        final byte[] content_append = new RandomStringGenerator.Builder().build().generate((int) (Math.random() * 100)).getBytes();
+        final byte[] content_append = RandomUtils.nextBytes(100);
 
         final TransferStatus status_append = new TransferStatus();
         status_append.setAppend(true);
         status_append.setLength(content_append.length);
+        status_append.setRemote(new IRODSAttributesFinderFeature(session).find(test));
 
-        assertTrue(new IRODSWriteFeature(session).append(test, status_append).append);
-        assertEquals(status.getLength(), new IRODSWriteFeature(session).append(test, status_append).size, 0L);
+        assertTrue(feature.append(test, status_append).append);
+        assertEquals(status.getLength(), feature.append(test, status_append).size, 0L);
 
-        final OutputStream out_append = new IRODSWriteFeature(session).write(test, status_append, new DisabledConnectionCallback());
+        final OutputStream out_append = feature.write(test, status_append, new DisabledConnectionCallback());
         assertNotNull(out_append);
 
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content_append), out_append);

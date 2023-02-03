@@ -32,13 +32,14 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.controller.MainController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
-    private static final Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
+    private static final Logger log = LogManager.getLogger(RendezvousMenuDelegate.class);
 
     private final AbstractHostCollection collection;
 

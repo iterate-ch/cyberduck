@@ -27,8 +27,13 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class StoregateApiClient extends ApiClient {
+
+    static {
+        Logger.getLogger("org.glassfish.jersey.client.ClientExecutorProvidersConfigurator").setLevel(java.util.logging.Level.SEVERE);
+    }
 
     private final CloseableHttpClient client;
 

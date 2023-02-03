@@ -90,7 +90,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             // 
             // statusPictureBox
             // 
-            this.statusPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.statusGreen;
+            this.statusPictureBox.Image = global::Ch.Cyberduck.ImageHelper.StatusGreen;
             this.statusPictureBox.Location = new System.Drawing.Point(51, 50);
             this.statusPictureBox.Name = "statusPictureBox";
             this.statusPictureBox.Size = new System.Drawing.Size(20, 20);
@@ -101,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             // directionPictureBox
             // 
             this.directionPictureBox.BackColor = System.Drawing.SystemColors.Control;
-            this.directionPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.transfer_download;
+            this.directionPictureBox.Image = global::Ch.Cyberduck.ImageHelper.TransferDownload;
             this.directionPictureBox.Location = new System.Drawing.Point(3, 3);
             this.directionPictureBox.Name = "directionPictureBox";
             this.directionPictureBox.Size = new System.Drawing.Size(32, 32);

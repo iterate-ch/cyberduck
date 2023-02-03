@@ -27,8 +27,8 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
+import ch.cyberduck.core.sds.SDSDirectS3MultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
-import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSReadFeature;
 import ch.cyberduck.core.sds.SDSTouchFeature;
@@ -63,7 +63,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         new Random().nextBytes(content);
         {
             final TransferStatus status = new TransferStatus().withLength(content.length).exists(true);
-            final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
@@ -102,7 +102,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus().withLength(content.length);
             status.setExists(true);
-            final StatusOutputStream<Node> out = new SDSMultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
+            final StatusOutputStream<Node> out = new SDSDirectS3MultipartWriteFeature(session, nodeid).write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();

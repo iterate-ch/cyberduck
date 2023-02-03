@@ -23,8 +23,12 @@ import ch.cyberduck.core.LocaleFactory;
 public class ConnectionTimeoutException extends BackgroundException {
     private static final long serialVersionUID = -7408164299912691588L;
 
+    public ConnectionTimeoutException(final String detail) {
+        super(LocaleFactory.localizedString("Connection failed", "Error"), detail);
+    }
+
     public ConnectionTimeoutException(final String detail, final Throwable cause) {
-        super(LocaleFactory.localizedString("Connection timed out", "Error"), detail, cause);
+        super(LocaleFactory.localizedString("Connection failed", "Error"), detail, cause);
     }
 
     public ConnectionTimeoutException(final String message, final String detail, final Throwable cause) {

@@ -33,7 +33,7 @@ public class SecurityScopedFilesystemBookmarkResolverTest {
     @Test
     public void testCreateNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
-        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        Local l = new FinderLocal(System.getProperty("user.dir"), name);
         try {
             assertNull(new SecurityScopedFilesystemBookmarkResolver().create(l));
             fail();

@@ -27,15 +27,17 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
+import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageLoggingFeature implements Logging, DistributionLogging {
-    private static final Logger log = Logger.getLogger(GoogleStorageLoggingFeature.class);
+    private static final Logger log = LogManager.getLogger(GoogleStorageLoggingFeature.class);
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
@@ -52,16 +54,20 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
             return LoggingConfiguration.empty();
         }
         try {
-            final Bucket.Logging status = session.getClient().buckets().get(bucket.getName()).execute().getLogging();
+            final Storage.Buckets.Get request = session.getClient().buckets().get(bucket.getName());
+            if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            final Bucket.Logging status = request.execute().getLogging();
             if(null == status) {
                 return LoggingConfiguration.empty();
             }
             final LoggingConfiguration configuration = new LoggingConfiguration(
-                status.getLogObjectPrefix() != null, status.getLogBucket());
+                    status.getLogObjectPrefix() != null, status.getLogBucket());
             try {
                 configuration.setContainers(new GoogleStorageBucketListService(session).list(
-                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-                    new DisabledListProgressListener()).toList());
+                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                        new DisabledListProgressListener()).toList());
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
@@ -80,16 +86,21 @@ public class GoogleStorageLoggingFeature implements Logging, DistributionLogging
     }
 
     @Override
-    public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
+    public void setConfiguration(final Path file, final LoggingConfiguration configuration) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
         try {
-            session.getClient().buckets().patch(container.getName(),
-                new Bucket().setLogging(new Bucket.Logging()
-                    .setLogObjectPrefix(configuration.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
-                    .setLogBucket(StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName()))
-            ).execute();
+            final Storage.Buckets.Patch request = session.getClient().buckets().patch(bucket.getName(),
+                    new Bucket().setLogging(new Bucket.Logging()
+                            .setLogObjectPrefix(configuration.isEnabled() ? new HostPreferences(session.getHost()).getProperty("google.logging.prefix") : null)
+                            .setLogBucket(StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : bucket.getName()))
+            );
+            if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                request.setUserProject(session.getHost().getCredentials().getUsername());
+            }
+            request.execute();
         }
         catch(IOException e) {
-            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, container);
+            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }

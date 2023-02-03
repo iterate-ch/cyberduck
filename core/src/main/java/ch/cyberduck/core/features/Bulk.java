@@ -32,7 +32,7 @@ public interface Bulk<R> {
      * @param callback Callback to user
      * @return Upload Id from server
      */
-    R pre(Transfer.Type type, Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException;
+    R pre(Transfer.Type type, Map<TransferItem, TransferStatus> files, ConnectionCallback callback) throws BackgroundException;
 
     /**
      * After transfer is complete

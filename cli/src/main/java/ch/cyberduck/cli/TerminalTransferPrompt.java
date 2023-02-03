@@ -25,12 +25,15 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferPrompt;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public class TerminalTransferPrompt implements TransferPrompt {
+    private static final Logger log = LogManager.getLogger(TerminalTransferPrompt.class);
 
     private final Console console = new Console();
 
@@ -52,6 +55,10 @@ public class TerminalTransferPrompt implements TransferPrompt {
         try {
             switch(transfer) {
                 case download:
+                    if(item.local.isDirectory()) {
+                        log.warn(String.format("Skip prompt for directory %s", item));
+                        return TransferAction.overwrite;
+                    }
                     input = console.readLine("%nThe local file %s already exists. Choose what action to take:%n%s%nAction %s: ",
                             item.local.getAbsolute(), actions, Arrays.toString(options.toArray()));
                     break;

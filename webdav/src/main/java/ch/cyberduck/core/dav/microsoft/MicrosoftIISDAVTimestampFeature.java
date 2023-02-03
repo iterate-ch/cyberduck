@@ -15,15 +15,19 @@ package ch.cyberduck.core.dav.microsoft;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
+import ch.cyberduck.core.exception.NotfoundException;
 
 import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import com.github.sardine.DavResource;
@@ -37,8 +41,20 @@ public class MicrosoftIISDAVTimestampFeature extends DAVTimestampFeature {
 
     public static final QName LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE = new QName(MS_NAMESPACE_URI, MS_NAMESPACE_LASTMODIFIED, MS_NAMESPACE_PREFIX);
 
+    private final DAVSession session;
+
     public MicrosoftIISDAVTimestampFeature(final DAVSession session) {
         super(session);
+        this.session = session;
+    }
+
+    @Override
+    protected DavResource getResource(final Path file) throws NotfoundException, IOException {
+        final Optional<DavResource> optional = new MicrosoftIISDAVAttributesFinderFeature(session).list(file).stream().findFirst();
+        if(!optional.isPresent()) {
+            throw new NotfoundException(file.getAbsolute());
+        }
+        return optional.get();
     }
 
     protected List<Element> getCustomProperties(final DavResource resource, final Long modified) {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
@@ -33,13 +32,14 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 public class StoregateReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(StoregateReadFeature.class);
+    private static final Logger log = LogManager.getLogger(StoregateReadFeature.class);
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;
@@ -54,11 +54,11 @@ public class StoregateReadFeature implements Read {
         try {
             final StoregateApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/v4/download/files/%s?stream=true", client.getBasePath(),
-                fileid.getFileId(file, new DisabledListProgressListener())));
+                fileid.getFileId(file)));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;
-                if(-1 == range.getEnd()) {
+                if(TransferStatus.UNKNOWN_LENGTH == range.getEnd()) {
                     header = String.format("bytes=%d-", range.getStart());
                 }
                 else {

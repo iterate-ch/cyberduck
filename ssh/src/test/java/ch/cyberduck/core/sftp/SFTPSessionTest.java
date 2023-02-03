@@ -14,7 +14,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
@@ -242,7 +242,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws BackgroundException {
                     fingerprint.set(new SSHFingerprintGenerator().fingerprint(key));
                     return super.verify(hostname, key);
                 }
@@ -262,7 +262,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             session.close();
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws BackgroundException {
                     assertEquals(fingerprint.get(), new SSHFingerprintGenerator().fingerprint(key));
                     return super.verify(hostname, key);
                 }

@@ -22,11 +22,20 @@ import ch.cyberduck.core.Factory;
 
 public class TemporaryFileServiceFactory extends Factory<TemporaryFileService> {
 
-    public TemporaryFileServiceFactory() {
-        super("factory.temporaryfiles.class");
+    private static final TemporaryFileService DEFAULT = new TemporaryFileServiceFactory().create();
+
+    /**
+     * @return Shared singleton
+     */
+    public static TemporaryFileService get() {
+        return DEFAULT;
     }
 
-    public static TemporaryFileService get() {
+    public static TemporaryFileService instance() {
         return new TemporaryFileServiceFactory().create();
+    }
+
+    public TemporaryFileServiceFactory() {
+        super("factory.temporaryfiles.class");
     }
 }

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #  Copyright (c) 2003 David Kocher. All rights reserved.
 #  http://cyberduck.ch/
 #
@@ -14,13 +16,11 @@
 #  Bug fixes, suggestions and comments should be sent to:
 #  dkocher@cyberduck.ch
 
-#!/bin/bash
-
 workdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
-arch="x86_64"
+arch="`/usr/bin/arch`"
 tx="/usr/local/bin/tx"
 extension=".xib"
 
@@ -56,14 +56,14 @@ init() {
 }
 
 test() {
-	for lproj in `ls . | grep lproj`; do
+	for lproj in $(ls . | grep lproj); do
 		language=$lproj;
 		run;
 	done;
 }
 
 run() {
-	echo "Running app using `basename $language .lproj`...";
+	echo "Running app using `basename $language .lproj` on $arch...";
     basedir="$( cd "$workdir/../../../.." && pwd )"
 	CA_DEBUG_TRANSACTIONS=1 arch -arch $arch $basedir/osx/target/Cyberduck.app/Contents/MacOS/Cyberduck -AppleLanguages "(`basename $language .lproj`)"
 }
@@ -80,7 +80,7 @@ nib() {
 }
 
 import_strings() {
-	if($force == true); then
+	if [ true == "$force" ] ; then
 	{
 		# force update
 		echo "*** Updating $nib... (force) in $language..."
@@ -89,21 +89,22 @@ import_strings() {
                     --import-strings-file $language/$nib.strings \
                     $base_language/$nib$extension
 	}
-    else
+  else
 	{
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
-	    # Checkout previous version from base language
-        git show `git log -2 --format="%H" $base_language/$nib$extension | tail -n 1`:./$base_language/$nib$extension > $base_language/$nib$extension.prev.xib
+	  # Checkout previous version from base language
+    # shellcheck disable=SC2046
+    git show $(git log -2 --format="%H" $base_language/$nib$extension | tail -n 1):./$base_language/$nib$extension > $base_language/$nib$extension.prev.xib
 		$nibtool    --write $language/$nib$extension \
-                    --incremental-file $language/$nib$extension \
-                    --previous-file $base_language/$nib$extension.prev.xib \
-                    --import-strings-file $language/$nib.strings \
-                    --localize-incremental \
-                    $base_language/$nib$extension
-        rm $base_language/$nib$extension.prev.xib
+                --incremental-file $language/$nib$extension \
+                --previous-file $base_language/$nib$extension.prev.xib \
+                --import-strings-file $language/$nib.strings \
+                --localize-incremental \
+                $base_language/$nib$extension
+    rm $base_language/$nib$extension.prev.xib
 	}
-    fi;
+  fi;
 }
 
 export_strings() {
@@ -115,22 +116,22 @@ export_strings_legacy() {
 	if [ "$language" = "all" ] ; then
 	{
 		echo "*** Updating all localizations...";
-    	for lproj in `ls . | grep lproj`; do
-    		language=$lproj;
-    		echo "*** Updating $language Localization...";
-            if [ "$nibfile" = "all" ] ; then
-        		for n in `ls $language | grep $extension`; do
-        			nib=`basename $n $extension`
-        			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
-        			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-        		done;
-            fi;
-            if [ "$nibfile" != "all" ] ; then
-    			nib=`basename $nibfile $extension`
-    			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
-    			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-            fi;
-    	done;
+    for lproj in $(ls . | grep lproj); do
+      language=$lproj;
+      echo "*** Updating $language Localization...";
+          if [ "$nibfile" = "all" ] ; then
+          for n in $(ls $language | grep $extension); do
+            nib=`basename $n $extension`
+            echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+            $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+          done;
+          fi;
+          if [ "$nibfile" != "all" ] ; then
+        nib=`basename $nibfile $extension`
+        echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+        $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+          fi;
+    done;
 	}
 	else
 	{

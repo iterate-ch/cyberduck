@@ -44,17 +44,19 @@ public class CryptoMoveV7Feature implements Move {
         // Move inside vault moves actual files and only metadata files for directories but not the actual directories
         final Path sourceEncrypted = vault.encrypt(session, file, file.isDirectory());
         final Path targetEncrypted = vault.encrypt(session, renamed, file.isDirectory());
-        final Path target = proxy.move(sourceEncrypted, targetEncrypted,
-            status, callback, connectionCallback);
+        final Path target = proxy.move(sourceEncrypted, targetEncrypted, status, callback, connectionCallback);
         if(file.isDirectory()) {
             if(!proxy.isRecursive(file, renamed)) {
                 proxy.move(new Path(sourceEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
-                    new Path(targetEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
-                    new TransferStatus(status), callback, connectionCallback);
+                        new Path(targetEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
+                        new TransferStatus(status), callback, connectionCallback);
             }
             vault.getDirectoryProvider().delete(file);
         }
-        return vault.decrypt(session, target);
+        if(vault.contains(target)) {
+            return vault.decrypt(session, target);
+        }
+        return target;
     }
 
     @Override

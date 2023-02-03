@@ -26,8 +26,8 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -40,23 +40,22 @@ import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.SegmentRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObject, MessageDigest> {
-    private static final Logger log = Logger.getLogger(SwiftLargeObjectUploadFeature.class);
+    private static final Logger log = LogManager.getLogger(SwiftLargeObjectUploadFeature.class);
 
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();
@@ -71,7 +70,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     public SwiftLargeObjectUploadFeature(final SwiftSession session, final SwiftRegionService regionService, final Write<StorageObject> writer,
                                          final Long segmentSize, final Integer concurrency) {
         this(session, regionService, new SwiftObjectListService(session, regionService), new SwiftSegmentService(session, regionService), writer,
-            segmentSize, concurrency);
+                segmentSize, concurrency);
     }
 
     public SwiftLargeObjectUploadFeature(final SwiftSession session,
@@ -137,34 +136,18 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 segments.add(this.submit(pool, segment, local, throttle, listener, status, offset, length, callback));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Segment %s submitted with size %d and offset %d",
-                        segment, length, offset));
+                            segment, length, offset));
                 }
                 remaining -= length;
                 offset += length;
             }
         }
         try {
-            for(Future<StorageObject> futureSegment : segments) {
-                completed.add(futureSegment.get());
-            }
-        }
-        catch(InterruptedException e) {
-            log.error("Part upload failed with interrupt failure");
-            status.setCanceled();
-            throw new ConnectionCanceledException(e);
-        }
-        catch(ExecutionException e) {
-            log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-            if(e.getCause() instanceof BackgroundException) {
-                throw (BackgroundException) e.getCause();
-            }
-            throw new DefaultExceptionMappingService().map(e.getCause());
+            completed.addAll(Interruptibles.awaitAll(segments));
         }
         finally {
             pool.shutdown(false);
         }
-        // Mark parent status as complete
-        status.setComplete();
         if(log.isInfoEnabled()) {
             log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
         }
@@ -177,14 +160,17 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                 log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
             }
             final StorageObject stored = new StorageObject(containerService.getKey(file));
+            stored.setSize(status.getOffset() + status.getLength());
             final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
-                containerService.getContainer(file)),
-                containerService.getContainer(file).getName(),
-                status.getMime(),
-                containerService.getKey(file), manifest, Collections.emptyMap());
+                            containerService.getContainer(file)),
+                    containerService.getContainer(file).getName(),
+                    status.getMime(),
+                    containerService.getKey(file), manifest, Collections.emptyMap());
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
+            // Mark parent status as complete
+            status.withResponse(new SwiftAttributesFinderFeature(session).toAttributes(stored)).setComplete();
             return stored;
         }
         catch(GenericException e) {
@@ -204,14 +190,13 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             public StorageObject call() throws BackgroundException {
                 overall.validate();
                 final TransferStatus status = new TransferStatus()
-                    .withLength(length)
-                    .withOffset(offset);
+                        .withLength(length)
+                        .withOffset(offset);
                 status.setHeader(overall.getHeader());
-                status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum(segment, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 return SwiftLargeObjectUploadFeature.super.upload(
-                    segment, local, throttle, counter, status, overall, status, callback);
+                        segment, local, throttle, counter, status, overall, status, callback);
             }
         }, overall, counter));
     }

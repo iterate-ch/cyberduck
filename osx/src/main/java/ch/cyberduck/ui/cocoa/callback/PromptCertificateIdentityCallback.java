@@ -33,7 +33,8 @@ import ch.cyberduck.core.keychain.SecPolicyRef;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.security.cert.X509Certificate;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PromptCertificateIdentityCallback implements CertificateIdentityCallback {
-    private static final Logger log = Logger.getLogger(PromptCertificateIdentityCallback.class);
+    private static final Logger log = LogManager.getLogger(PromptCertificateIdentityCallback.class);
 
     private final Controller controller;
 

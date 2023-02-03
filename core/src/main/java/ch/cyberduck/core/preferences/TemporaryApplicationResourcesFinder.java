@@ -21,10 +21,11 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TemporaryApplicationResourcesFinder implements ApplicationResourcesFinder {
-    private static final Logger log = Logger.getLogger(TemporaryApplicationResourcesFinder.class);
+    private static final Logger log = LogManager.getLogger(TemporaryApplicationResourcesFinder.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 

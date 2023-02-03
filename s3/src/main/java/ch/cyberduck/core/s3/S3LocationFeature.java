@@ -27,7 +27,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RegionEndpointCache;
 
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.Set;
 
 public class S3LocationFeature implements Location {
-    private static final Logger log = Logger.getLogger(S3LocationFeature.class);
+    private static final Logger log = LogManager.getLogger(S3LocationFeature.class);
 
     private final S3Session session;
     private final PathContainerService containerService;
@@ -59,11 +60,25 @@ public class S3LocationFeature implements Location {
     @Override
     public Set<Name> getLocations() {
         if(StringUtils.isNotBlank(session.getHost().getRegion())) {
-            return Collections.singleton(new S3Region(session.getHost().getRegion()));
+            final S3Region region = new S3Region(session.getHost().getRegion());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return single region %s set in bookmark", region));
+            }
+            return Collections.singleton(region);
+        }
+        if(StringUtils.isNotEmpty(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return empty set for hostname %s", session.getHost()));
+            }
+            // Connected to single bucket
+            return Collections.emptySet();
         }
         if(!S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(new S3Protocol().getRegions().equals(session.getHost().getProtocol().getRegions())) {
                 // Return empty set for unknown provider
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Return empty set for unknown provider %s", session.getHost()));
+                }
                 return Collections.emptySet();
             }
         }
@@ -72,17 +87,22 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
-        final Path bucket = containerService.getContainer(file);
-        if(bucket.isRoot()) {
-            return unknown;
+        if(StringUtils.isNotBlank(session.getHost().getRegion())) {
+            return new S3Region(session.getHost().getRegion());
         }
-        return this.getLocation(bucket.getName());
+        final Path bucket = containerService.getContainer(file);
+        return this.getLocation(bucket.isRoot() ? StringUtils.EMPTY : bucket.getName());
     }
 
     protected Name getLocation(final String bucketname) throws BackgroundException {
         try {
             if(cache.containsRegionForBucketName(bucketname)) {
                 return new S3Region(cache.getRegionForBucketName(bucketname));
+            }
+            if(session.getHost().getCredentials().isAnonymousLogin()) {
+                // To use this implementation of the operation, you must be the bucket owner
+                log.warn("Skip attempt to read bucket location with missing credentials");
+                return Location.unknown;
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query location for bucket %s", bucketname));
@@ -106,7 +126,17 @@ public class S3LocationFeature implements Location {
                         break;
                 }
             }
-            cache.putRegionForBucketName(bucketname, region.getIdentifier());
+            if(StringUtils.isBlank(bucketname)) {
+                if(StringUtils.isNotBlank(RequestEntityRestStorageService.findBucketInHostname(session.getHost()))) {
+                    cache.putRegionForBucketName(RequestEntityRestStorageService.findBucketInHostname(session.getHost()), region.getIdentifier());
+                }
+                else {
+                    cache.putRegionForBucketName(bucketname, region.getIdentifier());
+                }
+            }
+            else {
+                cache.putRegionForBucketName(bucketname, region.getIdentifier());
+            }
             return region;
         }
         catch(ServiceException e) {

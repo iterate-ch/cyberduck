@@ -43,14 +43,15 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.InvalidPathException;
 
 public class LocalSession extends Session<FileSystem> {
-    private static final Logger log = Logger.getLogger(LocalSession.class);
+    private static final Logger log = LogManager.getLogger(LocalSession.class);
 
     private Object lock;
 

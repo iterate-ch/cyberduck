@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.browser.PathTooltipService;
 import ch.cyberduck.ui.browser.SizeTooltipService;
+import ch.cyberduck.ui.comparator.ChecksumComparator;
 import ch.cyberduck.ui.comparator.ExtensionComparator;
 import ch.cyberduck.ui.comparator.FileTypeComparator;
 import ch.cyberduck.ui.comparator.FilenameComparator;
@@ -34,12 +35,13 @@ import ch.cyberduck.ui.comparator.StorageClassComparator;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 import ch.cyberduck.ui.comparator.VersionComparator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Comparator;
 
 public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Path, BrowserColumn> {
-    private static final Logger log = Logger.getLogger(AbstractTableDelegate.class);
+    private static final Logger log = LogManager.getLogger(AbstractTableDelegate.class);
 
     protected AbstractPathTableDelegate(final NSTableColumn selectedColumn) {
         super(selectedColumn);
@@ -86,6 +88,8 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
                 return new VersionComparator(ascending);
             case storageclass:
                 return new StorageClassComparator(ascending);
+            case checksum:
+                return new ChecksumComparator(ascending);
             default:
                 log.error(String.format("Unknown column identifier %s", identifier));
                 return new NullComparator<Path>();

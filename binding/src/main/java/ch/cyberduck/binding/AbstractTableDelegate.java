@@ -15,10 +15,12 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
+import ch.cyberduck.binding.application.NSTextFieldCell;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.NullComparator;
@@ -26,7 +28,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
 
 import java.util.Comparator;
 
@@ -83,6 +87,18 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
      */
     public boolean outlineView_shouldEditTableColumn_item(final NSOutlineView view, final NSTableColumn c, final NSObject item) {
         return this.isColumnRowEditable(c, view.rowForItem(item));
+    }
+
+    /**
+     * @see NSOutlineView.Delegate
+     */
+    public void outlineView_willDisplayCell_forTableColumn_item(final NSOutlineView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSObject item) {
+    }
+
+    /**
+     * @see NSTableView.Delegate
+     */
+    public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn c, NSInteger row) {
     }
 
     public boolean selectionShouldChange() {
@@ -157,6 +173,20 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
         //
     }
 
+    /**
+     * @see NSOutlineView.Delegate
+     */
+    public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell, ID rect, NSTableColumn c, NSObject item, NSPoint mouseLocation) {
+        return null;
+    }
+
+    /**
+     * @see NSTableView.Delegate
+     */
+    public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell, ID rect, NSTableColumn c, NSInteger row, NSPoint mouseLocation) {
+        return null;
+    }
+
     // ----------------------------------------------------------
     // Sorting
     // ----------------------------------------------------------
@@ -197,33 +227,49 @@ public abstract class AbstractTableDelegate<E, Column> extends ProxyController i
     protected abstract boolean isTypeSelectSupported();
 
     /**
+     * @see NSOutlineView.Delegate
+     */
+    public String outlineView_typeSelectStringForTableColumn_item(NSOutlineView view, NSTableColumn tableColumn, NSObject item) {
+        return null;
+    }
+
+    /**
+     * @see NSTableView.Delegate
+     */
+    public String tableView_typeSelectStringForTableColumn_row(NSTableView view, NSTableColumn column, NSInteger row) {
+        return null;
+    }
+
+    /**
      * You should implement this method if your table supports varying row heights.
      * <p/>
-     * Although table views may cache the returned values, you should ensure that this
-     * method is efficient. When you change a row's height you must invalidate the
-     * existing row height by calling noteHeightOfRowsWithIndexesChanged:. NSTableView
-     * automatically invalidates its entire row height cache when reloadData and
-     * noteNumberOfRowsChanged are called.
+     * Although table views may cache the returned values, you should ensure that this method is efficient. When you
+     * change a row's height you must invalidate the existing row height by calling noteHeightOfRowsWithIndexesChanged:.
+     * NSTableView automatically invalidates its entire row height cache when reloadData and noteNumberOfRowsChanged are
+     * called.
      *
      * @param tableView The table view that sent the message.
      * @param row       The row index.
      * @return The height of the row. The height should not include intercell spacing and must be greater than zero.
      */
-//    public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row);
+    public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
+        return tableView.rowHeight();
+    }
 
     /**
-     * Values returned by this method should not include intercell spacing and must be greater than 0. Implement
-     * this method to support an outline view with varying row heights.
+     * Values returned by this method should not include intercell spacing and must be greater than 0. Implement this
+     * method to support an outline view with varying row heights.
      * <p/>
-     * Special Considerations. For large tables in particular, you should make sure that this method is
-     * efficient. NSTableView
-     * may cache the values this method returns, so if you would like to change a row's height
-     * make sure to invalidate the row height by calling noteHeightOfRowsWithIndexesChanged:. NSTableView
-     * automatically invalidates its entire row height cache in reloadData and noteNumberOfRowsChanged.
+     * Special Considerations. For large tables in particular, you should make sure that this method is efficient.
+     * NSTableView may cache the values this method returns, so if you would like to change a row's height make sure to
+     * invalidate the row height by calling noteHeightOfRowsWithIndexesChanged:. NSTableView automatically invalidates
+     * its entire row height cache in reloadData and noteNumberOfRowsChanged.
      *
-     * @param outlineView
-     * @param item
-     * @return
+     * @param outlineView The outline view that sent the message.
+     * @param item        The row item.
+     * @return The height of the row.
      */
-//    public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item);
+    public CGFloat outlineView_heightOfRowByItem(NSOutlineView outlineView, NSObject item) {
+        return outlineView.rowHeight();
+    }
 }

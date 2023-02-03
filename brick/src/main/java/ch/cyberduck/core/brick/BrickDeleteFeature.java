@@ -1,4 +1,6 @@
-package ch.cyberduck.core.brick;/*
+package ch.cyberduck.core.brick;
+
+/*
  * Copyright (c) 2002-2021 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -36,14 +38,14 @@ public class BrickDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        try {
-            for(Path f : files.keySet()) {
-                new FilesApi(new BrickApiClient(session.getApiKey(), session.getClient())).deleteFilesPath(
+        for(Path f : files.keySet()) {
+            try {
+                new FilesApi(new BrickApiClient(session)).deleteFilesPath(
                     StringUtils.removeStart(f.getAbsolute(), String.valueOf(Path.DELIMITER)), f.isDirectory());
             }
-        }
-        catch(ApiException e) {
-            throw new BrickExceptionMappingService().map(e);
+            catch(ApiException e) {
+                throw new BrickExceptionMappingService().map("Cannot delete {0}", e, f);
+            }
         }
     }
 

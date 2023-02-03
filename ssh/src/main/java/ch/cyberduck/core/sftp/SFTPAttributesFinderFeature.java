@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -32,12 +33,14 @@ import java.io.IOException;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 
-public class SFTPAttributesFinderFeature implements AttributesFinder {
+public class SFTPAttributesFinderFeature implements AttributesFinder, AttributesAdapter<FileAttributes> {
 
     private final SFTPSession session;
+    private final boolean permissionsAvailable;
 
     public SFTPAttributesFinderFeature(final SFTPSession session) {
         this.session = session;
+        permissionsAvailable = !isServerBlacklisted();
     }
 
     @Override
@@ -61,12 +64,14 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
                 case REGULAR:
                 case SYMLINK:
                     if(!file.getType().contains(Path.Type.file)) {
-                        throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
+                        throw new NotfoundException(String.format("File %s is of type %s but expected %s",
+                                file.getAbsolute(), stat.getType(), file.getType()));
                     }
                     break;
                 case DIRECTORY:
                     if(!file.getType().contains(Path.Type.directory)) {
-                        throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
+                        throw new NotfoundException(String.format("File %s is of type %s but expected %s",
+                                file.getAbsolute(), stat.getType(), file.getType()));
                     }
                     break;
             }
@@ -77,6 +82,7 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    @Override
     public PathAttributes toAttributes(final FileAttributes stat) {
         final PathAttributes attributes = new PathAttributes();
         switch(stat.getType()) {
@@ -84,20 +90,14 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
             case UNKNOWN:
                 attributes.setSize(stat.getSize());
         }
-        if(0 != stat.getMode().getPermissionsMask()) {
-            if(this.isServerBlacklisted()) {
-                attributes.setPermission(Permission.EMPTY);
-            }
-            else {
+        if(permissionsAvailable) {
+            if(0 != stat.getMode().getPermissionsMask()) {
                 attributes.setPermission(new Permission(Integer.toString(stat.getMode().getPermissionsMask(), 8)));
             }
-        }
-        if(0 != stat.getUID()) {
             attributes.setOwner(String.valueOf(stat.getUID()));
-        }
-        if(0 != stat.getGID()) {
             attributes.setGroup(String.valueOf(stat.getGID()));
         }
+
         if(0 != stat.getMtime()) {
             attributes.setModificationDate(stat.getMtime() * 1000L);
         }
@@ -108,8 +108,11 @@ public class SFTPAttributesFinderFeature implements AttributesFinder {
     }
 
     private boolean isServerBlacklisted() {
+        final String serverVersion = session.getClient().getTransport().getServerVersion();
         for(String server : PreferencesFactory.get().getList("sftp.permissions.server.blacklist")) {
-            if(StringUtils.contains(server, session.getClient().getTransport().getServerVersion())) {
+            if(StringUtils.contains(
+                    /* seq */ serverVersion,
+                    /* search seq */ server)) {
                 // Known erroneous bitmask
                 return true;
             }

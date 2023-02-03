@@ -15,9 +15,6 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -25,40 +22,31 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 
-import com.google.api.client.util.DateTime;
 import com.google.api.services.storage.Storage;
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
 
-public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
-    private static final Logger log = Logger.getLogger(GoogleStorageAttributesFinderFeature.class);
+public class GoogleStorageAttributesFinderFeature implements AttributesFinder, AttributesAdapter<StorageObject> {
 
     private final PathContainerService containerService;
     private final GoogleStorageSession session;
-    /**
-     * Lookup previous versions
-     */
-    private final boolean references;
+
+    public static final String KEY_REQUESTER_PAYS = "requester_pays";
 
     public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session) {
-        this(session, new HostPreferences(session.getHost()).getBoolean("googlestorage.versioning.references.enable"));
-    }
-
-    public GoogleStorageAttributesFinderFeature(final GoogleStorageSession session, final boolean references) {
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
-        this.references = references;
     }
 
     @Override
@@ -68,51 +56,50 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
         }
         try {
             if(containerService.isContainer(file)) {
-                return this.toAttributes(session.getClient().buckets().get(
-                    containerService.getContainer(file).getName()).execute());
+                final Storage.Buckets.Get request = session.getClient().buckets().get(containerService.getContainer(file).getName());
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                    request.setUserProject(session.getHost().getCredentials().getUsername());
+                }
+                return this.toAttributes(request.execute());
             }
             else {
-                final Storage.Objects.Get request = session.getClient().objects().get(
-                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                final Storage.Objects.Get get = session.getClient().objects().get(
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                    get.setUserProject(session.getHost().getCredentials().getUsername());
+                }
                 final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                    containerService.getContainer(file)
+                        containerService.getContainer(file)
                 ) : VersioningConfiguration.empty();
                 if(versioning.isEnabled()) {
                     if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                        request.setGeneration(Long.parseLong(file.attributes().getVersionId()));
+                        get.setGeneration(Long.parseLong(file.attributes().getVersionId()));
                     }
                 }
-                final PathAttributes attributes = this.toAttributes(request.execute(), versioning);
+                final PathAttributes attributes = this.toAttributes(get.execute());
                 if(versioning.isEnabled()) {
-                    if(references) {
-                        // Add references to previous versions
-                        final AttributedList<Path> list = new GoogleStorageObjectListService(session, true).list(file, new DisabledListProgressListener());
-                        final Path versioned = list.find(new DefaultPathPredicate(file));
-                        if(null != versioned) {
-                            attributes.setDuplicate(versioned.attributes().isDuplicate());
-                            attributes.setVersions(versioned.attributes().getVersions());
+                    // Determine if latest version
+                    try {
+                        // Duplicate if not latest version
+                        final Storage.Objects.Get request = session.getClient().objects().get(
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
+                        if(containerService.getContainer(file).attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
+                            request.setUserProject(session.getHost().getCredentials().getUsername());
+                        }
+                        final String latest = this.toAttributes(request.execute()).getVersionId();
+                        if(null != latest) {
+                            attributes.setDuplicate(!latest.equals(attributes.getVersionId()));
                         }
                     }
-                    else {
-                        // Determine if latest version
-                        try {
-                            // Duplicate if not latest version
-                            final String latest = this.toAttributes(session.getClient().objects().get(
-                                containerService.getContainer(file).getName(), containerService.getKey(file)).execute(), versioning).getVersionId();
-                            if(null != latest) {
-                                attributes.setDuplicate(!latest.equals(attributes.getVersionId()));
-                            }
+                    catch(IOException e) {
+                        // Noncurrent versions only appear in requests that explicitly call for object versions to be included
+                        final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                        if(failure instanceof NotfoundException) {
+                            // The latest version is a delete marker
+                            attributes.setDuplicate(true);
                         }
-                        catch(IOException e) {
-                            // Noncurrent versions only appear in requests that explicitly call for object versions to be included
-                            final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-                            if(failure instanceof NotfoundException) {
-                                // The latest version is a delete marker
-                                attributes.setDuplicate(true);
-                            }
-                            else {
-                                throw failure;
-                            }
+                        else {
+                            throw failure;
                         }
                     }
                 }
@@ -134,31 +121,38 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
             attributes.setEncryption(new Encryption.Algorithm("AES256", bucket.getEncryption().getDefaultKmsKeyName()));
         }
         attributes.setRegion(bucket.getLocation());
+        if(bucket.getBilling() != null) {
+            attributes.setCustom(Collections.singletonMap("KEY_REQUESTER_PAYS", String.valueOf(true)));
+        }
         return attributes;
     }
 
-    protected PathAttributes toAttributes(final StorageObject object, final VersioningConfiguration versioning) {
+    @Override
+    public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         if(object.getSize() != null) {
             attributes.setSize(object.getSize().longValue());
         }
-        final DateTime lastmodified = object.getTimeCreated();
-        if(lastmodified != null) {
-            attributes.setModificationDate(lastmodified.getValue());
+        if(object.getTimeCreated() != null) {
+            attributes.setCreationDate(object.getTimeCreated().getValue());
+        }
+        if(object.getUpdated() != null) {
+            attributes.setModificationDate(object.getUpdated().getValue());
+        }
+        if(object.getCustomTime() != null) {
+            attributes.setModificationDate(object.getCustomTime().getValue());
         }
         attributes.setStorageClass(object.getStorageClass());
         if(StringUtils.isNotBlank(object.getEtag())) {
             attributes.setETag(object.getEtag());
         }
-        if(versioning.isEnabled()) {
-            // The content generation of this object. Used for object versioning.
-            attributes.setVersionId(String.valueOf(object.getGeneration()));
-            // Noncurrent versions of objects have a timeDeleted property.
-            attributes.setDuplicate(object.getTimeDeleted() != null);
-        }
+        // The content generation of this object. Used for object versioning.
+        attributes.setVersionId(String.valueOf(object.getGeneration()));
+        // Noncurrent versions of objects have a timeDeleted property.
+        attributes.setDuplicate(object.getTimeDeleted() != null);
         if(object.getKmsKeyName() != null) {
             attributes.setEncryption(new Encryption.Algorithm("AES256",
-                object.getKmsKeyName()) {
+                    object.getKmsKeyName()) {
                 @Override
                 public String getDescription() {
                     return String.format("SSE-KMS (%s)", key);

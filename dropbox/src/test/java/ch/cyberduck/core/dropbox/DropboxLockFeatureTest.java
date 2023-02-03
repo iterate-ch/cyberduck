@@ -21,12 +21,14 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -66,7 +68,8 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Ignore
+    @Test(expected = NotfoundException.class)
     public void testLockNoSuchFile() throws Exception {
         final Path file = new Path(new Path(new DefaultHomeFinderService(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withFileId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

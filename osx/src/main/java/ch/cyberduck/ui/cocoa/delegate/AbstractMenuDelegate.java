@@ -24,7 +24,8 @@ import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -32,7 +33,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate, NSMenu.Validation {
-    private static final Logger log = Logger.getLogger(AbstractMenuDelegate.class);
+    private static final Logger log = LogManager.getLogger(AbstractMenuDelegate.class);
 
     /**
      * Menu needs revalidation

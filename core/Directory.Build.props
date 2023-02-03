@@ -16,7 +16,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
-        <BasePath>$(MSBuildThisFileDirectory)</BasePath>
+        <ModulePath Condition=" '$(ModulePath)' == '' ">$(MSBuildThisFileDirectory)</ModulePath>
     </PropertyGroup>
+
+    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />
 
 </Project>

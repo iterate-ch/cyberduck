@@ -18,6 +18,7 @@ package ch.cyberduck.core.irods;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
@@ -47,7 +49,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.irods.jargon.core.connection.AuthScheme;
 import org.irods.jargon.core.connection.IRODSAccount;
 import org.irods.jargon.core.connection.SettableJargonProperties;
@@ -62,7 +65,7 @@ import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
-    private static final Logger log = Logger.getLogger(IRODSSession.class);
+    private static final Logger log = LogManager.getLogger(IRODSSession.class);
 
     public IRODSSession(final Host h) {
         super(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -97,7 +100,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         final SettableJargonProperties properties = new SettableJargonProperties(client.getJargonProperties());
         properties.setEncoding(host.getEncoding());
         final PreferencesReader preferences = new HostPreferences(host);
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         properties.setIrodsSocketTimeout(timeout);
         properties.setIrodsParallelSocketTimeout(timeout);
         properties.setGetBufferSize(preferences.getInteger("connection.chunksize"));
@@ -187,6 +190,9 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
         }
         if(type == Home.class) {
             return (T) new IRODSHomeFinderService(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new IRODSAttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }

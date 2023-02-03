@@ -32,7 +32,8 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 
 public class FinderLocal extends Local {
-    private static final Logger log = Logger.getLogger(FinderLocal.class);
+    private static final Logger log = LogManager.getLogger(FinderLocal.class);
 
     static {
         Native.load("core");
@@ -79,8 +80,9 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public <T> T serialize(final Serializer dict) {
+    public <T> T serialize(final Serializer<T> dict) {
         dict.setStringForKey(this.getAbbreviatedPath(), "Path");
+        dict.setStringForKey(this.getBookmark(), "Bookmark");
         return dict.getSerialized();
     }
 

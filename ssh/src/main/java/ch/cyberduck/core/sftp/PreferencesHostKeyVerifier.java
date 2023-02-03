@@ -20,13 +20,13 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.security.PublicKey;
@@ -37,14 +37,13 @@ import net.schmizz.sshj.common.KeyType;
  * Saving accepted host keys in preferences as Base64 encoded strings.
  */
 public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback {
-    private static final Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
+    private static final Logger log = LogManager.getLogger(PreferencesHostKeyVerifier.class);
 
     private final Preferences preferences
         = PreferencesFactory.get();
 
     @Override
-    public boolean verify(final Host host, final PublicKey key)
-        throws ConnectionCanceledException, ChecksumException {
+    public boolean verify(final Host host, final PublicKey key) throws BackgroundException {
         String lookup = preferences.getProperty(this.toFormat(host, key));
         if(StringUtils.isEmpty(lookup)) {
             // Backward compatiblity to find keys with no port number saved

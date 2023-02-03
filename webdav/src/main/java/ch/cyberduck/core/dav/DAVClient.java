@@ -18,19 +18,17 @@ package ch.cyberduck.core.dav;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -42,7 +40,6 @@ import java.util.List;
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineImpl;
 import com.github.sardine.impl.handler.MultiStatusResponseHandler;
-import com.github.sardine.impl.handler.VoidResponseHandler;
 import com.github.sardine.impl.methods.HttpPropFind;
 import com.github.sardine.model.Multistatus;
 import com.github.sardine.model.Propfind;
@@ -50,7 +47,7 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
-    private static final Logger log = Logger.getLogger(DAVClient.class);
+    private static final Logger log = LogManager.getLogger(DAVClient.class);
 
     private final String uri;
 
@@ -82,13 +79,13 @@ public class DAVClient extends SardineImpl {
     }
 
     @Override
-    protected List<DavResource> propfind(final String url, final int depth, final Propfind body) throws IOException {
+    public List<DavResource> propfind(final String url, final int depth, final Propfind body) throws IOException {
         HttpPropFind entity = new HttpPropFind(url);
         entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
         entity.setEntity(new StringEntity(SardineUtil.toXml(body), StandardCharsets.UTF_8));
         Multistatus multistatus = this.execute(entity, PreferencesFactory.get().getBoolean("webdav.list.handler.sax") ? new SaxPropFindResponseHandler() : new MultiStatusResponseHandler());
         List<Response> responses = multistatus.getResponse();
-        List<DavResource> resources = new ArrayList<DavResource>(responses.size());
+        List<DavResource> resources = new ArrayList<>(responses.size());
         for(Response response : responses) {
             try {
                 resources.add(new DavResource(response));
@@ -98,29 +95,6 @@ public class DAVClient extends SardineImpl {
             }
         }
         return resources;
-    }
-
-    @Override
-    public ContentLengthStatusInputStream get(final String url, final List<Header> headers) throws IOException {
-        HttpGet get = new HttpGet(url);
-        for(Header header : headers) {
-            get.addHeader(header);
-        }
-        // Must use #execute without handler, otherwise the entity is consumed
-        // already after the handler exits.
-        HttpResponse response = this.execute(get);
-        VoidResponseHandler handler = new VoidResponseHandler();
-        try {
-            handler.handleResponse(response);
-            // Will abort the read when closed before EOF.
-            return new ContentLengthStatusInputStream(new HttpMethodReleaseInputStream(response),
-                response.getEntity().getContentLength(),
-                response.getStatusLine().getStatusCode());
-        }
-        catch(IOException ex) {
-            get.abort();
-            throw ex;
-        }
     }
 
     public HttpClientContext context() {

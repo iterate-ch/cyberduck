@@ -20,7 +20,8 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.sftp.auth.AgentAuthenticator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,17 +35,16 @@ import com.jcraft.jsch.agentproxy.connector.SSHAgentConnector;
 import com.jcraft.jsch.agentproxy.usocket.JNAUSocketFactory;
 
 public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
-    private static final Logger log = Logger.getLogger(OpenSSHAgentAuthenticator.class);
+    private static final Logger log = LogManager.getLogger(OpenSSHAgentAuthenticator.class);
 
-    private AgentProxy proxy;
+    private final AgentProxy proxy;
 
-    public OpenSSHAgentAuthenticator() {
-        try {
-            proxy = new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory()));
-        }
-        catch(AgentProxyException e) {
-            log.warn(String.format("Agent proxy %s failed with %s", this, e));
-        }
+    public OpenSSHAgentAuthenticator(final String socket) throws AgentProxyException {
+        this(new AgentProxy(new SSHAgentConnector(new JNAUSocketFactory(), socket)));
+    }
+
+    public OpenSSHAgentAuthenticator(final AgentProxy proxy) {
+        this.proxy = proxy;
     }
 
     @Override
@@ -54,11 +54,8 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
 
     @Override
     public Collection<Identity> getIdentities() {
-        if(!SSHAgentConnector.isConnectorAvailable()) {
-            log.warn(String.format("SSH agent %s is not running", this));
-            return Collections.emptyList();
-        }
         if(null == proxy) {
+            log.warn(String.format("SSH agent %s is not running", this));
             return Collections.emptyList();
         }
         if(log.isDebugEnabled()) {

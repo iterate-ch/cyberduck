@@ -17,10 +17,11 @@ package ch.cyberduck.core.http;
 
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class RateLimitingHttpRequestInterceptor implements HttpRequestInterceptor {
-    private static final Logger log = Logger.getLogger(RateLimitingHttpRequestInterceptor.class);
+    private static final Logger log = LogManager.getLogger(RateLimitingHttpRequestInterceptor.class);
 
     private final HttpRateLimiter limiter;
 

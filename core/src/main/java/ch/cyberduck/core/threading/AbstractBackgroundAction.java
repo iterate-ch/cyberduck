@@ -22,7 +22,8 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,14 +31,14 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
-    private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
+    private static final Logger log = LogManager.getLogger(AbstractBackgroundAction.class);
 
     private State state;
 
     protected final Set<BackgroundActionListener> listeners = new CopyOnWriteArraySet<>();
 
     @Override
-    public void init() {
+    public void init() throws BackgroundException {
         //
     }
 

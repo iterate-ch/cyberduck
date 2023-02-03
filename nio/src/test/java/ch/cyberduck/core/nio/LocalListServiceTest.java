@@ -71,9 +71,9 @@ public class LocalListServiceTest {
             assertTrue(session.isConnected());
             assertNotNull(session.getClient());
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path test = new Path("/D:/", EnumSet.of(Path.Type.volume));
+            final Path test = new Path("/D:/", EnumSet.of(Path.Type.directory, Path.Type.volume));
             final AttributedList<Path> list = new LocalListService(session).list(test, new DisabledListProgressListener());
-            assertNotNull(list);
+            assertNotSame(AttributedList.emptyList(), list);
         }
         session.close();
     }
@@ -122,7 +122,7 @@ public class LocalListServiceTest {
             new LocalListService(session).list(recent, new DisabledListProgressListener());
             fail();
         }
-        catch(AccessDeniedException e) {
+        catch(AccessDeniedException | NotfoundException e) {
             //
         }
         session.close();

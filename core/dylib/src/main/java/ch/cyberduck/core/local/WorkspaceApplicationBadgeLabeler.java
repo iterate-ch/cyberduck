@@ -21,12 +21,21 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSWorkspace;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class WorkspaceApplicationBadgeLabeler implements ApplicationBadgeLabeler {
 
     @Override
     public void badge(final String label) {
         synchronized(NSWorkspace.class) {
             NSApplication.sharedApplication().dockTile().setBadgeLabel(label);
+        }
+    }
+
+    @Override
+    public void clear() {
+        synchronized(NSWorkspace.class) {
+            NSApplication.sharedApplication().dockTile().setBadgeLabel(StringUtils.EMPTY);
         }
     }
 }

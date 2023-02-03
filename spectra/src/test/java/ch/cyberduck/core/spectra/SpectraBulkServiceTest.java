@@ -15,23 +15,12 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -41,6 +30,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -52,63 +42,30 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SpectraBulkServiceTest {
+public class SpectraBulkServiceTest extends AbstractSpectraTest {
 
     @Test
     public void testPreUploadSingleFile() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, new DisabledCancelCallback());
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path file = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         files.put(new TransferItem(file), status.withLength(1L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
         assertNotNull(status.getParameters().get("job"));
         bulk.query(Transfer.Type.upload, file, status);
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testPreUploadDirectoryFile() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, new DisabledCancelCallback());
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
-        final Path directory = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path directory = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final TransferStatus directoryStatus = new TransferStatus().withLength(0L);
         files.put(new TransferItem(directory), directoryStatus);
         final TransferStatus fileStatus = new TransferStatus().withLength(1L);
@@ -118,91 +75,34 @@ public class SpectraBulkServiceTest {
         assertEquals(1, set.size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, directoryStatus).size());
         assertEquals(1, bulk.query(Transfer.Type.upload, directory, fileStatus).size());
-        for(TransferItem item : files.keySet()) {
-            new SpectraDeleteFeature(session).delete(Collections.singletonList(item.remote), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        session.close();
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
     public void testPreDownloadNotFound() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, new DisabledCancelCallback());
         new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
             new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))), new TransferStatus().withLength(1L)
         ), new DisabledConnectionCallback());
-        session.close();
     }
 
     @Test
     public void testPreDownloadFolderOnly() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, new DisabledCancelCallback());
         final Set<UUID> keys = new SpectraBulkService(session).pre(Transfer.Type.download, Collections.singletonMap(
             new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory))), new TransferStatus()
         ), new DisabledConnectionCallback());
         assertTrue(keys.isEmpty());
-        session.close();
     }
 
     @Test
     public void testPreUploadLargeFile() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, new DisabledCancelCallback());
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        final Path file = new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         files.put(new TransferItem(file),
-            // 11GB
-            status.withLength(112640000000L));
+                // 11GB
+                status.withLength(112640000000L));
         final SpectraBulkService bulk = new SpectraBulkService(session);
         bulk.pre(Transfer.Type.upload, files, new DisabledConnectionCallback());
         assertFalse(status.getParameters().isEmpty());
@@ -222,37 +122,20 @@ public class SpectraBulkServiceTest {
         catch(BackgroundException e) {
             //
         }
-        new SpectraDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
+        new SpectraDeleteFeature(session).delete(Arrays.asList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testPreUploadMultipleLargeFile() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-            new DefaultX509KeyManager());
-        final LoginConnectionService service = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener());
-        service.connect(session, new DisabledCancelCallback());
         final Map<TransferItem, TransferStatus> files = new HashMap<>();
         final TransferStatus status = new TransferStatus();
-        files.put(new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))),
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        files.put(new TransferItem(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))),
             // 11GB
             status.withLength(118111600640L)
         );
-        files.put(new TransferItem(new Path(String.format("/cyberduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file))),
+        files.put(new TransferItem(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))),
             // 11GB
             status.withLength(118111600640L)
         );
@@ -270,26 +153,12 @@ public class SpectraBulkServiceTest {
                 assertTrue(s.getLength() > 0);
             }
         }
-        for(TransferItem item : files.keySet()) {
-            new SpectraDeleteFeature(session).delete(Collections.singletonList(item.remote), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        session.close();
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Ignore
     @Test
     public void testSPECTRA67() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
-        ));
-        final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-67", EnumSet.of(Path.Type.directory));
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         for(int i = 1; i < 100; i++) {
@@ -302,6 +171,5 @@ public class SpectraBulkServiceTest {
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
         assertEquals(1, uuid.size());
-        session.close();
     }
 }

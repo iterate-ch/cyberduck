@@ -15,7 +15,10 @@ package ch.cyberduck.core.freenet;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultHostPasswordStore;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -29,7 +32,37 @@ public class FreenetAuthenticatedUrlProviderTest extends AbstractFreenetTest {
 
     @Test
     public void testToUrl() {
-        final FreenetAuthenticatedUrlProvider provider = new FreenetAuthenticatedUrlProvider();
+        final FreenetAuthenticatedUrlProvider provider = new FreenetAuthenticatedUrlProvider(new DefaultHostPasswordStore() {
+            @Override
+            public String getPassword(final String serviceName, final String accountName) throws LocalAccessDeniedException {
+                return PROPERTIES.get("freenet.password");
+            }
+
+            @Override
+            public void addPassword(final String serviceName, final String accountName, final String password) throws LocalAccessDeniedException {
+
+            }
+
+            @Override
+            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) throws LocalAccessDeniedException {
+                return System.getProperties().getProperty("freenet.password");
+            }
+
+            @Override
+            public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) throws LocalAccessDeniedException {
+
+            }
+
+            @Override
+            public void deletePassword(final String serviceName, final String user) throws LocalAccessDeniedException {
+
+            }
+
+            @Override
+            public void deletePassword(final Scheme scheme, final int port, final String hostname, final String user) throws LocalAccessDeniedException {
+
+            }
+        });
         final DescriptiveUrl url = provider.toUrl(session.getHost());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.authenticated, url.getType());

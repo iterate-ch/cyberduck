@@ -15,15 +15,27 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionTimeoutFactory;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ExpiringObjectHolder;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -31,7 +43,6 @@ import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
-import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
@@ -40,7 +51,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.AlgorithmVersionInfoList;
 import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateKeyPairRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
-import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
@@ -63,8 +73,10 @@ import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
@@ -75,7 +87,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -84,49 +95,42 @@ import com.dracoon.sdk.crypto.error.CryptoException;
 import com.dracoon.sdk.crypto.error.UnknownVersionException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
-import com.google.api.client.auth.oauth2.PasswordTokenRequest;
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.http.BasicAuthentication;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.apache.v2.ApacheHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
 import com.migcomponents.migbase64.Base64;
 
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
-    private static final Logger log = Logger.getLogger(SDSSession.class);
+    private static final Logger log = LogManager.getLogger(SDSSession.class);
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
     public static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
-    protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
     private final PreferencesReader preferences = new HostPreferences(host);
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPairDeprecated
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<SystemDefaults> systemDefaults
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<GeneralSettingsInfo> generalSettingsInfo
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<ClassificationPoliciesConfig> classificationPolicies
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
-        = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
+            = new ExpiringObjectHolder<>(preferences.getLong("sds.useracount.ttl"));
 
     private UserKeyPair.Version requiredKeyPairVersion;
 
@@ -136,124 +140,64 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         super(host, trust, key);
     }
 
-    private static final class OAuthFinderPredicate implements Predicate<Protocol> {
-        private final String identifier;
-
-        public OAuthFinderPredicate(final String identifier) {
-            this.identifier = identifier;
-        }
-
-        @Override
-        public boolean test(final Protocol protocol) {
-            return StringUtils.equals(identifier, protocol.getIdentifier())
-                && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization());
-        }
-    }
-
     @Override
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        if(preferences.getBoolean("sds.oauth.migrate.enable")) {
-            if(host.getProtocol().isDeprecated()) {
-                final Credentials credentials = host.getCredentials();
-                if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
-                    log.warn(String.format("Skip migration with missing credentials for %s", host));
-                }
-                else {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Attempt migration to OAuth flow for %s", host));
-                    }
-                    try {
-                        // Search for installed connection profile using OAuth authorization method
-                        for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
-                            // Run password flow to attempt to migrate to OAuth
-                            final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
-                                new GsonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                                oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
-                                host.getCredentials().getUsername(), host.getCredentials().getPassword()
-                            )
-                                .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
-                                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                                .execute();
-                            final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
-                            credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
-                            credentials.setSaved(true);
-                            log.warn(String.format("Switch bookmark %s to protocol %s", host, oauth));
-                            host.setProtocol(oauth);
-                            break;
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                if(request instanceof HttpRequestWrapper) {
+                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                    if(null != wrapper.getTarget()) {
+                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                            request.addHeader(HttpHeaders.AUTHORIZATION,
+                                    String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                         }
-                    }
-                    catch(IOException e) {
-                        log.warn(String.format("Failure %s running password flow to migrate to OAuth", e));
                     }
                 }
             }
-        }
-        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
-            case oauth:
-                authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) {
-                        if(request instanceof HttpRequestWrapper) {
-                            final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                            if(null != wrapper.getTarget()) {
-                                if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                                    request.addHeader(HttpHeaders.AUTHORIZATION,
-                                        String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
-                                }
-                            }
-                        }
-                    }
-                }).build(), host) {
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-                        if(request instanceof HttpRequestWrapper) {
-                            final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
-                            if(null != wrapper.getTarget()) {
-                                if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
-                                    super.process(request, context);
-                                }
-                            }
+        }).build(), host) {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                if(request instanceof HttpRequestWrapper) {
+                    final HttpRequestWrapper wrapper = (HttpRequestWrapper) request;
+                    if(null != wrapper.getTarget()) {
+                        if(StringUtils.equals(wrapper.getTarget().getHostName(), host.getHostname())) {
+                            super.process(request, context);
                         }
                     }
                 }
-                    .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
-                        Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                            host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
-                    );
-
-                try {
-                    authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
-                }
-                catch(UnknownHostException e) {
-                    throw new DefaultIOExceptionMappingService().map(e);
-                }
-                configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-                configuration.addInterceptorLast(authorizationService);
-                configuration.addInterceptorLast(new HttpRequestInterceptor() {
-                    @Override
-                    public void process(final HttpRequest request, final HttpContext context) {
-                        request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
-                    }
-                });
-                break;
-            default:
-                retryHandler = new SDSErrorResponseInterceptor(this, nodeid);
-                configuration.setServiceUnavailableRetryStrategy(retryHandler);
-                configuration.addInterceptorLast(retryHandler);
-                break;
+            }
+        }.withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+        );
+        try {
+            authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
         }
+        catch(UnknownHostException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        configuration.addInterceptorLast(authorizationService);
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
+            }
+        });
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
-            null, host.getHostname(), host.getProtocol().getContext()));
+                null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
-            .register(new InputStreamProvider())
-            .register(MultiPartFeature.class)
-            .register(new JSON())
-            .register(JacksonFeature.class)
-            .connectorProvider(new HttpComponentsProvider(apache))));
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
+                .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
+                .register(new InputStreamProvider())
+                .register(MultiPartFeature.class)
+                .register(new JSON())
+                .register(JacksonFeature.class)
+                .connectorProvider(new HttpComponentsProvider(apache))));
+        final int timeout = ConnectionTimeoutFactory.get(preferences).getTimeout() * 1000;
         client.setConnectTimeout(timeout);
         client.setReadTimeout(timeout);
         client.setUserAgent(new PreferencesUseragentProvider().get());
@@ -267,16 +211,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(matcher.matches()) {
             if(new Version(matcher.group(1)).compareTo(new Version(preferences.getProperty("sds.version.lts"))) < 0) {
                 throw new InteroperabilityException(
-                    LocaleFactory.localizedString("DRACOON environment needs to be updated", "SDS"),
-                    LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
+                        LocaleFactory.localizedString("DRACOON environment needs to be updated", "SDS"),
+                        LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
             }
         }
         final Credentials credentials = host.getCredentials();
-        final String login = credentials.getUsername();
-        final String password = credentials.getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+            case password:
                 if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
                     if(matcher.matches()) {
                         if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
@@ -287,48 +230,46 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
-                authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
-                break;
-            case radius:
-                final Credentials additional = prompt.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                    new LoginOptions()
-                        .icon(host.getProtocol().disk())
-                        .user(false)
-                        .keychain(false)
-                );
-                // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
-                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                    .login(login)
-                    .password(additional.getPassword())
-                ));
-                break;
-            default:
-                // Save tokens for 401 error response when expired
-                retryHandler.setTokens(login, password, this.login(prompt, new LoginRequest()
-                    .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                    .login(login)
-                    .password(password)
-                ));
+                authorizationService.authorize(host, prompt, cancel,
+                        SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization()) == SDSProtocol.Authorization.password
+                                ? OAuth2AuthorizationService.FlowType.PasswordGrant : OAuth2AuthorizationService.FlowType.AuthorizationCode);
                 break;
         }
+        final UserAccount account;
         try {
-            final UserAccount account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
+            account = new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
-            switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
-                case oauth:
-                    credentials.setUsername(account.getLogin());
-            }
-            userAccount.set(new UserAccountWrapper(account));
-            requiredKeyPairVersion = this.getRequiredKeyPairVersion();
-            this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
+            throw new SDSExceptionMappingService(nodeid).map(e);
         }
+        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+            case oauth:
+                credentials.setUsername(account.getLogin());
+        }
+        userAccount.set(new UserAccountWrapper(account));
+        requiredKeyPairVersion = this.getRequiredKeyPairVersion();
+        this.unlockTripleCryptKeyPair(prompt, userAccount.get(), requiredKeyPairVersion);
+        this.updateDirectS3UploadSetting();
+    }
+
+    private void updateDirectS3UploadSetting() {
+        boolean isS3DirectUploadSupported = false;
+        try {
+            if(this.generalSettingsInfo().isUseS3Storage()) {
+                final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
+                if(matcher.matches()) {
+                    isS3DirectUploadSupported = new Version(matcher.group(1)).compareTo(new Version("4.22")) >= 0;
+                }
+            }
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Failure reading software version. %s", e.getMessage()));
+            isS3DirectUploadSupported = true;
+        }
+        host.setProperty("sds.upload.s3.enable", String.valueOf(isS3DirectUploadSupported));
     }
 
     private UserKeyPair.Version getRequiredKeyPairVersion() {
@@ -448,37 +389,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         keyPairDeprecated.set(null);
     }
 
-    private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
-        try {
-            try {
-                return new AuthApi(client).login(request).getToken();
-            }
-            catch(ApiException e) {
-                throw new SDSExceptionMappingService(nodeid).map(e);
-            }
-        }
-        catch(PartialLoginFailureException e) {
-            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(),
-                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
-                new LoginOptions()
-                    .icon(host.getProtocol().disk())
-                    .user(false)
-                    .keychain(false)
-            );
-            return this.login(controller, new LoginRequest()
-                .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
-                .password(additional.getPassword())
-            );
-        }
-    }
-
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
                 userAccount.set(new UserAccountWrapper(new UserApi(client).requestUserInfo(StringUtils.EMPTY, false, null)));
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure updating user info. %s", e.getMessage()));
+                log.warn(String.format("Failure updating user info. %s", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -510,7 +427,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     log.debug(String.format("User does not have a keypair for version %s", UserKeyPair.Version.RSA2048.getValue()));
                 }
                 else {
-                    log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
+                    log.warn(String.format("Failure updating user key pair. %s", new SDSExceptionMappingService(nodeid).map(e)));
                     throw new SDSExceptionMappingService(nodeid).map(e);
                 }
             }
@@ -540,9 +457,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(softwareVersion.get() == null) {
             try {
                 softwareVersion.set(new PublicApi(client).requestSoftwareVersion(null));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Server version %s", softwareVersion.get()));
+                }
             }
             catch(ApiException e) {
-                log.warn(String.format("Failure %s updating software version", e.getMessage()));
+                log.warn(String.format("Failure %s updating software version", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -556,7 +476,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading system defaults", e.getMessage()));
+                log.warn(String.format("Failure %s reading system defaults", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -570,7 +490,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
             catch(ApiException e) {
                 // Precondition: Right "Config Read" required.
-                log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
                 throw new SDSExceptionMappingService(nodeid).map(e);
             }
         }
@@ -581,13 +501,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(classificationPolicies.get() == null) {
             final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
             if(matcher.matches()) {
-                if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.30))) >= 0) {
+                if(new Version(matcher.group(1)).compareTo(new Version("4.30")) >= 0) {
                     try {
                         classificationPolicies.set(new ConfigApi(client).requestClassificationPoliciesConfigInfo(StringUtils.EMPTY));
                     }
                     catch(ApiException e) {
                         // Precondition: Right "Config Read" required.
-                        log.warn(String.format("Failure %s reading configuration", e.getMessage()));
+                        log.warn(String.format("Failure %s reading configuration", new SDSExceptionMappingService(nodeid).map(e)));
                         throw new SDSExceptionMappingService(nodeid).map(e);
                     }
                 }
@@ -616,31 +536,22 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Upload.class) {
-            if(preferences.getBoolean("sds.upload.s3.enable")) {
-                try {
-                    if(this.generalSettingsInfo().isUseS3Storage()) {
-                        final Matcher matcher = Pattern.compile(SDSSession.VERSION_REGEX).matcher(this.softwareVersion().getRestApiVersion());
-                        if(matcher.matches()) {
-                            if(new Version(matcher.group(1)).compareTo(new Version(String.valueOf(4.22))) >= 0) {
-                                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
-                            }
-                        }
-                    }
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure readig software version. %s", e.getMessage()));
-                }
+            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
+                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDirectS3WriteFeature(this, nodeid));
             }
             return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
+            if(new HostPreferences(host).getBoolean("sds.upload.s3.enable")) {
+                return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3MultipartWriteFeature(this, nodeid));
+            }
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == Directory.class) {
             return (T) new SDSDirectoryFeature(this, nodeid);
         }
         if(type == Delete.class) {
-            return (T) new SDSDeleteFeature(this, nodeid);
+            return (T) new SDSThresholdDeleteFeature(this, nodeid);
         }
         if(type == VersionIdProvider.class) {
             return (T) nodeid;
@@ -680,6 +591,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Versioning.class) {
             return (T) new SDSVersioningFeature(this, nodeid);
+        }
+        if(type == Encryptor.class) {
+            return (T) new SDSTripleCryptEncryptorFeature(this, nodeid);
         }
         return super._getFeature(type);
     }

@@ -26,7 +26,8 @@ import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,7 +39,7 @@ import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class GraphTouchFeatureTest extends AbstractOneDriveTest {
-    private static final Logger log = Logger.getLogger(GraphTouchFeatureTest.class);
+    private static final Logger log = LogManager.getLogger(GraphTouchFeatureTest.class);
 
     @Test
     public void testTouch() throws Exception {

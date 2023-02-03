@@ -55,15 +55,14 @@ public class SDSSearchFeature implements Search {
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).searchNodes(
-                    String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())),
-                    StringUtils.EMPTY,
-                    -1,
-                    Long.valueOf(nodeid.getVersionId(workdir, listener)),
-                    null, null, offset, chunksize, StringUtils.EMPTY
+                        String.format("*%s*", new NFCNormalizer().normalize(regex.toString())),
+                        StringUtils.EMPTY,
+                        -1,
+                        Long.valueOf(nodeid.getVersionId(workdir)),
+                        null, null, offset, chunksize, StringUtils.EMPTY
                 );
-                final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
                 for(Node node : nodes.getItems()) {
-                    final PathAttributes attributes = feature.toAttributes(node);
+                    final PathAttributes attributes = new SDSAttributesAdapter(session).toAttributes(node);
                     final EnumSet<Path.Type> type;
                     switch(node.getType()) {
                         case ROOM:

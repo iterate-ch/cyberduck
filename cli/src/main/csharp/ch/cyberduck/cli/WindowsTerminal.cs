@@ -17,7 +17,6 @@
 // 
 
 using ch.cyberduck.cli;
-using ch.cyberduck.core.preferences;
 using org.apache.commons.cli;
 using Console = System.Console;
 

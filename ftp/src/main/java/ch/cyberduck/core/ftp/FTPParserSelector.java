@@ -20,12 +20,13 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.TimeZone;
 
 public class FTPParserSelector {
-    private static final Logger log = Logger.getLogger(FTPParserSelector.class);
+    private static final Logger log = LogManager.getLogger(FTPParserSelector.class);
 
     public CompositeFileEntryParser getParser(final String system) {
         return this.getParser(system, null);

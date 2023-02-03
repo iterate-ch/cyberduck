@@ -18,7 +18,6 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,12 +25,13 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.worker.Worker;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
 public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
-    private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
+    private static final Logger log = LogManager.getLogger(WorkerBackgroundAction.class);
 
     protected final Worker<T> worker;
 
@@ -52,20 +52,13 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
         this.worker = worker;
     }
 
-    public WorkerBackgroundAction(final Controller controller,
+    public WorkerBackgroundAction(final BackgroundActionListener listener,
                                   final SessionPool session,
                                   final Worker<T> worker,
                                   final ProgressListener progress,
-                                  final AlertCallback alert,
-                                  final LoginCallback login) {
-        super(controller, session, progress, alert, login);
+                                  final AlertCallback alert) {
+        super(listener, session, progress, alert);
         this.worker = worker;
-    }
-
-    @Override
-    protected void reset() throws BackgroundException {
-        worker.reset();
-        super.reset();
     }
 
     @Override

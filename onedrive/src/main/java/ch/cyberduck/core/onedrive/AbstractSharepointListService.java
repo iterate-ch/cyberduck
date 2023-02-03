@@ -74,7 +74,7 @@ public abstract class AbstractSharepointListService implements ListService {
         return new GraphItemListService(session, fileid).list(directory, listener);
     }
 
-    AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> addSiteItems(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list = new AttributedList<>();
         list.add(new Path(directory, DRIVES_NAME.getName(), DRIVES_NAME.getType(), DRIVES_NAME.attributes()));
         list.add(new Path(directory, SITES_NAME.getName(), SITES_NAME.getType(), SITES_NAME.attributes()));
@@ -82,9 +82,9 @@ public abstract class AbstractSharepointListService implements ListService {
         return list;
     }
 
-    abstract AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException;
+    protected abstract AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException;
 
-    AttributedList<Path> processList(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected AttributedList<Path> processList(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return AttributedList.emptyList();
     }
 }

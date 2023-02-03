@@ -20,12 +20,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Callable;
 
 public class BackgroundCallable<T> implements Callable<T> {
-    private static final Logger log = Logger.getLogger(BackgroundCallable.class);
+    private static final Logger log = LogManager.getLogger(BackgroundCallable.class);
 
     private final BackgroundAction<T> action;
     private final Controller controller;

@@ -20,10 +20,11 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DonationKey extends DictionaryLicense implements LicenseVerifier {
-    private static final Logger log = Logger.getLogger(DonationKey.class);
+    private static final Logger log = LogManager.getLogger(DonationKey.class);
 
     /**
      * @param file The license key file.

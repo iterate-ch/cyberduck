@@ -24,7 +24,8 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -32,11 +33,13 @@ import java.util.EnumSet;
 import com.google.common.io.BaseEncoding;
 
 public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
-    private static final Logger log = Logger.getLogger(CryptoDirectoryV7Provider.class);
+    private static final Logger log = LogManager.getLogger(CryptoDirectoryV7Provider.class);
 
     public static final String EXTENSION_REGULAR = ".c9r";
     public static final String FILENAME_DIRECTORYID = "dir";
     public static final String DIRECTORY_METADATAFILE = String.format("%s%s", FILENAME_DIRECTORYID, EXTENSION_REGULAR);
+    public static final String BACKUP_FILENAME_DIRECTORYID = "dirid";
+    public static final String BACKUP_DIRECTORY_METADATAFILE = String.format("%s%s", BACKUP_FILENAME_DIRECTORYID, EXTENSION_REGULAR);
 
     private final CryptoVault cryptomator;
 

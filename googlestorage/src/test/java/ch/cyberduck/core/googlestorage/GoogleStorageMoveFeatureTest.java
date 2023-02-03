@@ -17,12 +17,14 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -38,7 +40,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("cyberduck", "set")));
         assertTrue(new GoogleStorageFindFeature(session).find(test));
@@ -47,6 +49,8 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
+        assertEquals(1, new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener())
+                .filter(new SearchFilter(renamed.getName())).size());
         final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("set", metadata.get("cyberduck"));
@@ -55,7 +59,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testMoveWithDelimiter() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageTouchFeature(session).touch(test, new TransferStatus());
@@ -76,7 +80,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testMoveWithServerSideEncryptionBucketPolicy() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final GoogleStorageTouchFeature touch = new GoogleStorageTouchFeature(session);
         final TransferStatus status = new TransferStatus();

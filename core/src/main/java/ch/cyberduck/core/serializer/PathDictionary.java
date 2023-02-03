@@ -24,25 +24,26 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 
-public class PathDictionary {
-    private static final Logger log = Logger.getLogger(PathDictionary.class);
+public class PathDictionary<T> {
+    private static final Logger log = LogManager.getLogger(PathDictionary.class);
 
-    private final DeserializerFactory factory;
+    private final DeserializerFactory<T> factory;
 
     public PathDictionary() {
-        this.factory = new DeserializerFactory();
+        this.factory = new DeserializerFactory<>();
     }
 
-    public PathDictionary(final DeserializerFactory factory) {
+    public PathDictionary(final DeserializerFactory<T> factory) {
         this.factory = factory;
     }
 
-    public <T> Path deserialize(final T serialized) {
-        final Deserializer dict = factory.create(serialized);
+    public Path deserialize(final T serialized) {
+        final Deserializer<T> dict = factory.create(serialized);
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
@@ -56,9 +57,9 @@ public class PathDictionary {
             }
         }
         final Path path;
-        final Object attributesObj = dict.objectForKey("Attributes");
+        final T attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            final PathAttributes attributes = new PathAttributesDictionary(factory).deserialize(attributesObj);
+            final PathAttributes attributes = new PathAttributesDictionary<>(factory).deserialize(attributesObj);
             // Legacy
             final String legacyTypeObj = factory.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
@@ -94,9 +95,9 @@ public class PathDictionary {
             }
             path = new Path(absolute, type);
         }
-        final Object symlinkObj = dict.objectForKey("Symbolic Link");
+        final T symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {
-            path.setSymlinkTarget(new PathDictionary(factory).deserialize(symlinkObj));
+            path.setSymlinkTarget(new PathDictionary<>(factory).deserialize(symlinkObj));
         }
         return path;
     }

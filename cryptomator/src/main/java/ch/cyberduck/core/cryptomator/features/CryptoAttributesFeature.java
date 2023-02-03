@@ -39,7 +39,7 @@ public class CryptoAttributesFeature implements AttributesFinder {
     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final PathAttributes attributes = new PathAttributes(delegate.find(vault.encrypt(session, file, true), listener));
         if(file.isFile()) {
-            attributes.setSize(vault.toCleartextSize(attributes.getSize()));
+            attributes.setSize(vault.toCleartextSize(0L, attributes.getSize()));
         }
         if(file.isDirectory()) {
             attributes.setSize(-1L);

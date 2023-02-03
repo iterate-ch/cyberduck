@@ -53,7 +53,7 @@ public class AttributedListAttributes<E> {
      * @param invalid Flag
      */
     public void setInvalid(final boolean invalid) {
-        this.invalid.set(true);
+        this.invalid.set(invalid);
     }
 
     public Long getTimestamp() {

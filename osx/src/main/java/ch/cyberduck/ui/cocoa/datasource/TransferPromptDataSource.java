@@ -25,7 +25,6 @@ import ch.cyberduck.binding.foundation.NSNumber;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NSObjectTransferItemReference;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.pool.SessionPool;
@@ -40,7 +39,8 @@ import ch.cyberduck.core.worker.TransferPromptFilterWorker;
 import ch.cyberduck.core.worker.TransferPromptListWorker;
 import ch.cyberduck.ui.cocoa.controller.TransferPromptController;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class TransferPromptDataSource extends OutlineDataSource {
-    private static final Logger log = Logger.getLogger(TransferPromptDataSource.class);
+    private static final Logger log = LogManager.getLogger(TransferPromptDataSource.class);
 
     private final TransferPromptController controller;
 
@@ -219,7 +219,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, final NSInteger index, final NSObject item) {
         final AttributedList<TransferItem> children = this.get(null == item ? null : cache.lookup(new NSObjectTransferItemReference(item)));
-        return NSObjectPathReference.get(children.get(index.intValue()).remote);
+        return NSObjectTransferItemReference.get(children.get(index.intValue()).remote);
     }
 
     @Override

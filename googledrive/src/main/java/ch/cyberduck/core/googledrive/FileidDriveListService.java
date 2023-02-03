@@ -15,9 +15,9 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +39,9 @@ public class FileidDriveListService extends AbstractDriveListService {
         String escaped = file.getName();
         escaped = StringUtils.replace(escaped, "\\", "\\\\");
         escaped = StringUtils.replace(escaped, "'", "\\'");
-        if(directory.equals(DriveHomeFinderService.SHARED_FOLDER_NAME)) {
+        if(new SimplePathPredicate(DriveHomeFinderService.SHARED_FOLDER_NAME).test(directory)) {
             return String.format("name = '%s' and sharedWithMe", escaped);
         }
-        return String.format("name = '%s' and '%s' in parents", escaped, provider.getFileId(directory, new DisabledListProgressListener()));
+        return String.format("name = '%s' and '%s' in parents", escaped, provider.getFileId(directory));
     }
 }

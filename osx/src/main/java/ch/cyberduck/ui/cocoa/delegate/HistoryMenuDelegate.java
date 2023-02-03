@@ -37,7 +37,8 @@ import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.controller.MainController;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -45,7 +46,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import java.util.Date;
 
 public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
-    private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
+    private static final Logger log = LogManager.getLogger(HistoryMenuDelegate.class);
 
     private final AbstractHostCollection collection
         = HistoryCollection.defaultCollection();

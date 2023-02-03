@@ -23,13 +23,13 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
-using org.apache.log4j;
+using org.apache.logging.log4j;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
-    public class TcpReachability : Reachability
+    public class TcpReachability : Reachability, Reachability.Diagnostics
     {
-        private static readonly Logger Log = Logger.getLogger(typeof(TcpReachability).FullName);
+        private static readonly Logger Log = LogManager.getLogger(typeof(TcpReachability).FullName);
 
         static TcpReachability()
         {
@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
         public bool isReachable(Host h)
         {
-            switch ((Scheme.__Enum) h.getProtocol().getScheme().ordinal())
+            switch ((Scheme.__Enum)h.getProtocol().getScheme().ordinal())
             {
                 case Scheme.__Enum.file:
                     return true;
@@ -55,7 +55,8 @@ namespace Ch.Cyberduck.Core.Diagnostics
                             Log.debug($"Reachability test with url {url}");
                         }
 
-                        WebRequest request = WebRequest.Create(url);
+                        HttpWebRequest request = WebRequest.CreateHttp(url);
+                        request.UserAgent = new PreferencesUseragentProvider().get();
                         request.Timeout = 10000;
                         using (request.GetResponse())
                         {
@@ -66,13 +67,18 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     {
                         if (Log.isDebugEnabled())
                         {
-                            Log.debug($"WebException thrown with status {e.Status}");
+                            Log.debug($"WebException thrown with status {e.Status} for {h}");
                         }
 
                         switch (e.Status)
                         {
+                            // TLS version not supported on .NET Framework/Windows-Kernel
+                            case WebExceptionStatus.SecureChannelFailure:
+                            // HTTP returned error
                             case WebExceptionStatus.ProtocolError:
+                            //Certificate not trusted
                             case WebExceptionStatus.TrustFailure:
+                            // not an exception?
                             case WebExceptionStatus.Success:
                                 return true;
                         }
@@ -81,7 +87,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     }
                     catch (Exception e)
                     {
-                        Log.error("Generic exception while checking for reachability", e);
+                        Log.error("Generic exception while checking for reachability for {h}", e);
                         return false;
                     }
                 default:

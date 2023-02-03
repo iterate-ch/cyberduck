@@ -25,6 +25,6 @@ public class TerminalBrowserLauncher implements BrowserLauncher {
     public boolean open(final String url) {
         // Only print out URL
         console.printf("%n%s", url);
-        return false;
+        return true;
     }
 }

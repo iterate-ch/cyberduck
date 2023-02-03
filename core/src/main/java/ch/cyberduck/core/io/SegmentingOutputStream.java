@@ -15,15 +15,18 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import org.apache.commons.io.output.ProxyOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class SegmentingOutputStream extends ProxyOutputStream {
-    private static final Logger log = Logger.getLogger(SegmentingOutputStream.class);
+    private static final Logger log = LogManager.getLogger(SegmentingOutputStream.class);
 
     private final Long threshold;
     private Long written = 0L;
@@ -41,7 +44,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
         super(proxy);
         this.buffer = buffer;
         this.proxy = proxy;
-        this.threshold = -1L == threshold ? Long.MAX_VALUE : threshold;
+        this.threshold = TransferStatus.UNKNOWN_LENGTH == threshold ? Long.MAX_VALUE : threshold;
     }
 
     @Override

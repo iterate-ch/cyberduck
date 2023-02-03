@@ -20,7 +20,8 @@ package ch.cyberduck.core.serializer.impl.dd;
 
 import ch.cyberduck.core.serializer.Deserializer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ import com.dd.plist.NSObject;
 import com.dd.plist.NSString;
 
 public class PlistDeserializer implements Deserializer<NSDictionary> {
-    private static final Logger log = Logger.getLogger(PlistDeserializer.class);
+    private static final Logger log = LogManager.getLogger(PlistDeserializer.class);
 
     final NSDictionary dict;
 
@@ -83,7 +84,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         }
         if(value instanceof NSArray) {
             final NSArray array = (NSArray) value;
-            final List<T> list = new ArrayList<T>();
+            final List<T> list = new ArrayList<>();
             for(int i = 0; i < array.count(); i++) {
                 final NSObject next = array.objectAtIndex(i);
                 if(next instanceof NSDictionary) {

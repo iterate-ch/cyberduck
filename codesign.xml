@@ -76,13 +76,13 @@
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/xcrun" failonerror="false"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
             <arg
-                line="codesign ${codesign.options} --deep --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+                line="codesign ${codesign.options} --entitlements ${setup}/app/org.sparkle-project.Downloader.entitlements --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
-                <include name="Sparkle.framework/Versions/A/Resources/Autoupdate.app"/>
+                <include name="Sparkle.framework/Versions/*/XPCServices/Downloader.xpc"/>
             </fileset>
             <srcfile/>
         </apply>
@@ -92,7 +92,19 @@
             <arg
                 line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
-                <include name="*.framework/Versions/A"/>
+                <include name="Sparkle.framework/Versions/*/XPCServices/Installer.xpc"/>
+                <include name="Sparkle.framework/Versions/*/Autoupdate"/>
+                <include name="Sparkle.framework/Versions/*/*.app"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/xcrun" failonerror="true"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.frameworks}">
+                <include name="*.framework"/>
             </fileset>
             <srcfile/>
         </apply>
@@ -143,5 +155,18 @@
             <file name="${bundle}"/>
             <srcfile/>
         </apply>
+    </target>
+
+    <target name="notarize">
+        <echo message="Start notarizing '${notarize.archive.upload}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true"
+              resultproperty="exitcode_notarytool" output="result.plist" error="error.log">
+            <arg line="notarytool submit --apple-id '${env.NOTARIZATION_USER}' --password '${env.NOTARIZATION_PW}' --team-id G69SCX94XU --verbose '${notarize.archive.upload}' --wait --timeout 2h --output-format plist"/>
+        </exec>
+        <echo message="Start stapling '${notarize.archive.staple}'"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="stapler staple -v '${notarize.archive.staple}'"/>
+        </exec>
+        <echo message="Stapling was successful"/>
     </target>
 </project>

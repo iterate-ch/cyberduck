@@ -27,9 +27,12 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
@@ -39,20 +42,16 @@ import java.util.Collections;
 import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 
 public class S3MoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(S3MoveFeature.class);
+    private static final Logger log = LogManager.getLogger(S3MoveFeature.class);
 
     private final PathContainerService containerService;
     private final S3Session session;
     private final S3AccessControlListFeature accessControlListFeature;
     private final Delete delete;
 
-    public S3MoveFeature(final S3Session session) {
-        this(session, new S3AccessControlListFeature(session));
-    }
-
-    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
+    public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.accessControlListFeature = accessControlListFeature;
+        this.accessControlListFeature = acl;
         this.delete = new S3DefaultDeleteFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
     }
@@ -67,8 +66,10 @@ public class S3MoveFeature implements Move {
             delete.delete(Collections.singletonMap(copy, status), connectionCallback, callback);
             try {
                 // Find version id of moved delete marker
-                final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
-                    String.valueOf(Path.DELIMITER), 1, null, null, false);
+                final Path bucket = containerService.getContainer(renamed);
+                final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(
+                        bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), containerService.getKey(renamed),
+                        String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
                     copy.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
@@ -84,7 +85,7 @@ public class S3MoveFeature implements Move {
         }
         else {
             try {
-                copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback);
+                copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
                 delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).withVersionId(null)), status),
                     connectionCallback, callback);

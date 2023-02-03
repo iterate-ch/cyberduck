@@ -26,36 +26,45 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class S3UrlProvider implements UrlProvider {
-    private static final Logger log = Logger.getLogger(S3UrlProvider.class);
+    private static final Logger log = LogManager.getLogger(S3UrlProvider.class);
 
-    private final PathContainerService containerService;
-    private final HostPasswordStore store;
     private final S3Session session;
+    private final PathContainerService containerService;
+    private final Map<Path, Set<Distribution>> distributions;
+    private final HostPasswordStore store;
 
-    public S3UrlProvider(final S3Session session) {
-        this(session, PasswordStoreFactory.get());
+    public S3UrlProvider(final S3Session session, final Map<Path, Set<Distribution>> distributions) {
+        this(session, distributions, PasswordStoreFactory.get());
     }
 
-    public S3UrlProvider(final S3Session session, final HostPasswordStore store) {
+    public S3UrlProvider(final S3Session session, final Map<Path, Set<Distribution>> distributions, final HostPasswordStore store) {
         this.session = session;
+        this.distributions = distributions;
         this.store = store;
         this.containerService = session.getFeature(PathContainerService.class);
     }
@@ -63,13 +72,16 @@ public class S3UrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
+        if(new HostPreferences(session.getHost()).getBoolean("s3.bucket.virtualhost.disable")) {
             list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
         }
         else {
             list.add(this.toUrl(file, session.getHost().getProtocol().getScheme(), session.getHost().getPort()));
             list.add(this.toUrl(file, Scheme.http, 80));
-            list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
+            if(StringUtils.isNotBlank(session.getHost().getWebURL())) {
+                // Only include when custom domain is configured
+                list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
+            }
         }
         if(file.isFile()) {
             if(!session.getHost().getCredentials().isAnonymousLogin()) {
@@ -94,11 +106,22 @@ public class S3UrlProvider implements UrlProvider {
                 }
             }
         }
+        // AWS services require specifying an Amazon S3 bucket using S3://bucket
         list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
             containerService.getContainer(file).getName(),
             file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
             DescriptiveUrl.Type.provider,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+        // Filter by matching container name
+        final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
+                new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
+            .map(Map.Entry::getValue).findFirst();
+        if(filtered.isPresent()) {
+            // Add CloudFront distributions
+            for(Distribution distribution : filtered.get()) {
+                list.addAll(new DistributionUrlProvider(distribution).toUrl(file));
+            }
+        }
         return list;
     }
 
@@ -154,7 +177,9 @@ public class S3UrlProvider implements UrlProvider {
         expiry.add(Calendar.SECOND, seconds);
         final String secret = store.findLoginPassword(session.getHost());
         if(StringUtils.isBlank(secret)) {
-            log.warn("No secret found in password store required to sign temporary URL");
+            if(log.isWarnEnabled()) {
+                log.warn("No secret found in password store required to sign temporary URL");
+            }
             return DescriptiveUrl.EMPTY;
         }
         String region = session.getHost().getRegion();
@@ -178,7 +203,7 @@ public class S3UrlProvider implements UrlProvider {
         if(!ServiceUtils.isBucketNameValidDNSName(containerService.getContainer(bucket).getName())) {
             return session.getHost().getHostname();
         }
-        if(session.getHost().getHostname().equals(session.getHost().getProtocol().getDefaultHostname())) {
+        if(StringUtils.equals(session.getHost().getHostname(), session.getHost().getProtocol().getDefaultHostname())) {
             return String.format("%s.%s", bucket.getName(), session.getHost().getHostname());
         }
         return session.getHost().getHostname();

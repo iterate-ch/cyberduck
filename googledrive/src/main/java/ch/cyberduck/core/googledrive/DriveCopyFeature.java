@@ -16,10 +16,10 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -39,12 +39,13 @@ public class DriveCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
-            final File copy = session.getClient().files().copy(fileid.getFileId(source, new DisabledListProgressListener()), new File()
-                .setParents(Collections.singletonList(fileid.getFileId(target.getParent(), new DisabledListProgressListener())))
-                .setName(target.getName()))
+            final File copy = session.getClient().files().copy(fileid.getFileId(source), new File()
+                    .setParents(Collections.singletonList(fileid.getFileId(target.getParent())))
+                    .setName(target.getName()))
                 .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+            listener.sent(status.getLength());
             fileid.cache(target, copy.getId());
             return target.withAttributes(new DriveAttributesFinderFeature(session, fileid).toAttributes(copy));
         }
@@ -63,6 +64,10 @@ public class DriveCopyFeature implements Copy {
         if(target.isRoot()) {
             return false;
         }
-        return !source.getType().contains(Path.Type.placeholder);
+        if(source.isPlaceholder()) {
+            // Disable for application/vnd.google-apps
+            return false;
+        }
+        return true;
     }
 }

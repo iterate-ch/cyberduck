@@ -33,7 +33,7 @@ public class NSObjectTransferItemReference implements CacheReference<TransferIte
 
     public static NSObject get(final Path file) {
         if(!cache.contains(file)) {
-            cache.put(file, NSString.stringWithString(new DefaultPathPredicate(file).toString()));
+            cache.put(file, NSString.stringWithString(new SimplePathPredicate(file).toString()));
         }
         return cache.get(file);
     }

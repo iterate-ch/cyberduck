@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+
+  <Import Project="$(CyberduckDir)core\i18n-gen\i18n-gen.targets" />
+
+  <Target Name="GenerateImageResources" BeforeTargets="ResolveReferences" DependsOnTargets="ResolveProjectReferences">
+    <ImageDiscoverTask ImageResources="@(ImageResource)">
+      <Output ItemName="ImageDiscover" TaskParameter="Resources" />
+    </ImageDiscoverTask>
+
+    <ResourcesGenerator
+        ResourceFiles="@(ImageDiscover)"
+        OutputPath="$(IntermediateOutputPath)"
+        OutputResourcesFile="$(IntermediateOutputPath)Images.resources">
+
+      <Output ItemName="FileWrites" TaskParameter="OutputResourcesFile" />
+    </ResourcesGenerator>
+
+    <ItemGroup>
+      <EmbeddedResource Include="$(IntermediateOutputPath)Images.resources">
+        <GenerateResource>false</GenerateResource>
+        <Type>Resx</Type>
+        <WithCulture>false</WithCulture>
+        <OutputResource>$(IntermediateOutputPath)Images.resources</OutputResource>
+      </EmbeddedResource>
+    </ItemGroup>
+  </Target>
+</Project>

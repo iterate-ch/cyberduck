@@ -28,6 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -47,7 +48,11 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
+        nodeid.clear();
+        final String nodeId = nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1);
+        assertNotNull(nodeId);
+        assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.upperCase(name), EnumSet.of(Path.Type.file)), 1));
+        assertEquals(nodeId, nodeid.getNodeId(new Path(room, StringUtils.lowerCase(name), EnumSet.of(Path.Type.file)), 1));
         try {
             assertNull(nodeid.getNodeId(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), 1));
             fail();
@@ -72,12 +77,13 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionIdTouch = file.attributes().getVersionId();
+        nodeid.clear();
         assertEquals(versionIdTouch, nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setExists(true);
-        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
+        final SDSDirectS3MultipartWriteFeature writer = new SDSDirectS3MultipartWriteFeature(session, nodeid);
         final StatusOutputStream<Node> out = writer.write(file, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -94,7 +100,11 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertNotNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
+        assertNotNull(folder.attributes().getVersionId());
+        final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(file.attributes().getVersionId());
+        nodeid.clear();
+        assertEquals(folder.attributes().getVersionId(), nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.directory)), 1));
         try {
             assertNull(nodeid.getNodeId(new Path(room, name, EnumSet.of(Path.Type.file)), 1));
             fail();
@@ -102,7 +112,8 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             //
         }
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(folder, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(file.attributes().getVersionId(), nodeid.getNodeId(new Path(folder, file.getName(), EnumSet.of(Path.Type.file)), 1));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -110,10 +121,13 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final String roomname = new AlphanumericRandomStringService().random();
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        assertNotNull(room.attributes().getVersionId());
         final String subroomname = new AlphanumericRandomStringService().random();
         final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, subroomname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        assertNotNull(nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), 1));
-        assertNotNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), 1));
+        assertNotNull(subroom.attributes().getVersionId());
+        nodeid.clear();
+        assertEquals(room.attributes().getVersionId(), nodeid.getNodeId(new Path(roomname, EnumSet.of(Path.Type.directory)), 1));
+        assertEquals(subroom.attributes().getVersionId(), nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.directory)), 1));
         try {
             assertNull(nodeid.getNodeId(new Path(room, subroomname, EnumSet.of(Path.Type.file)), 1));
             fail();
@@ -121,6 +135,6 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
         catch(NotfoundException e) {
             //
         }
-        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(subroom, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

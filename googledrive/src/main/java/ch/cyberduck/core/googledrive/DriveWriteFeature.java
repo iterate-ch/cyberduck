@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.RFC3339DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -49,16 +48,17 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.TimeZone;
 
-import com.google.gson.stream.JsonReader;
+import com.google.api.services.drive.model.File;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implements Write<String> {
+public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements Write<File> {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
 
     public DriveWriteFeature(final DriveSession session, final DriveFileIdProvider fileid) {
+        super(new DriveAttributesFinderFeature(session, fileid));
         this.session = session;
         this.fileid = fileid;
     }
@@ -69,27 +69,22 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean timestamp() {
         return true;
     }
 
     @Override
-    public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+    public HttpResponseOutputStream<File> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final DelayedHttpEntityCallable<File> command = new DelayedHttpEntityCallable<File>(file) {
             @Override
-            public String call(final AbstractHttpEntity entity) throws BackgroundException {
+            public File call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = DriveWriteFeature.this.fileid.getFileId(file, new DisabledListProgressListener());
-                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true",
-                            session.getClient().getRootUrl(), fileid));
+                        final String fileid = DriveWriteFeature.this.fileid.getFileId(file);
+                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsAllDrives=true&fields=%s",
+                                session.getClient().getRootUrl(), fileid, DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                         }
@@ -97,21 +92,22 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                         request.setEntity(entity);
                     }
                     else {
-                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s",
-                            session.getClient().getRootUrl(), new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")));
+                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsAllDrives=%s&fields=%s",
+                                session.getClient().getRootUrl(), new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable"),
+                                DriveAttributesFinderFeature.DEFAULT_FIELDS));
                         final StringBuilder metadata = new StringBuilder("{");
                         metadata.append(String.format("\"name\":\"%s\"", file.getName()));
                         if(null != status.getTimestamp()) {
                             metadata.append(String.format(",\"modifiedTime\":\"%s\"",
-                                new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                                    new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
                         }
                         if(StringUtils.isNotBlank(status.getMime())) {
                             metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));
                         }
-                        metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent(), new DisabledListProgressListener())));
+                        metadata.append(String.format(",\"parents\":[\"%s\"]", fileid.getFileId(file.getParent())));
                         metadata.append("}");
                         request.setEntity(new StringEntity(metadata.toString(),
-                            ContentType.create("application/json", StandardCharsets.UTF_8.name())));
+                                ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                             request.addHeader("X-Upload-Content-Type", status.getMime());
@@ -119,22 +115,26 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                     }
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     final HttpClient client = session.getHttpClient();
-                    final HttpResponse response = client.execute(request);
+                    final HttpResponse postResponse = client.execute(request);
                     try {
-                        switch(response.getStatusLine().getStatusCode()) {
+                        switch(postResponse.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
+                                if(status.isExists()) {
+                                    return session.getClient().getObjectParser().parseAndClose(
+                                            new InputStreamReader(postResponse.getEntity().getContent(), StandardCharsets.UTF_8), File.class);
+                                }
                                 break;
                             default:
                                 throw new DefaultHttpResponseExceptionMappingService().map(
-                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                        new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()));
                         }
                     }
                     finally {
-                        EntityUtils.consume(response.getEntity());
+                        EntityUtils.consume(postResponse.getEntity());
                     }
                     if(!status.isExists()) {
-                        if(response.containsHeader(HttpHeaders.LOCATION)) {
-                            final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
+                        if(postResponse.containsHeader(HttpHeaders.LOCATION)) {
+                            final String putTarget = postResponse.getFirstHeader(HttpHeaders.LOCATION).getValue();
                             // Upload the file
                             final HttpPut put = new HttpPut(putTarget);
                             put.setEntity(entity);
@@ -143,23 +143,13 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                                 switch(putResponse.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
-                                        try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
-                                            reader.beginObject();
-                                            while(reader.hasNext()) {
-                                                final String name = reader.nextName();
-                                                final String value = reader.nextString();
-                                                switch(name) {
-                                                    case "id":
-                                                        fileid.cache(file, value);
-                                                        return value;
-                                                }
-                                            }
-                                            reader.endObject();
-                                        }
-                                        break;
+                                        final File response = session.getClient().getObjectParser().parseAndClose(
+                                                new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8), File.class);
+                                        fileid.cache(file, response.getId());
+                                        return response;
                                     default:
                                         throw new DefaultHttpResponseExceptionMappingService().map(
-                                            new HttpResponseException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
+                                                new HttpResponseException(putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
                                 }
                             }
                             finally {
@@ -168,10 +158,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<String> implemen
                         }
                         else {
                             throw new DefaultHttpResponseExceptionMappingService().map(
-                                new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                    new HttpResponseException(postResponse.getStatusLine().getStatusCode(), postResponse.getStatusLine().getReasonPhrase()));
                         }
                     }
-                    return fileid.getFileId(file, new DisabledListProgressListener());
+                    return null;
                 }
                 catch(IOException e) {
                     throw new DriveExceptionMappingService(fileid).map("Upload {0} failed", e, file);

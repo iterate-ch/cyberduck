@@ -20,14 +20,15 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.cache.LRUCache;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 public abstract class AbstractCache<T extends Referenceable> implements Cache<T> {
-    private static final Logger log = Logger.getLogger(AbstractCache.class);
+    private static final Logger log = LogManager.getLogger(AbstractCache.class);
 
-    private final LRUCache<T, AttributedList<T>> impl;
+    private final LRUCache<CacheReference<T>, AttributedList<T>> impl;
 
     public AbstractCache(int size) {
         if(size == Integer.MAX_VALUE) {
@@ -64,27 +65,27 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     }
 
     @Override
-    public Map<T, AttributedList<T>> asMap() {
+    public Map<CacheReference<T>, AttributedList<T>> asMap() {
         return impl.asMap();
     }
 
     /**
-     * @param reference Absolute path
+     * @param key Absolute path
      * @return True if the directory listing of this path is cached
      */
-    public boolean containsKey(final T reference) {
-        return impl.contains(reference);
+    public boolean containsKey(final T key) {
+        return impl.contains(this.reference(key));
     }
 
     /**
      * Remove the cached directory listing for this path
      *
-     * @param reference Reference to the path in cache.
+     * @param key Path in cache.
      * @return The previously cached directory listing
      */
-    public AttributedList<T> remove(final T reference) {
-        final AttributedList<T> removed = impl.get(reference);
-        impl.remove(reference);
+    public AttributedList<T> remove(final T key) {
+        final AttributedList<T> removed = impl.get(this.reference(key));
+        impl.remove(this.reference(key));
         if(null == removed) {
             // Not previously in cache
             return AttributedList.emptyList();
@@ -93,19 +94,16 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     }
 
     /**
-     * @param reference Absolute path
+     * @param key Absolute path
      * @return An empty list if no cached file listing is available
      * @throws java.util.ConcurrentModificationException If the caller is iterating of the cache himself
      *                                                   and requests a new filter here.
      */
-    public AttributedList<T> get(final T reference) {
-        if(null == reference) {
-            return AttributedList.emptyList();
-        }
-        final AttributedList<T> children = impl.get(reference);
+    public AttributedList<T> get(final T key) {
+        final AttributedList<T> children = impl.get(this.reference(key));
         if(null == children) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("No cache for %s", reference));
+                log.debug(String.format("No cache for %s", key));
             }
             return AttributedList.emptyList();
         }
@@ -113,16 +111,16 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     }
 
     /**
-     * @param reference Reference to the path in cache.
-     * @param children  Cached directory listing
+     * @param key      Path in cache.
+     * @param children Cached directory listing
      * @return Previous cached version
      */
-    public AttributedList<T> put(final T reference, final AttributedList<T> children) {
+    public AttributedList<T> put(final T key, final AttributedList<T> children) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Caching %s", reference));
+            log.debug(String.format("Caching %s", key));
         }
-        final AttributedList<T> replaced = impl.get(reference);
-        impl.put(reference, children);
+        final AttributedList<T> replaced = impl.get(this.reference(key));
+        impl.put(this.reference(key), children);
         if(null == replaced) {
             // Not previously in cache
             return AttributedList.emptyList();

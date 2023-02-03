@@ -21,7 +21,7 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.exception.ChecksumException;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sftp.SSHFingerprintGenerator;
@@ -42,18 +42,18 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
     public TerminalHostKeyVerifier(final TerminalPromptReader prompt) {
         super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
-            PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
+                PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
         this.prompt = prompt;
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    protected boolean isUnknownKeyAccepted(final Host host, final PublicKey key) throws BackgroundException {
         final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Unknown fingerprint", "Sftp"),
-            MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                new SSHFingerprintGenerator().fingerprint(key),
-                KeyType.fromKey(key).name()),
-            LocaleFactory.localizedString("Continue", "Credentials"));
+                MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                        new SSHFingerprintGenerator().fingerprint(key),
+                        KeyType.fromKey(key).toString()),
+                LocaleFactory.localizedString("Continue", "Credentials"));
         if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException();
         }
@@ -62,12 +62,12 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    protected boolean isChangedKeyAccepted(final Host host, final PublicKey key) throws BackgroundException {
         final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Changed fingerprint", "Sftp"),
-            MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                new SSHFingerprintGenerator().fingerprint(key),
-                KeyType.fromKey(key).name()),
-            LocaleFactory.localizedString("Continue", "Credentials"));
+                MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                        new SSHFingerprintGenerator().fingerprint(key),
+                        KeyType.fromKey(key).toString()),
+                LocaleFactory.localizedString("Continue", "Credentials"));
         if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException();
         }

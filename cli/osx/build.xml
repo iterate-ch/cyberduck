@@ -13,17 +13,20 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   -->
-<project name="Cyberduck CLI Mac" basedir=".">
+<project name="Cyberduck CLI Mac" basedir="." xmlns:unless="ant:unless">
 
     <import file="../../build.xml"/>
 
     <property name="cli.bundle" value="${build}/duck.bundle"/>
 
     <property name="app.name" value="Cyberduck"/>
-    <property name="app.runtime.archs" value="x86_64"/>
-    <property name="app.runtime.system.min" value="10.9"/>
+    <property name="app.runtime.archs" value="'x86_64 arm64'"/>
+    <property name="app.runtime.system.min" value="10.12"/>
+    <property name="app.runtime.args"
+              value="-client --add-opens=java.base/sun.security.ssl=ALL-UNNAMED --add-opens=java.base/sun.security.util=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -Djava.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.boot.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.library.path=$APP_PACKAGE/Contents/Frameworks -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -Dsun.io.useCanonCaches=false -DLog4jContextSelector=org.apache.logging.log4j.core.selector.BasicContextSelector -XX:+UseG1GC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:+UseStringDeduplication"/>
+
     <property name="build.xcodeoptions"
-              value="JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+              value="CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO JVM_RUNTIME_ARGS='${app.runtime.args}' JAVA_HOME=${java.home} SYMROOT=${build} SDKROOT=macosx ARCHS=${app.runtime.archs} MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.configuration" value="Release"/>
     <property name="xcode.target" value="cli"/>
@@ -66,9 +69,8 @@
     </target>
 
     <target name="package" depends="build">
-        <antcall target="codesign">
+        <antcall target="codesign" unless:true="${skipSign}">
             <param name="bundle" value="${cli.bundle}"/>
-            <param name="codesign.options" value="--force"/>
         </antcall>
         <antcall target="tar">
             <param name="directory" value="${build}"/>
@@ -98,12 +100,16 @@
             <replacefilter token="${SOURCE}"
                            value="https://dist.duck.sh/duck-src-${version}.${revision}.tar.gz"/>
         </replace>
-        <exec dir="${build.deploy}" executable="/usr/bin/pkgbuild" spawn="false" failonerror="true">
-            <arg line="--component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="pkgbuild --component ${cli.bundle} --install-location /usr/local --version ${version} --scripts ${setup}/pkg --sign '${installer.certificate}' --keychain ${codesign.keychain} ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
         <checksum file="${build.deploy}/duck-${version}.${revision}.pkg" algorithm="md5"/>
-        <exec executable="/usr/sbin/pkgutil" failonerror="true">
-            <arg line="--check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
+        <exec executable="/usr/bin/xcrun" failonerror="true">
+            <arg line="pkgutil --check-signature ${build.deploy}/duck-${version}.${revision}.pkg"/>
         </exec>
+        <antcall target="notarize" unless:true="${skipNotarize}">
+            <param name="notarize.archive.upload" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
+            <param name="notarize.archive.staple" value="${build.deploy}/duck-${version}.${revision}.pkg"/>
+        </antcall>
     </target>
 </project>

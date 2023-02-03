@@ -22,7 +22,8 @@ import ch.cyberduck.binding.quicklook.QLPreviewPanelDataSource;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.quicklook.QuickLook;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class QuartzQuickLook implements QuickLook {
-    private static final Logger log = Logger.getLogger(QuartzQuickLook.class);
+    private static final Logger log = LogManager.getLogger(QuartzQuickLook.class);
 
     private final List<QLPreviewItem> previews
         = new ArrayList<QLPreviewItem>();

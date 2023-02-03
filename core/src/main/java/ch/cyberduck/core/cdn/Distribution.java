@@ -26,7 +26,6 @@ import ch.cyberduck.core.Scheme;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -54,9 +53,14 @@ public class Distribution {
     private boolean deployed;
 
     /**
+     * Description
+     */
+    private final String name;
+
+    /**
      * S3 bucket name or DNS
      */
-    private URI origin;
+    private final URI origin;
 
     /**
      * Deployment enabled
@@ -166,7 +170,7 @@ public class Distribution {
     }
 
     /**
-     * Website endpoint for S3
+     * Website configuration for S3 bucket
      */
     public static final Method WEBSITE = new Method() {
         public String toString() {
@@ -185,7 +189,7 @@ public class Distribution {
     };
 
     /**
-     * Website configuration endpoint with custom origin CDN
+     * CloudFront distribution with S3 Bucket with website configuration as origin
      */
     public static final Method WEBSITE_CDN = new Method() {
         public String toString() {
@@ -203,6 +207,9 @@ public class Distribution {
         }
     };
 
+    /**
+     * Default CloudFront distribution
+     */
     public static final Method DOWNLOAD = new Method() {
         public String toString() {
             return LocaleFactory.localizedString("Download (HTTP) CDN", "S3");
@@ -219,6 +226,9 @@ public class Distribution {
         }
     };
 
+    /**
+     * CloudFront distribution with custom origin server
+     */
     public static final Method CUSTOM = new Method() {
         public String toString() {
             return LocaleFactory.localizedString("Custom Origin Server (HTTP/HTTPS) CDN", "S3");
@@ -251,22 +261,29 @@ public class Distribution {
         }
     };
 
+    public Distribution(final Method method, final boolean enabled) {
+        this(method, null, enabled);
+    }
+
     /**
-     * @param origin  Server
      * @param method  Kind of distribution
+     * @param origin  Server
      * @param enabled Deployment Enabled
      */
-    public Distribution(final URI origin, final Method method, final boolean enabled) {
+    public Distribution(final Method method, final URI origin, final boolean enabled) {
+        this(method, method.toString(), origin, enabled);
+    }
+
+    public Distribution(final Method method, final String name, final URI origin, final boolean enabled) {
+        this.name = name;
         this.origin = origin;
         this.enabled = enabled;
         this.deployed = enabled;
         this.method = method;
     }
 
-    public Distribution(final Method method, final boolean enabled) {
-        this.enabled = enabled;
-        this.deployed = enabled;
-        this.method = method;
+    public String getName() {
+        return name;
     }
 
     public String getId() {
@@ -491,52 +508,21 @@ public class Distribution {
         return sb.toString();
     }
 
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
-        if(o == null || getClass() != o.getClass()) {
+        if(!(o instanceof Distribution)) {
             return false;
         }
         final Distribution that = (Distribution) o;
-        if(deployed != that.deployed) {
-            return false;
-        }
-        if(enabled != that.enabled) {
-            return false;
-        }
-        if(logging != that.logging) {
-            return false;
-        }
-        if(!Arrays.equals(cnames, that.cnames)) {
-            return false;
-        }
-        if(!Objects.equals(errorDocument, that.errorDocument)) {
-            return false;
-        }
-        if(!Objects.equals(indexDocument, that.indexDocument)) {
-            return false;
-        }
-        if(!Objects.equals(loggingContainer, that.loggingContainer)) {
-            return false;
-        }
-        if(!Objects.equals(method, that.method)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(method, that.method);
     }
 
     @Override
     public int hashCode() {
-        int result = (deployed ? 1 : 0);
-        result = 31 * result + (enabled ? 1 : 0);
-        result = 31 * result + (logging ? 1 : 0);
-        result = 31 * result + (loggingContainer != null ? loggingContainer.hashCode() : 0);
-        result = 31 * result + (cnames != null ? Arrays.hashCode(cnames) : 0);
-        result = 31 * result + (method != null ? method.hashCode() : 0);
-        result = 31 * result + (indexDocument != null ? indexDocument.hashCode() : 0);
-        result = 31 * result + (errorDocument != null ? errorDocument.hashCode() : 0);
-        return result;
+        return Objects.hash(method);
     }
 }

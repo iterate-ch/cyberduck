@@ -25,11 +25,6 @@ public class DisabledReachability implements Reachability {
     }
 
     @Override
-    public void diagnose(final Host bookmark) {
-        // Not implemented
-    }
-
-    @Override
     public Monitor monitor(final Host host, final Callback callback) {
         return new DisabledMonitor();
     }
