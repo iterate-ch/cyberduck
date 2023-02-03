@@ -30,7 +30,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.time.Duration;
 import java.util.concurrent.Callable;
 
 public abstract class AbstractRetryCallable<T> implements Callable<T> {
@@ -69,6 +68,12 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
      * @return Increment counter and return true if retry attempt should be made for a failed transfer
      */
     public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+        if(++count > retry) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
+            }
+            return false;
+        }
         int delay;
         final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
         switch(diagnostics.determine(failure)) {
@@ -77,43 +82,31 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                     log.warn(String.format("Cancel retry for failure %s with host %s not reachable", failure, host));
                     return false;
                 }
-                if(++count > retry) {
-                    log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
-                    return false;
-                }
                 delay = backoff;
                 break;
             case application:
                 if(failure instanceof RetriableAccessDeniedException) {
-                    final Duration duration = ((RetriableAccessDeniedException) failure).getDelay();
-                    if(duration != null) {
-                        // Explicitly retry
-                        delay = (int) duration.getSeconds();
-                    }
-                    else {
-                        if(++count > retry) {
-                            log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
-                            return false;
-                        }
-                        delay = preferences.getInteger("connection.retry.delay");
-                    }
+                    // Explicitly retry
+                    delay = (int) ((RetriableAccessDeniedException) failure).getDelay().getSeconds();
+                    break;
                 }
-                else {
-                    log.warn(String.format("No retry for failure %s", failure));
-                    return false;
-                }
-                break;
             default:
-                log.warn(String.format("No retry for failure %s", failure));
+                if(log.isWarnEnabled()) {
+                    log.warn(String.format("No retry for failure %s", failure));
+                }
                 return false;
         }
-        log.warn(String.format("Retry for failure %s with delay of %ds", failure, delay));
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("Retry for failure %s with delay of %ds", failure, delay));
+        }
         if(delay > 0) {
             final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                 @Override
                 public void validate() throws ConnectionCanceledException {
                     if(cancel.isCanceled()) {
-                        log.warn(String.format("Abort pausing retry after failure %s", failure));
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Abort pausing retry after failure %s", failure));
+                        }
                         throw new ConnectionCanceledException();
                     }
                 }
@@ -121,7 +114,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                 @Override
                 public void progress(final Integer seconds) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0} ({1} more attempts)", "Status"),
-                        new RemainingPeriodFormatter().format(seconds), retry - count));
+                            new RemainingPeriodFormatter().format(seconds), retry - count));
                 }
             }, delay);
             pause.await();
