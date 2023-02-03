@@ -1108,7 +1108,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             // Find source browser
                             if (controller.View.Browser.Equals(dropargs.SourceListView))
                             {
-                                if (controller.Session.Equals(Session))
+                                if (new AbstractHostCollection.ProfilePredicate(controller.Session.getHost()).test(Session.getHost()))
                                 {
                                     CopyPaths(files);
                                 }

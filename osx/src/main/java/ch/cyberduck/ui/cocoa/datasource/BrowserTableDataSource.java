@@ -29,6 +29,7 @@ import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
@@ -418,19 +419,21 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final Path renamed = new Path(destination, next.getName(), next.getType(), new PathAttributes(next.attributes()).withVersionId(null));
                     files.put(next, renamed);
                 }
-                if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
-                    // Drag to browser windows with different session or explicit copy requested by user.
-                    final Host target = controller.getSession().getHost();
-                    controller.transfer(new CopyTransfer(pasteboard.getBookmark(), target, files),
-                        new ArrayList<Path>(files.values()), false);
-                }
-                else if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
-                    // The file should be copied
-                    new CopyController(controller).copy(files);
+                if(new AbstractHostCollection.ProfilePredicate(pasteboard.getBookmark()).test(controller.getSession().getHost())) {
+                    if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                        // The file should be copied
+                        new CopyController(controller).copy(files);
+                    }
+                    else {
+                        // The file should be renamed
+                        new MoveController(controller).rename(files);
+                    }
                 }
                 else {
-                    // The file should be renamed
-                    new MoveController(controller).rename(files);
+                    // Drag to browser windows with different session
+                    final Host target = controller.getSession().getHost();
+                    controller.transfer(new CopyTransfer(pasteboard.getBookmark(), target, files),
+                            new ArrayList<Path>(files.values()), false);
                 }
                 pasteboard.clear();
             }
@@ -514,7 +517,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
-                if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) == 0) {
+                if(new AbstractHostCollection.ProfilePredicate(pasteboard.getBookmark()).test(controller.getSession().getHost())) {
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         for(Path file : pasteboard) {

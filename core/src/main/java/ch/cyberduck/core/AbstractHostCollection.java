@@ -218,10 +218,13 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         }
     }
 
+    /**
+     * Tests for same protocol, hostname and username
+     */
     public static final class ProfilePredicate extends HostnamePredicate {
         private final Host input;
 
-        private ProfilePredicate(final Host input) {
+        public ProfilePredicate(final Host input) {
             super(input);
             this.input = input;
         }
@@ -235,7 +238,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public static final class ProtocolIdentifierPredicate extends HostnamePredicate {
         private final Host input;
 
-        private ProtocolIdentifierPredicate(final Host input) {
+        public ProtocolIdentifierPredicate(final Host input) {
             super(input);
             this.input = input;
         }
