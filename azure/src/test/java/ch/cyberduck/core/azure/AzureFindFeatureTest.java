@@ -36,31 +36,31 @@ public class AzureFindFeatureTest extends AbstractAzureTest{
 
     @Test
     public void testFindNotFound() throws Exception {
-        assertFalse(new AzureFindFeature(session, null).find(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+        assertFalse(new AzureFindFeature(session).find(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindHome() throws Exception {
-        assertTrue(new AzureFindFeature(session, null).find(new DefaultHomeFinderService(session).find()));
+        assertTrue(new AzureFindFeature(session).find(new DefaultHomeFinderService(session).find()));
     }
 
     @Test
     public void testFindDirectory() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path folder = new AzureDirectoryFeature(session, null).mkdir(
+        final Path folder = new AzureDirectoryFeature(session).mkdir(
                 new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        assertTrue(new AzureFindFeature(session, null).find(folder));
-        assertFalse(new AzureFindFeature(session, null).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new AzureFindFeature(session).find(folder));
+        assertFalse(new AzureFindFeature(session).find(new Path(folder.getAbsolute(), EnumSet.of(Path.Type.file))));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(file, new TransferStatus());
-        assertTrue(new AzureFindFeature(session, null).find(file));
-        assertFalse(new AzureFindFeature(session, null).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureTouchFeature(session).touch(file, new TransferStatus());
+        assertTrue(new AzureFindFeature(session).find(file));
+        assertFalse(new AzureFindFeature(session).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory))));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
