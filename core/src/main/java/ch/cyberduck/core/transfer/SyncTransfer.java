@@ -209,7 +209,7 @@ public class SyncTransfer extends Transfer {
     public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                  final TransferPrompt prompt, final ListProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+            log.debug(String.format("Find transfer action with prompt %s", prompt));
         }
         if(resumeRequested) {
             if(action.equals(TransferAction.callback)) {
