@@ -38,11 +38,6 @@ public class DefaultSearchFeature implements Search {
         return session.getFeature(ListService.class).list(workdir, new SearchListProgressListener(filter, listener)).filter(filter);
     }
 
-    @Override
-    public boolean isRecursive() {
-        return false;
-    }
-
     private static final class SearchListProgressListener implements ListProgressListener {
         private final Filter<Path> filter;
         private final ListProgressListener delegate;

@@ -34,5 +34,7 @@ public interface Search {
     /**
      * @return True if search is capable of recursively searching in folders
      */
-    boolean isRecursive();
+    default boolean isRecursive() {
+        return false;
+    }
 }
