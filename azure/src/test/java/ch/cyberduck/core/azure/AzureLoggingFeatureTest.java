@@ -18,7 +18,7 @@ public class AzureLoggingFeatureTest extends AbstractAzureTest {
     @Test
     public void testSetConfiguration() throws Exception {
         final Path container = new Path("/cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AzureLoggingFeature feature = new AzureLoggingFeature(session, null);
+        final AzureLoggingFeature feature = new AzureLoggingFeature(session);
         feature.setConfiguration(container, new LoggingConfiguration(false));
         assertFalse(feature.getConfiguration(container).isEnabled());
         feature.setConfiguration(container, new LoggingConfiguration(true));

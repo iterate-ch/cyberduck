@@ -26,14 +26,14 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testFindRoot() throws Exception {
-        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
+        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final Path container = new Path(StringUtils.lowerCase(new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
+        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         f.find(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)));
     }
 
@@ -41,44 +41,44 @@ public class AzureAttributesFinderFeatureTest extends AbstractAzureTest {
     public void testFind() throws Exception {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
+        new AzureTouchFeature(session).touch(test, new TransferStatus());
+        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getETag());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFindContainer() throws Exception {
         final Path container = new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new AzureDirectoryFeature(session, null).mkdir(container, new TransferStatus());
-        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
+        new AzureDirectoryFeature(session).mkdir(container, new TransferStatus());
+        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertNotNull(attributes.getETag());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testMissingPlaceholder() throws Exception {
-        final Path container = new AzureDirectoryFeature(session, null).mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path directory = new AzureDirectoryFeature(session, null).mkdir(new Path(container,
+        final Path container = new AzureDirectoryFeature(session).mkdir(new Path(new AlphanumericRandomStringService().random().toLowerCase(Locale.ROOT), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path directory = new AzureDirectoryFeature(session).mkdir(new Path(container,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new AzureTouchFeature(session, null).touch(
+        final Path test = new AzureTouchFeature(session).touch(
                 new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
+        final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(container);
         assertNotEquals(PathAttributes.EMPTY, attributes);
         assertNotNull(attributes.getETag());
-        assertNotNull(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertNotNull(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
+        assertNotNull(new AzureObjectListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertNotNull(new AzureObjectListService(session).list(directory, new DisabledListProgressListener()).find(new DefaultPathPredicate(test)));
         // Still found as prefix
-        assertNotNull(new AzureObjectListService(session, null).list(container, new DisabledListProgressListener()).find(new DefaultPathPredicate(directory)));
+        assertNotNull(new AzureObjectListService(session).list(container, new DisabledListProgressListener()).find(new DefaultPathPredicate(directory)));
         // Ignore 404 failures
-        assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session, null).find(directory));
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        new AzureDeleteFeature(session, null).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertSame(PathAttributes.EMPTY, new AzureAttributesFinderFeature(session).find(directory));
+        new AzureDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new AzureDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

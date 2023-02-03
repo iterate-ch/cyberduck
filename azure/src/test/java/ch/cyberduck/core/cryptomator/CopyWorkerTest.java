@@ -83,15 +83,15 @@ public class CopyWorkerTest extends AbstractAzureTest {
         session.withRegistry(registry);
         final byte[] content = RandomUtils.nextBytes(40500);
         final TransferStatus status = new TransferStatus();
-        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new AzureDeleteFeature(session, null), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
+        new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new AzureDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new AzureWriteFeature(session, null), cryptomator).write(source, status.withLength(content.length), new DisabledConnectionCallback()));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(source));
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(target));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(target));
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session, null), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
+        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(target, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
@@ -109,7 +109,7 @@ public class CopyWorkerTest extends AbstractAzureTest {
         session.withRegistry(registry);
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new AzureWriteFeature(session, null)), new AzureWriteFeature(session, null), cryptomator).touch(source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(targetFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -130,9 +130,9 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path target = new Path(targetFolder, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session), new AzureWriteFeature(session, null), cryptomator).touch(source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(targetFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -151,20 +151,20 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(folder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
-        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session), new AzureWriteFeature(session, null), cryptomator).touch(file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         new CopyWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(file));
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(fileRenamed));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(fileRenamed));
         // copy folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new CopyWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(folder));
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(folderRenamed));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(fileRenamedInRenamedFolder));
         registry.clear();
@@ -178,22 +178,22 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(40500);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new AzureWriteFeature(session, null).write(cleartextFile, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()));
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
+        assertTrue(new AzureFindFeature(session).find(cleartextFile));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(encryptedFile));
+        assertTrue(new AzureFindFeature(session).find(cleartextFile));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(encryptedFile));
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
-        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session, null), cryptomator).read(encryptedFile, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
+        assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(encryptedFile, new TransferStatus().withLength(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
@@ -205,10 +205,10 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new AzureDirectoryFeature(session, null).mkdir(cleartextFolder, new TransferStatus());
-        new AzureTouchFeature(session, null).touch(cleartextFile, new TransferStatus());
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFolder));
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
+        new AzureDirectoryFeature(session).mkdir(cleartextFolder, new TransferStatus());
+        new AzureTouchFeature(session).touch(cleartextFile, new TransferStatus());
+        assertTrue(new AzureFindFeature(session).find(cleartextFolder));
+        assertTrue(new AzureFindFeature(session).find(cleartextFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
@@ -220,8 +220,8 @@ public class CopyWorkerTest extends AbstractAzureTest {
         worker.run(session);
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFolder));
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
+        assertTrue(new AzureFindFeature(session).find(cleartextFolder));
+        assertTrue(new AzureFindFeature(session).find(cleartextFile));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
     }
@@ -231,23 +231,23 @@ public class CopyWorkerTest extends AbstractAzureTest {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new AzureDirectoryFeature(session, null).mkdir(clearFolder, new TransferStatus());
+        new AzureDirectoryFeature(session).mkdir(clearFolder, new TransferStatus());
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session), new AzureWriteFeature(session, null), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFile, cleartextFile), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(encryptedFile));
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFile));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new AzureFindFeature(session).find(cleartextFile));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
     }
@@ -262,19 +262,19 @@ public class CopyWorkerTest extends AbstractAzureTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session, null)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new AzureDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<Void>(session, new AzureTouchFeature(session), new AzureWriteFeature(session, null), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFolder, cleartextFolder), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(encryptedFolder));
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(encryptedFile));
-        assertTrue(new AzureFindFeature(session, null).find(cleartextFolder));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new AzureFindFeature(session).find(cleartextFolder));
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(new AzureFindFeature(session, null).find(fileRenamed));
+        assertTrue(new AzureFindFeature(session).find(fileRenamed));
         registry.clear();
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
     }

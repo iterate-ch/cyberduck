@@ -18,7 +18,7 @@ public class AzureAclPermissionFeatureTest extends AbstractAzureTest {
     @Test(expected = NotfoundException.class)
     public void testReadNotFoundContainer() throws Exception {
         final Path container = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session, null);
+        final AzureAclPermissionFeature f = new AzureAclPermissionFeature(session);
         f.getPermission(container);
     }
 }

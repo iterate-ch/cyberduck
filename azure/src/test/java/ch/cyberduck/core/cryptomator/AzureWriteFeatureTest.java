@@ -55,8 +55,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import com.microsoft.azure.storage.OperationContext;
-
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -83,15 +81,14 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        final OperationContext context = new OperationContext();
-        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, context), cryptomator).find(test));
-        final PathAttributes attributes = new CryptoListService(session, new AzureListService(session, context), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
+        assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session), cryptomator).find(test));
+        final PathAttributes attributes = new CryptoListService(session, new AzureListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session, context), cryptomator).append(test, status.withRemote(attributes)).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new AzureWriteFeature(session), cryptomator).append(test, status.withRemote(attributes)).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, context), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
+        final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session), cryptomator).read(test, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, context)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

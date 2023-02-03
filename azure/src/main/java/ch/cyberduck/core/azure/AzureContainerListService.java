@@ -25,53 +25,43 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.EnumSet;
 
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.ResultContinuation;
-import com.microsoft.azure.storage.ResultSegment;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.BlobRequestOptions;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
-import com.microsoft.azure.storage.blob.ContainerListingDetails;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.models.BlobContainerItem;
+import com.azure.storage.blob.models.BlobContainerListDetails;
+import com.azure.storage.blob.models.ListBlobContainersOptions;
 
 public class AzureContainerListService implements RootListService {
 
     private final AzureSession session;
-    private final OperationContext context;
 
-    public AzureContainerListService(final AzureSession session, final OperationContext context) {
+    private final Preferences preferences
+        = PreferencesFactory.get();
+
+    public AzureContainerListService(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        ResultSegment<CloudBlobContainer> result;
-        ResultContinuation token = null;
         try {
-            final AttributedList<Path> containers = new AttributedList<>();
-            do {
-                final BlobRequestOptions options = new BlobRequestOptions();
-                result = session.getClient().listContainersSegmented(null, ContainerListingDetails.NONE,
-                    new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token,
-                    options, context);
-                for(CloudBlobContainer container : result.getResults()) {
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setETag(container.getProperties().getEtag());
-                    attributes.setModificationDate(container.getProperties().getLastModified().getTime());
-                    containers.add(new Path(PathNormalizer.normalize(container.getName()),
-                        EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
-                }
+            final AttributedList<Path> containers = new AttributedList<Path>();
+            for(BlobContainerItem container : session.getClient().listBlobContainers(new ListBlobContainersOptions()
+                .setMaxResultsPerPage(preferences.getInteger("azure.listing.chunksize"))
+                .setDetails(new BlobContainerListDetails().setRetrieveDeleted(false).setRetrieveMetadata(true)), null)) {
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setETag(container.getProperties().getETag());
+                attributes.setModificationDate(container.getProperties().getLastModified().toInstant().toEpochMilli());
+                containers.add(new Path(PathNormalizer.normalize(container.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 listener.chunk(directory, containers);
-                token = result.getContinuationToken();
             }
-            while(result.getHasMoreResults());
             return containers;
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }

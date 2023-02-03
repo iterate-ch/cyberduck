@@ -26,25 +26,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import java.net.URISyntaxException;
-
-import com.microsoft.azure.storage.OperationContext;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.CloudBlob;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.azure.core.exception.HttpResponseException;
 
 public class AzureFindFeature implements Find {
 
     private final AzureSession session;
-
-    private final OperationContext context;
-
     private final PathContainerService containerService
         = new DirectoryDelimiterPathContainerService();
 
-    public AzureFindFeature(final AzureSession session, final OperationContext context) {
+    public AzureFindFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
     }
 
     @Override
@@ -56,21 +47,13 @@ public class AzureFindFeature implements Find {
             try {
                 final boolean found;
                 if(containerService.isContainer(file)) {
-                    final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                    found = container.exists(null, null, context);
+                    return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName()).exists();
                 }
-                else {
-                    final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
-                    found = blob.exists(null, null, context);
-                }
-                return found;
+                return session.getClient().getBlobContainerClient(containerService.getContainer(file).getName())
+                    .getBlobClient(containerService.getKey(file)).exists();
             }
-            catch(StorageException e) {
+            catch(HttpResponseException e) {
                 throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            }
-            catch(URISyntaxException e) {
-                return false;
             }
         }
         catch(NotfoundException e) {

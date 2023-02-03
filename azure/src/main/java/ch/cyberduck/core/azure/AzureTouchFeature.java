@@ -18,24 +18,24 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTouchFeature;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.input.NullInputStream;
 
-import com.microsoft.azure.storage.OperationContext;
-
-public class AzureTouchFeature extends DefaultTouchFeature<Void> {
+public class AzureTouchFeature implements Touch<Void> {
 
     private final AzureSession session;
-    private final OperationContext context;
+    private Write<Void> writer;
 
-    public AzureTouchFeature(final AzureSession session, final OperationContext context) {
-        super(new AzureWriteFeature(session, context));
+    public AzureTouchFeature(final AzureSession session) {
         this.session = session;
-        this.context = context;
+        this.writer = new AzureWriteFeature(session);
     }
 
     @Override
@@ -45,7 +45,14 @@ public class AzureTouchFeature extends DefaultTouchFeature<Void> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(write.checksum(file, status).compute(new NullInputStream(0L), status));
-        return super.touch(file, status).withAttributes(new AzureAttributesFinderFeature(session, context).find(file));
+        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
+        new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
+        return new Path(file.getParent(), file.getName(), file.getType(), new AzureAttributesFinderFeature(session).find(file));
+    }
+
+    @Override
+    public AzureTouchFeature withWriter(final Write<Void> writer) {
+        this.writer = writer;
+        return this;
     }
 }

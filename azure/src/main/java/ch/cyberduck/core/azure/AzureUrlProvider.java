@@ -31,19 +31,19 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
 import java.text.MessageFormat;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.TimeZone;
 
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.CloudBlob;
-import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
-import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
+import com.azure.core.exception.HttpResponseException;
+import com.azure.storage.blob.implementation.util.BlobSasImplUtil;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
+import com.azure.storage.common.StorageSharedKeyCredential;
 
 public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
 
@@ -77,24 +77,12 @@ public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
 
     private DescriptiveUrl createSignedUrl(final Path file, int seconds) throws BackgroundException {
         try {
-            final CloudBlob blob;
-            try {
-                if(!session.isConnected()) {
-                    return DescriptiveUrl.EMPTY;
-                }
-                blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(file));
-            }
-            catch(URISyntaxException e) {
+            if(!session.isConnected()) {
                 return DescriptiveUrl.EMPTY;
             }
-            final String token;
-            try {
-                token = blob.generateSharedAccessSignature(this.getPolicy(seconds), null);
-            }
-            catch(InvalidKeyException e) {
-                return DescriptiveUrl.EMPTY;
-            }
+            final String token = new BlobSasImplUtil(new BlobServiceSasSignatureValues(
+                OffsetDateTime.now().plusSeconds(seconds), new BlobSasPermission().setReadPermission(true)), containerService.getContainer(file).getName())
+                .generateSas(new StorageSharedKeyCredential(session.getHost().getCredentials().getUsername(), StringUtils.EMPTY), null);
             return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
                 Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
                 DescriptiveUrl.Type.signed,
@@ -102,16 +90,9 @@ public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
                     + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
         }
-        catch(StorageException e) {
+        catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map(e);
         }
-    }
-
-    private SharedAccessBlobPolicy getPolicy(final int expiry) {
-        final SharedAccessBlobPolicy policy = new SharedAccessBlobPolicy();
-        policy.setSharedAccessExpiryTime(new Date(this.getExpiry(expiry)));
-        policy.setPermissions(EnumSet.of(SharedAccessBlobPermissions.READ));
-        return policy;
     }
 
     protected Long getExpiry(final int seconds) {

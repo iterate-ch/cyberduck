@@ -29,7 +29,7 @@ import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Comparator;
 
-import com.microsoft.azure.storage.core.Base64;
+import static org.apache.commons.codec.binary.Base64.isBase64;
 
 public class AzureProtocol extends AbstractProtocol {
 
@@ -77,7 +77,7 @@ public class AzureProtocol extends AbstractProtocol {
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         if(super.validate(credentials, options)) {
             if(options.password) {
-                return Base64.validateIsBase64String(credentials.getPassword());
+                return isBase64(credentials.getPassword());
             }
             return true;
         }
