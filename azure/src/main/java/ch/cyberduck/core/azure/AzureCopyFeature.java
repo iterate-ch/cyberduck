@@ -21,10 +21,10 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DirectoryDelimiterPathContainerService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -51,7 +51,7 @@ public class AzureCopyFeature implements Copy {
     }
 
     @Override
-    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final BlobClient client = session.getClient().getBlobContainerClient(containerService.getContainer(copy).getName())
                 .getBlobClient(containerService.getKey(copy));
@@ -63,7 +63,7 @@ public class AzureCopyFeature implements Copy {
             }
             poller.waitForCompletion();
             // Copy original file attributes
-            return new Path(copy.getParent(), copy.getName(), copy.getType(), new PathAttributes(source.attributes()));
+            return copy.withAttributes(source.attributes());
         }
         catch(HttpResponseException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);

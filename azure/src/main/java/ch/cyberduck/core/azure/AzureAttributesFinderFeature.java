@@ -29,6 +29,7 @@ import ch.cyberduck.core.io.Checksum;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,6 +74,12 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
             }
         }
         catch(HttpResponseException e) {
+            switch(e.getResponse().getStatusCode()) {
+                case HttpStatus.SC_NOT_FOUND:
+                    if(file.isPlaceholder()) {
+                        return PathAttributes.EMPTY;
+                    }
+            }
             throw new AzureExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }

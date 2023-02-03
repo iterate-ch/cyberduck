@@ -91,11 +91,6 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     }
 
     @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
     public boolean random() {
         return false;
     }
