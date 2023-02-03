@@ -42,7 +42,8 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ import com.azure.storage.blob.specialized.BlockBlobClient;
 import com.azure.storage.common.implementation.Constants;
 
 public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write<Void> {
-    private static final Logger log = Logger.getLogger(AzureWriteFeature.class);
+    private static final Logger log = LogManager.getLogger(AzureWriteFeature.class);
 
     private final AzureSession session;
 

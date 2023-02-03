@@ -52,7 +52,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +83,7 @@ import com.azure.storage.common.policy.StorageSharedKeyCredentialPolicy;
 import reactor.core.publisher.Mono;
 
 public class AzureSession extends HttpSession<BlobServiceClient> {
-    private static final Logger log = Logger.getLogger(AzureSession.class);
+    private static final Logger log = LogManager.getLogger(AzureSession.class);
 
     private final CredentialsHttpPipelinePolicy authenticator = new CredentialsHttpPipelinePolicy();
 

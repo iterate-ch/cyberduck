@@ -26,7 +26,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 
@@ -35,7 +36,7 @@ import com.azure.storage.blob.models.BlobRange;
 import com.azure.storage.blob.models.BlobRequestConditions;
 
 public class AzureReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(AzureReadFeature.class);
+    private static final Logger log = LogManager.getLogger(AzureReadFeature.class);
 
     private final AzureSession session;
     private final PathContainerService containerService

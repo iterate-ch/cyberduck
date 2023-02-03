@@ -27,7 +27,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 
@@ -38,7 +39,7 @@ import com.azure.storage.blob.models.BlobCopyInfo;
 import com.azure.storage.blob.options.BlobBeginCopyOptions;
 
 public class AzureCopyFeature implements Copy {
-    private static final Logger log = Logger.getLogger(AzureCopyFeature.class);
+    private static final Logger log = LogManager.getLogger(AzureCopyFeature.class);
 
     private final AzureSession session;
 
