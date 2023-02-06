@@ -87,7 +87,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     }
                     catch (Exception e)
                     {
-                        Log.error("Generic exception while checking for reachability for {h}", e);
+                        Log.error($"Generic exception while checking for reachability for {h}", e);
                         return false;
                     }
                 default:
