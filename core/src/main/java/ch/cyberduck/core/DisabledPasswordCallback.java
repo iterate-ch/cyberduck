@@ -27,6 +27,9 @@ public class DisabledPasswordCallback implements PasswordCallback {
     @Override
     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options)
             throws LoginCanceledException {
+        if(options.anonymous) {
+            return new Credentials();
+        }
         throw new LoginCanceledException();
     }
 }
