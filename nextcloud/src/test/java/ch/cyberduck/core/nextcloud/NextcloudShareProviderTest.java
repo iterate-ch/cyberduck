@@ -22,14 +22,20 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVDeleteFeature;
+import ch.cyberduck.core.dav.DAVDirectoryFeature;
+import ch.cyberduck.core.dav.DAVTouchFeature;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.Collections;
+import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
@@ -37,31 +43,36 @@ import static org.junit.Assert.*;
 public class NextcloudShareProviderTest extends AbstractNextcloudTest {
 
     @Test
-    public void testIsSupported() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+    public void testIsSupported() {
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
         assertTrue(new NextcloudShareProvider(session).isSupported(home, PromptUrlProvider.Type.download));
         assertTrue(new NextcloudShareProvider(session).isSupported(home, PromptUrlProvider.Type.upload));
     }
 
     @Test
     public void testToDownloadUrlNoPassword() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
-        final DescriptiveUrl url = new NextcloudShareProvider(session).toDownloadUrl(home, null, new DisabledPasswordCallback());
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path file = new DAVTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DescriptiveUrl url = new NextcloudShareProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback());
         assertNotSame(DescriptiveUrl.EMPTY, url);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testToUploadUrlNoPassword() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
-        final DescriptiveUrl url = new NextcloudShareProvider(session).toUploadUrl(home, null, new DisabledPasswordCallback());
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final DescriptiveUrl url = new NextcloudShareProvider(session).toUploadUrl(folder, null, new DisabledPasswordCallback());
         assertNotSame(DescriptiveUrl.EMPTY, url);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testToDownloadUrlPasswordTooShort() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         try {
-            new NextcloudShareProvider(session).toDownloadUrl(home, null, new DisabledPasswordCallback() {
+            new NextcloudShareProvider(session).toDownloadUrl(folder, null, new DisabledPasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new Credentials(null, new AlphanumericRandomStringService(5).random());
@@ -70,25 +81,28 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
             fail();
         }
         catch(AccessDeniedException e) {
-            assertEquals("Forbidden. Das Passwort muss mindestens 10 Zeichen lang sein. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Forbidden. Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
+        new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testToDownloadUrlPassword() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
-        final DescriptiveUrl url = new NextcloudShareProvider(session).toDownloadUrl(home, null, new DisabledPasswordCallback() {
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path file = new DAVTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DescriptiveUrl url = new NextcloudShareProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService(10).random());
             }
         });
         assertNotSame(DescriptiveUrl.EMPTY, url);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testToDownloadShareRoot() throws Exception {
-        final Path home = Home.ROOT;
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
         try {
             new NextcloudShareProvider(session).toDownloadUrl(home, null, new DisabledPasswordCallback() {
                 @Override
@@ -105,21 +119,24 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
 
     @Test
     public void testToUploadUrl() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
-        final DescriptiveUrl url = new NextcloudShareProvider(session).toUploadUrl(home, null, new DisabledPasswordCallback() {
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final DescriptiveUrl url = new NextcloudShareProvider(session).toUploadUrl(folder, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService(10).random());
             }
         });
         assertNotSame(DescriptiveUrl.EMPTY, url);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testToUploadUrlPasswordTooShort() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new NextcloudHomeFeature(session.getHost()).find();
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         try {
-            new NextcloudShareProvider(session).toUploadUrl(home, null, new DisabledPasswordCallback() {
+            new NextcloudShareProvider(session).toUploadUrl(folder, null, new DisabledPasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new Credentials(null, new AlphanumericRandomStringService(5).random());
@@ -128,7 +145,8 @@ public class NextcloudShareProviderTest extends AbstractNextcloudTest {
             fail();
         }
         catch(AccessDeniedException e) {
-            assertEquals("Forbidden. Das Passwort muss mindestens 10 Zeichen lang sein. Please contact your web hosting service provider for assistance.", e.getDetail());
+            assertEquals("Forbidden. Password needs to be at least 10 characters long. Please contact your web hosting service provider for assistance.", e.getDetail());
         }
+        new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
