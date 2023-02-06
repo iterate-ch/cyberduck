@@ -92,6 +92,6 @@ public class B2SearchFeature implements Search {
 
     @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
 }
