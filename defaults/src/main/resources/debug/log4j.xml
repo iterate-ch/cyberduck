@@ -22,7 +22,7 @@
     <Loggers>
         <Logger name="org.apache.http.wire" additivity="false" level="error"/>
         <Logger name="org.apache.http.headers" additivity="false" level="error"/>
-        <Logger name="ch.cyberduck" additivity="false" level="debug"/>
+        <Logger name="ch.cyberduck" additivity="true" level="debug"/>
         <Root level="debug">
             <AppenderRef ref="console"/>
         </Root>

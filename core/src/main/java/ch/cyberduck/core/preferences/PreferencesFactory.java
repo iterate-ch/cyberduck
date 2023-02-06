@@ -46,16 +46,8 @@ public final class PreferencesFactory {
 
     public static synchronized Preferences get() {
         if(null == preferences) {
-            set(new DefaultLoggingMemoryPreferenes());
+            set(new MemoryPreferences());
         }
         return preferences;
-    }
-
-    private static final class DefaultLoggingMemoryPreferenes extends MemoryPreferences {
-        @Override
-        protected void configureLogging(final String level) {
-            this.setDefault("logging.config", "log4j.xml");
-            super.configureLogging(level);
-        }
     }
 }
