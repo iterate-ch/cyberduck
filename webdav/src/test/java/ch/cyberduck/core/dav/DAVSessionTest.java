@@ -2,6 +2,8 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -66,7 +68,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         }
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = BackgroundException.class)
     public void testHtmlResponse() throws Exception {
         final Host host = new Host(new DAVProtocol(), "cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -75,7 +77,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             new DAVListService(session).list(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener());
         }
-        catch(InteroperabilityException e) {
+        catch(InteroperabilityException | ConflictException e) {
             assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }

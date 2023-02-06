@@ -21,6 +21,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
@@ -87,7 +88,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder, AttributesA
                 try {
                     throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
                 }
-                catch(InteroperabilityException i) {
+                catch(InteroperabilityException | ConflictException i) {
                     // PROPFIND Method not allowed
                     if(log.isWarnEnabled()) {
                         log.warn(String.format("Failure with PROPFIND request for %s. %s", file, i.getMessage()));
