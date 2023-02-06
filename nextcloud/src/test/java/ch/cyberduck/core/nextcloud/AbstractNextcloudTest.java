@@ -54,7 +54,7 @@ public class AbstractNextcloudTest extends VaultTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new NextcloudProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
                 this.getClass().getResourceAsStream("/Nextcloud.cyberduckprofile"));
-        final Host host = new Host(profile, PROPERTIES.get("nextcloud.hostname"), 443, PROPERTIES.get("nextcloud.path"),
+        final Host host = new Host(profile, PROPERTIES.get("nextcloud.hostname"),
                 new Credentials(PROPERTIES.get("nextcloud.user"), PROPERTIES.get("nextcloud.password")));
         session = new NextcloudSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
