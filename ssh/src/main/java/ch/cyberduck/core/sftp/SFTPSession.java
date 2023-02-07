@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Factory.Platform;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CustomOriginCloudFrontDistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,6 +64,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.jcraft.jsch.agentproxy.AgentProxyException;
 import net.schmizz.concurrent.Promise;
@@ -72,6 +74,7 @@ import net.schmizz.sshj.Config;
 import net.schmizz.sshj.DefaultConfig;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.DisconnectReason;
+import net.schmizz.sshj.common.Factory.Named;
 import net.schmizz.sshj.common.SSHException;
 import net.schmizz.sshj.connection.channel.direct.DirectConnection;
 import net.schmizz.sshj.sftp.Request;
@@ -81,6 +84,7 @@ import net.schmizz.sshj.sftp.SFTPException;
 import net.schmizz.sshj.transport.DisconnectListener;
 import net.schmizz.sshj.transport.NegotiatedAlgorithms;
 import net.schmizz.sshj.transport.Transport;
+import net.schmizz.sshj.transport.cipher.Cipher;
 import net.schmizz.sshj.transport.compression.DelayedZlibCompression;
 import net.schmizz.sshj.transport.compression.NoneCompression;
 import net.schmizz.sshj.transport.compression.ZlibCompression;
@@ -134,6 +138,7 @@ public class SFTPSession extends Session<SSHClient> {
             heartbeat = KeepAliveProvider.HEARTBEAT;
         }
         configuration.setKeepAliveProvider(heartbeat);
+        configuration.setCipherFactories(this.lowestPriorityForCBC(configuration.getCipherFactories()));
         return this.connect(key, prompt, configuration);
     }
 
@@ -276,7 +281,7 @@ public class SFTPSession extends Session<SSHClient> {
         final List<AuthenticationProvider<Boolean>> defaultMethods = new ArrayList<>();
         if(preferences.getBoolean("ssh.authentication.agent.enable")) {
             final String identityAgent = new OpenSSHIdentityAgentConfigurator().getIdentityAgent(host.getHostname());
-            switch(Factory.Platform.getDefault()) {
+            switch(Platform.getDefault()) {
                 case windows:
                     defaultMethods.add(new SFTPAgentAuthentication(client, new PageantAuthenticator()));
                     try {
@@ -431,6 +436,19 @@ public class SFTPSession extends Session<SSHClient> {
             log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
         }
         super.disconnect();
+    }
+
+    private List<Named<Cipher>> lowestPriorityForCBC(final List<Named<Cipher>> factories) {
+        return factories.stream().sorted((c1, c2) -> {
+            if(c1.getName().endsWith("cbc")) {
+                return 1;
+            }
+            if(c2.getName().endsWith("cbc")) {
+                return -1;
+            }
+            return 0;
+
+        }).collect(Collectors.toList());
     }
 
     @Override
