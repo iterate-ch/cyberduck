@@ -23,7 +23,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public class CryptoFilenameV7Provider implements CryptoFilename {
 
-    public static final int NAME_SHORTENING_THRESHOLD = 220; // https://github.com/cryptomator/cryptofs/issues/60#issuecomment-523238303
+    public static final int DEFAULT_NAME_SHORTENING_THRESHOLD = 220; // https://github.com/cryptomator/cryptofs/issues/60#issuecomment-523238303
+    private final int threshold;
+
+    public CryptoFilenameV7Provider() {
+        this(DEFAULT_NAME_SHORTENING_THRESHOLD);
+    }
+
+    public CryptoFilenameV7Provider(final int threshold) {
+        this.threshold = threshold;
+    }
 
     @Override
     public boolean isDeflated(final String filename) {
@@ -45,7 +54,7 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
         if(this.isBelowThreshold(filename)) {
             return filename;
         }
-        throw new CryptoInvalidFilenameException(String.format("Filename length %d exceeds maximum length %d", filename.length(), NAME_SHORTENING_THRESHOLD));
+        throw new CryptoInvalidFilenameException(String.format("Filename length %d exceeds maximum length %d", filename.length(), DEFAULT_NAME_SHORTENING_THRESHOLD));
     }
 
     @Override
@@ -64,6 +73,6 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
     }
 
     private boolean isBelowThreshold(final String filename) {
-        return filename.length() <= NAME_SHORTENING_THRESHOLD;
+        return filename.length() <= threshold;
     }
 }

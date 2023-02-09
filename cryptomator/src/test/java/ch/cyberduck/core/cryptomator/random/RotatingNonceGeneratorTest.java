@@ -26,7 +26,7 @@ public class RotatingNonceGeneratorTest {
 
     @Test
     public void testRotation() {
-        final RotatingNonceGenerator generator = new RotatingNonceGenerator(2);
+        final RotatingNonceGenerator generator = new RotatingNonceGenerator(12, 2);
         final byte[] r1 = generator.next();
         final byte[] r2 = generator.next();
         final byte[] r3 = generator.next();

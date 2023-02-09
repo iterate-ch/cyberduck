@@ -74,7 +74,7 @@ public class BufferWriteFeatureTest extends AbstractBoxTest {
         final TransferStatus writeStatus = new TransferStatus();
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-        writeStatus.setNonces(new RandomNonceGenerator());
+        writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setChecksum(feature.checksum(test, new TransferStatus()).compute(new ByteArrayInputStream(content), new TransferStatus()));
         writeStatus.setLength(content.length);
         final StatusOutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());

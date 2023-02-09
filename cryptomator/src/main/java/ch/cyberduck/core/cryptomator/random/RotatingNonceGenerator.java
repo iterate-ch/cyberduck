@@ -23,15 +23,15 @@ import java.util.List;
 
 public final class RotatingNonceGenerator implements NonceGenerator {
 
-    private final static int len = 16;
-
+    private final int len;
     private final List<byte[]> nonces;
     private final SecureRandom random = FastSecureRandomProvider.get().provide();
     private final int capacity;
 
     private int index = 0;
 
-    public RotatingNonceGenerator(final int capacity) {
+    public RotatingNonceGenerator(final int len, final int capacity) {
+        this.len = len;
         this.capacity = capacity;
         this.nonces = new ArrayList<>(capacity);
     }

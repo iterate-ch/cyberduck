@@ -75,7 +75,7 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         final TransferStatus writeStatus = new TransferStatus();
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-        writeStatus.setNonces(new RandomNonceGenerator());
+        writeStatus.setNonces(new RandomNonceGenerator(cryptomator.getNonceSize()));
         writeStatus.setLength(-1L);
         final OutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);

@@ -52,7 +52,7 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
         try {
             if(null == status.getNonces()) {
                 // If not previously set in bulk feature
-                status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
+                status.setNonces(new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
             }
             final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),
                     new CryptoTransferStatus(vault, status), callback);

@@ -79,7 +79,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final CryptoWriteFeature<Metadata> writer = new CryptoWriteFeature<>(session, new DropboxWriteFeature(session), cryptomator);
         final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
+        status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(content.length)));
         status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final StatusOutputStream<Metadata> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);

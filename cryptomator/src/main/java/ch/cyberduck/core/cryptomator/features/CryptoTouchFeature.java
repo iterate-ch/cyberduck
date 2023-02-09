@@ -45,7 +45,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();
         status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
-        status.setNonces(new RandomNonceGenerator());
+        status.setNonces(new RandomNonceGenerator(vault.getNonceSize()));
         final Path target = proxy.touch(vault.encrypt(session, file), new TransferStatus(status) {
             @Override
             public void setResponse(final PathAttributes attributes) {

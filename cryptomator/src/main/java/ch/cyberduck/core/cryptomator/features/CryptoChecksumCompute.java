@@ -73,7 +73,7 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
         }
         if(null == status.getNonces()) {
             // Make nonces reusable in case we need to compute a checksum
-            status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
+            status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
         }
         return this.compute(this.normalize(in, status), status, status.getOffset(), status.getLength(), status.getHeader(), status.getNonces());
     }

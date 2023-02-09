@@ -41,7 +41,7 @@ import java.util.Map;
 public class CryptoBulkFeature<R> implements Bulk<R> {
 
     private final RandomStringService random
-        = new UUIDRandomStringService();
+            = new UUIDRandomStringService();
 
     private final Session<?> session;
     private final Bulk<R> delegate;
@@ -74,7 +74,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
                 status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
             }
             if(null == status.getNonces()) {
-                status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
+                status.setNonces(new RotatingNonceGenerator(cryptomator.getNonceSize(), cryptomator.numberOfChunks(status.getLength())));
             }
             if(file.isDirectory()) {
                 if(!status.isExists()) {
