@@ -656,7 +656,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         items.Add(entry);
                         foreach (Path path in selected)
                         {
-                            entry.Value.Add(((DescriptiveUrl)urlProvider.toUrl(path).toArray()[i]).getUrl());
+                            entry.Value.Add(((DescriptiveUrl)urlProvider.toUrl(path).toArray()[i]).getPreview());
                         }
                     }
                 }
@@ -693,7 +693,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     foreach (Path path in selected)
                     {
-                        entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]).getUrl());
+                        entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]).getPreview());
                     }
                 }
             }

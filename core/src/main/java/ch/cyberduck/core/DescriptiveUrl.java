@@ -71,9 +71,6 @@ public class DescriptiveUrl {
     }
 
     public String getUrl() {
-        if(null == url) {
-            return null;
-        }
         return url.toString();
     }
 
@@ -83,6 +80,10 @@ public class DescriptiveUrl {
 
     public String getHelp() {
         return help;
+    }
+
+    public String getPreview() {
+        return this.getUrl();
     }
 
     @Override
@@ -104,9 +105,11 @@ public class DescriptiveUrl {
 
     @Override
     public String toString() {
-        if(null == url) {
-            return null;
-        }
-        return url.toString();
+        final StringBuilder sb = new StringBuilder("DescriptiveUrl{");
+        sb.append("url=").append(url);
+        sb.append(", type=").append(type);
+        sb.append(", help='").append(help).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

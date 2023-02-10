@@ -97,7 +97,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             }
             else {
                 // Dummy menu item to preview URL only
-                final Set<String> target = this.getURLs(index, selected).stream().map(DescriptiveUrl::getUrl).collect(Collectors.toSet());
+                final Set<String> target = this.getURLs(index, selected).stream().map(DescriptiveUrl::getPreview).collect(Collectors.toSet());
                 item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
                         StringUtils.join(target, '\n'), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
