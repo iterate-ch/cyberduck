@@ -101,11 +101,15 @@ public abstract class AbstractController implements Controller {
 
     @Override
     public void message(final String message) {
-        log.info(message);
+        if(log.isInfoEnabled()) {
+            log.info(message);
+        }
     }
 
     @Override
     public void log(final Type request, final String message) {
-        log.trace(message);
+        if(log.isTraceEnabled()) {
+            log.trace(message);
+        }
     }
 }
