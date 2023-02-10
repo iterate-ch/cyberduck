@@ -152,7 +152,7 @@ public class CopyTransfer extends Transfer {
                 final Find find = destination.getFeature(Find.class);
                 if(find.find(copy)) {
                     // Found remote file
-                    if(upload.remote.isDirectory()) {
+                    if(copy.isDirectory()) {
                         // List files in target directory
                         if(this.list(destination, copy, null, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
