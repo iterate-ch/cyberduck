@@ -192,8 +192,8 @@ public class CopyTransfer extends Transfer {
         }
         final AttributedList<Path> list = session.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
-        for(Path p : list) {
-            mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
+        for(Path f : list) {
+            mapping.put(f, new Path(copy, f.getName(), f.getType()));
         }
         final List<TransferItem> nullified = new ArrayList<>();
         for(Path p : list) {
