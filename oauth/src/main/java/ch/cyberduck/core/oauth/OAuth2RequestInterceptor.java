@@ -107,13 +107,13 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 this.save(this.refresh(tokens));
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e));
+                log.warn(String.format("Failure %s refreshing OAuth tokens %s", e, tokens));
                 // Follow-up error 401 handled in error interceptor
             }
         }
         if(StringUtils.isNotBlank(tokens.getAccessToken())) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Authorizing service request with OAuth2 access token %s", tokens.getAccessToken()));
+                log.info(String.format("Authorizing service request with OAuth2 tokens %s", tokens));
             }
             request.removeHeaders(HttpHeaders.AUTHORIZATION);
             request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
