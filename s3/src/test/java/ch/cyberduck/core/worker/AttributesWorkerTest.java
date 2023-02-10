@@ -26,6 +26,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 @Category(IntegrationTest.class)
@@ -34,7 +35,10 @@ public class AttributesWorkerTest extends AbstractS3Test {
     @Test
     public void testBucket() throws Exception {
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final PathAttributes attributes = new AttributesWorker(PathCache.empty(), home).run(session);
+        final AttributesWorker worker = new AttributesWorker(PathCache.empty(), home);
+        assertEquals(worker, new AttributesWorker(PathCache.empty(), home));
+        assertEquals(worker.hashCode(), new AttributesWorker(PathCache.empty(), home).hashCode());
+        final PathAttributes attributes = worker.run(session);
         assertNotSame(PathAttributes.EMPTY, attributes);
     }
 }

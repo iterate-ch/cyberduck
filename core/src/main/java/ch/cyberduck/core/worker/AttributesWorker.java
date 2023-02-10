@@ -28,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class AttributesWorker extends Worker<PathAttributes> {
     private static final Logger log = LogManager.getLogger(AttributesWorker.class.getName());
@@ -56,6 +57,23 @@ public class AttributesWorker extends Worker<PathAttributes> {
     @Override
     public PathAttributes initialize() {
         return PathAttributes.EMPTY;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final AttributesWorker that = (AttributesWorker) o;
+        return file.equals(that.file);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(file);
     }
 
     @Override
