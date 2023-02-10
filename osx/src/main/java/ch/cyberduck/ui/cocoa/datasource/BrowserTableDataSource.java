@@ -415,7 +415,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 final Map<Path, Path> files = new HashMap<Path, Path>();
                 for(Path next : pasteboard) {
-                    final Path renamed = new Path(destination, next.getName(), next.getType());
+                    final Path renamed = new Path(destination, next.getName(), EnumSet.of(next.isDirectory() ? Path.Type.directory : Path.Type.file));
                     files.put(next, renamed);
                 }
                 if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {

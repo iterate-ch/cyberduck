@@ -41,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class CopyTransfer extends Transfer {
         final TransferAction action;
         if(reloadRequested) {
             action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.copy.reload.action"));
+                    PreferencesFactory.get().getProperty("queue.copy.reload.action"));
         }
         else {
             // Use default
@@ -193,7 +194,7 @@ public class CopyTransfer extends Transfer {
         final AttributedList<Path> list = session.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
         for(Path f : list) {
-            mapping.put(f, new Path(copy, f.getName(), f.getType()));
+            mapping.put(f, new Path(copy, f.getName(), EnumSet.of(f.isDirectory() ? Path.Type.directory : Path.Type.file)));
         }
         final List<TransferItem> nullified = new ArrayList<>();
         for(Path p : list) {
