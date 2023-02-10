@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Directory;
@@ -93,7 +94,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
             return false;
         }
         final CreateDirectoryWorker that = (CreateDirectoryWorker) o;
-        if(!Objects.equals(folder, that.folder)) {
+        if(!new SimplePathPredicate(folder).test(that.folder)) {
             return false;
         }
         return Objects.equals(region, that.region);
@@ -102,7 +103,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
 
     @Override
     public int hashCode() {
-        int result = folder != null ? folder.hashCode() : 0;
+        int result = folder != null ? new SimplePathPredicate(folder).hashCode() : 0;
         result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;
     }

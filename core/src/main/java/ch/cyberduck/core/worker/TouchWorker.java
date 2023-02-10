@@ -22,6 +22,7 @@ import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -38,7 +39,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
-import java.util.Objects;
 
 public class TouchWorker extends Worker<Path> {
     private static final Logger log = LogManager.getLogger(TouchWorker.class);
@@ -112,13 +112,13 @@ public class TouchWorker extends Worker<Path> {
             return false;
         }
         final TouchWorker that = (TouchWorker) o;
-        return Objects.equals(file, that.file);
+        return new SimplePathPredicate(file).test(that.file);
 
     }
 
     @Override
     public int hashCode() {
-        return file != null ? file.hashCode() : 0;
+        return file != null ? new SimplePathPredicate(file).hashCode() : 0;
     }
 
     @Override
