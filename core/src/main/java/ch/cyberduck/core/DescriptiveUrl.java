@@ -104,6 +104,9 @@ public class DescriptiveUrl {
 
     @Override
     public String toString() {
-        return this.getUrl();
+        if(null == url) {
+            return null;
+        }
+        return url.toString();
     }
 }
