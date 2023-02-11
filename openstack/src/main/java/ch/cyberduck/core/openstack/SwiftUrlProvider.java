@@ -32,7 +32,6 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -65,10 +64,9 @@ public class SwiftUrlProvider implements UrlProvider {
     private static final Logger log = LogManager.getLogger(SwiftUrlProvider.class);
 
     private final PathContainerService containerService
-        = new DefaultPathContainerService();
+            = new DefaultPathContainerService();
 
     private final SwiftSession session;
-    private final SwiftRegionService regionService;
     private final Map<Path, Set<Distribution>> distributions;
     private final Map<Region, AccountInfo> accounts;
 
@@ -77,18 +75,13 @@ public class SwiftUrlProvider implements UrlProvider {
     }
 
     public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts) {
-        this(session, accounts, new SwiftRegionService(session));
+        this(session, accounts, Collections.emptyMap());
     }
 
-    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final SwiftRegionService regionService) {
-        this(session, accounts, regionService, Collections.emptyMap());
-    }
-
-    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts, final SwiftRegionService regionService,
+    public SwiftUrlProvider(final SwiftSession session, final Map<Region, AccountInfo> accounts,
                             final Map<Path, Set<Distribution>> distributions) {
         this.session = session;
         this.accounts = accounts;
-        this.regionService = regionService;
         this.distributions = distributions;
     }
 
@@ -96,41 +89,38 @@ public class SwiftUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
-            Region region = null;
-            try {
-                region = regionService.lookup(file);
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Failure looking up region for %s %s", file, e.getMessage()));
-            }
-            if(null == region) {
+            Optional<Region> optional = accounts.keySet().stream().filter(r -> StringUtils.equals(r.getRegionId(),
+                    file.attributes().getRegion())).findAny();
+            if(!optional.isPresent()) {
                 list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
             }
             else {
+                final Region region = optional.get();
                 list.addAll(new HostWebUrlProvider(session.getHost()).toUrl(file));
                 list.add(new DescriptiveUrl(
-                    URI.create(region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).toString()),
-                    DescriptiveUrl.Type.provider,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
-                        session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
+                        URI.create(region.getStorageUrl(containerService.getContainer(file).getName(),
+                                containerService.getKey(file)).toString()),
+                        DescriptiveUrl.Type.provider,
+                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                                session.getHost().getProtocol().getScheme().name().toUpperCase(Locale.ROOT))
                 ));
                 // In one hour
-                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.HOURS.toSeconds(1))));
+                list.add(this.toSignedUrl(region, file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
-                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.SECONDS.toSeconds(
-                    new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds")))));
+                list.add(this.toSignedUrl(region, file, (int) TimeUnit.SECONDS.toSeconds(
+                        new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
                 // 1 Week
-                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(7))));
+                list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(7)));
                 // 1 Month
-                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(30))));
+                list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(30)));
                 // 1 Year
-                list.addAll(this.sign(region, file, this.getExpiry((int) TimeUnit.DAYS.toSeconds(365))));
+                list.add(this.toSignedUrl(region, file, (int) TimeUnit.DAYS.toSeconds(365)));
             }
         }
         // Filter by matching container name
         final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
-                new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
-            .map(Map.Entry::getValue).findFirst();
+                        new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
+                .map(Map.Entry::getValue).findFirst();
         if(filtered.isPresent()) {
             // Add CloudFront distributions
             for(Distribution distribution : filtered.get()) {
@@ -140,49 +130,64 @@ public class SwiftUrlProvider implements UrlProvider {
         return list;
     }
 
-    /**
-     * @param expiry Seconds
-     */
-    protected DescriptiveUrlBag sign(final Region region, final Path file, final long expiry) {
+    protected DescriptiveUrl toSignedUrl(final Region region, final Path file, final int seconds) {
         if(!accounts.containsKey(region)) {
             log.warn(String.format("No account info for region %s available required to sign temporary URL", region));
-            return DescriptiveUrlBag.empty();
+            return DescriptiveUrl.EMPTY;
         }
-        // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header
-        // be set on the Swift account. Used to sign.
+        // OpenStack Swift Temporary URLs (TempURL) required the X-Account-Meta-Temp-URL-Key header be set on the Swift account. Used to sign.
         final AccountInfo info = accounts.get(region);
-        if(StringUtils.isBlank(info.getTempUrlKey())) {
+        final String tempUrlKey = info.getTempUrlKey();
+        if(StringUtils.isBlank(tempUrlKey)) {
             log.warn("Missing X-Account-Meta-Temp-URL-Key header value to sign temporary URL");
-            return DescriptiveUrlBag.empty();
+            return DescriptiveUrl.EMPTY;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", info.getTempUrlKey()));
+            log.info(String.format("Using X-Account-Meta-Temp-URL-Key header value %s to sign", tempUrlKey));
         }
-        final String signature = this.sign(info.getTempUrlKey(),
-                String.format("GET\n%d\n%s", expiry, String.format("%s/%s/%s",
-                        region.getStorageUrl().getRawPath(),
-                        URIEncoder.encode(containerService.getContainer(file).getName()),
-                        containerService.getKey(file))));
-        //Compile the temporary URL
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        for(Scheme scheme : Collections.singletonList(Scheme.valueOf(region.getStorageUrl().getScheme()))) {
-            final int port = region.getStorageUrl().getPort();
-            list.add(new DescriptiveUrl(URI.create(String.format("%s://%s%s%s?temp_url_sig=%s&temp_url_expires=%d",
-                    scheme.name(), region.getStorageUrl().getHost(),
-                    port == -1 ? StringUtils.EMPTY : port == scheme.getPort() ? StringUtils.EMPTY : String.format(":%d", port),
-                    region.getStorageUrl(
-                            containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath(), signature, expiry)),
-                    DescriptiveUrl.Type.signed,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                            + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                            UserDateFormatterFactory.get().getShortFormat(expiry * 1000))
-            ));
-        }
-        return list;
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.SECOND, seconds);
+        return new PresignedUrl(file, region, tempUrlKey, expiry);
     }
 
-    protected String sign(final String secret, final String body) {
-        try {
+    private final class PresignedUrl extends DescriptiveUrl {
+        private final Path file;
+        private final Region region;
+        private final String tempUrlKey;
+        private final Calendar expiry;
+
+        public PresignedUrl(final Path file, final Region region, final String tempUrlKey, final Calendar expiry) {
+            super(EMPTY);
+            this.file = file;
+            this.region = region;
+            this.tempUrlKey = tempUrlKey;
+            this.expiry = expiry;
+        }
+
+        @Override
+        public String getUrl() {
+            final long epoch = expiry.getTimeInMillis() / 1000;
+            final String signature;
+            try {
+                signature = this.sign(tempUrlKey,
+                        String.format("GET\n%d\n%s", epoch, String.format("%s/%s/%s",
+                                region.getStorageUrl().getRawPath(),
+                                URIEncoder.encode(containerService.getContainer(file).getName()),
+                                containerService.getKey(file))));
+            }
+            catch(NoSuchAlgorithmException | InvalidKeyException e) {
+                return DescriptiveUrl.EMPTY.getUrl();
+            }
+            Scheme scheme = Scheme.valueOf(region.getStorageUrl().getScheme());
+            final int port = region.getStorageUrl().getPort();
+            return String.format("%s://%s%s%s?temp_url_sig=%s&temp_url_expires=%d",
+                    scheme.name(), region.getStorageUrl().getHost(),
+                    port == -1 ? StringUtils.EMPTY : port == scheme.getPort() ? StringUtils.EMPTY : String.format(":%d", port),
+                    region.getStorageUrl(containerService.getContainer(file).getName(), containerService.getKey(file)).getRawPath(), signature,
+                    epoch);
+        }
+
+        private String sign(final String secret, final String body) throws NoSuchAlgorithmException, InvalidKeyException {
             // Acquire an HMAC/SHA1 from the raw key bytes.
             final SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                     Constants.HMAC_SHA1_ALGORITHM);
@@ -191,15 +196,22 @@ public class SwiftUrlProvider implements UrlProvider {
             mac.init(signingKey);
             return Hex.encodeHexString(mac.doFinal(body.getBytes(StandardCharsets.UTF_8)));
         }
-        catch(NoSuchAlgorithmException | InvalidKeyException e) {
-            log.error(String.format("Error signing %s %s", body, e.getMessage()));
-            return null;
-        }
-    }
 
-    protected long getExpiry(final int seconds) {
-        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expiry.add(Calendar.SECOND, seconds);
-        return expiry.getTimeInMillis() / 1000;
+        @Override
+        public String getPreview() {
+            return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()));
+        }
+
+        @Override
+        public Type getType() {
+            return DescriptiveUrl.Type.signed;
+        }
+
+        @Override
+        public String getHelp() {
+            return MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                    LocaleFactory.localizedString("Pre-Signed", "S3"));
+        }
     }
 }

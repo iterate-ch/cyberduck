@@ -190,7 +190,7 @@ public class SwiftSession extends HttpSession<Client> {
             };
         }
         if(type == UrlProvider.class) {
-            return (T) new SwiftUrlProvider(this, accounts, regionService, distributions);
+            return (T) new SwiftUrlProvider(this, accounts, distributions);
         }
         if(type == Find.class) {
             return (T) new SwiftFindFeature(this);
