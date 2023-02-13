@@ -648,9 +648,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 UrlProvider urlProvider = ((UrlProvider)Session.getFeature(typeof(UrlProvider)));
                 if (urlProvider != null)
                 {
-                    for (int i = 0; i < urlProvider.toUrl(SelectedPath).size(); i++)
+                    DescriptiveUrlBag urls = urlProvider.toUrl(SelectedPath);
+                    for (int i = 0; i < urls.size(); i++)
                     {
-                        DescriptiveUrl descUrl = (DescriptiveUrl)urlProvider.toUrl(SelectedPath).toArray()[i];
+                        DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
                         KeyValuePair<String, List<String>> entry =
                             new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                         items.Add(entry);
@@ -680,20 +681,22 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                DescriptiveUrlBag urls =
-                    ((UrlProvider)Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
-                    .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                        DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated);
-                for (int i = 0; i < urls.size(); i++)
+                UrlProvider urlProvider = ((UrlProvider)Session.getFeature(typeof(UrlProvider)));
+                if (urlProvider != null)
                 {
-                    DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
-                    KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
-                        descUrl.getHelp(), new List<string>());
-                    items.Add(entry);
-
-                    foreach (Path path in selected)
+                    DescriptiveUrlBag urls = urlProvider.toUrl(SelectedPath)
+                            .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                                DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated);
+                    for (int i = 0; i < urls.size(); i++)
                     {
-                        entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]).getPreview());
+                        DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
+                        KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
+                            descUrl.getHelp(), new List<string>());
+                        items.Add(entry);
+                        foreach (Path path in selected)
+                        {
+                            entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]).getPreview());
+                        }
                     }
                 }
             }
