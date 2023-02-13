@@ -166,10 +166,20 @@ public class STSCredentialsConfigurator {
                 }
                 else {
                     final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
-                    // If a profile defines the role_arn property then the profile is treated as an assume role profile
-                    final AWSSecurityTokenService service = this.getTokenService(host,
-                            host.getRegion(),
-                            sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
+                    final AWSSecurityTokenService service;
+                    if(sourceProfile.getProperties().containsKey("sso_start_url")) {
+                        // Read cached SSO credentials
+                        final CachedCredential cached = this.fetchSsoCredentials(sourceProfile.getProperties(), awsDirectory);
+                        service = this.getTokenService(host, host.getRegion(),
+                                cached.accessKey, cached.secretKey, cached.sessionToken);
+                    }
+                    else {
+                        // If a profile defines the role_arn property then the profile is treated as an assume role profile
+                        service = this.getTokenService(host, host.getRegion(),
+                                sourceProfile.getAwsAccessIdKey(),
+                                sourceProfile.getAwsSecretAccessKey(),
+                                sourceProfile.getAwsSessionToken());
+                    }
                     final String tokenCode;
                     if(basicProfile.getProperties().containsKey("mfa_serial")) {
                         tokenCode = prompt.prompt(
