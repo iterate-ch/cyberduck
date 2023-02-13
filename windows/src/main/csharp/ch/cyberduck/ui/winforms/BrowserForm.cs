@@ -1237,7 +1237,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         }
                         catch (ExternalException exception)
                         {
-                            Log.error("Could not copy URL to clipboard");
+                            Log.error("Could not copy URL to clipboard", exception);
                         }
                     };
                     foreach (string url in pair.Value)
