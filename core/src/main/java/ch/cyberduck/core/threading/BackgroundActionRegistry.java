@@ -100,7 +100,9 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove action %s", action));
         }
-        running.remove(action);
+        if(!running.remove(action)) {
+            log.warn(String.format("Failure finding action %s in running tasks", action));
+        }
         if(super.remove(action)) {
             ((BackgroundAction) action).removeListener(this);
         }

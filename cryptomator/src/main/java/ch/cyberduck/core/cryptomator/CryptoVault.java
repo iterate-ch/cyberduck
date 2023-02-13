@@ -689,7 +689,7 @@ public class CryptoVault implements Vault {
 
     @Override
     public int hashCode() {
-        return Objects.hash(home);
+        return Objects.hash(new SimplePathPredicate(home));
     }
 
     @Override

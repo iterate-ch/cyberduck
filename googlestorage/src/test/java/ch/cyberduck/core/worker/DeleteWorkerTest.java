@@ -54,7 +54,10 @@ public class DeleteWorkerTest extends AbstractGoogleStorageTest {
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(file.attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener());
+        int hashCode = worker.hashCode();
+        worker.run(session);
+        assertEquals(hashCode, worker.hashCode());
         // Find delete marker
         assertTrue(new GoogleStorageFindFeature(session).find(file));
         assertTrue(new GoogleStorageAttributesFinderFeature(session).find(file).isDuplicate());

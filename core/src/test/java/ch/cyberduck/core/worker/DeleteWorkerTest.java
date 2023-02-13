@@ -65,9 +65,11 @@ public class DeleteWorkerTest {
             }
         };
         final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(),
-            Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
+                Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))),
                 new DisabledProgressListener());
+        int hashCode = worker.hashCode();
         assertEquals(4, worker.run(session).size());
+        assertEquals(hashCode, worker.hashCode());
     }
 
     @Test

@@ -39,8 +39,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeleteWorkerTest extends AbstractDriveTest {
@@ -55,7 +54,10 @@ public class DeleteWorkerTest extends AbstractDriveTest {
         final Path file = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener(), true).run(session);
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener(), true);
+        int hashCode = worker.hashCode();
+        worker.run(session);
+        assertEquals(hashCode, worker.hashCode());
         assertTrue(new DriveFindFeature(session, fileid).find(file));
         assertTrue(new DriveAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).isHidden());
         assertTrue(new DefaultFindFeature(session).find(file));

@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class DeleteWorker extends Worker<List<Path>> {
 
@@ -184,23 +183,6 @@ public class DeleteWorker extends Worker<List<Path>> {
     @Override
     public List<Path> initialize() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof DeleteWorker)) {
-            return false;
-        }
-        final DeleteWorker that = (DeleteWorker) o;
-        return Objects.equals(files, that.files);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(files);
     }
 
     @Override

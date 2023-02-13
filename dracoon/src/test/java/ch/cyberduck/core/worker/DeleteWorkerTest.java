@@ -38,8 +38,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DeleteWorkerTest extends AbstractSDSTest {
@@ -55,7 +54,10 @@ public class DeleteWorkerTest extends AbstractSDSTest {
         final Path file = new SDSTouchFeature(session, nodeid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SDSFindFeature(session, nodeid).find(file));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener()).run(session);
+        final DeleteWorker worker = new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(folder), new DisabledProgressListener());
+        int hashCode = worker.hashCode();
+        worker.run(session);
+        assertEquals(hashCode, worker.hashCode());
         // Find delete marker
         assertFalse(new SDSFindFeature(session, nodeid).find(file));
         assertFalse(new SDSFindFeature(session, nodeid).find(new Path(file).withAttributes(PathAttributes.EMPTY)));

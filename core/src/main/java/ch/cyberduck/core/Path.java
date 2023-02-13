@@ -260,7 +260,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
             return false;
         }
         if(other instanceof Path) {
-            return new DefaultPathPredicate(this).equals(new DefaultPathPredicate((Path) other));
+            return new DefaultPathPredicate(this).test((Path) other);
         }
         return false;
     }
