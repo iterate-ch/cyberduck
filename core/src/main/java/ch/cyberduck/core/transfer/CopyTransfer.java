@@ -41,6 +41,7 @@ import org.apache.logging.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class CopyTransfer extends Transfer {
         final TransferAction action;
         if(reloadRequested) {
             action = TransferAction.forName(
-                PreferencesFactory.get().getProperty("queue.copy.reload.action"));
+                    PreferencesFactory.get().getProperty("queue.copy.reload.action"));
         }
         else {
             // Use default
@@ -152,7 +153,7 @@ public class CopyTransfer extends Transfer {
                 final Find find = destination.getFeature(Find.class);
                 if(find.find(copy)) {
                     // Found remote file
-                    if(upload.remote.isDirectory()) {
+                    if(copy.isDirectory()) {
                         // List files in target directory
                         if(this.list(destination, copy, null, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
@@ -192,8 +193,8 @@ public class CopyTransfer extends Transfer {
         }
         final AttributedList<Path> list = session.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
-        for(Path p : list) {
-            mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
+        for(Path f : list) {
+            mapping.put(f, new Path(copy, f.getName(), EnumSet.of(f.isDirectory() ? Path.Type.directory : Path.Type.file)));
         }
         final List<TransferItem> nullified = new ArrayList<>();
         for(Path p : list) {
