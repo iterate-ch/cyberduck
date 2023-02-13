@@ -565,6 +565,6 @@ CA
         </menu>
     </objects>
     <resources>
-        <image name="NSQuickLookTemplate" width="27" height="16"/>
+        <image name="NSQuickLookTemplate" width="20" height="13"/>
     </resources>
 </document>
