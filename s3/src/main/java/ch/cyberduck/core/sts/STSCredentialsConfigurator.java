@@ -136,9 +136,15 @@ public class STSCredentialsConfigurator {
                 final BasicProfile basicProfile = entry.getValue();
                 final String awsAccessIdKey = basicProfile.getAwsAccessIdKey();
                 // Matching access key or profile name
-                if(StringUtils.equals(profileName, profile) || StringUtils.equals(awsAccessIdKey, profile)) {
+                if(StringUtils.equals(profileName, profile)) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found matching profile %s", profile));
+                        log.debug(String.format("Found matching profile %s for profile name %s", profile, profileName));
+                    }
+                    return true;
+                }
+                else if(StringUtils.equals(awsAccessIdKey, profile)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Found matching profile %s for access key %s", profile, awsAccessIdKey));
                     }
                     return true;
                 }
