@@ -14,7 +14,7 @@ public class DescriptiveUrlTest {
         assertEquals(new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "a"), new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b"));
         assertNotEquals(new DescriptiveUrl(URI.create("http://host.domainb"), DescriptiveUrl.Type.provider, "a"), new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b"));
         assertEquals(new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.http), new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.http));
-        assertEquals("http://host.domain", new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.http).toString());
+        assertEquals("http://host.domain", new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.http).getUrl());
     }
 
     @Test
