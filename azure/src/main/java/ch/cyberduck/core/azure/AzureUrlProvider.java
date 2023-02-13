@@ -27,16 +27,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.preferences.HostPreferences;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.text.MessageFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.TimeZone;
 
@@ -66,57 +63,76 @@ public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) {
         return this.createSignedUrl(file, new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"));
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) {
         return DescriptiveUrl.EMPTY;
     }
 
-    private DescriptiveUrl createSignedUrl(final Path file, int seconds) throws BackgroundException {
-        try {
+    private DescriptiveUrl createSignedUrl(final Path file, int seconds) {
+        return new SharedAccessSignatureUrl(file, this.getExpiry(seconds));
+    }
+
+    protected Calendar getExpiry(final int seconds) {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.SECOND, seconds);
+        return expiry;
+    }
+
+    private final class SharedAccessSignatureUrl extends DescriptiveUrl {
+        private final Path file;
+        private final Calendar expiry;
+
+        public SharedAccessSignatureUrl(final Path file, final Calendar expiry) {
+            super(EMPTY);
+            this.file = file;
+            this.expiry = expiry;
+        }
+
+        @Override
+        public String getUrl() {
             final CloudBlob blob;
             try {
                 if(!session.isConnected()) {
-                    return DescriptiveUrl.EMPTY;
+                    return DescriptiveUrl.EMPTY.getUrl();
                 }
                 blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(file));
+                        .getBlobReferenceFromServer(containerService.getKey(file));
+                final String token;
+                token = blob.generateSharedAccessSignature(this.getPolicy(expiry), null);
+                return String.format("%s://%s%s?%s",
+                        Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token);
             }
-            catch(URISyntaxException e) {
-                return DescriptiveUrl.EMPTY;
+            catch(InvalidKeyException | URISyntaxException | StorageException e) {
+                return DescriptiveUrl.EMPTY.getUrl();
             }
-            final String token;
-            try {
-                token = blob.generateSharedAccessSignature(this.getPolicy(seconds), null);
-            }
-            catch(InvalidKeyException e) {
-                return DescriptiveUrl.EMPTY;
-            }
-            return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
-                Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
-                DescriptiveUrl.Type.signed,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                    + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                    UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
         }
-        catch(StorageException e) {
-            throw new AzureExceptionMappingService().map(e);
+
+        private SharedAccessBlobPolicy getPolicy(final Calendar expiry) {
+            final SharedAccessBlobPolicy policy = new SharedAccessBlobPolicy();
+            policy.setSharedAccessExpiryTime(expiry.getTime());
+            policy.setPermissions(EnumSet.of(SharedAccessBlobPermissions.READ));
+            return policy;
         }
-    }
 
-    private SharedAccessBlobPolicy getPolicy(final int expiry) {
-        final SharedAccessBlobPolicy policy = new SharedAccessBlobPolicy();
-        policy.setSharedAccessExpiryTime(new Date(this.getExpiry(expiry)));
-        policy.setPermissions(EnumSet.of(SharedAccessBlobPermissions.READ));
-        return policy;
-    }
+        @Override
+        public String getPreview() {
+            return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()));
+        }
 
-    protected Long getExpiry(final int seconds) {
-        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        expiry.add(Calendar.SECOND, seconds);
-        return expiry.getTimeInMillis();
+        @Override
+        public Type getType() {
+            return DescriptiveUrl.Type.signed;
+        }
+
+        @Override
+        public String getHelp() {
+            return MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
+                    LocaleFactory.localizedString("Pre-Signed", "S3"));
+        }
     }
 }
