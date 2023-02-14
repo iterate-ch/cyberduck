@@ -19,7 +19,11 @@ import ch.cyberduck.core.random.NonceGenerator;
 
 public final class RandomNonceGenerator implements NonceGenerator {
 
-    private final static int len = 16;
+    private final int len;
+
+    public RandomNonceGenerator(final int len) {
+        this.len = len;
+    }
 
     @Override
     public byte[] next() {

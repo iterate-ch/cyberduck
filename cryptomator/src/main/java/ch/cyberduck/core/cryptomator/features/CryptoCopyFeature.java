@@ -50,7 +50,7 @@ public class CryptoCopyFeature implements Copy {
             // Write header to be reused in writer
             final FileHeader header = vault.getFileHeaderCryptor().create();
             status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
-            status.setNonces(new RotatingNonceGenerator(vault.numberOfChunks(status.getLength())));
+            status.setNonces(new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
         }
         if(vault.contains(source) && vault.contains(copy)) {
             return vault.decrypt(session, proxy.withTarget(target).copy(

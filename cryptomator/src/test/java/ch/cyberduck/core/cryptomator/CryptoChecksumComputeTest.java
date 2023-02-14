@@ -70,7 +70,7 @@ public class CryptoChecksumComputeTest {
         final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();
         final CryptoChecksumCompute compute = new CryptoChecksumCompute(sha, cryptomator);
-        final RandomNonceGenerator nonces = new RandomNonceGenerator();
+        final RandomNonceGenerator nonces = new RandomNonceGenerator(cryptomator.getNonceSize());
         assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withLength(1025L).withHeader(header).withNonces(nonces)).hash);
         assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withLength(1025L).withHeader(header).withNonces(nonces)),
             compute.compute(new NullInputStream(1025L), new TransferStatus().withLength(1025L).withHeader(header).withNonces(nonces)));

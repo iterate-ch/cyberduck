@@ -75,7 +75,8 @@ public class CryptoOutputStreamTest {
         final CryptoVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getFileHeaderCryptor().create();
-        final CryptoOutputStream stream = new CryptoOutputStream(new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(), 0);
+        final CryptoOutputStream stream = new CryptoOutputStream(
+                new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(vault.getNonceSize()), 0);
 
         final byte[] part1 = RandomUtils.nextBytes(1024);
         final byte[] part2 = RandomUtils.nextBytes(1024);
@@ -97,7 +98,8 @@ public class CryptoOutputStreamTest {
         final CryptoVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getFileHeaderCryptor().create();
-        final CryptoOutputStream stream = new CryptoOutputStream(new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(), 0);
+        final CryptoOutputStream stream = new CryptoOutputStream(
+                new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(vault.getNonceSize()), 0);
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getFileContentCryptor().cleartextChunkSize());
         stream.write(cleartext, 0, cleartext.length);
@@ -116,7 +118,8 @@ public class CryptoOutputStreamTest {
         final CryptoVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
         final FileHeader header = vault.getFileHeaderCryptor().create();
-        final CryptoOutputStream stream = new CryptoOutputStream(new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(), 0);
+        final CryptoOutputStream stream = new CryptoOutputStream(
+                new ProxyOutputStream(cipherText), vault.getFileContentCryptor(), header, new RandomNonceGenerator(vault.getNonceSize()), 0);
 
         final byte[] cleartext = RandomUtils.nextBytes(vault.getFileContentCryptor().cleartextChunkSize() + 1);
         stream.write(cleartext, 0, cleartext.length);

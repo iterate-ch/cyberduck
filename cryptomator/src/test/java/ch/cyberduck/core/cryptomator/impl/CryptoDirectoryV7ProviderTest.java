@@ -26,18 +26,22 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.IOUtils;
+import org.cryptomator.cryptolib.api.CryptorProvider;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.cryptomator.CryptoVault.VAULT_VERSION;
+import static ch.cyberduck.core.cryptomator.CryptoVaultTest.createJWT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -69,17 +73,23 @@ public class CryptoDirectoryV7ProviderTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                             final String masterKey = "{\n" +
-                                "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
-                                "  \"scryptCostParam\": 16384,\n" +
-                                "  \"scryptBlockSize\": 8,\n" +
-                                "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
-                                "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
-                                "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
-                                "  \"version\": 5\n" +
-                                "}";
-                            return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                                    "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
+                                    "  \"scryptCostParam\": 16384,\n" +
+                                    "  \"scryptBlockSize\": 8,\n" +
+                                    "  \"primaryMasterKey\": \"Q7pGo1l0jmZssoQh9rXFPKJE9NIXvPbL+HcnVSR9CHdkeR8AwgFtcw==\",\n" +
+                                    "  \"hmacMasterKey\": \"xzBqT4/7uEcQbhHFLC0YmMy4ykVKbuvJEA46p1Xm25mJNuTc20nCbw==\",\n" +
+                                    "  \"versionMac\": \"hlNr3dz/CmuVajhaiGyCem9lcVIUjDfSMLhjppcXOrM=\",\n" +
+                                    "  \"version\": 8\n" +
+                                    "}";
+                            if("masterkey.cryptomator".equals(file.getName())) {
+                                return IOUtils.toInputStream(masterKey, Charset.defaultCharset());
+                            }
+                            if("vault.cryptomator".equals(file.getName())) {
+                                return IOUtils.toInputStream(createJWT(masterKey, VAULT_VERSION, CryptorProvider.Scheme.SIV_GCM, "vault"), Charset.defaultCharset());
+                            }
+                            throw new NotfoundException(String.format("%s not found", file.getName()));
                         }
 
                         @Override
