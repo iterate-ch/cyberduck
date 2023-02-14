@@ -79,4 +79,12 @@ public class PageantAuthenticator extends AgentAuthenticator {
         }
         return identities;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PageantAuthenticator{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
+    }
 }
