@@ -57,11 +57,12 @@ public class PageantAuthenticator extends AgentAuthenticator {
 
     @Override
     public Collection<Identity> getIdentities() {
-        if(!PageantConnector.isConnectorAvailable()) {
-            log.warn(String.format("Disabled agent %s", this));
+        if(null == proxy) {
+            log.warn("Missing proxy reference");
             return Collections.emptyList();
         }
-        if(null == proxy) {
+        if(!proxy.isRunning()) {
+            log.warn(String.format("Agent %s not running", this));
             return Collections.emptyList();
         }
         if(log.isDebugEnabled()) {
