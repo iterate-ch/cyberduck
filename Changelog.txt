@@ -1,6 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.6
+- [Bugfix] Support for vaults using GCM encryption (Cryptomator) (#14207)
+- [Bugfix] Recursive search displaying folders not containing files matching the pattern (#13925)
+- [Bugfix] Copying or moving files with two browser windows may not use server side operation (#14084)
+- [Bugfix] Lazily calculate pre-signed URLs (S3, Openstack Swift, Azure)
+
 8.5.5
 - [Bugfix] Save OAuth tokens with username to allow connecting to different accounts (Google Drive, Google Storage, OneDrive, Dropbox, Box)
 
