@@ -30,11 +30,8 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,14 +47,16 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
     public void testGet() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
+        final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback(),
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         assertEquals("https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
-            new SwiftUrlProvider(session).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
+                new SwiftUrlProvider(session, accounts).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
     }
 
     @Test
     public void testSigned() throws Exception {
         final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback(),
-            new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
+                new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         final UrlProvider provider = new SwiftUrlProvider(session, accounts);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
@@ -74,19 +73,5 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
             assertNotEquals(DescriptiveUrl.EMPTY, s);
         }
         new SwiftDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testTempUrl() {
-        final Region region = new Region("DFW", URI.create("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee"), URI.create("http://m"));
-        Map<Region, AccountInfo> accounts = new HashMap<Region, AccountInfo>();
-        accounts.put(region, new AccountInfo(1L, 1, "k"));
-        final Path container = new Path("test w.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(container, "key f", EnumSet.of(Path.Type.file));
-        final Path file2 = new Path(file, "key2", EnumSet.of(Path.Type.file));
-        final SwiftUrlProvider provider = new SwiftUrlProvider(session, accounts);
-        final Iterator<DescriptiveUrl> iterator = provider.sign(region, file2, 1379500716).iterator();
-        assertEquals("http://storage101.hkg1.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test%20w.cyberduck.ch/key%20f/key2?temp_url_sig=a079831228bfea78853f1951e4d10f2599782219&temp_url_expires=1379500716",
-            iterator.next().getUrl());
     }
 }

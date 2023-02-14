@@ -42,6 +42,6 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
         final AzureUrlProvider provider = new AzureUrlProvider(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(DescriptiveUrl.EMPTY, provider.toDownloadUrl(file, null, new DisabledPasswordCallback()));
+        assertEquals(DescriptiveUrl.EMPTY.getUrl(), provider.toDownloadUrl(file, null, new DisabledPasswordCallback()).getUrl());
     }
 }

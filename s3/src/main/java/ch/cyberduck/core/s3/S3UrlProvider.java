@@ -45,6 +45,7 @@ import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
@@ -91,7 +92,7 @@ public class S3UrlProvider implements UrlProvider {
                 list.add(this.toSignedUrl(file, (int) TimeUnit.HOURS.toSeconds(1)));
                 // Default signed URL expiring in 24 hours.
                 list.add(this.toSignedUrl(file, (int) TimeUnit.SECONDS.toSeconds(
-                    new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
+                        new HostPreferences(session.getHost()).getInteger("s3.url.expire.seconds"))));
                 // 1 Week
                 list.add(this.toSignedUrl(file, (int) TimeUnit.DAYS.toSeconds(7)));
                 switch(session.getSignatureVersion()) {
@@ -108,14 +109,14 @@ public class S3UrlProvider implements UrlProvider {
         }
         // AWS services require specifying an Amazon S3 bucket using S3://bucket
         list.add(new DescriptiveUrl(URI.create(String.format("s3://%s%s",
-            containerService.getContainer(file).getName(),
-            file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
-            DescriptiveUrl.Type.provider,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
+                containerService.getContainer(file).getName(),
+                file.isRoot() ? Path.DELIMITER : containerService.isContainer(file) ? Path.DELIMITER : String.format("/%s", URIEncoder.encode(containerService.getKey(file))))),
+                DescriptiveUrl.Type.provider,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), "S3")));
         // Filter by matching container name
         final Optional<Set<Distribution>> filtered = distributions.entrySet().stream().filter(entry ->
-                new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
-            .map(Map.Entry::getValue).findFirst();
+                        new SimplePathPredicate(containerService.getContainer(file)).test(entry.getKey()))
+                .map(Map.Entry::getValue).findFirst();
         if(filtered.isPresent()) {
             // Add CloudFront distributions
             for(Distribution distribution : filtered.get()) {
@@ -161,7 +162,7 @@ public class S3UrlProvider implements UrlProvider {
             }
         }
         return new DescriptiveUrl(URI.create(url.toString()), DescriptiveUrl.Type.http,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), scheme.name().toUpperCase(Locale.ROOT)));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), scheme.name().toUpperCase(Locale.ROOT)));
     }
 
     /**
@@ -175,28 +176,7 @@ public class S3UrlProvider implements UrlProvider {
         // Determine expiry time for URL
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.SECOND, seconds);
-        final String secret = store.findLoginPassword(session.getHost());
-        if(StringUtils.isBlank(secret)) {
-            if(log.isWarnEnabled()) {
-                log.warn("No secret found in password store required to sign temporary URL");
-            }
-            return DescriptiveUrl.EMPTY;
-        }
-        String region = session.getHost().getRegion();
-        if(session.isConnected()) {
-            if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(containerService.getContainer(file).getName())) {
-                region = session.getClient().getRegionEndpointCache()
-                    .getRegionForBucketName(containerService.getContainer(file).getName());
-            }
-        }
-        return new DescriptiveUrl(URI.create(new S3PresignedUrlProvider(session).create(
-            secret,
-            containerService.getContainer(file).getName(), region, containerService.getKey(file),
-            "GET", expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
-            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
-        );
+        return new PresignedUrl(file, expiry);
     }
 
     private String getHostnameForContainer(final Path bucket) {
@@ -208,5 +188,73 @@ public class S3UrlProvider implements UrlProvider {
         }
         return session.getHost().getHostname();
     }
-}
 
+    private final class PresignedUrl extends DescriptiveUrl {
+        private final Path file;
+        private final Calendar expiry;
+
+        public PresignedUrl(final Path file, final Calendar expiry) {
+            super(EMPTY);
+            this.file = file;
+            this.expiry = expiry;
+        }
+
+        @Override
+        public String getUrl() {
+            final String secret = store.findLoginPassword(session.getHost());
+            if(StringUtils.isBlank(secret)) {
+                if(log.isWarnEnabled()) {
+                    log.warn("No secret found in password store required to sign temporary URL");
+                }
+                return DescriptiveUrl.EMPTY.getUrl();
+            }
+            String region = session.getHost().getRegion();
+            if(session.isConnected()) {
+                if(session.getClient().getRegionEndpointCache().containsRegionForBucketName(containerService.getContainer(file).getName())) {
+                    region = session.getClient().getRegionEndpointCache()
+                            .getRegionForBucketName(containerService.getContainer(file).getName());
+                }
+            }
+            return new S3PresignedUrlProvider(session).create(
+                    secret,
+                    containerService.getContainer(file).getName(), region, containerService.getKey(file),
+                    "GET", expiry.getTimeInMillis());
+        }
+
+        @Override
+        public String getPreview() {
+            return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()));
+        }
+
+        @Override
+        public Type getType() {
+            return DescriptiveUrl.Type.signed;
+        }
+
+        @Override
+        public String getHelp() {
+            return MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            if(!super.equals(o)) {
+                return false;
+            }
+            final PresignedUrl that = (PresignedUrl) o;
+            return Objects.equals(file, that.file) && Objects.equals(expiry, that.expiry);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), file, expiry);
+        }
+    }
+}

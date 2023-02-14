@@ -1207,11 +1207,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             PopulateCopyUrlMenuItemPopup(sender as MenuItem, GetCopyUrls());
         }
 
-        private void PopulateCopyUrlMenuItemPopup(MenuItem mainItem, IList<KeyValuePair<string, List<string>>> items)
+        private void PopulateCopyUrlMenuItemPopup(MenuItem mainItem, IList<KeyValuePair<string, List<DescriptiveUrl>>> items)
         {
             mainItem.MenuItems.Clear();
             int c = 0;
-            foreach (KeyValuePair<string, List<string>> pair in items)
+            foreach (KeyValuePair<string, List<DescriptiveUrl>> pair in items)
             {
                 if (c > 0)
                 {
@@ -1221,14 +1221,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(pair.Key);
                 if (pair.Value.Count > 0)
                 {
-                    KeyValuePair<string, List<string>> pair1 = pair;
+                    KeyValuePair<string, List<DescriptiveUrl>> pair1 = pair;
                     item.Click += delegate
                     {
                         StringBuilder sb = new StringBuilder();
                         for (int i = 0; i < pair1.Value.Count; i++)
                         {
                             if (i > 0) sb.Append(Environment.NewLine);
-                            sb.Append(pair1.Value[i]);
+                            sb.Append(pair1.Value[i].getUrl());
                         }
                         try
                         {
@@ -1237,12 +1237,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                         }
                         catch (ExternalException exception)
                         {
-                            Log.error("Could not copy URL to clipboard");
+                            Log.error("Could not copy URL to clipboard", exception);
                         }
                     };
-                    foreach (string url in pair.Value)
+                    foreach (DescriptiveUrl url in pair.Value)
                     {
-                        mainItem.MenuItems.Add(url).Enabled = false;
+                        mainItem.MenuItems.Add(url.getPreview()).Enabled = false;
                     }
                 }
                 else
@@ -1258,11 +1258,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             PopulateOpenUrlMenuItemPopup(sender as MenuItem, GetOpenUrls());
         }
 
-        private void PopulateOpenUrlMenuItemPopup(MenuItem mainItem, IList<KeyValuePair<string, List<string>>> items)
+        private void PopulateOpenUrlMenuItemPopup(MenuItem mainItem, IList<KeyValuePair<string, List<DescriptiveUrl>>> items)
         {
             mainItem.MenuItems.Clear();
             int c = 0;
-            foreach (KeyValuePair<string, List<string>> pair in items)
+            foreach (KeyValuePair<string, List<DescriptiveUrl>> pair in items)
             {
                 if (c > 0)
                 {
@@ -1272,17 +1272,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(pair.Key);
                 if (pair.Value.Count > 0)
                 {
-                    KeyValuePair<string, List<string>> pair1 = pair;
+                    KeyValuePair<string, List<DescriptiveUrl>> pair1 = pair;
                     item.Click += delegate
                     {
                         for (int i = 0; i < pair1.Value.Count; i++)
                         {
-                            BrowserLauncherFactory.get().open(pair1.Value[i]);
+                            BrowserLauncherFactory.get().open(pair1.Value[i].getUrl());
                         }
                     };
-                    foreach (string url in pair.Value)
+                    foreach (DescriptiveUrl url in pair.Value)
                     {
-                        mainItem.MenuItems.Add(url).Enabled = false;
+                        mainItem.MenuItems.Add(url.getPreview()).Enabled = false;
                     }
                 }
                 else

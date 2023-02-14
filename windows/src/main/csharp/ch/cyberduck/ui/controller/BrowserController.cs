@@ -39,6 +39,7 @@ using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
+using DynamicData;
 using java.lang;
 using java.text;
 using java.util;
@@ -634,29 +635,30 @@ namespace Ch.Cyberduck.Ui.Controller
             return IsMounted();
         }
 
-        private List<KeyValuePair<String, List<String>>> View_GetCopyUrls()
+        private List<KeyValuePair<String, List<DescriptiveUrl>>> View_GetCopyUrls()
         {
-            List<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
+            List<KeyValuePair<String, List<DescriptiveUrl>>> items = new List<KeyValuePair<String, List<DescriptiveUrl>>>();
             IList<Path> selected = View.SelectedPaths;
             if (selected.Count == 0)
             {
-                items.Add(new KeyValuePair<string, List<String>>(LocaleFactory.localizedString("None"),
-                    new List<string>()));
+                items.Add(new KeyValuePair<string, List<DescriptiveUrl>>(LocaleFactory.localizedString("None"),
+                    new List<DescriptiveUrl>()));
             }
             else
             {
                 UrlProvider urlProvider = ((UrlProvider)Session.getFeature(typeof(UrlProvider)));
                 if (urlProvider != null)
                 {
-                    for (int i = 0; i < urlProvider.toUrl(SelectedPath).size(); i++)
+                    DescriptiveUrlBag urls = urlProvider.toUrl(SelectedPath);
+                    for (int i = 0; i < urls.size(); i++)
                     {
-                        DescriptiveUrl descUrl = (DescriptiveUrl)urlProvider.toUrl(SelectedPath).toArray()[i];
-                        KeyValuePair<String, List<String>> entry =
-                            new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
+                        DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
+                        KeyValuePair<String, List<DescriptiveUrl>> entry =
+                            new KeyValuePair<string, List<DescriptiveUrl>>(descUrl.getHelp(), new List<DescriptiveUrl>());
                         items.Add(entry);
                         foreach (Path path in selected)
                         {
-                            entry.Value.Add(((DescriptiveUrl)urlProvider.toUrl(path).toArray()[i]).getUrl());
+                            entry.Value.Add(((DescriptiveUrl)urlProvider.toUrl(path).toArray()[i]));
                         }
                     }
                 }
@@ -669,31 +671,33 @@ namespace Ch.Cyberduck.Ui.Controller
             return View.CurrentView == BrowserView.File;
         }
 
-        private IList<KeyValuePair<string, List<string>>> View_GetOpenUrls()
+        private IList<KeyValuePair<string, List<DescriptiveUrl>>> View_GetOpenUrls()
         {
-            IList<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
+            IList<KeyValuePair<String, List<DescriptiveUrl>>> items = new List<KeyValuePair<String, List<DescriptiveUrl>>>();
             IList<Path> selected = View.SelectedPaths;
             if (selected.Count == 0)
             {
-                items.Add(new KeyValuePair<string, List<String>>(LocaleFactory.localizedString("None"),
-                    new List<string>()));
+                items.Add(new KeyValuePair<string, List<DescriptiveUrl>>(LocaleFactory.localizedString("None"),
+                    new List<DescriptiveUrl>()));
             }
             else
             {
-                DescriptiveUrlBag urls =
-                    ((UrlProvider)Session.getFeature(typeof(UrlProvider))).toUrl(SelectedPath)
-                    .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
-                        DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated);
-                for (int i = 0; i < urls.size(); i++)
+                UrlProvider urlProvider = ((UrlProvider)Session.getFeature(typeof(UrlProvider)));
+                if (urlProvider != null)
                 {
-                    DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
-                    KeyValuePair<String, List<String>> entry = new KeyValuePair<string, List<string>>(
-                        descUrl.getHelp(), new List<string>());
-                    items.Add(entry);
-
-                    foreach (Path path in selected)
+                    DescriptiveUrlBag urls = urlProvider.toUrl(SelectedPath)
+                            .filter(DescriptiveUrl.Type.http, DescriptiveUrl.Type.cname, DescriptiveUrl.Type.cdn,
+                                DescriptiveUrl.Type.signed, DescriptiveUrl.Type.authenticated);
+                    for (int i = 0; i < urls.size(); i++)
                     {
-                        entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]).getUrl());
+                        DescriptiveUrl descUrl = (DescriptiveUrl)urls.toArray()[i];
+                        KeyValuePair<String, List<DescriptiveUrl>> entry = new KeyValuePair<string, List<DescriptiveUrl>>(
+                            descUrl.getHelp(), new List<DescriptiveUrl>());
+                        items.Add(entry);
+                        foreach (Path path in selected)
+                        {
+                            entry.Value.Add(((DescriptiveUrl)urls.toArray()[i]));
+                        }
                     }
                 }
             }

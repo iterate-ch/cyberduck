@@ -44,9 +44,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
     public delegate IList<string> ArchivesHandler();
 
-    public delegate IList<KeyValuePair<String, List<String>>> CopyUrlHandler();
+    public delegate IList<KeyValuePair<String, List<DescriptiveUrl>>> CopyUrlHandler();
 
-    public delegate IList<KeyValuePair<String, List<String>>> OpenUrlHandler();
+    public delegate IList<KeyValuePair<String, List<DescriptiveUrl>>> OpenUrlHandler();
 
     public delegate IList<Host> BookmarksHandler();
 
