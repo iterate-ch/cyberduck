@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -67,7 +68,7 @@ public abstract class FileController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        if(StringUtils.contains(inputField.stringValue(), Path.DELIMITER)) {
+        if(PreferencesFactory.get().getList("browser.filter.regex").stream().anyMatch(s -> s.matches(inputField.stringValue()))) {
             return false;
         }
         final String input = StringUtils.trim(inputField.stringValue());
