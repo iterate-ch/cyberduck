@@ -178,7 +178,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         catch(UnknownHostException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        configuration.setServiceUnavailableRetryStrategy(new PreconditionFailedResponseInterceptor(host, authorizationService, prompt,
+                new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt)));
         configuration.addInterceptorLast(authorizationService);
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
