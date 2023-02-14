@@ -57,27 +57,35 @@ public class PageantAuthenticator extends AgentAuthenticator {
 
     @Override
     public Collection<Identity> getIdentities() {
-        if(!PageantConnector.isConnectorAvailable()) {
-            log.warn(String.format("Disabled agent %s", this));
+        if(null == proxy) {
+            log.warn("Missing proxy reference");
             return Collections.emptyList();
         }
-        if(null == proxy) {
+        if(!proxy.isRunning()) {
+            log.warn(String.format("Agent %s not running", this));
             return Collections.emptyList();
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Retrieve identities from proxy %s", proxy));
         }
-        final List<Identity> identities
-                = new ArrayList<Identity>();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Found %d identities", identities.size()));
-        }
+        final List<Identity> identities = new ArrayList<Identity>();
         try {
             Collections.addAll(identities, proxy.getIdentities());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Found %d identities", identities.size()));
+            }
         }
         catch(Exception e) {
             log.warn(String.format("Ignore failure reading identities from %s", proxy));
         }
         return identities;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PageantAuthenticator{");
+        sb.append("proxy=").append(proxy);
+        sb.append('}');
+        return sb.toString();
     }
 }

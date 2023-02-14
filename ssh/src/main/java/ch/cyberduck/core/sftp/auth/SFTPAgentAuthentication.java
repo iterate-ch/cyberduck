@@ -71,6 +71,10 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s for %s", agent, bookmark));
         }
+        if(agent.getIdentities().isEmpty()) {
+            log.warn(String.format("Skip authentication with agent %s with no identity available", agent));
+            return false;
+        }
         final Collection<Identity> identities;
         if(new OpenSSHIdentitiesOnlyConfigurator().isIdentitiesOnly(bookmark.getHostname())) {
             final Credentials configuration = new OpenSSHCredentialsConfigurator().configure(bookmark);

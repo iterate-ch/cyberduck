@@ -55,7 +55,11 @@ public class OpenSSHAgentAuthenticator extends AgentAuthenticator {
     @Override
     public Collection<Identity> getIdentities() {
         if(null == proxy) {
-            log.warn(String.format("SSH agent %s is not running", this));
+            log.warn("Missing proxy reference");
+            return Collections.emptyList();
+        }
+        if(!proxy.isRunning()) {
+            log.warn(String.format("Agent %s not running", this));
             return Collections.emptyList();
         }
         if(log.isDebugEnabled()) {
