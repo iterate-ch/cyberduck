@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -60,8 +59,6 @@ public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseIn
                 if(executionCount <= MAX_RETRIES) {
                     try {
                         log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
-                        // Reset OAuth Tokens
-                        bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
                         service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode));
                         // Try again
                         return true;

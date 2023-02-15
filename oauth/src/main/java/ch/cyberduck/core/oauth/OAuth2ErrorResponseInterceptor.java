@@ -18,7 +18,6 @@ package ch.cyberduck.core.oauth;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -59,8 +58,6 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                         }
                         catch(InteroperabilityException | LoginFailureException e) {
                             log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-                            // Reset OAuth Tokens
-                            bookmark.getCredentials().setOauth(OAuthTokens.EMPTY);
                             service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback(), OAuth2AuthorizationService.FlowType.AuthorizationCode));
                         }
                         // Try again
