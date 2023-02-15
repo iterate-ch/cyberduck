@@ -77,7 +77,7 @@ public class GraphMoveFeature implements Move {
         final DriveItem item = session.getItem(file);
         try {
             final DriveItem.Metadata metadata = Files.patch(item, patchOperation);
-            final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(session.getMetadata(item, null));
+            final PathAttributes attributes = new GraphAttributesFinderFeature(session, fileid).toAttributes(metadata);
             fileid.cache(file, null);
             fileid.cache(renamed, attributes.getFileId());
             return renamed.withAttributes(attributes);
