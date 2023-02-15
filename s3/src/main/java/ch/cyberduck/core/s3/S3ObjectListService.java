@@ -93,10 +93,6 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
 
                 for(StorageObject object : chunk.getObjects()) {
                     final String key = URIEncoder.decode(object.getKey());
-                    if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
-                        log.warn(String.format("Skipping prefix %s", key));
-                        continue;
-                    }
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Skip placeholder key %s", key));
