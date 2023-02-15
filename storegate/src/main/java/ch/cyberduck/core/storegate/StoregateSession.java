@@ -31,7 +31,6 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.jersey.HttpComponentsProvider;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -134,7 +133,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.authorize(host, controller, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
+        authorizationService.authorize(host, controller, cancel);
         try {
             final HttpRequestBase request = new HttpPost(
                 new HostUrlProvider().withUsername(false).withPath(true).get(
