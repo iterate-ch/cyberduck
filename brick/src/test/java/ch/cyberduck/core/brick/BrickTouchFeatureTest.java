@@ -16,6 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -24,9 +25,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BrickTouchFeatureTest extends AbstractBrickTest {
@@ -42,6 +45,7 @@ public class BrickTouchFeatureTest extends AbstractBrickTest {
                 .touch(new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertTrue(new BrickFindFeature(session).find(lowerCase));
         assertTrue(new BrickFindFeature(session).find(upperCase));
-        new BrickDeleteFeature(session).delete(Collections.singletonList(lowerCase), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        assertEquals(1, new BrickListService(session).list(container, new DisabledListProgressListener()).size());
+        new BrickDeleteFeature(session).delete(Arrays.asList(lowerCase, container), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
