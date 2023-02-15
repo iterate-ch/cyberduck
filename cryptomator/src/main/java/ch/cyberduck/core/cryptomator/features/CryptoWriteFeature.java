@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoOutputStream;
 import ch.cyberduck.core.cryptomator.CryptoTransferStatus;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
@@ -51,8 +52,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(null == status.getNonces()) {
-                // If not previously set in bulk feature
-                status.setNonces(new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
+                status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
+                        new RandomNonceGenerator(vault.getNonceSize()) :
+                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
             }
             final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),
                     new CryptoTransferStatus(vault, status), callback);
