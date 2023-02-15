@@ -38,7 +38,6 @@ import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -175,16 +174,16 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel,
-                    OAuth2AuthorizationService.FlowType.AuthorizationCode));
+            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel
+            ));
         }
         catch(InteroperabilityException e) {
             // Perm.INVALID_GRANT
             log.warn(String.format("Failure %s refreshing OAuth tokens", e));
             // Reset OAuth Tokens
             host.getCredentials().setOauth(OAuthTokens.EMPTY);
-            authorizationService.authorize(host, prompt, cancel,
-                    OAuth2AuthorizationService.FlowType.AuthorizationCode);
+            authorizationService.authorize(host, prompt, cancel
+            );
         }
         try {
             final StringBuilder url = new StringBuilder();

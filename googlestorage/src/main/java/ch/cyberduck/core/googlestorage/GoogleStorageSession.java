@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
-import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -80,7 +79,7 @@ public class GoogleStorageSession extends HttpSession<Storage> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt,
                       final CancelCallback cancel) throws BackgroundException {
-        authorizationService.authorize(host, prompt, cancel, OAuth2AuthorizationService.FlowType.AuthorizationCode);
+        authorizationService.authorize(host, prompt, cancel);
     }
 
     @Override

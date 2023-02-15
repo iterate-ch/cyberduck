@@ -73,8 +73,8 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     }
 
     @Override
-    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel, final FlowType type) throws BackgroundException {
-        return tokens = super.authorize(bookmark, prompt, cancel, type);
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        return tokens = super.authorize(bookmark, prompt, cancel);
     }
 
     public OAuthTokens refresh() throws BackgroundException {
@@ -129,6 +129,12 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     @Override
     public OAuth2RequestInterceptor withRedirectUri(final String redirectUri) {
         super.withRedirectUri(redirectUri);
+        return this;
+    }
+
+    @Override
+    public OAuth2RequestInterceptor withFlowType(final FlowType flowType) {
+        super.withFlowType(flowType);
         return this;
     }
 

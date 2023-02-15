@@ -86,6 +86,7 @@ public class OAuth2AuthorizationService {
             = BearerToken.authorizationHeaderAccessMethod();
 
     private String redirectUri = OOB_REDIRECT_URI;
+    private FlowType flowType = FlowType.AuthorizationCode;
 
     private final HttpTransport transport;
 
@@ -108,8 +109,7 @@ public class OAuth2AuthorizationService {
         this.pkce = pkce;
     }
 
-    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel,
-                                 final FlowType type) throws BackgroundException {
+    public OAuthTokens authorize(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         final OAuthTokens saved = credentials.getOauth();
         if(saved.validate()) {
@@ -136,7 +136,7 @@ public class OAuth2AuthorizationService {
             log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
         }
         final TokenResponse response;
-        switch(type) {
+        switch(flowType) {
             case AuthorizationCode:
                 response = this.authorizeWithCode(bookmark, prompt);
                 break;
@@ -284,6 +284,11 @@ public class OAuth2AuthorizationService {
 
     public OAuth2AuthorizationService withRedirectUri(final String redirectUri) {
         this.redirectUri = redirectUri;
+        return this;
+    }
+
+    public OAuth2AuthorizationService withFlowType(final FlowType flowType) {
+        this.flowType = flowType;
         return this;
     }
 

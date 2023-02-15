@@ -1,12 +1,12 @@
-package ch.cyberduck.core.oauth;
+package ch.cyberduck.core.sds;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -19,47 +19,46 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.ServiceUnavailableRetryStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
-    private static final Logger log = LogManager.getLogger(OAuth2ErrorResponseInterceptor.class);
+public class PreconditionFailedResponseInterceptor extends OAuth2ErrorResponseInterceptor {
+
+    private static final Logger log = LogManager.getLogger(PreconditionFailedResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
     private final Host bookmark;
     private final OAuth2RequestInterceptor service;
     private final LoginCallback prompt;
+    private final ServiceUnavailableRetryStrategy next;
 
-    public OAuth2ErrorResponseInterceptor(final Host bookmark,
-                                          final OAuth2RequestInterceptor service,
-                                          final LoginCallback prompt) {
+    public PreconditionFailedResponseInterceptor(final Host bookmark,
+                                                 final OAuth2RequestInterceptor service,
+                                                 final LoginCallback prompt,
+                                                 final ServiceUnavailableRetryStrategy next) {
+        super(bookmark, service, prompt);
         this.bookmark = bookmark;
         this.service = service;
         this.prompt = prompt;
+        this.next = next;
     }
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
+            case HttpStatus.SC_PRECONDITION_FAILED:
                 if(executionCount <= MAX_RETRIES) {
                     try {
-                        try {
-                            log.warn(String.format("Attempt to refresh OAuth tokens for failure %s", response));
-                            service.save(service.refresh());
-                        }
-                        catch(InteroperabilityException | LoginFailureException e) {
-                            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
-                            service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
-                        }
+                        log.warn(String.format("Invalidate OAuth tokens due to failed precondition %s", response));
+                        service.save(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
                         // Try again
                         return true;
                     }
@@ -70,8 +69,8 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                 else {
                     log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
                 }
-                break;
+                return false;
         }
-        return false;
+        return next.retryRequest(response, executionCount, context);
     }
 }
