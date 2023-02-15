@@ -18,7 +18,6 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -28,25 +27,21 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BrickTouchFeatureTest extends AbstractBrickTest {
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void testCaseSensitivity() throws Exception {
         final Path container = new BrickDirectoryFeature(session).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String filename = StringUtils.lowerCase(new AlphanumericRandomStringService().random());
-        final Path file = new BrickTouchFeature(session)
+        final Path lowerCase = new BrickTouchFeature(session)
                 .touch(new Path(container, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
-        try {
-            // Create conflict
-            new BrickTouchFeature(session)
-                    .touch(new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
-            fail();
-        }
-        finally {
-            new BrickDeleteFeature(session).delete(Collections.singletonList(file), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        }
+        final Path upperCase = new BrickTouchFeature(session)
+                .touch(new Path(container, StringUtils.capitalize(filename), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        assertTrue(new BrickFindFeature(session).find(lowerCase));
+        assertTrue(new BrickFindFeature(session).find(upperCase));
+        new BrickDeleteFeature(session).delete(Collections.singletonList(lowerCase), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
