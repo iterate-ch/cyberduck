@@ -98,7 +98,9 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         continue;
                     }
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
-                        // Placeholder object, skip
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip placeholder key %s", key));
+                        }
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
