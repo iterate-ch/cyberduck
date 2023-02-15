@@ -51,7 +51,7 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
         patchOperation.facet("fileSystemInfo", info);
         final DriveItem item = session.getItem(file);
         try {
-            Files.patch(item, patchOperation);
+            final DriveItem.Metadata metadata = Files.patch(item, patchOperation);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
