@@ -134,7 +134,7 @@ Maven artifacts are available in a repository hosted on Amazon S3.
 <repositories>
     <repository>
         <id>maven.cyberduck.io-release</id>
-        <url>http://repo.maven.cyberduck.io.s3.amazonaws.com/releases/</url>
+        <url>https://s3-eu-west-1.amazonaws.com/repo.maven.cyberduck.io/releases</url>
         <layout>default</layout>
         <releases>
             <enabled>true</enabled>

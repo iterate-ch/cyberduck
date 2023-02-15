@@ -806,7 +806,7 @@
     <repositories>
         <repository>
             <id>maven.cyberduck.io-release</id>
-            <url>https://repo.maven.cyberduck.io.s3.amazonaws.com/releases</url>
+            <url>https://s3-eu-west-1.amazonaws.com/repo.maven.cyberduck.io/releases</url>
             <layout>default</layout>
             <releases>
                 <enabled>true</enabled>
@@ -817,7 +817,7 @@
         </repository>
         <repository>
             <id>maven.cyberduck.io-snapshots</id>
-            <url>https://repo.maven.cyberduck.io.s3.amazonaws.com/snapshots</url>
+            <url>https://s3-eu-west-1.amazonaws.com/repo.maven.cyberduck.io/snapshots</url>
             <layout>default</layout>
             <releases>
                 <enabled>false</enabled>
