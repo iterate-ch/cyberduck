@@ -55,6 +55,11 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
+
+    @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         // Will get new pairing key if missing credentials
         return true;

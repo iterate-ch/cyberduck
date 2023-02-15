@@ -25,7 +25,7 @@ public class BrickProtocolTest {
 
     @Test
     public void testFeatures() {
-        assertEquals(Protocol.Case.sensitive, new BrickProtocol().getCaseSensitivity());
+        assertEquals(Protocol.Case.insensitive, new BrickProtocol().getCaseSensitivity());
         assertEquals(Protocol.DirectoryTimestamp.implicit, new BrickProtocol().getDirectoryTimestamp());
     }
 }
