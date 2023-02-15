@@ -114,7 +114,9 @@ public class GoogleStorageObjectListService implements ListService {
                             continue;
                         }
                         if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
-                            // Placeholder object, skip
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Skip placeholder key %s", key));
+                            }
                             hasDirectoryPlaceholder = true;
                             continue;
                         }
