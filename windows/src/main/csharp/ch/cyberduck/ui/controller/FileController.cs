@@ -17,9 +17,12 @@
 // 
 
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
+using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core;
 using java.util;
 using static Ch.Cyberduck.ImageHelper;
 
@@ -69,9 +72,12 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual bool ValidateInput()
         {
             string t = View.InputText.Trim();
-            if (t.IndexOf('/') != -1)
+            foreach (string f in Utils.ConvertFromJavaList<string>(PreferencesFactory.get().getList("browser.filter.regex")))
             {
-                return false;
+                if (Regex.IsMatch(t, f))
+                {
+                    return false;
+                }
             }
             if (!string.IsNullOrEmpty(t))
             {

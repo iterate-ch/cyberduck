@@ -23,6 +23,7 @@ import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 
 import org.apache.commons.lang3.StringUtils;
@@ -67,14 +68,15 @@ public abstract class FileController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        if(StringUtils.contains(inputField.stringValue(), Path.DELIMITER)) {
+        if(PreferencesFactory.get().getList("browser.filter.regex").stream().anyMatch(s -> s.matches(inputField.stringValue()))) {
             return false;
         }
-        if(StringUtils.isNotBlank(inputField.stringValue())) {
-            if(cache.get(workdir).contains(new Path(workdir, inputField.stringValue(), EnumSet.of(Path.Type.file)))) {
+        final String input = StringUtils.trim(inputField.stringValue());
+        if(StringUtils.isNotBlank(input)) {
+            if(cache.get(workdir).contains(new Path(workdir, input, EnumSet.of(Path.Type.file)))) {
                 return false;
             }
-            if(cache.get(workdir).contains(new Path(workdir, inputField.stringValue(), EnumSet.of(Path.Type.directory)))) {
+            if(cache.get(workdir).contains(new Path(workdir, input, EnumSet.of(Path.Type.directory)))) {
                 return false;
             }
             return true;
@@ -88,7 +90,7 @@ public abstract class FileController extends AlertController {
         switch(returncode) {
             case DEFAULT_OPTION:
             case ALTERNATE_OPTION:
-                this.callback(returncode, new Path(directory, inputField.stringValue(), EnumSet.of(Path.Type.file)));
+                this.callback(returncode, new Path(directory, StringUtils.trim(inputField.stringValue()), EnumSet.of(Path.Type.file)));
                 break;
         }
     }
