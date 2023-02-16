@@ -76,11 +76,11 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     public void testMissingKeys() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
         final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
         new NodesApi(session.getClient()).updateRoomUsers(new RoomUsersAddBatchRequest().
-            addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
+                addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
         room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -138,7 +138,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertEquals(1, keyPairs.size());
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -190,6 +190,24 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     @Test(expected = LoginCanceledException.class)
     public void testWrongPassword() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final EncryptRoomRequest encrypt = new EncryptRoomRequest().isEncrypted(true);
+        final Node node = new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).getVersionId(room)), StringUtils.EMPTY, null);
+        new NodesApi(session.getClient()).updateRoomUsers(new RoomUsersAddBatchRequest().
+                addItemsItem(new RoomUsersAddBatchRequestItem().id(757L).permissions(new NodePermissions().read(true))), node.getId(), StringUtils.EMPTY);
+        room.attributes().withCustom(KEY_ENCRYPTED, String.valueOf(true));
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
+        bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
+        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSDirectS3MultipartWriteFeature(session, nodeid));
+        final StatusOutputStream<Node> out = writer.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
         final AtomicBoolean prompt = new AtomicBoolean();
         final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {

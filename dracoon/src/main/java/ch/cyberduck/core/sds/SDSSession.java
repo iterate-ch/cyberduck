@@ -384,7 +384,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     /**
-     * Invlidate cached key pairs
+     * Invalidate cached key pairs
      */
     public void resetUserKeyPairs() {
         keyPair.set(null);
