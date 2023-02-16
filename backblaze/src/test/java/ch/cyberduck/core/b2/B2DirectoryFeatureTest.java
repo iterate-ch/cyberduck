@@ -50,13 +50,13 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = ConflictException.class)
     public void testBucketExists() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         try {
             new B2DirectoryFeature(session, new B2VersionIdProvider(session)).mkdir(bucket, new TransferStatus());
         }
-        catch(InteroperabilityException e) {
+        catch(ConflictException e) {
             assertEquals("Bucket name is already in use. Please contact your web hosting service provider for assistance.", e.getDetail());
             assertEquals("Cannot create folder test-cyberduck.", e.getMessage());
             throw e;
