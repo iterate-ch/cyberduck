@@ -79,7 +79,7 @@ public class B2SingleTransferWorkerTest extends AbstractB2Test {
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
         final B2Session custom = new B2Session(session.getHost().withCredentials(new Credentials(
-                System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.password")
+                PROPERTIES.get("b2.user"), PROPERTIES.get("b2.password")
         )), new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2VersionIdProvider(this), new B2WriteFeature(this, new B2VersionIdProvider(this)),
                 PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
