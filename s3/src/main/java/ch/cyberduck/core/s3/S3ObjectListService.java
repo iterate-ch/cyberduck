@@ -74,6 +74,9 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("List with prefix %s", prefix));
+            }
             // If this optional, Unicode string parameter is included with your request,
             // then keys that contain the same string between the prefix and the first
             // occurrence of the delimiter will be rolled up into a single result

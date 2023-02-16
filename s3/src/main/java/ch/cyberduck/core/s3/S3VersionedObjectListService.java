@@ -96,6 +96,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         final ThreadPool pool = ThreadPoolFactory.get("list", concurrency);
         try {
             final String prefix = this.createPrefix(directory);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("List with prefix %s", prefix));
+            }
             final Path bucket = containerService.getContainer(directory);
             final AttributedList<Path> objects = new AttributedList<>();
             String priorLastKey = null;
