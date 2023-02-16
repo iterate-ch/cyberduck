@@ -131,4 +131,13 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         assertTrue(new GoogleStorageObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new GoogleStorageDeleteFeature(session).delete(Arrays.asList(placeholder, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testListPlaceholderDot() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
+                new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

@@ -108,12 +108,8 @@ public class GoogleStorageObjectListService implements ListService {
                 response = request.execute();
                 if(response.getItems() != null) {
                     for(StorageObject object : response.getItems()) {
-                        final String key = PathNormalizer.normalize(object.getName());
-                        if(String.valueOf(Path.DELIMITER).equals(key)) {
-                            log.warn(String.format("Skipping prefix %s", key));
-                            continue;
-                        }
-                        if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
+                        final String key = object.getName();
+                        if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Skip placeholder key %s", key));
                             }
@@ -147,28 +143,24 @@ public class GoogleStorageObjectListService implements ListService {
                 if(response.getPrefixes() != null) {
                     final List<Future<Path>> folders = new ArrayList<>();
                     for(String prefix : response.getPrefixes()) {
-                        if(String.valueOf(Path.DELIMITER).equals(prefix)) {
-                            log.warn(String.format("Skipping prefix %s", prefix));
+                        final String key = StringUtils.chomp(URIEncoder.decode(prefix), String.valueOf(Path.DELIMITER));
+                        if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                             continue;
-                        }
-                        final String key = PathNormalizer.normalize(prefix);
-                        if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
-                            continue;
-                        }
-                        final Path file;
-                        final PathAttributes attributes = new PathAttributes();
-                        attributes.setRegion(bucket.attributes().getRegion());
-                        if(null == delimiter) {
-                            // When searching for files recursively
-                            file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
-                        }
-                        else {
-                            file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                         }
                         if(versioning.isEnabled()) {
                             folders.add(this.submit(pool, bucket, directory, prefix));
                         }
                         else {
+                            final Path file;
+                            final PathAttributes attributes = new PathAttributes();
+                            attributes.setRegion(bucket.attributes().getRegion());
+                            if(null == delimiter) {
+                                // When searching for files recursively
+                                file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                            }
+                            else {
+                                file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                            }
                             folders.add(ConcurrentUtils.constantFuture(file));
                         }
                     }
@@ -201,34 +193,32 @@ public class GoogleStorageObjectListService implements ListService {
         }
     }
 
-    private Future<Path> submit(final ThreadPool pool, final Path bucket, final Path directory, final String common) {
+    private Future<Path> submit(final ThreadPool pool, final Path bucket, final Path directory, final String prefix) {
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
                 final PathAttributes attr = new PathAttributes();
                 attr.setRegion(bucket.attributes().getRegion());
-                final Path prefix = new Path(directory, PathNormalizer.name(common),
-                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
+                final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
                 try {
                     final Storage.Objects.List list = session.getClient().objects().list(bucket.getName())
                             .setVersions(true)
                             .setMaxResults(1L)
-                            .setPrefix(common);
+                            .setPrefix(prefix);
                     if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                         list.setUserProject(session.getHost().getCredentials().getUsername());
                     }
-                    final Objects versions = list
-                            .execute();
+                    final Objects versions = list.execute();
                     if(null != versions.getItems() && versions.getItems().size() == 1) {
                         final StorageObject version = versions.getItems().get(0);
-                        if(URIEncoder.decode(version.getName()).equals(common)) {
+                        if(version.getName().equals(prefix)) {
                             attr.setVersionId(String.valueOf(version.getGeneration()));
                         }
                         // Check if all of them are deleted
                         final Storage.Objects.List request = session.getClient().objects().list(bucket.getName())
                                 .setVersions(false)
                                 .setMaxResults(1L)
-                                .setPrefix(common);
+                                .setPrefix(prefix);
                         if(bucket.attributes().getCustom().containsKey(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS)) {
                             request.setUserProject(session.getHost().getCredentials().getUsername());
                         }
@@ -237,10 +227,10 @@ public class GoogleStorageObjectListService implements ListService {
                             attr.setDuplicate(true);
                         }
                     }
-                    return prefix;
+                    return new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attr);
                 }
                 catch(IOException e) {
-                    throw new GoogleStorageExceptionMappingService().map("Listing directory {0} failed", e, prefix);
+                    throw new GoogleStorageExceptionMappingService().map("Listing directory {0} failed", e, directory);
                 }
             }
         });
