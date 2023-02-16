@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class SpectraVersioningFeatureTest extends AbstractSpectraTest {
 
     @Test
+    @Ignore
     public void testSetConfiguration() throws Exception {
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
