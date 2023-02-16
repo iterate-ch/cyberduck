@@ -36,7 +36,7 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
     @Test
     public void testDisconnected() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.user"), System.getProperties().getProperty("azure.key")
+                PROPERTIES.get("azure.user"), PROPERTIES.get("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         final AzureUrlProvider provider = new AzureUrlProvider(session);
