@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -124,6 +125,47 @@ public class SpectraObjectListServiceTest extends AbstractSpectraTest {
                 assertTrue(f.attributes().getMetadata().isEmpty());
             }
         }
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFilePlusCharacter() throws Exception {
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path file = new SpectraTouchFeature(session).touch(
+                new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFileDot() throws Exception {
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path file = new SpectraTouchFeature(session).touch(
+                new Path(container, ".", EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotNull(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListPlaceholderDot() throws Exception {
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path placeholder = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListPlaceholderPlusCharacter() throws Exception {
+        final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path placeholder = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
+                new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new SpectraObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        assertTrue(new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

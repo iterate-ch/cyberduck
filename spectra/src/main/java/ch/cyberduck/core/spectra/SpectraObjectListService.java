@@ -76,34 +76,30 @@ public class SpectraObjectListService extends S3AbstractListService {
             boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final GetBucketResponse response = client.getBucket(new GetBucketRequest(bucket.getName())
-                    .withVersions(true)
-                    .withDelimiter(String.valueOf(Path.DELIMITER))
-                    .withMarker(marker)
-                    .withPrefix(StringUtils.isBlank(prefix) ? StringUtils.EMPTY : prefix)
-                    .withMaxKeys(chunksize));
+                        .withVersions(true)
+                        .withDelimiter(String.valueOf(Path.DELIMITER))
+                        .withMarker(marker)
+                        .withPrefix(StringUtils.isBlank(prefix) ? StringUtils.EMPTY : prefix)
+                        .withMaxKeys(chunksize));
                 for(final Contents object : response.getListBucketResult().getObjects()) {
-                    final String key = PathNormalizer.normalize(object.getKey());
-                    if(String.valueOf(Path.DELIMITER).equals(key)) {
-                        log.warn(String.format("Skipping prefix %s", key));
-                        continue;
-                    }
-                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
+                    final String key = object.getKey();
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip placeholder key %s", key));
+                        }
                         hasDirectoryPlaceholder = true;
-                        // Placeholder object, skip
                         continue;
                     }
                     objects.add(new Path(directory, PathNormalizer.name(key), object.getKey().endsWith(String.valueOf(Path.DELIMITER))
-                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), this.toAttributes(object)));
+                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), this.toAttributes(object)));
                 }
                 for(final Contents object : response.getListBucketResult().getVersionedObjects()) {
-                    final String key = PathNormalizer.normalize(object.getKey());
-                    if(String.valueOf(Path.DELIMITER).equals(key)) {
-                        log.warn(String.format("Skipping prefix %s", key));
-                        continue;
-                    }
-                    if(new SimplePathPredicate(new Path(bucket, key, EnumSet.of(Path.Type.directory))).test(directory)) {
+                    final String key = object.getKey();
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip placeholder key %s", key));
+                        }
                         hasDirectoryPlaceholder = true;
-                        // Placeholder object, skip
                         continue;
                     }
                     if(!StringUtils.equals(lastKey, key)) {
@@ -121,15 +117,11 @@ public class SpectraObjectListService extends S3AbstractListService {
                         }
                     }
                     objects.add(new Path(directory, PathNormalizer.name(key), object.getKey().endsWith(String.valueOf(Path.DELIMITER))
-                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
+                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attributes));
                     lastKey = key;
                 }
                 for(CommonPrefixes common : response.getListBucketResult().getCommonPrefixes()) {
-                    if(String.valueOf(Path.DELIMITER).equals(common.getPrefix())) {
-                        log.warn(String.format("Skipping prefix %s", common.getPrefix()));
-                        continue;
-                    }
-                    final String key = PathNormalizer.normalize(common.getPrefix());
+                    final String key = StringUtils.chomp(common.getPrefix(), String.valueOf(Path.DELIMITER));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
