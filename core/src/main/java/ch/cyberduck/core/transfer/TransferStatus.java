@@ -100,7 +100,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
-    private long length = 0L;
+    private long length = TransferStatus.UNKNOWN_LENGTH;
 
     /**
      * The transfer has been canceled by the user.
