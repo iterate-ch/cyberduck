@@ -414,7 +414,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);
                             release(d, Connection.destination, e);
-                            log.warn(String.format("Failure %s transferring %s", item, e));
+                            log.warn(String.format("Failure %s transferring %s", e, item));
                             // Determine if we should retry depending on failure type
                             if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
                                 final Session<?> source = borrow(Connection.source);
