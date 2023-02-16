@@ -286,18 +286,18 @@ public class UploadTransferTest {
         new DefaultLocalTouchFeature().touch(new Local(local, name));
         final Transfer transfer = new UploadTransfer(host, test, local);
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
-            new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
+                new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 fail();
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), directoryname), new TransferStatus().exists(true),
                 TransferAction.overwrite);
-        assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(test, local)));
-        final TransferStatus expected = new TransferStatus();
+        assertEquals(new TransferStatus().exists(true).withLength(0L), worker.getStatus().get(new TransferItem(test, local)));
+        final TransferStatus expected = new TransferStatus().withLength(0L);
         assertEquals(expected, worker.getStatus().get(new TransferItem(new Path(directoryname + "/" + name, EnumSet.of(Path.Type.file)), new Local(local, name))));
     }
 
@@ -340,7 +340,7 @@ public class UploadTransferTest {
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(testDirectory, localDirectory, new TransferStatus().exists(true),
                 TransferAction.resume);
-        assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
+        assertEquals(new TransferStatus().exists(true).withLength(0L), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
         final TransferStatus expected = new TransferStatus().exists(true);
         expected.setAppend(true);
         // Remote size
