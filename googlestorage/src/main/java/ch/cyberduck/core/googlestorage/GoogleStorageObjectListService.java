@@ -166,7 +166,7 @@ public class GoogleStorageObjectListService implements ListService {
                             file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                         }
                         if(versioning.isEnabled()) {
-                            folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(prefix)));
+                            folders.add(this.submit(pool, bucket, directory, prefix));
                         }
                         else {
                             folders.add(ConcurrentUtils.constantFuture(file));
