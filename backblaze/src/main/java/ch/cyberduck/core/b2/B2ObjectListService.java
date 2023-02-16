@@ -128,7 +128,9 @@ public class B2ObjectListService implements ListService {
             }
             if(StringUtils.isBlank(info.getFileId())) {
                 // Common prefix
-                final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(info.getFileName()), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(),
+                        PathNormalizer.name(StringUtils.chomp(info.getFileName(), String.valueOf(Path.DELIMITER))),
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder));
                 objects.add(placeholder);
                 continue;
             }
