@@ -331,4 +331,28 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertEquals(found.attributes().getCustom(), attr.getCustom());
         return found.attributes().isDuplicate();
     }
+
+    @Test
+    public void testListFileDot() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+                new Path(container, ".", EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(".", file.getName());
+        assertEquals(container, file.getParent());
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        file.withAttributes(new S3AttributesFinderFeature(session, acl).find(file));
+        assertNotNull(new S3VersionedObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener())
+                .find(new SimplePathPredicate(file)));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListPlaceholderDot() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
+                new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new S3VersionedObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

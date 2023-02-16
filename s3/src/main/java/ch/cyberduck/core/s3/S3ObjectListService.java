@@ -122,12 +122,11 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
-                    if(String.valueOf(Path.DELIMITER).equals(common)) {
-                        log.warn(String.format("Skipping prefix %s", common));
-                        continue;
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Handle common prefix %s", common));
                     }
-                    final String key = PathNormalizer.normalize(URIEncoder.decode(common));
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    final String key = StringUtils.chomp(URIEncoder.decode(common), String.valueOf(Path.DELIMITER));
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         continue;
                     }
                     final Path f;
