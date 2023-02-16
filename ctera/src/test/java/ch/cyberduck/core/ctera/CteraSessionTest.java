@@ -47,7 +47,7 @@ public class CteraSessionTest extends AbstractCteraTest {
     public void testLoginRefreshCookie() throws Exception {
         final Host host = new Host(new CteraProtocol(), "alexdemo.ctera.me", new Credentials(
                 StringUtils.EMPTY, StringUtils.EMPTY,
-                System.getProperties().getProperty("ctera.token")
+                PROPERTIES.get("ctera.token")
         ));
         host.setDefaultPath("/ServicesPortal/webdav");
         final CteraSession session = new CteraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
