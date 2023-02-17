@@ -24,14 +24,19 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.VaultTest;
 
 import org.junit.After;
 import org.junit.Before;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 public class AbstractSpectraTest extends VaultTest {
 
@@ -43,12 +48,10 @@ public class AbstractSpectraTest extends VaultTest {
 
     @Before
     public void setup() throws Exception {
-        final Host host = new Host(new SpectraProtocol() {
-            @Override
-            public Scheme getScheme() {
-                return Scheme.http;
-            }
-        }, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SpectraProtocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/Spectra S3 (HTTP).cyberduckprofile"));
+        final Host host = new Host(profile, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
                 PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
         ));
         session = new SpectraSession(host, new DisabledX509TrustManager(),

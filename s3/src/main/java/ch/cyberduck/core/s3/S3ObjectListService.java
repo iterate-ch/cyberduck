@@ -74,6 +74,9 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
         try {
             final String prefix = this.createPrefix(directory);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("List with prefix %s", prefix));
+            }
             // If this optional, Unicode string parameter is included with your request,
             // then keys that contain the same string between the prefix and the first
             // occurrence of the delimiter will be rolled up into a single result
@@ -93,12 +96,10 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
 
                 for(StorageObject object : chunk.getObjects()) {
                     final String key = URIEncoder.decode(object.getKey());
-                    if(String.valueOf(Path.DELIMITER).equals(PathNormalizer.normalize(key))) {
-                        log.warn(String.format("Skipping prefix %s", key));
-                        continue;
-                    }
                     if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
-                        // Placeholder object, skip
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip placeholder key %s", key));
+                        }
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
@@ -121,12 +122,11 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {
-                    if(String.valueOf(Path.DELIMITER).equals(common)) {
-                        log.warn(String.format("Skipping prefix %s", common));
-                        continue;
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Handle common prefix %s", common));
                     }
-                    final String key = PathNormalizer.normalize(URIEncoder.decode(common));
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                    final String key = StringUtils.chomp(URIEncoder.decode(common), String.valueOf(Path.DELIMITER));
+                    if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                         continue;
                     }
                     final Path f;

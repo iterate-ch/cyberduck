@@ -87,6 +87,9 @@ public class AzureObjectListService implements ListService {
                         new HostPreferences(session.getHost()).getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
                     if(new SimplePathPredicate(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip placeholder key %s", object));
+                        }
                         hasDirectoryPlaceholder = true;
                         continue;
                     }

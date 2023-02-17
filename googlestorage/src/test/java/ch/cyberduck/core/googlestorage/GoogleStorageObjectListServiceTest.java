@@ -88,4 +88,56 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         }
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testListEncodedCharacter() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path placeholder = new GoogleStorageTouchFeature(session).touch(
+                new Path(container, String.format("^<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListInvisibleCharacter() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path placeholder = new GoogleStorageTouchFeature(session).touch(
+                new Path(container, String.format("test-\u001F-%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFilePlusCharacter() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path placeholder = new GoogleStorageTouchFeature(session).touch(
+                new Path(container, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListPlaceholderPlusCharacter() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("us-east-1");
+        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(
+                new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
+                new Path(directory, String.format("test+%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).contains(placeholder));
+        assertTrue(new GoogleStorageObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
+        new GoogleStorageDeleteFeature(session).delete(Arrays.asList(placeholder, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListPlaceholderDot() throws Exception {
+        final Path container = new Path("cyberduck-test-eu", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path placeholder = new GoogleStorageDirectoryFeature(session).mkdir(
+                new Path(container, ".", EnumSet.of(Path.Type.directory)), new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
