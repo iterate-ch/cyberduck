@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.5.6</version>
+        <version>8.5.7-SNAPSHOT</version>
     </parent>
     <artifactId>googlestorage</artifactId>
     <properties>
