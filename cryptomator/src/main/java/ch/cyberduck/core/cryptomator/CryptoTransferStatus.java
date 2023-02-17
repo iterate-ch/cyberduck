@@ -16,22 +16,25 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.io.StreamCancelation;
+import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.transfer.ProxyTransferStatus;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CryptoTransferStatus extends TransferStatus {
+public class CryptoTransferStatus extends ProxyTransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(CryptoTransferStatus.class);
 
     private final CryptoVault vault;
 
-    public CryptoTransferStatus(final CryptoVault vault, final TransferStatus copy) {
-        super(copy);
+    public CryptoTransferStatus(final CryptoVault vault, final TransferStatus proxy) {
+        super(proxy);
         this.vault = vault;
-        this.withLength(vault.toCiphertextSize(copy.getOffset(), copy.getLength()))
+        this.withLength(vault.toCiphertextSize(proxy.getOffset(), proxy.getLength()))
                 // Assume single chunk upload
-                .withOffset(0L == copy.getOffset() ? 0L : vault.toCiphertextSize(0L, copy.getOffset()))
+                .withOffset(0L == proxy.getOffset() ? 0L : vault.toCiphertextSize(0L, proxy.getOffset()))
                 .withMime(null);
     }
 
@@ -43,11 +46,5 @@ public class CryptoTransferStatus extends TransferStatus {
         catch(CryptoInvalidFilesizeException e) {
             log.warn(String.format("Failure %s translating file size from response %s", e, attributes));
         }
-    }
-
-    @Override
-    public TransferStatus withResponse(final PathAttributes attributes) {
-        this.setResponse(attributes);
-        return this;
     }
 }

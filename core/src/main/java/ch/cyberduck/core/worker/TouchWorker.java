@@ -56,6 +56,7 @@ public class TouchWorker extends Worker<Path> {
             log.debug(String.format("Run with feature %s", feature));
         }
         final TransferStatus status = new TransferStatus()
+                .withLength(0L)
                 .withTimestamp(System.currentTimeMillis())
                 .hidden(!SearchFilterFactory.HIDDEN_FILTER.accept(file))
                 .exists(false)

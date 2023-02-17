@@ -89,7 +89,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
                         // Create directory unless copy implementation is recursive
                         final Directory directory = session.getFeature(Directory.class);
                         result.put(r.getKey(), directory.mkdir(r.getValue(),
-                                new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
+                                new TransferStatus().withLength(0L).withRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()

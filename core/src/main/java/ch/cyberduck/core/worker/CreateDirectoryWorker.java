@@ -53,7 +53,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", feature));
         }
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(folder));
