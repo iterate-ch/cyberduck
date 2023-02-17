@@ -43,7 +43,6 @@ public class BoxShareFeatureTest extends AbstractBoxTest {
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(directory, PromptUrlProvider.Type.download));
         assertFalse(feature.isSupported(directory, PromptUrlProvider.Type.upload));
-        assertNotNull(feature.toUploadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
         assertNotNull(feature.toDownloadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
