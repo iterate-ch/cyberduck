@@ -65,7 +65,7 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
         new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
         if(!find.find(intermediate)) {
-            delegate.mkdir(intermediate, new TransferStatus().withRegion(status.getRegion()));
+            delegate.mkdir(intermediate, new TransferStatus().withLength(0L).withRegion(status.getRegion()));
         }
         // Write header
         final FileHeader header = vault.getFileHeaderCryptor().create();

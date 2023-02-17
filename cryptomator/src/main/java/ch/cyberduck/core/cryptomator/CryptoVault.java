@@ -164,7 +164,7 @@ public class CryptoVault implements Vault {
         }
         // Obtain non encrypted directory writer
         final Directory<?> directory = session._getFeature(Directory.class);
-        final TransferStatus status = new TransferStatus().withRegion(region);
+        final TransferStatus status = new TransferStatus().withLength(0L).withRegion(region);
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(home));

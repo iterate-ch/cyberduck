@@ -57,28 +57,22 @@ public class CryptoCopyFeature implements Copy {
         }
         if(vault.contains(source) && vault.contains(copy)) {
             return vault.decrypt(session, proxy.withTarget(target).copy(
-                vault.contains(source) ? vault.encrypt(session, source) : source,
-                vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback, listener));
+                    vault.contains(source) ? vault.encrypt(session, source) : source,
+                    vault.contains(copy) ? vault.encrypt(session, copy) : copy, status, callback, listener));
         }
         else {
             // Copy files from or into vault requires to pass through encryption features
             final Path target = new DefaultCopyFeature(session).withTarget(this.target).copy(
                     vault.contains(source) ? vault.encrypt(session, source) : source,
                     vault.contains(copy) ? vault.encrypt(session, copy) : copy,
-                    new TransferStatus(status) {
+                    vault.contains(copy) ? new TransferStatus(status) {
                         @Override
                         public void setResponse(final PathAttributes attributes) {
-                            if(vault.contains(copy)) {
-                                status.setResponse(attributes);
-                                // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
-                                super.setResponse(new PathAttributes(attributes).withSize(vault.toCiphertextSize(0L, attributes.getSize())));
-                            }
-                            else {
-                                status.setResponse(attributes);
-                                super.setResponse(attributes);
-                            }
+                            status.setResponse(attributes);
+                            // Will be converted back to clear text when decrypting file below set in default copy feature implementation using writer.
+                            super.setResponse(new PathAttributes(attributes).withSize(vault.toCiphertextSize(0L, attributes.getSize())));
                         }
-                    },
+                    } : status,
                     callback, listener);
             if(vault.contains(copy)) {
                 return vault.decrypt(session, target);
