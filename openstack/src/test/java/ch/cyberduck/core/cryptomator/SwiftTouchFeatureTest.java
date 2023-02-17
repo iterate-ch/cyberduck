@@ -62,7 +62,8 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        new CryptoTouchFeature<>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(test,
+                new TransferStatus().withLength(0L));
         assertTrue(new CryptoFindV6Feature(session, new SwiftFindFeature(session), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -77,8 +78,8 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
-        final Path touch = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, regionService)
-        ), new SwiftWriteFeature(session, regionService), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, regionService)), new SwiftWriteFeature(session, regionService), cryptomator).touch(test,
+                new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

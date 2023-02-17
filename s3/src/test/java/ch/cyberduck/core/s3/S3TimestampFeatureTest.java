@@ -39,7 +39,7 @@ public class S3TimestampFeatureTest extends AbstractS3Test {
     @Test
     public void testFindTimesteamp() throws Exception {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3TouchFeature(session, acl).touch(new Path(bucket,
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), status.withTimestamp(1530305150672L));

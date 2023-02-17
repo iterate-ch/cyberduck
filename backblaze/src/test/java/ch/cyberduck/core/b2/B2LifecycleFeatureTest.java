@@ -38,7 +38,7 @@ public class B2LifecycleFeatureTest extends AbstractB2Test {
     public void testSetConfiguration() throws Exception {
         final Path bucket = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2DirectoryFeature(session, fileid).mkdir(bucket, new TransferStatus());
+        new B2DirectoryFeature(session, fileid).mkdir(bucket, new TransferStatus().withLength(0L));
         assertEquals(LifecycleConfiguration.empty(), new B2LifecycleFeature(session, fileid).getConfiguration(bucket));
         new B2LifecycleFeature(session, fileid).setConfiguration(bucket, new LifecycleConfiguration(1, 30));
         final LifecycleConfiguration configuration = new B2LifecycleFeature(session, fileid).getConfiguration(bucket);

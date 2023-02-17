@@ -49,7 +49,7 @@ public class CachingFindFeatureTest extends AbstractS3Test {
         final String name = new AlphanumericRandomStringService().random();
         final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertFalse(f.find(test));
         cache.clear();
         assertTrue(f.find(test));

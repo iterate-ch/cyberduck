@@ -57,7 +57,7 @@ public class S3FindFeatureTest extends AbstractS3Test {
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
                 new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
-                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory))));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));

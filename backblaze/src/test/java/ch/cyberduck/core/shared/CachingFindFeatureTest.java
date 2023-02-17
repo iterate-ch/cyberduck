@@ -52,7 +52,7 @@ public class CachingFindFeatureTest extends AbstractB2Test {
         final String name = new AlphanumericRandomStringService().random();
         final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
         assertFalse(f.find(new Path(bucket, name, EnumSet.of(Path.Type.file))));
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertFalse(f.find(test));
         cache.clear();
         assertTrue(f.find(test));
@@ -66,10 +66,10 @@ public class CachingFindFeatureTest extends AbstractB2Test {
         final PathCache cache = new PathCache(1);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
         final String name = new AlphanumericRandomStringService().random();
         final Path test = new B2TouchFeature(session, fileid).touch(
-                new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final CachingFindFeature f = new CachingFindFeature(cache, new DefaultFindFeature(session));
         // Find without version id set in attributes
         assertTrue(f.find(test));

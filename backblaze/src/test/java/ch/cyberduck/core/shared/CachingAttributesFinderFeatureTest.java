@@ -68,7 +68,7 @@ public class CachingAttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        session.getFeature(Touch.class).touch(file, new TransferStatus().withLength(0L));
         final Attributes lookup = f.find(file);
         assertEquals(0L, lookup.getSize());
         // Test cache

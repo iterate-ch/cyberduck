@@ -48,13 +48,13 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
     public void testRevert() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path room = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path ignored = new B2TouchFeature(session, fileid).touch(new Path(room, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        final Path ignored = new B2TouchFeature(session, fileid).touch(new Path(room, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         {
             // Make sure there is another versioned copy of a file not to be included when listing
             final byte[] content = RandomUtils.nextBytes(245);
-            final TransferStatus status = new TransferStatus().withLength(content.length);
+            final TransferStatus status = new TransferStatus().withLength(0L).withLength(content.length);
             final B2WriteFeature writer = new B2WriteFeature(session, fileid);
             final HttpResponseOutputStream<BaseB2Response> out = writer.write(ignored, status, new DisabledConnectionCallback());
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -63,7 +63,7 @@ public class B2VersioningFeatureTest extends AbstractB2Test {
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
         status.setExists(true);
         final B2WriteFeature writer = new B2WriteFeature(session, fileid);

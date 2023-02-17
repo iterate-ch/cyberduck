@@ -78,7 +78,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final AttributesFinder f = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator);
         final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, new S3AccessControlListFeature(session)), new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final PathAttributes initialAttributes = new PathAttributes(test.attributes());
         final String initialVersion = test.attributes().getVersionId();
         final byte[] content = RandomUtils.nextBytes(32769);

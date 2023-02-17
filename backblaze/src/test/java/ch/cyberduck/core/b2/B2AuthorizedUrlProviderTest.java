@@ -41,7 +41,7 @@ public class B2AuthorizedUrlProviderTest extends AbstractB2Test {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withLength(0L));
         final B2AuthorizedUrlProvider provider = new B2AuthorizedUrlProvider(session, fileid);
         assertFalse(provider.isSupported(bucket, PromptUrlProvider.Type.download));
         final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());

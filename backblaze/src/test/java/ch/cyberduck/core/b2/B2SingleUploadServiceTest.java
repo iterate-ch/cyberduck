@@ -55,9 +55,9 @@ public class B2SingleUploadServiceTest extends AbstractB2Test {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
-        final Checksum checksum = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
+        final Checksum checksum = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(0L));
         status.setChecksum(checksum);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2SingleUploadService upload = new B2SingleUploadService(session, new B2WriteFeature(session, fileid));
@@ -67,7 +67,7 @@ public class B2SingleUploadServiceTest extends AbstractB2Test {
         status.validate();
         assertTrue(status.isComplete());
         assertTrue(new B2FindFeature(session, fileid).find(test));
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();

@@ -57,7 +57,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2ReadFeature(session, new B2VersionIdProvider(session)).read(new Path(bucket, "nosuchname", EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback());
+        new B2ReadFeature(session, new B2VersionIdProvider(session)).read(new Path(bucket, "nosuchname", EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L), new DisabledConnectionCallback());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(923);
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
@@ -91,7 +91,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(923);
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
         status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
@@ -101,12 +101,12 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         {
             // Unknown length in status
             // Read a single byte
-            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
             assertNotNull(in.read());
             in.close();
         }
         {
-            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(file, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
             assertNotNull(in);
             in.close();
         }
@@ -118,7 +118,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withLength(0L));
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -128,9 +128,9 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         out.close();
         final BaseB2Response reply = new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().withLength(0L).withLength(content.length),
                 new DisabledConnectionCallback());
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
         status.setAppend(true);
         status.setOffset(100L);
@@ -150,7 +150,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withLength(0L));
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -160,9 +160,9 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         out.close();
         new B2SingleUploadService(session, new B2WriteFeature(session, fileid)).upload(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                new TransferStatus().withLength(content.length),
+                new TransferStatus().withLength(0L).withLength(content.length),
                 new DisabledConnectionCallback());
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(-1L);
         status.setAppend(true);
         status.setOffset(100L);
@@ -184,10 +184,10 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final int length = 2048;
         final byte[] content = RandomUtils.nextBytes(length);
-        final TransferStatus status = new TransferStatus().withLength(content.length);
+        final TransferStatus status = new TransferStatus().withLength(0L).withLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         final OutputStream out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
-        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(new TransferStatus().withLength(0L), new TransferStatus().withLength(0L)).transfer(new ByteArrayInputStream(content), out);
         final CountingInputStream in = new CountingInputStream(new B2ReadFeature(session, fileid).read(file, status, new DisabledConnectionCallback()));
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
@@ -198,8 +198,8 @@ public class B2ReadFeatureTest extends AbstractB2Test {
     public void testChangedNodeId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server
@@ -207,7 +207,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
         test.attributes().setVersionId(invalidId);
         fileid.cache(test, invalidId);
         try {
-            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withRemote(test.attributes()), new DisabledLoginCallback());
+            final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withLength(0L).withRemote(test.attributes()), new DisabledLoginCallback());
             fail();
         }
         catch(NotfoundException e) {

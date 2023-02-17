@@ -45,8 +45,8 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final B2DirectoryFeature feature = new B2DirectoryFeature(session, fileid);
         assertTrue(feature.isSupported(bucket.getParent(), bucket.getName()));
-        feature.mkdir(bucket, new TransferStatus());
-        assertThrows(ConflictException.class, () -> feature.mkdir(bucket, new TransferStatus()));
+        feature.mkdir(bucket, new TransferStatus().withLength(0L));
+        assertThrows(ConflictException.class, () -> feature.mkdir(bucket, new TransferStatus().withLength(0L)));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -54,7 +54,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     public void testBucketExists() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         try {
-            new B2DirectoryFeature(session, new B2VersionIdProvider(session)).mkdir(bucket, new TransferStatus());
+            new B2DirectoryFeature(session, new B2VersionIdProvider(session)).mkdir(bucket, new TransferStatus().withLength(0L));
         }
         catch(ConflictException e) {
             assertEquals("Bucket name is already in use. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -69,7 +69,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         assertFalse(new B2DirectoryFeature(session, fileid).isSupported(bucket.getParent(), bucket.getName()));
         try {
-            new B2DirectoryFeature(session, fileid).mkdir(bucket, new TransferStatus());
+            new B2DirectoryFeature(session, fileid).mkdir(bucket, new TransferStatus().withLength(0L));
         }
         catch(InteroperabilityException e) {
             assertEquals("Invalid characters in bucketName: must be alphanumeric or '-'. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -82,8 +82,8 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     public void testCreatePlaceholder() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file = new B2TouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
+        final Path file = new B2TouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertTrue(directory.getType().contains(Path.Type.placeholder));
         assertTrue(new B2FindFeature(session, fileid).find(directory));
         assertTrue(new DefaultFindFeature(session).find(directory));
@@ -99,7 +99,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
     @Test
     public void testModificationDate() throws Exception {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         final long timestamp = 1509959502930L;
         status.setTimestamp(timestamp);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);

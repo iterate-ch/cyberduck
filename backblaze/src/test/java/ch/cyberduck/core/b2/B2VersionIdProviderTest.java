@@ -40,8 +40,8 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
     @Test
     public void getFileIdFile() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
+        final Path file = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final String versionId = fileid.getVersionId(file);
         assertNotNull(versionId);
         assertEquals(file.attributes().getVersionId(), versionId);
@@ -63,8 +63,8 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
     @Test
     public void getFileIdDirectory() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
+        final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertNotNull(fileid.getVersionId(folder));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -72,14 +72,14 @@ public class B2VersionIdProviderTest extends AbstractB2Test {
     @Test
     public void testFileIdCollision() throws Exception {
         final B2VersionIdProvider idProvider = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, idProvider).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, idProvider).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
         final Path path2R = new Path(bucket, "2R", EnumSet.of(Path.Type.directory));
         final Path path33 = new Path(bucket, "33", EnumSet.of(Path.Type.directory));
 
         final Directory directoryFeature = new B2DirectoryFeature(session, idProvider);
-        final Path path2RWithId = directoryFeature.mkdir(path2R, new TransferStatus());
+        final Path path2RWithId = directoryFeature.mkdir(path2R, new TransferStatus().withLength(0L));
         assertNotNull(path2RWithId.attributes().getVersionId());
-        final Path path33WithId = directoryFeature.mkdir(path33, new TransferStatus());
+        final Path path33WithId = directoryFeature.mkdir(path33, new TransferStatus().withLength(0L));
         assertNotNull(path33WithId.attributes().getVersionId());
         assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
 

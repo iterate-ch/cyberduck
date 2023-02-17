@@ -59,7 +59,7 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
-        new CryptoTouchFeature<>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus().withLength(0L));
         assertTrue(new CryptoFindV6Feature(session, new AzureFindFeature(session, null), cryptomator).find(test));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -73,7 +73,7 @@ public class AzureTouchFeatureTest extends AbstractAzureTest {
         final Path vault = cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path test = new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file));
-        new CryptoTouchFeature<>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus());
+        new CryptoTouchFeature<>(session, new AzureTouchFeature(session, null), new AzureWriteFeature(session, null), cryptomator).touch(test, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, null)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

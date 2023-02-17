@@ -46,7 +46,7 @@ public class S3ListServiceTest extends AbstractS3Test {
         final Path bucket = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new TransferStatus());
+                new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new TransferStatus().withLength(0L));
         final MultipartUpload multipart = session.getClient().multipartStartUpload(bucket.getName(), String.format("%s/.", new S3PathContainerService(session.getHost()).getKey(placeholder)), Collections.emptyMap());
         assertNotNull(new S3ListService(session, acl).list(placeholder, new DisabledListProgressListener()).find(path -> path.getName().equals(".")));
         new S3DefaultMultipartService(session).delete(multipart);

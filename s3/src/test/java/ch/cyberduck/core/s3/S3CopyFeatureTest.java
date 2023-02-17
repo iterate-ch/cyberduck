@@ -42,7 +42,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
-        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus().withMime("application/cyberduck"));
+        new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(test, new TransferStatus().withLength(0L).withMime("application/cyberduck"));
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
@@ -57,7 +57,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
     @Test
     public void testCopyFile() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
@@ -73,7 +73,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
     @Test
     public void testCopyFileVersionedBucket() throws Exception {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         assertNotNull(test.attributes().getVersionId());
@@ -91,7 +91,7 @@ public class S3CopyFeatureTest extends AbstractS3Test {
 
     @Test
     public void testCopyFileVirtualHostBucket() throws Exception {
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setMetadata(Collections.singletonMap("cyberduck", "m"));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3TouchFeature(virtualhost, acl).touch(new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);

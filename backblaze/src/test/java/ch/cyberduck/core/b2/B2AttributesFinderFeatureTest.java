@@ -55,7 +55,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final long timestamp = System.currentTimeMillis();
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withTimestamp(timestamp));
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withLength(0L).withTimestamp(timestamp));
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -70,10 +70,10 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testHideMarker() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final long timestamp = System.currentTimeMillis();
-        final TransferStatus status = new TransferStatus().withTimestamp(timestamp);
+        final TransferStatus status = new TransferStatus().withLength(0L).withTimestamp(timestamp);
         new B2TouchFeature(session, fileid).touch(test, status);
         assertNotNull(status.getResponse().getVersionId());
         assertNotNull(test.attributes().getVersionId());
@@ -94,7 +94,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testFindDirectory() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(directory);
         assertNotNull(attributes);
@@ -113,7 +113,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     @Test
     public void testFindBucket() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+        final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
         final PathAttributes attributes = f.find(bucket);
         assertNotNull(attributes);
@@ -133,11 +133,11 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final PathAttributes attributes = new B2AttributesFinderFeature(session, fileid).find(file);
         assertNotSame(PathAttributes.EMPTY, attributes);
         assertEquals(0L, attributes.getSize());
-        new B2ReadFeature(session, fileid).read(file, new TransferStatus(), new DisabledConnectionCallback()).close();
+        new B2ReadFeature(session, fileid).read(file, new TransferStatus().withLength(0L), new DisabledConnectionCallback()).close();
         final Path found = new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).find(
                 new SimplePathPredicate(file));
         assertTrue(found.getType().contains(Path.Type.upload));
-        new B2ReadFeature(session, fileid).read(found, new TransferStatus(), new DisabledConnectionCallback()).close();
+        new B2ReadFeature(session, fileid).read(found, new TransferStatus().withLength(0L), new DisabledConnectionCallback()).close();
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 
@@ -145,8 +145,9 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
     public void testChangedFileId() throws Exception {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)),
+                new TransferStatus().withLength(0L));
         final String latestnodeid = test.attributes().getVersionId();
         assertNotNull(latestnodeid);
         // Assume previously seen but changed on server

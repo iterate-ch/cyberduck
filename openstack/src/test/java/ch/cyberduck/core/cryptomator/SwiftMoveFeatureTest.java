@@ -49,8 +49,6 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-import ch.iterate.openstack.swift.model.StorageObject;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -69,7 +67,8 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session, regionService)).mkdir(folder, new TransferStatus());
-        new CryptoTouchFeature<StorageObject>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(file,
+                new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new SwiftMoveFeature(session, regionService));
         // rename file

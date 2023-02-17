@@ -46,7 +46,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(file, new TransferStatus().withLength(0L));
         // Find without version id set in attributes
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -68,9 +68,9 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
-        final Checksum checksum = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus());
+        final Checksum checksum = new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus().withLength(0L));
         status.setChecksum(checksum);
 
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
@@ -86,7 +86,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(content.length, status.getResponse().getSize());
 
         assertTrue(new DefaultFindFeature(session).find(test));
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
         in.close();
@@ -105,7 +105,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final int length = 102 * 1024 * 1024;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         final BytecountStreamListener count = new BytecountStreamListener();
@@ -135,7 +135,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertFalse(status.isComplete());
         assertEquals(TransferStatus.UNKNOWN_LENGTH, status.getResponse().getSize());
 
-        final TransferStatus append = new TransferStatus().append(true).withLength(content.length);
+        final TransferStatus append = new TransferStatus().withLength(0L).append(true).withLength(content.length);
         service.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
@@ -144,7 +144,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(content.length, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
@@ -161,7 +161,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final int length = 102 * 1024 * 1024;
         final byte[] content = RandomUtils.nextBytes(length);
         IOUtils.write(content, local.getOutputStream(false));
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setLength(content.length);
         final AtomicBoolean interrupt = new AtomicBoolean();
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
@@ -194,7 +194,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final Path upload = new Path(test).withType(EnumSet.of(Path.Type.file, Path.Type.upload));
         assertTrue(new B2FindFeature(session, fileid).find(upload));
         assertEquals(100L * 1024L * 1024L, new B2AttributesFinderFeature(session, fileid).find(upload).getSize(), 0L);
-        final TransferStatus append = new TransferStatus().append(true).withLength(2L * 1024L * 1024L).withOffset(100L * 1024L * 1024L);
+        final TransferStatus append = new TransferStatus().withLength(0L).append(true).withLength(2L * 1024L * 1024L).withOffset(100L * 1024L * 1024L);
         feature.upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count, append,
                 new DisabledLoginCallback());
@@ -204,7 +204,7 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertTrue(new B2FindFeature(session, fileid).find(test));
         assertEquals(102L * 1024L * 1024L, new B2AttributesFinderFeature(session, fileid).find(test).getSize(), 0L);
         final byte[] buffer = new byte[content.length];
-        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback());
+        final InputStream in = new B2ReadFeature(session, fileid).read(test, new TransferStatus().withLength(0L), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);

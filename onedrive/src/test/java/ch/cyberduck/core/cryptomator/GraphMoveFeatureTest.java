@@ -65,11 +65,11 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(folder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session, fileid)).mkdir(folder, new TransferStatus().withLength(0L));
         final String filename = new AlphanumericRandomStringService().random();
         final Path file = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)
         ), new GraphWriteFeature(session, fileid), cryptomator).touch(
-                new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session, fileid));
         // rename file

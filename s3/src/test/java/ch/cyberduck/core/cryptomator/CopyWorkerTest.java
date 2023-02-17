@@ -110,10 +110,10 @@ public class CopyWorkerTest extends AbstractS3Test {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(source, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
 
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(targetFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(targetFolder, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -135,9 +135,9 @@ public class CopyWorkerTest extends AbstractS3Test {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(source, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(targetFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(targetFolder, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
@@ -157,9 +157,9 @@ public class CopyWorkerTest extends AbstractS3Test {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(folder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(folder, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(file, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -192,7 +192,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(encryptedFolder, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new SessionPool.SingleSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
@@ -213,8 +213,8 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(cleartextFolder, new TransferStatus());
-        new S3TouchFeature(session, acl).touch(cleartextFile, new TransferStatus());
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(cleartextFolder, new TransferStatus().withLength(0L));
+        new S3TouchFeature(session, acl).touch(cleartextFile, new TransferStatus().withLength(0L));
         assertTrue(new S3FindFeature(session, acl).find(cleartextFolder));
         assertTrue(new S3FindFeature(session, acl).find(cleartextFile));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -241,16 +241,16 @@ public class CopyWorkerTest extends AbstractS3Test {
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         new S3DirectoryFeature(session, new S3WriteFeature(session, acl),
-                acl).mkdir(clearFolder, new TransferStatus());
+                acl).mkdir(clearFolder, new TransferStatus().withLength(0L));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(encryptedFolder, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(encryptedFolder, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -274,9 +274,9 @@ public class CopyWorkerTest extends AbstractS3Test {
         session.withRegistry(registry);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl),
-                acl)).mkdir(encryptedFolder, new TransferStatus());
+                acl)).mkdir(encryptedFolder, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

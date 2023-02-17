@@ -48,7 +48,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new S3TouchFeature(session, acl).touch(test, new TransferStatus());
+        new S3TouchFeature(session, acl).touch(test, new TransferStatus().withLength(0L));
         final S3EncryptionFeature feature = new S3EncryptionFeature(session, acl);
         feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         final Encryption.Algorithm value = feature.getEncryption(test);
@@ -62,7 +62,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
         final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         final S3EncryptionFeature feature = new S3EncryptionFeature(session, acl);
         feature.setEncryption(test, S3EncryptionFeature.SSE_AES256);
         final Encryption.Algorithm value = feature.getEncryption(test);

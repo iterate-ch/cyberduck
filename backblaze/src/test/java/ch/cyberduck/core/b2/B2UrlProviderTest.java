@@ -40,7 +40,7 @@ public class B2UrlProviderTest extends AbstractB2Test {
         final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
+        new B2TouchFeature(session, fileid).touch(test, new TransferStatus().withLength(0L));
         final B2UrlProvider provider = new B2UrlProvider(session);
         assertEquals(0, provider.toUrl(bucket).size());
         assertEquals(1, provider.toUrl(test).size());

@@ -89,9 +89,9 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(
-                bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new S3TouchFeature(session, acl).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path ignored = new S3TouchFeature(session, acl).touch(new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
+        final Path ignored = new S3TouchFeature(session, acl).touch(new Path(directory, String.format("%s-2", test.getName()), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         {
             // Make sure there is another versioned copy of a file not to be included when listing
             final byte[] content = RandomUtils.nextBytes(245);

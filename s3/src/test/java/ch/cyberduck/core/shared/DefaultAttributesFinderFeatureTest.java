@@ -61,7 +61,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractS3Test {
         final AttributesFinder f = new DefaultAttributesFinderFeature(session);
         final String name = new AlphanumericRandomStringService().random();
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final String initialVersion = file.attributes().getVersionId();
         assertNotNull(initialVersion);
         assertNotSame(file.attributes(), f.find(file));

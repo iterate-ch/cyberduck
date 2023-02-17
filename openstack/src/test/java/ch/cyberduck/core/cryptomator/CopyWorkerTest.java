@@ -108,8 +108,8 @@ public class CopyWorkerTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))
-        ), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
@@ -132,8 +132,8 @@ public class CopyWorkerTest extends AbstractSwiftTest {
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))
-        ), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session)).mkdir(targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
@@ -156,8 +156,8 @@ public class CopyWorkerTest extends AbstractSwiftTest {
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))
-        ), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(file, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -245,8 +245,8 @@ public class CopyWorkerTest extends AbstractSwiftTest {
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))
-        ), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -270,8 +270,8 @@ public class CopyWorkerTest extends AbstractSwiftTest {
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new SwiftDirectoryFeature(session)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))
-        ), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
+                new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus().withLength(0L));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

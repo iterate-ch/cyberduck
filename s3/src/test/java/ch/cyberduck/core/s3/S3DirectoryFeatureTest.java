@@ -57,7 +57,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
                     final Path test = new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService(30).random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
                     assertTrue(feature.isSupported(test.getParent(), test.getName()));
                     test.attributes().setRegion(region.getIdentifier());
-                    feature.mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+                    feature.mkdir(test, new TransferStatus().withLength(0L).withRegion(region.getIdentifier()));
                     assertTrue(new S3FindFeature(session, acl).find(test));
                     assertEquals(region.getIdentifier(), new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(test).getIdentifier());
                     new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -74,7 +74,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3DirectoryFeature(virtualhost, new S3WriteFeature(session, acl), acl).isSupported(test.getParent(), test.getName()));
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
-        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(test, new TransferStatus().withRegion(region.getIdentifier()));
+        new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(test, new TransferStatus().withLength(0L).withRegion(region.getIdentifier()));
         assertTrue(new S3FindFeature(session, acl).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -96,7 +96,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         });
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(b.get());
         assertTrue(new S3FindFeature(session, acl).find(test));
@@ -124,13 +124,13 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             @Override
             public Path call() throws BackgroundException {
                 return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(
-                        new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                        new Path(new DefaultHomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
             }
         }).call();
         final Path test = new S3PathStyleFallbackAdapter<>(session.getClient(), new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+                return new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
             }
         }).call();
         assertTrue(test.getType().contains(Path.Type.placeholder));
@@ -147,7 +147,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreatePlaceholderVersioningDelete() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertTrue(new S3VersionedObjectListService(session, acl).list(bucket, new DisabledListProgressListener()).contains(test));
@@ -161,8 +161,8 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreatePlaceholderVersioningDeleteWithMarker() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertTrue(new S3VersionedObjectListService(session, acl).list(directory, new DisabledListProgressListener()).contains(test));
@@ -179,9 +179,9 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path parent = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(bucket,
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(parent,
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertNotNull(test.attributes().getVersionId());
         assertTrue(test.isPlaceholder());
         // Only placeholder is found in list output with no version id set
@@ -203,7 +203,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final String name = String.format("%s=", new AlphanumericRandomStringService().random());
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertTrue(new S3FindFeature(session, acl).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session, acl).list(test, new DisabledListProgressListener()).isEmpty());
@@ -214,7 +214,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     public void testCreatePlaceholderVirtualHost() throws Exception {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(virtualhost);
         final Path test = new S3DirectoryFeature(virtualhost, new S3WriteFeature(virtualhost, acl), acl).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus().withLength(0L));
         assertTrue(new S3FindFeature(virtualhost, acl).find(test));
         assertTrue(new DefaultFindFeature(virtualhost).find(test));
         assertTrue(new S3ObjectListService(virtualhost, acl).list(test, new DisabledListProgressListener()).isEmpty());
@@ -226,7 +226,7 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3AccessControlListFeature(session)), new S3AccessControlListFeature(session)).mkdir(
                 new Path(container, String.format("%s\\%s", new AlphanumericRandomStringService().random(),
-                        new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus());
+                        new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(test));

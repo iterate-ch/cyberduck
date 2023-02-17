@@ -39,10 +39,10 @@ public class B2MoveFeatureTest extends AbstractB2Test {
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path container = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
-        final Path test = new B2TouchFeature(session, fileid).touch(new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new B2TouchFeature(session, fileid).touch(new Path(container, name, EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertTrue(new B2FindFeature(session, fileid).find(test));
         final Path target = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new B2MoveFeature(session, fileid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new B2MoveFeature(session, fileid).move(test, target, new TransferStatus().withLength(0L), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertNotEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         assertFalse(new B2FindFeature(session, fileid).find(new Path(container, name, EnumSet.of(Path.Type.file))));
         assertTrue(new B2FindFeature(session, fileid).find(target));

@@ -36,7 +36,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testFindFileUsEast() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session));
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
@@ -89,7 +89,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testFindPlaceholder() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus().withLength(0L));
         final PathAttributes attributes = new S3AttributesFinderFeature(session, acl).find(test);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0L, attributes.getSize());
@@ -100,7 +100,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testVersioningReadAttributesDeleteMarker() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path testWithVersionId = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path testWithVersionId = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         final PathAttributes attr = new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(testWithVersionId);
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
@@ -147,7 +147,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
-                new Path(container, String.format("%s~", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(container, String.format("%s~", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -157,7 +157,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("us-east-1");
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
-                new Path(container, String.format("%s@", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+                new Path(container, String.format("%s@", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -169,7 +169,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final String prefix = new AlphanumericRandomStringService().random();
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
                 new Path(new Path(container, prefix, EnumSet.of(Path.Type.directory)),
-                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+                        new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertNotNull(new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         assertNotNull(new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(new Path(container, prefix, EnumSet.of(Path.Type.directory))));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -202,7 +202,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test(expected = NotfoundException.class)
     public void testDeleted() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
@@ -218,7 +218,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testDeletedWithMarker() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
-        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withLength(0L));
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         // Add delete marker
@@ -239,7 +239,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(cloudfront, new S3AccessControlListFeature(cloudfront));
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         final String name = new AlphanumericRandomStringService().random();
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         status.setAcl(Acl.CANNED_PUBLIC_READ);
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
                 new Path(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)),
@@ -256,7 +256,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(virtualhost, new S3AccessControlListFeature(virtualhost));
         assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.directory))));
         final String name = new AlphanumericRandomStringService().random();
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLength(0L);
         final Path file = new S3TouchFeature(virtualhost, new S3AccessControlListFeature(session)).touch(
                 new Path(name, EnumSet.of(Path.Type.file)), status);
         final PathAttributes attributes = f.find(new Path(file.getName(), EnumSet.of(Path.Type.file)));
