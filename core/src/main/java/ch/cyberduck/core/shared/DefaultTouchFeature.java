@@ -45,7 +45,8 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final StatusOutputStream<T> writer = write.write(file, status.withLength(0L), new DisabledConnectionCallback());
+            final StatusOutputStream<T> writer = write.write(file, status.withLength(
+                    TransferStatus.UNKNOWN_LENGTH == status.getLength() ? 0L : status.getLength()), new DisabledConnectionCallback());
             writer.close();
             if(!PathAttributes.EMPTY.equals(status.getResponse())) {
                 if(log.isDebugEnabled()) {

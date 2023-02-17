@@ -110,7 +110,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         log.warn(String.format("Move operation is not recursive. Create directory %s", r.getValue()));
                         // Create directory unless copy implementation is recursive
                         result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(),
-                                new TransferStatus().withRegion(r.getKey().attributes().getRegion())));
+                                new TransferStatus().withLength(0L).withRegion(r.getKey().attributes().getRegion())));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()

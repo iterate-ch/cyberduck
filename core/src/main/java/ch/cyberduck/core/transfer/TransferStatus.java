@@ -44,7 +44,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class TransferStatus implements StreamCancelation, StreamProgress {
+public class TransferStatus implements TransferResponse, StreamCancelation, StreamProgress {
     private static final Logger log = LogManager.getLogger(TransferStatus.class);
 
     public static final long KILO = 1024; //2^10
@@ -481,13 +481,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    /**
-     * @return Attributes on server after upload
-     */
+    @Override
     public PathAttributes getResponse() {
         return response;
     }
 
+    @Override
     public void setResponse(PathAttributes attributes) {
         this.response = attributes;
     }
