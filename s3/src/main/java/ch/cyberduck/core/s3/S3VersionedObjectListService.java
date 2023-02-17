@@ -217,7 +217,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             public Path call() throws BackgroundException {
                 final PathAttributes attr = new PathAttributes();
                 attr.setRegion(bucket.attributes().getRegion());
-                final String key = StringUtils.chomp(URIEncoder.decode(prefix), String.valueOf(Path.DELIMITER));
+                final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
                             bucket.isRoot() ? StringUtils.EMPTY : bucket.getName(), prefix, null, 1,
