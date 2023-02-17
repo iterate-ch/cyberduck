@@ -131,7 +131,7 @@ public class GoogleStorageObjectListService implements ListService {
                         attr.setRegion(bucket.attributes().getRegion());
                         if(null == delimiter) {
                             // When searching for files recursively
-                            file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
+                            file = new Path(String.format("%s/%s", bucket.getAbsolute(), key), types, attr);
                         }
                         else {
                             file = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), types, attr);
@@ -156,7 +156,7 @@ public class GoogleStorageObjectListService implements ListService {
                             attributes.setRegion(bucket.attributes().getRegion());
                             if(null == delimiter) {
                                 // When searching for files recursively
-                                file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                                file = new Path(String.format("%s/%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                             }
                             else {
                                 file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
