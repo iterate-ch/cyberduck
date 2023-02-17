@@ -62,9 +62,11 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)
-        ), new GraphWriteFeature(session, fileid), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)), new GraphWriteFeature(session, fileid), cryptomator).touch(
+                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
+        assertEquals(0L, test.attributes().getSize());
+        assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVault());
         assertTrue(new CryptoFindV6Feature(session, new GraphFindFeature(session, fileid), cryptomator).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
@@ -81,9 +83,11 @@ public class GraphTouchFeatureTest extends AbstractOneDriveTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)
-        ), new GraphWriteFeature(session, fileid), cryptomator).touch(
-                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Path test = new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new GraphWriteFeature(session, fileid)), new GraphWriteFeature(session, fileid), cryptomator).touch(
+                new Path(vault, new AlphanumericRandomStringService(130).random(), EnumSet.of(Path.Type.file)), status);
+        assertEquals(0L, test.attributes().getSize());
+        assertEquals(0L, status.getResponse().getSize());
         assertNotNull(test.attributes().getVault());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new GraphAttributesFinderFeature(session, fileid), cryptomator).find(test);
