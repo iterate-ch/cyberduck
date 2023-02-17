@@ -60,9 +60,9 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
-        assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -88,9 +88,9 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
-        assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
@@ -116,9 +116,9 @@ public class BrickMultipartWriteFeatureTest extends AbstractBrickTest {
         assertEquals(content.length, count.getSent());
         in.close();
         out.close();
-        assertNull(out.getStatus());
         assertTrue(new BrickFindFeature(session).find(file));
         final PathAttributes attributes = new BrickAttributesFinderFeature(session).find(file);
+        assertEquals(new BrickAttributesFinderFeature(session).toAttributes(out.getStatus()), attributes);
         assertEquals(content.length, attributes.getSize());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new BrickReadFeature(session).read(file, new TransferStatus().withLength(content.length), new DisabledConnectionCallback());
