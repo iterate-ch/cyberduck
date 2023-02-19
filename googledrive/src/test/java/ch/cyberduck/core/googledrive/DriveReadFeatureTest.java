@@ -47,6 +47,7 @@ import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
 
+import static ch.cyberduck.core.googledrive.DriveHomeFinderService.MYDRIVE_FOLDER;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -136,7 +137,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
         final TransferStatus writeStatus = new TransferStatus();
         writeStatus.setLength(content.length);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DriveWriteFeature writer = new DriveWriteFeature(session, fileid);
         final HttpResponseOutputStream<File> out = writer.write(test, writeStatus, new DisabledConnectionCallback());
@@ -152,7 +153,7 @@ public class DriveReadFeatureTest extends AbstractDriveTest {
     public void testReadRevision() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final byte[] content = RandomUtils.nextBytes(1645);
         {

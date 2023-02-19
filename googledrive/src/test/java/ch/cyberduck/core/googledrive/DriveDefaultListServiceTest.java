@@ -38,6 +38,7 @@ import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
 
+import static ch.cyberduck.core.googledrive.DriveHomeFinderService.MYDRIVE_FOLDER;
 import static ch.cyberduck.core.googledrive.DriveHomeFinderService.SHARED_DRIVES_NAME;
 import static org.junit.Assert.*;
 
@@ -46,7 +47,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testList() throws Exception {
-        final Path directory = DriveHomeFinderService.MYDRIVE_FOLDER;
+        final Path directory = MYDRIVE_FOLDER;
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -91,7 +92,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     @Test
     public void testListMissingFileidOnFolder() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
         fileid.cache(directory, null);
@@ -105,7 +107,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     @Test
     public void testListLexicographicallyLetters() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(f1.getName().compareTo(f2.getName()) < 0);
@@ -119,7 +122,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     @Test
     public void testListLexicographicallyNumbers() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "103", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "101", EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(f1.getName().compareTo(f2.getName()) < 0);
@@ -133,7 +137,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     @Test
     public void testListFilenameSingleQuote() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("%s'", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
@@ -144,7 +149,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     @Test
     public void testListFilenameBackslash() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
-        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("%s\\", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertEquals(1, list.size());
@@ -154,8 +160,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
     public void testFilenameColon() throws Exception {
-        final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
-        final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(MYDRIVE_FOLDER, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final Path folder = new Path(MYDRIVE_FOLDER, String.format("%s:name", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         new DriveTouchFeature(session, fileid).touch(file, new TransferStatus());
         new DriveDirectoryFeature(session, fileid).mkdir(folder, new TransferStatus());
@@ -168,7 +174,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     public void testSameFoldername() throws Exception {
         final String f1 = new AlphanumericRandomStringService().random();
         final String f2 = new AlphanumericRandomStringService().random();
-        final Path parent = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory));
+        final Path parent = new Path(MYDRIVE_FOLDER, f1, EnumSet.of(Path.Type.directory));
         final Path folder = new Path(parent, f2, EnumSet.of(Path.Type.directory));
         final DriveFileIdProvider provider = new DriveFileIdProvider(session);
         new DriveDirectoryFeature(session, provider).mkdir(parent, new TransferStatus());

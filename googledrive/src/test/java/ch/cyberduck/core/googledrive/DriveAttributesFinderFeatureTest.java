@@ -41,6 +41,7 @@ import java.util.UUID;
 
 import com.google.api.services.drive.model.File;
 
+import static ch.cyberduck.core.googledrive.DriveHomeFinderService.MYDRIVE_FOLDER;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -170,7 +171,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     public void testChangedFileId() throws Exception {
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final Path room = new DriveDirectoryFeature(session, fileid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String latestnodeid = test.attributes().getFileId();
         assertNotNull(latestnodeid);
