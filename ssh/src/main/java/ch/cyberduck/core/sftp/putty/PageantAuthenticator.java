@@ -61,10 +61,6 @@ public class PageantAuthenticator extends AgentAuthenticator {
             log.warn("Missing proxy reference");
             return Collections.emptyList();
         }
-        if(!proxy.isRunning()) {
-            log.warn(String.format("Agent %s not running", this));
-            return Collections.emptyList();
-        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Retrieve identities from proxy %s", proxy));
         }
