@@ -68,10 +68,10 @@ public abstract class FileController extends AlertController {
 
     @Override
     public boolean validate(final int option) {
-        if(PreferencesFactory.get().getList("browser.filter.regex").stream().anyMatch(s -> s.matches(inputField.stringValue()))) {
+        final String input = StringUtils.trim(inputField.stringValue());
+        if(PreferencesFactory.get().getList("browser.filter.regex").stream().anyMatch(input::matches)) {
             return false;
         }
-        final String input = StringUtils.trim(inputField.stringValue());
         if(StringUtils.isNotBlank(input)) {
             if(cache.get(workdir).contains(new Path(workdir, input, EnumSet.of(Path.Type.file)))) {
                 return false;
