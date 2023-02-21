@@ -52,6 +52,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
@@ -212,6 +213,26 @@ public class SwiftUrlProvider implements UrlProvider {
         public String getHelp() {
             return MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                     LocaleFactory.localizedString("Pre-Signed", "S3"));
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if(this == o) {
+                return true;
+            }
+            if(o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            if(!super.equals(o)) {
+                return false;
+            }
+            final PresignedUrl that = (PresignedUrl) o;
+            return Objects.equals(file, that.file) && Objects.equals(expiry, that.expiry);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), file, expiry);
         }
     }
 }

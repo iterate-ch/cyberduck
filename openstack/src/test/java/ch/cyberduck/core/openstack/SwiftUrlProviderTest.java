@@ -68,6 +68,7 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
         assertNotNull(signed);
         assertNotEquals(DescriptiveUrl.EMPTY, signed);
         assertFalse(list.filter(DescriptiveUrl.Type.signed).isEmpty());
+        assertEquals(5, list.filter(DescriptiveUrl.Type.signed).size());
         for(DescriptiveUrl s : list.filter(DescriptiveUrl.Type.signed)) {
             assertNotNull(s);
             assertNotEquals(DescriptiveUrl.EMPTY, s);
