@@ -20,6 +20,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -44,8 +45,13 @@ public class DriveTouchFeature implements Touch<VersionId> {
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            if(new DriveFindFeature(session, fileid).find(file)) {
-                throw new ConflictException(file.getAbsolute());
+            try {
+                if(!new DriveAttributesFinderFeature(session, fileid).find(file).isHidden()) {
+                    throw new ConflictException(file.getAbsolute());
+                }
+            }
+            catch(NotfoundException e) {
+                // Ignore
             }
             final Drive.Files.Create insert = session.getClient().files().create(new File()
                     .setName(file.getName())

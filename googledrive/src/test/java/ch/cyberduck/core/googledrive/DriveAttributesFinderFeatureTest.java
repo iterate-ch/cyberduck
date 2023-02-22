@@ -106,19 +106,19 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
                 new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
         assertEquals(version1.attributes(), f.find(version1));
-        final Path version2 = new DriveTouchFeature(session, fileid).touch(
-                new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotEquals(f.find(version1), f.find(version2));
         final AttributedList<Path> listBeforeDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listBeforeDelete.contains(version1));
         assertFalse(listBeforeDelete.find(new DefaultPathPredicate(version1)).attributes().isHidden());
-        assertTrue(listBeforeDelete.contains(version2));
         new DriveTrashFeature(session, fileid).delete(Collections.singletonList(new Path(version1)), new DisabledLoginCallback(), new Delete.DisabledCallback());
         final AttributedList<Path> listAfterDelete = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
         assertTrue(listAfterDelete.contains(version1));
         assertTrue(listAfterDelete.find(new DefaultPathPredicate(version1)).attributes().isHidden());
-        assertTrue(listAfterDelete.contains(version2));
-        assertFalse(listAfterDelete.find(new DefaultPathPredicate(version2)).attributes().isHidden());
+        final Path version2 = new DriveTouchFeature(session, fileid).touch(
+                new Path(folder, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertNotEquals(f.find(version1), f.find(version2));
+        final AttributedList<Path> listAfterReupload = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
+        assertTrue(listAfterReupload.contains(version2));
+        assertFalse(listAfterReupload.find(new DefaultPathPredicate(version2)).attributes().isHidden());
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(version1, version2, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
