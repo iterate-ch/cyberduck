@@ -4,7 +4,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -18,7 +17,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class AzureUrlProviderTest extends AbstractAzureTest {
@@ -28,8 +26,7 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "f g", EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        assertNotNull("https://kahy9boj3eib.blob.core.windows.net/cyberduck/f%20g?sp=r&sr=b&sv=2012-02-12&se=2014-01-29T14%3A48%3A26Z&sig=HlAF9RjXNic2%2BJa2ghOgs8MTgJva4bZqNZrb7BIv2mI%3D",
-            new AzureUrlProvider(session).toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
+        assertEquals(5, new AzureUrlProvider(session).toUrl(test).filter(DescriptiveUrl.Type.signed).size());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -42,6 +39,6 @@ public class AzureUrlProviderTest extends AbstractAzureTest {
         final AzureUrlProvider provider = new AzureUrlProvider(session);
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(DescriptiveUrl.EMPTY.getUrl(), provider.toDownloadUrl(file, null, new DisabledPasswordCallback()).getUrl());
+        assertEquals(DescriptiveUrl.EMPTY.getUrl(), provider.toUrl(file).find(DescriptiveUrl.Type.signed).getUrl());
     }
 }

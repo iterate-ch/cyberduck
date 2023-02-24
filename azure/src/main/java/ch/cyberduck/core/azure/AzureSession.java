@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -41,7 +42,6 @@ import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -228,7 +228,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(type == Touch.class) {
             return (T) new AzureTouchFeature(this, context);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == UrlProvider.class) {
             return (T) new AzureUrlProvider(this);
         }
         if(type == AclPermission.class) {
