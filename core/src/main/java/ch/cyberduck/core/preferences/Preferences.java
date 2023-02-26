@@ -283,12 +283,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("local.delimiter", File.separator);
         this.setDefault("queue.download.folder", System.getProperty("user.dir"));
         this.setDefault("ftp.timezone.default", TimeZone.getDefault().getID());
-        // Ticket #2539
-        if(this.getBoolean("connection.dns.ipv6")) {
-            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
-        }
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
+
+        System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
 
         // TTL for DNS queries
         Security.setProperty("networkaddress.cache.ttl", "10");
