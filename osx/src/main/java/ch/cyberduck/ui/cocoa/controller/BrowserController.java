@@ -2488,7 +2488,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     protected void edit(final Application application, final Path file) {
-        final Editor editor = editors.getOrDefault(file, EditorFactory.instance().create(pool.getHost(), file, this));
+        final Editor editor;
+        if(!editors.containsKey(file)) {
+            editors.put(file, editor = EditorFactory.instance().create(pool.getHost(), file, this));
+        }
+        else {
+            editor = editors.get(file);
+        }
         this.background(new WorkerBackgroundAction<>(this, pool, editor.open(
                 application, new DisabledApplicationQuitCallback(), new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
                     @Override
