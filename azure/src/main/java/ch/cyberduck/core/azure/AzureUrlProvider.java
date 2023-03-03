@@ -120,7 +120,7 @@ public class AzureUrlProvider implements UrlProvider {
 
         @Override
         public String getPreview() {
-            return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+            return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3"),
                     UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()));
         }
 
