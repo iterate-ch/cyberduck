@@ -93,7 +93,8 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
                 throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
             }
             catch(NotfoundException n) {
-                // Ignore - for buckets created through the S3 console with object writer ownership we get a 404
+                // For buckets created through the S3 console with object writer ownership we get a 404
+                return true;
             }
             catch(AccessDeniedException | InteroperabilityException l) {
                 log.warn(String.format("Missing permission to read bucket ownership configuration for %s %s", bucket.getName(), e.getMessage()));
