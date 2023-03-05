@@ -98,8 +98,8 @@ You will run into warnings from `MSBuild`/`WiX` that are unrelated to how Cyberd
 ### macOS
 
 Edit `setup/app/Info.plist` if you want to debug _Cyberduck.app_ or `setup/pkg/Info.plist` if you want to
- debug`duck` respectively. Add `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005` to allow to
- connect to the running application in your IDE by attaching to the remote JVM.
+debug`duck` respectively. Add `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005` in `VMOptions` to
+allow to connect to the running application in your IDE by attaching to the remote JVM.
 
 ### Windows
 
