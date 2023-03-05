@@ -34,7 +34,9 @@ For general help about using Cyberduck, please refer to the [documentation](http
 
 ## Snapshot and Beta builds
 
-These are nightly snapshot builds from the current development trunk featuring the latest bug fixes and enhancements. Be warned, though, these builds are potentially unstable and experimental. You can also switch to beta or snapshot builds in _Preferences → Update.
+These are nightly snapshot builds from the current development trunk featuring the latest bug fixes and enhancements. Be
+warned, though, these builds are potentially unstable and experimental. You can also switch to beta or snapshot builds
+in _Preferences → Update_.
 
 ## Prerequisites
 
