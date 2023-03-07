@@ -19,6 +19,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 public class FileBufferTest {
@@ -32,10 +35,45 @@ public class FileBufferTest {
         assertEquals(100L, buffer.length(), 0L);
         buffer.truncate(1L);
         assertEquals(1L, buffer.length(), 0L);
-        final byte[] read = new byte[1];
-        assertEquals(1, buffer.read(read, 0L));
-        assertEquals(chunk[0], read[0]);
+        {
+            final byte[] read = new byte[1];
+            assertEquals(1, buffer.read(read, 0L));
+            assertEquals(chunk[0], read[0]);
+        }
+        {
+            final byte[] read = new byte[2];
+            assertEquals(1, buffer.read(read, 0L));
+            assertEquals(chunk[0], read[0]);
+        }
         assertEquals(1L, buffer.length(), 0L);
+        buffer.truncate(102L);
+        assertEquals(102L, buffer.length(), 0L);
+        {
+            final byte[] read = new byte[2];
+            assertEquals(2, buffer.read(read, 0L));
+            assertEquals(chunk[0], read[0]);
+            assertEquals(0, read[1]);
+        }
+        buffer.write(chunk, 0L);
+        {
+            final byte[] read = new byte[100];
+            assertEquals(100, buffer.read(read, 0L));
+            assertArrayEquals(chunk, read);
+        }
+        {
+            final byte[] read = new byte[2];
+            assertEquals(2, buffer.read(read, 100L));
+            assertEquals(0, read[0]);
+            assertEquals(0, read[1]);
+        }
+        {
+            final byte[] read = new byte[3];
+            assertEquals(3, buffer.read(read, 99L));
+            assertEquals(chunk[99], read[0]);
+            assertEquals(0, read[1]);
+            assertEquals(0, read[2]);
+        }
+        assertEquals(IOUtils.EOF, buffer.read(new byte[1], 102L));
     }
 
     @Test
@@ -45,7 +83,9 @@ public class FileBufferTest {
         final byte[] chunk = RandomUtils.nextBytes(100);
         buffer.write(chunk, 0L);
         assertEquals(100L, buffer.length(), 0L);
-        buffer.read(new byte[20], 1L);
+        final byte[] read = new byte[20];
+        assertEquals(20, buffer.read(read, 1L));
+        assertArrayEquals(Arrays.copyOfRange(chunk, 1, 21), read);
         assertEquals(100L, buffer.length(), 0L);
     }
 
@@ -67,6 +107,7 @@ public class FileBufferTest {
         assertEquals(0L, buffer.length(), 0L);
         buffer.truncate(1L);
         assertEquals(1L, buffer.length(), 0L);
+        assertEquals(1, buffer.read(new byte[1], 0L));
         final byte[] chunk = RandomUtils.nextBytes(100);
         buffer.write(chunk, 0L);
         assertEquals(100L, buffer.length(), 0L);
