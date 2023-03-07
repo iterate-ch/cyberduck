@@ -22,6 +22,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 
+@Required
 public interface Read {
 
     /**

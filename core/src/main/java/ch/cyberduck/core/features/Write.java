@@ -26,6 +26,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Objects;
 
+@Required
 public interface Write<Reply> {
 
     /**
