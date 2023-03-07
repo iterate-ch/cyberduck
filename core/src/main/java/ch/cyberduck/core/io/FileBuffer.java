@@ -62,7 +62,16 @@ public class FileBuffer implements Buffer {
         if(offset < file.length()) {
             file.seek(offset);
             if(chunk.length + offset > file.length()) {
-                return file.read(chunk, 0, (int) (file.length() - offset));
+                final int read = file.read(chunk, 0, (int) (file.length() - offset));
+                if(read + offset < file.length()) {
+                    // Less read than we have in file - honour read interface
+                    return read;
+                }
+                //
+                final int missing = chunk.length - read;
+                final int available = (int) Math.min(missing, this.length - file.length());
+                System.arraycopy(new byte[available], 0, chunk, read, missing);
+                return chunk.length;
             }
             else {
                 return file.read(chunk, 0, chunk.length);
