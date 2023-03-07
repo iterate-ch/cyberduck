@@ -1,7 +1,7 @@
 package ch.cyberduck.core.features;
 
 /*
- * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,5 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-
-@Optional
-public interface Restore {
-    void restore(Path file, LoginCallback prompt) throws BackgroundException;
-
-    boolean isRestorable(Path file);
+public @interface Optional {
 }

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+@Optional
 public interface TransferAcceleration {
     /**
      * @param file File

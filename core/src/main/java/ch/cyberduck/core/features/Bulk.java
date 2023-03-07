@@ -23,6 +23,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
+@Optional
 public interface Bulk<R> {
     /**
      * Prior transfer is started

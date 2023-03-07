@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.EnumSet;
 
+@Optional
 public interface Home {
 
     Path ROOT = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory));

@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+@Optional
 public interface Touch<Reply> {
 
     Path touch(Path file, TransferStatus status) throws BackgroundException;

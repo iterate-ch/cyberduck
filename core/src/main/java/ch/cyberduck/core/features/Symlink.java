@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+@Optional
 public interface Symlink {
 
     void symlink(Path file, String target) throws BackgroundException;

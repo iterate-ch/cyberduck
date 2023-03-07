@@ -22,6 +22,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.concurrent.TimeUnit;
 
+@Optional
 public interface Timestamp {
 
     static long toSeconds(final long millis) {

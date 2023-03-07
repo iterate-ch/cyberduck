@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+@Optional
 public interface Lock<T> {
     T lock(Path file) throws BackgroundException;
 

@@ -23,6 +23,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+@Optional
 public interface Download {
 
     void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,

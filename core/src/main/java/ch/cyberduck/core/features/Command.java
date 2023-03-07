@@ -19,6 +19,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
+@Optional
 public interface Command {
 
     /**

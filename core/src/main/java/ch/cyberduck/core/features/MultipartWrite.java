@@ -15,5 +15,6 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+@Optional
 public interface MultipartWrite<Reply> extends Write<Reply> {
 }

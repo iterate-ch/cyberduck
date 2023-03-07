@@ -19,6 +19,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.Objects;
 
+@Optional
 public interface Quota {
     Space get() throws BackgroundException;
 

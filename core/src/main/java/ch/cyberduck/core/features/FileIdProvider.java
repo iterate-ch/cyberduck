@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
  * Determine an ID for a file for services where API calls take IDs rather than file paths. Implemented for services
  * where the file id remains constant when updating file contents.
  */
+@Optional
 public interface FileIdProvider {
     /**
      * Determine file id for file

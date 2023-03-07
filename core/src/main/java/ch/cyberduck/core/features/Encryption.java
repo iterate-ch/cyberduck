@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 import java.util.Set;
 
+@Optional
 public interface Encryption {
 
     /**

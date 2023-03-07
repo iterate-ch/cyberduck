@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 
+@Optional
 public interface Logging {
 
     LoggingConfiguration getConfiguration(Path container) throws BackgroundException;

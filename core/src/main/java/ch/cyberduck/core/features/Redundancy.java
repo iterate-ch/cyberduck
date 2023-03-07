@@ -21,8 +21,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.Set;
 
 /**
- * Storage class for files
+ * Allows to retrieve and set storage classification for files.
  */
+@Optional
 public interface Redundancy {
 
     /**

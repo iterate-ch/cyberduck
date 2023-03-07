@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+@Optional
 public interface Copy {
     /**
      * @param source   Source file or folder

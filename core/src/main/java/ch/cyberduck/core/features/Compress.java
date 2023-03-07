@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 
+@Optional
 public interface Compress {
 
     void archive(Archive archive, Path workdir, List<Path> files, ProgressListener listener, TranscriptListener transcript) throws BackgroundException;

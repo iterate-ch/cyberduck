@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.Objects;
 import java.util.Set;
 
+@Optional
 public interface Location {
 
     /**

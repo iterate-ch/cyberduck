@@ -23,6 +23,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+@Optional
 public interface Upload<Reply> {
 
     Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,

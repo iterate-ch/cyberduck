@@ -19,6 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
+@Optional
 public interface Lifecycle {
 
     /**

@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
+@Optional
 public interface Pairing {
     void delete(final Host bookmark) throws BackgroundException;
 }

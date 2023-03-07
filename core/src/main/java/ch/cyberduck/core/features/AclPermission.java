@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.EnumSet;
 import java.util.List;
 
+@Optional
 public interface AclPermission {
 
     Acl getPermission(Path file) throws BackgroundException;

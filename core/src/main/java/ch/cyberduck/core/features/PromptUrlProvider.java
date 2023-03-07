@@ -20,6 +20,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+@Optional
 public interface PromptUrlProvider<Download, Upload> {
     boolean isSupported(Path file, Type type);
 

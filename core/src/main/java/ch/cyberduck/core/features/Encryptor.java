@@ -21,6 +21,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 
+@Optional
 public interface Encryptor {
     InputStream encrypt(final Path file, InputStream proxy, final TransferStatus status) throws BackgroundException;
 }
