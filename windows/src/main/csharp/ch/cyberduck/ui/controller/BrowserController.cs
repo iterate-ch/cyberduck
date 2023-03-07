@@ -2331,7 +2331,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Editor editor;
             if (!_editors.TryGetValue(file, out editor))
             {
-                editor = EditorFactory.instance().create(Session.getHost(), file, this);
+                _editors.Add(file, editor = EditorFactory.instance().create(Session.getHost(), file, this));
             }
             application ??= EditorFactory.getEditor(file.getAbsolute());
             application ??= EditorFactory.getDefaultEditor();

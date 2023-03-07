@@ -128,19 +128,7 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public Worker<Transfer> open(final Application application, final ApplicationQuitCallback callback, final FileWatcherListener listener) {
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
-                temporary, progress, listener, notification) {
-            @Override
-            public void cleanup(final Transfer download) {
-                // Save checksum before edit
-                try {
-                    checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Error computing checksum for %s. %s", temporary, e));
-                }
-
-            }
-        };
+                temporary, progress, listener, notification);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", temporary));
         }
@@ -162,6 +150,12 @@ public abstract class AbstractEditor implements Editor {
                 delete();
             }
         };
+        try {
+            checksum = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(temporary.getInputStream(), new TransferStatus());
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Error computing checksum for %s. %s", temporary, e));
+        }
         if(!finder.isInstalled(application)) {
             log.warn(String.format("No editor application configured for %s", temporary));
             if(launcher.open(temporary)) {
