@@ -66,7 +66,8 @@ public class ReceiptFactory extends LicenseFactory {
             // Copy to Application Support for users switching versions
             final Local support = SupportDirectoryFinderFactory.get().find();
             try {
-                file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt", receipt.getName())));
+                file.copy(LocalFactory.get(support, String.format("%s.cyberduckreceipt",
+                        PreferencesFactory.get().getProperty("application.name"))));
             }
             catch(AccessDeniedException e) {
                 log.warn(e.getMessage());
