@@ -67,7 +67,7 @@ public class FileBuffer implements Buffer {
         final RandomAccessFile file = random();
         file.seek(offset);
         file.write(chunk, 0, chunk.length);
-        length = Math.max(length, file.length());
+        this.length = Math.max(this.length, file.length());
         return chunk.length;
     }
 
@@ -77,23 +77,26 @@ public class FileBuffer implements Buffer {
         if(offset < file.length()) {
             file.seek(offset);
             if(chunk.length + offset > file.length()) {
-                final int read = file.read(chunk, 0, (int) (file.length() - offset));
-                if(read + offset < file.length()) {
+                final int bufferRead = file.read(chunk, 0, (int) (file.length() - offset));
+                if(bufferRead + offset < file.length()) {
                     // Less read than we have in file - honour read interface
-                    return read;
+                    return bufferRead;
                 }
-                //
-                final int missing = chunk.length - read;
+                // Add null bytes up to allocated size
+                final int missing = chunk.length - bufferRead;
                 final int available = (int) Math.min(missing, this.length - file.length());
-                System.arraycopy(new byte[available], 0, chunk, read, missing);
-                return chunk.length;
+                final int nullRead = new NullInputStream(available).read(chunk, bufferRead, available);
+                if(nullRead > 0) {
+                    return bufferRead + nullRead;
+                }
+                return bufferRead;
             }
             else {
                 return file.read(chunk, 0, chunk.length);
             }
         }
         else {
-            final NullInputStream nullStream = new NullInputStream(length);
+            final NullInputStream nullStream = new NullInputStream(this.length);
             if(nullStream.available() > 0) {
                 nullStream.skip(offset);
                 return nullStream.read(chunk, 0, chunk.length);
