@@ -17,11 +17,11 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.features.CredentialsCleanupService;
-import ch.cyberduck.core.features.DelegatingPairingFeature;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptCleanupFeature;
+import ch.cyberduck.core.shared.CredentialsCleanupService;
+import ch.cyberduck.core.shared.DelegatingPairingFeature;
 import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.synchronization.DefaultComparisonService;
 import ch.cyberduck.core.synchronization.RevisionComparisonService;

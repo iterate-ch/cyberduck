@@ -1,7 +1,7 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.shared;
 
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,20 +16,24 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Pairing;
 
-public class DelegatingPairingFeature implements Pairing {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-    private final Pairing[] features;
+public class CredentialsCleanupService implements Pairing {
+    private static final Logger log = LogManager.getLogger(CredentialsCleanupService.class);
 
-    public DelegatingPairingFeature(final Pairing... features) {
-        this.features = features;
-    }
+    private final HostPasswordStore keychain = PasswordStoreFactory.get();
 
     @Override
     public void delete(final Host bookmark) throws BackgroundException {
-        for(Pairing feature : features) {
-            feature.delete(bookmark);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Delete credentials for %s in keychain %s", bookmark, keychain));
         }
+        keychain.delete(bookmark);
     }
 }
