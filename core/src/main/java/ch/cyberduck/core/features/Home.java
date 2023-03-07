@@ -20,6 +20,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.EnumSet;
 
+/**
+ * Retrieve home directory for user on server
+ */
 @Optional
 public interface Home {
 

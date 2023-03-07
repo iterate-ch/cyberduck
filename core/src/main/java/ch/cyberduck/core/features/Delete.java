@@ -24,6 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Delete files on server
+ */
 @Required
 public interface Delete {
     default void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException {
@@ -34,16 +37,33 @@ public interface Delete {
         this.delete(set, prompt, callback);
     }
 
+    /**
+     * Delete files on server
+     *
+     * @param files    Selected files or folders
+     * @param prompt   Callback when password is required to delete file
+     * @param callback Progress callback
+     */
     void delete(Map<Path, TransferStatus> files, PasswordCallback prompt, Callback callback) throws BackgroundException;
 
+    /**
+     * @param file File or folder
+     * @return True if the file can be deleted on the server
+     */
     default boolean isSupported(final Path file) {
         return file.attributes().getPermission().isWritable();
     }
 
+    /**
+     * @return True if the implementation supports deleting folders recursively
+     */
     default boolean isRecursive() {
         return false;
     }
 
+    /**
+     * Callback for every file deleted
+     */
     interface Callback {
         void delete(Path file);
     }

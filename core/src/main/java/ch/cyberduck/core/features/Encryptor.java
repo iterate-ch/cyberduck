@@ -23,5 +23,14 @@ import java.io.InputStream;
 
 @Optional
 public interface Encryptor {
-    InputStream encrypt(final Path file, InputStream proxy, final TransferStatus status) throws BackgroundException;
+
+    /**
+     * Wrap proxy with stream encrypting content on the fly
+     *
+     * @param file   File
+     * @param proxy  File input stream
+     * @param status Encryption properties
+     * @return Wrapped stream
+     */
+    InputStream encrypt(Path file, InputStream proxy, TransferStatus status) throws BackgroundException;
 }

@@ -17,6 +17,11 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.PathAttributes;
 
+/**
+ * Adapter to set the latest remote attributes after writing file from returned data structure from server
+ *
+ * @param <R> Custom domain model type
+ */
 @Required
 public interface AttributesAdapter<R> {
 

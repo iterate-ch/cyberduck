@@ -19,10 +19,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+/**
+ * Create new folder on server
+ *
+ * @param <Reply> Metadata
+ */
 @Required
 public interface Directory<Reply> {
 
     /**
+     * Create new folder on server
+     *
      * @param folder Directory
      * @param status Transfer status
      */
@@ -31,11 +38,14 @@ public interface Directory<Reply> {
     /**
      * @param workdir Working directory in browser
      * @param name    Folder name or null if unknown
-     * @return True if creating directory will succeed
+     * @return True if creating directory is supported in the working directory
      */
     default boolean isSupported(final Path workdir, final String name) {
         return workdir.attributes().getPermission().isWritable();
     }
 
+    /**
+     * Retrieve write implementation for implementations using placeholder files for folders
+     */
     Directory<Reply> withWriter(Write<Reply> writer);
 }

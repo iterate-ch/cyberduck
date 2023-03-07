@@ -26,9 +26,26 @@ import ch.cyberduck.core.transfer.TransferStatus;
 @Optional
 public interface Download {
 
+    /**
+     * Copy file from server to disk
+     *
+     * @param file     File on server
+     * @param local    File on local disk
+     * @param throttle Bandwidth management
+     * @param listener Progress callback
+     * @param status   Transfer status holder
+     * @param callback Prompt
+     * @throws BackgroundException
+     */
     void download(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                   TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
+    /**
+     * Determine support for reading file with offset
+     *
+     * @param file File
+     * @return True if reading with offset is supported
+     */
     boolean offset(Path file) throws BackgroundException;
 
     Download withReader(Read reader);

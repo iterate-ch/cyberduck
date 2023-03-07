@@ -19,6 +19,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
+/**
+ * Configure automatic transitions for files in remote storage
+ */
 @Optional
 public interface Lifecycle {
 

@@ -31,8 +31,7 @@ public interface Encryption {
     /**
      * Get list of key names available for use for server side encryption
      *
-     *
-     * @param file Container
+     * @param file   Container
      * @param prompt Login callback
      * @return List of key names
      */

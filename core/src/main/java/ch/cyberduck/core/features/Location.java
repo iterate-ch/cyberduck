@@ -22,6 +22,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Retrieve geographical location remote storage
+ */
 @Optional
 public interface Location {
 

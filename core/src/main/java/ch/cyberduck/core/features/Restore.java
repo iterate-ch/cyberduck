@@ -17,11 +17,24 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
+/**
+ * Revert file version
+ */
 @Optional
 public interface Restore {
+    /**
+     * @param file   File
+     * @param prompt Callback
+     * @see PathAttributes#getVersionId()
+     */
     void restore(Path file, LoginCallback prompt) throws BackgroundException;
 
+    /**
+     * @param file File
+     * @return True if file version can be restored
+     */
     boolean isRestorable(Path file);
 }

@@ -23,10 +23,30 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.List;
 
+/**
+ * Server side support for compressing files or folders
+ */
 @Optional
 public interface Compress {
 
+    /**
+     * Compress files
+     *
+     * @param archive    Compression format
+     * @param workdir    Working directory
+     * @param files      Selected files or folders
+     * @param listener   Progress callback
+     * @param transcript Log callback
+     */
     void archive(Archive archive, Path workdir, List<Path> files, ProgressListener listener, TranscriptListener transcript) throws BackgroundException;
 
+    /**
+     * Uncompress file
+     *
+     * @param archive    Compression format
+     * @param file       Selected file
+     * @param listener   Progress callback
+     * @param transcript Log callback
+     */
     void unarchive(Archive archive, Path file, ProgressListener listener, TranscriptListener transcript) throws BackgroundException;
 }

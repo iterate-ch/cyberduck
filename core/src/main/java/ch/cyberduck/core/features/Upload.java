@@ -26,6 +26,17 @@ import ch.cyberduck.core.transfer.TransferStatus;
 @Optional
 public interface Upload<Reply> {
 
+    /**
+     * Copy file on disk to server
+     *
+     * @param file     File on server
+     * @param local    File on local disk
+     * @param throttle Bandwidth management
+     * @param listener Progress callback
+     * @param status   Transfer status holder
+     * @param callback Prompt
+     * @see AttributesAdapter#toAttributes(Reply)
+     */
     Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 

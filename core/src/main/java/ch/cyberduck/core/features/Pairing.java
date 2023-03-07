@@ -18,7 +18,13 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 
+/**
+ * Cleanup any pairing with remote service when deleting bookmark configuration
+ */
 @Optional
 public interface Pairing {
+    /**
+     * Delete any cached pairing identifiers on disk or server
+     */
     void delete(final Host bookmark) throws BackgroundException;
 }

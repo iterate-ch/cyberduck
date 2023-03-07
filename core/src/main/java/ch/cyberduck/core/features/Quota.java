@@ -21,6 +21,10 @@ import java.util.Objects;
 
 @Optional
 public interface Quota {
+
+    /**
+     * @return Used and available disk space for user on server
+     */
     Space get() throws BackgroundException;
 
     final class Space {

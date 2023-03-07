@@ -22,6 +22,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Write modification date for file on server
+ */
 @Optional
 public interface Timestamp {
 
