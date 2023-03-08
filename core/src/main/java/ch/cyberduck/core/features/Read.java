@@ -22,10 +22,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.InputStream;
 
+/**
+ * Read file from server
+ */
+@Required
 public interface Read {
 
     /**
-     * @param status   Transfer status
+     * @param status   Transfer status holder
      * @param callback Prompt
      * @return Stream to read from to download file
      */

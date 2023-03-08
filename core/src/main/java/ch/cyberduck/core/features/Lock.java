@@ -18,8 +18,27 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+/**
+ * Lock files for exclusive access
+ *
+ * @param <T>
+ */
+@Optional
 public interface Lock<T> {
+    /**
+     * Lock file
+     *
+     * @param file File
+     * @return Lock token
+     */
     T lock(Path file) throws BackgroundException;
 
+    /**
+     * Release previously obtained lock
+     *
+     * @param file  File
+     * @param token Lock token
+     * @throws BackgroundException
+     */
     void unlock(Path file, T token) throws BackgroundException;
 }

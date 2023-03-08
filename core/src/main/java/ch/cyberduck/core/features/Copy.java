@@ -22,16 +22,20 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+/**
+ * Server side copying of files
+ */
+@Optional
 public interface Copy {
     /**
      * @param source   Source file or folder
      * @param target   Target file or folder
      * @param status   Write status
-     * @param callback Prompt
-     * @param listener
+     * @param prompt   Prompt
+     * @param listener Progress callback
      * @return Target file
      */
-    Path copy(Path source, Path target, TransferStatus status, ConnectionCallback callback, final StreamListener listener) throws BackgroundException;
+    Path copy(Path source, Path target, TransferStatus status, ConnectionCallback prompt, final StreamListener listener) throws BackgroundException;
 
     /**
      * @param source Source file or folder

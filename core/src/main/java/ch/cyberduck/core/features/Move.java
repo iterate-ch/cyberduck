@@ -21,16 +21,20 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+/**
+ * Move or rename file or folder on server
+ */
+@Required
 public interface Move {
     /**
-     * @param source   Source file or folder
-     * @param target   Target file or folder
-     * @param status   True if the target file exists
-     * @param delete   Progress
-     * @param callback Prompt
+     * @param source Source file or folder
+     * @param target Target file or folder
+     * @param status True if the target file exists
+     * @param delete Progress callback
+     * @param prompt Prompt
      * @return Target file
      */
-    Path move(Path source, Path target, TransferStatus status, Delete.Callback delete, ConnectionCallback callback) throws BackgroundException;
+    Path move(Path source, Path target, TransferStatus status, Delete.Callback delete, ConnectionCallback prompt) throws BackgroundException;
 
     /**
      * @param source Source file or folder

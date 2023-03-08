@@ -21,16 +21,26 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
+/**
+ * Retrieve metadata of file or folder from server
+ */
+@Required
 public interface AttributesFinder {
 
     /**
-     * Find file attributes
+     * Find file metadata
      *
-     * @param file File
+     * @param file File or folder
      */
     default PathAttributes find(Path file) throws BackgroundException {
         return this.find(file, new DisabledListProgressListener());
     }
 
+    /**
+     * Find file metadata
+     *
+     * @param file     File or folder
+     * @param listener Will optionally be invoked by implementation if directory listing is retrieved
+     */
     PathAttributes find(Path file, ListProgressListener listener) throws BackgroundException;
 }

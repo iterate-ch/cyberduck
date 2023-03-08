@@ -26,12 +26,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Objects;
 
+@Required
 public interface Write<Reply> {
 
     /**
      * @param status   Transfer status
      * @param callback Prompt
      * @return Stream to write to for upload
+     * @see AttributesAdapter#toAttributes(Reply)
      */
     StatusOutputStream<Reply> write(Path file, TransferStatus status, final ConnectionCallback callback) throws BackgroundException;
 

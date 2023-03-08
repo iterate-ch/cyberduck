@@ -1,7 +1,7 @@
-package ch.cyberduck.core.features;
+package ch.cyberduck.core.shared;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,21 +15,22 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Pairing;
 
-@Optional
-public interface PromptUrlProvider<Download, Upload> {
-    boolean isSupported(Path file, Type type);
+public class DelegatingPairingFeature implements Pairing {
 
-    DescriptiveUrl toDownloadUrl(Path file, Download options, PasswordCallback callback) throws BackgroundException;
+    private final Pairing[] features;
 
-    DescriptiveUrl toUploadUrl(Path file, Upload options, PasswordCallback callback) throws BackgroundException;
+    public DelegatingPairingFeature(final Pairing... features) {
+        this.features = features;
+    }
 
-    enum Type {
-        download,
-        upload
+    @Override
+    public void delete(final Host bookmark) throws BackgroundException {
+        for(Pairing feature : features) {
+            feature.delete(bookmark);
+        }
     }
 }

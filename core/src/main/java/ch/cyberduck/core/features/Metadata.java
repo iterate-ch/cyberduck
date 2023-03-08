@@ -22,6 +22,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
+@Optional
 public interface Metadata {
     Map<String, String> getDefault(Local local);
 

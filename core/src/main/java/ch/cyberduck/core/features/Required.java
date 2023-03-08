@@ -1,7 +1,7 @@
 package ch.cyberduck.core.features;
 
 /*
- * Copyright (c) 2002-2022 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,21 +15,5 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.exception.BackgroundException;
-
-public class DelegatingPairingFeature implements Pairing {
-
-    private final Pairing[] features;
-
-    public DelegatingPairingFeature(final Pairing... features) {
-        this.features = features;
-    }
-
-    @Override
-    public void delete(final Host bookmark) throws BackgroundException {
-        for(Pairing feature : features) {
-            feature.delete(bookmark);
-        }
-    }
+public @interface Required {
 }

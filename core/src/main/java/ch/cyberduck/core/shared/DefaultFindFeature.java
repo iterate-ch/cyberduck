@@ -28,6 +28,9 @@ import ch.cyberduck.core.features.Find;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The default implementation does a directory listing of the parent folder.
+ */
 public class DefaultFindFeature extends ListFilteringFeature implements Find {
     private static final Logger log = LogManager.getLogger(DefaultFindFeature.class);
 

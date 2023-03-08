@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.EnumSet;
 
+@Optional
 public interface UnixPermission {
 
     void setUnixOwner(Path file, String owner) throws BackgroundException;

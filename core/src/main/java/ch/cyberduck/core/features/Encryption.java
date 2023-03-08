@@ -25,13 +25,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 import java.util.Set;
 
+@Optional
 public interface Encryption {
 
     /**
      * Get list of key names available for use for server side encryption
      *
-     *
-     * @param file Container
+     * @param file   Container
      * @param prompt Login callback
      * @return List of key names
      */

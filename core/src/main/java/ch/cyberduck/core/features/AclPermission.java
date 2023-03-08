@@ -23,10 +23,26 @@ import ch.cyberduck.core.exception.BackgroundException;
 import java.util.EnumSet;
 import java.util.List;
 
+/**
+ * Read and write ACLs of files
+ */
+@Optional
 public interface AclPermission {
 
+    /**
+     * Retrieve access control list for file or folder
+     *
+     * @param file File or folder
+     * @return Acl.EMPTY when not applicable
+     */
     Acl getPermission(Path file) throws BackgroundException;
 
+    /**
+     * Write access control list for file or folder
+     *
+     * @param file File or folder
+     * @param acl  Access control list to replace any previously set
+     */
     void setPermission(Path file, Acl acl) throws BackgroundException;
 
     /**

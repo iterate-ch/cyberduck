@@ -19,6 +19,10 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 
+/**
+ * Command interface to the server
+ */
+@Optional
 public interface Command {
 
     /**

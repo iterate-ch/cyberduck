@@ -15,5 +15,9 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+/**
+ * Marker interface for write implementations supporting segmented uploads
+ */
+@Optional
 public interface MultipartWrite<Reply> extends Write<Reply> {
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.pool.SessionPool;
 
+@Optional
 public interface Scheduler<R> {
     R repeat(SessionPool pool, PasswordCallback callback);
 
