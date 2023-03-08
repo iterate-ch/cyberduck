@@ -50,29 +50,66 @@ in _Preferences → Update_.
 
 ### Windows
 
-- Visual Studio 2017 or later
-  - `.NET Desktop development`-Workload
-  - Windows SDK (10.0.14393.0)
-  - [MSBuild Community Tasks](https://github.com/loresoft/msbuildtasks)
-- [Bonjour SDK for Windows](https://developer.apple.com/downloads/index.action?q=Bonjour%20SDK%20for%20Windows)
+#### Installation
 
-#### Chocolatey
+**Manually**
+- Visual Studio 2022, following workloads are required:
+  - `.NET desktop development`
+  - `Universal Windows Platform development`
+  - `Desktop development with C++`
+- [Bonjour SDK for Windows](https://support.apple.com/kb/dl999)
+- [Wix v3](https://wixtoolset.org/docs/wix3/) (Optional)
 
+**Chocolatey**
+
+_Without Visual Studio (IDE)_
 ```sh
-choco install adoptopenjdk15 maven bonjour -y
-choco install visualstudio2019buildtools -y
-choco install wixtoolset -y
-choco install visualstudio2019-workload-manageddesktopbuildtools --params "--add Microsoft.Net.Component.4.7.TargetingPack" -y
-choco install visualstudio2019-workload-netcorebuildtools -y
-choco install visualstudio2019-workload-vctools --params "--add Microsoft.VisualStudio.Component.Windows10SDK.17763 --add Microsoft.VisualStudio.Component.VC.v141.x86.x64" -y
+choco install visualstudio2022buildtools -y
+choco install visualstudio2022-workload-manageddesktopbuildtools -y
+choco install visualstudio2022-workload-vctools -y
+choco install visualstudio2022-workload-universalbuildtools -y
 ```
+
+_With Visual Studio IDE_
+```sh
+choco install visualstudio2022(edition) -y
+choco install visualstudio2022-workload-manageddesktop -y
+choco install visualstudio2022-workload-nativedesktop -y
+choco install visualstudio2022-workload-universal -y
+```
+
+Replace `(edition)` with your licensed IDE SKU: community, professional, enterprise
+
+Install required dependencies, after installing Visual Studio IDE or build tools:
+```sh
+choco install microsoft-openjdk17 ant maven -y
+choco install bonjour -y; choco install bonjour -y --force
+```
+
+Optional, see Remarks:
+```sh
+choco install wixtoolset -y
+```
+
+_Remarks_: Installing with Chocolatey may or may not fail spectacularly.<br>
+Following issues have been observed on a clean installation:
+- Bonjour package fails with `file not found` - though the Bonjour64.msi is extracted from BonjourPSSetup.exe.
+- wixtoolset depends on .NET 3.5-package, which never completes<br>
+  On Windows 11 installation doesn't work
+- `visualstudio*-workload-*` may halt with "Operation canceled",<br>
+  Abort Chocolatey-command (Ctrl-C), then open up Visual Studio Installer and Resume installation there
 
 Restart your machine after installing these components.
 
-Additional `%PATH%`:
+#### System Configuration
+Make sure that `MSBuild`, `mvn`, `ant` and `java` are on your `PATH`-environment variable.
+* Open `Developer Command Prompt for VS2022`, then run `where msbuild.exe`, add first directory name to path
+  * e.g. `C:\Program Files\Microsoft Visual Studio\Community\Msbuild\Current\Bin\amd64`
+* Chocolatey may have added mvn and ant to your `PATH`-variable
+* The Microsoft OpenJDK 17 installer automatically adds itself to the system `PATH`.
 
-* `%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin`
-* `%ProgramFiles(x86)%\Windows Kits\10\bin\10.0.17763.0\x64`
+Additionally include the latest Windows Sdk-binary folder in your `PATH`-environment variable:
+* `%ProgramFiles(x86)%\Windows Kits\10\bin\10.0.<Latest>.0\x64`
 
 ## Building
 
@@ -106,7 +143,7 @@ allow to connect to the running application in your IDE by attaching to the remo
 Due to Visual Studio not being able to handle Java projects it is required to follow these steps for debugging:
 
 - Run `mvn verify -Dconfiguration=debug` which ensures that debugging symbols are generated
-  This prevents Visual Studio (or `MSBuild invoked from Maven) from generating optimized assemblies which in turn may
+  This prevents Visual Studio (or `MSBuild invoked from Maven`) from generating optimized assemblies which in turn may
   prevent debugging.
 - Open the solution in Visual Studio
 - Open a `.java` file and set a breakpoint. Visual Studio breaks either on or near the line selected.
