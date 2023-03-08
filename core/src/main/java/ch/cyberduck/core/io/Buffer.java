@@ -41,10 +41,13 @@ public interface Buffer {
     Long length();
 
     /**
-     * Close and release resources for buffer. Subsequent operations will fail
+     * Close and release resources for buffer
      */
     void close();
 
+    /**
+     * Extend or decrease buffer size
+     */
     void truncate(Long length);
 
     interface Factory {
