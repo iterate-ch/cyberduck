@@ -29,12 +29,14 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.concurrency.Interruptibles;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -104,6 +106,16 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             }
             catch(NotfoundException e) {
                 // Ignore
+            }
+        }
+        else {
+            if(status.isExists()) {
+                // Delete existing segments
+                if(new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject.cleanup")) {
+                    // Clean up any old segments
+                    new SwiftMultipleDeleteFeature(session).delete(
+                            new SwiftSegmentService(session, regionService).list(file), callback, new Delete.DisabledCallback());
+                }
             }
         }
         // Get the results of the uploads in the order they were submitted

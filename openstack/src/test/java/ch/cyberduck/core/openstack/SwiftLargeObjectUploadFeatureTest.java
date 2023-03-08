@@ -164,61 +164,110 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     }
 
     @Test
-    public void testUpload() throws Exception {
+    public void testUploadOverwrite() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, new AlphanumericRandomStringService().random() + ".txt", EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
 
         // Each segment, except the last, must be larger than 1048576 bytes.
-        //2MB + 1
-        final int length = 1048576 + 1048576 + 1;
-        final byte[] content = RandomUtils.nextBytes(length);
+        // 2MB + 1
+        {
+            final int length = 1048576 + 1048576 + 1;
+            final byte[] content = RandomUtils.nextBytes(length);
 
-        final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
-        out.close();
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            final TransferStatus status = new TransferStatus();
+            status.setLength(content.length);
 
-        final SwiftRegionService regionService = new SwiftRegionService(session);
-        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-            regionService,
-            new SwiftObjectListService(session, regionService),
-            new SwiftSegmentService(session, ".segments-test/"),
-                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+            final SwiftRegionService regionService = new SwiftRegionService(session);
+            final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+                    regionService,
+                    new SwiftObjectListService(session, regionService),
+                    new SwiftSegmentService(session, ".segments-test/"),
+                    new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
-        final BytecountStreamListener count = new BytecountStreamListener();
-        final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
-                status, new DisabledConnectionCallback());
-        assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
-        assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
-        assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
+            final BytecountStreamListener count = new BytecountStreamListener();
+            final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
+                    status, new DisabledConnectionCallback());
+            assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
+            assertNotEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+            assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
-        assertTrue(status.isComplete());
-        assertNotSame(PathAttributes.EMPTY, status.getResponse());
-        assertEquals(content.length, status.getResponse().getSize());
+            assertTrue(status.isComplete());
+            assertNotSame(PathAttributes.EMPTY, status.getResponse());
+            assertEquals(content.length, status.getResponse().getSize());
 
-        // Verify not canceled
-        status.validate();
-        assertEquals(content.length, count.getSent());
+            // Verify not canceled
+            status.validate();
+            assertEquals(content.length, count.getSent());
 
-        assertTrue(new SwiftFindFeature(session).find(test));
-        final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
-        new StreamCopier(status, status).transfer(in, buffer);
-        in.close();
-        buffer.close();
-        assertArrayEquals(content, buffer.toByteArray());
-        final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
-        assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
-        final List<Path> segments = new SwiftSegmentService(session).list(test);
-        assertFalse(segments.isEmpty());
-        assertEquals(3, segments.size());
-        assertEquals(1048576L, segments.get(0).attributes().getSize());
-        assertEquals(1048576L, segments.get(1).attributes().getSize());
-        assertEquals(1L, segments.get(2).attributes().getSize());
+            assertTrue(new SwiftFindFeature(session).find(test));
+            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            new StreamCopier(status, status).transfer(in, buffer);
+            in.close();
+            buffer.close();
+            assertArrayEquals(content, buffer.toByteArray());
+
+            final Map<String, String> metadata = new SwiftMetadataFeature(session).getMetadata(test);
+            assertFalse(metadata.isEmpty());
+            assertEquals("text/plain", metadata.get("Content-Type"));
+
+            final List<Path> segments = new SwiftSegmentService(session).list(test);
+            assertFalse(segments.isEmpty());
+            assertEquals(3, segments.size());
+            assertEquals(1048576L, segments.get(0).attributes().getSize());
+            assertEquals(1048576L, segments.get(1).attributes().getSize());
+            assertEquals(1L, segments.get(2).attributes().getSize());
+        }
+        // Overwrite
+        {
+            final int length = 1048576 + 1;
+            final byte[] content = RandomUtils.nextBytes(length);
+
+            final OutputStream out = local.getOutputStream(false);
+            IOUtils.write(content, out);
+            out.close();
+            final TransferStatus status = new TransferStatus();
+            status.setExists(true);
+            status.setLength(content.length);
+
+            final SwiftRegionService regionService = new SwiftRegionService(session);
+            final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+                    regionService,
+                    new SwiftObjectListService(session, regionService),
+                    new SwiftSegmentService(session, ".segments-test/"),
+                    new SwiftWriteFeature(session, regionService), 1048576L, 4);
+
+            final BytecountStreamListener count = new BytecountStreamListener();
+            upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), count,
+                    status, new DisabledConnectionCallback());
+
+            assertTrue(status.isComplete());
+            assertEquals(content.length, status.getResponse().getSize());
+
+            // Verify not canceled
+            status.validate();
+            assertEquals(content.length, count.getSent());
+
+            final List<Path> segments = new SwiftSegmentService(session).list(test);
+            assertFalse(segments.isEmpty());
+            assertEquals(2, segments.size());
+            assertEquals(1048576L, segments.get(0).attributes().getSize());
+            assertEquals(1L, segments.get(1).attributes().getSize());
+
+            assertTrue(new SwiftFindFeature(session).find(test));
+            final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
+            final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
+            new StreamCopier(status, status).transfer(in, buffer);
+            in.close();
+            buffer.close();
+            assertArrayEquals(content, buffer.toByteArray());
+        }
+
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0, new SwiftSegmentService(session).list(test).size());
         local.delete();
