@@ -24,8 +24,6 @@ import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.NullInputStream;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,20 +36,7 @@ public class FileBuffer implements Buffer {
 
     private final Local temporary;
 
-    private final LazyInitializer<RandomAccessFile> file = new LazyInitializer<RandomAccessFile>() {
-        @Override
-        protected RandomAccessFile initialize() throws ConcurrentException {
-            try {
-                LocalTouchFactory.get().touch(temporary);
-                final RandomAccessFile file = new RandomAccessFile(temporary.getAbsolute(), "rw");
-                file.seek(0L);
-                return file;
-            }
-            catch(AccessDeniedException | IOException e) {
-                throw new ConcurrentException(e);
-            }
-        }
-    };
+    private RandomAccessFile file;
     private Long length = 0L;
 
     public FileBuffer() {
@@ -134,7 +119,9 @@ public class FileBuffer implements Buffer {
         this.length = 0L;
         if(temporary.exists()) {
             try {
-                this.random().close();
+                if(file != null) {
+                    file.close();
+                }
             }
             catch(IOException e) {
                 log.error(String.format("Failure closing buffer %s", this));
@@ -142,6 +129,7 @@ public class FileBuffer implements Buffer {
             finally {
                 try {
                     temporary.delete();
+                    file = null;
                 }
                 catch(AccessDeniedException | NotfoundException e) {
                     log.warn(String.format("Failure removing temporary file %s for buffer %s. Schedule for delete on exit.", temporary, this));
@@ -152,12 +140,17 @@ public class FileBuffer implements Buffer {
     }
 
     protected synchronized RandomAccessFile random() throws IOException {
-        try {
-            return file.get();
+        if(null == file) {
+            try {
+                LocalTouchFactory.get().touch(temporary);
+            }
+            catch(AccessDeniedException e) {
+                throw new IOException(e);
+            }
+            this.file = new RandomAccessFile(temporary.getAbsolute(), "rw");
+            this.file.seek(0L);
         }
-        catch(ConcurrentException e) {
-            throw new IOException(e);
-        }
+        return file;
     }
 
     @Override

@@ -98,7 +98,8 @@ public class FileBufferTest {
         assertEquals(100L, buffer.length(), 0L);
         buffer.close();
         assertEquals(0L, buffer.length(), 0L);
-        assertThrows(IOException.class, () -> buffer.write(chunk, 0L));
+        buffer.write(chunk, 0L);
+        assertEquals(100L, buffer.length(), 0L);
     }
 
     @Test
