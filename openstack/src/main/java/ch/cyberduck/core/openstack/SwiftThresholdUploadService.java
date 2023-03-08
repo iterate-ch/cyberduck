@@ -21,7 +21,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -31,9 +30,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -85,20 +81,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
         else {
             feature = new SwiftSmallObjectUploadFeature(session, writer);
         }
-        // Previous segments to delete
-        final List<Path> segments = new ArrayList<>();
-        if(new HostPreferences(session.getHost()).getBoolean("openstack.upload.largeobject.cleanup")) {
-            if(!status.isAppend()) {
-                // Cleanup if necessary
-                segments.addAll(new SwiftSegmentService(session, regionService).list(file));
-            }
-        }
-        final StorageObject checksum = feature.upload(file, local, throttle, listener, status, callback);
-        if(!segments.isEmpty()) {
-            // Clean up any old segments
-            new SwiftMultipleDeleteFeature(session).delete(segments, callback, new Delete.DisabledCallback());
-        }
-        return checksum;
+        return feature.upload(file, local, throttle, listener, status, callback);
     }
 
     @Override
