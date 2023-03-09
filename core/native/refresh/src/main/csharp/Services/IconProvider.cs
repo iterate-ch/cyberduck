@@ -72,13 +72,15 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                         return default;
                 }
                 realIconPath = iconPath;
-                iconPath = SHLoadIndirectString(iconPath);
-
-                SHCreateFileExtractIcon(iconPath, 0, out IExtractIconW icon);
-                using HICON_Handle largeIcon = new();
-                using HICON_Handle smallIcon = new();
+                
                 try
                 {
+                    iconPath = SHLoadIndirectString(iconPath);
+
+                    SHCreateFileExtractIcon(iconPath, 0, out IExtractIconW icon);
+                    using HICON_Handle largeIcon = new();
+                    using HICON_Handle smallIcon = new();
+
                     icon.Extract(iconPath, (uint)iconIndex, largeIcon.Ref, smallIcon.Ref, 0);
                     Get(largeIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
                     Get(smallIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
