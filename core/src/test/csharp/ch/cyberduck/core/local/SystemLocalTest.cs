@@ -108,6 +108,14 @@ namespace Ch.Cyberduck.Core.Local
         }
 
         [Test]
+        public void TestLocalCompound()
+        {
+            CoreLocal root = new SystemLocal(@"C:\");
+            CoreLocal compound = new SystemLocal(root, @"C:\");
+            Assert.AreEqual(@"C:\C$", compound.getAbsolute());
+        }
+
+        [Test]
         public void TestMountainDuckPath()
         {
             CoreLocal local = new SystemLocal("/C:/Users/Public");
