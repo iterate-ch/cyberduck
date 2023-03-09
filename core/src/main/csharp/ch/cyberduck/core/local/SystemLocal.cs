@@ -32,12 +32,12 @@ namespace Ch.Cyberduck.Core.Local
         private static readonly char[] PATH_SEPARATORS = new[] { Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar };
 
         public SystemLocal(string parent, string name)
-            : base(parent, name)
+            : this(Join(parent, Sanitize(name, true)))
         {
         }
 
         public SystemLocal(CoreLocal parent, string name)
-            : base(parent, name)
+            : this(parent.getAbsolute(), name)
         {
         }
 
@@ -80,7 +80,18 @@ namespace Ch.Cyberduck.Core.Local
             return false;
         }
 
-        private static string Sanitize(string name)
+        private static string Join(string root, string path)
+        {
+            // Path.Join doesn't exist in .NET Framework, need to replicate
+            bool hasDirectorySeparator = IsDirectorySeparator(root[root.Length - 1]) || IsDirectorySeparator(path[0]);
+            return hasDirectorySeparator
+                ? string.Concat(root, path)
+                : string.Concat(root, Path.DirectorySeparatorChar, path);
+
+            static bool IsDirectorySeparator(char sep) => sep == Path.DirectorySeparatorChar || sep == Path.AltDirectorySeparatorChar;
+        }
+
+        private static string Sanitize(string name, bool makeUnc = false)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -145,7 +156,8 @@ namespace Ch.Cyberduck.Core.Local
                         }
                         // check above is simplified only, this passes raw input through
                         // check is 'a' but segment is 'A:', then 'A:' is written to output
-                        Append(segment, writer);
+                        writer.Write(segment[0]);
+                        writer.Write(makeUnc ? '$' : ':');
                         // additionally, this strips away all leading separator characters before the drive letter
                         // "/C:" becomes "C:".
                     }
