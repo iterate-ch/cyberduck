@@ -26,9 +26,6 @@ public class DisabledServiceUnavailableRetryStrategy implements ServiceUnavailab
 
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
-        if(log.isWarnEnabled()) {
-            log.warn(String.format("No retry for response %s", response));
-        }
         return false;
     }
 
