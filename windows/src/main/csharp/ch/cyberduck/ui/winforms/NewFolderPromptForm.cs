@@ -57,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     regionComboBox.Margin = new(6);
                     regionComboBox.Name = "regionComboBox";
                     regionComboBox.Size = new Size(121, 23);
-                    regionComboBox.TabIndex = 3;
+                    regionComboBox.TabIndex = 1;
 
                     tableLayoutPanel.Controls.Add(regionComboBox, 1, regionRow);
                 }
@@ -95,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             buttonPanel.Controls.Add(CreateButton(new Button()
             {
                 DialogResult = DialogResult.OK,
-                TabIndex = 0,
+                TabIndex = 16,
                 Text = "Create"
             }, out var createButton), 1, 0);
             AcceptButton = createButton;
@@ -103,7 +103,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             buttonPanel.Controls.Add(CreateButton(new Button()
             {
                 DialogResult = DialogResult.Cancel,
-                TabIndex = 5,
+                TabIndex = 17,
                 Text = "Cancel",
             }, out var cancelButton), 2, 0);
             CancelButton = cancelButton;

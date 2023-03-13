@@ -52,7 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             buttonPanel.Controls.Add(CreateButton(new Button()
             {
                 DialogResult = DialogResult.Cancel,
-                TabIndex = 5,
+                TabIndex = 1,
                 Text = "Cancel",
             }, out var cancelButton), 2, 0);
             CancelButton = cancelButton;

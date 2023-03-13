@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             saveCheckBox = new CheckBox
             {
                 Name = "saveCheckBox",
-                TabIndex = 3,
+                TabIndex = 1,
                 Anchor = (((AnchorStyles.Left | AnchorStyles.Right))),
                 Text = "Save Password"
             };
@@ -98,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             buttonPanel.Controls.Add(CreateButton(new Button()
             {
                 DialogResult = DialogResult.OK,
-                TabIndex = 0,
+                TabIndex = 16,
                 Text = "Create",
             }, out createButton), 1, 0);
             AcceptButton = createButton;
@@ -106,14 +106,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             buttonPanel.Controls.Add(CreateButton(new Button()
             {
                 DialogResult = DialogResult.Yes,
-                TabIndex = 1,
+                TabIndex = 17,
                 Text = "Skip",
             }, out skipButton), 2, 0);
 
             buttonPanel.Controls.Add(CreateButton(new Button()
             {
                 DialogResult = DialogResult.Cancel,
-                TabIndex = 5,
+                TabIndex = 18,
                 Text = "Cancel",
             }, out var cancelButton), 3, 0);
             CancelButton = cancelButton;
