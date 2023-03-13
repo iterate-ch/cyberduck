@@ -16,9 +16,9 @@
 // yves@cyberduck.ch
 // 
 
-using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -32,7 +32,32 @@ namespace Ch.Cyberduck.Ui.Winforms
             pictureBox.Padding = new Padding(0, 0, 0, 5);
 
             label.Text = LocaleFactory.localizedString("Enter the pathname to list:", "Goto");
-            okButton.Text = LocaleFactory.localizedString("Go", "Goto");
+
+            SetupButtons();
+        }
+
+        private void SetupButtons()
+        {
+            buttonPanel.SuspendLayout();
+
+            buttonPanel.ColumnCount = 3;
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.OK,
+                TabIndex = 0,
+                Text = LocaleFactory.localizedString("Go", "Goto"),
+            }, out var createButton), 1, 0);
+            AcceptButton = createButton;
+
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.Cancel,
+                TabIndex = 5,
+                Text = "Cancel",
+            }, out var cancelButton), 2, 0);
+            CancelButton = cancelButton;
+
+            buttonPanel.ResumeLayout();
         }
     }
 }
