@@ -16,8 +16,9 @@
 // yves@cyberduck.ch
 // 
 
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -31,8 +32,32 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             pictureBox.Width = 32;
             label.Text = LocaleFactory.localizedString("Enter the name for the new file", "Duplicate");
-            okButton.Text = LocaleFactory.localizedString("Duplicate", "Duplicate");
-            cancelButton.Text = LocaleFactory.localizedString("Cancel", "Duplicate");
+
+            SetupButtons();
+        }
+
+        private void SetupButtons()
+        {
+            buttonPanel.SuspendLayout();
+
+            buttonPanel.ColumnCount = 3;
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.OK,
+                TabIndex = 0,
+                Text = LocaleFactory.localizedString("Duplicate", "Duplicate"),
+            }, out var createButton), 1, 0);
+            AcceptButton = createButton;
+
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.Cancel,
+                TabIndex = 5,
+                Text = "Cancel",
+            }, out var cancelButton), 2, 0);
+            CancelButton = cancelButton;
+
+            buttonPanel.ResumeLayout();
         }
     }
 }
