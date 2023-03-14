@@ -16,20 +16,32 @@
 // feedback@cyberduck.io
 // 
 
+using Ch.Cyberduck.Ui.Controller;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class NewFolderPromptForm : PromptForm, INewFolderPromptView
     {
+        private readonly int regionRow;
         private ComboBox regionComboBox;
 
         public NewFolderPromptForm()
         {
             InitializeComponent();
+
+            tableLayoutPanel.SuspendLayout();
+
+            var newButtonRow = tableLayoutPanel.RowCount++;
+            regionRow = newButtonRow - 1;
+            tableLayoutPanel.RowStyles.Insert(regionRow, new());
+            tableLayoutPanel.SetRow(buttonPanel, newButtonRow);
+
+            SetupButtons();
+
+            tableLayoutPanel.ResumeLayout();
         }
 
         public bool RegionsEnabled
@@ -39,19 +51,15 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (value && regionComboBox == null)
                 {
                     regionComboBox = new ComboBox();
+                    regionComboBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
+                    regionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
                     regionComboBox.FormattingEnabled = true;
-                    regionComboBox.Location = new Point(84, 70);
+                    regionComboBox.Margin = new(6);
                     regionComboBox.Name = "regionComboBox";
                     regionComboBox.Size = new Size(121, 23);
-                    regionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-                    regionComboBox.TabIndex = 3;
-                    regionComboBox.Anchor = (((AnchorStyles.Left | AnchorStyles.Right)));
-                    tableLayoutPanel.RowCount++;
-                    tableLayoutPanel.RowStyles.Insert(2, new RowStyle(SizeType.AutoSize));
-                    tableLayoutPanel.SetRow(okButton, 3);
-                    tableLayoutPanel.SetRow(cancelButton, 3);
-                    tableLayoutPanel.Controls.Add(regionComboBox, 1, 2);
-                    tableLayoutPanel.SetColumnSpan(regionComboBox, 3);
+                    regionComboBox.TabIndex = 1;
+
+                    tableLayoutPanel.Controls.Add(regionComboBox, 1, regionRow);
                 }
             }
             protected get { return regionComboBox != null; }
@@ -59,7 +67,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Region
         {
-            get { return regionComboBox != null ? (string) regionComboBox.SelectedValue : null; }
+            get { return regionComboBox != null ? (string)regionComboBox.SelectedValue : null; }
             set
             {
                 if (regionComboBox != null)
@@ -77,6 +85,30 @@ namespace Ch.Cyberduck.Ui.Winforms
                 regionComboBox.ValueMember = "Key";
                 regionComboBox.DisplayMember = "Value";
             }
+        }
+
+        protected void SetupButtons()
+        {
+            buttonPanel.SuspendLayout();
+
+            buttonPanel.ColumnCount = 3;
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.OK,
+                TabIndex = 16,
+                Text = "Create"
+            }, out var createButton), 1, 0);
+            AcceptButton = createButton;
+
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.Cancel,
+                TabIndex = 17,
+                Text = "Cancel",
+            }, out var cancelButton), 2, 0);
+            CancelButton = cancelButton;
+
+            buttonPanel.ResumeLayout();
         }
     }
 }
