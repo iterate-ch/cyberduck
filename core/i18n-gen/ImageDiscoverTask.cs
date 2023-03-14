@@ -29,17 +29,20 @@ namespace i18n_gen
             });
             var prioritize = key.Select(x => Path.GetExtension(x.path) switch
             {
-                ".ico" => (x.key, x.path, Path.ChangeExtension(x.key, ".ico"), 5),
-                ".tiff" => (x.key, x.path, Path.ChangeExtension(x.key, ".tiff"), 4),
-                ".png" => (x.key, x.path, Path.ChangeExtension(x.key, ".png"), x.isHDPI ? 2 : 3),
-                ".gif" => (x.key, x.path, Path.ChangeExtension(x.key, ".gif"), 1),
-                _ => (x.key, x.path, Path.GetFileName(x.path), 0)
-            });
+                string ext => ext switch
+                {
+                    ".ico" => (x.key, ext, x.path, priority: 5),
+                    ".tiff" => (x.key, ext, x.path, priority: 4),
+                    ".png" => (x.key, ext, x.path, priority: x.isHDPI ? 3 : 2),
+                    ".gif" => (x.key, ext, x.path, priority: 1),
+                    _ => (x.key, ext, x.path, priority: 0)
+                },
+            }).ToLookup(x => (x.key, x.ext)).Select(g => (g.Count() > 1 ? g.OrderByDescending(d => d.priority).AsEnumerable() : g).First());
             var lookup = prioritize.ToLookup(x => x.key);
-            var resources = lookup.Select(x => x.OrderByDescending(x => x.Item4).Aggregate((x, y) => new FileInfo(x.path).Length > new FileInfo(y.path).Length ? y : x));
+            var resources = lookup.Select(x => x.OrderByDescending(x => x.priority).Aggregate((x, y) => new FileInfo(x.path).Length > new FileInfo(y.path).Length ? y : x));
             Resources = resources.Select(r => new TaskItem(r.path, new Hashtable
             {
-                ["LogicalName"] = r.Item3
+                ["LogicalName"] = $"{r.key}{r.ext}"
             })).ToArray();
             return true;
         }
