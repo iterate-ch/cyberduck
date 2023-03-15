@@ -37,7 +37,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +45,8 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        final Path room = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new DefaultAttributesFinderFeature(session).find(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
