@@ -81,6 +81,9 @@ public class SFTPListService implements ListService {
                     listener.chunk(directory, children);
                 }
             }
+            if(children.isEmpty()) {
+                listener.chunk(directory, children);
+            }
             return children;
         }
         catch(IOException e) {

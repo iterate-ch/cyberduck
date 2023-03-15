@@ -33,6 +33,10 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class DAVListServiceTest extends AbstractDAVTest {
@@ -41,6 +45,22 @@ public class DAVListServiceTest extends AbstractDAVTest {
     public void testListNotfound() throws Exception {
         new DAVListService(session).list(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testListEmptyFolder() throws Exception {
+        final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(
+                new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AtomicBoolean callback = new AtomicBoolean();
+        assertTrue(new DAVListService(session).list(folder, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) {
+                assertNotSame(AttributedList.EMPTY, list);
+                callback.set(true);
+            }
+        }).isEmpty());
+        assertTrue(callback.get());
+        new DAVDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)

@@ -84,10 +84,10 @@ public class StoregateListService implements ListService {
                                 EnumSet.of(Path.Type.directory) :
                                 EnumSet.of(Path.Type.file);
                         children.add(new Path(directory, f.getName(), type, attrs));
-                        listener.chunk(directory, children);
                     }
                     pageIndex++;
                     fileCount += files.getFiles().size();
+                    listener.chunk(directory, children);
                 }
                 while(fileCount < files.getTotalRowCount());
                 return children;
