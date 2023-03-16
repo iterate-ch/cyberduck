@@ -32,8 +32,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -120,5 +122,22 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
         assertNotSame(AttributedList.emptyList(), list);
         assertTrue(list.isEmpty());
         new StoregateDeleteFeature(session, nodeid).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListEmptyFolder() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session);
+        final Path room = new Path("/My files", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AtomicBoolean callback = new AtomicBoolean();
+        assertTrue(new StoregateListService(session, nodeid).list(folder, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) {
+                assertNotSame(AttributedList.EMPTY, list);
+                callback.set(true);
+            }
+        }).isEmpty());
+        assertTrue(callback.get());
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

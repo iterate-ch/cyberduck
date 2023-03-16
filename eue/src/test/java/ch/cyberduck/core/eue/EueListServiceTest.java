@@ -38,6 +38,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static ch.cyberduck.core.AbstractPath.Type.directory;
 import static org.junit.Assert.*;
@@ -104,7 +105,15 @@ public class EueListServiceTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path folder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
-        assertTrue(new EueListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        final AtomicBoolean callback = new AtomicBoolean();
+        assertTrue(new EueListService(session, fileid).list(folder, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) {
+                assertNotSame(AttributedList.EMPTY, list);
+                callback.set(true);
+            }
+        }).isEmpty());
+        assertTrue(callback.get());
         final Path subfolder = new EueDirectoryFeature(session, fileid).mkdir(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(directory)), new TransferStatus());
         assertTrue(new EueListService(session, fileid).list(subfolder, new DisabledListProgressListener()).isEmpty());

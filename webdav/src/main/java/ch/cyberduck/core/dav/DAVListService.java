@@ -57,7 +57,7 @@ public class DAVListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
-            final AttributedList<Path> children = new AttributedList<Path>();
+            final AttributedList<Path> children = new AttributedList<>();
             for(final DavResource resource : this.list(directory)) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
@@ -71,8 +71,11 @@ public class DAVListService implements ListService {
                 }
                 final PathAttributes attr = attributes.toAttributes(resource);
                 final Path file = new Path(directory, PathNormalizer.name(href),
-                    resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
+                        resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
                 children.add(file);
+                listener.chunk(directory, children);
+            }
+            if(children.isEmpty()) {
                 listener.chunk(directory, children);
             }
             return children;

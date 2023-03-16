@@ -90,9 +90,9 @@ public class BoxListService implements ListService {
                                     attributes.toAttributes(folder)));
                             break;
                     }
-                    listener.chunk(directory, list);
                 }
                 offset += chunksize;
+                listener.chunk(directory, list);
             }
             while(items.getEntries().size() == chunksize);
             return list;

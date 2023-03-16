@@ -85,9 +85,9 @@ public class EueListService implements ListService {
                                     EueShareFeature.findShareForResource(session.userShares(),
                                             EueResourceIdProvider.getResourceIdFromResourceUri(child.getUifs().getResourceURI()))))
                     );
-                    listener.chunk(directory, children);
                 }
                 offset += chunksize;
+                listener.chunk(directory, children);
             }
             while(fsModel.getUifs().getChildren().size() == chunksize);
             return children;
