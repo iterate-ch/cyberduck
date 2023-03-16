@@ -72,11 +72,6 @@ public class DropboxVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
-        return file.attributes().isDuplicate();
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> versions = new AttributedList<>();

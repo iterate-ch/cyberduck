@@ -73,11 +73,6 @@ public class GraphVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(Path file) {
-        return file.attributes().isDuplicate();
-    }
-
-    @Override
     public AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
         final DriveItem item = session.getItem(file);

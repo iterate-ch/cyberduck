@@ -58,7 +58,9 @@ public interface Versioning {
      * @param file File
      * @return True if this file version can be reverted
      */
-    boolean isRevertable(Path file);
+    default boolean isRevertable(Path file) {
+        return file.attributes().isDuplicate();
+    }
 
     /**
      * Find all versions for path. Should not include latest version but only previous.
