@@ -18,7 +18,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,21 +28,14 @@ public class FTPParserSelector {
     private static final Logger log = LogManager.getLogger(FTPParserSelector.class);
 
     public CompositeFileEntryParser getParser(final String system) {
-        return this.getParser(system, null);
+        return this.getParser(system, TimeZone.getDefault());
     }
 
     public CompositeFileEntryParser getParser(final String system, final TimeZone zone) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Select parser for system %s in zone %s", system, zone));
         }
-        final CompositeFileEntryParser parser;
-        if(null == zone) {
-            parser = new FTPParserFactory().createFileEntryParser(system,
-                    TimeZone.getTimeZone(PreferencesFactory.get().getProperty("ftp.timezone.default")));
-        }
-        else {
-            parser = new FTPParserFactory().createFileEntryParser(system, zone);
-        }
+        final CompositeFileEntryParser parser = new FTPParserFactory().createFileEntryParser(system, zone);
         // Configure timezone
         parser.configure(null);
         return parser;
