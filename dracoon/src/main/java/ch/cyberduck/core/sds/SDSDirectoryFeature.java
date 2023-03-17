@@ -33,6 +33,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 
 import java.util.EnumSet;
 
@@ -54,10 +55,10 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     public Path mkdir(final Path folder, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(folder)) {
-                return this.createRoom(folder, new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.encrypt"));
+                return this.createRoom(folder, status, new HostPreferences(session.getHost()).getBoolean("sds.create.dataroom.encrypt"));
             }
             else {
-                return this.createFolder(folder);
+                return this.createFolder(folder, status);
             }
         }
         catch(ApiException e) {
@@ -65,18 +66,26 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
         }
     }
 
-    private Path createFolder(final Path folder) throws BackgroundException, ApiException {
+    private Path createFolder(final Path folder, final TransferStatus status) throws BackgroundException, ApiException {
         final CreateFolderRequest folderRequest = new CreateFolderRequest();
         folderRequest.setParentId(Long.parseLong(nodeid.getVersionId(folder.getParent())));
         folderRequest.setName(folder.getName());
+        folderRequest.setTimestampCreation(DateTime.now());
+        if(null != status.getTimestamp()) {
+            folderRequest.setTimestampModification(new DateTime(status.getTimestamp()));
+        }
         final Node node = new NodesApi(session.getClient()).createFolder(folderRequest, StringUtils.EMPTY, null);
         nodeid.cache(folder, String.valueOf(node.getId()));
         return folder.withAttributes(new SDSAttributesAdapter(session).toAttributes(node));
     }
 
-    protected Path createRoom(final Path room, final boolean encrypt) throws BackgroundException, ApiException {
+    protected Path createRoom(final Path room, final TransferStatus status, final boolean encrypt) throws BackgroundException, ApiException {
         final CreateRoomRequest roomRequest = new CreateRoomRequest();
         roomRequest.setParentId(null);
+        roomRequest.setTimestampCreation(DateTime.now());
+        if(null != status.getTimestamp()) {
+            roomRequest.setTimestampModification(new DateTime(status.getTimestamp()));
+        }
         final UserAccountWrapper user = session.userAccount();
         roomRequest.addAdminIdsItem(user.getId());
         roomRequest.setAdminGroupIds(null);

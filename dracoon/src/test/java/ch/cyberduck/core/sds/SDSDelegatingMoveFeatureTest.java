@@ -134,7 +134,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveFromEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -185,7 +185,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveToEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -223,7 +223,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveBetweenEncryptedDataRooms() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

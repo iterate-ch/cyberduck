@@ -179,7 +179,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
     public void testCopyFromEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -232,7 +232,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
     public void testCopyToEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
@@ -271,7 +271,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
     public void testCopyFileWithRenameBetweenEncryptedDataRooms() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("dracoon.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
@@ -326,7 +326,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
     public void testCopyFileSameNameBetweenEncryptedDataRooms() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("dracoon.user")), SDSPermissionsFeature.DELETE_ROLE);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());

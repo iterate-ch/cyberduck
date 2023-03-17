@@ -76,7 +76,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWrite() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), false);
+                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), false);
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString(), EnumSet.of(Path.Type.file));
         {
@@ -130,7 +130,7 @@ public class SDSDirectS3MultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWriteEncrypted() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).createRoom(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus(), true);
         final byte[] content = RandomUtils.nextBytes(new HostPreferences(session.getHost()).getInteger("sds.upload.multipart.chunksize") + 1);
         final Path test = new Path(room, new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString(), EnumSet.of(Path.Type.file));
         {
