@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Upload;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -44,6 +45,7 @@ import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.shared.DisabledMoveFeature;
@@ -339,6 +341,12 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == Home.class) {
             return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host));
+        }
+        if(type == Versioning.class) {
+            switch(host.getProtocol().getVersioningMode()) {
+                case custom:
+                    return (T) new DefaultVersioningFeature(this);
+            }
         }
         return host.getProtocol().getFeature(type);
     }
