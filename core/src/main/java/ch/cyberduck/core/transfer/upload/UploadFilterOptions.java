@@ -33,6 +33,10 @@ public final class UploadFilterOptions {
      */
     public boolean temporary;
     /**
+     * Upload to versioning directory and copy to final target
+     */
+    public boolean versioning;
+    /**
      * Enable server side encryption if available
      */
     public boolean encryption;
@@ -52,6 +56,11 @@ public final class UploadFilterOptions {
         acl = preferences.getBoolean("queue.upload.acl.change");
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");
         temporary = preferences.getBoolean("queue.upload.file.temporary");
+        switch(bookmark.getProtocol().getVersioningMode()) {
+            case custom:
+                versioning = preferences.getBoolean("queue.upload.file.versioning");
+                break;
+        }
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
         encryption = preferences.getBoolean("queue.upload.file.encryption.change");
         redundancy = preferences.getBoolean("queue.upload.file.redundancy.change");
