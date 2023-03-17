@@ -42,6 +42,7 @@ import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -58,10 +59,12 @@ public class FTPListServiceTest extends AbstractFTPTest {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        assertTrue(new CryptoListService(session, new FTPListService(session, null, null), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new CryptoListService(session, new FTPListService(session, null,
+                TimeZone.getDefault()), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<>(session, new DefaultTouchFeature<>(new FTPWriteFeature(session)
         ), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
-        assertEquals(test, new CryptoListService(session, new FTPListService(session, null, null), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
+        assertEquals(test, new CryptoListService(session, new FTPListService(session, null,
+                TimeZone.getDefault()), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
