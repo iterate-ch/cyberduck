@@ -89,4 +89,10 @@ public class FTPTLSProtocol extends AbstractProtocol {
     public boolean isAnonymousConfigurable() {
         return true;
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.custom;
+    }
+
 }

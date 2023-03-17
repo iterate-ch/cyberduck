@@ -71,6 +71,8 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
      */
     Comparator<String> getListComparator();
 
+    VersioningMode getVersioningMode();
+
     /**
      * @return True if anonymous login is possible.
      */
@@ -349,6 +351,27 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
     enum Statefulness {
         stateful,
         stateless
+    }
+
+    enum VersioningMode {
+        /**
+         * No versioning enabled when uploading files
+         */
+        none {
+
+        },
+        /**
+         * Versioning is handled by storage implementation
+         */
+        storage {
+
+        },
+        /**
+         * Custom implementation using directory to save previous versions
+         */
+        custom {
+
+        };
     }
 
     @SuppressWarnings("unchecked")

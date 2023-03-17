@@ -79,4 +79,9 @@ public class MantaProtocol extends AbstractProtocol {
     public boolean isPrivateKeyConfigurable() {
         return true;
     }
+
+    @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.custom;
+    }
 }

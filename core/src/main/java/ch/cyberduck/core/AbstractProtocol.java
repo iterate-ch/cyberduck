@@ -396,6 +396,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public VersioningMode getVersioningMode() {
+        return VersioningMode.custom;
+    }
+
+    @Override
     public Map<String, String> getProperties() {
         return Collections.emptyMap();
     }
