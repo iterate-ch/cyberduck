@@ -26,7 +26,9 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -58,22 +60,25 @@ public class DAVListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            for(final DavResource resource : this.list(directory)) {
-                // Try to parse as RFC 2396
-                final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
-                if(href.equals(directory.getAbsolute())) {
-                    log.warn(String.format("Ignore resource %s", href));
-                    // Do not include self
-                    if(resource.isDirectory()) {
-                        continue;
+            for(List<DavResource> list : ListUtils.partition(this.list(directory),
+                    new HostPreferences(session.getHost()).getInteger("webdav.listing.chunksize"))) {
+                for(final DavResource resource : list) {
+                    // Try to parse as RFC 2396
+                    final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
+                    if(href.equals(directory.getAbsolute())) {
+                        log.warn(String.format("Ignore resource %s", href));
+                        // Do not include self
+                        if(resource.isDirectory()) {
+                            continue;
+                        }
+                        throw new NotfoundException(directory.getAbsolute());
                     }
-                    throw new NotfoundException(directory.getAbsolute());
+                    final PathAttributes attr = attributes.toAttributes(resource);
+                    final Path file = new Path(directory, PathNormalizer.name(href),
+                            resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
+                    children.add(file);
+                    listener.chunk(directory, children);
                 }
-                final PathAttributes attr = attributes.toAttributes(resource);
-                final Path file = new Path(directory, PathNormalizer.name(href),
-                        resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
-                children.add(file);
-                listener.chunk(directory, children);
             }
             if(children.isEmpty()) {
                 listener.chunk(directory, children);
@@ -90,9 +95,9 @@ public class DAVListService implements ListService {
 
     protected List<DavResource> list(final Path directory) throws IOException {
         return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
-            Stream.of(
-                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                collect(Collectors.toSet()));
+                Stream.of(
+                                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                        collect(Collectors.toSet()));
     }
 }
