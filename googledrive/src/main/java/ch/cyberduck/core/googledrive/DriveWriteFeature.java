@@ -17,7 +17,7 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.date.RFC3339DateFormatter;
+import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
@@ -100,7 +100,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                         metadata.append(String.format("\"name\":\"%s\"", file.getName()));
                         if(null != status.getTimestamp()) {
                             metadata.append(String.format(",\"modifiedTime\":\"%s\"",
-                                    new RFC3339DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
+                                    new ISO8601DateFormatter().format(status.getTimestamp(), TimeZone.getTimeZone("UTC"))));
                         }
                         if(StringUtils.isNotBlank(status.getMime())) {
                             metadata.append(String.format(",\"mimeType\":\"%s\"", status.getMime()));

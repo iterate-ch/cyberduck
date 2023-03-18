@@ -25,7 +25,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -56,7 +56,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
     private final SwiftSession session;
     private final PathContainerService containerService = new DefaultPathContainerService();
     private final RFC1123DateFormatter rfc1123DateFormatter = new RFC1123DateFormatter();
-    private final ISO8601DateParser iso8601DateParser = new ISO8601DateParser();
+    private final ISO8601DateFormatter iso8601DateFormatter = new ISO8601DateFormatter();
     private final SwiftRegionService regionService;
 
     public SwiftAttributesFinderFeature(SwiftSession session) {
@@ -150,7 +150,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder, Attribute
         final String lastModified = object.getLastModified();
         if(lastModified != null) {
             try {
-                attributes.setModificationDate(iso8601DateParser.parse(lastModified).getTime());
+                attributes.setModificationDate(iso8601DateFormatter.parse(lastModified).getTime());
             }
             catch(InvalidDateException e) {
                 log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));

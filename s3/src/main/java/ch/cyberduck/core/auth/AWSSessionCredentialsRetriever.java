@@ -29,7 +29,7 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TemporaryAccessTokens;
 import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.date.ISO8601DateParser;
+import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
@@ -156,7 +156,7 @@ public class AWSSessionCredentialsRetriever implements S3CredentialsStrategy {
                         break;
                     case "Expiration":
                         try {
-                            expiration = new ISO8601DateParser().parse(value);
+                            expiration = new ISO8601DateFormatter().parse(value);
                         }
                         catch(InvalidDateException e) {
                             log.warn(String.format("Failure %s parsing %s", e, value));
