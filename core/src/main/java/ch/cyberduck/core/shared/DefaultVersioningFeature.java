@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 public class DefaultVersioningFeature implements Versioning {
 
@@ -69,7 +70,8 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        for(Path version : session.getFeature(ListService.class).list(getVersionedFolder(file), listener)) {
+        for(Path version : session.getFeature(ListService.class).list(file.isFile() ? getVersionedFolder(file) : file, listener).toStream()
+                .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
             version.attributes().setDuplicate(true);
             versions.add(version);
         }
