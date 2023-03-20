@@ -64,11 +64,11 @@ public class S3CopyFeature implements Copy {
             status.setEncryption(new S3EncryptionFeature(session, acl).getEncryption(source));
         }
         if(Acl.EMPTY == status.getAcl()) {
-            // Apply non standard ACL
+            // Apply non-standard ACL
             try {
-                final Acl list = acl.getPermission(source);
-                if(list.isEditable()) {
-                    status.setAcl(list);
+                // Verify target bucket allows ACLs
+                if(acl.getPermission(containerService.getContainer(target)).isEditable()) {
+                    status.setAcl(acl.getPermission(source));
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
