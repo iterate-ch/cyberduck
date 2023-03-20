@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -63,10 +64,8 @@ public class DAVListService implements ListService {
             for(List<DavResource> list : ListUtils.partition(this.list(directory),
                     new HostPreferences(session.getHost()).getInteger("webdav.listing.chunksize"))) {
                 for(final DavResource resource : list) {
-                    // Try to parse as RFC 2396
-                    final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
-                    if(href.equals(directory.getAbsolute())) {
-                        log.warn(String.format("Ignore resource %s", href));
+                    if(new SimplePathPredicate(new Path(resource.getHref().getPath(), EnumSet.of(Path.Type.directory))).test(directory)) {
+                        log.warn(String.format("Ignore resource %s", resource));
                         // Do not include self
                         if(resource.isDirectory()) {
                             continue;
@@ -74,7 +73,7 @@ public class DAVListService implements ListService {
                         throw new NotfoundException(directory.getAbsolute());
                     }
                     final PathAttributes attr = attributes.toAttributes(resource);
-                    final Path file = new Path(directory, PathNormalizer.name(href),
+                    final Path file = new Path(directory, PathNormalizer.name(resource.getHref().getPath()),
                             resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
                     children.add(file);
                     listener.chunk(directory, children);
