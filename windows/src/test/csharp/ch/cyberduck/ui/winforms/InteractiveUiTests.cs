@@ -81,6 +81,28 @@ namespace Ch.Cyberduck.Ui.Winforms
             Application.Run(new PasswordForm());
         }
 
+        [Test]
+        public void Test14381()
+        {
+            // Tests https://github.com/iterate-ch/cyberduck/issues/14381
+            Application.Run(new PasswordForm()
+            {
+                Reason = """
+                Lorem ipsum dolor sit amet,
+                consetetur sadipscing elitr,
+                sed diam nonumy eirmod tempor 
+                invidunt ut labore et dolore 
+                magna aliquyam erat, 
+                sed diam voluptua. 
+                At vero eos et accusam et justo
+                duo dolores et ea rebum.
+                Stet clita kasd gubergren,
+                no sea takimata sanctus est
+                Lorem ipsum dolor sit amet.
+                """
+            });
+        }
+
         private static T WithRegions<T>(T @this) where T : NewFolderPromptForm
         {
             @this.RegionsEnabled = true;

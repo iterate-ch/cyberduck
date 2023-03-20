@@ -44,9 +44,6 @@
             this.tableLayoutPanel.ColumnCount = 2;
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel.Controls.Add(this.pictureBox, 0, 0);
             this.tableLayoutPanel.Controls.Add(this.label, 1, 0);
             this.tableLayoutPanel.Controls.Add(this.inputTextBox, 1, 1);
@@ -57,10 +54,10 @@
             this.tableLayoutPanel.Margin = new System.Windows.Forms.Padding(6);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 3;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel.Size = new System.Drawing.Size(462, 133);
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // pictureBox
@@ -72,16 +69,20 @@
             this.tableLayoutPanel.SetRowSpan(this.pictureBox, 2);
             this.pictureBox.Size = new System.Drawing.Size(75, 55);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             // 
             // label
             // 
-            this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label.AutoSize = true;
-            this.label.Location = new System.Drawing.Point(90, 20);
+            this.label.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label.Location = new System.Drawing.Point(90, 17);
+            this.label.Margin = new System.Windows.Forms.Padding(3, 17, 3, 0);
             this.label.Name = "label";
             this.label.Size = new System.Drawing.Size(184, 15);
+            this.label.TabIndex = 1;
             this.label.Text = "Enter the name for the new folder";
+            this.label.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             // 
             // inputTextBox
             // 
