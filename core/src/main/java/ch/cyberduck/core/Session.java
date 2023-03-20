@@ -45,6 +45,7 @@ import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
+import ch.cyberduck.core.shared.DefaultVersioningBulkFeature;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -101,7 +102,7 @@ public abstract class Session<C> implements TranscriptListener {
             return false;
         }
         return preferences.getBoolean(
-            String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
+                String.format("connection.unsecure.warning.%s", host.getProtocol().getScheme()));
     }
 
     public Session<?> withListener(final TranscriptListener listener) {
@@ -313,6 +314,10 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
         }
         if(type == Bulk.class) {
+            switch(host.getProtocol().getVersioningMode()) {
+                case custom:
+                    return (T) new DefaultVersioningBulkFeature(this);
+            }
             return (T) new DisabledBulkFeature();
         }
         if(type == Move.class) {
