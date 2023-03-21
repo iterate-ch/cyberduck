@@ -145,7 +145,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             actionToolStrip.Renderer = new NoGapRenderer();
 
             // configure browser properties
-            browser.UseExplorerTheme = true;
             browser.UseTranslucentSelection = true;
             browser.OwnerDraw = true;
             browser.UseOverlays = false;

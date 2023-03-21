@@ -45,7 +45,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(MaxWidth, MaxHeight + detailsTableLayoutPanel.Height);
             MinimumSize = new Size(MinWidth, MinHeight + detailsTableLayoutPanel.Height);
 
-            browser.UseExplorerTheme = true;
             browser.UseTranslucentSelection = true;
             browser.OwnerDraw = true;
             browser.UseOverlays = false;
