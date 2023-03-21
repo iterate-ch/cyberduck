@@ -65,8 +65,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // comboBoxAction
             // 
-            this.comboBoxAction.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxAction.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.mainTableLayoutPanel.SetColumnSpan(this.comboBoxAction, 4);
             this.comboBoxAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxAction.FormattingEnabled = true;
@@ -79,13 +79,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // browser
             // 
             this.browser.ActiveForegroudColor = System.Drawing.SystemColors.ControlText;
-            this.browser.ActiveGetterTransferItem = null;
             this.browser.ActiveGetterPath = null;
+            this.browser.ActiveGetterTransferItem = null;
             this.browser.AllColumns.Add(this.treeColumnName);
             this.browser.AllColumns.Add(this.treeColumnSize);
             this.browser.AllColumns.Add(this.treeColumnWarning);
             this.browser.AllColumns.Add(this.treeColumnSync);
             this.browser.AllColumns.Add(this.treeColumnCreate);
+            this.browser.CellEditUseWholeCell = false;
             this.browser.CheckBoxes = true;
             this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.treeColumnName,
@@ -94,17 +95,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnSync,
             this.treeColumnCreate});
             this.mainTableLayoutPanel.SetColumnSpan(this.browser, 4);
-            this.browser.Cursor = System.Windows.Forms.Cursors.Default;
             this.browser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.browser.FullRowSelect = true;
+            this.browser.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.browser.HideSelection = false;
             this.browser.InactiveForegroudColor = System.Drawing.Color.Gray;
             this.browser.Location = new System.Drawing.Point(13, 42);
+            this.browser.MultiSelect = false;
             this.browser.Name = "browser";
-            this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
             this.browser.ShowImagesOnSubItems = true;
             this.browser.Size = new System.Drawing.Size(689, 234);
             this.browser.TabIndex = 2;
             this.browser.UseCompatibleStateImageBehavior = false;
+            this.browser.UseOverlays = false;
+            this.browser.UseTranslucentSelection = true;
             this.browser.View = System.Windows.Forms.View.Details;
             this.browser.VirtualMode = true;
             this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
@@ -112,6 +117,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // treeColumnName
             // 
             this.treeColumnName.AspectName = "Name";
+            this.treeColumnName.FillsFreeSpace = true;
             this.treeColumnName.Text = "Name";
             this.treeColumnName.UseInitialLetterForGroup = true;
             this.treeColumnName.Width = 350;
@@ -141,8 +147,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // localFileUrl
             // 
-            this.localFileUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.localFileUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.localFileUrl.Location = new System.Drawing.Point(91, 51);
             this.localFileUrl.Name = "localFileUrl";
             this.localFileUrl.Size = new System.Drawing.Size(611, 15);
@@ -150,8 +156,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // localFileModificationDate
             // 
-            this.localFileModificationDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.localFileModificationDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.localFileModificationDate.Location = new System.Drawing.Point(91, 81);
             this.localFileModificationDate.Name = "localFileModificationDate";
             this.localFileModificationDate.Size = new System.Drawing.Size(611, 17);
@@ -159,8 +165,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // localFileSize
             // 
-            this.localFileSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.localFileSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.localFileSize.Location = new System.Drawing.Point(91, 66);
             this.localFileSize.Name = "localFileSize";
             this.localFileSize.Size = new System.Drawing.Size(611, 15);
@@ -168,8 +174,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // remoteFileModificationDate
             // 
-            this.remoteFileModificationDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.remoteFileModificationDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.remoteFileModificationDate.Location = new System.Drawing.Point(91, 31);
             this.remoteFileModificationDate.Name = "remoteFileModificationDate";
             this.remoteFileModificationDate.Size = new System.Drawing.Size(611, 16);
@@ -177,8 +183,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // remoteFileSize
             // 
-            this.remoteFileSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.remoteFileSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.remoteFileSize.Location = new System.Drawing.Point(91, 16);
             this.remoteFileSize.Name = "remoteFileSize";
             this.remoteFileSize.Size = new System.Drawing.Size(611, 15);
@@ -186,8 +192,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // remoteFileUrl
             // 
-            this.remoteFileUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.remoteFileUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.remoteFileUrl.Location = new System.Drawing.Point(91, 0);
             this.remoteFileUrl.Name = "remoteFileUrl";
             this.remoteFileUrl.Size = new System.Drawing.Size(611, 16);
@@ -270,7 +276,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // animation
             // 
             this.animation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.animation.Image = global::Ch.Cyberduck.ImageHelper.ThrobberSmall;
             this.animation.Location = new System.Drawing.Point(13, 282);
             this.animation.Name = "animation";
             this.animation.Size = new System.Drawing.Size(24, 20);
@@ -281,8 +286,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // separatorLine
             // 
-            this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.separatorLine.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.mainTableLayoutPanel.SetColumnSpan(this.separatorLine, 4);
             this.separatorLine.Location = new System.Drawing.Point(16, 335);
@@ -293,8 +298,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // statusLabel
             // 
-            this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.statusLabel.AutoSize = true;
             this.statusLabel.Location = new System.Drawing.Point(43, 279);
             this.statusLabel.Name = "statusLabel";
@@ -314,7 +319,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toggleDetailsLabel.Location = new System.Drawing.Point(13, 310);
             this.toggleDetailsLabel.MinimumSize = new System.Drawing.Size(0, 25);
             this.toggleDetailsLabel.Name = "toggleDetailsLabel";
-            this.toggleDetailsLabel.Size = new System.Drawing.Size(124, 25);
+            this.toggleDetailsLabel.Size = new System.Drawing.Size(120, 25);
             this.toggleDetailsLabel.TabIndex = 8;
             this.toggleDetailsLabel.Text = "        Toggle Transcript";
             this.toggleDetailsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

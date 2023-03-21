@@ -45,16 +45,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(MaxWidth, MaxHeight + detailsTableLayoutPanel.Height);
             MinimumSize = new Size(MinWidth, MinHeight + detailsTableLayoutPanel.Height);
 
-            browser.UseTranslucentSelection = true;
-            browser.OwnerDraw = true;
-            browser.UseOverlays = false;
-            browser.HeaderStyle = ColumnHeaderStyle.None;
-            browser.ShowGroups = false;
-            browser.ShowImagesOnSubItems = true;
             browser.TreeColumnRenderer = new BrowserRenderer();
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
-            browser.MultiSelect = false;
-            browser.FullRowSelect = true;
             browser.ItemsChanged += (sender, args) => ItemsChanged();
 
             //due to the checkbox feature the highlight bar is not being redrawn properly -> redraw the entire control instead
@@ -77,8 +69,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             treeColumnWarning.Renderer = sir;
             treeColumnCreate.Renderer = sir;
             treeColumnSync.Renderer = sir;
-
-            treeColumnName.FillsFreeSpace = true;
 
             toggleDetailsLabel.Text = String.Format("        {0}", LocaleFactory.localizedString("Details"));
             toggleDetailsLabel.Click += delegate { ToggleDetailsEvent(); };
