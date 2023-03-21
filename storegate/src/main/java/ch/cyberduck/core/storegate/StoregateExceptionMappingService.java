@@ -24,12 +24,20 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.SocketException;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 public class StoregateExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
 
@@ -66,6 +74,33 @@ public class StoregateExceptionMappingService extends AbstractExceptionMappingSe
                 return new ConnectionCanceledException(cause);
             }
         }
-        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getCode(), failure.getMessage()));
+        final StringBuilder buffer = new StringBuilder();
+        this.parse(buffer, failure.getResponseBody());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+    }
+
+    private void parse(final StringBuilder buffer, final String message) {
+        if(StringUtils.isBlank(message)) {
+            return;
+        }
+        try {
+            final JsonElement element = JsonParser.parseReader(new StringReader(message));
+            if(element.isJsonObject()) {
+                final JsonObject json = element.getAsJsonObject();
+                final JsonPrimitive error = json.getAsJsonPrimitive("message");
+                if(null == error) {
+                    this.append(buffer, message);
+                }
+                else {
+                    this.append(buffer, error.getAsString());
+                }
+            }
+            if(element.isJsonPrimitive()) {
+                this.append(buffer, element.getAsString());
+            }
+        }
+        catch(JsonParseException e) {
+            // Ignore
+        }
     }
 }
