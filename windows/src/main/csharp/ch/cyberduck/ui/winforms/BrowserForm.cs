@@ -153,7 +153,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.DragSource = new BrowserDragSource(this);
 
             browser.TreeColumnRenderer = new BrowserRenderer();
-            browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
             browser.BeforeSorting += BeforeSorting;
             browser.CellEditStarting += (sender, args) => args.Cancel = !ValidateRenameFile();

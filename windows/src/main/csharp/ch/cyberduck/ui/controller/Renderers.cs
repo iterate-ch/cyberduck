@@ -1015,35 +1015,6 @@ namespace Ch.Cyberduck.Ui.Controller
         }
     }
 
-    /// <summary>
-    /// Explorer gradient-style renderer for selected rows.
-    /// </summary>
-    public class ExplorerRowBorderDecoration : RowBorderDecoration
-    {
-        public ExplorerRowBorderDecoration()
-        {
-            BoundsPadding = new Size(0, -1);
-            CornerRounding = 5.0f;
-            BorderPen = new Pen(Color.FromArgb(128, Color.SteelBlue), 1);
-        }
-
-        protected override Rectangle CalculateBounds()
-        {
-            Rectangle bounds = base.CalculateBounds();
-            bounds.Y--;
-            bounds.Height++;
-            bounds.Width--;
-            // update brush
-            if (FillBrush != null)
-            {
-                FillBrush.Dispose();
-            }
-            FillBrush = new LinearGradientBrush(bounds, Color.FromArgb(64, Color.LightBlue),
-                                                Color.FromArgb(64, Color.DodgerBlue), LinearGradientMode.Vertical);
-            return bounds;
-        }
-    }
-
     //
     //see https://sourceforge.net/p/objectlistview/discussion/812922/thread/445489ce/
     //

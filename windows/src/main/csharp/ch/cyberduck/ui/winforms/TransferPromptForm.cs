@@ -46,7 +46,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             MinimumSize = new Size(MinWidth, MinHeight + detailsTableLayoutPanel.Height);
 
             browser.TreeColumnRenderer = new BrowserRenderer();
-            browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
 
             //due to the checkbox feature the highlight bar is not being redrawn properly -> redraw the entire control instead
