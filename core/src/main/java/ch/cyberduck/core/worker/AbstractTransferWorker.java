@@ -266,6 +266,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             if(log.isInfoEnabled()) {
                                 log.info(String.format("Skip file %s by filter %s for transfer %s", file, filter, this));
                             }
+                            transfer.addSize(0L);
+                            transfer.addTransferred(0L);
                             return null;
                         }
                         else {
