@@ -30,7 +30,7 @@ public class ChunkListSHA256ChecksumComputeTest {
     @Test
     public void testCompute() throws Exception {
         assertEquals("07_pjo8c6JFhSFRWmiD19FCNarQCW4crezqCgu91sSo",
-                new ChunkListSHA256ChecksumCompute().compute(new NullInputStream(0), new TransferStatus()).hash);
+                new ChunkListSHA256ChecksumCompute().compute(new NullInputStream(0), new TransferStatus().withLength(0L)).hash);
     }
 
     @Test
