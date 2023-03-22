@@ -18,6 +18,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -155,11 +156,21 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     @Test
     public void testReadAtSignInKey() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        container.attributes().setRegion("us-east-1");
         final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
                 new Path(container, String.format("%s@", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testReadWhitespaceInKey() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+                new Path(directory, String.format("%s %s", new AlphanumericRandomStringService(4).random(), new AlphanumericRandomStringService(4).random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(file);
+        new S3DefaultDeleteFeature(session).delete(Arrays.asList(directory, file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
