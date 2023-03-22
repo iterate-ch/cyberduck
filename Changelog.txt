@@ -1,6 +1,19 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.7
+- [Bugfix] Cannot create or duplicate files with any suffix (#14263)
+- [Bugfix] Do not use MLST when running with interoperability connection profile (FTP) (#14333)
+- [Bugfix] Error using "Open With" to open file in external editor (Windows) (#14332)
+- [Bugfix] Overwriting large file deletes segments after transfer is complete (OpenStack Swift) (#14326)
+- [Bugfix] Edit file instantly uploads and overwrites file on server with no change (#14251)
+- [Bugfix] The bucket does not allow ACLs error when copying file to bucket with BucketOwnerEnforced ownership controls (S3) (#14300)
+- [Bugfix] Allow to copy expiring public links using shared access signature with different expiry dates (Azure) (#14270)
+- [Bugfix] Allow to create public links with different expiry dates (OpenStack Swift) (#14256)
+- [Bugfix] Review layout of input prompts (Windows)
+- [Bugfix] Overwrite prompt does not allow to expand folder (Windows) (#14287)
+- [Bugfix] Transfer with Resume or Compare option marked as incomplete when all files can be skipped (#12998)
+
 8.5.6
 - [Bugfix] Support for vaults using GCM encryption (Cryptomator) (#14207)
 - [Bugfix] Recursive search displaying folders not containing files matching the pattern (#13925)
