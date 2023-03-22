@@ -199,7 +199,7 @@ public class SwiftUrlProvider implements UrlProvider {
         }
 
         @Override
-        public String getPreview() {
+        public String getHelp() {
             return MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3"),
                     UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()));
         }
@@ -210,7 +210,7 @@ public class SwiftUrlProvider implements UrlProvider {
         }
 
         @Override
-        public String getHelp() {
+        public String getPreview() {
             return MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                     LocaleFactory.localizedString("Pre-Signed", "S3"));
         }
