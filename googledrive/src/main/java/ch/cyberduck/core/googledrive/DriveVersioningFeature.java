@@ -92,6 +92,7 @@ public class DriveVersioningFeature implements Versioning {
                         log.debug(String.format("Found revision %s", revision));
                     }
                     versions.add(new Path(file).withAttributes(this.toAttributes(revision)));
+                    listener.chunk(file.getParent(), versions);
                 }
                 page = list.getNextPageToken();
             }
