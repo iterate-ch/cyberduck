@@ -119,6 +119,7 @@ public class NextcloudVersioningFeature implements Versioning {
                 attributes.setFileId(file.attributes().getFileId());
                 attributes.setVersionId(PathNormalizer.name(resource.getHref().getPath()));
                 versions.add(new Path(file.getParent(), file.getName(), file.getType(), attributes));
+                listener.chunk(file.getParent(), versions);
             }
             return versions.filter(new TimestampComparator(false));
         }

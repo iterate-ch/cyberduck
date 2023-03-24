@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.8
+- [Bugfix] Failure reverting previous version in vault (Cryptomator, OneDrive, Google Drive, Dropbox) (#14410)
+
 8.5.7
 - [Bugfix] Cannot create or duplicate files with any suffix (#14263)
 - [Bugfix] Do not use MLST when running with interoperability connection profile (FTP) (#14333)
