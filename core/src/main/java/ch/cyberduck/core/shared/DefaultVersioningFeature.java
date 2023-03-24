@@ -86,7 +86,8 @@ public class DefaultVersioningFeature implements Versioning {
         return new Path(file.getParent(), DIRECTORY_SUFFIX, EnumSet.of(Path.Type.directory));
     }
 
-    public static Path getVersionedFile(final Path file) {
+    @Override
+    public Path toVersioned(final Path file) {
         final String basename = String.format("%s-%s", FilenameUtils.getBaseName(file.getName()),
                 new ISO8601DateFormatter().format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY));
         if(StringUtils.isNotBlank(file.getExtension())) {

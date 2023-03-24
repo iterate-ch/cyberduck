@@ -58,7 +58,7 @@ public interface Versioning {
      * @param file File
      * @return True if this file version can be reverted
      */
-    default boolean isRevertable(Path file) {
+    default boolean isRevertable(final Path file) {
         return file.attributes().isDuplicate();
     }
 
@@ -71,4 +71,14 @@ public interface Versioning {
      * @throws BackgroundException Failure reading versions from server
      */
     AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
+
+    /**
+     * Generate new versioned path for file
+     *
+     * @param file File
+     * @return Same
+     */
+    default Path toVersioned(final Path file) {
+        return file;
+    }
 }

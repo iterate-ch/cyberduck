@@ -38,9 +38,7 @@ import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Headers;
@@ -50,10 +48,8 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
-import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -175,24 +171,6 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
                 else {
                     log.warn(String.format("Cannot use temporary filename for upload with missing rename support for %s", file));
-                }
-            }
-            if(options.versioning) {
-                final Path version = DefaultVersioningFeature.getVersionedFile(file);
-                if(session.getFeature(Copy.class).isSupported(file, version)) {
-                    final Path versions = DefaultVersioningFeature.getVersionedFolder(file);
-                    if(!find.find(versions)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Create directory %s for versions", versions));
-                        }
-                        session.getFeature(Directory.class).mkdir(versions, new TransferStatus());
-                    }
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add new version %s", version));
-                    }
-                    status.withRename(version).withDisplayname(file);
-                    // Remember status of target file for later copy
-                    status.getDisplayname().exists(status.isExists());
                 }
             }
             status.withMime(new MappingMimeTypeService().getMime(file.getName()));
@@ -333,24 +311,8 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Clear exist flag for file %s", local));
             }
-            // Reset exist flag after subclass has applied strategy
+            // Reset exist flag after subclass hae applied strategy
             status.setExists(false);
-        }
-        if(status.isExists()) {
-            if(options.versioning) {
-                final Path version = DefaultVersioningFeature.getVersionedFile(file);
-                if(!session.getFeature(Copy.class).isSupported(file, version)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Rename existing file %s to %s", file, version));
-                    }
-                    session.getFeature(Move.class).move(file, version,
-                            new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Clear exist flag for file %s", file));
-                    }
-                    status.exists(false).getDisplayname().exists(false);
-                }
-            }
         }
     }
 
@@ -407,22 +369,12 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             if(file.isFile()) {
                 if(status.getDisplayname().remote != null) {
-                    if(options.versioning) {
-                        final Copy feature = session.getFeature(Copy.class);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Copy file %s to %s", file, status.getDisplayname().remote));
-                        }
-                        feature.copy(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
-                                new DisabledConnectionCallback(), new DisabledStreamListener());
+                    final Move move = session.getFeature(Move.class);
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));
                     }
-                    else {
-                        final Move feature = session.getFeature(Move.class);
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Rename file %s to %s", file, status.getDisplayname().remote));
-                        }
-                        feature.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
-                                new Delete.DisabledCallback(), new DisabledConnectionCallback());
-                    }
+                    move.move(file, status.getDisplayname().remote, new TransferStatus(status).exists(status.getDisplayname().exists),
+                            new Delete.DisabledCallback(), new DisabledConnectionCallback());
                 }
             }
         }

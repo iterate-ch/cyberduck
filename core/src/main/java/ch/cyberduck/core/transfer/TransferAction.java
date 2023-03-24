@@ -197,6 +197,21 @@ public abstract class TransferAction {
         }
     };
 
+    /**
+     * Move existing file to versioning directory
+     */
+    public static final TransferAction versioning = new TransferAction("versioning") {
+        @Override
+        public String getTitle() {
+            return LocaleFactory.localizedString("Versioning", "Transfer");
+        }
+
+        @Override
+        public String getDescription() {
+            return LocaleFactory.localizedString("Move existing file to versioned folder", "Transfer");
+        }
+    };
+
     public static final TransferAction cancel = new TransferAction("cancel") {
         @Override
         public String getTitle() {
