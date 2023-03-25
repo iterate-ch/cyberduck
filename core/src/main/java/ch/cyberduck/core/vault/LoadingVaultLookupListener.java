@@ -52,7 +52,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 registry.add(vault.load(session, prompt, keychain));
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure %e loading vault %s", e, vault));
+                log.warn(String.format("Failure %s loading vault %s", e, vault));
                 throw new VaultUnlockCancelException(vault, e);
             }
             return vault;
