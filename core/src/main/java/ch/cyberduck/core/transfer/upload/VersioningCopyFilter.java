@@ -46,21 +46,23 @@ public class VersioningCopyFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
-        final Path version = versioning.toVersioned(file);
-        if(session.getFeature(Copy.class).isSupported(file, version)) {
-            final Path directory = file.getParent();
-            if(!find.find(directory)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Create directory %s for versions", directory));
+        if(status.isExists()) {
+            final Path version = versioning.toVersioned(file);
+            if(session.getFeature(Copy.class).isSupported(file, version)) {
+                final Path directory = file.getParent();
+                if(!find.find(directory)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Create directory %s for versions", directory));
+                    }
+                    session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                 }
-                session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Add new version %s", version));
+                }
+                status.withRename(version).withDisplayname(file);
+                // Remember status of target file for later copy
+                status.getDisplayname().exists(status.isExists());
             }
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Add new version %s", version));
-            }
-            status.withRename(version).withDisplayname(file);
-            // Remember status of target file for later copy
-            status.getDisplayname().exists(status.isExists());
         }
         return status;
     }
