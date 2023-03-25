@@ -24,12 +24,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.regex.Pattern;
 
 public class VersioningCopyFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(VersioningRenameFilter.class);
@@ -47,21 +51,24 @@ public class VersioningCopyFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
         if(status.isExists()) {
-            final Path version = versioning.toVersioned(file);
-            if(session.getFeature(Copy.class).isSupported(file, version)) {
-                final Path directory = file.getParent();
-                if(!find.find(directory)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Create directory %s for versions", directory));
+            final String regex = new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex");
+            if(new UploadRegexFilter(Pattern.compile(regex)).accept(local)) {
+                final Path version = versioning.toVersioned(file);
+                if(session.getFeature(Copy.class).isSupported(file, version)) {
+                    final Path directory = file.getParent();
+                    if(!find.find(directory)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Create directory %s for versions", directory));
+                        }
+                        session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                     }
-                    session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Add new version %s", version));
+                    }
+                    status.withRename(version).withDisplayname(file);
+                    // Remember status of target file for later copy
+                    status.getDisplayname().exists(status.isExists());
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Add new version %s", version));
-                }
-                status.withRename(version).withDisplayname(file);
-                // Remember status of target file for later copy
-                status.getDisplayname().exists(status.isExists());
             }
         }
         return status;
