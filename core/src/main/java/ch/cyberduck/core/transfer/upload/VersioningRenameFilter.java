@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -54,22 +55,24 @@ public class VersioningRenameFilter extends AbstractUploadFilter {
             final String regex = new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex");
             if(new UploadRegexFilter(Pattern.compile(regex)).accept(local)) {
                 final Path version = versioning.toVersioned(file);
-                final Path directory = version.getParent();
-                if(!find.find(directory)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Create directory %s for versions", directory));
+                if(session.getFeature(Move.class).isSupported(file, version)) {
+                    final Path directory = version.getParent();
+                    if(!find.find(directory)) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Create directory %s for versions", directory));
+                        }
+                        session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
                     }
-                    session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Rename existing file %s to %s", file, version));
+                    }
+                    session.getFeature(Move.class).move(file, version,
+                            new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Clear exist flag for file %s", file));
+                    }
+                    status.exists(false).getDisplayname().exists(false);
                 }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Rename existing file %s to %s", file, version));
-                }
-                session.getFeature(Move.class).move(file, version,
-                        new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Clear exist flag for file %s", file));
-                }
-                status.exists(false).getDisplayname().exists(false);
             }
             else {
                 if(log.isDebugEnabled()) {
