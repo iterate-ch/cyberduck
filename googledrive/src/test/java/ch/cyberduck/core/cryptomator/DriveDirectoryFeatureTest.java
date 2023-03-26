@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -68,7 +67,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final String versionId = test.attributes().getFileId();
         assertNotNull(versionId);
         // Assert both filename and file id matches
-        assertTrue(new CryptoFindV6Feature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DriveFindFeature(session, fileid)).find(test));
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(test));
         final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
         assertEquals(versionId, attributes.getFileId());

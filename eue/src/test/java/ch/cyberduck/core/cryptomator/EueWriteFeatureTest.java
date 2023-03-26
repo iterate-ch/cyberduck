@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
@@ -35,6 +34,7 @@ import ch.cyberduck.core.eue.EueReadFeature;
 import ch.cyberduck.core.eue.EueResourceIdProvider;
 import ch.cyberduck.core.eue.EueWriteFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -90,7 +90,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals(PathAttributes.EMPTY, status.getResponse());
-        assertTrue(new CryptoFindV6Feature(session, new EueFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new EueFindFeature(session, fileid)).find(test));
         assertEquals(content.length, new CryptoWriteFeature<>(session, new EueWriteFeature(session, fileid), cryptomator).append(test, status
                 .withRemote(new CryptoAttributesFeature(session, new EueAttributesFinderFeature(session, fileid), cryptomator).find(test))).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
