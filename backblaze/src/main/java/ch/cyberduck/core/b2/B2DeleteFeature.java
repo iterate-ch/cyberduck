@@ -84,7 +84,17 @@ public class B2DeleteFeature implements Delete {
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Add hide marker %s of %s", file.attributes().getVersionId(), file));
                             }
-                            session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file)), containerService.getKey(file));
+                            try {
+                                session.getClient().hideFile(fileid.getVersionId(containerService.getContainer(file)), containerService.getKey(file));
+                            }
+                            catch(B2ApiException e) {
+                                if("already_hidden".equalsIgnoreCase(e.getCode())) {
+                                    log.warn(String.format("Ignore failure %s hiding file %s already hidden", e.getMessage(), file));
+                                }
+                                else {
+                                    throw e;
+                                }
+                            }
                         }
                         else {
                             // Delete specific version
