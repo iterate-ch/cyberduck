@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import synapticloop.b2.Action;
 import synapticloop.b2.exception.B2ApiException;
@@ -114,7 +116,7 @@ public class B2ObjectListService implements ListService {
     }
 
     private Marker parse(final Path directory, final AttributedList<Path> objects,
-                         final B2ListFilesResponse response, final Map<String, Long> revisions) {
+                         final B2ListFilesResponse response, final Map<String, Long> revisions) throws BackgroundException {
         final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
@@ -131,6 +133,10 @@ public class B2ObjectListService implements ListService {
                 final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(),
                         PathNormalizer.name(StringUtils.chomp(info.getFileName(), String.valueOf(Path.DELIMITER))),
                         EnumSet.of(Path.Type.directory, Path.Type.placeholder));
+                // Need to check if only hidden files inside
+                if(this.list(placeholder, new DisabledListProgressListener()).toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty()) {
+                    placeholder.attributes().setDuplicate(true);
+                }
                 objects.add(placeholder);
                 continue;
             }
