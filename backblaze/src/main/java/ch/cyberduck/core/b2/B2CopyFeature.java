@@ -33,7 +33,7 @@ import synapticloop.b2.response.B2FileResponse;
 public class B2CopyFeature implements Copy {
 
     private final PathContainerService containerService
-        = new B2PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
@@ -47,8 +47,8 @@ public class B2CopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
             final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source),
-                fileid.getVersionId(containerService.getContainer(target)),
-                containerService.getKey(target));
+                    fileid.getVersionId(containerService.getContainer(target)),
+                    containerService.getKey(target));
             listener.sent(status.getLength());
             fileid.cache(target, response.getFileId());
             return target.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
@@ -64,6 +64,9 @@ public class B2CopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         if(source.getType().contains(Path.Type.upload)) {
+            return false;
+        }
+        if(containerService.isContainer(source) || containerService.isContainer(target)) {
             return false;
         }
         return new SimplePathPredicate(containerService.getContainer(source)).test(containerService.getContainer(target));

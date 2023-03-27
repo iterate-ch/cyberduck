@@ -51,7 +51,7 @@ public class AzureMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source);
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 
     @Override
