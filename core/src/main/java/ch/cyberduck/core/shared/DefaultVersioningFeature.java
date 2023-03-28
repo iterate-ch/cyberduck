@@ -23,6 +23,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
+import ch.cyberduck.core.date.DateFormatter;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -45,9 +46,15 @@ public class DefaultVersioningFeature implements Versioning {
     private static final String DIRECTORY_SUFFIX = ".cyberduckversions";
 
     private final Session<?> session;
+    private final DateFormatter formatter;
 
     public DefaultVersioningFeature(final Session<?> session) {
+        this(session, new ISO8601DateFormatter());
+    }
+
+    public DefaultVersioningFeature(final Session<?> session, final DateFormatter formatter) {
         this.session = session;
+        this.formatter = formatter;
     }
 
     @Override
@@ -89,7 +96,7 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public Path toVersioned(final Path file) {
         final String basename = String.format("%s-%s", FilenameUtils.getBaseName(file.getName()),
-                new ISO8601DateFormatter().format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY));
+                formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY));
         if(StringUtils.isNotBlank(file.getExtension())) {
             return new Path(getVersionedFolder(file), String.format("%s.%s", basename, file.getExtension()), EnumSet.of(Path.Type.file));
         }
