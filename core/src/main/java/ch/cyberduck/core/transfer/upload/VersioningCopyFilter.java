@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,19 +39,20 @@ public class VersioningCopyFilter extends AbstractUploadFilter {
 
     private final Session<?> session;
     private final Versioning versioning;
+    private final Pattern include;
 
     public VersioningCopyFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
         this.session = session;
         this.versioning = session.getFeature(Versioning.class);
+        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
     }
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
         if(status.isExists()) {
-            final String regex = new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex");
-            if(new UploadRegexFilter(Pattern.compile(regex)).accept(local)) {
+            if(include.matcher(file.getName()).matches()) {
                 final Path version = versioning.toVersioned(file);
                 if(session.getFeature(Copy.class).isSupported(file, version)) {
                     final Path directory = file.getParent();
