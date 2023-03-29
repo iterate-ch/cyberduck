@@ -56,7 +56,6 @@ import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 import ch.cyberduck.core.transfer.upload.UploadRegexPriorityComparator;
-import ch.cyberduck.core.transfer.upload.VersioningRenameFilter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -182,9 +181,6 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.comparison)) {
             return new CompareFilter(resolver, source, options, listener).withFinder(find).withAttributes(attributes);
-        }
-        if(action.equals(TransferAction.versioning)) {
-            return new VersioningRenameFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
         }
         return new OverwriteFilter(resolver, source, options).withFinder(find).withAttributes(attributes);
     }

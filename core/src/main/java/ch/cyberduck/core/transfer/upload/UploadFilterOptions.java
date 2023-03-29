@@ -33,7 +33,7 @@ public final class UploadFilterOptions {
      */
     public boolean temporary;
     /**
-     * Upload to versioning directory and copy to final target
+     * Move existing file to versioning directory
      */
     public boolean versioning;
     /**

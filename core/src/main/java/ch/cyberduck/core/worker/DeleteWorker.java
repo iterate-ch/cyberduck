@@ -33,8 +33,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -122,10 +122,7 @@ public class DeleteWorker extends Worker<List<Path>> {
         }
         switch(session.getHost().getProtocol().getVersioningMode()) {
             case custom:
-                if(TransferAction.versioning == TransferAction.forName(PreferencesFactory.get().getProperty("queue.upload.action"))) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Delete disabled using %s", TransferAction.versioning));
-                    }
+                if(new UploadFilterOptions(session.getHost()).versioning) {
                     final Versioning versioning = session.getFeature(Versioning.class);
                     for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
                         final Path f = iter.next();

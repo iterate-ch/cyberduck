@@ -46,6 +46,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -307,6 +308,17 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
+        if(status.isExists()) {
+            if(options.versioning) {
+                final Versioning feature = session.getFeature(Versioning.class);
+                if(feature.save(file)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Clear exist flag for file %s", file));
+                    }
+                    status.exists(false).getDisplayname().exists(false);
+                }
+            }
+        }
         if(status.getRename().remote != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Clear exist flag for file %s", local));
