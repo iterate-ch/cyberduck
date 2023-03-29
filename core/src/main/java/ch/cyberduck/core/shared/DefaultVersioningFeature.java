@@ -128,7 +128,7 @@ public class DefaultVersioningFeature implements Versioning {
      * @param file File to edit
      * @return Directory to save previous versions of file
      */
-    public static Path getVersionedFolder(final Path file) {
+    private static Path getVersionedFolder(final Path file) {
         return new Path(file.getParent(), DIRECTORY_SUFFIX, EnumSet.of(Path.Type.directory));
     }
 
