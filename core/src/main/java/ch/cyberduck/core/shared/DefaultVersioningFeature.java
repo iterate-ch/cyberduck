@@ -183,4 +183,9 @@ public class DefaultVersioningFeature implements Versioning {
         }
         return file;
     }
+
+    @Override
+    public boolean isRevertable(final Path file) {
+        return StringUtils.equals(DIRECTORY_SUFFIX, file.getParent().getName());
+    }
 }
