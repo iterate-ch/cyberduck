@@ -49,6 +49,11 @@ public class CryptoVersioningFeature implements Versioning {
     }
 
     @Override
+    public boolean save(final Path file) throws BackgroundException {
+        return delegate.save(file);
+    }
+
+    @Override
     public void revert(final Path file) throws BackgroundException {
         delegate.revert(vault.encrypt(session, file));
     }

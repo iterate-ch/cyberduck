@@ -59,6 +59,11 @@ public class VaultRegistryVersioningFeature implements Versioning {
     }
 
     @Override
+    public boolean save(final Path file) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Versioning.class, proxy).save(file);
+    }
+
+    @Override
     public void revert(final Path file) throws BackgroundException {
         registry.find(session, file).getFeature(session, Versioning.class, proxy).revert(file);
     }

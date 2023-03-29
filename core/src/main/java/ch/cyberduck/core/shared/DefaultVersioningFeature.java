@@ -28,6 +28,10 @@ import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -36,17 +40,22 @@ import ch.cyberduck.ui.comparator.FilenameComparator;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DefaultVersioningFeature implements Versioning {
+    private static final Logger log = LogManager.getLogger(DefaultVersioningFeature.class);
 
     private static final String DIRECTORY_SUFFIX = ".cyberduckversions";
 
     private final Session<?> session;
     private final DateFormatter formatter;
+    private final Pattern include;
 
     public DefaultVersioningFeature(final Session<?> session) {
         this(session, new ISO8601DateFormatter());
@@ -55,6 +64,7 @@ public class DefaultVersioningFeature implements Versioning {
     public DefaultVersioningFeature(final Session<?> session, final DateFormatter formatter) {
         this.session = session;
         this.formatter = formatter;
+        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
     }
 
     @Override
@@ -65,6 +75,35 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public void setConfiguration(final Path container, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         throw new UnsupportedException();
+    }
+
+    @Override
+    public boolean save(final Path file) throws BackgroundException {
+        if(include.matcher(file.getName()).matches()) {
+            final Path version = this.toVersioned(file);
+            if(!session.getFeature(Move.class).isSupported(file, version)) {
+                return false;
+            }
+            final Path directory = version.getParent();
+            if(!session.getFeature(Find.class).find(directory)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Create directory %s for versions", directory));
+                }
+                session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Rename existing file %s to %s", file, version));
+            }
+            session.getFeature(Move.class).move(file, version,
+                    new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+            return true;
+        }
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No match for %s in %s", file.getName(), include));
+            }
+            return false;
+        }
     }
 
     @Override
@@ -93,8 +132,14 @@ public class DefaultVersioningFeature implements Versioning {
         return new Path(file.getParent(), DIRECTORY_SUFFIX, EnumSet.of(Path.Type.directory));
     }
 
-    @Override
-    public Path toVersioned(final Path file) {
+
+    /**
+     * Generate new versioned path for file
+     *
+     * @param file File
+     * @return Same
+     */
+    private Path toVersioned(final Path file) {
         final String basename = String.format("%s-%s", FilenameUtils.getBaseName(file.getName()),
                 formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY));
         if(StringUtils.isNotBlank(file.getExtension())) {

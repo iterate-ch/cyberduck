@@ -15,67 +15,36 @@ package ch.cyberduck.core.transfer.upload;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.regex.Pattern;
-
 public class VersioningRenameFilter extends AbstractUploadFilter {
     private static final Logger log = LogManager.getLogger(VersioningRenameFilter.class);
 
-    private final Session<?> session;
     private final Versioning versioning;
-    private final Pattern include;
 
     public VersioningRenameFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session, final UploadFilterOptions options) {
         super(symlinkResolver, session, options);
-        this.session = session;
         this.versioning = session.getFeature(Versioning.class);
-        this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
     }
 
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
         if(status.isExists()) {
-            if(include.matcher(file.getName()).matches()) {
-                final Path version = versioning.toVersioned(file);
-                if(session.getFeature(Move.class).isSupported(file, version)) {
-                    final Path directory = version.getParent();
-                    if(!find.find(directory)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Create directory %s for versions", directory));
-                        }
-                        session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
-                    }
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Rename existing file %s to %s", file, version));
-                    }
-                    session.getFeature(Move.class).move(file, version,
-                            new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Clear exist flag for file %s", file));
-                    }
-                    status.exists(false).getDisplayname().exists(false);
-                }
-            }
-            else {
+            if(versioning.save(file)) {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("No match for %s in %s", file.getName(), include));
+                    log.debug(String.format("Clear exist flag for file %s", file));
                 }
+                status.exists(false).getDisplayname().exists(false);
             }
         }
     }

@@ -45,6 +45,16 @@ public interface Versioning {
     void setConfiguration(Path container, PasswordCallback prompt, VersioningConfiguration configuration) throws BackgroundException;
 
     /**
+     * Save new version
+     *
+     * @param file File or folder
+     * @return True if version is saved
+     */
+    default boolean save(Path file) throws BackgroundException {
+        return false;
+    }
+
+    /**
      * Restore this version
      *
      * @param file File
@@ -71,14 +81,4 @@ public interface Versioning {
      * @throws BackgroundException Failure reading versions from server
      */
     AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException;
-
-    /**
-     * Generate new versioned path for file
-     *
-     * @param file File
-     * @return Same
-     */
-    default Path toVersioned(final Path file) {
-        return file;
-    }
 }
