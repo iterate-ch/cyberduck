@@ -116,10 +116,13 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        for(Path version : session.getFeature(ListService.class).list(file.isFile() ? getVersionedFolder(file) : file, listener).toStream()
-                .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
-            version.attributes().setDuplicate(true);
-            versions.add(version);
+        final Path directory = file.isFile() ? getVersionedFolder(file) : file;
+        if(session.getFeature(Find.class).find(directory)) {
+            for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
+                    .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
+                version.attributes().setDuplicate(true);
+                versions.add(version);
+            }
         }
         return versions.filter(new FilenameComparator(false));
     }
