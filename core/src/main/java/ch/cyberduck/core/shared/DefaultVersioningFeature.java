@@ -27,13 +27,11 @@ import ch.cyberduck.core.date.DateFormatter;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.FilenameComparator;
@@ -45,6 +43,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -68,8 +67,8 @@ public class DefaultVersioningFeature implements Versioning {
     }
 
     @Override
-    public VersioningConfiguration getConfiguration(final Path container) throws BackgroundException {
-        return new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("versioning.enable"));
+    public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
+        return new VersioningConfiguration(file.isDirectory() || include.matcher(file.getName()).matches());
     }
 
     @Override
@@ -79,8 +78,8 @@ public class DefaultVersioningFeature implements Versioning {
 
     @Override
     public boolean save(final Path file) throws BackgroundException {
-        if(include.matcher(file.getName()).matches()) {
-            final Path version = this.toVersioned(file);
+        if(this.getConfiguration(file).isEnabled()) {
+            final Path version = toVersioned(file, formatter);
             if(!session.getFeature(Move.class).isSupported(file, version)) {
                 return false;
             }
@@ -93,6 +92,11 @@ public class DefaultVersioningFeature implements Versioning {
             }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Rename existing file %s to %s", file, version));
+            }
+            if(file.isDirectory()) {
+                if(!session.getFeature(Move.class).isRecursive(file, version)) {
+                    throw new UnsupportedException();
+                }
             }
             session.getFeature(Move.class).move(file, version,
                     new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -108,9 +112,19 @@ public class DefaultVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        session.getFeature(Copy.class).copy(file, new Path(file.getParent().getParent(),
-                        StringUtils.removeEnd(file.getParent().getName(), DIRECTORY_SUFFIX), EnumSet.of(Path.Type.file)), new TransferStatus(),
-                new DisabledConnectionCallback(), new DisabledStreamListener());
+        final Path target = fromVersioned(file);
+        final TransferStatus status = new TransferStatus().exists(session.getFeature(Find.class).find(target));
+        if(status.isExists()) {
+            if(this.save(target)) {
+                status.setExists(false);
+            }
+        }
+        if(file.isDirectory()) {
+            if(!session.getFeature(Move.class).isRecursive(file, target)) {
+                throw new UnsupportedException();
+            }
+        }
+        session.getFeature(Move.class).move(file, target, status, new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }
 
     @Override
@@ -135,6 +149,7 @@ public class DefaultVersioningFeature implements Versioning {
         return new Path(file.getParent(), DIRECTORY_SUFFIX, EnumSet.of(Path.Type.directory));
     }
 
+    private static final char FILENAME_VERSION_SEPARATOR = '-';
 
     /**
      * Generate new versioned path for file
@@ -142,12 +157,30 @@ public class DefaultVersioningFeature implements Versioning {
      * @param file File
      * @return Same
      */
-    private Path toVersioned(final Path file) {
-        final String basename = String.format("%s-%s", FilenameUtils.getBaseName(file.getName()),
-                formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY));
+    static Path toVersioned(final Path file, final DateFormatter formatter) {
+        // Translate from /basename.extension to /.cyberduckversions/basename-timestamp.extension
+        final String basename = String.format("%s%s%s", FilenameUtils.getBaseName(file.getName()),
+                FILENAME_VERSION_SEPARATOR, toTimestamp(formatter));
         if(StringUtils.isNotBlank(file.getExtension())) {
-            return new Path(getVersionedFolder(file), String.format("%s.%s", basename, file.getExtension()), EnumSet.of(Path.Type.file));
+            return new Path(getVersionedFolder(file), String.format("%s.%s", basename, file.getExtension()), file.getType());
         }
-        return new Path(getVersionedFolder(file), basename, EnumSet.of(Path.Type.file));
+        return new Path(getVersionedFolder(file), basename, file.getType());
+    }
+
+    static String toTimestamp(final DateFormatter formatter) {
+        return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY);
+    }
+
+    static Path fromVersioned(final Path file) {
+        // Translate from /.cyberduckersions/basename-timestamp.extension to /basename.extension
+        final Pattern format = Pattern.compile("(.*)-[0-9]{8}T[0-9]{6}\\.[0-9]{3}[Z](\\..*)?");
+        final Matcher matcher = format.matcher(file.getName());
+        if(matcher.matches()) {
+            if(StringUtils.isBlank(matcher.group(2))) {
+                return new Path(file.getParent().getParent(), matcher.group(1), file.getType());
+            }
+            return new Path(file.getParent().getParent(), String.format("%s%s", matcher.group(1), matcher.group(2)), file.getType());
+        }
+        return file;
     }
 }
