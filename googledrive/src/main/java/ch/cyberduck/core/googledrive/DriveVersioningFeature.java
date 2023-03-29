@@ -72,6 +72,9 @@ public class DriveVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         try {
             final AttributedList<Path> versions = new AttributedList<>();
             String page = null;

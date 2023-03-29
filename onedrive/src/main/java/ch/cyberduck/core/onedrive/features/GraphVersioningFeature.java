@@ -74,6 +74,9 @@ public class GraphVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         final AttributedList<Path> versions = new AttributedList<>();
         final DriveItem item = session.getItem(file);
         try {

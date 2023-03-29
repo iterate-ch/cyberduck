@@ -116,7 +116,7 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        final Path directory = file.isFile() ? getVersionedFolder(file) : file;
+        final Path directory = getVersionedFolder(file);
         if(session.getFeature(Find.class).find(directory)) {
             for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
                     .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {

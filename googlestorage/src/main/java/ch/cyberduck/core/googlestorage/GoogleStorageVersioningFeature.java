@@ -93,6 +93,9 @@ public class GoogleStorageVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         return new GoogleStorageObjectListService(session).list(file, listener).filter(new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {

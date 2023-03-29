@@ -220,6 +220,9 @@ public class S3VersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         return new S3VersionedObjectListService(session, acl).list(file, new ProxyListProgressListener(new IndexedListProgressListener() {
             @Override
             public void message(final String message) {

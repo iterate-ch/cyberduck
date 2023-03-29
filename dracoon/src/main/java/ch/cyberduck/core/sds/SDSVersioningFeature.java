@@ -70,6 +70,9 @@ public class SDSVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         final int chunksize = new HostPreferences(session.getHost()).getInteger("sds.listing.chunksize");
         try {
             int offset = 0;

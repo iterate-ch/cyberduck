@@ -91,6 +91,9 @@ public class NextcloudVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         try {
             final AttributedList<Path> versions = new AttributedList<>();
             // To obtain all the version of a file a normal PROPFIND has to be send

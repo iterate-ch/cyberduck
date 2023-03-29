@@ -17,7 +17,6 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -73,6 +72,9 @@ public class DropboxVersioningFeature implements Versioning {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
+        if(file.isDirectory()) {
+            return AttributedList.emptyList();
+        }
         try {
             final AttributedList<Path> versions = new AttributedList<>();
             final ListRevisionsResult result = new DbxUserFilesRequests(session.getClient(file)).listRevisions(containerService.getKey(file));
