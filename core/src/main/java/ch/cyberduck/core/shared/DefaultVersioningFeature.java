@@ -22,9 +22,11 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.date.DateFormatter;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
+import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
@@ -41,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -50,18 +53,18 @@ import java.util.stream.Collectors;
 public class DefaultVersioningFeature implements Versioning {
     private static final Logger log = LogManager.getLogger(DefaultVersioningFeature.class);
 
-    private static final String DIRECTORY_SUFFIX = ".cyberduckversions";
-
     private final Session<?> session;
-    private final DateFormatter formatter;
+    private final FilenameVersionIdentifier formatter;
+    private final VersioningDirectoryProvider provider;
     private final Pattern include;
 
     public DefaultVersioningFeature(final Session<?> session) {
-        this(session, new ISO8601DateFormatter());
+        this(session, new DefaultVersioningDirectoryProvider(), new ISO8601FilenameVersionIdentifier());
     }
 
-    public DefaultVersioningFeature(final Session<?> session, final DateFormatter formatter) {
+    public DefaultVersioningFeature(final Session<?> session, final VersioningDirectoryProvider provider, final FilenameVersionIdentifier formatter) {
         this.session = session;
+        this.provider = provider;
         this.formatter = formatter;
         this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
     }
@@ -79,7 +82,7 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public boolean save(final Path file) throws BackgroundException {
         if(this.getConfiguration(file).isEnabled()) {
-            final Path version = toVersioned(file, formatter);
+            final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
             if(!session.getFeature(Move.class).isSupported(file, version)) {
                 return false;
             }
@@ -112,7 +115,7 @@ public class DefaultVersioningFeature implements Versioning {
 
     @Override
     public void revert(final Path file) throws BackgroundException {
-        final Path target = fromVersioned(file);
+        final Path target = new Path(file.getParent().getParent(), formatter.fromVersion(file.getName()), file.getType());
         final TransferStatus status = new TransferStatus().exists(session.getFeature(Find.class).find(target));
         if(status.isExists()) {
             if(this.save(target)) {
@@ -130,7 +133,7 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        final Path directory = getVersionedFolder(file);
+        final Path directory = provider.provide(file);
         if(session.getFeature(Find.class).find(directory)) {
             for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
                     .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
@@ -141,51 +144,86 @@ public class DefaultVersioningFeature implements Versioning {
         return versions.filter(new FilenameComparator(false));
     }
 
-    /**
-     * @param file File to edit
-     * @return Directory to save previous versions of file
-     */
-    private static Path getVersionedFolder(final Path file) {
-        return new Path(file.getParent(), DIRECTORY_SUFFIX, EnumSet.of(Path.Type.directory));
-    }
-
-    private static final char FILENAME_VERSION_SEPARATOR = '-';
-
-    /**
-     * Generate new versioned path for file
-     *
-     * @param file File
-     * @return Same
-     */
-    static Path toVersioned(final Path file, final DateFormatter formatter) {
-        // Translate from /basename.extension to /.cyberduckversions/basename-timestamp.extension
-        final String basename = String.format("%s%s%s", FilenameUtils.getBaseName(file.getName()),
-                FILENAME_VERSION_SEPARATOR, toTimestamp(formatter));
-        if(StringUtils.isNotBlank(file.getExtension())) {
-            return new Path(getVersionedFolder(file), String.format("%s.%s", basename, file.getExtension()), file.getType());
-        }
-        return new Path(getVersionedFolder(file), basename, file.getType());
-    }
-
-    static String toTimestamp(final DateFormatter formatter) {
-        return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC")).replaceAll("[-:]", StringUtils.EMPTY);
-    }
-
-    static Path fromVersioned(final Path file) {
-        // Translate from /.cyberduckersions/basename-timestamp.extension to /basename.extension
-        final Pattern format = Pattern.compile("(.*)-[0-9]{8}T[0-9]{6}\\.[0-9]{3}[Z](\\..*)?");
-        final Matcher matcher = format.matcher(file.getName());
-        if(matcher.matches()) {
-            if(StringUtils.isBlank(matcher.group(2))) {
-                return new Path(file.getParent().getParent(), matcher.group(1), file.getType());
-            }
-            return new Path(file.getParent().getParent(), String.format("%s%s", matcher.group(1), matcher.group(2)), file.getType());
-        }
-        return file;
-    }
-
     @Override
     public boolean isRevertable(final Path file) {
-        return StringUtils.equals(DIRECTORY_SUFFIX, file.getParent().getName());
+        return new SimplePathPredicate(file.getParent()).test(provider.provide(file));
+    }
+
+    private interface VersioningDirectoryProvider {
+        /**
+         * @param file File to edit
+         * @return Directory to save previous versions of file
+         */
+        Path provide(Path file);
+    }
+
+    public static final class DefaultVersioningDirectoryProvider implements VersioningDirectoryProvider {
+        private static final String NAME = ".cyberduckversions";
+
+        @Override
+        public Path provide(final Path file) {
+            return new Path(file.getParent(), NAME, EnumSet.of(Path.Type.directory));
+        }
+    }
+
+    public interface FilenameVersionIdentifier extends DateFormatter {
+        /**
+         * Translate from basename-timestamp.extension to /basename.extension
+         */
+        String fromVersion(String filename);
+
+        /**
+         * Translate from basename.extension to basename-timestamp.extension
+         */
+        String toVersion(String filename);
+    }
+
+    public static final class ISO8601FilenameVersionIdentifier implements FilenameVersionIdentifier {
+        private static final char FILENAME_VERSION_SEPARATOR = '-';
+
+        private static final ISO8601DateFormatter formatter = new ISO8601DateFormatter();
+        private static final Pattern format = Pattern.compile("(.*)" + FILENAME_VERSION_SEPARATOR + "[0-9]{8}T[0-9]{6}\\.[0-9]{3}Z(\\..*)?");
+
+        @Override
+        public String format(final Date input, final TimeZone zone) {
+            return formatter.format(input, zone);
+        }
+
+        @Override
+        public String format(final long milliseconds, final TimeZone zone) {
+            return formatter.format(milliseconds, zone);
+        }
+
+        @Override
+        public Date parse(final String input) throws InvalidDateException {
+            return formatter.parse(input);
+        }
+
+        @Override
+        public String fromVersion(final String filename) {
+            final Matcher matcher = format.matcher(filename);
+            if(matcher.matches()) {
+                if(StringUtils.isBlank(matcher.group(2))) {
+                    return matcher.group(1);
+                }
+                return String.format("%s%s", matcher.group(1), matcher.group(2));
+            }
+            return null;
+        }
+
+        @Override
+        public String toVersion(final String filename) {
+            final String basename = String.format("%s%s%s", FilenameUtils.getBaseName(filename),
+                    FILENAME_VERSION_SEPARATOR, toTimestamp());
+            if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
+                return String.format("%s.%s", basename, FilenameUtils.getExtension(filename));
+            }
+            return basename;
+        }
+
+        private static String toTimestamp() {
+            return formatter.format(System.currentTimeMillis(), TimeZone.getTimeZone("UTC"))
+                    .replaceAll("[-:]", StringUtils.EMPTY);
+        }
     }
 }
