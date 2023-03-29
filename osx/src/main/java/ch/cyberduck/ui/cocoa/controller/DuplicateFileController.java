@@ -60,9 +60,11 @@ public class DuplicateFileController extends FileController {
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
         final NSView view = super.getAccessoryView(alert);
-        String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
+        final String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
-                UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false)
+                        .replace('/', '.')
+                        .replace(':', '.'),
                 StringUtils.isNotBlank(selected.getExtension()) ? String.format(".%s", selected.getExtension()) : StringUtils.EMPTY);
         this.updateField(inputField, proposal);
         return view;
