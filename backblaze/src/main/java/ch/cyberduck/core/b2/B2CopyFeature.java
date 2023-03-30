@@ -26,9 +26,13 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2FileResponse;
+
+import static ch.cyberduck.core.b2.B2MetadataFeature.X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS;
 
 public class B2CopyFeature implements Copy {
 
@@ -46,9 +50,13 @@ public class B2CopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback, final StreamListener listener) throws BackgroundException {
         try {
+            final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
+            if(null != status.getTimestamp()) {
+                fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+            }
             final B2FileResponse response = session.getClient().copyFile(fileid.getVersionId(source),
                     fileid.getVersionId(containerService.getContainer(target)),
-                    containerService.getKey(target));
+                    containerService.getKey(target), status.getMime(), fileinfo);
             listener.sent(status.getLength());
             fileid.cache(target, response.getFileId());
             return target.withAttributes(new B2AttributesFinderFeature(session, fileid).toAttributes(response));
