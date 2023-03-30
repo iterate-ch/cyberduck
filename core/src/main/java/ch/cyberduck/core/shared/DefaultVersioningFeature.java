@@ -82,6 +82,10 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
         switch(session.getHost().getProtocol().getVersioningMode()) {
             case custom:
+                if(this.isRevertable(file)) {
+                    // No versioning for previous versions
+                    return VersioningConfiguration.empty();
+                }
                 return new VersioningConfiguration(file.isDirectory() || include.matcher(file.getName()).matches());
         }
         return VersioningConfiguration.empty();
