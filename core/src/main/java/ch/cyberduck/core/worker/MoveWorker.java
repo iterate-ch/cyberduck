@@ -22,6 +22,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CachingAttributesFinderFeature;
 import ch.cyberduck.core.CachingFindFeature;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -36,9 +37,11 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.VersionsComparator;
@@ -121,18 +124,49 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                         if(status.isExists()) {
                             status.withRemote(new CachingAttributesFinderFeature(cache, session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session))).find(r.getValue()));
                         }
-                        final Path moved = feature.move(r.getKey(), r.getValue(), status,
-                                new Delete.Callback() {
-                                    @Override
-                                    public void delete(final Path file) {
-                                        listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
-                                                file.getName()));
-                                    }
-                                }, callback);
+                        final Delete.Callback delete = new Delete.Callback() {
+                            @Override
+                            public void delete(final Path file) {
+                                listener.message(MessageFormat.format(LocaleFactory.localizedString("Deleting {0}", "Status"),
+                                        file.getName()));
+                            }
+                        };
+                        final Path moved = feature.move(r.getKey(), r.getValue(), status, delete, callback);
                         if(PathAttributes.EMPTY.equals(moved.attributes())) {
                             moved.withAttributes(session.getFeature(AttributesFinder.class).find(moved));
                         }
                         result.put(r.getKey(), moved);
+                        // Move previous versions of file
+                        final Versioning versioning = session.getFeature(Versioning.class);
+                        if(versioning.getConfiguration(r.getKey()).isEnabled()) {
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("List previous versions of %s", r.getKey()));
+                            }
+                            for(Path version : versioning.list(r.getKey(), new DisabledListProgressListener())) {
+                                final Path target = new Path(new DefaultVersioningFeature.DefaultVersioningDirectoryProvider().provide(r.getValue()),
+                                        version.getName(), version.getType());
+                                final Path directory = target.getParent();
+                                if(!new CachingFindFeature(cache, new DefaultFindFeature(session)).find(directory)) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Create directory %s for versions", directory));
+                                    }
+                                    session.getFeature(Directory.class).mkdir(directory, new TransferStatus());
+                                }
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Move previous version %s to %s", version, target));
+                                }
+                                if(version.isDirectory()) {
+                                    if(!session.getFeature(Move.class).isRecursive(version, target)) {
+                                        continue;
+                                    }
+                                }
+                                feature.move(version, target, new TransferStatus()
+                                        .withLockId(this.getLockId(version))
+                                        .withMime(new MappingMimeTypeService().getMime(version.getName()))
+                                        .exists(new CachingFindFeature(cache, session.getFeature(Find.class, new DefaultFindFeature(session))).find(target))
+                                        .withLength(version.attributes().getSize()), delete, callback);
+                            }
+                        }
                     }
                 }
                 // Find previous folders to be deleted
