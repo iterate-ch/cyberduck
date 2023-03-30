@@ -34,7 +34,6 @@ import ch.cyberduck.core.features.Trash;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -120,16 +119,14 @@ public class DeleteWorker extends Worker<List<Path>> {
         if(delete.isRecursive()) {
             recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
         }
-        if(new UploadFilterOptions(session.getHost()).versioning) {
-            final Versioning versioning = session.getFeature(Versioning.class);
-            for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
-                final Path f = iter.next();
-                if(versioning.save(f)) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Skip deleting %s", f));
-                    }
-                    iter.remove();
+        final Versioning versioning = session.getFeature(Versioning.class);
+        for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
+            final Path f = iter.next();
+            if(versioning.save(f)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Skip deleting %s", f));
                 }
+                iter.remove();
             }
         }
         if(!recursive.isEmpty()) {
