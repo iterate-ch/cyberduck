@@ -16,7 +16,9 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
@@ -29,12 +31,15 @@ import ch.cyberduck.core.date.ISO8601DateFormatter;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.FilenameComparator;
 
@@ -45,18 +50,22 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class DefaultVersioningFeature implements Versioning {
+public class DefaultVersioningFeature extends DisabledBulkFeature implements Versioning {
     private static final Logger log = LogManager.getLogger(DefaultVersioningFeature.class);
 
     private final Session<?> session;
     private final FilenameVersionIdentifier formatter;
     private final VersioningDirectoryProvider provider;
     private final Pattern include;
+
+    private Delete delete;
 
     public DefaultVersioningFeature(final Session<?> session) {
         this(session, new DefaultVersioningDirectoryProvider(), new ISO8601FilenameVersionIdentifier());
@@ -67,11 +76,16 @@ public class DefaultVersioningFeature implements Versioning {
         this.provider = provider;
         this.formatter = formatter;
         this.include = Pattern.compile(new HostPreferences(session.getHost()).getProperty("queue.upload.file.versioning.include.regex"));
+        this.delete = session.getFeature(Delete.class);
     }
 
     @Override
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
-        return new VersioningConfiguration(file.isDirectory() || include.matcher(file.getName()).matches());
+        switch(session.getHost().getProtocol().getVersioningMode()) {
+            case custom:
+                return new VersioningConfiguration(file.isDirectory() || include.matcher(file.getName()).matches());
+        }
+        return VersioningConfiguration.empty();
     }
 
     @Override
@@ -133,15 +147,40 @@ public class DefaultVersioningFeature implements Versioning {
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        final Path directory = provider.provide(file);
-        if(session.getFeature(Find.class).find(directory)) {
-            for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
-                    .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
-                version.attributes().setDuplicate(true);
-                versions.add(version);
+        if(this.getConfiguration(file).isEnabled()) {
+            final Path directory = provider.provide(file);
+            if(session.getFeature(Find.class).find(directory)) {
+                for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
+                        .filter(f -> f.getName().startsWith(FilenameUtils.getBaseName(file.getName()))).collect(Collectors.toList())) {
+                    version.attributes().setDuplicate(true);
+                    versions.add(version);
+                }
             }
         }
         return versions.filter(new FilenameComparator(false));
+    }
+
+    @Override
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+        switch(type) {
+            case upload:
+                for(TransferItem item : files.keySet()) {
+                    if(this.getConfiguration(item.remote).isEnabled()) {
+                        final List<Path> versions = new DefaultVersioningFeature(session).list(item.remote, new DisabledListProgressListener()).toStream()
+                                .sorted(new FilenameComparator(false)).skip(new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Delete %d previous versions of %s", versions.size(), item.remote));
+                        }
+                        delete.delete(versions, callback, new Delete.DisabledCallback());
+                    }
+                }
+        }
+    }
+
+    @Override
+    public Bulk withDelete(final Delete delete) {
+        this.delete = delete;
+        return this;
     }
 
     @Override

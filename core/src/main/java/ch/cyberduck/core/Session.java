@@ -45,7 +45,6 @@ import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DefaultSearchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
-import ch.cyberduck.core.shared.DefaultVersioningBulkFeature;
 import ch.cyberduck.core.shared.DefaultVersioningFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -313,13 +312,6 @@ public abstract class Session<C> implements TranscriptListener {
         if(type == Download.class) {
             return (T) new DefaultDownloadFeature(this.getFeature(Read.class));
         }
-        if(type == Bulk.class) {
-            switch(host.getProtocol().getVersioningMode()) {
-                case custom:
-                    return (T) new DefaultVersioningBulkFeature(this);
-            }
-            return (T) new DisabledBulkFeature();
-        }
         if(type == Move.class) {
             return (T) new DisabledMoveFeature();
         }
@@ -348,10 +340,14 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host));
         }
         if(type == Versioning.class) {
+            return (T) new DefaultVersioningFeature(this);
+        }
+        if(type == Bulk.class) {
             switch(host.getProtocol().getVersioningMode()) {
                 case custom:
                     return (T) new DefaultVersioningFeature(this);
             }
+            return (T) new DisabledBulkFeature();
         }
         return host.getProtocol().getFeature(type);
     }

@@ -120,21 +120,17 @@ public class DeleteWorker extends Worker<List<Path>> {
         if(delete.isRecursive()) {
             recursive.keySet().removeIf(f -> recursive.keySet().stream().anyMatch(f::isChild));
         }
-        switch(session.getHost().getProtocol().getVersioningMode()) {
-            case custom:
-                if(new UploadFilterOptions(session.getHost()).versioning) {
-                    final Versioning versioning = session.getFeature(Versioning.class);
-                    for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
-                        final Path f = iter.next();
-                        if(versioning.save(f)) {
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Skip deleting %s", f));
-                            }
-                            iter.remove();
-                        }
+        if(new UploadFilterOptions(session.getHost()).versioning) {
+            final Versioning versioning = session.getFeature(Versioning.class);
+            for(Iterator<Path> iter = recursive.keySet().iterator(); iter.hasNext(); ) {
+                final Path f = iter.next();
+                if(versioning.save(f)) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Skip deleting %s", f));
                     }
-                    break;
+                    iter.remove();
                 }
+            }
         }
         if(!recursive.isEmpty()) {
             delete.delete(recursive, prompt, new Delete.Callback() {

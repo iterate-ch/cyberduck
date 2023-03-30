@@ -56,11 +56,7 @@ public final class UploadFilterOptions {
         acl = preferences.getBoolean("queue.upload.acl.change");
         timestamp = preferences.getBoolean("queue.upload.timestamp.change");
         temporary = preferences.getBoolean("queue.upload.file.temporary");
-        switch(bookmark.getProtocol().getVersioningMode()) {
-            case custom:
-                versioning = preferences.getBoolean("queue.upload.file.versioning");
-                break;
-        }
+        versioning = preferences.getBoolean("queue.upload.file.versioning");
         metadata = preferences.getBoolean("queue.upload.file.metadata.change");
         encryption = preferences.getBoolean("queue.upload.file.encryption.change");
         redundancy = preferences.getBoolean("queue.upload.file.redundancy.change");
