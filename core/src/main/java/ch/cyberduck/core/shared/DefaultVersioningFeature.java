@@ -184,8 +184,8 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
-        return new SimplePathPredicate(file.getParent()).test(provider.provide(file));
+    public boolean isRevertable(final Path version) {
+        return StringUtils.equals(DefaultVersioningDirectoryProvider.NAME, version.getParent().getName());
     }
 
     private interface VersioningDirectoryProvider {
