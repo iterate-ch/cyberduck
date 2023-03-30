@@ -193,6 +193,16 @@ public class GoogleStorageObjectListService implements ListService {
         }
     }
 
+    /**
+     * Determine path from prefix. Path will have duplicate marker set in attributes when all containing files for the
+     * prefix have a delete marker set.
+     *
+     * @param pool      Thread pool to run task with
+     * @param bucket    Bucket
+     * @param directory The directory for which contents are listed
+     * @param prefix    URI decoded common prefix found in directory
+     * @return Path to add to directory list
+     */
     private Future<Path> submit(final ThreadPool pool, final Path bucket, final Path directory, final String prefix) {
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
