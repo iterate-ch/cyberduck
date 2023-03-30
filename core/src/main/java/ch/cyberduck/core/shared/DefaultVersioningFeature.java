@@ -24,7 +24,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.date.DateFormatter;
 import ch.cyberduck.core.date.ISO8601DateFormatter;
@@ -165,6 +164,11 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
         switch(type) {
             case upload:
                 for(TransferItem item : files.keySet()) {
+                    if(item.remote.isDirectory()) {
+                        if(!delete.isRecursive()) {
+                            continue;
+                        }
+                    }
                     if(this.getConfiguration(item.remote).isEnabled()) {
                         final List<Path> versions = new DefaultVersioningFeature(session).list(item.remote, new DisabledListProgressListener()).toStream()
                                 .sorted(new FilenameComparator(false)).skip(new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
