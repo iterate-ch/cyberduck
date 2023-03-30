@@ -167,6 +167,9 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Versioning.class) {
             return (T) new B2VersioningFeature(this, fileid);
         }
+        if(type == Timestamp.class) {
+            return (T) new B2TimestampFeature(this, fileid);
+        }
         return super._getFeature(type);
     }
 }
