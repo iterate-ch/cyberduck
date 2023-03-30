@@ -82,11 +82,7 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     public VersioningConfiguration getConfiguration(final Path file) throws BackgroundException {
         switch(session.getHost().getProtocol().getVersioningMode()) {
             case custom:
-                if(this.isRevertable(file)) {
-                    // No versioning for previous versions
-                    return VersioningConfiguration.empty();
-                }
-                return new VersioningConfiguration(file.isDirectory() || include.matcher(file.getName()).matches());
+                return new VersioningConfiguration(this.isSupported(file));
         }
         return VersioningConfiguration.empty();
     }
@@ -98,7 +94,7 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
 
     @Override
     public boolean save(final Path file) throws BackgroundException {
-        if(this.getConfiguration(file).isEnabled()) {
+        if(this.isSupported(file)) {
             final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
             if(!session.getFeature(Move.class).isSupported(file, version)) {
                 return false;
@@ -150,7 +146,7 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
-        if(this.getConfiguration(file).isEnabled()) {
+        if(this.isSupported(file)) {
             final Path directory = provider.provide(file);
             if(session.getFeature(Find.class).find(directory)) {
                 for(Path version : session.getFeature(ListService.class).list(directory, listener).toStream()
@@ -173,7 +169,7 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
                             continue;
                         }
                     }
-                    if(this.getConfiguration(item.remote).isEnabled()) {
+                    if(this.isSupported(item.remote)) {
                         final List<Path> versions = new DefaultVersioningFeature(session).list(item.remote, new DisabledListProgressListener()).toStream()
                                 .sorted(new FilenameComparator(false)).skip(new HostPreferences(session.getHost()).getInteger("queue.upload.file.versioning.limit")).collect(Collectors.toList());
                         if(log.isWarnEnabled()) {
@@ -194,6 +190,14 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     @Override
     public boolean isRevertable(final Path version) {
         return StringUtils.equals(DefaultVersioningDirectoryProvider.NAME, version.getParent().getName());
+    }
+
+    private boolean isSupported(final Path file) {
+        if(this.isRevertable(file)) {
+            // No versioning for previous versions
+            return false;
+        }
+        return file.isDirectory() || include.matcher(file.getName()).matches();
     }
 
     private interface VersioningDirectoryProvider {
