@@ -151,6 +151,8 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             base.setDefaults();
 
+            this.setDefault("os.version", Environment.OSVersion.Version.ToString());
+
             this.setDefault("application.name", Application.ProductName);
             this.setDefault("application.datafolder.name", Application.ProductName);
             this.setDefault("oauth.handler.scheme",

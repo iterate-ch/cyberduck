@@ -30,9 +30,9 @@ public class PreferencesUseragentProvider implements UseragentProvider {
             preferences.getProperty("application.name"),
             preferences.getProperty("application.version"),
             preferences.getProperty("application.revision"),
-            System.getProperty("os.name"),
-            System.getProperty("os.version"),
-            System.getProperty("os.arch"));
+            preferences.getProperty("os.name"),
+            preferences.getProperty("os.version"),
+            preferences.getProperty("os.arch"));
 
     @Override
     public String get() {
