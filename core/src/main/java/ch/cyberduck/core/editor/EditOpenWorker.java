@@ -124,22 +124,19 @@ public class EditOpenWorker extends Worker<Transfer> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if(this == o) {
             return true;
         }
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        EditOpenWorker that = (EditOpenWorker) o;
-        if(!Objects.equals(editor, that.editor)) {
-            return false;
-        }
-        return true;
+        final EditOpenWorker that = (EditOpenWorker) o;
+        return Objects.equals(editor, that.editor) && Objects.equals(file, that.file);
     }
 
     @Override
     public int hashCode() {
-        return editor != null ? editor.hashCode() : 0;
+        return Objects.hash(editor, file);
     }
 }
