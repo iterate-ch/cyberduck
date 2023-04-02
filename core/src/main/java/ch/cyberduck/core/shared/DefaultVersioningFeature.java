@@ -96,7 +96,8 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
     public boolean save(final Path file) throws BackgroundException {
         if(this.isSupported(file)) {
             final Path version = new Path(provider.provide(file), formatter.toVersion(file.getName()), file.getType());
-            if(!session.getFeature(Move.class).isSupported(file, version)) {
+            final Move feature = session.getFeature(Move.class);
+            if(!feature.isSupported(file, version)) {
                 return false;
             }
             final Path directory = version.getParent();
@@ -110,11 +111,11 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
                 log.debug(String.format("Rename existing file %s to %s", file, version));
             }
             if(file.isDirectory()) {
-                if(!session.getFeature(Move.class).isRecursive(file, version)) {
+                if(!feature.isRecursive(file, version)) {
                     throw new UnsupportedException();
                 }
             }
-            session.getFeature(Move.class).move(file, version,
+            feature.move(file, version,
                     new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback());
             return true;
         }
