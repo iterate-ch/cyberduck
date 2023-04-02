@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -58,15 +57,9 @@ public class B2DeleteFeatureTest extends AbstractB2Test {
         // Hide
         new B2DeleteFeature(session, new B2VersionIdProvider(session)).delete(Collections.singletonList(test.withAttributes(PathAttributes.EMPTY)),
                 new DisabledLoginCallback(), new Delete.DisabledCallback());
-        // Double hide
-        try {
-            new B2DeleteFeature(session, new B2VersionIdProvider(session)).delete(Collections.singletonList(test.withAttributes(PathAttributes.EMPTY)),
-                    new DisabledLoginCallback(), new Delete.DisabledCallback());
-            fail();
-        }
-        catch(InteroperabilityException e) {
-            //
-        }
+        // Double hide. Ignore failure already_hidden
+        new B2DeleteFeature(session, new B2VersionIdProvider(session)).delete(Collections.singletonList(test.withAttributes(PathAttributes.EMPTY)),
+                new DisabledLoginCallback(), new Delete.DisabledCallback());
         new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new B2DeleteFeature(session, new B2VersionIdProvider(session)).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
