@@ -198,7 +198,10 @@ public class DefaultVersioningFeature extends DisabledBulkFeature implements Ver
             // No versioning for previous versions
             return false;
         }
-        return file.isDirectory() || include.matcher(file.getName()).matches();
+        if(new HostPreferences(session.getHost()).getBoolean("queue.upload.file.versioning")) {
+            return file.isDirectory() || include.matcher(file.getName()).matches();
+        }
+        return false;
     }
 
     private interface VersioningDirectoryProvider {
