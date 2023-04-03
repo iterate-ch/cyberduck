@@ -375,6 +375,21 @@ public class RequestEntityRestStorageService extends RestS3Service {
     }
 
     @Override
+    protected int getHttpPort() {
+        return session.getHost().getPort();
+    }
+
+    @Override
+    protected int getHttpsPort() {
+        return session.getHost().getPort();
+    }
+
+    @Override
+    public boolean isHttpsOnly() {
+        return session.getHost().getProtocol().isSecure();
+    }
+
+    @Override
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
         return session.getXmlResponseSaxParser();
     }
