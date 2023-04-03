@@ -97,7 +97,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -272,6 +271,10 @@ public abstract class Preferences implements Locales, PreferencesReader {
      */
     protected void setDefaults() {
         this.loadDefaults("default.properties");
+
+        this.setDefault("os.name", System.getProperty("os.name"));
+        this.setDefault("os.version", System.getProperty("os.version"));
+        this.setDefault("os.arch", System.getProperty("os.arch"));
 
         final Version version = new Version();
         this.setDefault("application.version", StringUtils.substringBeforeLast(version.getSpecification(), "."));
