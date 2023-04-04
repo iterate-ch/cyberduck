@@ -81,7 +81,7 @@ public class S3ListService implements ListService {
         else {
             objects = new S3ObjectListService(session, acl).list(directory, listener);
         }
-        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart")) {
+        if(new HostPreferences(session.getHost()).getBoolean("s3.upload.multipart.lookup")) {
             try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(session).find(directory)) {
                     final PathAttributes attributes = new PathAttributes();
