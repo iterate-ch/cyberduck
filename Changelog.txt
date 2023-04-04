@@ -2,7 +2,11 @@ Cyberduck
 https://cyberduck.io/
 
 8.5.8
+- [Bugfix] Presigned URL does not consider the server port number (S3) (#13981)
+- [Bugfix] File changes in editors are no longer uploaded when file has previously deleted by a save process (#14455)
+- [Bugfix] Unable to duplicate files (macOS) (#14413)
 - [Bugfix] Failure reverting previous version in vault (Cryptomator, OneDrive, Google Drive, Dropbox) (#14410)
+- [Bugfix] Hide directory placeholders only containing hidden files (Backblaze B2) (#14431)
 
 8.5.7
 - [Bugfix] Cannot create or duplicate files with any suffix (#14263)
