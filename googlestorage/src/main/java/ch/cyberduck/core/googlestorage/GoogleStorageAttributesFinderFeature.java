@@ -122,7 +122,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder, A
         }
         attributes.setRegion(bucket.getLocation());
         if(bucket.getBilling() != null) {
-            attributes.setCustom(Collections.singletonMap("KEY_REQUESTER_PAYS", String.valueOf(true)));
+            attributes.setCustom(Collections.singletonMap(GoogleStorageAttributesFinderFeature.KEY_REQUESTER_PAYS, String.valueOf(true)));
         }
         return attributes;
     }
