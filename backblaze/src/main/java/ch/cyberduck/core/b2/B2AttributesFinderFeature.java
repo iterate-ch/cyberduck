@@ -91,25 +91,37 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             }
         }
         else {
+
+            final String id = fileid.getVersionId(file);
             try {
-                final PathAttributes attr = this.toAttributes(session.getClient().getFileInfo(fileid.getVersionId(file)));
-                if(attr.isDuplicate()) {
-                    // Throw failure if latest version has hide marker set
-                    if(StringUtils.isBlank(file.attributes().getVersionId())) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Latest version of %s is duplicate", file));
-                        }
-                        throw new NotfoundException(file.getAbsolute());
+                return this.findFileInfo(file, id);
+            }
+            catch(NotfoundException e) {
+                // Try with reset cache after failure finding node id
+                return this.findFileInfo(file, fileid.getVersionId(file));
+            }
+        }
+    }
+
+    private PathAttributes findFileInfo(final Path file, final String id) throws BackgroundException {
+        try {
+            final PathAttributes attr = this.toAttributes(session.getClient().getFileInfo(id));
+            if(attr.isDuplicate()) {
+                // Throw failure if latest version has hide marker set and lookup was without explicit version
+                if(StringUtils.isBlank(file.attributes().getVersionId())) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Latest version of %s is duplicate", file));
                     }
+                    throw new NotfoundException(file.getAbsolute());
                 }
-                return attr;
             }
-            catch(B2ApiException e) {
-                throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            return attr;
+        }
+        catch(B2ApiException e) {
+            throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 

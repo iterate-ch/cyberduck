@@ -154,13 +154,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         test.attributes().setVersionId(invalidId);
         fileid.cache(test, invalidId);
         final B2AttributesFinderFeature f = new B2AttributesFinderFeature(session, fileid);
-        try {
-            f.find(test).getVersionId();
-            fail();
-        }
-        catch(NotfoundException e) {
-            // Expected
-        }
+        assertEquals(latestnodeid, f.find(test).getVersionId());
         new B2DeleteFeature(session, fileid).delete(new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).toList(), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
