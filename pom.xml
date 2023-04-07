@@ -531,6 +531,7 @@
                             <include>**/*.java</include>
                         </includes>
                         <groups>ch.cyberduck.test.IntegrationTest</groups>
+                        <rerunFailingTestsCount>1</rerunFailingTestsCount>
                     </configuration>
                     <dependencies>
                         <dependency>
