@@ -96,6 +96,9 @@ public final class FileWatcher {
                         key = monitor.take();
                     }
                     catch(ClosedWatchServiceException e) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Exit watching folder %s for closed monitor %s", folder, monitor));
+                        }
                         // If this watch service is closed
                         return true;
                     }
@@ -126,6 +129,9 @@ public final class FileWatcher {
                     boolean valid = key.reset();
                     if(!valid) {
                         // The key is no longer valid and the loop can exit.
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Exit watching folder %s", folder));
+                        }
                         return true;
                     }
                 }
