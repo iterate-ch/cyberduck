@@ -36,6 +36,8 @@ import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
@@ -46,6 +48,7 @@ public final class FileWatcher {
 
     private final RegisterWatchService monitor;
     private final ThreadPool pool;
+    private final Set<Local> registered = new HashSet<>();
 
     public FileWatcher() {
         this(WatchServiceFactory.get());
@@ -74,6 +77,12 @@ public final class FileWatcher {
     }
 
     public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
+        if(registered.contains(folder)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Skip duplicate registration for %s in %s", folder, monitor));
+            }
+            return new CountDownLatch(0);
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Register folder %s watching with filter %s", folder, filter));
         }
@@ -81,6 +90,7 @@ public final class FileWatcher {
         if(!key.isValid()) {
             throw new IOException(String.format("Failure registering for events in %s", folder));
         }
+        registered.add(folder);
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
             @Override
@@ -170,6 +180,7 @@ public final class FileWatcher {
         try {
             monitor.close();
             pool.shutdown(false);
+            registered.clear();
         }
         catch(IOException e) {
             log.error("Failure closing file watcher monitor", e);
