@@ -53,7 +53,7 @@ public final class FileWatcher {
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
-        this.pool = new DefaultThreadPool("watcher", 1);
+        this.pool = new DefaultThreadPool("watcher");
     }
 
     public static final class DefaultFileFilter extends NullFilter<Local> {
