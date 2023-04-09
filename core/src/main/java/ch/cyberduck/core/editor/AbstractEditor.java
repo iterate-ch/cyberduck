@@ -57,8 +57,6 @@ public abstract class AbstractEditor implements Editor {
 
     private final Host host;
 
-    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
-
     /**
      * File has changed but not uploaded yet
      */
@@ -94,7 +92,7 @@ public abstract class AbstractEditor implements Editor {
         else {
             this.file = file;
         }
-        this.temporary = temp.create(String.format("editor-%s", host.getUuid()), this.file);
+        this.temporary = TemporaryFileServiceFactory.instance().create(String.format("editor-%s", host.getUuid()), this.file);
         this.launcher = launcher;
         this.finder = finder;
         this.progress = listener;
