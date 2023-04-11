@@ -199,20 +199,14 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals("eu-west-1", session.getClient().getRegionEndpointCache().getRegionForBucketName("profiles.cyberduck.io"));
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test
     public void testDeleted() throws Exception {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertNotEquals(PathAttributes.EMPTY, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        try {
-            new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test);
-            fail();
-        }
-        catch(NotfoundException e) {
-            throw e;
-        }
+        assertThrows(NotfoundException.class, () -> new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test));
     }
 
     @Test

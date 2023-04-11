@@ -105,7 +105,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest extends VaultTe
     @Test
     @Ignore
     public void testWriteReadUpdate() throws Exception {
-        final Host origin = new Host(new TestProtocol(), String.format("%s.localdomain", UUID.randomUUID().toString()));
+        final Host origin = new Host(new TestProtocol(), String.format("%s.localdomain", UUID.randomUUID()));
         origin.setWebURL("http://example.net");
         origin.setDefaultPath("public_html");
         final CustomOriginCloudFrontDistributionConfiguration configuration

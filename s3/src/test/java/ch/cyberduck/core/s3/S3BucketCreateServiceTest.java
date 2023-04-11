@@ -40,15 +40,11 @@ public class S3BucketCreateServiceTest extends AbstractS3Test {
     @Test
     public void testCreateBucket() throws Exception {
         final AtomicBoolean header = new AtomicBoolean();
-        final AtomicBoolean signature = new AtomicBoolean();
         session.withListener(new TranscriptListener() {
             @Override
             public void log(final Type request, final String message) {
                 if(StringUtils.contains(message, "Expect: 100-continue")) {
                     header.set(true);
-                }
-                if(StringUtils.contains(message, "SignedHeaders=content-type;date;expect;host;x-amz-acl;x-amz-content-sha256;x-amz-date")) {
-                    signature.set(true);
                 }
             }
         });
@@ -58,6 +54,6 @@ public class S3BucketCreateServiceTest extends AbstractS3Test {
         assertTrue(header.get());
         bucket.attributes().setRegion("eu-central-1");
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(bucket));
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -125,7 +125,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
     @Test
     public void testDeleteNotFoundKey() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
+        final List<ObjectKeyAndVersion> keys = new ArrayList<>();
         for(int i = 0; i < 1010; i++) {
             keys.add(new ObjectKeyAndVersion(new AlphanumericRandomStringService().random()));
         }

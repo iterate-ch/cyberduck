@@ -36,7 +36,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.model.StorageOwner;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -158,8 +157,7 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         final Path placeholder = new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final S3AccessControlListFeature f = acl;
-        assertNotNull(f.getPermission(placeholder));
+        assertNotNull(acl.getPermission(placeholder));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
