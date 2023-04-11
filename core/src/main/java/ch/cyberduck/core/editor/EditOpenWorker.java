@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -58,6 +59,7 @@ public class EditOpenWorker extends Worker<Transfer> {
     private final Transfer download;
     private final Path file;
     private final Local local;
+    private final ApplicationQuitCallback quit;
     private final NotificationService notification;
     private final ProgressListener listener;
     private final FileWatcherListener watcher;
@@ -67,12 +69,13 @@ public class EditOpenWorker extends Worker<Transfer> {
                           final Application application,
                           final Path file, final Local local,
                           final ProgressListener listener,
-                          final FileWatcherListener watcher,
+                          final ApplicationQuitCallback quit, final FileWatcherListener watcher,
                           final NotificationService notification) {
         this.application = application;
         this.file = file;
         this.editor = editor;
         this.local = local;
+        this.quit = quit;
         this.notification = notification;
         final DownloadFilterOptions options = new DownloadFilterOptions(bookmark);
         options.quarantine = false;
@@ -105,7 +108,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             log.warn(String.format("File size changed for %s", file));
         }
         try {
-            editor.edit(application, file, local, watcher);
+            editor.edit(application, file, local, watcher, quit);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
@@ -138,5 +141,14 @@ public class EditOpenWorker extends Worker<Transfer> {
     @Override
     public int hashCode() {
         return Objects.hash(editor, file);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("EditOpenWorker{");
+        sb.append("editor=").append(editor);
+        sb.append(", file=").append(file);
+        sb.append('}');
+        return sb.toString();
     }
 }

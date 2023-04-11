@@ -97,7 +97,9 @@ public class FSEventWatchEditor extends DefaultWatchEditor {
 
     @Override
     public void close() {
-        log.warn(String.format("Remove observer %s", terminate));
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("Remove observer %s", terminate));
+        }
         workspace.notificationCenter().removeObserver(terminate.id());
         super.close();
     }

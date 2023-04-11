@@ -136,4 +136,13 @@ public class EditSaveWorker extends Worker<Transfer> {
     public int hashCode() {
         return Objects.hash(editor, file);
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("EditSaveWorker{");
+        sb.append("editor=").append(editor);
+        sb.append(", file=").append(file);
+        sb.append('}');
+        return sb.toString();
+    }
 }

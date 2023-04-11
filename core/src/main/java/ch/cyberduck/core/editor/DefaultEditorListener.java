@@ -36,8 +36,7 @@ public class DefaultEditorListener implements FileWatcherListener {
     private final Editor editor;
     private final Listener listener;
 
-    public DefaultEditorListener(final Controller controller, final SessionPool session,
-                                 final Editor editor, final Listener listener) {
+    public DefaultEditorListener(final Controller controller, final SessionPool session, final Editor editor, final Listener listener) {
         this.controller = controller;
         this.session = session;
         this.editor = editor;
@@ -49,15 +48,13 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s written", temporary));
         }
-        controller.background(new WorkerBackgroundAction<Transfer>(controller, session,
-                                      editor.save(new DisabledTransferErrorCallback())) {
-                                  @Override
-                                  public void cleanup() {
-                                      super.cleanup();
-                                      listener.saved();
-                                  }
-                              }
-        );
+        controller.background(new WorkerBackgroundAction<Transfer>(controller, session, editor.save(new DisabledTransferErrorCallback())) {
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                listener.saved();
+            }
+        });
     }
 
     @Override
@@ -72,15 +69,13 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s created", temporary));
         }
-        controller.background(new WorkerBackgroundAction<Transfer>(controller, session,
-                                      editor.save(new DisabledTransferErrorCallback())) {
-                                  @Override
-                                  public void cleanup() {
-                                      super.cleanup();
-                                      listener.saved();
-                                  }
-                              }
-        );
+        controller.background(new WorkerBackgroundAction<Transfer>(controller, session, editor.save(new DisabledTransferErrorCallback())) {
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                listener.saved();
+            }
+        });
     }
 
     /**

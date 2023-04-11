@@ -82,7 +82,7 @@ public class AbstractEditorTest {
             }
 
             @Override
-            protected void edit(final Application editor, final Path file, final Local temporary, final FileWatcherListener listener) {
+            protected void edit(final Application editor, final Path file, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) {
                 e.set(true);
             }
 

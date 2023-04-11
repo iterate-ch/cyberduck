@@ -41,28 +41,34 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = LogManager.getLogger(DefaultWatchEditor.class);
 
-    private final FileWatcher monitor;
+    private final FileWatcher watcher;
 
     public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener) {
         this(host, file, listener, new FileWatcher(new NIOEventWatchService()));
     }
 
-    public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener, final FileWatcher monitor) {
+    public DefaultWatchEditor(final Host host, final Path file, final ProgressListener listener, final FileWatcher watcher) {
         super(host, file, listener);
-        this.monitor = monitor;
+        this.watcher = watcher;
     }
 
     @Override
     protected void watch(final Application application, final Local temporary, final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(temporary, listener));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Register %s in file watcher %s", temporary, watcher));
+        }
+        Uninterruptibles.awaitUninterruptibly(watcher.register(temporary, listener));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Successfully registered %s in file watcher %s", temporary, watcher));
+        }
     }
 
     @Override
     public void close() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Close monitor %s", monitor));
+            log.debug(String.format("Close watcher %s", watcher));
         }
-        monitor.close();
+        watcher.close();
     }
 }
 
