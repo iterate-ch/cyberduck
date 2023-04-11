@@ -36,15 +36,24 @@ public class DefaultComparisonService implements ComparisonService {
                             EnumSet.of(Comparison.unknown, Comparison.equal), new TimestampComparisonService(), new SizeComparisonService()))
     );
 
+    private static final ChainedComparisonService DEFAULT_SYMLINK_COMPARISON_CHAIN = new ChainedComparisonService(
+            EnumSet.of(Comparison.unknown), new TimestampComparisonService());
+
     private final ComparisonService files;
+    private final ComparisonService symlinks;
     private final ComparisonService directories;
 
     public DefaultComparisonService(final Protocol protocol) {
-        this(forFiles(protocol), forDirectories(protocol));
+        this(forFiles(protocol), forSymlinks(protocol), forDirectories(protocol));
     }
 
     public DefaultComparisonService(final ComparisonService files, final ComparisonService directories) {
+        this(files, DEFAULT_SYMLINK_COMPARISON_CHAIN, directories);
+    }
+
+    public DefaultComparisonService(final ComparisonService files, final ComparisonService symlinks, final ComparisonService directories) {
         this.files = files;
+        this.symlinks = symlinks;
         this.directories = directories;
     }
 
@@ -56,6 +65,8 @@ public class DefaultComparisonService implements ComparisonService {
                     log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, directories));
                 }
                 return directories.compare(type, local, remote);
+            case symboliclink:
+                return symlinks.compare(type, local, remote);
             default:
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Compare local attributes %s with remote %s using %s", local, remote, files));
@@ -84,6 +95,10 @@ public class DefaultComparisonService implements ComparisonService {
 
     public static ComparisonService forFiles(final Protocol protocol) {
         return DEFAULT_FILE_COMPARISON_CHAIN;
+    }
+
+    public static ComparisonService forSymlinks(final Protocol protocol) {
+        return DEFAULT_SYMLINK_COMPARISON_CHAIN;
     }
 
     public static ComparisonService forDirectories(final Protocol protocol) {
