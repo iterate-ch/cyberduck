@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.5.9
+- [Bugfix] Requires force quit after opening file multiple times in external editor (macOS) (#14412)
+
 8.5.8
 - [Bugfix] Presigned URL does not consider the server port number (S3) (#13981)
 - [Bugfix] File changes in editors are no longer uploaded when file has previously deleted by a save process (#14455)
