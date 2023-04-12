@@ -87,7 +87,7 @@ public class OwncloudVersioningFeatureTest extends AbstractOwncloudTest {
                     contentUpdate.length));
         }
         feature.revert(initialVersion);
-        assertEquals(initialVersion.attributes().getModificationDate(), new OwncloudAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(initialVersion.attributes().getSize(), new OwncloudAttributesFinderFeature(session).find(test).getSize());
         new DAVDeleteFeature(session).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
