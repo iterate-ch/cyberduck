@@ -41,16 +41,12 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
 
     private static final int MAX_RETRIES = 1;
 
-    private final X509TrustManager trust;
-    private final X509KeyManager key;
-    private final LoginCallback prompt;
     private final Host host;
+    private final STSCredentialsConfigurator configurator;
 
     public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this.host = session.getHost();
-        this.trust = trust;
-        this.key = key;
-        this.prompt = prompt;
+        this.configurator = new STSCredentialsConfigurator(trust, key, prompt);
     }
 
     @Override
@@ -66,7 +62,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                                     EntityUtils.toString(response.getEntity()));
                             if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
                                 try {
-                                    host.setCredentials(new STSCredentialsConfigurator(trust, key, prompt).configure(host));
+                                    host.setCredentials(configurator.configure(host));
                                     return true;
                                 }
                                 catch(LoginFailureException | LoginCanceledException e) {
