@@ -2336,15 +2336,30 @@ namespace Ch.Cyberduck.Ui.Controller
             application ??= EditorFactory.getEditor(file.getAbsolute());
             application ??= EditorFactory.getDefaultEditor();
             background(new WorkerBackgroundAction(this, Session,
-                editor.open(application, new DisabledApplicationQuitCallback(),
+                editor.open(application, new EditorApplicationQuitCallback(_editors, file),
                     new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
+        }
+
+        private class EditorApplicationQuitCallback : ApplicationQuitCallback
+        {
+            private readonly IDictionary<Path, Editor> _editors;
+            private readonly Path _file;
+
+            public EditorApplicationQuitCallback(IDictionary<Path, Editor> editors, Path file)
+            {
+                _editors = editors;
+                _file = file;
+            }
+
+            public void callback() {
+                _editors.Remove(_file);
+            }
         }
 
         private class ReloadEditorListener : DefaultEditorListener.Listener
         {
             private readonly BrowserController _controller;
             private readonly Path _file;
-
 
             public ReloadEditorListener(BrowserController controller, Path file)
             {
