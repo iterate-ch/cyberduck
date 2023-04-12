@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.5.9-SNAPSHOT</version>
+        <version>8.5.9</version>
     </parent>
     <artifactId>freenet</artifactId>
     <packaging>jar</packaging>
