@@ -23,7 +23,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -77,17 +76,18 @@ public class GoogleStorageObjectListService implements ListService {
     }
 
     protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter) throws BackgroundException {
-        return this.list(directory, listener, delimiter, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"));
+        final VersioningConfiguration versioning = new HostPreferences(session.getHost()).getBoolean("googlestorage.listing.versioning.enable") &&
+                null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                containerService.getContainer(directory)
+        ) : VersioningConfiguration.empty();
+        return this.list(directory, listener, delimiter, new HostPreferences(session.getHost()).getInteger("googlestorage.listing.chunksize"), versioning);
     }
 
-    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize,
+                                        final VersioningConfiguration versioning) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("list", concurrency);
         try {
             final Path bucket = containerService.getContainer(directory);
-            final VersioningConfiguration versioning = new HostPreferences(session.getHost()).getBoolean("googlestorage.listing.versioning.enable")
-                    && null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                    containerService.getContainer(directory)
-            ) : VersioningConfiguration.empty();
             final AttributedList<Path> objects = new AttributedList<>();
             Objects response;
             long revision = 0L;
@@ -143,7 +143,7 @@ public class GoogleStorageObjectListService implements ListService {
                 if(response.getPrefixes() != null) {
                     final List<Future<Path>> folders = new ArrayList<>();
                     for(String prefix : response.getPrefixes()) {
-                        final String key = StringUtils.chomp(URIEncoder.decode(prefix), String.valueOf(Path.DELIMITER));
+                        final String key = StringUtils.chomp(prefix, String.valueOf(Path.DELIMITER));
                         if(new SimplePathPredicate(PathNormalizer.compose(bucket, key)).test(directory)) {
                             continue;
                         }
