@@ -69,7 +69,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.passwordstore.class", KeychainPasswordStore.class.getName());
         this.setDefault("factory.certificatestore.class", KeychainCertificateStore.class.getName());
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
-        if(Factory.Platform.osversion.matches("(10|11.12)\\..*")) {
+        if(Factory.Platform.osversion.matches("(10|11|12)\\..*")) {
             this.setDefault("factory.proxy.configuration.class", SystemPreferencesProxyConfiguration.class.getName());
         }
         else {
