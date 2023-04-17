@@ -22,11 +22,13 @@ namespace Windows.Win32
         }
 
         /// <inheritdoc cref="winmdroot.UI.Shell.IExtractIconW.Extract(winmdroot.Foundation.PCWSTR, uint, winmdroot.UI.WindowsAndMessaging.HICON*, winmdroot.UI.WindowsAndMessaging.HICON*, uint)"/>
-		public static unsafe void Extract(this winmdroot.UI.Shell.IExtractIconW @this, string pszFile, uint nIconIndex, in winmdroot.UI.WindowsAndMessaging.HICON phiconLarge, in winmdroot.UI.WindowsAndMessaging.HICON phiconSmall, uint nIconSize)
+		public static unsafe void Extract(this winmdroot.UI.Shell.IExtractIconW @this, string pszFile, uint nIconIndex, ref winmdroot.UI.WindowsAndMessaging.HICON phiconLarge, ref winmdroot.UI.WindowsAndMessaging.HICON phiconSmall, uint nIconSize)
         {
             fixed (char* pszFileLocal = pszFile)
+            fixed (winmdroot.UI.WindowsAndMessaging.HICON* phiconLargeLocal = &phiconLarge)
+            fixed (winmdroot.UI.WindowsAndMessaging.HICON* phiconSmallLocal = &phiconSmall)
             {
-                @this.Extract(pszFileLocal, nIconIndex, (winmdroot.UI.WindowsAndMessaging.HICON*)phiconLarge.Value, (winmdroot.UI.WindowsAndMessaging.HICON*)phiconSmall.Value, nIconSize);
+                @this.Extract(pszFileLocal, nIconIndex, phiconLargeLocal, phiconSmallLocal, nIconSize);
             }
         }
 

@@ -61,22 +61,8 @@
     <PackageReference Include="Microsoft.Windows.CsWin32" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
     <PackageReference Include="ObjectListView.Official" />
-    <PackageReference Include="ReactiveUI.Fody" />
     <PackageReference Include="ReactiveUI.WPF" />
     <PackageReference Include="StructureMap" />
-    <PackageReference Include="System.Memory" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <COMReference Include="Bonjour">
-      <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
   </ItemGroup>
 
   <ItemGroup>

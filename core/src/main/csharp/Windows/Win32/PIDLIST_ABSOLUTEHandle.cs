@@ -1,6 +1,4 @@
-﻿using static InlineIL.FieldRef;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
+﻿using System.Diagnostics.CodeAnalysis;
 using static System.Runtime.CompilerServices.Unsafe;
 using static Windows.Win32.CorePInvoke;
 
@@ -10,37 +8,20 @@ namespace Windows.Win32.UI.Shell.Common
     {
         private ITEMIDLIST* ptr;
 
-        public ref ITEMIDLIST Handle
+        public PIDLIST_ABSOLUTEHandle(in ITEMIDLIST* ptr)
         {
-            get
-            {
-                // C# doesn't allow return ref ptr.
-                // IL doesn't have a problem with it.
-                Ldarg_0();
-                Ldflda(Field(typeof(PIDLIST_ABSOLUTEHandle), nameof(ptr)));
-                Ret(); // return ref *(ITEMIDLIST*)&ptr;
-                throw Unreachable();
-            }
+            this.ptr = ptr;
         }
 
-        public ref ITEMIDLIST* Pointer
-        {
-            get
-            {
-                // C# doesn't allow return ref ptr.
-                // IL doesn't have a problem with it.
-                Ldarg_0();
-                Ldflda(Field(typeof(PIDLIST_ABSOLUTEHandle), nameof(ptr)));
-                Ret(); // return ref ptr;
-                throw Unreachable();
-            }
-        }
+        [UnscopedRef]
+        public ref ITEMIDLIST* Pointer => ref ptr;
 
+        [UnscopedRef]
         public ref ITEMIDLIST Value => ref *ptr;
 
         public static implicit operator bool(in PIDLIST_ABSOLUTEHandle @this) => @this.ptr != null;
 
-        public static implicit operator PIDLIST_ABSOLUTEHandle(in ITEMIDLIST pidl) => new() { ptr = (ITEMIDLIST*)AsPointer(ref AsRef(pidl)) };
+        public static implicit operator PIDLIST_ABSOLUTEHandle(in ITEMIDLIST pidl) => new((ITEMIDLIST*)AsPointer(ref AsRef(pidl)));
 
         public void Dispose()
         {

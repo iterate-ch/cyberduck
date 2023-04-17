@@ -81,9 +81,9 @@ namespace Ch.Cyberduck.Core.Refresh.Services
                     using HICON_Handle largeIcon = new();
                     using HICON_Handle smallIcon = new();
 
-                    icon.Extract(iconPath, (uint)iconIndex, largeIcon.Ref, smallIcon.Ref, 0);
-                    Get(largeIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
-                    Get(smallIcon.Value, (c, s, i) => c.CacheIcon(key, s, i));
+                    icon.Extract(iconPath, (uint)iconIndex, ref largeIcon.Handle, ref smallIcon.Handle, 0);
+                    Get(largeIcon, (c, s, i) => c.CacheIcon(key, s, i));
+                    Get(smallIcon, (c, s, i) => c.CacheIcon(key, s, i));
                     image = Get(key, size);
                 }
                 catch (Exception genericException)

@@ -32,8 +32,7 @@
 
     <ItemGroup>
         <CyberduckProjectReferences Include="@(CyberduckReference->HasMetadata('ProjectPath'))" Condition=" '$(BuildingInsideVisualStudio)'=='True' " />
-        <CyberduckLibraryReferences Include="@(CyberduckReference)" />
-        <CyberduckLibraryReferences Remove="@(CyberduckProjectReferences)" />
+        <CyberduckLibraryReferences Include="@(CyberduckReference)" Exclude="@(CyberduckProjectReferences)" />
 
         <ProjectReference Include="@(CyberduckProjectReferences->'%(ProjectPath)')">
             <Name>Cyberduck.%(Identity)</Name>

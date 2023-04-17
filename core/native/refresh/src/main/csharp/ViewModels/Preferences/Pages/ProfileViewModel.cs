@@ -2,7 +2,6 @@
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.profiles;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System.Linq;
 using System.Reactive;
 
@@ -10,6 +9,8 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
     public class ProfileViewModel : ReactiveObject
     {
+        private bool installed;
+
         public ProfileViewModel(ProfileDescription profile)
         {
             ProfileDescription = profile;
@@ -29,8 +30,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 
         public string Description => Profile.getDescription();
 
-        [Reactive]
-        public bool Installed { get; set; }
+        public bool Installed
+        {
+            get => installed;
+            set => this.RaiseAndSetIfChanged(ref installed, value);
+        }
 
         public string Name => Profile.getName();
 
