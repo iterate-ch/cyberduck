@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.random.NonceGenerator;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.logging.log4j.LogManager;
@@ -52,9 +53,13 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(null == status.getNonces()) {
-                status.setNonces(status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
+                final NonceGenerator nonces = status.getLength() == TransferStatus.UNKNOWN_LENGTH ?
                         new RandomNonceGenerator(vault.getNonceSize()) :
-                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength())));
+                        new RotatingNonceGenerator(vault.getNonceSize(), vault.numberOfChunks(status.getLength()));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Using %s", nonces));
+                }
+                status.setNonces(nonces);
             }
             final StatusOutputStream<Reply> cleartext = proxy.write(vault.encrypt(session, file),
                     new CryptoTransferStatus(vault, status), callback);
