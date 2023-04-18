@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import synapticloop.b2.Action;
 import synapticloop.b2.exception.B2ApiException;
@@ -133,8 +132,12 @@ public class B2ObjectListService implements ListService {
                 final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(),
                         PathNormalizer.name(StringUtils.chomp(info.getFileName(), String.valueOf(Path.DELIMITER))),
                         EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                // Need to check if only hidden files inside
-                if(this.list(placeholder, new DisabledListProgressListener()).toStream().filter(f -> !f.attributes().isDuplicate()).collect(Collectors.toList()).isEmpty()) {
+                // Read .bzEmpty
+                try {
+                    placeholder.withAttributes(attr.find(placeholder, new DisabledListProgressListener()));
+                }
+                catch(NotfoundException e) {
+                    // No placeholder object or hidden flag set
                     placeholder.attributes().setDuplicate(true);
                 }
                 objects.add(placeholder);

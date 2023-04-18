@@ -91,21 +91,16 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
             }
         }
         else {
-
             final String id = fileid.getVersionId(file);
+            B2FileResponse response;
             try {
-                return this.findFileInfo(file, id);
+                response = this.findFileInfo(file, id);
             }
             catch(NotfoundException e) {
                 // Try with reset cache after failure finding node id
-                return this.findFileInfo(file, fileid.getVersionId(file));
+                response = this.findFileInfo(file, fileid.getVersionId(file));
             }
-        }
-    }
-
-    private PathAttributes findFileInfo(final Path file, final String id) throws BackgroundException {
-        try {
-            final PathAttributes attr = this.toAttributes(session.getClient().getFileInfo(id));
+            final PathAttributes attr = this.toAttributes(response);
             if(attr.isDuplicate()) {
                 // Throw failure if latest version has hide marker set and lookup was without explicit version
                 if(StringUtils.isBlank(file.attributes().getVersionId())) {
@@ -116,6 +111,12 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
                 }
             }
             return attr;
+        }
+    }
+
+    private B2FileResponse findFileInfo(final Path file, final String id) throws BackgroundException {
+        try {
+            return session.getClient().getFileInfo(id);
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);
