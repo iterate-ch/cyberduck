@@ -1319,7 +1319,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
             ProtocolFactory p = ProtocolFactory.get();
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
+                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav, Protocol.Type.smb))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));

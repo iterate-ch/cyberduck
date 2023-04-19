@@ -21,6 +21,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+      - name: Disable Testcontainers for Windows an MacOS
+        run: echo "args=-P=no-testcontainers" >> "$GITHUB_ENV"
+        shell: bash
+        if: runner.os == 'Windows' || runner.os == 'macos'
       - run: choco install bonjour
         if: runner.os == 'Windows'
       - uses: ilammy/msvc-dev-cmd@v1
@@ -37,4 +41,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: mvn --no-transfer-progress verify -DskipITs -DskipSign --batch-mode -Drevision=0
+        run: mvn --no-transfer-progress verify -DskipITs -DskipSign ${{ env.args }} --batch-mode -Drevision=0
