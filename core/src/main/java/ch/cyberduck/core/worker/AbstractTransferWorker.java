@@ -537,6 +537,18 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
     @Override
     public String getActivity() {
+        switch(transfer.getType()) {
+            case download:
+                return LocaleFactory.localizedString("Download", "Transfer");
+            case upload:
+                return LocaleFactory.localizedString("Upload", "Transfer");
+            case sync:
+                return LocaleFactory.localizedString("Download and Upload", "Transfer");
+            case move:
+                return LocaleFactory.localizedString("Rename", "Transfer");
+            case copy:
+                return LocaleFactory.localizedString("Copy", "Transfer");
+        }
         return BookmarkNameProvider.toString(transfer.getSource());
     }
 
