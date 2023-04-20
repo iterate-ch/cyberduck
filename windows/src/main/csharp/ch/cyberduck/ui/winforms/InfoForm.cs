@@ -16,19 +16,20 @@
 // feedback@cyberduck.io
 // 
 
+using ch.cyberduck.core;
+using ch.cyberduck.core.cdn;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
+using Ch.Cyberduck.Core.Refresh.Views;
+using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
+using java.lang;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using ch.cyberduck.core.cdn;
-using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using java.lang;
-using String = System.String;
 using static Ch.Cyberduck.ImageHelper;
-using Ch.Cyberduck.Core.Refresh.Views;
+using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -42,13 +43,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             aclAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
             distributionAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
-            metadataAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
             permissionAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
             s3Animation.Image = Images.TryGet(_ => _.ThrobberSmall);
             sizeAnimation.Image = Images.TryGet(_ => _.ThrobberSmall);
 
             addAclButton.Image = Images.TryGet(_ => _.Advanced).Size(20);
-            addHeaderButton.Image = Images.TryGet(_ => _.Advanced).Size(20);
             generalButton.Image = Images.TryGet(_ => _.Info);
             metadataButton.Image = Images.TryGet(_ => _.Pencil);
             permissionsButton.Image = Images.TryGet(_ => _.Permissions);
@@ -71,7 +70,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ConfigureHelp();
             InitAclGrid();
-            InitMetadataGrid();
 
             panelManager.SelectedIndexChanged += (sender, args) => ActiveTabChanged();
 
@@ -97,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public override string[] BundleNames
         {
-            get { return new[] {"Info"}; }
+            get { return new[] { "Info" }; }
         }
 
         public event EventHandler<InfoHelpArgs> ShowHelp;
@@ -319,7 +317,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string LifecycleTransition
         {
-            get { return (string) lifecycleTransitionComboBox.SelectedValue; }
+            get { return (string)lifecycleTransitionComboBox.SelectedValue; }
             set { lifecycleTransitionComboBox.SelectedValue = value; }
         }
 
@@ -330,7 +328,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string LifecycleDelete
         {
-            get { return (string) lifecycleDeleteComboBox.SelectedValue; }
+            get { return (string)lifecycleDeleteComboBox.SelectedValue; }
             set { lifecycleDeleteComboBox.SelectedValue = value; }
         }
 
@@ -519,24 +517,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             aclDataGridView.BeginEdit(true);
         }
 
-        public void EditMetadataRow(InfoController.CustomHeaderEntry headerEntry, bool selectValue)
-        {
-            foreach (DataGridViewRow row in metadataDataGridView.Rows)
-            {
-                if (row.DataBoundItem == headerEntry)
-                {
-                    metadataDataGridView.CurrentCell = selectValue
-                        ? row.Cells[MetadataColumName.Value.ToString()]
-                        : row.Cells[MetadataColumName.Name.ToString()];
-                    break;
-                }
-            }
-            metadataDataGridView.BeginEdit(true);
-        }
-
         public Distribution.Method DistributionDeliveryMethod
         {
-            get { return (Distribution.Method) deliveryMethodComboBox.SelectedValue; }
+            get { return (Distribution.Method)deliveryMethodComboBox.SelectedValue; }
             set { deliveryMethodComboBox.SelectedValue = value; }
         }
 
@@ -562,7 +545,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string DistributionDefaultRoot
         {
-            get { return (String) defaultRootComboBox.SelectedValue; }
+            get { return (String)defaultRootComboBox.SelectedValue; }
             set { defaultRootComboBox.SelectedValue = value; }
         }
 
@@ -592,7 +575,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void PopulateAclRoles(IList<string> roles)
         {
-            ((DataGridViewComboBoxColumn) aclDataGridView.Columns[AclColumnName.Role.ToString()]).DataSource = roles;
+            ((DataGridViewComboBoxColumn)aclDataGridView.Columns[AclColumnName.Role.ToString()]).DataSource = roles;
         }
 
         public bool AclAnimationActive
@@ -789,7 +772,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Encryption
         {
-            get { return (string) encryptionComboBox.SelectedValue; }
+            get { return (string)encryptionComboBox.SelectedValue; }
             set { encryptionComboBox.SelectedValue = value; }
         }
 
@@ -801,7 +784,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string StorageClass
         {
-            get { return (string) storageClassComboBox.SelectedValue; }
+            get { return (string)storageClassComboBox.SelectedValue; }
             set { storageClassComboBox.SelectedValue = value; }
         }
 
@@ -892,93 +875,21 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler LifecycleDeletePopupChanged = delegate { };
         public event VoidHandler ActiveTabChanged = delegate { };
 
-        public bool MetadataTableEnabled
-        {
-            set { metadataDataGridView.Enabled = value; }
-        }
-
-        public bool MetadataAddEnabled
-        {
-            set { addHeaderButton.Enabled = value; }
-        }
-
-        public bool MetadataRemoveEnabled
-        {
-            set { addMetadataContextMenuStrip.Items[addMetadataContextMenuStrip.Items.Count - 1].Enabled = value; }
-        }
-
-        public bool MetadataAnimationActive
-        {
-            set { metadataAnimation.Visible = value; }
-        }
-
-        public BindingList<InfoController.CustomHeaderEntry> MetadataDataSource
-        {
-            set { metadataDataGridView.DataSource = value; }
-        }
-
-        public void PopulateMetadata(IDictionary<string, AsyncController.SyncDelegate> metadata)
-        {
-            addMetadataContextMenuStrip.Items.Clear();
-            ToolStripItem[] items = new ToolStripItem[metadata.Count + 2];
-
-            int i = 0;
-            foreach (KeyValuePair<string, AsyncController.SyncDelegate> header in metadata)
-            {
-                ToolStripMenuItem item = new ToolStripMenuItem(header.Key);
-                KeyValuePair<string, AsyncController.SyncDelegate> header1 = header;
-                item.Click += delegate { header1.Value(); };
-                items[i] = item;
-                i++;
-
-                if (1 == i || (metadata.Count) == i)
-                {
-                    items[i++] = new ToolStripSeparator();
-                }
-            }
-            addMetadataContextMenuStrip.Items.AddRange(items);
-        }
-
-        public List<InfoController.CustomHeaderEntry> SelectedMetadataEntries
-        {
-            get
-            {
-                List<InfoController.CustomHeaderEntry> selected = new List<InfoController.CustomHeaderEntry>();
-                DataGridViewSelectedRowCollection rows = metadataDataGridView.SelectedRows;
-                foreach (DataGridViewRow row in rows)
-                {
-                    selected.Add((InfoController.CustomHeaderEntry) row.DataBoundItem);
-                }
-                return selected;
-            }
-        }
-
         public VersionsInfoTab Versions => versionsInfoTab;
 
-        public event VoidHandler DistributionDefaultRootChanged = delegate { };
-
-        private void InitMetadataGrid()
+        public MetadataViewModel MetadataViewModel
         {
-            metadataDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            metadataDataGridView.MultiSelect = true;
-            metadataDataGridView.RowHeadersVisible = false;
-            metadataDataGridView.AutoGenerateColumns = false;
-            metadataDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            metadataDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
-
-            DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
-            nameColumn.HeaderText = "Name";
-            nameColumn.DataPropertyName = MetadataColumName.Name.ToString();
-            nameColumn.Name = MetadataColumName.Name.ToString();
-
-            DataGridViewTextBoxColumn valueColumn = new DataGridViewTextBoxColumn();
-            valueColumn.DataPropertyName = MetadataColumName.Value.ToString();
-            valueColumn.HeaderText = "Value";
-            valueColumn.Name = MetadataColumName.Value.ToString();
-
-            metadataDataGridView.Columns.Add(nameColumn);
-            metadataDataGridView.Columns.Add(valueColumn);
+            get => metadataInfoTab?.ViewModel;
+            set
+            {
+                if(metadataInfoTab is not null)
+                {
+                    metadataInfoTab.ViewModel = value;
+                }
+            }
         }
+
+        public event VoidHandler DistributionDefaultRootChanged = delegate { };
 
         private void HandleHelpRequest()
         {
@@ -1020,7 +931,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             aclDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             aclDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
-            aclDataGridView.CellFormatting += delegate(object sender, DataGridViewCellFormattingEventArgs args)
+            aclDataGridView.CellFormatting += delegate (object sender, DataGridViewCellFormattingEventArgs args)
             {
                 if (null != aclDataGridView.DataSource)
                 {
@@ -1031,7 +942,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     if (String.IsNullOrEmpty(args.Value as String))
                     {
                         args.Value =
-                            ((InfoController.UserAndRoleEntry) aclDataGridView.Rows[args.RowIndex].DataBoundItem)
+                            ((InfoController.UserAndRoleEntry)aclDataGridView.Rows[args.RowIndex].DataBoundItem)
                                 .getUser().getPlaceholder();
                         args.CellStyle.ForeColor = Color.Gray;
                         args.CellStyle.Font = new Font(args.CellStyle.Font, FontStyle.Italic);
@@ -1041,7 +952,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
 
             //make combobox directly editable without multiple clicks
-            aclDataGridView.CellClick += delegate(object o, DataGridViewCellEventArgs a)
+            aclDataGridView.CellClick += delegate (object o, DataGridViewCellEventArgs a)
             {
                 if (a.RowIndex < 0)
                 {
@@ -1053,16 +964,16 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
 
                 aclDataGridView.BeginEdit(true);
-                ComboBox comboBox = (ComboBox) aclDataGridView.EditingControl;
+                ComboBox comboBox = (ComboBox)aclDataGridView.EditingControl;
                 comboBox.DroppedDown = true;
             };
 
-            aclDataGridView.CellBeginEdit += delegate(object sender, DataGridViewCellCancelEventArgs args)
+            aclDataGridView.CellBeginEdit += delegate (object sender, DataGridViewCellCancelEventArgs args)
             {
                 if (args.ColumnIndex == 0)
                 {
                     args.Cancel =
-                        !((InfoController.UserAndRoleEntry) aclDataGridView.Rows[args.RowIndex].DataBoundItem).getUser()
+                        !((InfoController.UserAndRoleEntry)aclDataGridView.Rows[args.RowIndex].DataBoundItem).getUser()
                             .isEditable();
                 }
                 if (args.ColumnIndex == 1)
@@ -1276,12 +1187,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             addAclContextMenuStrip.Items[addAclContextMenuStrip.Items.Count - 1].Enabled =
                 aclDataGridView.SelectedRows.Count > 0;
-        }
-
-        private void addMetadataContextMenuStrip_Opening(object sender, CancelEventArgs e)
-        {
-            addMetadataContextMenuStrip.Items[addMetadataContextMenuStrip.Items.Count - 1].Enabled =
-                metadataDataGridView.SelectedRows.Count > 0;
         }
 
         private void distributionCnameTextBox_Validated(object sender, EventArgs e)

@@ -18,6 +18,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>11</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -33,6 +33,7 @@ using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Refresh;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
+using Ch.Cyberduck.Core.Refresh.Views;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
@@ -70,7 +71,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private IList<Path> _files;
         private IList<KeyValuePair<string, string>> _lifecycleDeletePeriods;
         private IList<KeyValuePair<string, string>> _lifecycleTransitionPeriods;
-        private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
         private PermissionOverwrite permissions = new PermissionOverwrite();
 
         private InfoController(BrowserController controller, IList<Path> files)
@@ -197,16 +197,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _controller.Reload(_controller.Workdir, files, new List<Path>());
         }
 
-        private Map ConvertMetadataToMap()
-        {
-            TreeMap map = new TreeMap();
-            foreach (CustomHeaderEntry header in _metadata)
-            {
-                map.Add(header.Name, header.ActualValue);
-            }
-            return map;
-        }
-
         private void ConfigureToolbar()
         {
             SessionPool session = _controller.Session;
@@ -271,7 +261,18 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarMetadataEnabled = session.getFeature(typeof(Metadata)) != null;
+                var feature = (Metadata)session.getFeature(typeof(Metadata));
+                bool metadataAvailable = feature != null;
+                if (metadataAvailable && View.MetadataViewModel is not MetadataViewModel viewModel)
+                {
+                    View.MetadataViewModel = viewModel = new(feature, _controller, _controller.Session);
+                    viewModel.Recurse.RegisterHandler(c =>
+                    {
+                        DialogRecursiveCallback dialog = new(this);
+                        c.SetOutput(dialog.recurse(c.Input.Directory, c.Input.Value));
+                    });
+                }
+                View.ToolbarMetadataEnabled = metadataAvailable;
             }
         }
 
@@ -280,66 +281,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void InitMetadata()
         {
-            SetMetadata(new List<CustomHeaderEntry>());
-            if (ToggleMetadataSettings(false))
+            if(View.MetadataViewModel is MetadataViewModel viewModel)
             {
-                PopulateMetadata();
-                _controller.Background(new ReadMetadataBackgroundAction(_controller, this));
+                viewModel.Paths = Files;
+                viewModel.Load.Execute().Subscribe();
             }
-        }
-
-        /// <summary>
-        /// Toggle settings before and after update
-        /// </summary>
-        /// <param name="stop">Enable controls and stop progress spinner</param>
-        /// <returns>True if progress animation has started and settings are toggled</returns>
-        private bool ToggleMetadataSettings(bool stop)
-        {
-            SessionPool session = _controller.Session;
-            Credentials credentials = session.getHost().getCredentials();
-            bool enable = !credentials.isAnonymousLogin() && session.getFeature(typeof(Metadata)) != null;
-            View.MetadataTableEnabled = stop && enable;
-            View.MetadataAddEnabled = stop && enable;
-            bool selection = View.SelectedMetadataEntries.Count > 0;
-            View.MetadataRemoveEnabled = stop && enable && selection;
-            if (stop)
-            {
-                View.MetadataAnimationActive = false;
-            }
-            else if (enable)
-            {
-                View.MetadataAnimationActive = true;
-            }
-            return enable;
-        }
-
-        private void SetMetadata(IList<CustomHeaderEntry> metadata)
-        {
-            _metadata = new BindingList<CustomHeaderEntry>(metadata);
-            View.MetadataDataSource = _metadata;
-            _metadata.ListChanged += delegate (object sender, ListChangedEventArgs args)
-            {
-                switch (args.ListChangedType)
-                {
-                    case ListChangedType.ItemDeleted:
-                        if (ToggleMetadataSettings(false))
-                        {
-                            Background(new WriteMetadataBackgroundAction(_controller, this));
-                        }
-                        break;
-
-                    case ListChangedType.ItemChanged:
-                        if (args.NewIndex < _metadata.Count && Utils.IsNotBlank(_metadata[args.NewIndex].Name) &&
-                            Utils.IsNotBlank(_metadata[args.NewIndex].ActualValue))
-                        {
-                            if (ToggleMetadataSettings(false))
-                            {
-                                Background(new WriteMetadataBackgroundAction(_controller, this));
-                            }
-                        }
-                        break;
-                }
-            };
         }
 
         private void AddAclEntry(Acl.User user, Acl.Role role)
@@ -348,62 +294,6 @@ namespace Ch.Cyberduck.Ui.Controller
             UserAndRoleEntry entry = new UserAndRoleEntry(user, role);
             _acl.Add(entry);
             View.EditAclRow(entry, !user.isEditable());
-        }
-
-        /// <summary>
-        /// Add new metadata row and selects the name column
-        /// </summary>
-        private void AddMetadataItem(string name)
-        {
-            AddMetadataItem(name, string.Empty, false);
-        }
-
-        /// <summary>
-        /// Add new metadata row and selects the name column
-        /// </summary>
-        private void AddMetadataItem(string name, string value)
-        {
-            AddMetadataItem(name, value, true);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="name">HTTP header name</param>
-        /// <param name="value">HTTP header value</param>
-        /// <param name="selectValue">Select the value field or the name header field</param>
-        private void AddMetadataItem(string name, string value, bool selectValue)
-        {
-            Log.debug("AddMetadataItem:" + name);
-            CustomHeaderEntry newHeaderEntry = new CustomHeaderEntry(name, value);
-            _metadata.Add(newHeaderEntry);
-            View.EditMetadataRow(newHeaderEntry, selectValue);
-        }
-
-        private void PopulateMetadata()
-        {
-            IDictionary<string, SyncDelegate> metadata = new Dictionary<string, SyncDelegate>();
-            metadata.Add(LocaleFactory.localizedString("Custom Header"),
-                () => AddMetadataItem(LocaleFactory.localizedString("Unknown")));
-            metadata.Add("Content-Disposition", () => AddMetadataItem("Content-Disposition", "attachment", true));
-            metadata.Add(LocaleFactory.localizedString("Cache-Control"),
-                () =>
-                    AddMetadataItem("Cache-Control",
-                        "public,max-age=" + PreferencesFactory.get().getInteger("s3.cache.seconds")));
-            metadata.Add(LocaleFactory.localizedString("Expires"), delegate
-            {
-                DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
-                DateTime expires = DateTime.Now.AddSeconds(PreferencesFactory.get().getInteger("s3.cache.seconds"));
-                AddMetadataItem("Expires", expires.ToString("r", format)); // RFC1123 format
-            });
-            metadata.Add("Pragma", () => AddMetadataItem("Pragma", String.Empty, true));
-            metadata.Add("Content-Type", () => AddMetadataItem("Content-Type", String.Empty, true));
-            metadata.Add("x-amz-website-redirect-location",
-                () => AddMetadataItem("x-amz-website-redirect-location", String.Empty, true));
-
-            metadata.Add(LocaleFactory.localizedString("Remove"), RemoveMetadata);
-
-            View.PopulateMetadata(metadata);
         }
 
         private void PopulateLifecycleTransitionPeriod()
@@ -432,15 +322,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                     item.ToString()), item.ToString()));
             }
             View.PopulateLifecycleDeletePeriod(_lifecycleDeletePeriods);
-        }
-
-        private void RemoveMetadata()
-        {
-            List<CustomHeaderEntry> entries = View.SelectedMetadataEntries;
-            foreach (CustomHeaderEntry entry in entries)
-            {
-                _metadata.Remove(entry);
-            }
         }
 
         private void ConfigureHelp()
@@ -1921,45 +1802,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class ReadMetadataBackgroundAction : WorkerBackgroundAction
-        {
-            public ReadMetadataBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(
-                    controller, controller.Session,
-                    new InnerReadMetadataWorker(controller, infoController,
-                        Utils.ConvertToJavaList(infoController._files)))
-            {
-            }
-
-            private class InnerReadMetadataWorker : ReadMetadataWorker
-            {
-                private readonly InfoController _infoController;
-
-                public InnerReadMetadataWorker(BrowserController browserController, InfoController infoController,
-                    List files) : base(files)
-                {
-                    _infoController = infoController;
-                }
-
-                public override void cleanup(object obj)
-                {
-                    Map updated = (Map)obj;
-                    Iterator it = updated.entrySet().iterator();
-                    IList<CustomHeaderEntry> metadata = new List<CustomHeaderEntry>();
-                    if (updated != null)
-                    {
-                        while (it.hasNext())
-                        {
-                            Map.Entry pair = (Map.Entry)it.next();
-                            metadata.Add(new CustomHeaderEntry((string)pair.getKey(), (string)pair.getValue()));
-                        }
-                    }
-                    _infoController.ToggleMetadataSettings(true);
-                    _infoController.SetMetadata(metadata);
-                }
-            }
-        }
-
         private class ReadSizeBackgroundAction : WorkerBackgroundAction
         {
             public ReadSizeBackgroundAction(BrowserController browserController, InfoController infoController)
@@ -2281,34 +2123,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     // Refresh the current distribution status
                     _infoController.DistributionDeliveryMethodChanged();
-                }
-            }
-        }
-
-        private class WriteMetadataBackgroundAction : WorkerBackgroundAction
-        {
-            public WriteMetadataBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(
-                    controller, controller.Session,
-                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                        infoController.ConvertMetadataToMap()))
-            {
-            }
-
-            private class InnerWriteMetadataWorker : WriteMetadataWorker
-            {
-                private readonly InfoController _infoController;
-
-                public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata, new DialogRecursiveCallback(infoController), infoController._controller)
-                {
-                    _infoController = infoController;
-                }
-
-                public override void cleanup(object obj)
-                {
-                    _infoController.ToggleMetadataSettings(true);
-                    _infoController.InitMetadata();
                 }
             }
         }
