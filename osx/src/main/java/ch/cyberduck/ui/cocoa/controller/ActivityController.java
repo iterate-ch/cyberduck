@@ -46,11 +46,18 @@ import java.util.Map;
 public final class ActivityController extends WindowController {
     private static final Logger log = LogManager.getLogger(ActivityController.class);
 
-    private final BackgroundActionRegistry registry
-        = BackgroundActionRegistry.global();
+    private final BackgroundActionRegistry registry;
 
     private final Map<BackgroundAction, TaskController> tasks
-        = Collections.synchronizedMap(new LinkedHashMap<BackgroundAction, TaskController>());
+            = Collections.synchronizedMap(new LinkedHashMap<>());
+
+    public ActivityController() {
+        this(BackgroundActionRegistry.global());
+    }
+
+    public ActivityController(final BackgroundActionRegistry registry) {
+        this.registry = registry;
+    }
 
     @Override
     public void awakeFromNib() {
@@ -59,7 +66,7 @@ public final class ActivityController extends WindowController {
         registry.addListener(backgroundActionListener);
         // Add already running background actions
         final BackgroundAction[] actions = registry.toArray(
-            new BackgroundAction[registry.size()]);
+                new BackgroundAction[registry.size()]);
         for(final BackgroundAction action : actions) {
             tasks.put(action, new TaskController(action));
         }
