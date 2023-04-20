@@ -30,6 +30,7 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,10 +103,15 @@ public final class ActivityController extends WindowController {
      *
      */
     private void reload() {
-        while(table.subviews().count().intValue() > 0) {
-            (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
-        }
-        table.reloadData();
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                while(table.subviews().count().intValue() > 0) {
+                    (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
+                }
+                table.reloadData();
+            }
+        });
     }
 
     @Override
