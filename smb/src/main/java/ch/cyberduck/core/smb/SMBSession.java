@@ -17,26 +17,44 @@ package ch.cyberduck.core.smb;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import com.hierynomus.smbj.SmbConfig;
-import com.hierynomus.smbj.auth.AuthenticationContext;
-import com.hierynomus.smbj.connection.Connection;
-import com.hierynomus.smbj.connection.PacketEncryptor;
-import com.hierynomus.smbj.connection.PacketSignatory;
-import com.hierynomus.smbj.event.SMBEventBus;
-import com.hierynomus.smbj.paths.PathResolver;
-import com.hierynomus.smbj.session.Session;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 
+import com.hierynomus.smbj.SMBClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SMBSession extends Session {
-
-    public SMBSession(Connection connection, SmbConfig config, AuthenticationContext userCredentials, SMBEventBus bus,
-            PathResolver pathResolver, PacketSignatory signatory, PacketEncryptor encryptor) {
-        super(connection, config, userCredentials, bus, pathResolver, signatory, encryptor);
+public class SMBSession extends Session<SMBClient> {
+    
+    protected SMBSession(Host h) {
+        super(h);
     }
 
     private static final Logger log = LogManager.getLogger(SMBSession.class);
+
+    @Override
+    protected SMBClient connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt, CancelCallback cancel)
+            throws BackgroundException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'connect'");
+    }
+
+    @Override
+    public void login(Proxy proxy, LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'login'");
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'logout'");
+    }
 
     // TODO implement methods or remove class
 }
