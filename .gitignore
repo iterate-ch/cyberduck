@@ -56,4 +56,11 @@ Thumbs.db
 *.DotSettings.user
 obj/
 
+# FHNW IP5 SMB #
+################
+# Remove these before before merge
+.vscode
+FodyWeavers.xml
+FodyWeavers.xsd
+
 packages/
