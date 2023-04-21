@@ -119,4 +119,15 @@ public class DefaultTemporaryFileServiceTest {
         assertEquals("f2", local.getParent().getParent().getName());
         assertEquals("f1", local.getParent().getParent().getParent().getName());
     }
+
+    @Test
+    public void testTemporaryPathCustomPrefix() {
+        final Path file = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
+        file.attributes().setDuplicate(true);
+        file.attributes().setVersionId("1");
+        final Local local = new DefaultTemporaryFileService().create("u", file);
+        assertTrue(local.getParent().exists());
+        assertEquals("t.txt", file.getName());
+        assertEquals("t.txt", local.getName());
+    }
 }
