@@ -17,31 +17,26 @@ package ch.cyberduck.core.smb;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesReader;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.Session;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
+import com.hierynomus.smbj.SmbConfig;
+import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.connection.Connection;
+import com.hierynomus.smbj.connection.PacketEncryptor;
+import com.hierynomus.smbj.connection.PacketSignatory;
+import com.hierynomus.smbj.event.SMBEventBus;
+import com.hierynomus.smbj.paths.PathResolver;
+import com.hierynomus.smbj.session.Session;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SMBSession extends Session<SMBClient> {
+public class SMBSession extends Session {
+
+    public SMBSession(Connection connection, SmbConfig config, AuthenticationContext userCredentials, SMBEventBus bus,
+            PathResolver pathResolver, PacketSignatory signatory, PacketEncryptor encryptor) {
+        super(connection, config, userCredentials, bus, pathResolver, signatory, encryptor);
+    }
+
     private static final Logger log = LogManager.getLogger(SMBSession.class);
 
-    private final PreferencesReader preferences
-            = new HostPreferences(host);
-
-    public SMBSession(final Host h) {
-        this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-    }
-
-    public SMBSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
-        super(h, trust, key);
-    }
-
-    // TODO implement superclass methods
+    // TODO implement methods or remove class
 }
