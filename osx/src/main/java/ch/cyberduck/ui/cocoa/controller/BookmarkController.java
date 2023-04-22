@@ -154,7 +154,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     private void loadProtocols() {
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+        for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav, Protocol.Type.smb)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
