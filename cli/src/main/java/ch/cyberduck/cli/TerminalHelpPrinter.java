@@ -65,7 +65,7 @@ public final class TerminalHelpPrinter {
             append(p, builder);
         }
         builder.append(StringUtils.LF);
-        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))) {
+        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick, Protocol.Type.smb)))) {
             append(p, builder);
         }
         builder.append("Local Disk");
