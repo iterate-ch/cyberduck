@@ -160,7 +160,8 @@ public class Terminal {
                 new NextcloudProtocol(),
                 new OwncloudProtocol(),
                 new CteraProtocol(),
-                new BoxProtocol()
+                new BoxProtocol(),
+                new SMBProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {

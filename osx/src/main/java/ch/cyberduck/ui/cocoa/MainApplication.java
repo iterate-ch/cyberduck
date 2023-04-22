@@ -109,7 +109,8 @@ public final class MainApplication {
                     new NextcloudProtocol(),
                     new OwncloudProtocol(),
                     new CteraProtocol(),
-                    new BoxProtocol()
+                    new BoxProtocol(),
+                    new SMBProtocol()
             );
             protocols.load();
             final MainController c = new MainController();

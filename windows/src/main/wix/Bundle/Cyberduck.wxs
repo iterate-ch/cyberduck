@@ -361,6 +361,9 @@
       <Component Id="nextcloud.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Nextcloud.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="smb.cyberduckprofile">
+        <File Source="$(var.cyberduck.TargetDir)/profiles/SMB.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="owncloud.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/ownCloud.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
