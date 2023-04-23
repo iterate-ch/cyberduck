@@ -308,6 +308,7 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         googledrive,
         swift,
         dav,
+        smb,
         azure,
         onedrive,
         irods,
@@ -323,7 +324,6 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         freenet,
         ctera,
         box,
-        smb
     }
 
     enum Case {
