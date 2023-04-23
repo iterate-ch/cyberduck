@@ -17,22 +17,35 @@ package ch.cyberduck.core.smb;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
-import com.hierynomus.smbj.SMBClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SMBSession extends Session<SMBClient> {
-    
-    protected SMBSession(Host h) {
+import java.io.IOException;
+
+import com.hierynomus.smbj.SMBClient;
+import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.connection.Connection;
+import com.hierynomus.smbj.session.Session;
+import com.hierynomus.smbj.share.DiskShare;
+
+public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
+
+    private SMBClient client;
+    private Connection connection;
+    private DiskShare share;
+
+    public SMBSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h);
+        client = new SMBClient();
     }
 
     private static final Logger log = LogManager.getLogger(SMBSession.class);
@@ -40,8 +53,20 @@ public class SMBSession extends Session<SMBClient> {
     @Override
     protected SMBClient connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'connect'");
+        try (Connection connection = client.connect(getHost().getHostname())) {
+            this.connection = connection;
+            AuthenticationContext ac = new AuthenticationContext(host.getCredentials().getUsername(), host.getCredentials().getPassword().toCharArray(), "EDU");
+            Session session = connection.authenticate(ac);
+
+            // Connect to Share
+            try (DiskShare share = (DiskShare) session.connectShare("data")) {
+                this.share = share;
+            }
+        }
+        catch(IOException e) {
+            throw new RuntimeException(e);
+        }
+        return client;
     }
 
     @Override
@@ -56,5 +81,9 @@ public class SMBSession extends Session<SMBClient> {
         throw new UnsupportedOperationException("Unimplemented method 'logout'");
     }
 
-    // TODO implement methods or remove class
+    @Override
+    public boolean isConnected() {
+        return connection != null && connection.isConnected();
+    }
+
 }
