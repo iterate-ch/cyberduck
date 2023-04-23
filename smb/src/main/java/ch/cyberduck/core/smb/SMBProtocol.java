@@ -57,6 +57,11 @@ public class SMBProtocol extends AbstractProtocol {
     }
 
     @Override
+    public String disk() {
+        return String.format("%s.tiff", "ftp");
+    }
+
+    @Override
     public boolean isUTCTimezone() {
         return false;
     }
