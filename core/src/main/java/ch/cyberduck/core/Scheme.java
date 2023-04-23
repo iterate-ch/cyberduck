@@ -110,6 +110,17 @@ public enum Scheme {
             return 443;
         }
     },
+    smb {
+        @Override
+        public boolean isSecure() {
+            return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 445;
+        }
+    },
     s3 {
         @Override
         public boolean isSecure() {
@@ -174,17 +185,6 @@ public enum Scheme {
         @Override
         public int getPort() {
             return 0;
-        }
-    },
-    smb {
-        @Override
-        public boolean isSecure() {
-            return true;
-        }
-
-        @Override
-        public int getPort() {
-            return 445;
         }
     };
 

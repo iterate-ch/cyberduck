@@ -1319,7 +1319,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
             ProtocolFactory p = ProtocolFactory.get();
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav))).toArray(new Protocol[] { }))
+                EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav, Protocol.Type.smb))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
@@ -1332,7 +1332,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     protocol.disk()));
             }
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.box, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick, Protocol.Type.smb)))
+                    EnumSet.of(Protocol.Type.dropbox, Protocol.Type.box, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud, Protocol.Type.owncloud, Protocol.Type.dracoon, Protocol.Type.brick)))
                 .toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),

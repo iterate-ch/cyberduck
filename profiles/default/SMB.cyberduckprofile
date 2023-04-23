@@ -24,7 +24,7 @@
         <key>Bundled</key>
         <true/>
         <key>Description</key>
-        <string>SMB</string>
+        <string>SMB (Server Message Block)</string>
         <key>Path Configurable</key>
         <true/>
         <key>Hostname Configurable</key>
