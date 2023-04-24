@@ -22,8 +22,8 @@ namespace Ch.Cyberduck.Ui
             bool newInstance;
             Mutex mutex = new Mutex(true, "iterate/cyberduck.io", out newInstance);
 
-            var preferences = new ApplicationPreferences();
-            PreferencesFactory.set(preferences);
+            StructureMapBootstrapper.Bootstrap();
+            PreferencesFactory.set(ObjectFactory.GetInstance<Preferences>());
             var argsTask = Task.Run(async () =>
             {
                 using (var channel = new ChannelFactory<ICyberduck>(new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost/iterate/cyberduck.io")))
@@ -97,7 +97,6 @@ namespace Ch.Cyberduck.Ui
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                StructureMapBootstrapper.Bootstrap();
                 Application.Run(ObjectFactory.GetInstance<MainController>());
             }
             else

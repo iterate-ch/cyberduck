@@ -18,7 +18,6 @@
 
 using ch.cyberduck.cli;
 using ch.cyberduck.core.cryptomator;
-using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
@@ -33,7 +32,7 @@ namespace Ch.Cyberduck.Cli
 {
     internal class WindowsTerminalPreferences : TerminalPreferences
     {
-        public WindowsTerminalPreferences() : base(new AppConfigPreferences(new WindowsTerminalLocales()))
+        public WindowsTerminalPreferences() : base(new ApplicationPreferences(new WindowsTerminalLocales(), TerminalRuntime.Create()))
         {
         }
 
@@ -43,12 +42,13 @@ namespace Ch.Cyberduck.Cli
             save();
         }
 
+        public override string locale() => "en";
+
         protected override void setDefaults()
         {
             base.setDefaults();
 
             this.setDefault("application.language", "en");
-            this.setDefault("application.datafolder.name", "Cyberduck");
 
             Security.addProvider(new SunMSCAPI());
             this.setDefault("connection.ssl.keystore.type", "Windows-MY");

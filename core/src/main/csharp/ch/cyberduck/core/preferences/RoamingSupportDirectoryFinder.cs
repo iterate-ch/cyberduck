@@ -16,20 +16,32 @@
 // feedback@cyberduck.io
 //
 
-using System;
-using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core.Local;
+using Windows.Storage;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Preferences
 {
+    using Local = ch.cyberduck.core.Local;
+
     public class RoamingSupportDirectoryFinder : SupportDirectoryFinder
     {
-        public ch.cyberduck.core.Local find()
+        private static SystemLocal local;
+
+        public static SystemLocal Local
         {
-            return
-                LocalFactory.get(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    PreferencesFactory.get().getProperty("application.datafolder.name")));
+            get
+            {
+                return local ??= new(Runtime.Packaged.GetValueOrDefault()
+                    ? ApplicationData.Current.LocalFolder.Path
+                    : Path.Combine(EnvironmentInfo.AppDataPath, Runtime.DataFolderName));
+            }
+        }
+
+        public Local find()
+        {
+            return new SystemLocal(Local);
         }
     }
 }

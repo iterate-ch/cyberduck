@@ -20,13 +20,12 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.profiles;
-using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Preferences;
 using Ch.Cyberduck.Core.Refresh;
 using Ch.Cyberduck.Core.Refresh.Services;
 using Ch.Cyberduck.Core.Refresh.UserControls;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Core.Contracts;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ReactiveUI;
@@ -37,9 +36,13 @@ using StructureMap.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CoreRuntime = Ch.Cyberduck.Core.Preferences.Runtime;
 
 namespace Ch.Cyberduck.Ui
 {
+    using ApplicationPreferences = Core.Preferences.ApplicationPreferences;
+    using Runtime = Core.Runtime;
+
     public static class StructureMapBootstrapper
     {
         public static void Bootstrap()
@@ -49,7 +52,6 @@ namespace Ch.Cyberduck.Ui
                 x.ForConcreteType<BaseController>();
                 x.Forward<BaseController, ch.cyberduck.core.Controller>();
 
-                x.For<Preferences>().Use(PreferencesFactory.get);
                 x.For<ProtocolFactory>().Use(ProtocolFactory.get);
                 x.For<Locale>().Use(LocaleFactory.get);
 
@@ -88,6 +90,10 @@ namespace Ch.Cyberduck.Ui
 
                 // Singletons
                 x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
+                x.ForConcreteSingleton<ApplicationPreferences>();
+
+                x.Forward<ApplicationPreferences, Preferences>();
+                x.For<IRuntime>().Singleton().Use(() => new Runtime(CoreRuntime.CreateDefault()));
             });
         }
 
