@@ -56,10 +56,10 @@ namespace Ch.Cyberduck.Core.CredentialManager
         /// </summary>
         /// <param name="target">Name of the application/Url where the credential is used for</param>
         /// <returns>empty credentials if target not found, else stored credentials</returns>
-        public static unsafe WindowsCredentialManagerCredential GetCredentials(string target)
+        public unsafe static WindowsCredentialManagerCredential GetCredentials(string target)
         {
-            using CredHandle handle = new();
-            if (!CredRead(target, CRED_TYPE_GENERIC, 0, out handle.Handle))
+            using CredHandle handle = CredRead(target, CRED_TYPE_GENERIC, 0);
+            if (!handle)
             {
                 if (log.isDebugEnabled())
                 {
@@ -69,7 +69,7 @@ namespace Ch.Cyberduck.Core.CredentialManager
                 return default;
             }
 
-            ref CREDENTIALW cred = ref handle.Value;
+            ref readonly CREDENTIALW cred = ref handle.Value;
             var type = cred.Type;
             var flags = cred.Flags;
             var persist = cred.Persist;

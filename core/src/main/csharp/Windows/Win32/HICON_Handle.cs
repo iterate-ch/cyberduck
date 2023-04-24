@@ -1,6 +1,4 @@
-﻿using static InlineIL.FieldRef;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
+﻿using System.Diagnostics.CodeAnalysis;
 using static Windows.Win32.CorePInvoke;
 
 namespace Windows.Win32.UI.WindowsAndMessaging
@@ -9,39 +7,21 @@ namespace Windows.Win32.UI.WindowsAndMessaging
     {
         private HICON ptr;
 
-        public HICON Ref
+        public HICON_Handle(in HICON handle)
         {
-            get
-            {
-                // C# doesn't allow return ref ptr.
-                // IL doesn't have a problem with it.
-                Ldarg_0();
-                Ldflda(Field(typeof(HICON_Handle), nameof(ptr)));
-                Ret();
-                throw Unreachable();
-            }
+            ptr = handle;
         }
 
-        public ref HICON Value
-        {
-            get
-            {
-                // C# doesn't allow return ref ptr.
-                // IL doesn't have a problem with it.
-                Ldarg_0();
-                Ldflda(Field(typeof(HICON_Handle), nameof(ptr)));
-                Ret(); // return ref *(HICON*)&ptr;
-                throw Unreachable();
-            }
-        }
+        [UnscopedRef]
+        public ref HICON Handle => ref ptr;
 
-        public static implicit operator bool(in HICON_Handle @this) => @this.ptr != null;
+        public static implicit operator bool(in HICON_Handle @this) => !@this.ptr.IsNull;
 
-        public static implicit operator HICON_Handle(in HICON hicon) => new() { ptr = hicon };
+        public static implicit operator nint(in HICON_Handle @this) => @this.ptr;
 
         public void Dispose()
         {
-            if (ptr != null)
+            if (!ptr.IsNull)
             {
                 DestroyIcon(ptr);
                 ptr = default;
