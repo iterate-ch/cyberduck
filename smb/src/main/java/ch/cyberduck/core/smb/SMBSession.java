@@ -53,13 +53,27 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
     @Override
     protected SMBClient connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException {
-        try (Connection connection = client.connect(getHost().getHostname())) {
+        
+        String domain, username, shareString;
+        String[] parts = host.getCredentials().getUsername().split("/", 0);
+        String domainUsername = parts[0];
+        shareString = parts[1];
+        parts = domainUsername.split("@", 0);
+        if (parts.length == 1) {
+            domain = "WORKGROUP";
+            username = parts[0];
+        } else {
+            domain = parts[0];
+            username = parts[1];
+        }
+
+        try (Connection connection = client.connect(getHost().getHostname(), getHost().getPort())) {
             this.connection = connection;
-            AuthenticationContext ac = new AuthenticationContext(host.getCredentials().getUsername(), host.getCredentials().getPassword().toCharArray(), "EDU");
+            AuthenticationContext ac = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
             Session session = connection.authenticate(ac);
 
             // Connect to Share
-            try (DiskShare share = (DiskShare) session.connectShare("data")) {
+            try (DiskShare share = (DiskShare) session.connectShare(shareString)) {
                 this.share = share;
             }
         }
