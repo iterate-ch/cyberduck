@@ -29,8 +29,12 @@
         <true/>
         <key>Hostname Configurable</key>
         <true/>
+        <key>Hostname Placeholder</key>
+        <string>hostname</string>
         <key>Username Configurable</key>
         <true/>
+        <key>Username Placeholder</key>
+        <string>username@domain/server</string>
         <key>Password Configurable</key>
         <true/>
         <key>Anonymous Configurable</key>
