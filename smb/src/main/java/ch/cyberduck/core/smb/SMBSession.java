@@ -19,6 +19,7 @@ package ch.cyberduck.core.smb;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.Proxy;
@@ -138,6 +139,16 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
     @Override
     public boolean isConnected() {
         return connection != null && connection.isConnected();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new SMBListService(this);
+        }
+
+        return super._getFeature(type);
     }
 
 }
