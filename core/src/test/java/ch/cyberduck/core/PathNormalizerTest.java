@@ -149,9 +149,16 @@ public class PathNormalizerTest {
     }
 
     @Test
+    public void testStartingWithHome() {
+        final Path home = PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), String.format("%smyfolder/sub", Path.HOME));
+        assertEquals(new Path(String.format("/%smyfolder/sub", Path.HOME), EnumSet.of(Path.Type.directory)), home);
+        assertEquals(new Path(String.format("/%smyfolder", Path.HOME), EnumSet.of(Path.Type.directory)), home.getParent());
+    }
+
+    @Test
     public void testDefaultLocalPathDriveLetter() {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
-            PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
+                PathNormalizer.compose(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
     }
 
     @Test
