@@ -113,7 +113,7 @@ public enum Scheme {
     smb {
         @Override
         public boolean isSecure() {
-            return true;
+            return false;
         }
 
         @Override
