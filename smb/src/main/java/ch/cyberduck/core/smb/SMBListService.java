@@ -2,8 +2,10 @@ package ch.cyberduck.core.smb;
 
 import java.util.EnumSet;
 
+import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -20,20 +22,17 @@ public class SMBListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<>();
-        String path = directory.getAbsolute();
-
-            for (FileIdBothDirectoryInformation f : session.share.list(path)) {
-                long attr = f.getFileAttributes();
-                if (attr == 16) { // is a directory
-                    children.add(new Path(directory, f.getFileName(), EnumSet.of(Type.directory)));
-                } else if (attr == 32)  { // is a file
-                    children.add(new Path(directory, f.getFileName(), EnumSet.of(Type.file)));
-                }
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        AttributedList<Path> result = new AttributedList<>();
+        for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
+            if((f.getFileAttributes() & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
+                result.add(new Path(directory.getAbsolute() + f.getFileName(), EnumSet.of(AbstractPath.Type.directory)));
             }
-
-        return children;
+            else {
+                result.add(new Path(directory.getAbsolute() + f.getFileName(), EnumSet.of(AbstractPath.Type.file)));
+            }
+        }
+        return result;
     }
     
 }
