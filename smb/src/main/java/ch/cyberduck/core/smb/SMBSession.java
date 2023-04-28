@@ -67,13 +67,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             this.connection = client.connect(getHost().getHostname(), getHost().getPort());
         }
         catch(Exception e) {
-            try {
-                connection.close();
-                throw new RuntimeException(e);
-            }
-            catch(IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            throw new BackgroundException(e);
         }
         return client;
     }
@@ -87,11 +81,20 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
         String[] parts = host.getCredentials().getUsername().split("/", 0);
         String domainUsername = parts[0];
-        shareString = parts[1];
+        if(parts.length > 1) {
+            shareString = parts[1];
+        }
+        else {
+            throw new BackgroundException("Share name missing", "Share name must be specified after /");
+        }
+
         parts = domainUsername.split("@", 0);
-        if(parts.length == 1) {
-            domain = "WORKGROUP";
+        if(parts.length == 0) {
+            throw new BackgroundException("Username missing", "Username must be specified");
+        }
+        else if(parts.length == 1) {
             username = parts[0];
+            domain = "WORKGROUP";
         }
         else {
             username = parts[0];
@@ -99,12 +102,16 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
 
         AuthenticationContext ac = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
+
         try {
             session = connection.authenticate(ac);
             share = (DiskShare) session.connectShare(shareString);
-        } catch(Exception e) {
+        }
+        catch(
+                Exception e) {
             throw new BackgroundException(e);
         }
+
     }
 
     @Override
@@ -127,10 +134,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
                 connection.close();
                 connection = null;
             }
-            if(client != null) {
-                client.close();
-                client = null;
-            }
+            client.close();
         }
         catch(IOException e) {
             throw new RuntimeException(e);
