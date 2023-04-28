@@ -323,7 +323,7 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
         eue,
         freenet,
         ctera,
-        box,
+        box
     }
 
     enum Case {
