@@ -38,6 +38,6 @@
         <key>Password Configurable</key>
         <true/>
         <key>Anonymous Configurable</key>
-        <true/>
+        <false/>
     </dict>
 </plist>
