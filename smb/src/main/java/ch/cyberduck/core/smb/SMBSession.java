@@ -22,6 +22,8 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -147,7 +149,12 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         if(type == ListService.class) {
             return (T) new SMBListService(this);
         }
-
+        if(type == Directory.class) {
+            return (T) new SMBDirectoryFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new SMBTouchFeature(null);
+        }
         return super._getFeature(type);
     }
 
