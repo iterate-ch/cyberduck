@@ -37,6 +37,7 @@ import org.junit.experimental.categories.Category;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -223,6 +224,15 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(session, acl).list(placeholderTildeEnd, new DisabledListProgressListener()).isEmpty());
         assertTrue(new S3ObjectListService(session, acl).list(placeholderTildeStart, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(placeholderTildeEnd, placeholderTildeStart), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFileTilde() throws Exception {
+        final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path file = new S3TouchFeature(session, new S3AccessControlListFeature(session)).touch(
+                new Path(container, String.format("@%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3ObjectListService(session, new S3AccessControlListFeature(session)).list(container, new DisabledListProgressListener()).contains(file));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
