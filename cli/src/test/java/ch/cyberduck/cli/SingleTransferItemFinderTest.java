@@ -91,7 +91,7 @@ public class SingleTransferItemFinderTest {
         final Iterator<TransferItem> iter = found.iterator();
         final Local temp = LocalFactory.get(System.getProperty("java.io.tmpdir"));
         assertTrue(temp.getType().contains(Path.Type.directory));
-        assertEquals(new TransferItem(new Path("/remote/" + temp.getName(), EnumSet.of(Path.Type.directory)), temp), iter.next());
+        assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.directory)), temp), iter.next());
     }
 
     @Test
@@ -104,7 +104,7 @@ public class SingleTransferItemFinderTest {
         final Iterator<TransferItem> iter = found.iterator();
         final Local temp = LocalFactory.get(System.getProperty("java.io.tmpdir"));
         assertTrue(temp.getType().contains(Path.Type.directory));
-        assertEquals(new TransferItem(new Path("/" + temp.getName(), EnumSet.of(Path.Type.directory)), temp), iter.next());
+        assertEquals(new TransferItem(new Path("/", EnumSet.of(Path.Type.directory)), temp), iter.next());
     }
 
     @Test

@@ -34,24 +34,28 @@ public class DownloadTransferItemFinder implements TransferItemFinder {
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
         final Local local = LocalFactory.get(input.getOptionValues(action.name())[1]);
+        return Collections.singleton(resolve(remote, local));
+    }
+
+    protected static TransferItem resolve(final Path remote, final Local local) {
         if(StringUtils.containsAny(remote.getName(), '*')) {
             // Treat asterisk as wildcard
-            return Collections.singleton(new TransferItem(remote.getParent(), local));
+            return new TransferItem(remote.getParent(), local);
         }
         if(remote.isDirectory()) {
             // Remote path resolves to directory
             if(local.exists()) {
-                return Collections.singleton(new TransferItem(remote, LocalFactory.get(local, remote.getName())));
+                return new TransferItem(remote, LocalFactory.get(local, remote.getName()));
             }
-            return Collections.singleton(new TransferItem(remote, local));
+            return new TransferItem(remote, local);
         }
         // Remote path resolves to file
         if(local.isDirectory()) {
             // Append remote filename to local target
-            return Collections.singleton(new TransferItem(remote, LocalFactory.get(local, remote.getName())));
+            return new TransferItem(remote, LocalFactory.get(local, remote.getName()));
         }
         // Keep from input
-        return Collections.singleton(new TransferItem(remote, local));
+        return new TransferItem(remote, local);
     }
 }
 
