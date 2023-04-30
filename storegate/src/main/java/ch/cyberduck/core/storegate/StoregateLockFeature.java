@@ -54,8 +54,7 @@ public class StoregateLockFeature implements Lock<String> {
     @Override
     public void unlock(final Path file, final String token) throws BackgroundException {
         try {
-            new FileLocksApi(this.session.getClient()).fileLocksDeleteLock(fileid.getFileId(file
-            ), token);
+            new FileLocksApi(this.session.getClient()).fileLocksDeleteLock(fileid.getFileId(file), token);
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);

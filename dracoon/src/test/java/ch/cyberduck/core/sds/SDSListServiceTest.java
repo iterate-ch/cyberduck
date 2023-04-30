@@ -32,6 +32,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -57,7 +58,15 @@ public class SDSListServiceTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
-        assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
+        final AtomicBoolean callback = new AtomicBoolean();
+        assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) {
+                assertNotSame(AttributedList.EMPTY, list);
+                callback.set(true);
+            }
+        }).isEmpty());
+        assertTrue(callback.get());
         final String filename = String.format("%s%s", new AlphanumericRandomStringService().random(), new NFDNormalizer().normalize("ä"));
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1);

@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.util.Collections;
 
-public class BrickTouchFeature implements Touch<Void> {
+public class BrickTouchFeature implements Touch<FileEntity> {
 
     private final BrickSession session;
 
@@ -56,7 +56,7 @@ public class BrickTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public Touch<Void> withWriter(final Write<Void> writer) {
+    public Touch<FileEntity> withWriter(final Write<FileEntity> writer) {
         return this;
     }
 }

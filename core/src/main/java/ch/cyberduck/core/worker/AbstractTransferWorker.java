@@ -266,6 +266,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             if(log.isInfoEnabled()) {
                                 log.info(String.format("Skip file %s by filter %s for transfer %s", file, filter, this));
                             }
+                            transfer.addSize(0L);
+                            transfer.addTransferred(0L);
                             return null;
                         }
                         else {
@@ -433,6 +435,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                         // Retry immediately
                                         log.info(String.format("Retry %s with transfer status %s", item, retry));
                                         this.transferSegment(segment
+                                                .withNonces(retry.getNonces())
+                                                .withChecksum(retry.getChecksum())
                                                 .withLength(retry.getLength())
                                                 .withOffset(retry.getOffset())
                                                 .append(retry.isAppend()));
@@ -533,6 +537,18 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
     @Override
     public String getActivity() {
+        switch(transfer.getType()) {
+            case download:
+                return LocaleFactory.localizedString("Download", "Transfer");
+            case upload:
+                return LocaleFactory.localizedString("Upload", "Transfer");
+            case sync:
+                return LocaleFactory.localizedString("Download and Upload", "Transfer");
+            case move:
+                return LocaleFactory.localizedString("Rename", "Transfer");
+            case copy:
+                return LocaleFactory.localizedString("Copy", "Transfer");
+        }
         return BookmarkNameProvider.toString(transfer.getSource());
     }
 

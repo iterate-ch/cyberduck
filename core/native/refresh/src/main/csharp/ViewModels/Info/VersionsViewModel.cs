@@ -10,10 +10,10 @@ using Ch.Cyberduck.Core.Refresh.Models;
 using DynamicData;
 using java.util;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Observable = System.Reactive.Linq.Observable;
@@ -24,8 +24,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
     public class VersionsViewModel : ReactiveObject
     {
         private readonly ObservableAsPropertyHelper<VersionViewModel> selectedVersionProperty;
-        private readonly SourceList<VersionModel> versions = new();
+        private readonly ReadOnlyObservableCollection<VersionViewModel> versions;
         private readonly IObservableCache<VersionViewModel, VersionModel> viewModelCache;
+        private bool busy;
+        private Path selection;
+        private VersionModel selectedVersionValue;
 
         public VersionsViewModel(Controller controller, SessionPool session)
         {
@@ -33,20 +36,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             var delete = (Delete)session.getFeature(typeof(Delete));
             var versioning = (Versioning)session.getFeature(typeof(Versioning));
 
-            /* setup tracking */
-            viewModelCache = versions.Connect()
-                .Transform(x => new VersionViewModel(x))
-                .Bind(Versions)
-                .AddKey(x => x.Model)
-                .AsObservableCache();
-
-            this.WhenAnyValue(x => x.SelectedVersionValue)
-                .Select(x => x switch
-                {
-                    null => Observable.Return(default(VersionViewModel)),
-                    _ => viewModelCache.WatchValue(x)
-                })
-                .Switch().ToProperty(this, nameof(SelectedVersion), out selectedVersionProperty);
+            var selectedVersion = this.WhenAnyValue(x => x.SelectedVersionValue).Publish().RefCount();
 
             /* setup commands */
             Open = ReactiveCommand.Create(() =>
@@ -55,7 +45,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                 controller.background(new QuicklookTransferBackgroundAction(
                     controller, QuickLookFactory.get(), session, Collections.singletonList(
                         new TransferItem(f, temporary.create(session.getHost().getUuid(), f)))));
-            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null && v.Path.attributes().getPermission().isReadable()));
+            }, selectedVersion.Select(v => v != null && v.Path.attributes().getPermission().isReadable()));
             Remove = ReactiveCommand.CreateFromTask(async () =>
             {
                 var norm = PathNormalizer.normalize(Collections.singletonList(SelectedVersionValue.Path));
@@ -84,7 +74,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                     Busy = false;
                 }
                 await Load.ExecuteIfPossible();
-            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null && delete.isSupported(v.Path)));
+            }, selectedVersion.Select(v => v != null && delete.isSupported(v.Path)));
             Revert = ReactiveCommand.CreateFromTask(async () =>
             {
                 try
@@ -104,7 +94,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                     Busy = false;
                 }
                 await Load.ExecuteIfPossible();
-            }, this.WhenAnyValue(v => v.SelectedVersionValue).Select(v => v != null && versioning.isRevertable(v.Path)));
+            }, selectedVersion.Select(v => v != null && versioning.isRevertable(v.Path)));
             Load = ReactiveCommand.CreateFromTask(async () =>
             {
                 try
@@ -115,49 +105,40 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
                         new WorkerBackgroundAction(
                             controller, session, new VersionsWorkerImpl(Selection, new DisabledListProgressListener(), result)));
                     var versions = await result.Task;
-                    this.versions.Edit(u =>
-                    {
-                        u.Clear();
-                        Iterator versionIterator = versions.iterator();
-                        try
-                        {
-                            while (versionIterator.hasNext())
-                            {
-                                Path path;
-                                try
-                                {
-                                    path = (Path)versionIterator.next();
-                                }
-                                catch (Exception)
-                                {
-                                    // Log exception
-                                    continue;
-                                }
 
-                                u.Add(new VersionModel(path));
-                            }
-                        }
-                        catch (Exception)
-                        {
-                            // Log exception
-                        }
-                    });
+                    return versions.Cast<Path>().Select(p => new VersionModel(p)).AsObservableChangeSet();
                 }
                 finally
                 {
                     Busy = false;
                 }
             });
+
+            /* setup tracking */
+            viewModelCache = Load.Switch()
+                .Transform(x => new VersionViewModel(x))
+                .Bind(out versions)
+                .AddKey(x => x.Model)
+                .AsObservableCache();
+
+            selectedVersionProperty = selectedVersion.Select(x => x switch
+            {
+                null => Observable.Empty<VersionViewModel>(),
+                _ => viewModelCache.WatchValue(x)
+            }).Switch().ToProperty(this, nameof(SelectedVersion));
         }
 
         public delegate void RevertedEventHandler(IList<Path> files);
 
         public event RevertedEventHandler Reverted;
 
-        [Reactive]
-        public bool Busy { get; private set; }
+        public bool Busy
+        {
+            get => busy;
+            set => this.RaiseAndSetIfChanged(ref busy, value);
+        }
 
-        public ReactiveCommand<Unit, Unit> Load { get; }
+        public ReactiveCommand<Unit, IObservable<IChangeSet<VersionModel>>> Load { get; }
 
         public ReactiveCommand<Unit, Unit> Open { get; }
 
@@ -173,13 +154,19 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
             set => SelectedVersionValue = value?.Model;
         }
 
-        [Reactive]
-        public Path Selection { get; set; }
+        public Path Selection
+        {
+            get => selection;
+            set => this.RaiseAndSetIfChanged(ref selection, value);
+        }
 
-        public BindingList<VersionViewModel> Versions { get; } = new();
+        public ReadOnlyObservableCollection<VersionViewModel> Versions => versions;
 
-        [Reactive]
-        private VersionModel SelectedVersionValue { get; set; }
+        private VersionModel SelectedVersionValue
+        {
+            get => selectedVersionValue;
+            set => this.RaiseAndSetIfChanged(ref selectedVersionValue, value);
+        }
 
         private class AsyncWorkerBackgroundAction : WorkerBackgroundAction
         {

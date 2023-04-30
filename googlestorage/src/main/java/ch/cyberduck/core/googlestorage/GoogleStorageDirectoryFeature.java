@@ -24,6 +24,9 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jets3t.service.utils.ServiceUtils;
+
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -71,6 +74,23 @@ public class GoogleStorageDirectoryFeature implements Directory<StorageObject> {
         catch(IOException e) {
             throw new GoogleStorageExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+    }
+
+
+    @Override
+    public boolean isSupported(final Path workdir, final String name) {
+        if(workdir.isRoot()) {
+            if(StringUtils.isNotBlank(name)) {
+                if(StringUtils.startsWith(name, "goog")) {
+                    return false;
+                }
+                if(StringUtils.contains(name, "google")) {
+                    return false;
+                }
+                return ServiceUtils.isBucketNameValidDNSName(name);
+            }
+        }
+        return true;
     }
 
     @Override

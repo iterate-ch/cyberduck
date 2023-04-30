@@ -27,12 +27,15 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.preferences.HostPreferences;
 
+import org.apache.commons.collections4.ListUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.List;
 
 import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode;
@@ -56,30 +59,36 @@ public class SFTPListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
         try (RemoteDirectory handle = session.sftp().openDir(directory.getAbsolute())) {
-            for(RemoteResourceInfo f : handle.scan(new RemoteResourceFilter() {
-                @Override
-                public boolean accept(RemoteResourceInfo remoteResourceInfo) {
-                    return true;
+            for(List<RemoteResourceInfo> list : ListUtils.partition(handle.scan(new RemoteResourceFilter() {
+                        @Override
+                        public boolean accept(RemoteResourceInfo remoteResourceInfo) {
+                            return true;
+                        }
+                    }),
+                    new HostPreferences(session.getHost()).getInteger("sftp.listing.chunksize"))) {
+                for(RemoteResourceInfo f : list) {
+                    final PathAttributes attr = attributes.toAttributes(f.getAttributes());
+                    final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
+                    switch(f.getAttributes().getType()) {
+                        case DIRECTORY:
+                            type.add(Path.Type.directory);
+                            break;
+                        case SYMLINK:
+                            type.add(Path.Type.symboliclink);
+                            break;
+                        default:
+                            type.add(Path.Type.file);
+                            break;
+                    }
+                    final Path file = new Path(directory, f.getName(), type, attr);
+                    if(this.post(file)) {
+                        children.add(file);
+                        listener.chunk(directory, children);
+                    }
                 }
-            })) {
-                final PathAttributes attr = attributes.toAttributes(f.getAttributes());
-                final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
-                switch(f.getAttributes().getType()) {
-                    case DIRECTORY:
-                        type.add(Path.Type.directory);
-                        break;
-                    case SYMLINK:
-                        type.add(Path.Type.symboliclink);
-                        break;
-                    default:
-                        type.add(Path.Type.file);
-                        break;
-                }
-                final Path file = new Path(directory, f.getName(), type, attr);
-                if(this.post(file)) {
-                    children.add(file);
-                    listener.chunk(directory, children);
-                }
+            }
+            if(children.isEmpty()) {
+                listener.chunk(directory, children);
             }
             return children;
         }

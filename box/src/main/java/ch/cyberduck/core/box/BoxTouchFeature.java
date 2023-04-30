@@ -33,10 +33,6 @@ public class BoxTouchFeature extends DefaultTouchFeature<File> {
         if(StringUtils.length(name) > 255) {
             return false;
         }
-        // Names containing non-printable ASCII characters, forward and backward slashes (/, \), as well as names with trailing spaces are prohibited.
-        if(!StringUtils.isAsciiPrintable(name)) {
-            return false;
-        }
         if(StringUtils.contains(name, "/")) {
             return false;
         }

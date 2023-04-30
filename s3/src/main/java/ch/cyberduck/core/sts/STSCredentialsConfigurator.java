@@ -62,9 +62,14 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
 import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.common.base.Charsets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
@@ -72,7 +77,6 @@ import com.google.common.io.BaseEncoding;
 
 public class STSCredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(STSCredentialsConfigurator.class);
-
     private final X509TrustManager trust;
     private final X509KeyManager key;
     private final PasswordCallback prompt;
@@ -244,7 +248,7 @@ public class STSCredentialsConfigurator {
                     log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
                 }
                 final Map<String, String> profileProperties = basicProfile.getProperties();
-                if(profileProperties.containsKey("sso_start_url")) {
+                if(profileProperties.containsKey("sso_start_url") || profileProperties.containsKey("sso_session")) {
                     // Read cached SSO credentials
                     final CachedCredential cached = this.fetchSsoCredentials(profileProperties, awsDirectory);
                     credentials.setUsername(cached.accessKey);
@@ -309,14 +313,24 @@ public class STSCredentialsConfigurator {
      */
     private CachedCredential fetchSsoCredentials(final Map<String, String> properties, final Local awsDirectory)
             throws LoginFailureException {
-        // See https://github.com/boto/botocore/blob/23ee17f5446c78167ff442302471f9928c3b4b7c/botocore/credentials.py#L2004
+        // See https://github.com/boto/botocore/blob/412aeb96c9a6ebc72aa1bdf33e58ddd48c7b048d/botocore/credentials.py#L2078-L2098
         try {
-            final String ssoStartUrl = properties.get("sso_start_url");
-            final String ssoAccountId = properties.get("sso_account_id");
-            final String ssoRoleName = properties.get("sso_role_name");
-            final String cacheKey = String.format("{\"accountId\":\"%s\",\"roleName\":\"%s\",\"startUrl\":\"%s\"}",
-                    ssoAccountId, ssoRoleName, ssoStartUrl);
-            final HashCode hashCode = Hashing.sha1().newHasher().putString(cacheKey, Charsets.UTF_8).hash();
+            ObjectMapper mapper = JsonMapper.builder()
+                .serializationInclusion(Include.NON_NULL)
+                .enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .visibility(PropertyAccessor.FIELD, Visibility.ANY).build();
+            final CacheKey cacheKey = new CacheKey();
+            cacheKey.accountId = properties.get("sso_account_id");
+            cacheKey.roleName = properties.get("sso_role_name");
+            final String ssoSession = properties.get("sso_session");
+            if (ssoSession != null) {
+                cacheKey.sessionName = ssoSession;
+            } else {
+                cacheKey.startUrl = properties.get("sso_start_url");
+            }
+            final String cacheKeyJson = mapper.writeValueAsString(cacheKey);
+            final HashCode hashCode = Hashing.sha1().newHasher().putString(cacheKeyJson, Charsets.UTF_8).hash();
             final String hash = BaseEncoding.base16().lowerCase().encode(hashCode.asBytes());
             final String cachedCredentialsJson = String.format("%s.json", hash);
             final Local cachedCredentialsFile =
@@ -328,8 +342,6 @@ public class STSCredentialsConfigurator {
                 throw new LoginFailureException(String.format("Missing file %s with cached SSO credentials.", cachedCredentialsFile.getAbsolute()));
             }
             try (InputStream in = cachedCredentialsFile.getInputStream()) {
-                final ObjectMapper mapper = new ObjectMapper();
-                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 final CachedCredentials cached = mapper.readValue(in, CachedCredentials.class);
                 if(null == cached.credentials) {
                     throw new LoginFailureException("Failure parsing SSO credentials.");
@@ -344,6 +356,13 @@ public class STSCredentialsConfigurator {
         catch(IOException | AccessDeniedException e) {
             throw new LoginFailureException("Failure retrieving SSO credentials.", e);
         }
+    }
+
+    private static class CacheKey {
+        private String accountId;
+        private String roleName;
+        private String sessionName;
+        private String startUrl;
     }
 
     private static class CachedCredentials {

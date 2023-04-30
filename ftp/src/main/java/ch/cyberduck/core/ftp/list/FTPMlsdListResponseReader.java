@@ -16,7 +16,6 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
@@ -46,7 +45,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     }
 
     @Override
-    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener) throws FTPInvalidListException {
+    public AttributedList<Path> read(final Path directory, final List<String> replies) throws FTPInvalidListException {
         final AttributedList<Path> children = new AttributedList<>();
         if(replies.isEmpty()) {
             return children;

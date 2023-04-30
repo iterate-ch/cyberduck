@@ -17,6 +17,8 @@ package ch.cyberduck.core.date;
 
 import org.junit.Test;
 
+import java.util.TimeZone;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -31,4 +33,11 @@ public class RFC822DateFormatterTest {
     public void testParse() throws Exception {
         assertEquals(1599696000000L, new RFC822DateFormatter().parse("Thu, 10 Sep 2020 00:00:00 GMT").getTime(), 0L);
     }
+
+    @Test
+    public void testPrint() {
+        assertEquals("Thu, 01 Dec 1994 17:00:00 GMT", new RFC822DateFormatter().format(786297600000L, TimeZone.getTimeZone("Europe/Zurich")));
+        assertEquals("Thu, 01 Dec 1994 16:00:00 GMT", new RFC822DateFormatter().format(786297600000L, TimeZone.getTimeZone("UTC")));
+    }
+
 }

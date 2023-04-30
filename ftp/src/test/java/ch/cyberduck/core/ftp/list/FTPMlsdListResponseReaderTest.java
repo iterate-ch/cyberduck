@@ -16,7 +16,6 @@ package ch.cyberduck.core.ftp.list;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.test.IntegrationTest;
@@ -49,7 +48,7 @@ public class FTPMlsdListResponseReaderTest {
 
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(3, children.size());
         assertEquals("writable", children.get(0).getName());
         assertTrue(children.get(0).isFile());
@@ -68,10 +67,10 @@ public class FTPMlsdListResponseReaderTest {
             "/www", EnumSet.of(Path.Type.directory));
 
         String[] replies = new String[]{
-            "Type=dir;Modify=20171202151917;Unique=04c800e7ef006c54;Perm=cmpdfe; progrocklists",
+                "Type=dir;Modify=20171202151917;Unique=04c800e7ef006c54;Perm=cmpdfe; progrocklists",
         };
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertTrue(children.get(0).isDirectory());
         assertTrue(children.get(0).attributes().getPermission().isReadable());
@@ -87,7 +86,7 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
             "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
     }
 
     @Test(expected = FTPInvalidListException.class)
@@ -98,7 +97,7 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
             "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
     }
 
     @Test(expected = FTPInvalidListException.class)
@@ -109,7 +108,7 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
             "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
     }
 
     @Test
@@ -123,7 +122,7 @@ public class FTPMlsdListResponseReaderTest {
             "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
         };
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals("ftpd.c", children.get(0).getName());
     }
@@ -135,7 +134,7 @@ public class FTPMlsdListResponseReaderTest {
 
         String[] replies = new String[]{};
 
-        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
         assertEquals(0, children.size());
     }
 
@@ -149,7 +148,7 @@ public class FTPMlsdListResponseReaderTest {
         };
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals(34589, children.get(0).attributes().getSize());
     }
@@ -161,10 +160,10 @@ public class FTPMlsdListResponseReaderTest {
 
         // Tuesday, January 12, 1999 3:30:45 AM GMT
         String[] replies = new String[]{
-            "Type=dir;Modify=19990112033045; text" //yyyyMMddHHmmss
+                "Type=dir;Modify=19990112033045; text" //yyyyMMddHHmmss
         };
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals(916111845000L, children.get(0).attributes().getModificationDate());
         Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -193,7 +192,7 @@ public class FTPMlsdListResponseReaderTest {
         String[] replies = new String[]{
             "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
         };
-        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies), new DisabledListProgressListener());
+        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
     }
 
     public void testDir() throws Exception {
@@ -206,7 +205,7 @@ public class FTPMlsdListResponseReaderTest {
             };
 
             final AttributedList<Path> children = new FTPMlsdListResponseReader()
-                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                    .read(path, Arrays.asList(replies));
             assertEquals(2, children.size());
         }
         {
@@ -216,7 +215,7 @@ public class FTPMlsdListResponseReaderTest {
             };
 
             final AttributedList<Path> children = new FTPMlsdListResponseReader()
-                .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                    .read(path, Arrays.asList(replies));
             assertEquals(2, children.size());
         }
     }
@@ -230,7 +229,7 @@ public class FTPMlsdListResponseReaderTest {
         };
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals("664", children.get(0).attributes().getPermission().getMode());
     }
@@ -244,7 +243,7 @@ public class FTPMlsdListResponseReaderTest {
         };
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals("2775", children.get(0).attributes().getPermission().getMode());
     }
@@ -258,10 +257,20 @@ public class FTPMlsdListResponseReaderTest {
         };
 
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(1, children.size());
         assertEquals("/www/foobar", children.get(0).getAbsolute());
         assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
+    }
+
+    @Test(expected = FTPInvalidListException.class)
+    public void testParseMlsdSymbolicMissingTarget() throws Exception {
+        Path path = new Path(
+            "/www", EnumSet.of(Path.Type.directory));
+        String[] replies = new String[]{
+            "type=OS.unix=slink:;size=11;modify=20190522005707;UNIX.mode=0777;UNIX.uid=1677;UNIX.gid=1676;unique=841g5e0003; www"
+        };
+        new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
     }
 
     @Test
@@ -269,11 +278,11 @@ public class FTPMlsdListResponseReaderTest {
     public void testParseSlashInFilename() throws Exception {
         Path path = new Path("/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
-            "type=dir;modify=20140315210350; Gozo 2013/2014",
-            "type=dir;modify=20140315210350; Tigger & Friends"
+                "type=dir;modify=20140315210350; Gozo 2013/2014",
+                "type=dir;modify=20140315210350; Tigger & Friends"
         };
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
         assertEquals(2, children.size());
         assertEquals("/www/Gozo 2013/2014", children.get(0).getAbsolute());
         assertEquals("Gozo 2013/2014", children.get(0).getName());
@@ -286,20 +295,20 @@ public class FTPMlsdListResponseReaderTest {
             "type=OS.unix=slink:;size=11;modify=20140506165021;UNIX.mode=0777;UNIX.uid=1144;UNIX.gid=1144;unique=fd51g2dc0020; www"
         };
         new FTPMlsdListResponseReader()
-            .read(path, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(path, Arrays.asList(replies));
     }
 
     @Test
     public void testSkipCurrentAndParentDir() throws Exception {
         Path directory = new Path("/", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
-            "type=dir;size=512;modify=20150115041252;create=20150115041212;perm=cdeflmp; .",
-            "type=dir;size=512;modify=20150115041252;create=20150115041212;perm=cdeflmp; ..",
-            "type=dir;size=512;modify=20150115041245;create=20150115041242;perm=cdeflmp; AVID",
-            "type=dir;size=512;modify=20150115041252;create=20150115041250;perm=cdeflmp; QTS"
+                "type=dir;size=512;modify=20150115041252;create=20150115041212;perm=cdeflmp; .",
+                "type=dir;size=512;modify=20150115041252;create=20150115041212;perm=cdeflmp; ..",
+                "type=dir;size=512;modify=20150115041245;create=20150115041242;perm=cdeflmp; AVID",
+                "type=dir;size=512;modify=20150115041252;create=20150115041250;perm=cdeflmp; QTS"
         };
         final AttributedList<Path> children = new FTPMlsdListResponseReader()
-            .read(directory, Arrays.asList(replies), new DisabledListProgressListener());
+                .read(directory, Arrays.asList(replies));
         assertEquals(2, children.size());
     }
 }

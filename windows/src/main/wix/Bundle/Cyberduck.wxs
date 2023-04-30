@@ -188,9 +188,6 @@
       <Component Id="ikvm.misc" Guid="29564F63-CA76-4944-9022-D705E038DF24">
         <File Source="$(var.cyberduck.TargetDir)/IKVM.OpenJDK.Misc.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-      <Component Id="Interop.Bonjour">
-        <File Source="$(var.cyberduck.TargetDir)/Interop.Bonjour.dll" KeyPath="yes" Checksum="yes"/>
-      </Component>
       <Component Id="objectlistview">
         <File Source="$(var.cyberduck.TargetDir)/ObjectListView.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
@@ -248,10 +245,6 @@
       <!-- System.Reactive -->
       <Component Id="System.Reactive">
         <File Source="$(var.cyberduck.TargetDir)/System.Reactive.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <!-- ReactiveUI.Fody-->
-      <Component Id="ReactiveUI.Fody.Helpers">
-        <File Source="$(var.cyberduck.TargetDir)/ReactiveUI.Fody.Helpers.dll" KeyPath="yes" Checksum="yes" />
       </Component>
       <!-- ReactiveUI.WPF-->
       <Component Id="ReactiveUI.Wpf">

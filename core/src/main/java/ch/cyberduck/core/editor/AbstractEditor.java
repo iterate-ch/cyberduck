@@ -36,7 +36,6 @@ import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.FileWatcherListener;
-import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
@@ -56,8 +55,6 @@ public abstract class AbstractEditor implements Editor {
     private static final Logger log = LogManager.getLogger(AbstractEditor.class);
 
     private final Host host;
-
-    private final TemporaryFileService temp = TemporaryFileServiceFactory.instance();
 
     /**
      * File has changed but not uploaded yet
@@ -94,7 +91,7 @@ public abstract class AbstractEditor implements Editor {
         else {
             this.file = file;
         }
-        this.temporary = temp.create(String.format("editor-%s", host.getUuid()), this.file);
+        this.temporary = TemporaryFileServiceFactory.instance().create(String.format("editor-%s", host.getUuid()), this.file);
         this.launcher = launcher;
         this.finder = finder;
         this.progress = listener;
@@ -123,12 +120,12 @@ public abstract class AbstractEditor implements Editor {
 
     /**
      * @param application Editor application
-     * @param callback    Quit callback notified when editor application is closed
+     * @param quit        Quit callback notified when editor application is closed
      */
     @Override
-    public Worker<Transfer> open(final Application application, final ApplicationQuitCallback callback, final FileWatcherListener listener) {
+    public Worker<Transfer> open(final Application application, final ApplicationQuitCallback quit, final FileWatcherListener listener) {
         final Worker<Transfer> worker = new EditOpenWorker(host, this, application, file,
-                temporary, progress, listener, notification);
+                temporary, progress, quit, listener, notification);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Download file for edit %s", temporary));
         }
@@ -141,11 +138,20 @@ public abstract class AbstractEditor implements Editor {
      * @param application Editor
      * @param file        Remote file
      * @param temporary   Temporary file
+     * @param quit
      */
-    protected void edit(final Application application, final Path file, final Local temporary, final FileWatcherListener listener) throws IOException {
-        final ApplicationQuitCallback quit = new ApplicationQuitCallback() {
+    protected void edit(final Application application, final Path file, final Local temporary,
+                        final FileWatcherListener listener, final ApplicationQuitCallback quit) throws IOException {
+        final ApplicationQuitCallback callback = new ApplicationQuitCallback() {
             @Override
             public void callback() {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Received quit event for application %s", application));
+                }
+                quit.callback();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Close editor for %s", file));
+                }
                 close();
                 delete();
             }
@@ -159,7 +165,7 @@ public abstract class AbstractEditor implements Editor {
         if(!finder.isInstalled(application)) {
             log.warn(String.format("No editor application configured for %s", temporary));
             if(launcher.open(temporary)) {
-                this.watch(application, temporary, listener, quit);
+                this.watch(application, temporary, listener, callback);
             }
             else {
                 throw new IOException(String.format("Failed to open default application for %s",
@@ -167,7 +173,7 @@ public abstract class AbstractEditor implements Editor {
             }
         }
         else if(launcher.open(temporary, application)) {
-            this.watch(application, temporary, listener, quit);
+            this.watch(application, temporary, listener, callback);
         }
         else {
             throw new IOException(String.format("Failed to open application %s for %s",

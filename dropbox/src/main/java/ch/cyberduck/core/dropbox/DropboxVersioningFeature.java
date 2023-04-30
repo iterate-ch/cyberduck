@@ -72,11 +72,6 @@ public class DropboxVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(final Path file) {
-        return file.attributes().isDuplicate();
-    }
-
-    @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> versions = new AttributedList<>();
@@ -84,20 +79,18 @@ public class DropboxVersioningFeature implements Versioning {
             final List<FileMetadata> entries = result.getEntries();
             final DropboxAttributesFinderFeature attr = new DropboxAttributesFinderFeature(session);
             for(FileMetadata revision : entries) {
+                if(StringUtils.equals(revision.getRev(), file.attributes().getVersionId())) {
+                    continue;
+                }
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found revision %s", revision));
                 }
                 final PathAttributes attributes = attr.toAttributes(revision);
                 attributes.setDuplicate(true);
-                versions.add(new Path(file.getParent(), PathNormalizer.name(revision.getName()), file.getType(),
-                        attributes));
+                versions.add(new Path(file.getParent(), PathNormalizer.name(revision.getName()), file.getType(), attributes));
+                listener.chunk(file.getParent(), versions);
             }
-            return versions.filter(new NullFilter<Path>() {
-                @Override
-                public boolean accept(final Path test) {
-                    return !StringUtils.equals(test.attributes().getVersionId(), file.attributes().getVersionId());
-                }
-            });
+            return versions;
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e, file);

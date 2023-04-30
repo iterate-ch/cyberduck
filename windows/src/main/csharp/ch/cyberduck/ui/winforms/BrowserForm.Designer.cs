@@ -2564,13 +2564,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AllColumns.Add(this.treeColumnStorageClass);
             this.browser.AllColumns.Add(this.treeColumnVersion);
             this.browser.AllColumns.Add(this.treeColumnChecksum);
+            this.browser.AllowColumnReorder = true;
+            this.browser.AllowDrop = true;
             this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.browser.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
-            this.browser.CellEditUseWholeCell = true;
             this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.treeColumnName,
             this.treeColumnSize,
             this.treeColumnModified});
+            this.browser.Cursor = System.Windows.Forms.Cursors.Default;
             this.browser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.browser.FullRowSelect = true;
             this.browser.HideSelection = false;
@@ -2578,11 +2580,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.IsSimpleDragSource = true;
             this.browser.Location = new System.Drawing.Point(0, 0);
             this.browser.Name = "browser";
-            this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(1028, 444);
+            this.browser.ShowImagesOnSubItems = true;
+            this.browser.Size = new System.Drawing.Size(1028, 473);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
+            this.browser.UseOverlays = false;
+            this.browser.UseTranslucentSelection = true;
             this.browser.View = System.Windows.Forms.View.Details;
             this.browser.VirtualMode = true;
             this.browser.Expanding += new System.EventHandler<BrightIdeasSoftware.TreeBranchExpandingEventArgs>(this.browser_Expanding);
@@ -2595,6 +2599,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // treeColumnName
             // 
+            this.treeColumnName.CellEditUseWholeCell = true;
             this.treeColumnName.FillsFreeSpace = true;
             this.treeColumnName.Tag = "filename";
             this.treeColumnName.Text = "Filename";
@@ -2715,16 +2720,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkListView.AllColumns.Add(this.bookmarkDescriptionColumn);
             this.bookmarkListView.AllColumns.Add(this.activeColumn);
             this.bookmarkListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.bookmarkListView.CellEditUseWholeCell = false;
             this.bookmarkListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.bookmarkImageColumn,
             this.bookmarkDescriptionColumn,
             this.activeColumn});
+            this.bookmarkListView.Cursor = System.Windows.Forms.Cursors.Default;
             this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bookmarkListView.FullRowSelect = true;
+            this.bookmarkListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.bookmarkListView.HideSelection = false;
             this.bookmarkListView.Location = new System.Drawing.Point(0, 0);
             this.bookmarkListView.Name = "bookmarkListView";
-            this.bookmarkListView.OwnerDraw = true;
             this.bookmarkListView.RowHeight = 37;
             this.bookmarkListView.ShowGroups = false;
             this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
@@ -2737,7 +2744,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // bookmarkImageColumn
             // 
             this.bookmarkImageColumn.AspectName = "";
-            this.bookmarkImageColumn.CellPadding = null;
             this.bookmarkImageColumn.IsEditable = false;
             this.bookmarkImageColumn.Text = "";
             this.bookmarkImageColumn.Width = 32;
@@ -2745,13 +2751,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // bookmarkDescriptionColumn
             // 
             this.bookmarkDescriptionColumn.AspectName = "";
-            this.bookmarkDescriptionColumn.CellPadding = null;
             this.bookmarkDescriptionColumn.Text = "";
             this.bookmarkDescriptionColumn.Width = 200;
             // 
             // activeColumn
             // 
-            this.activeColumn.CellPadding = null;
             this.activeColumn.Text = "";
             // 
             // actionToolStrip

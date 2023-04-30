@@ -89,8 +89,29 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             = new HostPreferences(host);
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
-    private final Versioning versioning
-            = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, acl) : null;
+
+    private final Versioning versioning = preferences.getBoolean("s3.versioning.enable")
+            ? new S3VersioningFeature(this, acl) : null;
+
+    private final Glacier glacier = new Glacier(this, trust, key);
+
+    private final Encryption encryption = S3Session.isAwsHostname(host.getHostname())
+            ? new KMSEncryptionFeature(this, acl, trust, key) : null;
+
+    private final WebsiteCloudFrontDistributionConfiguration cloudfront = new WebsiteCloudFrontDistributionConfiguration(this, trust, key) {
+        @Override
+        public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
+            final Distribution distribution = super.read(container, method, prompt);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cache distribution %s", distribution));
+            }
+            // Replace previously cached value
+            final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());
+            cached.add(distribution);
+            distributions.put(container, cached);
+            return distribution;
+        }
+    };
 
     private final Map<Path, Set<Distribution>> distributions = new ConcurrentHashMap<>();
 
@@ -171,7 +192,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 client.setProviderCredentials(new AWSSessionCredentials(temporary.getUsername(), temporary.getPassword(),
                         temporary.getToken()));
             }
-            catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException | InteroperabilityException e) {
+            catch(ConnectionTimeoutException | ConnectionRefusedException | ResolveFailedException | NotfoundException |
+                  InteroperabilityException e) {
                 log.warn(String.format("Failure to retrieve session credentials from . %s", e.getMessage()));
                 throw new LoginFailureException(e.getDetail(false), e);
             }
@@ -342,30 +364,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3LifecycleConfiguration(this);
         }
         if(type == Encryption.class) {
-            // Only for AWS
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new KMSEncryptionFeature(this, acl, trust, key);
-            }
-            return null;
+            return (T) encryption;
         }
         if(type == Redundancy.class) {
             return (T) new S3StorageClassFeature(this, acl);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new WebsiteCloudFrontDistributionConfiguration(this, trust, key) {
-                @Override
-                public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
-                    final Distribution distribution = super.read(container, method, prompt);
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Cache distribution %s", distribution));
-                    }
-                    // Replace previously cached value
-                    final Set<Distribution> cached = distributions.getOrDefault(container, new HashSet<>());
-                    cached.add(distribution);
-                    distributions.put(container, cached);
-                    return distribution;
-                }
-            };
+            return (T) cloudfront;
         }
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this, distributions);
@@ -413,7 +418,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new DelegatingSchedulerFeature(new CloudFrontDistributionConfigurationPreloader(this));
         }
         if(type == Restore.class) {
-            return (T) new Glacier(this, trust, key);
+            return (T) glacier;
         }
         if(type == Timestamp.class) {
             if(preferences.getBoolean("s3.timestamp.enable")) {

@@ -53,11 +53,11 @@ public class FlatTemporaryFileServiceTest {
     public void testCreateFile() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = System.getProperty("file.separator");
-        assertEquals(String.format("%s%su%sf-887503681", temp, s, s),
+        assertEquals(String.format("%s%su%s887503681-f", temp, s, s),
                 new FlatTemporaryFileService().create("u", new Path("/p/f", EnumSet.of(Path.Type.file))).getAbsolute());
         final Path file = new Path("/p/f", EnumSet.of(Path.Type.file));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%sf-887503681", temp, s, s),
+        assertEquals(String.format("%s%su%s887503681-f", temp, s, s),
                 new FlatTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -67,7 +67,7 @@ public class FlatTemporaryFileServiceTest {
         final String s = System.getProperty("file.separator");
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));
         file.attributes().setRegion("region");
-        assertEquals(String.format("%s%su%scontainer-887503681", temp, s, s),
+        assertEquals(String.format("%s%su%s887503681-container", temp, s, s),
                 new FlatTemporaryFileService().create("u", file).getAbsolute());
     }
 
@@ -99,8 +99,8 @@ public class FlatTemporaryFileServiceTest {
         final Local local = new FlatTemporaryFileService().create("UID", file);
         assertTrue(local.getParent().exists());
         final String localFile = local.getAbsolute();
-        assertEquals(String.format("%s/%s/%s-887551731", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
-        assertNotEquals(String.format("%s/%s%s/2/%s-887551731", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
+        assertEquals(String.format("%s/%s/887551731-%s", temp, "UID", testPathFile).replace('/', File.separatorChar), localFile);
+        assertNotEquals(String.format("%s/%s%s/2/887551731-%s", temp, "UID", testPathMD5, testPathFile).replace('/', File.separatorChar), localFile);
     }
 
     @Test
@@ -112,6 +112,19 @@ public class FlatTemporaryFileServiceTest {
         assertTrue(local.getParent().exists());
         assertEquals("t.txt", file.getName());
         assertNotEquals("t.txt", local.getName());
+        assertTrue(local.getName().endsWith("-t.txt"));
         assertEquals(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir")), LocalFactory.get(local.getParent().getAbsolute()));
+    }
+
+    @Test
+    public void testTemporaryPathCustomPrefix() {
+        final Path file = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
+        file.attributes().setDuplicate(true);
+        file.attributes().setVersionId("1");
+        final Local local = new FlatTemporaryFileService().create("u", file);
+        assertTrue(local.getParent().exists());
+        assertEquals("t.txt", file.getName());
+        assertTrue(local.getName().endsWith("-t.txt"));
+        assertEquals(LocalFactory.get(PreferencesFactory.get().getProperty("tmp.dir"), "u"), LocalFactory.get(local.getParent().getAbsolute()));
     }
 }

@@ -35,6 +35,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.api.services.drive.model.File;
 
@@ -46,7 +47,7 @@ import static org.junit.Assert.*;
 public class DriveDefaultListServiceTest extends AbstractDriveTest {
 
     @Test
-    public void testList() throws Exception {
+    public void testListMyDrive() throws Exception {
         final Path directory = MYDRIVE_FOLDER;
         final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
@@ -188,5 +189,22 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         new DriveDirectoryFeature(session, provider).mkdir(folder, new TransferStatus());
         assertEquals(2, new DriveDefaultListService(session, provider).list(parent, new DisabledListProgressListener()).size());
         new DriveDeleteFeature(session, provider).delete(Collections.singletonList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListEmptyFolder() throws Exception {
+        final DriveFileIdProvider fileid = new DriveFileIdProvider(session);
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
+                new Path(MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
+        final AtomicBoolean callback = new AtomicBoolean();
+        assertTrue(new DriveDefaultListService(session, fileid).list(folder, new DisabledListProgressListener() {
+            @Override
+            public void chunk(final Path parent, final AttributedList<Path> list) {
+                assertNotSame(AttributedList.EMPTY, list);
+                callback.set(true);
+            }
+        }).isEmpty());
+        assertTrue(callback.get());
+        new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

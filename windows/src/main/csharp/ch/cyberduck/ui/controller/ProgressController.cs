@@ -113,20 +113,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 double transferred = _transfer.getTransferred().longValue();
                 double size = _transfer.getSize().longValue();
+                if (transferred > size)
+                {
+                    // clamp transferred to size
+                    transferred = size;
+                }
                 if (transferred > 0 && size > 0)
                 {
                     View.ProgressIndeterminate = false;
-                    // normalize double to int if size is too big
-                    if (size > int.MaxValue)
-                    {
-                        View.ProgressMaximum = int.MaxValue;
-                        View.ProgressValue = Convert.ToInt32(int.MaxValue*transferred/size);
-                    }
-                    else
-                    {
-                        View.ProgressMaximum = Convert.ToInt32(size);
-                        View.ProgressValue = Convert.ToInt32(transferred);
-                    }
+                    View.ProgressMaximum = 100;
+                    // Normalize Value to [0;100]
+                    View.ProgressValue = Convert.ToInt32(transferred / size * 100);
                 }
                 else
                 {

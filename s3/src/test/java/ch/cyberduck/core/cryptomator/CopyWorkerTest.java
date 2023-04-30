@@ -54,7 +54,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -135,7 +134,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(source, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(source, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(source));
         cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(targetFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(targetFolder));
@@ -159,7 +158,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
         cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(folder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(folder));
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(file, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(file, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(file));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
@@ -250,7 +249,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         session.withRegistry(registry);
         cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl), acl)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -276,7 +275,7 @@ public class CopyWorkerTest extends AbstractS3Test {
         cryptomator.getFeature(session, Directory.class, new S3DirectoryFeature(session, new S3WriteFeature(session, acl),
                 acl)).mkdir(encryptedFolder, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFolder));
-        new CryptoTouchFeature<StorageObject>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus());
+        new CryptoTouchFeature<>(session, new S3TouchFeature(session, acl), new S3WriteFeature(session, acl), cryptomator).touch(encryptedFile, new TransferStatus());
         assertTrue(cryptomator.getFeature(session, Find.class, new DefaultFindFeature(session)).find(encryptedFile));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

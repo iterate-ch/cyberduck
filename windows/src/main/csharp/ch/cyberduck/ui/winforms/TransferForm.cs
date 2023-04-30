@@ -57,8 +57,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureToolbar();
 
             bandwidthSplitButton.Image = Images.Bandwidth.Size(16);
-            showToolStripButton.Image = Images.Reveal.Size(16);
             connectionsSplitButton.Image = Images.Connection.Size(16);
+            showToolStripButton.Image = Images.Reveal;
 
             transferListView.FullRowSelect = false;
             transferListView.HeaderStyle = ColumnHeaderStyle.None;

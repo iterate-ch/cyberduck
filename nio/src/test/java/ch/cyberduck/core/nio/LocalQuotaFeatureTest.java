@@ -19,12 +19,12 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.proxy.Proxy;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class LocalQuotaFeatureTest {
@@ -34,9 +34,9 @@ public class LocalQuotaFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path home = new LocalHomeFinderFeature().find();
         final Quota.Space quota = new LocalQuotaFeature(session).get();
         assertNotNull(quota.used);
         assertNotNull(quota.available);
+        assertNotEquals(Quota.unknown, quota);
     }
 }

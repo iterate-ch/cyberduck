@@ -96,6 +96,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                 DriveItem.Property.Folder, /*Usage: Determines Folder */
                 DriveItem.Property.Package, /*Usage: Determines OneNote */
                 DriveItem.Property.Publication, /*Usage: Sharepoint Server, provides Checkout-state */
+                DriveItem.Property.RemoteItem, /*Usage: "Add to Drive" for shared folders/items*/
                 DriveItem.Property.Size /*Usage: Downloads of files, display sizes */);
 
         return query;

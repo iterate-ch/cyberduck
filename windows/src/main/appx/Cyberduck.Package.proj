@@ -142,9 +142,6 @@
     <LayoutFile Include="$(OutputPath)\IKVM.OpenJDK.Jdbc.dll">
       <PackagePath>$(PackageLayout)\IKVM.OpenJDK.Jdbc.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\Interop.Bonjour.dll">
-      <PackagePath>$(PackageLayout)\Interop.Bonjour.dll</PackagePath>
-    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ObjectListView.dll">
       <PackagePath>$(PackageLayout)\ObjectListView.dll</PackagePath>
     </LayoutFile>
@@ -189,9 +186,6 @@
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ReactiveUI.dll">
       <PackagePath>$(PackageLayout)\ReactiveUI.dll</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\ReactiveUI.Fody.Helpers.dll">
-      <PackagePath>$(PackageLayout)\ReactiveUI.Fody.Helpers.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ReactiveUI.Wpf.dll">
       <PackagePath>$(PackageLayout)\ReactiveUI.Wpf.dll</PackagePath>

@@ -73,6 +73,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -2175,7 +2176,9 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocation = b;
         this.defaultBucketLocation.setAutoenablesItems(false);
         this.defaultBucketLocation.removeAllItems();
-        ProtocolFactory.get().forType(Protocol.Type.s3).getRegions().stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
+        final Protocol protocol = ProtocolFactory.get().forType(Protocol.Type.s3);
+        final Set<Location.Name> regions = null == protocol ? Collections.emptySet() : protocol.getRegions();
+        regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocation.addItemWithTitle(location.toString());
             this.defaultBucketLocation.lastItem().setRepresentedObject(location.getIdentifier());
         });
@@ -2197,7 +2200,9 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        for(String s : PreferencesReader.toList(ProtocolFactory.get().forType(Protocol.Type.s3).getProperties().get("s3.storage.class.options"))) {
+        final Protocol protocol = ProtocolFactory.get().forType(Protocol.Type.s3);
+        final Map<String, String> properties = null == protocol ? Collections.emptyMap() : protocol.getProperties();
+        for(String s : PreferencesReader.toList(properties.get("s3.storage.class.options"))) {
             this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
             this.defaultStorageClassPopup.lastItem().setRepresentedObject(s);
         }
@@ -2273,7 +2278,9 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBucketLocationGoogleStorage = b;
         this.defaultBucketLocationGoogleStorage.setAutoenablesItems(false);
         this.defaultBucketLocationGoogleStorage.removeAllItems();
-        ProtocolFactory.get().forType(Protocol.Type.googlestorage).getRegions().stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
+        final Protocol protocol = ProtocolFactory.get().forType(Protocol.Type.googlestorage);
+        final Set<Location.Name> regions = null == protocol ? Collections.emptySet() : protocol.getRegions();
+        regions.stream().sorted(Comparator.comparing(Location.Name::toString)).forEach(location -> {
             this.defaultBucketLocationGoogleStorage.addItemWithTitle(location.toString());
             this.defaultBucketLocationGoogleStorage.lastItem().setRepresentedObject(location.getIdentifier());
         });

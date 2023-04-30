@@ -19,10 +19,10 @@ namespace Ch.Cyberduck
         }
 
         [EditorBrowsable(Never)]
-        public static Image Clean => Images.Clean;
+        public static Image Clean => Images.TryGet(_ =>_.Clean);
 
         [EditorBrowsable(Never)]
-        public static Image CleanAll => Images.CleanAll;
+        public static Image CleanAll => Images.TryGet(_ =>_.CleanAll);
 
         public static WinFormsIconProvider IconProvider { get; }
 

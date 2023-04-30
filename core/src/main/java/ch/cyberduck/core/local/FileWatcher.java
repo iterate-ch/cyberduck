@@ -36,6 +36,8 @@ import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
@@ -46,6 +48,7 @@ public final class FileWatcher {
 
     private final RegisterWatchService monitor;
     private final ThreadPool pool;
+    private final Set<Local> registered = new HashSet<>();
 
     public FileWatcher() {
         this(WatchServiceFactory.get());
@@ -53,7 +56,7 @@ public final class FileWatcher {
 
     public FileWatcher(final RegisterWatchService monitor) {
         this.monitor = monitor;
-        this.pool = new DefaultThreadPool("watcher", 1);
+        this.pool = new DefaultThreadPool("watcher");
     }
 
     public static final class DefaultFileFilter extends NullFilter<Local> {
@@ -74,6 +77,12 @@ public final class FileWatcher {
     }
 
     public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
+        if(registered.contains(folder)) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Skip duplicate registration for %s in %s", folder, monitor));
+            }
+            return new CountDownLatch(0);
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Register folder %s watching with filter %s", folder, filter));
         }
@@ -81,6 +90,7 @@ public final class FileWatcher {
         if(!key.isValid()) {
             throw new IOException(String.format("Failure registering for events in %s", folder));
         }
+        registered.add(folder);
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
             @Override
@@ -96,6 +106,9 @@ public final class FileWatcher {
                         key = monitor.take();
                     }
                     catch(ClosedWatchServiceException e) {
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Exit watching folder %s for closed monitor %s", folder, monitor));
+                        }
                         // If this watch service is closed
                         return true;
                     }
@@ -126,6 +139,9 @@ public final class FileWatcher {
                     boolean valid = key.reset();
                     if(!valid) {
                         // The key is no longer valid and the loop can exit.
+                        if(log.isWarnEnabled()) {
+                            log.warn(String.format("Exit watching folder %s", folder));
+                        }
                         return true;
                     }
                 }
@@ -164,6 +180,7 @@ public final class FileWatcher {
         try {
             monitor.close();
             pool.shutdown(false);
+            registered.clear();
         }
         catch(IOException e) {
             log.error("Failure closing file watcher monitor", e);

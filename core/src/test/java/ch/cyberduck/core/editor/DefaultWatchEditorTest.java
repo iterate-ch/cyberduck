@@ -49,7 +49,7 @@ public class DefaultWatchEditorTest {
     public void testEditNullApplicationNoFile() throws Exception {
         final DefaultWatchEditor editor = new DefaultWatchEditor(new Host(new TestProtocol()), new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         final Path file = new Path("/remote", EnumSet.of(Path.Type.file));
-        editor.edit(EditorFactory.getEditor(file.getName()), file, new DefaultTemporaryFileService().create("remote"), new DisabledFileWatcherListener());
+        editor.edit(EditorFactory.getEditor(file.getName()), file, new DefaultTemporaryFileService().create("remote"), new DisabledFileWatcherListener(), new DisabledApplicationQuitCallback());
     }
 
     @Test(expected = IOException.class)
@@ -58,6 +58,6 @@ public class DefaultWatchEditorTest {
         final Local local = new DefaultTemporaryFileService().create("remote");
         new DefaultLocalTouchFeature().touch(local);
         final Path file = new Path("/remote.txt", EnumSet.of(Path.Type.file));
-        editor.edit(EditorFactory.getEditor(file.getName()), file, local, new DisabledFileWatcherListener());
+        editor.edit(EditorFactory.getEditor(file.getName()), file, local, new DisabledFileWatcherListener(), new DisabledApplicationQuitCallback());
     }
 }

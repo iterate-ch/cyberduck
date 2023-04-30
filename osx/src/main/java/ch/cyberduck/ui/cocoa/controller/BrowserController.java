@@ -56,8 +56,8 @@ import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.keychain.SFCertificatePanel;
 import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileService;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
@@ -2496,7 +2496,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             editor = editors.get(file);
         }
         this.background(new WorkerBackgroundAction<>(this, pool, editor.open(
-                application, new DisabledApplicationQuitCallback(), new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
+                application, new ApplicationQuitCallback() {
+                    @Override
+                    public void callback() {
+                        editors.remove(file);
+                    }
+                }, new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
                     @Override
                     public void saved() {
                         reload(workdir, new PathReloadFinder().find(Collections.singletonList(file)), Collections.singletonList(file), true);

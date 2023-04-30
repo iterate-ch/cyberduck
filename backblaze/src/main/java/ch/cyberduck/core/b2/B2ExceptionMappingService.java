@@ -79,6 +79,9 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 if("bad_bucket_id".equalsIgnoreCase(e.getCode())) {
                     return new NotfoundException(buffer.toString(), e);
                 }
+                if("already_hidden".equalsIgnoreCase(e.getCode())) {
+                    return new NotfoundException(buffer.toString(), e);
+                }
                 if("cap_exceeded".equalsIgnoreCase(e.getCode())) {// Reached the storage cap that you set
                     return new QuotaException(buffer.toString(), e);
                 }

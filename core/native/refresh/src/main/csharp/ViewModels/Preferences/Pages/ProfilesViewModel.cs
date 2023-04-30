@@ -1,14 +1,13 @@
-﻿using ch.cyberduck.core.profiles;
-using Ch.Cyberduck.Core.Refresh.Models;
+﻿using ch.cyberduck.core;
+using ch.cyberduck.core.profiles;
 using Ch.Cyberduck.Core.Refresh.Services;
 using DynamicData;
 using DynamicData.Binding;
 using org.apache.logging.log4j;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -17,23 +16,24 @@ using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
 {
-    using ch.cyberduck.core;
+    using Local = ch.cyberduck.core.Local;
 
     public class ProfilesViewModel : ReactiveObject
     {
         private static Logger log = LogManager.getLogger(typeof(ProfilesViewModel).FullName);
 
-        private readonly Dictionary<ProfileDescription, DescribedProfile> installed = new();
+        private readonly ReadOnlyObservableCollection<ProfileViewModel> profiles;
+        private bool busy;
+        private string filterText;
 
         public ProfilesViewModel(ProtocolFactory protocols, ProfileListObserver profileListObserver, Controller controller)
         {
-            BehaviorSubject<bool> initialized = new(false);
+            BehaviorSubject<bool> loadActive = new(true);
             LoadProfiles = ReactiveCommand.CreateFromTask(async () =>
             {
                 // doesn't handle failures.
                 // On Cyberduck: Requires restarting Cyberduck, as the Preferences-window is cached.
                 // On Mountain Duck: everytime navigating to the view reruns LoadProfiles.
-                initialized.OnNext(true);
                 TaskCompletionSource<IEnumerable<ProfileDescription>> result = new();
                 var worker = new InternalProfilesSynchronizeWorker(protocols, result);
                 var action = new ProfilesWorkerBackgroundAction(controller, worker);
@@ -48,9 +48,10 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 {
                     Busy = false;
                 }
-            }, initialized.Select(x => !x));
+            }, loadActive);
+            LoadProfiles.SelectMany(Observable.Return(false)).Subscribe(loadActive);
 
-            var profiles = LoadProfiles.ToObservableChangeSet()
+            var profiles = LoadProfiles.Select(s => s.AsObservableChangeSet()).Switch()
                 .Filter(x => x.getProfile().isPresent())
                 .Filter(this.WhenAnyValue(v => v.FilterText)
                     .Throttle(TimeSpan.FromMilliseconds(500))
@@ -58,11 +59,11 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                     .Select(v => (Func<ProfileDescription, bool>)new SearchProfilePredicate(v).test))
                 .Transform(x => new ProfileViewModel(x))
                 .AsObservableList();
-
+            
             profiles.Connect()
                 .Sort(SortExpressionComparer<ProfileViewModel>.Ascending(x => x.Profile))
                 .ObserveOnDispatcher()
-                .Bind(Profiles)
+                .Bind(out this.profiles)
                 .Subscribe();
 
             profiles.Connect()
@@ -86,15 +87,21 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Preferences.Pages
                 });
         }
 
-        [Reactive]
-        public bool Busy { get; set; }
+        public bool Busy
+        {
+            get => busy;
+            set => this.RaiseAndSetIfChanged(ref busy, value);
+        }
 
-        [Reactive]
-        public string FilterText { get; set; }
+        public string FilterText
+        {
+            get => filterText;
+            set => this.RaiseAndSetIfChanged(ref filterText, value);
+        }
 
         public ReactiveCommand<Unit, IEnumerable<ProfileDescription>> LoadProfiles { get; }
 
-        public BindingList<ProfileViewModel> Profiles { get; } = new();
+        public ReadOnlyObservableCollection<ProfileViewModel> Profiles => profiles;
 
         private class InternalProfilesSynchronizeWorker : ProfilesSynchronizeWorker
         {

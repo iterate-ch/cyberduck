@@ -29,7 +29,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public PromptForm()
         {
             InitializeComponent();
-            AutoSize = true;
             FormClosing += delegate (object sender, FormClosingEventArgs args)
             {
                 if (DialogResult == DialogResult.Cancel || DialogResult == DialogResult.Ignore)
@@ -55,8 +54,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                     SystemSounds.Beep.Play();
                 }
             };
-            MinimumSize = new Size(400, 150);
-            skipButton.Visible = ValidateSkip();
         }
 
         protected override bool EnableAutoSizePosition => false;
@@ -76,12 +73,19 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public event ValidateInputHandler ValidateInput;
 
+        protected static Button CreateButton(Button button, out Button result)
+        {
+            button.AutoSize = true;
+            button.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            button.UseVisualStyleBackColor = true;
+            result = button;
+            return button;
+        }
+
         private void PromptForm_Shown(object sender, EventArgs e)
         {
             inputTextBox.Focus();
             inputTextBox.SelectAll();
         }
-
-        protected virtual bool ValidateSkip() => false;
     }
 }

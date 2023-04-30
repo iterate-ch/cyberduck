@@ -30,6 +30,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.ftp.list.FTPDataResponseReader;
 import ch.cyberduck.core.ftp.list.FTPMlsdListResponseReader;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 
 import org.apache.commons.net.ftp.FTPCmd;
@@ -56,18 +58,21 @@ public class FTPAttributesFinderFeature extends VoidAttributesAdapter implements
         }
         try {
             try {
-                if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
-                    if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {
-                        throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                final PreferencesReader preferences = new HostPreferences(session.getHost());
+                if(preferences.getBoolean("ftp.command.mlsd")) {
+                    if(session.getClient().hasFeature(FTPCmd.MLST.getCommand())) {
+                        if(!FTPReply.isPositiveCompletion(session.getClient().sendCommand(FTPCmd.MLST, file.getAbsolute()))) {
+                            throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());
+                        }
+                        final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
+                        final AttributedList<Path> attributes
+                                = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()));
+                        if(attributes.contains(file)) {
+                            return attributes.get(attributes.indexOf(file)).attributes();
+                        }
                     }
-                    final FTPDataResponseReader reader = new FTPMlsdListResponseReader();
-                    final AttributedList<Path> attributes
-                            = reader.read(file.getParent(), Arrays.asList(session.getClient().getReplyStrings()), listener);
-                    if(attributes.contains(file)) {
-                        return attributes.get(attributes.indexOf(file)).attributes();
-                    }
+                    log.warn("No support for MLST in reply to FEAT");
                 }
-                log.warn("No support for MLST in reply to FEAT");
                 return new DefaultAttributesFinderFeature(session).find(file, listener);
             }
             catch(IOException e) {

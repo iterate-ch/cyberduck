@@ -51,10 +51,4 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
         global.add(this);
         super.init();
     }
-
-    @Override
-    public void cleanup() {
-        global.remove(this);
-        super.cleanup();
-    }
 }

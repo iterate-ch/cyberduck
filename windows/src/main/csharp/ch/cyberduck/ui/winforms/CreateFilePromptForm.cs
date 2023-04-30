@@ -16,10 +16,9 @@
 // yves@cyberduck.ch
 // 
 
-using System.Drawing;
-using System.Windows.Forms;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Ui.Controller;
+using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -30,26 +29,42 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Text = LocaleFactory.localizedString("Create new file", "File");
-            Button cancelBtn = new Button
-                {
-                    AutoSize = true,
-                    Size = new Size(75, okButton.Size.Height),
-                    TabIndex = 5,
-                    Text = LocaleFactory.localizedString("Cancel"),
-                    UseVisualStyleBackColor = true,
-                    Anchor = AnchorStyles.Bottom | AnchorStyles.Left
-                };
-            tableLayoutPanel.Controls.Add(cancelBtn, 1, 2);
-
             pictureBox.Padding = new Padding(0, 0, 0, 5);
             label.Text = LocaleFactory.localizedString("Enter the name for the new file", "File");
-            okButton.Text = LocaleFactory.localizedString("Create", "File");
 
-            // cancelButton is the 'Edit' button now
-            cancelButton.DialogResult = DialogResult.Yes;
-            cancelButton.Text = LocaleFactory.localizedString("Edit", "File");
+            SetupButtons();
+        }
+        
+        private void SetupButtons()
+        {
+            buttonPanel.SuspendLayout();
 
-            CancelButton = cancelBtn;
+            buttonPanel.ColumnCount = 4;
+
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.OK,
+                TabIndex = 0,
+                Text = LocaleFactory.localizedString("Create", "File"),
+            }, out var createButton), 1, 0);
+            AcceptButton = createButton;
+
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.Yes,
+                TabIndex = 1,
+                Text = LocaleFactory.localizedString("Edit", "File"),
+            }, out _), 2, 0);
+
+            buttonPanel.Controls.Add(CreateButton(new Button()
+            {
+                DialogResult = DialogResult.Cancel,
+                TabIndex = 2,
+                Text = "Cancel",
+            }, out var cancelButton), 3, 0);
+            CancelButton = cancelButton;
+
+            buttonPanel.ResumeLayout();
         }
     }
 }

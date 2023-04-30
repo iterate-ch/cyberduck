@@ -73,11 +73,6 @@ public class GraphVersioningFeature implements Versioning {
     }
 
     @Override
-    public boolean isRevertable(Path file) {
-        return file.attributes().isDuplicate();
-    }
-
-    @Override
     public AttributedList<Path> list(Path file, ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> versions = new AttributedList<>();
         final DriveItem item = session.getItem(file);
@@ -88,6 +83,7 @@ public class GraphVersioningFeature implements Versioning {
             for(final DriveItemVersion version : items.stream().skip(1).collect(Collectors.toList())) {
                 versions.add(new Path(file).withAttributes(attributes.toAttributes(parentMetadata, version)));
             }
+            listener.chunk(file.getParent(), versions);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService(fileid).map("Failure to read attributes of {0}", e, file);

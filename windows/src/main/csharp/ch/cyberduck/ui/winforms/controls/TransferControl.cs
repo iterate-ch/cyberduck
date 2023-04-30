@@ -177,15 +177,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 if (value == TransferDirection.Download)
                 {
-                    directionPictureBox.Image = Images.TransferDownload;
+                    directionPictureBox.Image = Images.TransferDownload.Size(32);
                 }
                 if (value == TransferDirection.Upload)
                 {
-                    directionPictureBox.Image = Images.TransferUpload;
+                    directionPictureBox.Image = Images.TransferUpload.Size(32);
                 }
                 if (value == TransferDirection.Sync)
                 {
-                    directionPictureBox.Image = Images.Sync;
+                    directionPictureBox.Image = Images.Sync.Size(32);
                 }
             }
         }

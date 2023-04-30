@@ -1,6 +1,4 @@
-﻿using static InlineIL.FieldRef;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
+﻿using System.Diagnostics.CodeAnalysis;
 using static Windows.Win32.CorePInvoke;
 
 namespace Windows.Win32.Security.Credentials
@@ -9,31 +7,13 @@ namespace Windows.Win32.Security.Credentials
     {
         private CREDENTIALW* ptr;
 
-        public ref CREDENTIALW Handle
+        public CredHandle(in CREDENTIALW* pointer)
         {
-            get
-            {
-                // C# doesn't allow return ref ptr.
-                // IL doesn't have a problem with it.
-                Ldarg_0();
-                Ldflda(Field(typeof(CredHandle), nameof(ptr)));
-                Ret(); // return ref *(CREDENTIALW*)&ptr;
-                throw Unreachable();
-            }
+            ptr = pointer;
         }
 
-        public ref CREDENTIALW* Pointer
-        {
-            get
-            {
-                // C# doesn't allow return ref ptr.
-                // IL doesn't have a problem with it.
-                Ldarg_0();
-                Ldflda(Field(typeof(CredHandle), nameof(ptr)));
-                Ret(); // return ref ptr;
-                throw Unreachable();
-            }
-        }
+        [UnscopedRef]
+        public ref CREDENTIALW* Pointer => ref ptr;
 
         public ref CREDENTIALW Value => ref *ptr;
 

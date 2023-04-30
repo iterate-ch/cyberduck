@@ -66,9 +66,9 @@ public class SDSListService implements ListService {
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     nodeid.cache(file, String.valueOf(node.getId()));
                     children.add(file);
-                    listener.chunk(directory, children);
                 }
                 offset += chunksize;
+                listener.chunk(directory, children);
             }
             while(nodes.getItems().size() == chunksize);
         }

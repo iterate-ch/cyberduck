@@ -197,11 +197,6 @@ public class S3VersioningFeature implements Versioning {
         }
     }
 
-    @Override
-    public boolean isRevertable(final Path file) {
-        return file.attributes().isDuplicate();
-    }
-
     /**
      * Prompt for MFA credentials
      *

@@ -68,6 +68,9 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             return this.findNode(file, id);
         }
         catch(NotfoundException e) {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Previously cached node id %s no longer found for file %s", id, file));
+            }
             // Try with reset cache after failure finding node id
             return this.findNode(file, nodeid.getVersionId(file));
         }

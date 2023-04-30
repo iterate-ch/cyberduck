@@ -145,22 +145,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             actionToolStrip.Renderer = new NoGapRenderer();
 
             // configure browser properties
-            browser.UseExplorerTheme = true;
-            browser.UseTranslucentSelection = true;
-            browser.OwnerDraw = true;
-            browser.UseOverlays = false;
             browser.LabelEdit = true;
-            browser.AllowDrop = true;
 
             browser.ContextMenuStrip = null;
             browser.ContextMenu = browserContextMenu;
             browser.DropSink = new ExpandingBrowserDropSink(this);
             browser.DragSource = new BrowserDragSource(this);
 
-            browser.AllowColumnReorder = true;
-            browser.ShowImagesOnSubItems = true;
             browser.TreeColumnRenderer = new BrowserRenderer();
-            browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
             browser.BeforeSorting += BeforeSorting;
             browser.CellEditStarting += (sender, args) => args.Cancel = !ValidateRenameFile();
@@ -1685,14 +1677,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureBookmarkList(ObjectListView l, OLVColumn descColumn, OLVColumn imageColumn,
             OLVColumn activeColumn)
         {
-            l.ShowGroups = false;
-            l.UseOverlays = false;
-            l.OwnerDraw = true;
-            l.FullRowSelect = true;
-            l.MultiSelect = true;
-            l.HeaderStyle = ColumnHeaderStyle.None;
-            l.HideSelection = false;
-            l.AllowDrop = true;
             l.DropSink = new HostDropSink(this);
             l.DragSource = new HostDragSource(this);
 

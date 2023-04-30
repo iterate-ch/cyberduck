@@ -57,8 +57,7 @@ public class SDSReadFeature implements Read {
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final SDSApiClient client = session.getClient();
-            final DownloadTokenGenerateResponse token = new NodesApi(session.getClient()).generateDownloadUrl(Long.valueOf(nodeid.getVersionId(file
-            )), StringUtils.EMPTY);
+            final DownloadTokenGenerateResponse token = new NodesApi(session.getClient()).generateDownloadUrl(Long.valueOf(nodeid.getVersionId(file)), StringUtils.EMPTY);
             final HttpUriRequest request = new HttpGet(token.getDownloadUrl());
             request.addHeader("X-Sds-Auth-Token", StringUtils.EMPTY);
             if(status.isAppend()) {

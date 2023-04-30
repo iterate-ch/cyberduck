@@ -30,6 +30,7 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,11 +46,18 @@ import java.util.Map;
 public final class ActivityController extends WindowController {
     private static final Logger log = LogManager.getLogger(ActivityController.class);
 
-    private final BackgroundActionRegistry registry
-        = BackgroundActionRegistry.global();
+    private final BackgroundActionRegistry registry;
 
     private final Map<BackgroundAction, TaskController> tasks
-        = Collections.synchronizedMap(new LinkedHashMap<BackgroundAction, TaskController>());
+            = Collections.synchronizedMap(new LinkedHashMap<>());
+
+    public ActivityController() {
+        this(BackgroundActionRegistry.global());
+    }
+
+    public ActivityController(final BackgroundActionRegistry registry) {
+        this.registry = registry;
+    }
 
     @Override
     public void awakeFromNib() {
@@ -58,7 +66,7 @@ public final class ActivityController extends WindowController {
         registry.addListener(backgroundActionListener);
         // Add already running background actions
         final BackgroundAction[] actions = registry.toArray(
-            new BackgroundAction[registry.size()]);
+                new BackgroundAction[registry.size()]);
         for(final BackgroundAction action : actions) {
             tasks.put(action, new TaskController(action));
         }
@@ -102,10 +110,15 @@ public final class ActivityController extends WindowController {
      *
      */
     private void reload() {
-        while(table.subviews().count().intValue() > 0) {
-            (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
-        }
-        table.reloadData();
+        this.invoke(new DefaultMainAction() {
+            @Override
+            public void run() {
+                while(table.subviews().count().intValue() > 0) {
+                    (Rococoa.cast(table.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
+                }
+                table.reloadData();
+            }
+        });
     }
 
     @Override

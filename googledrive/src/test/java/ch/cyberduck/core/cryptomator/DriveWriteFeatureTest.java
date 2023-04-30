@@ -28,7 +28,6 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoFindV6Feature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -132,7 +131,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindV6Feature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(cryptomator.getFeature(session, Find.class, new DriveFindFeature(session, fileid)).find(test));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         final String fileId = found.attributes().getFileId();
         assertNotNull(fileId);
