@@ -37,7 +37,7 @@ public class SMBListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        AttributedList<Path> result = new AttributedList<>();
+        final AttributedList<Path> result = new AttributedList<>();
         for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
             // TODO: add missing types and path attributes
             if((f.getFileAttributes() & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {

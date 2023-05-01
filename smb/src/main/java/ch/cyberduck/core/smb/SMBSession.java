@@ -68,10 +68,10 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         if(connection == null) {
             throw new BackgroundException(new IllegalStateException("Connection must be established before login"));
         }
-        String domain, username, shareString;
+        final String domain, username, shareString;
 
         String[] parts = host.getCredentials().getUsername().split("/", 0);
-        String domainUsername = parts[0];
+        final String domainUsername = parts[0];
         if(parts.length > 1) {
             shareString = parts[1];
         }
@@ -92,7 +92,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             domain = parts[1];
         }
 
-        AuthenticationContext ac = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
+        final AuthenticationContext ac = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
 
         try {
             session = connection.authenticate(ac);
