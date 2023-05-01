@@ -23,8 +23,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.logging.log4j.LogManager;
@@ -35,11 +33,13 @@ import java.io.IOException;
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
 import com.hierynomus.smbj.auth.AuthenticationContext;
+import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.connection.Connection;
 import com.hierynomus.smbj.session.Session;
 import com.hierynomus.smbj.share.DiskShare;
 
 public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
+    private static final Logger log = LogManager.getLogger(SMBSession.class);
 
     protected Connection connection;
     protected DiskShare share;
@@ -50,13 +50,6 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         client = new SMBClient();
     }
 
-    public SMBSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
-        super(h);
-        client = new SMBClient();
-    }
-
-    private static final Logger log = LogManager.getLogger(SMBSession.class);
-
     @Override
     protected SMBClient connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt, CancelCallback cancel)
             throws BackgroundException {
@@ -64,7 +57,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         try {
             this.connection = client.connect(getHost().getHostname(), getHost().getPort());
         }
-        catch(Exception e) {
+        catch(IOException e) {
             throw new BackgroundException(e);
         }
         return client;
@@ -105,8 +98,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             session = connection.authenticate(ac);
             share = (DiskShare) session.connectShare(shareString);
         }
-        catch(
-                Exception e) {
+        catch(SMBRuntimeException e) {
             throw new BackgroundException(e);
         }
 
@@ -118,7 +110,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             try {
                 session.logoff();
             }
-            catch(TransportException e) {
+            catch(SMBRuntimeException|TransportException e) {
                 throw new BackgroundException(e);
             }
         }
@@ -126,7 +118,6 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
     @Override
     protected void disconnect() {
-        super.disconnect();
         try {
             if(connection != null) {
                 connection.close();
@@ -135,8 +126,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             client.close();
         }
         catch(IOException e) {
-            throw new RuntimeException(e);
+            log.warn(String.format("Ignore disconnect failure %s", e.getMessage()));
         }
+        super.disconnect();
 
     }
 
