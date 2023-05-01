@@ -34,7 +34,7 @@
         <key>Username Configurable</key>
         <true/>
         <key>Username Placeholder</key>
-        <string>username@domain/server</string>
+        <string>username@domain/share</string>
         <key>Password Configurable</key>
         <true/>
         <key>Anonymous Configurable</key>
