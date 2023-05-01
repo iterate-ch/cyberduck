@@ -39,7 +39,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
      */
     private String path;
     /**
-     * An absolute reference here the symbolic link is pointing to
+     * The target of the symbolic link if this path denotes a symbolic link or null
      */
     private Path symlink;
     /**
@@ -48,7 +48,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     private EnumSet<Type> type;
 
     /**
-     * Attributes denoting this path
+     * File attributes
      */
     private PathAttributes attributes;
 
@@ -61,9 +61,9 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * @param parent the absolute directory
-     * @param name   the file relative to param path
-     * @param type   File type
+     * @param parent Parent path
+     * @param name   The filename relative to parent
+     * @param type   File types
      */
     public Path(final Path parent, final String name, final EnumSet<Type> type) {
         this.type = type;
@@ -74,7 +74,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     /**
      * @param absolute The absolute path of the remote file
-     * @param type     File type
+     * @param type     File types
      */
     public Path(final String absolute, final EnumSet<Type> type) {
         this.type = type;
@@ -84,7 +84,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
 
     /**
      * @param absolute   The absolute path of the remote file
-     * @param attributes File type
+     * @param type       File types
+     * @param attributes File attributes
      */
     public Path(final String absolute, final EnumSet<Type> type, final PathAttributes attributes) {
         this.type = type;
@@ -93,8 +94,8 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
-     * @param parent     Parent path reference
-     * @param name       Filename
+     * @param parent     Parent path
+     * @param name       The filename relative to parent
      * @param attributes Attributes
      */
     public Path(final Path parent, final String name, final EnumSet<Type> type, final PathAttributes attributes) {
