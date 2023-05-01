@@ -61,7 +61,10 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             = new PreferencesUseragentProvider();
 
     private OAuth2RequestInterceptor authorizationService;
-    private Lock<String> locking = null;
+
+    private DropboxLockFeature locking;
+    private DropboxShareUrlProvider share;
+
     private PathRoot root = PathRoot.HOME;
 
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -98,8 +101,16 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(account.getEmail());
             switch(account.getAccountType()) {
+                // The features listed below are only available to customers on Dropbox Professional, Standard, Advanced, and Enterprise.
+                case PRO:
                 case BUSINESS:
+                    share = new DropboxPasswordShareUrlProvider(this);
                     locking = new DropboxLockFeature(this);
+                    break;
+                default:
+                    share = new DropboxShareUrlProvider(this);
+                    locking = null;
+                    break;
             }
             // The Dropbox API Path Root is the folder that an API request operates relative to.
             final PathRoot root = PathRoot.root(account.getRootInfo().getRootNamespaceId());
@@ -154,7 +165,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxUrlProvider(this);
         }
         if(type == PromptUrlProvider.class) {
-            return (T) new DropboxPasswordShareUrlProvider(this);
+            return (T) share;
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);
