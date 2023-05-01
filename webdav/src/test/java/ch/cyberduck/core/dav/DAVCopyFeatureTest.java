@@ -21,6 +21,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -36,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -61,6 +63,7 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(copy, new TransferStatus());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
@@ -76,7 +79,9 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DAVDirectoryFeature(session).mkdir(directory, new TransferStatus());
         new DAVTouchFeature(session).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback(), new DisabledStreamListener());
+        new DAVDirectoryFeature(session).mkdir(copy, new TransferStatus());
+        assertThrows(ConflictException.class, () -> new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().exists(false), new DisabledConnectionCallback(), new DisabledStreamListener()));
+        new DAVCopyFeature(session).copy(directory, copy, new TransferStatus().exists(true), new DisabledConnectionCallback(), new DisabledStreamListener());
         assertTrue(new DAVFindFeature(session).find(file));
         assertTrue(new DAVFindFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));

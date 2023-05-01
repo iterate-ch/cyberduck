@@ -49,11 +49,11 @@ public class DAVCopyFeature implements Copy {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
                 // Indicate that the client has knowledge of that state token
-                session.getClient().copy(new DAVPathEncoder().encode(source), target, true,
-                    Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists(),
+                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
             }
             else {
-                session.getClient().copy(new DAVPathEncoder().encode(source), target, true);
+                session.getClient().copy(new DAVPathEncoder().encode(source), target, status.isExists());
             }
             listener.sent(status.getLength());
             return copy;
