@@ -41,10 +41,10 @@ public class SMBListService implements ListService {
         for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
             // TODO: add missing types and path attributes
             if((f.getFileAttributes() & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
-                result.add(new Path(directory.getAbsolute() + f.getFileName(), EnumSet.of(AbstractPath.Type.directory)));
+                result.add(new Path(directory, f.getFileName(), EnumSet.of(AbstractPath.Type.directory)));
             }
             else {
-                result.add(new Path(directory.getAbsolute() + f.getFileName(), EnumSet.of(AbstractPath.Type.file)));
+                result.add(new Path(directory, f.getFileName(), EnumSet.of(AbstractPath.Type.file)));
             }
         }
         return result;
