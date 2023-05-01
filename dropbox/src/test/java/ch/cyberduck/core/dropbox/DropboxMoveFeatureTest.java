@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -53,6 +54,20 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
         assertEquals(target.attributes().getModificationDate(), file.attributes().getModificationDate());
         assertEquals(target.attributes(), new DropboxAttributesFinderFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveOverride() throws Exception {
+        final Path home = new DefaultHomeFinderService(session).find();
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DropboxTouchFeature(session).touch(test, new TransferStatus());
+        final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        new DropboxTouchFeature(session).touch(target, new TransferStatus());
+        assertThrows(ConflictException.class, () -> new DropboxMoveFeature(session).move(test, target, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
+        new DropboxMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new DropboxFindFeature(session).find(test));
+        assertTrue(new DropboxFindFeature(session).find(target));
+        new DropboxDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

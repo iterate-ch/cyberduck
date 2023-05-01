@@ -270,6 +270,16 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                     return new AccessDeniedException(buffer.toString(), failure);
             }
         }
+        if(failure instanceof RelocationErrorException) {
+            final RelocationError error = ((RelocationErrorException) failure).errorValue;
+            switch(error.tag()) {
+                case TO:
+                    return new ConflictException(buffer.toString(), failure);
+                case TOO_MANY_FILES:
+                case INSUFFICIENT_QUOTA:
+                    return new QuotaException(buffer.toString(), failure);
+            }
+        }
         return new InteroperabilityException(buffer.toString(), failure);
     }
 
