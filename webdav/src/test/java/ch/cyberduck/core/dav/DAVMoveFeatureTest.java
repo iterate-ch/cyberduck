@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -109,6 +110,7 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
         new DAVTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(target, new TransferStatus());
+        assertThrows(ConflictException.class, () -> new DAVMoveFeature(session).move(test, target, new TransferStatus().exists(false), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
         new DAVMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));

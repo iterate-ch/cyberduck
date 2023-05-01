@@ -50,11 +50,13 @@ public class DAVMoveFeature implements Move {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
             if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
                 // Indicate that the client has knowledge of that state token
-                session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target, true,
-                    Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target,
+                        status.isExists(),
+                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
             }
             else {
-                session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target, true);
+                session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target,
+                        status.isExists());
             }
             // Copy original file attributes
             return renamed.withAttributes(file.attributes());

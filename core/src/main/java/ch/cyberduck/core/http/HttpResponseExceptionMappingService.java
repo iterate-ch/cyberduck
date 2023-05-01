@@ -55,6 +55,7 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
                 return new AccessDeniedException(buffer.toString(), failure);
             case HttpStatus.SC_CONFLICT:
             case HttpStatus.SC_METHOD_NOT_ALLOWED:
+            case HttpStatus.SC_PRECONDITION_FAILED:
                 return new ConflictException(buffer.toString(), failure);
             case HttpStatus.SC_NOT_FOUND:
             case HttpStatus.SC_GONE:
