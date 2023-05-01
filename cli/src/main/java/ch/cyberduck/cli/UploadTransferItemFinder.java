@@ -34,22 +34,18 @@ public class UploadTransferItemFinder implements TransferItemFinder {
     @Override
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
         final Local local = LocalFactory.get(input.getOptionValues(action.name())[1]);
-        final Set<TransferItem> items = new HashSet<TransferItem>();
-        items.add(this.resolve(remote, local));
+        final Set<TransferItem> items = new HashSet<>();
+        items.add(resolve(remote, local));
         for(String arg : input.getArgs()) {
-            items.add(this.resolve(remote, LocalFactory.get(arg)));
+            items.add(resolve(remote, LocalFactory.get(arg)));
         }
         return items;
     }
 
-    protected TransferItem resolve(final Path remote, final Local local) {
+    protected static TransferItem resolve(final Path remote, final Local local) {
         if(local.isDirectory()) {
             // Local path resolves to folder
-            if(remote.isDirectory()) {
-                // Append local name to remote target
-                return new TransferItem(new Path(remote, local.getName(), EnumSet.of(Path.Type.directory)), local);
-            }
-            return new TransferItem(new Path(remote.getParent(), remote.getName(), EnumSet.of(Path.Type.directory)), local);
+            return new TransferItem(remote, local);
         }
         // Local path resolves to file
         if(remote.isDirectory()) {
