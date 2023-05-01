@@ -101,7 +101,7 @@ public final class PathNormalizer {
                     break;
                 }
                 normalized = normalized.substring(0, index) +
-                    normalized.substring(index + 2);
+                        normalized.substring(index + 2);
             }
             // Resolve occurrences of "/../" in the normalized path
             while(true) {
@@ -114,7 +114,7 @@ public final class PathNormalizer {
                     return String.valueOf(Path.DELIMITER);
                 }
                 normalized = normalized.substring(0, normalized.lastIndexOf(Path.DELIMITER, index - 1)) +
-                    normalized.substring(index + 3);
+                        normalized.substring(index + 3);
             }
             StringBuilder n = new StringBuilder();
             if(normalized.startsWith("//")) {
@@ -187,14 +187,14 @@ public final class PathNormalizer {
             // Mount absolute path
             final String normalized = normalize(StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), true);
             return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
-                EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
         else {
             final String normalized;
-            if(StringUtils.startsWith(path, Path.HOME)) {
+            if(StringUtils.startsWith(path, String.format("%s%s", Path.HOME, Path.DELIMITER))) {
                 // Relative path to the home directory
                 normalized = normalize(StringUtils.removeStart(StringUtils.removeStart(
-                    StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), Path.HOME), String.valueOf(Path.DELIMITER)), false);
+                        StringUtils.replace(path, "\\", String.valueOf(Path.DELIMITER)), Path.HOME), String.valueOf(Path.DELIMITER)), false);
             }
             else {
                 // Relative path
