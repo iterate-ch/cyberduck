@@ -17,6 +17,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -129,11 +130,14 @@ public class BackgroundCallable<T> implements Callable<T> {
         catch(IllegalStateException e) {
             log.warn(String.format("Failure overwriting cause for failure %s with %s", trace, failure));
         }
-        if(failure instanceof UnsupportedException) {
-            log.debug(String.format("Failure %s running background task", failure), trace);
+        if(failure instanceof ConnectionCanceledException) {
+            log.debug(String.format("Canceled running background task %s", action), trace);
+        }
+        else if(failure instanceof UnsupportedException) {
+            log.debug(String.format("Unsupported running background task %s", action), trace);
         }
         else {
-            log.warn(String.format("Failure %s running background task", failure), trace);
+            log.warn(String.format("Failure running background task %s", action), trace);
         }
     }
 }
