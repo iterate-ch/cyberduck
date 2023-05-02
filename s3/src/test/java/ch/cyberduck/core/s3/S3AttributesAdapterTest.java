@@ -29,4 +29,11 @@ public class S3AttributesAdapterTest {
         object.addMetadata("Mtime", "1647683127.160620746");
         assertEquals(1647683127L, new S3AttributesAdapter().toAttributes(object).getModificationDate());
     }
+
+    @Test
+    public void testMtimeInvalid() {
+        final StorageObject object = new StorageObject();
+        object.addMetadata("Mtime", "Invalid");
+        assertEquals(-1, new S3AttributesAdapter().toAttributes(object).getModificationDate());
+    }
 }
