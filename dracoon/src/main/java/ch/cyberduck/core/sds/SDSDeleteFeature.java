@@ -53,6 +53,11 @@ public class SDSDeleteFeature implements Delete {
                     new NodesApi(session.getClient()).removeDeletedNodes(new DeleteDeletedNodesRequest().deletedNodeIds(Collections.singletonList(
                             Long.parseLong(nodeid.getVersionId(file)))), StringUtils.EMPTY);
                 }
+                else if(false) {
+                    // Delete malicious file
+                    log.warn(String.format("Delete file %s marked as malicious", file));
+                    // todo API call tbd
+                }
                 else {
                     new NodesApi(session.getClient()).removeNode(
                             Long.parseLong(nodeid.getVersionId(file)), StringUtils.EMPTY);
