@@ -82,7 +82,12 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
             }
             attributes.setMetadata(metadata);
             if(object.containsMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
-                attributes.setModificationDate(Double.valueOf(object.getMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()).longValue());
+                try {
+                    attributes.setModificationDate(Double.valueOf(object.getMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()).longValue());
+                }
+                catch(NumberFormatException ignored) {
+                    // ignore
+                }
             }
         }
         return attributes;
