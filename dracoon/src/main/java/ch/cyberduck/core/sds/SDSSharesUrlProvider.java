@@ -23,7 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -58,9 +57,6 @@ import com.dracoon.sdk.crypto.model.UserKeyPair;
 
 public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadShareRequest, CreateUploadShareRequest> {
     private static final Logger log = LogManager.getLogger(SDSSharesUrlProvider.class);
-
-    private final PathContainerService containerService
-            = new SDSPathContainerService();
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
