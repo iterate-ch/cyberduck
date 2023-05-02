@@ -88,6 +88,19 @@ public class SDSAttributesAdapter implements AttributesAdapter<Node> {
             custom.put(KEY_CLASSIFICATION, String.valueOf(node.getClassification().getValue()));
         }
         attributes.setCustom(custom);
+        if(null != node.getVirusProtectionInfo()) {
+            switch(node.getVirusProtectionInfo().getVerdict()) {
+                case CLEAN:
+                    attributes.setVerdict(PathAttributes.Verdict.clean);
+                    break;
+                case UNKNOWN:
+                    attributes.setVerdict(PathAttributes.Verdict.unknown);
+                    break;
+                case MALICIOUS:
+                    attributes.setVerdict(PathAttributes.Verdict.malicious);
+                    break;
+            }
+        }
         return attributes;
     }
 
