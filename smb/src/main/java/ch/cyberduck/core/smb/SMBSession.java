@@ -1,5 +1,7 @@
 package ch.cyberduck.core.smb;
 
+import ch.cyberduck.core.ConnectionTimeoutFactory;
+
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
@@ -22,16 +24,20 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.SMBClient;
+import com.hierynomus.smbj.SmbConfig;
 import com.hierynomus.smbj.auth.AuthenticationContext;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 import com.hierynomus.smbj.connection.Connection;
@@ -47,7 +53,12 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
     public SMBSession(final Host h) {
         super(h);
-        client = new SMBClient();
+        SmbConfig config = SmbConfig.builder()
+                .withSocketFactory(new ProxySocketFactory(h))
+                .withTimeout(ConnectionTimeoutFactory.get(new HostPreferences(h)).getTimeout(), TimeUnit.SECONDS)
+                .withSoTimeout(ConnectionTimeoutFactory.get(new HostPreferences(h)).getTimeout(), TimeUnit.SECONDS)
+                .build();
+        client = new SMBClient(config);
     }
 
     @Override
