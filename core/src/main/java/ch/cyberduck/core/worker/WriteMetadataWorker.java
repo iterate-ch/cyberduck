@@ -112,7 +112,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
             feature.setMetadata(file, new TransferStatus().withMetadata(update).withLockId(this.getLockId(file)));
-            file.attributes().setMetadata(metadata);
+            file.attributes().setMetadata(update);
         }
         if(file.isDirectory()) {
             if(callback.recurse(file, LocaleFactory.localizedString("Metadata", "Info"))) {
