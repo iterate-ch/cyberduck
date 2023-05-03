@@ -45,7 +45,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
     protected DiskShare share;
     protected Session session;
 
-    protected SMBSession(final Host h) {
+    public SMBSession(final Host h) {
         super(h);
         client = new SMBClient();
     }
