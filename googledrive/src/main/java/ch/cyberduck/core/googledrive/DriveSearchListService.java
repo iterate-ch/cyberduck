@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.HostPreferences;
 
@@ -37,12 +36,14 @@ public class DriveSearchListService extends AbstractDriveListService {
     private final DriveSession session;
     private final DriveFileIdProvider fileid;
     private final String query;
+    private final DriveAttributesFinderFeature attributes;
 
     public DriveSearchListService(final DriveSession session, final DriveFileIdProvider fileid, final String query) {
         super(session, fileid, new HostPreferences(session.getHost()).getInteger("googledrive.list.limit"), DEFAULT_FIELDS);
         this.session = session;
         this.fileid = fileid;
         this.query = query;
+        this.attributes = new DriveAttributesFinderFeature(session, fileid);
     }
 
     @Override
@@ -83,8 +84,8 @@ public class DriveSearchListService extends AbstractDriveListService {
         }
         Path parent = directory;
         while(dequeue.size() > 0) {
-            final File p = dequeue.pop();
-            parent = new Path(parent, p.getName(), EnumSet.of(Path.Type.directory), new PathAttributes().withFileId(p.getId()));
+            final File f = dequeue.pop();
+            parent = new Path(parent, f.getName(), EnumSet.of(Path.Type.directory), attributes.toAttributes(f));
         }
         tree.add(parent);
         return tree;
