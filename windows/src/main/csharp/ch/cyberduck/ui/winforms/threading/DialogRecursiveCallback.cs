@@ -64,9 +64,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                                     _option = c.Value;
                                 }
                             });
-                    if (result.Button == IDCANCEL)
+                    if (result.Button == 0)
                     {
-                        c.SetValue(false);
+                        c.SetValue(true);
                     }
                 }, true);
                 return c.Value;
