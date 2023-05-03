@@ -45,14 +45,21 @@ public class DriveSearchListServiceTest extends AbstractDriveTest {
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Drive.Files.Create insert = session.getClient().files().create(new File()
-            .setName(name)
-            .setParents(Collections.singletonList(fileid.getFileId(directory))));
+                .setName(name)
+                .setParents(Collections.singletonList(fileid.getFileId(directory))));
         final File execute = insert.execute();
         execute.setVersion(1L);
         final Path f1 = new Path(directory, name, EnumSet.of(Path.Type.file), new DriveAttributesFinderFeature(session, fileid).toAttributes(execute));
-        final AttributedList<Path> list = new DriveSearchListService(session, fileid, name).list(DriveHomeFinderService.MYDRIVE_FOLDER, new DisabledListProgressListener());
-        assertEquals(1, list.size());
-        assertEquals(f1, list.get(0));
+        {
+            final AttributedList<Path> list = new DriveSearchListService(session, fileid, name).list(DriveHomeFinderService.MYDRIVE_FOLDER, new DisabledListProgressListener());
+            assertEquals(1, list.size());
+            assertEquals(f1, list.get(0));
+        }
+        {
+            final AttributedList<Path> list = new DriveSearchListService(session, fileid, name).list(directory, new DisabledListProgressListener());
+            assertEquals(1, list.size());
+            assertEquals(f1, list.get(0));
+        }
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
