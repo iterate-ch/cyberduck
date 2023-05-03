@@ -58,11 +58,17 @@ public class DriveSearchListService extends AbstractDriveListService {
         try {
             // Parent may not be current working directory when searching recursively
             final Set<Path> tree = new HashSet<>();
-            for(String parentId : f.getParents()) {
-                final Set<Path> parents = this.parents(parentId, new ArrayDeque<>());
-                for(Path parent : parents) {
-                    if(parent.isChild(directory) || new SimplePathPredicate(parent).test(directory)) {
-                        tree.add(parent);
+            if(null == f.getParents()) {
+                // Shared files do not have parent set
+                tree.add(DriveHomeFinderService.SHARED_FOLDER_NAME);
+            }
+            else {
+                for(String parentId : f.getParents()) {
+                    final Set<Path> parents = this.parents(parentId, new ArrayDeque<>());
+                    for(Path parent : parents) {
+                        if(parent.isChild(directory) || new SimplePathPredicate(parent).test(directory)) {
+                            tree.add(parent);
+                        }
                     }
                 }
             }
