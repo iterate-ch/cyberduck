@@ -17,13 +17,14 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,10 +58,13 @@ public class DriveSearchListService extends AbstractDriveListService {
         try {
             // Parent may not be current working directory when searching recursively
             final Set<Path> tree = new HashSet<>();
-            final String workdirId = session.getClient().files().get(fileid.getFileId(directory))
-                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute().getId();
-            for(String parentid : f.getParents()) {
-                tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>()));
+            for(String parentId : f.getParents()) {
+                final Set<Path> parents = this.parents(parentId, new ArrayDeque<>());
+                for(Path parent : parents) {
+                    if(parent.isChild(directory) || new SimplePathPredicate(parent).test(directory)) {
+                        tree.add(parent);
+                    }
+                }
             }
             return tree;
         }
@@ -69,23 +73,26 @@ public class DriveSearchListService extends AbstractDriveListService {
         }
     }
 
-    private Set<Path> parents(final Path directory, final String workdirId, String id, final Deque<File> dequeue) throws IOException {
+    /**
+     * @return The IDs of the parent folders which contain the file.
+     */
+    private Set<Path> parents(String fileId, final Deque<File> dequeue) throws IOException {
         final Set<Path> tree = new HashSet<>();
-        while(!workdirId.equals(id)) {
-            final File f = session.getClient().files().get(id).setFields(String.format("parents,%s", DriveAttributesFinderFeature.DEFAULT_FIELDS)).execute();
+        while(true) {
+            final File f = session.getClient().files().get(fileId).setFields(String.format("parents,%s", DriveAttributesFinderFeature.DEFAULT_FIELDS)).execute();
             dequeue.push(f);
             if(null == f.getParents()) {
                 break;
             }
             for(String parentid : f.getParents()) {
-                tree.addAll(this.parents(directory, workdirId, parentid, new ArrayDeque<>(dequeue)));
-                id = parentid;
+                tree.addAll(this.parents(parentid, new ArrayDeque<>(dequeue)));
+                fileId = parentid;
             }
         }
-        Path parent = directory;
+        Path parent = Home.ROOT;
         while(dequeue.size() > 0) {
             final File f = dequeue.pop();
-            parent = new Path(parent, f.getName(), EnumSet.of(Path.Type.directory), attributes.toAttributes(f));
+            parent = new Path(parent, f.getName(), this.toType(f), attributes.toAttributes(f));
         }
         tree.add(parent);
         return tree;
