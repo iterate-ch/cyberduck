@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -159,6 +160,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Touch.class) {
             return (T) new SMBTouchFeature(null);
+        }
+        if(type == Delete.class) {
+            return (T) new SMBDeleteFeature(this);
         }
         return super._getFeature(type);
     }
