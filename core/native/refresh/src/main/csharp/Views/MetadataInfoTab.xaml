@@ -17,6 +17,7 @@
 
         <TextBlock FontWeight="Bold"
                    Margin="11,7,11,2"
+                   Name="headersGridLabel"
                    Text="{xaml:Text Headers, Table=Info}"
                    Grid.Row="0" />
 
@@ -25,6 +26,7 @@
                   CanUserResizeRows="False"
                   SelectionMode="Single"
                   Margin="11,2,11,0"
+                  AutomationProperties.LabeledBy="{Binding ElementName=headersGridLabel}"
                   Grid.Row="1">
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="KeyColumn"
@@ -43,8 +45,10 @@
                 BorderThickness="0,1,0,0"
                 Padding="11"
                 Grid.Row="2">
-            <tk:SplitButton HorizontalAlignment="Left"
+            <tk:SplitButton x:Name="AddNewMetadataButton"
+                            HorizontalAlignment="Left"
                             Margin="3,5"
+                            Click="SplitButton_Opened"
                             Opened="SplitButton_Opened">
                 <ContentControl.Content>
                     <Image Height="16"

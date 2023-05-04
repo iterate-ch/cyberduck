@@ -135,6 +135,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                     SelectedIndexChanged(this, EventArgs.Empty);
 
             oldSelection = m_SelectedPanel;
+            m_SelectedPanel.Focus();
         }
 
 

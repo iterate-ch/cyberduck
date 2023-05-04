@@ -1278,7 +1278,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.SelectedIndex = 0;
             this.panelManager.SelectedPanel = this.managedDistributionPanel;
             this.panelManager.Size = new System.Drawing.Size(500, 548);
-            this.panelManager.TabIndex = 2;
+            this.panelManager.TabIndex = 0;
+            this.panelManager.TabStop = false;
             // 
             // managedDistributionPanel
             // 
@@ -1286,7 +1287,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedDistributionPanel.Location = new System.Drawing.Point(0, 0);
             this.managedDistributionPanel.Name = "managedDistributionPanel";
             this.managedDistributionPanel.Size = new System.Drawing.Size(500, 548);
-            this.managedDistributionPanel.Text = "managedPanel1";
             // 
             // managedVersionsPanel
             // 
@@ -1294,7 +1294,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedVersionsPanel.Location = new System.Drawing.Point(0, 0);
             this.managedVersionsPanel.Name = "managedVersionsPanel";
             this.managedVersionsPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedVersionsPanel.Text = "managedPanel1";
             // 
             // versionsViewHost
             // 
@@ -1303,7 +1302,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.versionsViewHost.Name = "versionsViewHost";
             this.versionsViewHost.Size = new System.Drawing.Size(0, 0);
             this.versionsViewHost.TabIndex = 0;
-            this.versionsViewHost.Text = "elementHost1";
             this.versionsViewHost.Child = this.versionsInfoTab;
             // 
             // managedGeneralPanel
@@ -1312,7 +1310,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedGeneralPanel.Location = new System.Drawing.Point(0, 0);
             this.managedGeneralPanel.Name = "managedGeneralPanel";
             this.managedGeneralPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedGeneralPanel.Text = "managedPanel1";
             // 
             // managedMetadataPanel
             // 
@@ -1320,7 +1317,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedMetadataPanel.Location = new System.Drawing.Point(0, 0);
             this.managedMetadataPanel.Name = "managedMetadataPanel";
             this.managedMetadataPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedMetadataPanel.Text = "managedPanel1";
             // 
             // managedMetadataHost
             // 
@@ -1329,7 +1325,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedMetadataHost.Name = "managedMetadataHost";
             this.managedMetadataHost.Size = new System.Drawing.Size(500, 548);
             this.managedMetadataHost.TabIndex = 0;
-            this.managedMetadataHost.Text = "managedMetadataHost";
             this.managedMetadataHost.Child = this.metadataInfoTab;
             // 
             // managedPermissionsPanel
@@ -1338,7 +1333,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedPermissionsPanel.Location = new System.Drawing.Point(0, 0);
             this.managedPermissionsPanel.Name = "managedPermissionsPanel";
             this.managedPermissionsPanel.Size = new System.Drawing.Size(500, 548);
-            this.managedPermissionsPanel.Text = "managedPanel2";
             // 
             // panelManagerPermissions
             // 
@@ -1351,6 +1345,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManagerPermissions.SelectedPanel = this.cloudManagedPanel;
             this.panelManagerPermissions.Size = new System.Drawing.Size(500, 548);
             this.panelManagerPermissions.TabIndex = 1;
+            this.panelManagerPermissions.TabStop = false;
             // 
             // nonCloudManagedPanel
             // 

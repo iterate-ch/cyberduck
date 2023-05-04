@@ -18,11 +18,13 @@
 
 using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
+using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
 using Ch.Cyberduck.Core.Refresh.Views;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -52,6 +54,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             metadataButton.Image = Images.TryGet(_ => _.Pencil);
             permissionsButton.Image = Images.TryGet(_ => _.Permissions);
             versionsButton.Image = Images.TryGet(_ => _.Multiple);
+
+            Locale locale = Locator.Current.GetService<Locale>();
+            managedDistributionPanel.Text = locale.localize("Distribution (CDN)", "Info");
+            managedGeneralPanel.Text = locale.localize("General", "Info");
+            managedMetadataPanel.Text = locale.localize("Metadata", "Info");
+            managedPermissionsPanel.Text = locale.localize("Permissions", "Info");
+            managedS3Panel.Text = locale.localize("S3", "Info");
+            managedVersionsPanel.Text = locale.localize("Versions", "Info");
 
             Load += delegate
             {
