@@ -77,9 +77,6 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
 
     @Override
     public void login(Proxy proxy, LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
-        if(connection == null) {
-            throw new BackgroundException(new IllegalStateException("Connection must be established before login"));
-        }
         final String domain, username, shareString;
 
         String[] parts = host.getCredentials().getUsername().split("/", 0);
