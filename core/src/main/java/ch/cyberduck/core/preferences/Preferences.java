@@ -388,7 +388,7 @@ public abstract class Preferences implements Locales, PreferencesReader {
         final DeleteAction deleteAction = DeleteAction.createDeleteAction(logfolder, false, 1, false,
                 PathSortByModificationTime.createSorter(true),
                 new PathCondition[]{
-                        IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(5))
+                        IfFileName.createNameCondition(String.format("%s-*.log.zip", appname), null, IfAccumulatedFileCount.createFileCountCondition(this.getInteger("logging.archives")))
                 },
                 null, new NullConfiguration());
         final Appender appender = RollingFileAppender.newBuilder()
