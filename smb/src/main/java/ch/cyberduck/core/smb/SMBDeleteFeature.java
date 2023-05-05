@@ -39,8 +39,6 @@ public class SMBDeleteFeature implements Delete {
             if (file.isFile() || file.isSymbolicLink()) {
                 session.share.rm(file.getAbsolute());
             } else if (file.isDirectory()) {
-                // TODO Change working directory to parent
-                // TODO deleting a folder with content not working yet
                 session.share.rmdir(file.getAbsolute(), true);
             }
 
