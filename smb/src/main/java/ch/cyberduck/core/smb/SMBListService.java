@@ -20,11 +20,11 @@ import java.util.EnumSet;
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.AbstractPath.Type;
 import ch.cyberduck.core.exception.BackgroundException;
 
 public class SMBListService implements ListService {
@@ -40,12 +40,19 @@ public class SMBListService implements ListService {
         final AttributedList<Path> result = new AttributedList<>();
         for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
             // TODO: add missing types and path attributes
-            if((f.getFileAttributes() & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
-                result.add(new Path(directory, f.getFileName(), EnumSet.of(AbstractPath.Type.directory)));
+            
+            EnumSet<Type> type = EnumSet.noneOf(Type.class);
+            long fileAttributes = f.getFileAttributes();
+
+            if((fileAttributes == FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue())) {
+                type.add(Type.directory);
             }
             else {
-                result.add(new Path(directory, f.getFileName(), EnumSet.of(AbstractPath.Type.file)));
+                type.add(Type.file);
             }
+
+            result.add(new Path(directory, f.getFileName(), type));
+
         }
         return result;
     }
