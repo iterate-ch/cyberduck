@@ -207,5 +207,8 @@ public class ReadWriteMetadataWorkerTest {
 
         // execute write test
         writeWorker.run(testSession);
+
+        // Verify reading is possible after writing
+        assertEquals(updatedMetadata, readWorker.run(testSession));
     }
 }
