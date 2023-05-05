@@ -22,7 +22,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.unicode.NFDNormalizer;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -30,11 +30,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public final class WorkspaceIconService implements IconService {
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
-
-    @Override
-    public boolean set(final Local file, final String image) {
-        return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(image));
-    }
 
     protected boolean update(final Local file, final NSImage icon) {
         synchronized(NSWorkspace.class) {
@@ -48,19 +43,9 @@ public final class WorkspaceIconService implements IconService {
     }
 
     @Override
-    public boolean set(final Local file, final TransferStatus status) {
-        if(status.isComplete()) {
-            return this.remove(file);
-        }
-        else {
-            if(status.getLength() > 0) {
-                int fraction = (int) (status.getOffset() / (status.getOffset() + status.getLength()) * 10);
-                return this.set(file, String.format("download%d.icns", ++fraction));
-            }
-            else {
-                return this.set(file, String.format("download%d.icns", 0));
-            }
-        }
+    public boolean set(final Local file, final TransferProgress status) {
+        int fraction = (int) (status.getTransferred() / (status.getTransferred() + status.getSize()) * 10);
+        return this.update(file, IconCacheFactory.<NSImage>get().iconNamed(String.format("download%d.icns", ++fraction)));
     }
 
     @Override

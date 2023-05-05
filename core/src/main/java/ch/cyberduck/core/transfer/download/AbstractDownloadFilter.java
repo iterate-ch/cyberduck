@@ -309,7 +309,6 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                 launcher.bounce(local);
                 // Remove custom icon if complete. The Finder will display the default icon for this file type
                 if(this.options.icon) {
-                    icon.set(local, status);
                     icon.remove(local);
                 }
                 final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
