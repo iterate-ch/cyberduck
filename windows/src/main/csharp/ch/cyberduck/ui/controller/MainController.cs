@@ -23,7 +23,6 @@ using ch.cyberduck.core.b2;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.box;
 using ch.cyberduck.core.brick;
-using ch.cyberduck.core.ctera;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.exception;
@@ -50,7 +49,6 @@ using ch.cyberduck.core.sds;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
-using ch.cyberduck.core.storegate;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
@@ -151,7 +149,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(), new SharepointSiteProtocol(),
-                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol(), new OwncloudProtocol(), new CteraProtocol(), new BoxProtocol());
+                new MantaProtocol(), new SDSProtocol(), new BrickProtocol(), new NextcloudProtocol(), new OwncloudProtocol(), new BoxProtocol());
             protocolFactory.load();
 
             Locator.SetLocator(new StructureMapBootstrapper.SplatDependencyResolver());
@@ -405,30 +403,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         bool ICyberduck.OAuth(Uri result)
         {
-            var success = false;
-            string state = default, code = default;
             if (result.AbsolutePath == "oauth")
             {
                 success = true;
                 var query = HttpUtility.ParseQueryString(result.Query);
-                state = query.Get("state");
-                code = query.Get("code");
-            }
-            if (result.OriginalString.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
-            {
-                success = true;
-                var query = HttpUtility.ParseQueryString(result.Query);
-                code = query.Get("ActivationCode");
-            }
-            if (success)
-            {
+                string state = query.Get("state");
+                string code = query.Get("code");
                 if (Logger.isDebugEnabled())
                 {
                     Logger.debug($"Notify OAuth with {state} ({code})");
                 }
                 OAuth2TokenListenerRegistry.get().notify(state, code);
+                return true;
             }
-            return success;
+            return false;
         }
 
         void ICyberduck.QuickConnect(string arg)

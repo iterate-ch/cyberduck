@@ -24,7 +24,6 @@ import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
 import ch.cyberduck.core.box.BoxProtocol;
 import ch.cyberduck.core.brick.BrickProtocol;
-import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
@@ -49,7 +48,6 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.spectra.SpectraProtocol;
-import ch.cyberduck.core.storegate.StoregateProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.controller.MainController;
@@ -102,11 +100,9 @@ public final class MainApplication {
                     new LocalProtocol(),
                     new MantaProtocol(),
                     new SDSProtocol(),
-                    new StoregateProtocol(),
                     new BrickProtocol(),
                     new NextcloudProtocol(),
                     new OwncloudProtocol(),
-                    new CteraProtocol(),
                     new BoxProtocol()
             );
             protocols.load();
