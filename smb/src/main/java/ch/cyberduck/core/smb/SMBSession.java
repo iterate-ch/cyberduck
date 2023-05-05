@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
@@ -160,6 +161,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Delete.class) {
             return (T) new SMBDeleteFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new SMBMoveFeature(this);
         }
         return super._getFeature(type);
     }
