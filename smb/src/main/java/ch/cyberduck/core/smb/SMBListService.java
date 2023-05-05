@@ -39,15 +39,20 @@ public class SMBListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> result = new AttributedList<>();
         for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
-            // TODO: add missing types and path attributes
             
             EnumSet<Type> type = EnumSet.noneOf(Type.class);
             long fileAttributes = f.getFileAttributes();
 
-            if((fileAttributes == FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue())) {
+            // check for all relevant file types and add them to the EnumSet
+            if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
                 type.add(Type.directory);
             }
-            else {
+            if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue()) != 0) {
+                type.add(Type.file);
+            }
+
+            // default to file
+            if (type.isEmpty()) {
                 type.add(Type.file);
             }
 
