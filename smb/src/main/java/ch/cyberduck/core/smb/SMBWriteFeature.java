@@ -32,6 +32,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
         Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
         shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
         shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_WRITE);
+        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_DELETE);
 
         Set<FileAttributes> fileAttributes = new HashSet<>();
         fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
