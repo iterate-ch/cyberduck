@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -168,6 +169,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Read.class) {
             return (T) new SMBReadFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new SMBWriteFeature(this);
         }
         return super._getFeature(type);
     }
