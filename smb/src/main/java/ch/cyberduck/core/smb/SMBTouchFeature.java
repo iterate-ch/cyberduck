@@ -23,11 +23,10 @@ public class SMBTouchFeature extends DefaultTouchFeature<Void> {
 
     public SMBTouchFeature(Write<Void> writer) {
         super(writer);
-        //TODO Auto-generated constructor stub
     }
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
-        return false;
+        return true;
     }
 }
