@@ -29,7 +29,8 @@ public class SMBMoveFeature implements Move {
     public Path move(Path source, Path target, TransferStatus status, Callback delete, ConnectionCallback prompt)
             throws BackgroundException {
         
-        // TODO rename is working, implement move
+        // TODO rename and moving for files is working
+        // TODO class is not called for directories (yet)
 
         Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
         shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
