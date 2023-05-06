@@ -25,7 +25,13 @@ public class SMBMoveFeature implements Move {
         this.session = session;
     }
 
-	@Override
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
+
+
+    @Override
     public Path move(Path source, Path target, TransferStatus status, Callback delete, ConnectionCallback prompt)
             throws BackgroundException {
         
