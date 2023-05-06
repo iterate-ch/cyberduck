@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
@@ -164,6 +165,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Move.class) {
             return (T) new SMBMoveFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new SMBReadFeature(this);
         }
         return super._getFeature(type);
     }
