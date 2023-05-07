@@ -8,6 +8,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
@@ -53,16 +54,13 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             this.connection = client.connect(getHost().getHostname(), getHost().getPort());
         }
         catch(IOException e) {
-            throw new BackgroundException(e);
+            throw new HttpExceptionMappingService().map(e);
         }
         return client;
     }
 
     @Override
     public void login(Proxy proxy, LoginCallback prompt, CancelCallback cancel) throws BackgroundException {
-        if(connection == null) {
-            throw new BackgroundException(new IllegalStateException("Connection must be established before login"));
-        }
         final String domain, username, shareString;
 
         String[] parts = host.getCredentials().getUsername().split("/", 0);
