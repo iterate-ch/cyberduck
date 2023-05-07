@@ -15,22 +15,22 @@ package ch.cyberduck.core.smb;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath.Type;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+
 import java.util.EnumSet;
 
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.AbstractPath.Type;
-import ch.cyberduck.core.exception.BackgroundException;
-
 public class SMBListService implements ListService {
 
     private final SMBSession session;
-    
+
     public SMBListService(SMBSession session) {
         this.session = session;
     }
@@ -39,7 +39,10 @@ public class SMBListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> result = new AttributedList<>();
         for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
-            
+            String fileName = f.getFileName();
+            if(fileName.equals(".") || fileName.equals("..")) {
+                continue; // skip the . and .. directories
+            }
             EnumSet<Type> type = EnumSet.noneOf(Type.class);
             long fileAttributes = f.getFileAttributes();
 
@@ -52,14 +55,14 @@ public class SMBListService implements ListService {
             }
 
             // default to file
-            if (type.isEmpty()) {
+            if(type.isEmpty()) {
                 type.add(Type.file);
             }
 
-            result.add(new Path(directory, f.getFileName(), type));
+            result.add(new Path(directory, fileName, type));
 
         }
         return result;
     }
-    
+
 }
