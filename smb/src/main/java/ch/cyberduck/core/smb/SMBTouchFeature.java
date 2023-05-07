@@ -16,13 +16,12 @@ package ch.cyberduck.core.smb;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 
 public class SMBTouchFeature extends DefaultTouchFeature<Void> {
 
-    public SMBTouchFeature(Write<Void> writer) {
-        super(writer);
+    public SMBTouchFeature(SMBSession session) {
+        super(new SMBWriteFeature(session));
     }
 
     @Override
