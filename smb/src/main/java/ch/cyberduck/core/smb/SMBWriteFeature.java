@@ -71,8 +71,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
         @Override
         public void close() throws IOException {
-            stream.flush();
-            super.close();
+            stream.close();
             file.close();
         }
 
