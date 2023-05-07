@@ -1,14 +1,19 @@
 package ch.cyberduck.core.smb;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
+import com.hierynomus.smbj.share.File;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
@@ -40,8 +45,33 @@ public class SMBReadFeature implements Read {
 
         createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        return session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions).getInputStream();
+        File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions);
+
+        return new SMBInputStream(fileEntry.getInputStream(), fileEntry);
     }
 
+    public final class SMBInputStream extends InputStream {
+
+        private InputStream stream;
+        private File file;
+
+
+        public SMBInputStream(InputStream stream, File file) {
+            this.stream = stream;
+            this.file = file;
+        }
+
+        @Override
+        public int read() throws IOException {
+            return stream.read();
+        }
+
+        @Override
+        public void close() throws IOException {
+            super.close();
+            file.close();
+        }
+
+    }
     
 }
