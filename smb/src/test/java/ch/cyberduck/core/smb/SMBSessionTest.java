@@ -28,29 +28,13 @@ import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SMBSessionTest {
-
-    SMBSession session;
-
-    @Before
-    public void setup() throws BackgroundException {
-        final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
-        host.setCredentials(new Credentials("smbj/user", "pass"));
-        session = new SMBSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
-
-    @ClassRule
-    public static SmbTestContainer container = SmbTestContainer.getInstance();
+public class SMBSessionTest extends AbstractSMBTest {
 
     @Test
     public void testLoginSuccessWithoutDomain() throws Exception {

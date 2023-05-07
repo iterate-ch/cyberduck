@@ -7,12 +7,12 @@ ENV SMB_PASSWORD pass
 
 COPY smb.conf /etc/samba/smb.conf
 COPY supervisord.conf /etc/supervisord.conf
-COPY entrypoint.sh /entrypoint.sh
-ADD container-files/public /opt/samba/public
-ADD container-files/user /opt/samba/user
+ADD entrypoint.sh /entrypoint.sh
+ADD container-files/ /opt/samba/
 
 RUN mkdir -p /opt/samba/readonly /opt/samba/user /opt/samba/dfs && \
-    chmod 777 /opt/samba/readonly /opt/samba/user /opt/samba/dfs && \
+    mkdir -p /opt/samba/readonly/empty_folder /opt/samba/user/empty_folder /opt/samba/dfs/empty_folder && \
+    chmod -R 777 /opt/samba/readonly /opt/samba/user /opt/samba/dfs && \
     adduser -s /bin/false "$SMB_USER" -D $SMB_PASSWORD && \
     (echo "$SMB_PASSWORD"; echo "$SMB_PASSWORD" ) | pdbedit -a -u "$SMB_USER" && \
     chmod ugo+x /entrypoint.sh
