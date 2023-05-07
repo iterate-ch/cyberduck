@@ -148,7 +148,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             return (T) new SMBDirectoryFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new SMBTouchFeature(null);
+            return (T) new SMBTouchFeature(this);
         }
         if(type == Delete.class) {
             return (T) new SMBDeleteFeature(this);
