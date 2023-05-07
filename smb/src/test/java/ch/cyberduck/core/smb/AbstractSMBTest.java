@@ -39,7 +39,7 @@ public abstract class AbstractSMBTest {
     SMBSession session;
 
     @Before
-    public void setup() throws BackgroundException, InterruptedException {
+    public void setup() throws BackgroundException {
         container.stop();
         container.start();
         final Host host = new Host(new SMBProtocol(), container.getHost(), container.getMappedPort(445));
