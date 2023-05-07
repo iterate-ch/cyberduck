@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -172,6 +173,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Write.class) {
             return (T) new SMBWriteFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new SMBAttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }
