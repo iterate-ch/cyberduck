@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core.cdn;
+using Ch.Cyberduck.Core.Refresh.ViewModels.Info;
 using Ch.Cyberduck.Core.Refresh.Views;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -101,13 +102,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool AclRemoveEnabled { set; }
         bool AclAnimationActive { set; }
 
-        bool MetadataTableEnabled { set; }
-        bool MetadataAddEnabled { set; }
-        bool MetadataRemoveEnabled { set; }
-        bool MetadataAnimationActive { set; }
-
-        BindingList<InfoController.CustomHeaderEntry> MetadataDataSource { set; }
-        List<InfoController.CustomHeaderEntry> SelectedMetadataEntries { get; }
+        MetadataViewModel MetadataViewModel { get; set; }
 
         Distribution.Method DistributionDeliveryMethod { set; get; }
         bool DistributionDeliveryMethodEnabled { set; }
@@ -177,9 +172,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event EventHandler<InfoHelpArgs> ShowHelp;
         void PopulateAclUsers(IDictionary<string, AsyncController.SyncDelegate> users);
         void PopulateAclRoles(IList<string> roles);
-        void PopulateMetadata(IDictionary<string, AsyncController.SyncDelegate> metadata);
         void EditAclRow(InfoController.UserAndRoleEntry aclEntry, bool selectRole);
-        void EditMetadataRow(InfoController.CustomHeaderEntry headerEntry, bool selectValue);
         void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods);
         void PopulateDefaultRoot(IList<KeyValuePair<string, string>> roots);
         void PopulateBucketLogging(IList<string> buckets);

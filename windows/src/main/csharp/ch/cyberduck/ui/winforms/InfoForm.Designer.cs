@@ -113,21 +113,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.panelManager = new Ch.Cyberduck.Ui.Winforms.Controls.PanelManager();
             this.managedDistributionPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.managedGeneralPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.managedVersionsPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.versionsViewHost = new System.Windows.Forms.Integration.ElementHost();
             this.versionsInfoTab = new Ch.Cyberduck.Core.Refresh.Views.VersionsInfoTab();
-            this.managedGeneralPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.managedMetadataPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.metadataTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.label30 = new System.Windows.Forms.Label();
-            this.metadataDataGridView = new System.Windows.Forms.DataGridView();
-            this.addHeaderButton = new Ch.Cyberduck.Ui.Winforms.Controls.SplitButton();
-            this.addMetadataContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.metadataAnimation = new System.Windows.Forms.PictureBox();
+            this.managedMetadataHost = new System.Windows.Forms.Integration.ElementHost();
+            this.metadataInfoTab = new Ch.Cyberduck.Core.Refresh.Views.MetadataInfoTab();
             this.managedPermissionsPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.panelManagerPermissions = new Ch.Cyberduck.Ui.Winforms.Controls.PanelManager();
             this.nonCloudManagedPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
@@ -170,13 +162,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             ((System.ComponentModel.ISupportInitialize)(this.s3Animation)).BeginInit();
             this.panelManager.SuspendLayout();
             this.managedDistributionPanel.SuspendLayout();
-            this.managedVersionsPanel.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
+            this.managedVersionsPanel.SuspendLayout();
             this.managedMetadataPanel.SuspendLayout();
-            this.metadataTableLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.metadataDataGridView)).BeginInit();
-            this.addMetadataContextMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.metadataAnimation)).BeginInit();
             this.managedPermissionsPanel.SuspendLayout();
             this.panelManagerPermissions.SuspendLayout();
             this.nonCloudManagedPanel.SuspendLayout();
@@ -1290,7 +1278,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.SelectedIndex = 0;
             this.panelManager.SelectedPanel = this.managedDistributionPanel;
             this.panelManager.Size = new System.Drawing.Size(500, 548);
-            this.panelManager.TabIndex = 2;
+            this.panelManager.TabIndex = 0;
+            this.panelManager.TabStop = false;
             // 
             // managedDistributionPanel
             // 
@@ -1298,7 +1287,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedDistributionPanel.Location = new System.Drawing.Point(0, 0);
             this.managedDistributionPanel.Name = "managedDistributionPanel";
             this.managedDistributionPanel.Size = new System.Drawing.Size(500, 548);
-            this.managedDistributionPanel.Text = "managedPanel1";
             // 
             // managedVersionsPanel
             // 
@@ -1306,7 +1294,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedVersionsPanel.Location = new System.Drawing.Point(0, 0);
             this.managedVersionsPanel.Name = "managedVersionsPanel";
             this.managedVersionsPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedVersionsPanel.Text = "managedPanel1";
             // 
             // versionsViewHost
             // 
@@ -1315,7 +1302,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.versionsViewHost.Name = "versionsViewHost";
             this.versionsViewHost.Size = new System.Drawing.Size(0, 0);
             this.versionsViewHost.TabIndex = 0;
-            this.versionsViewHost.Text = "elementHost1";
             this.versionsViewHost.Child = this.versionsInfoTab;
             // 
             // managedGeneralPanel
@@ -1324,119 +1310,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedGeneralPanel.Location = new System.Drawing.Point(0, 0);
             this.managedGeneralPanel.Name = "managedGeneralPanel";
             this.managedGeneralPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedGeneralPanel.Text = "managedPanel1";
             // 
             // managedMetadataPanel
             // 
-            this.managedMetadataPanel.Controls.Add(this.metadataTableLayoutPanel);
+            this.managedMetadataPanel.Controls.Add(this.managedMetadataHost);
             this.managedMetadataPanel.Location = new System.Drawing.Point(0, 0);
             this.managedMetadataPanel.Name = "managedMetadataPanel";
             this.managedMetadataPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedMetadataPanel.Text = "managedPanel1";
             // 
-            // metadataTableLayoutPanel
+            // managedMetadataHost
             // 
-            this.metadataTableLayoutPanel.ColumnCount = 4;
-            this.metadataTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 140F));
-            this.metadataTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33332F));
-            this.metadataTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.metadataTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
-            this.metadataTableLayoutPanel.Controls.Add(this.label30, 0, 0);
-            this.metadataTableLayoutPanel.Controls.Add(this.metadataDataGridView, 0, 2);
-            this.metadataTableLayoutPanel.Controls.Add(this.addHeaderButton, 0, 3);
-            this.metadataTableLayoutPanel.Controls.Add(this.metadataAnimation, 3, 0);
-            this.metadataTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.metadataTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.metadataTableLayoutPanel.Name = "metadataTableLayoutPanel";
-            this.metadataTableLayoutPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.metadataTableLayoutPanel.RowCount = 4;
-            this.metadataTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.metadataTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.metadataTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.metadataTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.metadataTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.metadataTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.metadataTableLayoutPanel.Size = new System.Drawing.Size(0, 0);
-            this.metadataTableLayoutPanel.TabIndex = 1;
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.metadataTableLayoutPanel.SetColumnSpan(this.label30, 3);
-            this.label30.Location = new System.Drawing.Point(13, 10);
-            this.label30.Name = "label30";
-            this.label30.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
-            this.label30.Size = new System.Drawing.Size(41, 25);
-            this.label30.TabIndex = 27;
-            this.label30.Text = "Headers";
-            // 
-            // metadataDataGridView
-            // 
-            this.metadataDataGridView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.metadataDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.metadataTableLayoutPanel.SetColumnSpan(this.metadataDataGridView, 4);
-            this.metadataDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.metadataDataGridView.Location = new System.Drawing.Point(13, 38);
-            this.metadataDataGridView.Name = "metadataDataGridView";
-            this.metadataDataGridView.Size = new System.Drawing.Size(1, 1);
-            this.metadataDataGridView.TabIndex = 29;
-            // 
-            // addHeaderButton
-            // 
-            this.addHeaderButton.AutoSize = true;
-            this.addHeaderButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.addHeaderButton.ContextMenuStrip = this.addMetadataContextMenuStrip;
-            this.addHeaderButton.Location = new System.Drawing.Point(13, -16);
-            this.addHeaderButton.Name = "addHeaderButton";
-            this.addHeaderButton.Size = new System.Drawing.Size(38, 24);
-            this.addHeaderButton.SplitMenuStrip = this.addMetadataContextMenuStrip;
-            this.addHeaderButton.TabIndex = 30;
-            this.addHeaderButton.UseVisualStyleBackColor = true;
-            // 
-            // addMetadataContextMenuStrip
-            // 
-            this.addMetadataContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripMenuItem2,
-            this.toolStripSeparator2,
-            this.toolStripMenuItem3});
-            this.addMetadataContextMenuStrip.Name = "contextMenuStrip1";
-            this.addMetadataContextMenuStrip.Size = new System.Drawing.Size(165, 76);
-            this.addMetadataContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.addMetadataContextMenuStrip_Opening);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(164, 22);
-            this.toolStripMenuItem1.Text = "yves (Owner)";
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(164, 22);
-            this.toolStripMenuItem2.Text = "Canoncal User ID";
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(161, 6);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(164, 22);
-            this.toolStripMenuItem3.Text = "Remove";
-            // 
-            // metadataAnimation
-            // 
-            this.metadataAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.metadataAnimation.Location = new System.Drawing.Point(61, 13);
-            this.metadataAnimation.Name = "metadataAnimation";
-            this.metadataAnimation.Size = new System.Drawing.Size(1, 18);
-            this.metadataAnimation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.metadataAnimation.TabIndex = 31;
-            this.metadataAnimation.TabStop = false;
-            this.metadataAnimation.Visible = false;
+            this.managedMetadataHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.managedMetadataHost.Location = new System.Drawing.Point(0, 0);
+            this.managedMetadataHost.Name = "managedMetadataHost";
+            this.managedMetadataHost.Size = new System.Drawing.Size(500, 548);
+            this.managedMetadataHost.TabIndex = 0;
+            this.managedMetadataHost.Child = this.metadataInfoTab;
             // 
             // managedPermissionsPanel
             // 
@@ -1444,7 +1333,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedPermissionsPanel.Location = new System.Drawing.Point(0, 0);
             this.managedPermissionsPanel.Name = "managedPermissionsPanel";
             this.managedPermissionsPanel.Size = new System.Drawing.Size(500, 548);
-            this.managedPermissionsPanel.Text = "managedPanel2";
             // 
             // panelManagerPermissions
             // 
@@ -1457,6 +1345,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManagerPermissions.SelectedPanel = this.cloudManagedPanel;
             this.panelManagerPermissions.Size = new System.Drawing.Size(500, 548);
             this.panelManagerPermissions.TabIndex = 1;
+            this.panelManagerPermissions.TabStop = false;
             // 
             // nonCloudManagedPanel
             // 
@@ -1824,15 +1713,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.ResumeLayout(false);
             this.managedDistributionPanel.ResumeLayout(false);
             this.managedDistributionPanel.PerformLayout();
-            this.managedVersionsPanel.ResumeLayout(false);
             this.managedGeneralPanel.ResumeLayout(false);
             this.managedGeneralPanel.PerformLayout();
+            this.managedVersionsPanel.ResumeLayout(false);
             this.managedMetadataPanel.ResumeLayout(false);
-            this.metadataTableLayoutPanel.ResumeLayout(false);
-            this.metadataTableLayoutPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.metadataDataGridView)).EndInit();
-            this.addMetadataContextMenuStrip.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.metadataAnimation)).EndInit();
             this.managedPermissionsPanel.ResumeLayout(false);
             this.panelManagerPermissions.ResumeLayout(false);
             this.nonCloudManagedPanel.ResumeLayout(false);
@@ -1933,16 +1817,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem canoncalUserIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
-        private System.Windows.Forms.TableLayoutPanel metadataTableLayoutPanel;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.DataGridView metadataDataGridView;
-        private SplitButton addHeaderButton;
-        private System.Windows.Forms.ContextMenuStrip addMetadataContextMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
-        private System.Windows.Forms.PictureBox metadataAnimation;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.ComboBox defaultRootComboBox;
         private System.Windows.Forms.Label label26;
@@ -1982,5 +1856,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ManagedPanel managedVersionsPanel;
         private System.Windows.Forms.Integration.ElementHost versionsViewHost;
         private Cyberduck.Core.Refresh.Views.VersionsInfoTab versionsInfoTab;
+        private System.Windows.Forms.Integration.ElementHost managedMetadataHost;
+        private Cyberduck.Core.Refresh.Views.MetadataInfoTab metadataInfoTab;
     }
 }

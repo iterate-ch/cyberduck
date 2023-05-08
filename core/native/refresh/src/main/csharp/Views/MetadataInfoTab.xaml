@@ -1,0 +1,71 @@
+﻿<local:MetadataInfoTabBase x:Class="Ch.Cyberduck.Core.Refresh.Views.MetadataInfoTab"
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:tk="http://schemas.xceed.com/wpf/xaml/toolkit"
+                           xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
+                           xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
+                           mc:Ignorable="d" 
+                           d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock FontWeight="Bold"
+                   Margin="11,7,11,2"
+                   Name="headersGridLabel"
+                   Text="{xaml:Text Headers, Table=Info}"
+                   Grid.Row="0" />
+
+        <DataGrid x:Name="HeadersGrid"
+                  AutoGenerateColumns="False"
+                  CanUserResizeRows="False"
+                  SelectionMode="Single"
+                  Margin="11,2,11,0"
+                  AutomationProperties.LabeledBy="{Binding ElementName=headersGridLabel}"
+                  Grid.Row="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="KeyColumn"
+                                    Header="{xaml:Text Name, Table=Info}"
+                                    Binding="{Binding Key}"
+                                    Width="*" />
+                <DataGridTextColumn x:Name="ValueColumn" 
+                                    Header="{xaml:Text Value, Table=Info}"
+                                    Binding="{Binding Display}"
+                                    Width="*" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border Background="{x:Static SystemColors.ControlBrush}"
+                BorderBrush="{x:Static SystemColors.ControlLightBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="11"
+                Grid.Row="2">
+            <tk:SplitButton x:Name="AddNewMetadataButton"
+                            HorizontalAlignment="Left"
+                            Margin="3,5"
+                            Click="SplitButton_Opened"
+                            Opened="SplitButton_Opened">
+                <ContentControl.Content>
+                    <Image Height="16"
+                           RenderOptions.BitmapScalingMode="Fant"
+                           Source="{xaml:Icon Gear}"
+                           Width="16" />
+                </ContentControl.Content>
+                <FrameworkElement.ContextMenu>
+                    <ContextMenu x:Name="metadataButtonMenu"
+                                 Placement="Bottom" />
+                </FrameworkElement.ContextMenu>
+            </tk:SplitButton>
+        </Border>
+
+        <tk:BusyIndicator x:Name="Status"
+                          BusyContent="{x:Null}"
+                          Grid.Row="1"
+                          Grid.RowSpan="2" />
+    </Grid>
+</local:MetadataInfoTabBase>

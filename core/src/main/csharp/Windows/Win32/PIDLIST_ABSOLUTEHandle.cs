@@ -8,9 +8,9 @@ namespace Windows.Win32.UI.Shell.Common
     {
         private ITEMIDLIST* ptr;
 
-        public PIDLIST_ABSOLUTEHandle(in ITEMIDLIST* ptr)
+        public PIDLIST_ABSOLUTEHandle(in ITEMIDLIST ptr)
         {
-            this.ptr = ptr;
+            this.ptr = (ITEMIDLIST*)AsPointer(ref AsRef(ptr));
         }
 
         [UnscopedRef]
@@ -21,7 +21,7 @@ namespace Windows.Win32.UI.Shell.Common
 
         public static implicit operator bool(in PIDLIST_ABSOLUTEHandle @this) => @this.ptr != null;
 
-        public static implicit operator PIDLIST_ABSOLUTEHandle(in ITEMIDLIST pidl) => new((ITEMIDLIST*)AsPointer(ref AsRef(pidl)));
+        public static implicit operator PIDLIST_ABSOLUTEHandle(in ITEMIDLIST pidl) => new(pidl);
 
         public void Dispose()
         {

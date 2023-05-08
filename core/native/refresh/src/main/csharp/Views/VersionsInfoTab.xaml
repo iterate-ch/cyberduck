@@ -18,7 +18,7 @@
 
         <TextBlock Text="{xaml:Text Versions, Table=Info}"
                    FontWeight="Bold"
-                   Margin="11,0,11,2"
+                   Margin="11,7,11,2"
                    Grid.Row="0" />
         <DataGrid x:Name="VersionGrid"
                   AutoGenerateColumns="False"

@@ -35,6 +35,10 @@
     <PackageReference Update="Microsoft.Windows.CsWin32" Version="0.1.647-beta">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Update="ReactiveMarbles.ObservableEvents.SourceGenerator" Version="1.2.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
 
     <GlobalPackageReference Include="MSBuildTasks" Version="1.5.0.235" GeneratePathProperty="true" />
   </ItemGroup>
