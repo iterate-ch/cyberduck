@@ -1,6 +1,6 @@
 ﻿$packageName = 'cyberduck'
 $installerType = 'exe'
-$silentArgs = '/quiet'
+$silentArgs = '/quiet InstallBonjour=0'
 $url = 'https://update.cyberduck.io/windows/Cyberduck-Installer-${VERSION}.${REVISION}.exe'
 $checksum = '${CHECKSUM}'
 $checksumType = 'sha256'
