@@ -1,5 +1,7 @@
 package ch.cyberduck.core.smb;
 
+import com.hierynomus.msfscc.fileinformation.FileAllInformation;
+
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -17,15 +19,14 @@ public class SMBAttributesFinderFeature extends VoidAttributesAdapter implements
 
     @Override
     public PathAttributes find(Path file, ListProgressListener listener) throws BackgroundException {
-        // TODO implement these values
         final PathAttributes attributes = new PathAttributes();
 
-        attributes.setModificationDate(13370000);
-        attributes.setCreationDate(1337000);
-        attributes.setSize(1337);
-        attributes.setETag("SMB ETag");
-        attributes.setDisplayname("SMB Displayname");
-        attributes.setLockId("SMB LockId");
+        FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
+
+        attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
+        attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
+        attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
+        attributes.setDisplayname(fileInformation.getNameInformation().substring(1));
 
         return attributes;
     }
