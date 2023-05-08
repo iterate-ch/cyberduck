@@ -1,12 +1,13 @@
 package ch.cyberduck.core.smb;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -22,6 +23,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SMBReadFeature implements Read {
+    private static final Logger logger = LogManager.getLogger(SMBReadFeature.class);
 
     private final SMBSession session;
 
@@ -47,7 +49,21 @@ public class SMBReadFeature implements Read {
 
         File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions);
 
-        return new SMBInputStream(fileEntry.getInputStream(), fileEntry);
+        InputStream stream = fileEntry.getInputStream();
+
+        if (status.isAppend()) {
+            try {
+                long skipped = stream.skip(status.getOffset());
+                if (skipped != status.getOffset()) {
+                    logger.log(Level.WARN, "Could not skip %d bytes in file %s.", status.getOffset(), file);
+                }
+            } catch (IOException e) {
+                fileEntry.close();   
+                throw new BackgroundException(e);
+            }
+        }
+
+        return new SMBInputStream(stream, fileEntry);
     }
 
     public final class SMBInputStream extends InputStream {
