@@ -7,6 +7,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -155,6 +156,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == Move.class) {
             return (T) new SMBMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new SMBCopyFeature(this);
         }
         if(type == Read.class) {
             return (T) new SMBReadFeature(this);
