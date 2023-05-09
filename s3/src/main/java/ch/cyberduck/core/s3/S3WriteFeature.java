@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -136,7 +137,8 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
         }
         if(status.getTimestamp() != null) {
             // Interoperable with rsync
-            object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+            final Header header = S3TimestampFeature.toHeader(status.getTimestamp());
+            object.addMetadata(header.getName(), header.getValue());
         }
         if(status.getLength() != TransferStatus.UNKNOWN_LENGTH) {
             object.setContentLength(status.getLength());
