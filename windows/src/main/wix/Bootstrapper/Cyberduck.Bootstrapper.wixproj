@@ -51,6 +51,9 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="InstallerTheme.xml" />
+  </ItemGroup>
   <Target Name="UsesFrameworkSdk">
     <GetFrameworkSdkPath>
       <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />

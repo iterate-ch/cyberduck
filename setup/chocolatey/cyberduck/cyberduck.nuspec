@@ -20,6 +20,7 @@
     <mailingListUrl>https://lists.cyberduck.io</mailingListUrl>
     <packageSourceUrl>https://github.com/iterate-ch/cyberduck</packageSourceUrl>
     <dependencies>
+      <dependency id="bonjour" version="3.1.0.2" />
       <dependency id="dotnetfx" version="4.7.2.20210909" />
     </dependencies>
   </metadata>
