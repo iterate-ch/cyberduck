@@ -741,7 +741,8 @@ public class TransferStatus implements TransferResponse, StreamCancelation, Stre
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("Temporary{");
+            final StringBuilder sb = new StringBuilder("Displayname{");
+            sb.append("remote=").append(remote);
             sb.append(", local=").append(local);
             sb.append('}');
             return sb.toString();
