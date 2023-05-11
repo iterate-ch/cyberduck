@@ -21,7 +21,7 @@ nibtool="ibtool"
 convertstrings="ruby convertstrings.rb"
 base_language="en.lproj"
 arch="$(/usr/bin/arch)"
-tx="/usr/local/bin/tx"
+tx="$workdir/tx"
 extension=".xib"
 
 usage() {
@@ -94,7 +94,6 @@ import_strings() {
 		# incremental update
 		echo "*** Updating $nib... (incremental) in $language..."
 	  # Checkout previous version from base language
-    # shellcheck disable=SC2046
     git show $(git log -2 --format="%H" $base_language/$nib$extension | tail -n 1):./$base_language/$nib$extension > $base_language/$nib$extension.prev.xib
 		$nibtool    --write $language/$nib$extension \
                 --incremental-file $language/$nib$extension \
@@ -201,15 +200,13 @@ tx_push() {
             for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
                 strings=`basename $s .strings`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-                $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive --skip
+                $tx push --translation cyberduck.$strings --skip
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
-            $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings --source-language en --type=STRINGS --execute
-            $tx --traceback push --source --translations --resource=cyberduck.$strings --force --no-interactive --skip
+            $tx push --translation cyberduck.$strings --skip
         fi;
 	}
 	else
@@ -221,16 +218,14 @@ tx_push() {
                 strings=`basename $s .strings`
                 lang=`basename $language .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings -l $lang --source-language en --type=STRINGS --execute
-                $tx --traceback push --source --translations -l $lang --resource=cyberduck.$strings --force --no-interactive --skip
+                $tx push --translation -l $lang cyberduck.$strings --skip
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
             lang=`basename $language .lproj`
             echo "*** Updating $strings.strings...";
-            $tx --traceback set --auto-local -r cyberduck.$strings '<lang>'.lproj/$strings.strings -l $lang --source-language en --type=STRINGS --execute
-            $tx --traceback push --source -l $lang --translations -l $lang --resource=cyberduck.$strings --force --no-interactive --skip
+            $tx push --translation -l $lang cyberduck.$strings --skip
         fi;
 	}
 	fi;
@@ -250,14 +245,14 @@ tx_pull() {
               strings=`basename $s .strings`
               lang=`basename $language .lproj`
               echo "*** Updating $strings.strings...";
-              $tx --traceback pull -l $lang --resource=cyberduck.$strings --force
+              $tx pull --force -l $lang cyberduck.$strings
           done;
       fi;
       if [ "$stringsfile" != "all" ] ; then
           strings=`basename "$stringsfile" .strings`
           lang=`basename "$language" .lproj`
           echo "*** Updating $strings.strings...";
-          $tx --traceback pull -l "$lang" --resource=cyberduck."$strings" --force
+          $tx pull --force -l $lang cyberduck.$strings
       fi;
 		done;
 	}
@@ -270,14 +265,14 @@ tx_pull() {
                 strings=`basename "$s" .strings`
                 lang=`basename "$language" .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx --traceback pull --source -l "$lang" --resource=cyberduck."$strings" --force
+                $tx pull --force -l $lang cyberduck.$strings
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename "$stringsfile" .strings`
             lang=`basename "$language" .lproj`
             echo "*** Updating $strings.strings...";
-            $tx --traceback pull --source -l "$lang" --resource=cyberduck."$strings" --force
+            $tx pull --force -l $lang cyberduck.$strings
         fi;
 	}
 	fi;
