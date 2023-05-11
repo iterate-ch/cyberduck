@@ -148,6 +148,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ShowDebugLogEvent += View_ShowDebugLogEvent;
 
             View.CryptomatorAutoDetectVaultChangedEvent += View_CryptomatorAutoDetectVaultChangedEvent;
+            View.CryptomatorUseKeychainChangedEvent += View_CryptomatorUseKeychainChangedEvent;
 
             #region S3
 
@@ -216,6 +217,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_CryptomatorAutoDetectVaultChangedEvent()
         {
             PreferencesFactory.get().setProperty("cryptomator.vault.autodetect", View.AutoDetectVault);
+        }
+
+        private void View_CryptomatorUseKeychainChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("cryptomator.keychain", View.VaultUseKeychain);
         }
 
         public static PreferencesController Instance
@@ -1083,6 +1089,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Cryptomator
             View.AutoDetectVault = PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect");
+            View.VaultUseKeychain = PreferencesFactory.get().getBoolean("cryptomator.keychain");
             #endregion
         }
 

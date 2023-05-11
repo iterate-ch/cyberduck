@@ -812,6 +812,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UpdateFeedChangedEvent = delegate { };
         public event VoidHandler BookmarkSizeChangedEvent = delegate { };
         public event VoidHandler CryptomatorAutoDetectVaultChangedEvent = delegate { };
+        public event VoidHandler CryptomatorUseKeychainChangedEvent = delegate { };
 
         public bool AutomaticUpdateCheck
         {
@@ -997,6 +998,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return cryptomatorAutoDetectCheckBox.Checked; }
             set { cryptomatorAutoDetectCheckBox.Checked = value; }
+        }
+
+        public bool VaultUseKeychain
+        {
+            get => cryptomatorUseKeychain.Checked;
+            set => cryptomatorUseKeychain.Checked = value;
         }
 
         public void PopulateLocales(IList<KeyValuePair<string, string>> locales)
@@ -1631,6 +1638,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void SelectProfilesTab()
         {
             profilesButton_Click(this, EventArgs.Empty);
+        }
+
+        private void cryptomatorUseKeychain_CheckedChanged(object sender, EventArgs e)
+        {
+            CryptomatorUseKeychainChangedEvent();
         }
     }
 }

@@ -2466,17 +2466,32 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSButton cryptomatorCheckbox;
+    private NSButton cryptomatorAutodetectCheckbox;
 
-    public void setCryptomatorCheckbox(final NSButton cryptomatorCheckbox) {
-        this.cryptomatorCheckbox = cryptomatorCheckbox;
-        this.cryptomatorCheckbox.setTarget(this.id());
-        this.cryptomatorCheckbox.setAction(Foundation.selector("cryptomatorCheckboxClicked:"));
-        this.cryptomatorCheckbox.setState(preferences.getBoolean("cryptomator.vault.autodetect") ? NSCell.NSOnState : NSCell.NSOffState);
+    public void setCryptomatorAutodetectCheckbox(final NSButton cryptomatorAutodetectCheckbox) {
+        this.cryptomatorAutodetectCheckbox = cryptomatorAutodetectCheckbox;
+        this.cryptomatorAutodetectCheckbox.setTarget(this.id());
+        this.cryptomatorAutodetectCheckbox.setAction(Foundation.selector("cryptomatorAutodetectCheckboxClicked:"));
+        this.cryptomatorAutodetectCheckbox.setState(preferences.getBoolean("cryptomator.vault.autodetect") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
-    public void cryptomatorCheckboxClicked(NSButton sender) {
+    public void cryptomatorAutodetectCheckboxClicked(NSButton sender) {
         preferences.setProperty("cryptomator.vault.autodetect", sender.state() == NSCell.NSOnState);
+    }
+
+    @Outlet
+    private NSButton cryptomatorKeychainCheckbox;
+
+    public void setCryptomatorKeychainCheckbox(final NSButton cryptomatorKeychainCheckbox) {
+        this.cryptomatorKeychainCheckbox = cryptomatorKeychainCheckbox;
+        this.cryptomatorKeychainCheckbox.setTarget(this.id());
+        this.cryptomatorKeychainCheckbox.setAction(Foundation.selector("cryptomatorKeychainCheckboxClicked:"));
+        this.cryptomatorKeychainCheckbox.setState(preferences.getBoolean("cryptomator.keychain") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void cryptomatorKeychainCheckboxClicked(NSButton sender) {
+        preferences.setProperty("cryptomator.keychain", sender.state() == NSCell.NSOnState);
     }
 }
