@@ -1,5 +1,13 @@
 package ch.cyberduck.core.smb;
 
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.io.VoidStatusOutputStream;
+import ch.cyberduck.core.shared.AppendWriteFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
@@ -11,14 +19,6 @@ import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.smbj.share.File;
-
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.io.VoidStatusOutputStream;
-import ch.cyberduck.core.shared.AppendWriteFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
@@ -64,11 +64,10 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             this.stream = stream;
             this.file = file;
         }
-        
+
         @Override
         public void close() throws IOException {
             stream.close();
-            file.setLength(fileSize);
             file.close();
         }
 
@@ -77,17 +76,17 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             stream.write(b);
             fileSize += 1;
         }
-        
+
         @Override
         public void write(byte[] b) throws IOException {
             super.write(b);
             fileSize += b.length;
         }
-        
+
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
             super.write(b, off, len);
-            if (off + len > fileSize) {
+            if(off + len > fileSize) {
                 fileSize = off + len;
             }
         }
