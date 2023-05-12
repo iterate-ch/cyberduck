@@ -20,6 +20,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
 import java.util.EnumSet;
@@ -54,12 +55,19 @@ public class SMBListService implements ListService {
                 type.add(Type.file);
             }
 
+            final PathAttributes attributes = new PathAttributes();
+            attributes.setAccessedDate(f.getLastAccessTime().toEpochMillis());
+            attributes.setModificationDate(f.getLastWriteTime().toEpochMillis());
+            attributes.setCreationDate(f.getCreationTime().toEpochMillis());
+            attributes.setSize(f.getEndOfFile());
+            attributes.setDisplayname(f.getFileName());
+
             // default to file
             if(type.isEmpty()) {
                 type.add(Type.file);
             }
 
-            result.add(new Path(directory, fileName, type));
+            result.add(new Path(directory, fileName, type).withAttributes(attributes));
 
         }
         return result;

@@ -32,6 +32,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
                 throw new NotfoundException("Path found but type is not file");
             }
 
+            attributes.setAccessedDate(fileInformation.getBasicInformation().getLastAccessTime().toEpochMillis());
             attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
             attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
             attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
