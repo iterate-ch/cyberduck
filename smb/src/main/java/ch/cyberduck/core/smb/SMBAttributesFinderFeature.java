@@ -1,15 +1,16 @@
 package ch.cyberduck.core.smb;
 
-import com.hierynomus.msfscc.fileinformation.FileAllInformation;
-
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.VoidAttributesAdapter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
-public class SMBAttributesFinderFeature extends VoidAttributesAdapter implements AttributesFinder {
+import com.hierynomus.msfscc.fileinformation.FileAllInformation;
+import com.hierynomus.mssmb2.SMBApiException;
+
+public class SMBAttributesFinderFeature implements AttributesFinder {
 
     private final SMBSession session;
 
@@ -21,14 +22,25 @@ public class SMBAttributesFinderFeature extends VoidAttributesAdapter implements
     public PathAttributes find(Path file, ListProgressListener listener) throws BackgroundException {
         final PathAttributes attributes = new PathAttributes();
 
-        FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
+        try {
 
-        attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
-        attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
-        attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
-        attributes.setDisplayname(fileInformation.getNameInformation().substring(1));
+            FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
+            if(file.isDirectory() && !fileInformation.getStandardInformation().isDirectory()) {
+                throw new NotfoundException("Path found but type is not directory");
+            }
+            else if(file.isFile() && fileInformation.getStandardInformation().isDirectory()) {
+                throw new NotfoundException("Path found but type is not file");
+            }
 
-        return attributes;
+            attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
+            attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
+            attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
+            attributes.setDisplayname(fileInformation.getNameInformation().substring(1));
+
+            return attributes;
+        }
+        catch(SMBApiException e) {
+            throw new SmbExceptionMappingService().map(e);
+        }
     }
-    
 }
