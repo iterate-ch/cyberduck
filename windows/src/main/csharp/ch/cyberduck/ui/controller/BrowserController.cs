@@ -346,6 +346,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Editor editor = entry.Value;
                 editor.close();
             }
+            _editors.Clear();
             base.Invalidate();
         }
 
@@ -2927,6 +2928,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 Session = SessionPool.DISCONNECTED;
                 SetWorkdir(null);
                 _cache.clear();
+                foreach (KeyValuePair<Path, Editor> entry in _editors)
+                {
+                    Editor editor = entry.Value;
+                    editor.close();
+                }
+                _editors.Clear();
                 _navigation.clear();
                 View.WindowTitle = PreferencesFactory.get().getProperty("application.name");
                 disconnected();
