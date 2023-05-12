@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SMBListFeatureTest extends AbstractSMBTest {
+public class SMBListServiceTest extends AbstractSMBTest {
 
     @Test
     public void testList() throws Exception {
