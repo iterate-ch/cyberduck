@@ -21,6 +21,8 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import com.hierynomus.smbj.common.SMBRuntimeException;
+
 public class SMBDirectoryFeature implements Directory<Integer> {
 
     private final SMBSession session;
@@ -31,7 +33,13 @@ public class SMBDirectoryFeature implements Directory<Integer> {
 
     @Override
     public Path mkdir(Path folder, TransferStatus status) throws BackgroundException {
-        session.share.mkdir(folder.getAbsolute());
+        try {
+            session.share.mkdir(folder.getAbsolute());
+
+        }
+        catch(SMBRuntimeException e) {
+            throw new SmbExceptionMappingService().map(e);
+        }
         return folder;
     }
 
