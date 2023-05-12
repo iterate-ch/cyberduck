@@ -14,6 +14,7 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
+import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.share.File;
 
 import ch.cyberduck.core.ConnectionCallback;
@@ -33,37 +34,41 @@ public class SMBReadFeature implements Read {
 
     @Override
     public InputStream read(Path file, TransferStatus status, ConnectionCallback callback) throws BackgroundException {
-        
-        Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
-        shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
+        try {
+            Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
+            shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
 
-        Set<FileAttributes> fileAttributes = new HashSet<>();
-        fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
-        Set<SMB2CreateOptions> createOptions = new HashSet<>();
-        SMB2CreateDisposition smb2CreateDisposition = SMB2CreateDisposition.FILE_OPEN_IF;
+            Set<FileAttributes> fileAttributes = new HashSet<>();
+            fileAttributes.add(FileAttributes.FILE_ATTRIBUTE_NORMAL);
+            Set<SMB2CreateOptions> createOptions = new HashSet<>();
+            SMB2CreateDisposition smb2CreateDisposition = SMB2CreateDisposition.FILE_OPEN_IF;
 
-        Set<AccessMask> accessMask = new HashSet<>();
-        accessMask.add(AccessMask.FILE_READ_DATA);
+            Set<AccessMask> accessMask = new HashSet<>();
+            accessMask.add(AccessMask.FILE_READ_DATA);
 
-        createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
+            createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions);
+            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions);
 
-        InputStream stream = fileEntry.getInputStream();
+            InputStream stream = fileEntry.getInputStream();
 
-        if (status.isAppend()) {
-            try {
-                long skipped = stream.skip(status.getOffset());
-                if (skipped != status.getOffset()) {
-                    logger.log(Level.WARN, "Could not skip %d bytes in file %s.", status.getOffset(), file);
+            if(status.isAppend()) {
+                try {
+                    long skipped = stream.skip(status.getOffset());
+                    if(skipped != status.getOffset()) {
+                        logger.log(Level.WARN, "Could not skip %d bytes in file %s.", status.getOffset(), file);
+                    }
                 }
-            } catch (IOException e) {
-                fileEntry.close();   
-                throw new BackgroundException(e);
+                catch(IOException e) {
+                    fileEntry.close();
+                    throw new BackgroundException(e);
+                }
             }
-        }
 
-        return new SMBInputStream(stream, fileEntry);
+            return new SMBInputStream(stream, fileEntry);
+        } catch(SMBApiException e) {
+            throw new SmbExceptionMappingService().map(e);
+        }
     }
 
     public final class SMBInputStream extends InputStream {

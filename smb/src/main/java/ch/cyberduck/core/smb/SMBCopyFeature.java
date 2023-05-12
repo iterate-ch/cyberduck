@@ -18,6 +18,7 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
+import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.protocol.commons.buffer.Buffer.BufferException;
 import com.hierynomus.protocol.transport.TransportException;
 import com.hierynomus.smbj.share.File;
@@ -33,17 +34,22 @@ public class SMBCopyFeature implements Copy {
     @Override
     public Path copy(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
                      StreamListener listener) throws BackgroundException {
-        if(source.isFile()) {
-            copyFile(source, target, status, prompt, listener);
+        try {
+            if(source.isFile()) {
+                copyFile(source, target, status, prompt, listener);
+            }
+            else {
+                copyDirectory(source, target, status, prompt, listener);
+            }
+            return target;
         }
-        else {
-            copyDirectory(source, target, status, prompt, listener);
+        catch(SMBApiException e) {
+            throw new SmbExceptionMappingService().map(e);
         }
-        return target;
     }
 
     private Path copyDirectory(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
-                              StreamListener listener) throws BackgroundException {
+                               StreamListener listener) throws BackgroundException {
         if(!session.share.folderExists(target.toString())) {
             session.getFeature(Directory.class).mkdir(target, null);
         }
@@ -63,7 +69,7 @@ public class SMBCopyFeature implements Copy {
     }
 
     private Path copyFile(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
-                         StreamListener listener) throws BackgroundException {
+                          StreamListener listener) throws BackgroundException {
 
         Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
         shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);

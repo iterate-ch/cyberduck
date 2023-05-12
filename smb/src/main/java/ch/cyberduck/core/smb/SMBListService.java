@@ -27,6 +27,7 @@ import java.util.EnumSet;
 
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.msfscc.fileinformation.FileIdBothDirectoryInformation;
+import com.hierynomus.mssmb2.SMBApiException;
 
 public class SMBListService implements ListService {
 
@@ -38,39 +39,45 @@ public class SMBListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> result = new AttributedList<>();
-        for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
-            String fileName = f.getFileName();
-            if(fileName.equals(".") || fileName.equals("..")) {
-                continue; // skip the . and .. directories
+
+        try {
+            final AttributedList<Path> result = new AttributedList<>();
+            for(FileIdBothDirectoryInformation f : session.share.list(directory.getAbsolute())) {
+                String fileName = f.getFileName();
+                if(fileName.equals(".") || fileName.equals("..")) {
+                    continue; // skip the . and .. directories
+                }
+                EnumSet<Type> type = EnumSet.noneOf(Type.class);
+                long fileAttributes = f.getFileAttributes();
+
+                // check for all relevant file types and add them to the EnumSet
+                if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
+                    type.add(Type.directory);
+                }
+                if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue()) != 0) {
+                    type.add(Type.file);
+                }
+
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setAccessedDate(f.getLastAccessTime().toEpochMillis());
+                attributes.setModificationDate(f.getLastWriteTime().toEpochMillis());
+                attributes.setCreationDate(f.getCreationTime().toEpochMillis());
+                attributes.setSize(f.getEndOfFile());
+                attributes.setDisplayname(f.getFileName());
+
+                // default to file
+                if(type.isEmpty()) {
+                    type.add(Type.file);
+                }
+
+                result.add(new Path(directory, fileName, type).withAttributes(attributes));
+
             }
-            EnumSet<Type> type = EnumSet.noneOf(Type.class);
-            long fileAttributes = f.getFileAttributes();
-
-            // check for all relevant file types and add them to the EnumSet
-            if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_DIRECTORY.getValue()) != 0) {
-                type.add(Type.directory);
-            }
-            if((fileAttributes & FileAttributes.FILE_ATTRIBUTE_NORMAL.getValue()) != 0) {
-                type.add(Type.file);
-            }
-
-            final PathAttributes attributes = new PathAttributes();
-            attributes.setAccessedDate(f.getLastAccessTime().toEpochMillis());
-            attributes.setModificationDate(f.getLastWriteTime().toEpochMillis());
-            attributes.setCreationDate(f.getCreationTime().toEpochMillis());
-            attributes.setSize(f.getEndOfFile());
-            attributes.setDisplayname(f.getFileName());
-
-            // default to file
-            if(type.isEmpty()) {
-                type.add(Type.file);
-            }
-
-            result.add(new Path(directory, fileName, type).withAttributes(attributes));
-
+            return result;
         }
-        return result;
+        catch(SMBApiException e) {
+            throw new SmbExceptionMappingService().map(e);
+        }
     }
 
 }

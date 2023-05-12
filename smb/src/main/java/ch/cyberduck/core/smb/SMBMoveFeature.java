@@ -8,6 +8,7 @@ import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
 import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
+import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.share.DiskEntry;
 
 import ch.cyberduck.core.ConnectionCallback;
@@ -61,6 +62,8 @@ public class SMBMoveFeature implements Move {
         try (DiskEntry file = session.share.open(source.getAbsolute(), accessMask, fileAttributes, shareAccessSet,
                 smb2CreateDisposition, createOptions)) {
             file.rename(target.getAbsolute());
+        } catch(SMBApiException e) {
+            throw new SmbExceptionMappingService().map(e);
         }
 
         return target;

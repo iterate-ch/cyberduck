@@ -35,7 +35,6 @@ public class SMBDirectoryFeature implements Directory<Integer> {
     public Path mkdir(Path folder, TransferStatus status) throws BackgroundException {
         try {
             session.share.mkdir(folder.getAbsolute());
-
         }
         catch(SMBRuntimeException e) {
             throw new SmbExceptionMappingService().map(e);
