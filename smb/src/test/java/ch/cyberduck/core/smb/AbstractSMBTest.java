@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
-import org.junit.runners.Parameterized;
 
 @Category(IntegrationTest.class)
 public abstract class AbstractSMBTest {
@@ -53,7 +52,4 @@ public abstract class AbstractSMBTest {
     public void disconnect() throws Exception {
         session.close();
     }
-
-    @Parameterized.Parameter
-    public int vaultVersion;
 }
