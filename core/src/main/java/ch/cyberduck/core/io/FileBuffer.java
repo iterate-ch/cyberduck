@@ -157,6 +157,7 @@ public class FileBuffer implements Buffer {
     public String toString() {
         final StringBuilder sb = new StringBuilder("FileBuffer{");
         sb.append("temporary=").append(temporary);
+        sb.append(", length=").append(length);
         sb.append('}');
         return sb.toString();
     }
