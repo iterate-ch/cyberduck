@@ -21,8 +21,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.Maps;
 
 public class S3TimestampFeature extends DefaultTimestampFeature {
 
@@ -47,9 +52,13 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
     }
 
     public static Long fromHeaders(final HashMap<String, String> response) {
-        if(response.containsKey(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
+        final HashMap<String, String> headers = new HashMap<>(response.entrySet()
+                .stream()
+                .map(entry -> Maps.immutableEntry(StringUtils.lowerCase(entry.getKey()), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        if(headers.containsKey(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))) {
             try {
-                return Double.valueOf(response.get(S3TimestampFeature.METADATA_MODIFICATION_DATE)).longValue() * 1000;
+                return Double.valueOf(headers.get(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))).longValue() * 1000;
             }
             catch(NumberFormatException ignored) {
                 // ignore
