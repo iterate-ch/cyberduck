@@ -52,7 +52,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         status.setMime("text/plain");
-        final long ts = System.currentTimeMillis();
+        final long ts = 1684090690000L;
         status.setTimestamp(ts);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
