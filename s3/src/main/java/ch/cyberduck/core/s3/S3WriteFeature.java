@@ -82,9 +82,6 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 catch(ServiceException e) {
                     throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                 }
-                if(status.getTimestamp() != null) {
-                    object.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
-                }
                 return object;
             }
 
