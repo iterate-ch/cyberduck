@@ -30,7 +30,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -80,18 +79,17 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("/XyFraJKj", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
-        final Path file = new B2TouchFeature(session, fileid).touch(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(directory.getType().contains(Path.Type.placeholder));
         assertTrue(new B2FindFeature(session, fileid).find(directory));
         assertTrue(new DefaultFindFeature(session).find(directory));
+        assertNotEquals(PathAttributes.EMPTY, new B2AttributesFinderFeature(session, fileid).find(directory));
         // Mark as hidden
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(directory).withAttributes(PathAttributes.EMPTY)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        // .bzEmpty is deleted not hidden
         assertFalse(new B2FindFeature(session, fileid).find(directory));
-        assertTrue(new DefaultFindFeature(session).find(directory));
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(directory));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -104,11 +102,8 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         status.setTimestamp(timestamp);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
-        final Path test = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
-        assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(directory).getModificationDate());
-        // Timestamp for placeholder is unknown. Only set on /.bzEmpty
-        assertNotEquals(timestamp, new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
-        new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(timestamp, new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).get(directory).attributes().getModificationDate());
+        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
