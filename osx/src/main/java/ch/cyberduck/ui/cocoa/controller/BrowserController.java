@@ -3398,8 +3398,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 pool.shutdown();
                 pool = SessionPool.DISCONNECTED;
-                cache.clear();
                 setWorkdir(null);
+                cache.clear();
+                for(Editor editor : editors.values()) {
+                    editor.close();
+                }
+                editors.clear();
                 window.setTitle(StringUtils.EMPTY);
                 if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
                     window.setSubtitle(StringUtils.EMPTY);
@@ -3603,6 +3607,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         for(Editor editor : editors.values()) {
             editor.close();
         }
+        editors.clear();
         temporary.shutdown();
         quicklook.close();
 
