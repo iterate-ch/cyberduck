@@ -182,7 +182,7 @@ public class FTPClient extends FTPSClient {
     }
 
     public List<String> list(final FTPCmd command, final String pathname) throws IOException {
-        this.pret(command, pathname);
+        this.pret(command, null == pathname ? StringUtils.EMPTY : pathname);
 
         Socket socket = _openDataConnection_(command, pathname);
 
