@@ -311,4 +311,15 @@ public class FTPMlsdListResponseReaderTest {
                 .read(directory, Arrays.asList(replies));
         assertEquals(2, children.size());
     }
+
+    @Test
+    public void testParseWhitespaceInResponseLine() throws Exception {
+        Path path = new Path("/", EnumSet.of(Path.Type.directory));
+        String[] replies = new String[]{
+                "     Type=file;Size=38955938;Modify=20230328150158.830; IMG_2625–JK.psd"
+        };
+        final AttributedList<Path> children = new FTPMlsdListResponseReader().read(path, Arrays.asList(replies));
+        assertEquals(1, children.size());
+        assertEquals("IMG_2625–JK.psd", children.get(0).getName());
+    }
 }

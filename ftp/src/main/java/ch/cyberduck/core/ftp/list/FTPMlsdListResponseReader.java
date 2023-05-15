@@ -235,7 +235,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
      * @return Parsed keys and values
      */
     protected Map<String, Map<String, String>> parseFacts(final String line) {
-        final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
+        final Pattern p = Pattern.compile("\\s*(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
         final Map<String, Map<String, String>> file = new HashMap<>();
         if(result.matches()) {
