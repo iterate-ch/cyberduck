@@ -22,8 +22,14 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DisabledReachability;
+import ch.cyberduck.core.dropbox.DropboxChecksumCompute;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.i18n.Locales;
+import ch.cyberduck.core.io.CRC32ChecksumCompute;
+import ch.cyberduck.core.io.MD5FastChecksumCompute;
+import ch.cyberduck.core.io.SHA1ChecksumCompute;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.SHA512ChecksumCompute;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
 import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
@@ -516,6 +522,12 @@ public abstract class Preferences implements Locales, PreferencesReader {
         this.setDefault("factory.quicklook.class", ApplicationLauncherQuicklook.class.getName());
         this.setDefault("factory.connectiontimeout.class", DefaultConnectionTimeout.class.getName());
         this.setDefault("factory.authorizationcodeprovider.class", "ch.cyberduck.core.oauth.BrowserOAuth2AuthorizationCodeProvider");
+        this.setDefault("factory.checksumcompute.md5.class", MD5FastChecksumCompute.class.getName());
+        this.setDefault("factory.checksumcompute.sha1.class", SHA1ChecksumCompute.class.getName());
+        this.setDefault("factory.checksumcompute.sha256.class", SHA256ChecksumCompute.class.getName());
+        this.setDefault("factory.checksumcompute.sha512.class", SHA512ChecksumCompute.class.getName());
+        this.setDefault("factory.checksumcompute.crc32.class", CRC32ChecksumCompute.class.getName());
+        this.setDefault("factory.checksumcompute.dropbox_content_hash.class", DropboxChecksumCompute.class.getName());
     }
 
     /**

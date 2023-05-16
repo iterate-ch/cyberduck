@@ -17,30 +17,15 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.dropbox.DropboxChecksumCompute;
+import ch.cyberduck.core.Factory;
 
-public final class ChecksumComputeFactory {
+public final class ChecksumComputeFactory extends Factory<ChecksumCompute> {
 
-    private ChecksumComputeFactory() {
-        //
+    private ChecksumComputeFactory(final HashAlgorithm algorithm) {
+        super(String.format("factory.checksumcompute.%s.class", algorithm.name()));
     }
 
     public static ChecksumCompute get(final HashAlgorithm algorithm) {
-        switch(algorithm) {
-            case md5:
-                return new MD5FastChecksumCompute();
-            case sha1:
-                return new SHA1ChecksumCompute();
-            case sha256:
-                return new SHA256ChecksumCompute();
-            case sha512:
-                return new SHA512ChecksumCompute();
-            case crc32:
-                return new CRC32ChecksumCompute();
-            case dropbox_content_hash:
-                return new DropboxChecksumCompute();
-            default:
-                return new DisabledChecksumCompute();
-        }
+        return new ChecksumComputeFactory(algorithm).create();
     }
 }
