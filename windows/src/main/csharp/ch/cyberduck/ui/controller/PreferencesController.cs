@@ -221,7 +221,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_CryptomatorUseKeychainChangedEvent()
         {
-            PreferencesFactory.get().setProperty("cryptomator.keychain", View.VaultUseKeychain);
+            PreferencesFactory.get().setProperty("cryptomator.vault.keychain", View.VaultUseKeychain);
         }
 
         public static PreferencesController Instance
@@ -1089,7 +1089,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #region Cryptomator
             View.AutoDetectVault = PreferencesFactory.get().getBoolean("cryptomator.vault.autodetect");
-            View.VaultUseKeychain = PreferencesFactory.get().getBoolean("cryptomator.keychain");
+            View.VaultUseKeychain = PreferencesFactory.get().getBoolean("cryptomator.vault.keychain");
             #endregion
         }
 

@@ -2487,11 +2487,11 @@ public class PreferencesController extends ToolbarWindowController {
         this.cryptomatorKeychainCheckbox = cryptomatorKeychainCheckbox;
         this.cryptomatorKeychainCheckbox.setTarget(this.id());
         this.cryptomatorKeychainCheckbox.setAction(Foundation.selector("cryptomatorKeychainCheckboxClicked:"));
-        this.cryptomatorKeychainCheckbox.setState(preferences.getBoolean("cryptomator.keychain") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.cryptomatorKeychainCheckbox.setState(preferences.getBoolean("cryptomator.vault.keychain") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
     public void cryptomatorKeychainCheckboxClicked(NSButton sender) {
-        preferences.setProperty("cryptomator.keychain", sender.state() == NSCell.NSOnState);
+        preferences.setProperty("cryptomator.vault.keychain", sender.state() == NSCell.NSOnState);
     }
 }

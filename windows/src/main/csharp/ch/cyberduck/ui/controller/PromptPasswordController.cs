@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public Credentials prompt(Host bookmark, string title, string reason, LoginOptions options)
         {
-            Credentials credentials = new Credentials().withSaved(options.keychain());
+            Credentials credentials = new Credentials().withSaved(options.save());
             AsyncDelegate d = delegate
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
