@@ -1883,7 +1883,7 @@
                             <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hwv-Xz-6TN">
                                 <rect key="frame" x="10" y="10" width="435" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Use Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318-M1-7rH">
+                                <buttonCell key="cell" type="check" title="أستخدم Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318-M1-7rH">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
