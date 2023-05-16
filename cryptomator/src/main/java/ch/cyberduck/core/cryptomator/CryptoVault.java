@@ -218,12 +218,15 @@ public class CryptoVault implements Vault {
             log.debug(String.format("Read master key %s", masterkey));
         }
         final Host bookmark = session.getHost();
-        String passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
-        if(null == passphrase) {
-            // Legacy
-            passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+        String passphrase = null;
+        if(preferences.getBoolean("cryptomator.vault.keychain")) {
+            passphrase = keychain.getPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
                     new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+            if(null == passphrase) {
+                // Legacy
+                passphrase = keychain.getPassword(String.format("Cryptomator Passphrase %s", bookmark.getHostname()),
+                        new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl());
+            }
         }
         final VaultConfig vaultConfig = this.getVaultConfig(session);
         this.unlock(vaultConfig, passphrase, bookmark, prompt,
