@@ -68,9 +68,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     default:
                         credentials.setPassword(View.InputText.Trim());
+                        credentials.setSaved(View.SavePasswordState);
                         break;
                 }
-                credentials.setSaved(View.SavePasswordState);
             };
             _browser.Invoke(d);
             return credentials;
