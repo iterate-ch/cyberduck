@@ -302,7 +302,7 @@ public class Terminal {
                 }
                 try {
                     this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
-                            PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault)));
+                            new TerminalPasswordCallback()), vault)));
                 }
                 catch(TerminalBackgroundException e) {
                     return Exit.failure;

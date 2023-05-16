@@ -102,6 +102,7 @@ public class CryptoVault implements Vault {
     private int vaultVersion;
     private int nonceSize;
 
+    private final PasswordStore keychain = PasswordStoreFactory.get();
     private final Preferences preferences = PreferencesFactory.get();
 
     private Cryptor cryptor;
@@ -132,11 +133,11 @@ public class CryptoVault implements Vault {
         }
     }
 
-    public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
-        return this.create(session, null, credentials, keychain, version);
+    public synchronized Path create(final Session<?> session, final VaultCredentials credentials, final int version) throws BackgroundException {
+        return this.create(session, null, credentials, version);
     }
 
-    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final int version) throws BackgroundException {
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
             try {
@@ -201,12 +202,12 @@ public class CryptoVault implements Vault {
     }
 
     @Override
-    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
-        return this.create(session, region, credentials, keychain, VAULT_VERSION);
+    public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials) throws BackgroundException {
+        return this.create(session, region, credentials, VAULT_VERSION);
     }
 
     @Override
-    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) throws BackgroundException {
+    public synchronized CryptoVault load(final Session<?> session, final PasswordCallback prompt) throws BackgroundException {
         if(this.isUnlocked()) {
             log.warn(String.format("Skip unlock of open vault %s", this));
             return this;

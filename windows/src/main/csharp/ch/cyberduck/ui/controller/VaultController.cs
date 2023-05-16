@@ -95,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCreateVaultWorker(BrowserController controller, Path folder, String filename,
                     String region, String passphrase)
-                    : base(region, new VaultCredentials(passphrase), PasswordStoreFactory.get(), VaultFactory.get(folder,
+                    : base(region, new VaultCredentials(passphrase), VaultFactory.get(folder,
                         new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
                         new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.config.filename"),
                         Encoding.UTF8.GetBytes(new HostPreferences(controller.Session.getHost()).getProperty("cryptomator.vault.pepper"))))

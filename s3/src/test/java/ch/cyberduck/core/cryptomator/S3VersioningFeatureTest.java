@@ -74,7 +74,7 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         final Path bucket = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path vault = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final AttributesFinder f = new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)), cryptomator);
         final Path test = new CryptoTouchFeature<>(session, new S3TouchFeature(session, new S3AccessControlListFeature(session)), new S3WriteFeature(session, new S3AccessControlListFeature(session)), cryptomator).touch(

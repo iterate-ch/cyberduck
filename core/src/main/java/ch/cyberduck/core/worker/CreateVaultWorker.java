@@ -30,19 +30,17 @@ public class CreateVaultWorker extends Worker<Path> {
 
     private final String region;
     private final VaultCredentials passphrase;
-    private final PasswordStore keychain;
     private final Vault vault;
 
-    public CreateVaultWorker(final String region, final VaultCredentials passphrase, final PasswordStore keychain, final Vault vault) {
+    public CreateVaultWorker(final String region, final VaultCredentials passphrase, final Vault vault) {
         this.region = region;
         this.passphrase = passphrase;
-        this.keychain = keychain;
         this.vault = vault;
     }
 
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        final Path home = vault.create(session, region, passphrase, keychain);
+        final Path home = vault.create(session, region, passphrase);
         vault.close();
         return home;
     }

@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
@@ -88,9 +87,7 @@ public class CryptoReadFeatureTest {
                                               final LoginOptions options) {
                         return new VaultCredentials("vault");
                     }
-                }, new
-
-                        DisabledPasswordStore()).
+                }).
 
                 getHome());
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
@@ -165,7 +162,7 @@ public class CryptoReadFeatureTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
-        }, new DisabledPasswordStore()).getHome());
+        }).getHome());
         CryptoReadFeature read = new CryptoReadFeature(null, null, vault);
         {
             assertEquals(0, read.chunk(0));

@@ -18,7 +18,6 @@ package ch.cyberduck.core.cryptomator;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullSession;
@@ -111,7 +110,7 @@ public class CryptoVaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new DisabledPasswordStore());
+        });
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -193,7 +192,7 @@ public class CryptoVaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new DisabledPasswordStore()).getHome());
+        }).getHome());
         assertTrue(vault.getFileContentCryptor().getClass().getName().contains("v2"));
         assertTrue(vault.getFileHeaderCryptor().getClass().getName().contains("v2"));
         assertEquals(Vault.State.open, vault.getState());
@@ -244,7 +243,7 @@ public class CryptoVaultTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault123");
             }
-        }, new DisabledPasswordStore()).getHome());
+        }).getHome());
         assertEquals(Vault.State.open, vault.getState());
         assertEquals(home, new PathDictionary<>().deserialize(home.serialize(SerializerFactory.get())));
         vault.close();
@@ -303,7 +302,7 @@ public class CryptoVaultTest {
                         throw new LoginCanceledException();
                     }
                 }
-            }, new DisabledPasswordStore());
+            });
             fail();
         }
         catch(LoginCanceledException e) {
@@ -353,7 +352,7 @@ public class CryptoVaultTest {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     throw new LoginCanceledException();
                 }
-            }, new DisabledPasswordStore());
+            });
             fail();
         }
         catch(LoginCanceledException e) {
@@ -402,7 +401,7 @@ public class CryptoVaultTest {
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new VaultCredentials(null);
                 }
-            }, new DisabledPasswordStore());
+            });
             fail();
         }
         catch(LoginCanceledException e) {
@@ -436,7 +435,7 @@ public class CryptoVaultTest {
             }
         };
         final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        vault.create(session, null, new VaultCredentials("test"));
     }
 
     @Test
@@ -471,7 +470,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), 6);
+        vault.create(session, null, new VaultCredentials("test"), 6);
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0L, 0);
@@ -526,7 +525,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        vault.create(session, null, new VaultCredentials("test"));
         // zero ciphertextFileSize
         try {
             vault.toCleartextSize(0L, 0);
@@ -581,7 +580,7 @@ public class CryptoVaultTest {
         };
         final CryptoVault vault = new CryptoVault(
                 home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        vault.create(session, null, new VaultCredentials("test"));
         for(int i = 0; i < 26000000; i++) {
             assertEquals(i, vault.toCleartextSize(0L, vault.toCiphertextSize(0L, i)));
         }
