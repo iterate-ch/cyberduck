@@ -16,7 +16,6 @@ package ch.cyberduck.core.vault;
  */
 
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
@@ -37,12 +36,12 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) {
+    public Path create(final Session<?> session, final String region, final VaultCredentials credentials) {
         return null;
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) {
+    public Vault load(final Session<?> session, final PasswordCallback prompt) {
         return this;
     }
 

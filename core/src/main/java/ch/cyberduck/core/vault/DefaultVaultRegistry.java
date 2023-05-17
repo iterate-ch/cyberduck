@@ -123,7 +123,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             }
         }
         if(lookup) {
-            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, keychain, prompt);
+            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
             if(file.attributes().getVault() != null) {
                 return listener.load(session, file.attributes().getVault(),
                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
@@ -148,13 +148,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                    new LoadingVaultLookupListener(this, keychain, prompt))
+                    new LoadingVaultLookupListener(this, prompt))
                     .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
                     );
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                    new LoadingVaultLookupListener(this, keychain, prompt))
+                    new LoadingVaultLookupListener(this, prompt))
                     .withAutodetect(new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autodetect")
                     );
         }

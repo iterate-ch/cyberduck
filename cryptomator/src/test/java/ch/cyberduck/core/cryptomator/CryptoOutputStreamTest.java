@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -66,7 +65,7 @@ public class CryptoOutputStreamTest {
             }
         };
         final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        vault.create(session, null, new VaultCredentials("test"));
         return vault;
     }
 

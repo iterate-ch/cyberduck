@@ -200,32 +200,32 @@ tx_push() {
             for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
                 strings=`basename $s .strings`
                 echo "*** Updating $strings.strings...";
-                $tx push --translation cyberduck.$strings --skip
+                $tx push --force --translation cyberduck.$strings
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
             echo "*** Updating $strings.strings...";
-            $tx push --translation cyberduck.$strings --skip
+            $tx push --force --translation cyberduck.$strings
         fi;
 	}
 	else
 	{
-		echo "*** Updating $language Localization...";
+		    echo "*** Updating $language Localization...";
         if [ "$stringsfile" = "all" ] ; then
             echo "*** Updating all .strings...";
             for s in `ls en.lproj | grep .strings | grep -v .strings.1`; do
                 strings=`basename $s .strings`
                 lang=`basename $language .lproj`
                 echo "*** Updating $strings.strings...";
-                $tx push --translation -l $lang cyberduck.$strings --skip
+                $tx push --force --translation -l $lang cyberduck.$strings
             done;
         fi;
         if [ "$stringsfile" != "all" ] ; then
             strings=`basename $stringsfile .strings`
             lang=`basename $language .lproj`
             echo "*** Updating $strings.strings...";
-            $tx push --translation -l $lang cyberduck.$strings --skip
+            $tx push --force --translation -l $lang cyberduck.$strings
         fi;
 	}
 	fi;

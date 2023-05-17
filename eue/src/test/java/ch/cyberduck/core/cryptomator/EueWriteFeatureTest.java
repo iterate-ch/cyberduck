@@ -77,7 +77,7 @@ public class EueWriteFeatureTest extends AbstractEueSessionTest {
                 new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
                 new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
                 new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
-        cryptomator.create(session, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
+        cryptomator.create(session, new VaultCredentials("test"), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final CryptoWriteFeature<EueWriteFeature.Chunk> writer = new CryptoWriteFeature<EueWriteFeature.Chunk>(session, new EueWriteFeature(session, fileid), cryptomator);

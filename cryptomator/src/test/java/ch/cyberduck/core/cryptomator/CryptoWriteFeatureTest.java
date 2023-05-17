@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -60,7 +59,7 @@ public class CryptoWriteFeatureTest {
             }
         };
         final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), CryptoVault.VAULT_VERSION_DEPRECATED);
+        vault.create(session, null, new VaultCredentials("test"), CryptoVault.VAULT_VERSION_DEPRECATED);
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));
@@ -102,7 +101,7 @@ public class CryptoWriteFeatureTest {
             }
         };
         final CryptoVault vault = new CryptoVault(home);
-        vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), CryptoVault.VAULT_VERSION);
+        vault.create(session, null, new VaultCredentials("test"), CryptoVault.VAULT_VERSION);
         int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0L, 0));

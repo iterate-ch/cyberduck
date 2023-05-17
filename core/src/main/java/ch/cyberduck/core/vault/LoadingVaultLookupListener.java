@@ -29,12 +29,10 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = LogManager.getLogger(LoadingVaultLookupListener.class);
 
     private final VaultRegistry registry;
-    private final PasswordStore keychain;
     private final PasswordCallback prompt;
 
-    public LoadingVaultLookupListener(final VaultRegistry registry, final PasswordStore keychain, final PasswordCallback prompt) {
+    public LoadingVaultLookupListener(final VaultRegistry registry, final PasswordCallback prompt) {
         this.registry = registry;
-        this.keychain = keychain;
         this.prompt = prompt;
     }
 
@@ -49,7 +47,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 log.info(String.format("Loading vault %s for session %s", vault, session));
             }
             try {
-                registry.add(vault.load(session, prompt, keychain));
+                registry.add(vault.load(session, prompt));
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure %s loading vault %s", e, vault));

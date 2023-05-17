@@ -3790,7 +3790,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerLoadVaultWorker(BrowserController controller, VaultRegistry registry, Path directory)
                     : base(new LoadingVaultLookupListener(registry,
-                        PasswordStoreFactory.get(), PasswordCallbackFactory.get(controller)), directory)
+                        PasswordCallbackFactory.get(controller)), directory)
                 {
                     _controller = controller;
                     _directory = directory;
