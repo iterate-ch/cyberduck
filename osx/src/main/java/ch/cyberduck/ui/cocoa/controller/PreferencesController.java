@@ -23,7 +23,6 @@ import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSDictionary;
-import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -1452,7 +1451,7 @@ public class PreferencesController extends ToolbarWindowController {
         boolean enabled = sender.state() == NSCell.NSOnState;
         downloadSkipRegexField.setSelectable(enabled);
         downloadSkipRegexField.setEditable(enabled);
-        downloadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
+        downloadSkipRegexField.setTextColor(enabled ? NSColor.textColor() : NSColor.disabledControlTextColor());
         preferences.setProperty("queue.download.skip.enable", enabled);
     }
 
@@ -1493,12 +1492,11 @@ public class PreferencesController extends ToolbarWindowController {
         }
         try {
             Pattern compiled = Pattern.compile(value);
-            preferences.setProperty("queue.download.skip.regex",
-                    compiled.pattern());
-            this.mark(this.downloadSkipRegexField.textStorage(), null);
+            preferences.setProperty("queue.download.skip.regex", compiled.pattern());
+            this.mark(this.downloadSkipRegexField, null);
         }
         catch(PatternSyntaxException e) {
-            this.mark(this.downloadSkipRegexField.textStorage(), e);
+            this.mark(this.downloadSkipRegexField, e);
         }
     }
 
@@ -1517,7 +1515,7 @@ public class PreferencesController extends ToolbarWindowController {
         boolean enabled = sender.state() == NSCell.NSOnState;
         uploadSkipRegexField.setSelectable(enabled);
         uploadSkipRegexField.setEditable(enabled);
-        uploadSkipRegexField.setTextColor(enabled ? NSColor.controlTextColor() : NSColor.disabledControlTextColor());
+        uploadSkipRegexField.setTextColor(enabled ? NSColor.textColor() : NSColor.disabledControlTextColor());
         preferences.setProperty("queue.upload.skip.enable", enabled);
     }
 
@@ -1558,12 +1556,11 @@ public class PreferencesController extends ToolbarWindowController {
         }
         try {
             Pattern compiled = Pattern.compile(value);
-            preferences.setProperty("queue.upload.skip.regex",
-                    compiled.pattern());
-            this.mark(this.uploadSkipRegexField.textStorage(), null);
+            preferences.setProperty("queue.upload.skip.regex", compiled.pattern());
+            this.mark(this.uploadSkipRegexField, null);
         }
         catch(PatternSyntaxException e) {
-            this.mark(this.uploadSkipRegexField.textStorage(), e);
+            this.mark(this.uploadSkipRegexField, e);
         }
     }
 
@@ -1572,15 +1569,14 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray.arrayWithObjects(NSAttributedString.ForegroundColorAttributeName)
     );
 
-    private void mark(NSMutableAttributedString text, PatternSyntaxException e) {
+    private void mark(NSTextView field, PatternSyntaxException e) {
         if(null == e) {
-            text.removeAttributeInRange(
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSRange.NSMakeRange(new NSUInteger(0), text.length()));
+            field.setTextColor(NSColor.textColor());
             return;
         }
         int index = e.getIndex(); //The approximate index in the pattern of the error
         NSRange range = null;
+        final NSTextStorage text = field.textStorage();
         if(-1 == index) {
             range = NSRange.NSMakeRange(new NSUInteger(0), text.length());
         }
