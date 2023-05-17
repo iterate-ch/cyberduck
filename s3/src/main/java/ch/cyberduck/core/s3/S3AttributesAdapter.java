@@ -81,14 +81,7 @@ public class S3AttributesAdapter implements AttributesAdapter<StorageObject> {
                 metadata.put(entry.getKey(), entry.getValue().toString());
             }
             attributes.setMetadata(metadata);
-            if(object.containsMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE)) {
-                try {
-                    attributes.setModificationDate(Double.valueOf(object.getMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE).toString()).longValue());
-                }
-                catch(NumberFormatException ignored) {
-                    // ignore
-                }
-            }
+            attributes.setModificationDate(S3TimestampFeature.fromHeaders(metadata));
         }
         return attributes;
     }

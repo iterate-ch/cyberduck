@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Header;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -73,10 +74,11 @@ public class S3MetadataFeature implements Headers {
             final StorageObject target = new StorageObject(containerService.getKey(file));
             target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
             if(status.getTimestamp() != null) {
-                target.addMetadata(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(status.getTimestamp()));
+                final Header header = S3TimestampFeature.toHeader(status.getTimestamp());
+                target.addMetadata(header.getName(), header.getValue());
             }
             try {
-                // Apply non standard ACL
+                // Apply non-standard ACL
                 final Acl list = acl.getPermission(file);
                 if(list.isEditable()) {
                     target.setAcl(acl.toAcl(list));
