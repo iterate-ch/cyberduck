@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
+  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  xmlns:rescap3="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities/3"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:virtualization="http://schemas.microsoft.com/appx/manifest/virtualization/windows10"
+  IgnorableNamespaces="desktop2 desktop6 rescap rescap3 uap uap2 uap3 uap4 uap5 virtualization">
+
+    <Identity Name="iterate.37637C3DE32E5"
+              Publisher="CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4"
+              Version="${normalized.version}.0" />
+
+    <Properties>
+        <DisplayName>Cyberduck</DisplayName>
+        <PublisherDisplayName>iterate</PublisherDisplayName>
+        <Logo>Images\CyberduckAppx.50x50.png</Logo>
+
+        <!-- Required for %AppData%\Cyberduck-access (sharing bookmarks/profiles) -->
+        <desktop6:FileSystemWriteVirtualization>disabled</desktop6:FileSystemWriteVirtualization>
+
+        <virtualization:FileSystemWriteVirtualization>
+            <virtualization:ExcludedDirectories>
+                <virtualization:ExcludedDirectory>$(KnownFolder:RoamingAppData)\Cyberduck</virtualization:ExcludedDirectory>
+                <virtualization:ExcludedDirectory>$(KnownFolder:RoamingAppData)\iterate_GmbH</virtualization:ExcludedDirectory>
+            </virtualization:ExcludedDirectories>
+        </virtualization:FileSystemWriteVirtualization>
+    </Properties>
+
+    <Dependencies>
+        <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.15063.0" MaxVersionTested="10.0.15063.0" />
+    </Dependencies>
+
+    <Resources>
+        <Resource Language="x-generate"/>
+    </Resources>
+
+    <Applications>
+        <Application Id="Cyberduck"
+          Executable="$targetnametoken$.exe"
+          EntryPoint="$targetentrypoint$">
+            <uap:VisualElements DisplayName="Cyberduck"
+              Description="Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows."
+              BackgroundColor="transparent" Square150x150Logo="Images\CyberduckAppx.150x150.png"
+              Square44x44Logo="Images\CyberduckAppx.44x44.png" />
+            <Extensions>
+                <rescap3:Extension Category="windows.desktopAppMigration">
+                    <rescap3:DesktopAppMigration>
+                        <rescap3:DesktopApp AumId="iterate.Cyberduck" />
+                        <rescap3:DesktopApp ShortcutPath="%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Cyberduck\Cyberduck.lnk" />
+                    </rescap3:DesktopAppMigration>
+                </rescap3:Extension>
+                <uap:Extension Category="windows.fileTypeAssociation">
+                    <uap3:FileTypeAssociation Name="cyberduck" desktop2:UseUrl="true">
+                        <uap:DisplayName>Cyberduck</uap:DisplayName>
+                        <uap:SupportedFileTypes>
+                            <uap:FileType>.cyberduckprofile</uap:FileType>
+                            <uap:FileType>.duck</uap:FileType>
+                        </uap:SupportedFileTypes>
+                    </uap3:FileTypeAssociation>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="dav">
+                        <uap:DisplayName>dav</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="davs">
+                        <uap:DisplayName>davs</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="ftp">
+                        <uap:DisplayName>ftp</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="ftps">
+                        <uap:DisplayName>ftps</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="irods">
+                        <uap:DisplayName>irods</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="s3">
+                        <uap:DisplayName>s3</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="sftp">
+                        <uap:DisplayName>sftp</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap:Extension Category="windows.protocol">
+                    <uap:Protocol Name="io.cyberduck">
+                        <uap:DisplayName>Cyberduck OAuth</uap:DisplayName>
+                    </uap:Protocol>
+                </uap:Extension>
+                <uap5:Extension Category="windows.appExecutionAlias" Executable="Cyberduck\Cyberduck.exe"
+                  EntryPoint="Windows.FullTrustApplication">
+                    <uap5:AppExecutionAlias>
+                        <uap5:ExecutionAlias Alias="Cyberduck.exe" />
+                    </uap5:AppExecutionAlias>
+                </uap5:Extension>
+            </Extensions>
+        </Application>
+    </Applications>
+
+    <Capabilities>
+        <Capability Name="internetClient" />
+        <rescap:Capability Name="runFullTrust" />
+        <rescap:Capability Name="unvirtualizedResources"/>
+    </Capabilities>
+</Package>

@@ -1,0 +1,9 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.Props', $(MSBuildThisFileDirectory)../))" />
+
+  <PropertyGroup>
+    <AppxPackageDir>$(OutputPath)$(Configuration)\</AppxPackageDir>
+  </PropertyGroup>
+
+</Project>

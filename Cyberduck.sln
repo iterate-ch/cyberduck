@@ -50,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "i18n-gen", "core\i18n-gen\i18n-gen.csproj", "{ABB0D3AD-BCDA-4F73-88C3-C67B76AAB6FE}"
 EndProject
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "package", "windows\src\main\package\package.wapproj", "{55CDD736-9A8A-4091-AC99-60E2F9C73269}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Windows = Debug|Windows
@@ -108,6 +110,12 @@ Global
 		{ABB0D3AD-BCDA-4F73-88C3-C67B76AAB6FE}.Debug|Windows.Build.0 = Debug|Any CPU
 		{ABB0D3AD-BCDA-4F73-88C3-C67B76AAB6FE}.Release|Windows.ActiveCfg = Release|Any CPU
 		{ABB0D3AD-BCDA-4F73-88C3-C67B76AAB6FE}.Release|Windows.Build.0 = Release|Any CPU
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Debug|Windows.ActiveCfg = Debug|x64
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Debug|Windows.Build.0 = Debug|x64
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Debug|Windows.Deploy.0 = Debug|x64
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Release|Windows.ActiveCfg = Release|x64
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Release|Windows.Build.0 = Release|x64
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Release|Windows.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,6 +137,7 @@ Global
 		{F6975079-F730-4A31-9909-DE536E524764} = {457F1D6D-8AEC-42E2-9211-2A8405C95019}
 		{D1286C4A-9D6A-4904-B9AD-CB7688483EDB} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
 		{ABB0D3AD-BCDA-4F73-88C3-C67B76AAB6FE} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
+		{55CDD736-9A8A-4091-AC99-60E2F9C73269} = {7D32EE61-B6F0-4978-B500-45172B181283}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {289E6003-15D5-4377-ADA6-2E7093785BCD}
