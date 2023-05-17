@@ -71,6 +71,12 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>oauth</artifactId>
+            <version>8.5.10-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
 
