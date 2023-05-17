@@ -227,8 +227,8 @@ public class BookmarkController extends SheetController implements CollectionLis
             }
             options.configure(selected);
             validator.configure(selected);
-            this.update();
         }
+        this.update();
     }
 
     public void setHostField(final NSTextField field) {
