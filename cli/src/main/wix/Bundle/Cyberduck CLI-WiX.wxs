@@ -47,10 +47,10 @@
         <File Source="$(var.CLI.TargetPath).config" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
-        <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.LicenseFile)" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="acknowledgments" Guid="95A3AF7B-D782-47C5-9AEE-398DEE02D222">
-        <File Source="$(var.CLI.TargetDir)/Acknowledgments.rtf" KeyPath="yes" Checksum="yes" />
+        <File Source="$(var.CyberduckDir)Acknowledgments.rtf" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="Cyberduck.Cli" Guid="811AEB4A-4751-428E-9116-9F7396C5C2C8">
         <File Source="$(var.CLI.TargetDir)/Cyberduck.Cli.dll" KeyPath="yes" Checksum="yes"/>
@@ -151,69 +151,9 @@
       </Component>
     </ComponentGroup>
 
-    <ComponentGroup Id="profiles" Directory="PROFILES">
-      <Component Id="azure.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Azure.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="b2.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="dav.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/DAV.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="davs.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/DAVS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="dracoon.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/DRACOON (OAuth).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="dropbox.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Dropbox.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="file.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/File.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ftp.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/FTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ftps.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/FTPS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="googlecloudstorage.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Google Cloud Storage.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="googledrive.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Google Drive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="onedrive.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="sharepoint.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Microsoft SharePoint.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="rackspace.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="s3.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/S3 (HTTPS).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="sftp.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/SFTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="swiftv2.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Openstack Swift (Keystone 2).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="swiftv3.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Openstack Swift (Keystone 3).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="box.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Box.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-    </ComponentGroup>
-
     <Feature Id="ProductFeature" Title="CLI_WiX" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
-      <ComponentGroupRef Id="profiles" />
+      <ComponentGroupRef Id="ProfileComponents" />
       <ComponentRef Id="setEnviroment" />
     </Feature>
   </Product>

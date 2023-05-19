@@ -269,8 +269,8 @@
       <!-- /Nuget Dependencies -->
 
       <Component Id="additional" Guid="c0733025-a4ec-4437-8617-0ace7d29318a">
-        <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
-        <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
+        <File Source="$(var.CyberduckDir)Acknowledgments.rtf" Checksum="yes" />
+        <File Source="$(var.LicenseFile)" Checksum="yes" />
       </Component>
 
       <!-- Protocol Handlers -->
@@ -321,81 +321,9 @@
       </Component>
     </ComponentGroup>
 
-    <ComponentGroup Id="Profiles" Directory="PROFILES">
-      <Component Id="azure.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Azure.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="b2.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/B2.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="dav.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/DAV.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="davs.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/DAVS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="dracoon.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/DRACOON (OAuth).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="dropbox.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Dropbox.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="file.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/File.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="files.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Files.com.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ftp.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/FTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="ftps.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/FTPS.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="googlecloudstorage.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Google Cloud Storage.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="googledrive.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Google Drive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="nextcloud.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Nextcloud.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="owncloud.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/ownCloud.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="onedrive.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="sharepoint.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft SharePoint.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="sharepointsite.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft SharePoint Site.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="rackspace.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="s3.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/S3 (HTTPS).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="sftp.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/SFTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="swiftv2.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Openstack Swift (Keystone 2).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="swiftv3.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Openstack Swift (Keystone 3).cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="box.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Box.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
-    </ComponentGroup>
-
     <Feature Id="ProductFeature" Title="cyberduck-WiX" Level="1">
       <ComponentGroupRef Id="ProductComponents" />
-      <ComponentGroupRef Id="Profiles" />
+      <ComponentGroupRef Id="ProfileComponents" />
     </Feature>
 
     <Binary Id="WindowsVersionCustomAction.dll" SourceFile="$(var.WindowsVersionCustomAction.TargetDir)$(var.WindowsVersionCustomAction.TargetName).dll" />
