@@ -48,7 +48,7 @@ public class SMBCopyFeature implements Copy {
         }
     }
 
-    private Path copyDirectory(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
+    private void copyDirectory(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
                                StreamListener listener) throws BackgroundException {
         if(!session.share.folderExists(target.toString())) {
             session.getFeature(Directory.class).mkdir(target, null);
@@ -65,10 +65,9 @@ public class SMBCopyFeature implements Copy {
                 copy(sourceFile, targetFile, status, prompt, listener);
             }
         }
-        return target;
     }
 
-    private Path copyFile(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
+    private void copyFile(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
                           StreamListener listener) throws BackgroundException {
 
         Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
@@ -105,9 +104,10 @@ public class SMBCopyFeature implements Copy {
 
         sourceFile.close();
         targetFile.close();
-
-        return target;
     }
 
-
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return true;
+    }
 }

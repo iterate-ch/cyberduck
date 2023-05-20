@@ -63,7 +63,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
     }
 
-    private final class SMBOutputStream extends ProxyOutputStream {
+    private static final class SMBOutputStream extends ProxyOutputStream {
 
         private OutputStream stream;
         private File file;
