@@ -70,13 +70,13 @@ public class SMBListService implements ListService {
                     type.add(Type.file);
                 }
 
-                result.add(new Path(directory, fileName, type).withAttributes(attributes));
+                result.add(new Path(directory, fileName, type, attributes));
 
             }
             return result;
         }
         catch(SMBApiException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map(e);
         }
     }
 

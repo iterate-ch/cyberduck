@@ -41,7 +41,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         catch(SMBApiException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 }

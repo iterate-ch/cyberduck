@@ -32,7 +32,7 @@ public class SMBDeleteFeature implements Delete {
                 }
             }
             catch(SMBApiException e) {
-                throw new SmbExceptionMappingService().map(e);
+                throw new SMBExceptionMappingService().map("Cannot delete {0}", e, file);
             }
 
         }

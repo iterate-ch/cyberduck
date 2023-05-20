@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,17 +68,18 @@ public class SMBReadFeature implements Read {
 
             return new SMBInputStream(stream, fileEntry);
         } catch(SMBApiException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
-    public final class SMBInputStream extends InputStream {
+    private final class SMBInputStream extends ProxyInputStream {
 
-        private InputStream stream;
-        private File file;
+        private final InputStream stream;
+        private final File file;
 
 
         public SMBInputStream(InputStream stream, File file) {
+            super(stream);
             this.stream = stream;
             this.file = file;
         }
@@ -94,5 +96,5 @@ public class SMBReadFeature implements Read {
         }
 
     }
-    
+
 }

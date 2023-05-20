@@ -1,4 +1,5 @@
-package ch.cyberduck.core.smb;/*
+package ch.cyberduck.core.smb;
+/*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -17,8 +18,9 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -28,7 +30,7 @@ import ch.cyberduck.core.exception.UnsupportedException;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.common.SMBRuntimeException;
 
-public class SmbExceptionMappingService extends AbstractExceptionMappingService<SMBRuntimeException> {
+public class SMBExceptionMappingService extends AbstractExceptionMappingService<SMBRuntimeException> {
     @Override
     public BackgroundException map(final SMBRuntimeException exception) {
         if(exception instanceof SMBApiException) {
@@ -58,9 +60,9 @@ public class SmbExceptionMappingService extends AbstractExceptionMappingService<
                     return new ConnectionTimeoutException(exception.getMessage(), exception.getCause());
                 case STATUS_CONNECTION_DISCONNECTED:
                 case STATUS_CONNECTION_RESET:
-                    return new ConnectionCanceledException(exception.getMessage(), exception.getCause());
+                    return new ConnectionRefusedException(exception.getMessage(), exception.getCause());
                 default:
-                    return new BackgroundException(exception.getMessage(), exception.getCause());
+                    return new InteroperabilityException(exception.getMessage(), exception.getCause());
             }
         }
         else {

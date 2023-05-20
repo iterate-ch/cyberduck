@@ -44,7 +44,7 @@ public class SMBCopyFeature implements Copy {
             return target;
         }
         catch(SMBApiException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map(e);
         }
     }
 
@@ -96,9 +96,11 @@ public class SMBCopyFeature implements Copy {
             sourceFile.remoteCopyTo(targetFile);
         }
         catch(TransportException | BufferException e) {
+            throw new BackgroundException(e);
+        }
+        finally {
             sourceFile.close();
             targetFile.close();
-            throw new BackgroundException(e);
         }
 
         sourceFile.close();

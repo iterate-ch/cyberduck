@@ -61,9 +61,9 @@ public class SMBMoveFeature implements Move {
 
         try (DiskEntry file = session.share.open(source.getAbsolute(), accessMask, fileAttributes, shareAccessSet,
                 smb2CreateDisposition, createOptions)) {
-            file.rename(target.getAbsolute());
+            file.rename(target.getAbsolute(), status.isExists());
         } catch(SMBApiException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map("Cannot rename {0}", e, source);
         }
 
         return target;

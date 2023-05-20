@@ -13,6 +13,8 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.output.ProxyOutputStream;
+
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
 import com.hierynomus.mssmb2.SMB2CreateDisposition;
@@ -55,19 +57,20 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));
         }
         catch(SMBApiException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map("Upload {0} failed", e, file);
         }
 
 
     }
 
-    public final class SMBOutputStream extends OutputStream {
+    private final class SMBOutputStream extends ProxyOutputStream {
 
         private OutputStream stream;
         private File file;
         private long fileSize;
 
         public SMBOutputStream(OutputStream stream, File file) {
+            super(stream);
             this.stream = stream;
             this.file = file;
         }

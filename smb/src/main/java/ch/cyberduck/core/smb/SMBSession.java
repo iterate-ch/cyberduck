@@ -98,7 +98,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             share = (DiskShare) session.connectShare(shareString);
         }
         catch(SMBRuntimeException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map(e);
         }
 
     }
@@ -110,7 +110,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
                 session.logoff();
             }
             catch(SMBRuntimeException e) {
-                throw new SmbExceptionMappingService().map(e);
+                throw new SMBExceptionMappingService().map(e);
             }
             catch(TransportException e) {
                 throw new BackgroundException(e);

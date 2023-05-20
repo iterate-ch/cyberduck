@@ -37,7 +37,7 @@ public class SMBDirectoryFeature implements Directory<Integer> {
             session.share.mkdir(folder.getAbsolute());
         }
         catch(SMBRuntimeException e) {
-            throw new SmbExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         return folder;
     }
