@@ -1,6 +1,23 @@
 Cyberduck
 https://cyberduck.io/
 
+8.6.0
+- [Feature] Add preference "Use Keychain" when unlocking vaults (Cryptomator) (#14662)
+- [Feature] Ask for permission to automatically download and install new updates (macOS)
+- [Bugfix] Slow listing of directory contents (Backblaze B2) (#14527)
+- [Bugfix] Set newly calculated nonces and checksum when retrying upload (Cryptomator) (#14547)
+- [Bugfix] Unable to enable connection profiles from Preferences
+- [Bugfix] Allow tilde character in keys (S3, Google Storage) (#14590)
+- [Bugfix] Support sso_session configuration directive (S3) (#14568)
+- [Bugfix] Allow synchronizing of folders with different folder names as parameters (CLI) (#13911)
+- [Bugfix] Only prompt for password when creating share when account is subscribed to professional plan (Dropbox) (#14581)
+- [Bugfix] File permission changes not applying recursively (SFTP, FTP) (#14004)
+- [Bugfix] No result set when searching for shared files (Google Drive) (#14612)
+- [Bugfix] Make Bonjour installation optional (Windows) (#13416)
+- [Bugfix] Allow uninstall of Bonjour components (Windows) (#13416)
+- [Bugfix] Error parsing MLST response from Serv-U FTP Server (FTP) (#14652)
+- [Bugfix] Set timestamps in metadata interoperable with rclone (S3) (#14639)
+
 8.5.9
 - [Bugfix] Requires force quit after opening file multiple times in external editor (macOS) (#14412)
 
