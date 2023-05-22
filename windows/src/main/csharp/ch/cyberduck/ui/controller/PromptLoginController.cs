@@ -80,14 +80,13 @@ namespace Ch.Cyberduck.Ui.Controller
         public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
-            var credentials = new Credentials().withSaved(options.keychain()).withUsername(username);
+            var credentials = new Credentials().withSaved(options.save()).withUsername(username);
             InitEventHandlers(bookmark, credentials, options);
 
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = username;
-            View.SavePasswordState = options.keychain();
             View.DiskIcon = Images.Get(options.icon()).Size(64);
 
             InitPrivateKeys();
@@ -212,10 +211,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PasswordEnabled = options.password() && !credentials.isAnonymousLogin();
             View.UsernameLabel = options.getUsernamePlaceholder() + ":";
             View.PasswordLabel = options.getPasswordPlaceholder() + ":";
-            {
-                View.SavePasswordEnabled = options.keychain() && !credentials.isAnonymousLogin();
-                View.SavePasswordState = credentials.isSaved();
-            }
+            View.SavePasswordEnabled = options.keychain() && !credentials.isAnonymousLogin();
+            View.SavePasswordState = credentials.isSaved();
             View.AnonymousEnabled = options.anonymous();
             if (options.anonymous() && credentials.isAnonymousLogin())
             {

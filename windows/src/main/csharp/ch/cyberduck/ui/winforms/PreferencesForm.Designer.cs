@@ -255,6 +255,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.cryptomatorAutoDetectCheckBox = new System.Windows.Forms.CheckBox();
+            this.cryptomatorUseKeychain = new System.Windows.Forms.CheckBox();
             this.managedProfilesPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.profilesPageHost = new System.Windows.Forms.Integration.ElementHost();
             this.toolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
@@ -3349,7 +3350,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.Controls.Add(this.cryptomatorAutoDetectCheckBox);
+            this.flowLayoutPanel1.Controls.Add(this.cryptomatorUseKeychain);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 19);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 5, 0, 5);
@@ -3366,6 +3369,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorAutoDetectCheckBox.Text = "Auto detect and open vault in browser";
             this.cryptomatorAutoDetectCheckBox.UseVisualStyleBackColor = true;
             this.cryptomatorAutoDetectCheckBox.CheckedChanged += new System.EventHandler(this.cryptomatorAutoDetectCheckBox_CheckedChanged);
+            // 
+            // cryptomatorUseKeychain
+            // 
+            this.cryptomatorUseKeychain.AutoSize = true;
+            this.cryptomatorUseKeychain.Location = new System.Drawing.Point(8, 33);
+            this.cryptomatorUseKeychain.Name = "cryptomatorUseKeychain";
+            this.cryptomatorUseKeychain.Size = new System.Drawing.Size(96, 19);
+            this.cryptomatorUseKeychain.TabIndex = 1;
+            this.cryptomatorUseKeychain.Text = "Use Keychain";
+            this.cryptomatorUseKeychain.UseVisualStyleBackColor = true;
+            this.cryptomatorUseKeychain.CheckedChanged += new System.EventHandler(this.cryptomatorUseKeychain_CheckedChanged);
             // 
             // managedProfilesPanel
             // 
@@ -4027,5 +4041,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ImageComboBox connectBookmarkCombobox;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.CheckBox newBrowserOnStartupCheckbox;
+        private System.Windows.Forms.CheckBox cryptomatorUseKeychain;
     }
 }
