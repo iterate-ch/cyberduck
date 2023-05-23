@@ -241,16 +241,18 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
         if(result.matches()) {
             final String filename = result.group(2);
             final Map<String, String> facts = new HashMap<>();
-            for(String fact : result.group(1).split(";")) {
-                String key = StringUtils.substringBefore(fact, "=");
-                if(StringUtils.isBlank(key)) {
-                    continue;
+            if(null != result.group(1)) {
+                for(String fact : result.group(1).split(";")) {
+                    String key = StringUtils.substringBefore(fact, "=");
+                    if(StringUtils.isBlank(key)) {
+                        continue;
+                    }
+                    String value = StringUtils.substringAfter(fact, "=");
+                    if(StringUtils.isBlank(value)) {
+                        continue;
+                    }
+                    facts.put(key.toLowerCase(Locale.ROOT), value);
                 }
-                String value = StringUtils.substringAfter(fact, "=");
-                if(StringUtils.isBlank(value)) {
-                    continue;
-                }
-                facts.put(key.toLowerCase(Locale.ROOT), value);
             }
             file.put(filename, facts);
             return file;

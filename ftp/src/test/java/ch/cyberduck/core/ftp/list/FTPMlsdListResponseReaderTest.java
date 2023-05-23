@@ -323,7 +323,7 @@ public class FTPMlsdListResponseReaderTest {
         assertEquals("IMG_2625–JK.psd", children.get(0).getName());
     }
 
-    @Test
+    @Test(expected = FTPInvalidListException.class)
     public void test14333() throws Exception {
         Path path = new Path("/TEST", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
