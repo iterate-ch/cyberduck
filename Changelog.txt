@@ -17,6 +17,7 @@ https://cyberduck.io/
 - [Bugfix] Allow uninstall of Bonjour components (Windows) (#13416)
 - [Bugfix] Error parsing MLST response from Serv-U FTP Server (FTP) (#14652)
 - [Bugfix] Set timestamps in metadata interoperable with rclone (S3) (#14639)
+- [Bugfix] Failure configuring CloudFront distributions for bucket (S3) (#14669)
 
 8.5.9
 - [Bugfix] Requires force quit after opening file multiple times in external editor (macOS) (#14412)
