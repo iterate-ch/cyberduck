@@ -18,7 +18,6 @@
 
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Local;
-using Windows.Storage;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Preferences
@@ -33,9 +32,7 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             get
             {
-                return local ??= new(Runtime.Packaged.GetValueOrDefault()
-                    ? ApplicationData.Current.LocalFolder.Path
-                    : Path.Combine(EnvironmentInfo.AppDataPath, Runtime.DataFolderName));
+                return local ??= new(Path.Combine(EnvironmentInfo.AppDataPath, Runtime.DataFolderName));
             }
         }
 

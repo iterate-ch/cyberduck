@@ -50,7 +50,13 @@ namespace Ch.Cyberduck.Core.Preferences
             this.locales = locales;
             Runtime.Current = runtime;
 
-            userConfig = new(Path.Combine(RoamingSupportDirectoryFinder.Local.getAbsolute(), $"{runtime.ProductName}.user.config"));
+            // store in Packaged cache folder (to ensure clearing after uninstall)
+            // store in roaming app data, if not packaged
+            var configDirectory = runtime.Packaged
+                ? ApplicationData.Current.LocalCacheFolder.Path
+                : Path.Combine(EnvironmentInfo.AppDataPath, runtime.DataFolderName);
+
+            userConfig = new(Path.Combine(configDirectory, $"{runtime.ProductName}.user.config"));
 
             System.setProperty("jna.boot.library.path", runtime.Location);
         }

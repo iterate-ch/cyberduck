@@ -54,7 +54,7 @@ namespace Ch.Cyberduck.Core
             ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
             ExceptionReport report = reportGenerator.CreateExceptionReport();
 
-            string crashDir = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
+            string crashDir = Path.Combine(LocalSupportDirectoryFinderFactory.get().find().getAbsolute(),
                 "CrashReporter");
             Directory.CreateDirectory(crashDir);
             using (StreamWriter outfile = new StreamWriter(Path.Combine(crashDir, DateTime.Now.Ticks + ".txt")))
