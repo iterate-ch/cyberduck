@@ -77,7 +77,10 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
         @Override
         public void close() throws IOException {
+            stream.flush();
             stream.close();
+            file.flush();
+            file.setLength(fileSize);
             file.close();
         }
 
@@ -89,15 +92,15 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
         @Override
         public void write(byte[] b) throws IOException {
-            super.write(b);
+            stream.write(b);
             fileSize += b.length;
         }
 
         @Override
         public void write(byte[] b, int off, int len) throws IOException {
-            super.write(b, off, len);
-            if(off + len > fileSize) {
-                fileSize = off + len;
+            stream.write(b, off, len);
+            if(off + len > 0) {
+                fileSize += off + len;
             }
         }
 

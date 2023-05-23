@@ -57,7 +57,6 @@ public class SMBReadFeatureTest extends AbstractSMBTest {
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        out.close();
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, session.getFeature(ListService.class).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         assertEquals(content.length, writer.append(test, status.withRemote(session.getFeature(AttributesFinder.class).find(test))).size, 0L);
