@@ -56,8 +56,8 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
     private final S3Session session;
     private final PathContainerService containerService;
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
-        super(session, trust, key);
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final S3LocationFeature location, final X509TrustManager trust, final X509KeyManager key) {
+        super(session, location, trust, key);
         this.session = session;
         this.containerService = session.getFeature(PathContainerService.class);
     }

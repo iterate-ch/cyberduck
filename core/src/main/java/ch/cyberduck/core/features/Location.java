@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -85,6 +86,23 @@ public interface Location {
         @Override
         public String toString() {
             return LocaleFactory.localizedString("Unknown");
+        }
+    };
+
+    Location disabled = new Location() {
+        @Override
+        public Name getDefault() {
+            return unknown;
+        }
+
+        @Override
+        public Set<Name> getLocations() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Name getLocation(final Path file) throws BackgroundException {
+            return unknown;
         }
     };
 }

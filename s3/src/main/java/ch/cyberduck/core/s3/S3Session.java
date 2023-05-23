@@ -98,7 +98,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final Encryption encryption = S3Session.isAwsHostname(host.getHostname())
             ? new KMSEncryptionFeature(this, acl, trust, key) : null;
 
-    private final WebsiteCloudFrontDistributionConfiguration cloudfront = new WebsiteCloudFrontDistributionConfiguration(this, trust, key) {
+    private final RegionEndpointCache regions = new RegionEndpointCache();
+
+    private final WebsiteCloudFrontDistributionConfiguration cloudfront = new WebsiteCloudFrontDistributionConfiguration(this,
+            new S3LocationFeature(this, regions), trust, key) {
         @Override
         public Distribution read(final Path container, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
             final Distribution distribution = super.read(container, method, prompt);
@@ -117,8 +120,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private S3Protocol.AuthenticationHeaderSignatureVersion authenticationHeaderSignatureVersion
             = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
-
-    private final RegionEndpointCache regions = new RegionEndpointCache();
 
     public S3Session(final Host host) {
         super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
