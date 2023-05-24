@@ -38,7 +38,7 @@ public class SystemConfigurationReachability implements Reachability {
         //
     }
 
-    private final class NotificationFilterCallback extends Proxy {
+    private static final class NotificationFilterCallback extends Proxy {
         private final Callback proxy;
 
         public NotificationFilterCallback(final Callback proxy) {
@@ -79,8 +79,13 @@ public class SystemConfigurationReachability implements Reachability {
 
     @Override
     public boolean isReachable(final Host bookmark) {
-        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(toURL(bookmark));
-        return monitor.isReachable();
+        final String url = toURL(bookmark);
+        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(url);
+        final boolean status = monitor.isReachable();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined reachability %s for %s", status, url));
+        }
+        return status;
     }
 
     protected static String toURL(final Host host) {
