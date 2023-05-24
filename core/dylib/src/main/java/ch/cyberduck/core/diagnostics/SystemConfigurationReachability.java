@@ -22,21 +22,20 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 
 public class SystemConfigurationReachability implements Reachability {
     private static final Logger log = LogManager.getLogger(SystemConfigurationReachability.class);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
-
-    public SystemConfigurationReachability() {
-        //
-    }
 
     private static final class NotificationFilterCallback extends Proxy {
         private final Callback proxy;
@@ -57,7 +56,7 @@ public class SystemConfigurationReachability implements Reachability {
     public Monitor monitor(final Host bookmark, final Callback callback) {
         final String url = toURL(bookmark);
         return new Reachability.Monitor() {
-            private final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(url);
+            private final SystemConfigurationReachability.Native monitor = SystemConfigurationReachability.Native.monitorForUrl(url);
             private final NotificationFilterCallback listener = new NotificationFilterCallback(callback);
 
             @Override
@@ -80,7 +79,7 @@ public class SystemConfigurationReachability implements Reachability {
     @Override
     public boolean isReachable(final Host bookmark) {
         final String url = toURL(bookmark);
-        final CDReachabilityMonitor monitor = CDReachabilityMonitor.monitorForUrl(url);
+        final SystemConfigurationReachability.Native monitor = SystemConfigurationReachability.Native.monitorForUrl(url);
         final boolean status = monitor.isReachable();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determined reachability %s for %s", status, url));
@@ -94,5 +93,31 @@ public class SystemConfigurationReachability implements Reachability {
         url.append(new PunycodeConverter().convert(host.getHostname()));
         url.append(":").append(host.getPort());
         return url.toString();
+    }
+
+    public abstract static class Native extends NSObject {
+        static {
+            ch.cyberduck.core.library.Native.load("core");
+        }
+
+        private static final _Class CLASS = Rococoa.createClass("SystemConfigurationReachability", _Class.class);
+
+        public interface _Class extends ObjCClass {
+            SystemConfigurationReachability.Native alloc();
+        }
+
+        public static Native monitorForUrl(final String url) {
+            return CLASS.alloc().initWithUrl(url);
+        }
+
+        public abstract Native initWithUrl(String url);
+
+        public abstract void diagnoseInteractively();
+
+        public abstract boolean startReachabilityMonitor();
+
+        public abstract boolean stopReachabilityMonitor();
+
+        public abstract boolean isReachable();
     }
 }

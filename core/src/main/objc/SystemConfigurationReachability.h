@@ -21,7 +21,7 @@
 #import <CoreServices/CoreServices.h>
 #import <SystemConfiguration/SCNetworkReachability.h>
 
-@interface CDReachabilityMonitor : NSObject {
+@interface SystemConfigurationReachability : NSObject {
 @private
 	NSURL *url;
     SCNetworkReachabilityRef target;

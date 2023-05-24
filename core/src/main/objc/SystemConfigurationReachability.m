@@ -17,7 +17,7 @@
  *  dkocher@cyberduck.ch
  */
 
-#import "CDReachabilityMonitor.h"
+#import "SystemConfigurationReachability.h"
 #import <Foundation/Foundation.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 
@@ -30,7 +30,7 @@ static void _ReachabilityCallbackFunction(SCNetworkReachabilityRef target, SCNet
                                                       userInfo: nil];
 }
 
-@implementation CDReachabilityMonitor
+@implementation SystemConfigurationReachability
 
 - (id)initWithUrl:(NSString *) url {
     self->url = [[NSURL alloc] initWithString:url];
