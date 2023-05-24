@@ -83,14 +83,14 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     private final Host bookmark;
     private final ClientConfiguration configuration;
-    private final Location locationFeature;
+    private final Location location;
 
-    public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
+    public CloudFrontDistributionConfiguration(final S3Session session, final Location location, final X509TrustManager trust, final X509KeyManager key) {
         this.session = session;
         this.bookmark = session.getHost();
+        this.location = location;
         this.configuration = new CustomClientConfiguration(bookmark,
             new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
-        this.locationFeature = session.getFeature(Location.class);
     }
 
     @Override
@@ -664,6 +664,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected Location.Name getRegion(final Path container) throws BackgroundException {
-        return locationFeature.getLocation(container);
+        return location.getLocation(container);
     }
 }
