@@ -20,36 +20,24 @@ package ch.cyberduck.core.diagnostics;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
-public class DefaultInetAddressReachabilityTest {
+public class ResolverReachabilityTest {
 
     @Test
-    public void testIsReachable() {
-        final Reachability r = new DefaultInetAddressReachability();
+    public void testReachable() {
+        final Reachability r = new ResolverReachability();
         assertTrue(r.isReachable(
-                new Host(new TestProtocol(), "cloud.iterate.ch")
-        ));
+                new Host(new TestProtocol(), "cyberduck.io")));
     }
 
     @Test
-    public void testNotReachableSubdomain() {
-        final Reachability r = new DefaultInetAddressReachability();
+    public void testNotReachable() {
+        final Reachability r = new ResolverReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(), "a.cyberduck.ch")
-        ));
-    }
-
-    @Test
-    public void testNotReachableWrongHostname() {
-        final Reachability r = new DefaultInetAddressReachability();
-        assertFalse(r.isReachable(
-                new Host(new TestProtocol(), "cyberduck.ch.f")
-        ));
+                new Host(new TestProtocol(), "invalidnodename")));
     }
 }

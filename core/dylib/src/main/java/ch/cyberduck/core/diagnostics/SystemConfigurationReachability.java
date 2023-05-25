@@ -32,7 +32,7 @@ import org.rococoa.Foundation;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
-public class SystemConfigurationReachability implements Reachability {
+public class SystemConfigurationReachability extends ChainedReachability {
     private static final Logger log = LogManager.getLogger(SystemConfigurationReachability.class);
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
@@ -50,6 +50,10 @@ public class SystemConfigurationReachability implements Reachability {
             }
             proxy.change();
         }
+    }
+
+    public SystemConfigurationReachability() {
+        super(new ResolverReachability());
     }
 
     @Override
@@ -86,7 +90,11 @@ public class SystemConfigurationReachability implements Reachability {
         }
         final boolean reachable = (flags & Native.kSCNetworkReachabilityFlagsReachable) == Native.kSCNetworkReachabilityFlagsReachable;
         final boolean connectionRequired = (flags & Native.kSCNetworkReachabilityFlagsConnectionRequired) == Native.kSCNetworkReachabilityFlagsConnectionRequired;
-        return reachable && !connectionRequired;
+        if(reachable && !connectionRequired) {
+            // Resolve address
+            return super.isReachable(bookmark);
+        }
+        return false;
     }
 
     protected static String toURL(final Host host) {
