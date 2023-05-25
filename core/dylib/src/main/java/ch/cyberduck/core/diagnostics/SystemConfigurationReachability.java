@@ -102,14 +102,46 @@ public class SystemConfigurationReachability implements Reachability {
             ch.cyberduck.core.library.Native.load("core");
         }
 
+        /**
+         * The specified node name or address can be reached via a transient connection, such as PPP.
+         */
         public static final int kSCNetworkReachabilityFlagsTransientConnection = 1 << 0;
+        /**
+         * The specified node name or address can be reached using the current network configuration.
+         */
         public static final int kSCNetworkReachabilityFlagsReachable = 1 << 1;
+        /**
+         * The specified node name or address can be reached using the current network configuration, but a connection
+         * must first be established. If this flag is set, the kSCNetworkReachabilityFlagsConnectionOnTraffic flag,
+         * kSCNetworkReachabilityFlagsConnectionOnDemand flag, or kSCNetworkReachabilityFlagsIsWWAN flag is also
+         * typically set to indicate the type of connection required. If the user must manually make the connection,
+         * the kSCNetworkReachabilityFlagsInterventionRequired flag is also set.
+         */
         public static final int kSCNetworkReachabilityFlagsConnectionRequired = 1 << 2;
+        /**
+         * The specified node name or address can be reached using the current network configuration, but a connection
+         * must first be established. Any traffic directed to the specified name or address will initiate the connection.
+         */
         public static final int kSCNetworkReachabilityFlagsConnectionOnTraffic = 1 << 3;
+        /**
+         * The specified node name or address can be reached using the current network configuration, but a connection must first be established.
+         */
         public static final int kSCNetworkReachabilityFlagsInterventionRequired = 1 << 4;
+        /**
+         * The specified node name or address can be reached using the current network configuration, but a connection must first be established.
+         */
         public static final int kSCNetworkReachabilityFlagsConnectionOnDemand = 1 << 5;
+        /**
+         * The specified node name or address is one that is associated with a network interface on the current system.
+         */
         public static final int kSCNetworkReachabilityFlagsIsLocalAddress = 1 << 16;
+        /**
+         * Network traffic to the specified node name or address will not go through a gateway, but is routed directly to one of the interfaces in the system.
+         */
         public static final int kSCNetworkReachabilityFlagsIsDirect = 1 << 17;
+        /**
+         * The specified node name or address can be reached via a cellular connection, such as EDGE or GPRS.
+         */
         public static final int kSCNetworkReachabilityFlagsIsWWAN = 1 << 18;
 
         private static final _Class CLASS = Rococoa.createClass("SystemConfigurationReachability", _Class.class);
