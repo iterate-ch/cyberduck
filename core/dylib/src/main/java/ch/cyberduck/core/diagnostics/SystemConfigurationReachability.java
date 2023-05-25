@@ -80,11 +80,13 @@ public class SystemConfigurationReachability implements Reachability {
     public boolean isReachable(final Host bookmark) {
         final String url = toURL(bookmark);
         final SystemConfigurationReachability.Native monitor = SystemConfigurationReachability.Native.monitorForUrl(url);
-        final boolean status = monitor.isReachable();
+        final int flags = monitor.getFlags();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Determined reachability %s for %s", status, url));
+            log.debug(String.format("Determined reachability flags %s for %s", flags, url));
         }
-        return status;
+        final boolean reachable = (flags & Native.kSCNetworkFlagsReachable) == Native.kSCNetworkFlagsReachable;
+        final boolean connectionRequired = (flags & Native.kSCNetworkFlagsConnectionRequired) == Native.kSCNetworkFlagsConnectionRequired;
+        return reachable && !connectionRequired;
     }
 
     protected static String toURL(final Host host) {
@@ -99,6 +101,14 @@ public class SystemConfigurationReachability implements Reachability {
         static {
             ch.cyberduck.core.library.Native.load("core");
         }
+
+        public static final int kSCNetworkFlagsTransientConnection = 1 << 0;
+        public static final int kSCNetworkFlagsReachable = 1 << 1;
+        public static final int kSCNetworkFlagsConnectionRequired = 1 << 2;
+        public static final int kSCNetworkFlagsConnectionAutomatic = 1 << 3;
+        public static final int kSCNetworkFlagsInterventionRequired = 1 << 4;
+        public static final int kSCNetworkFlagsIsLocalAddress = 1 << 16;
+        public static final int kSCNetworkFlagsIsDirect = 1 << 17;
 
         private static final _Class CLASS = Rococoa.createClass("SystemConfigurationReachability", _Class.class);
 
@@ -118,6 +128,6 @@ public class SystemConfigurationReachability implements Reachability {
 
         public abstract boolean stopReachabilityMonitor();
 
-        public abstract boolean isReachable();
+        public abstract int getFlags();
     }
 }
