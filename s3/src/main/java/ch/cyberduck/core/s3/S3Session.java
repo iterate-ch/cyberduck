@@ -93,12 +93,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final Versioning versioning = preferences.getBoolean("s3.versioning.enable")
             ? new S3VersioningFeature(this, acl) : null;
 
-    private final Glacier glacier = new Glacier(this, trust, key);
+    private final RegionEndpointCache regions = new RegionEndpointCache();
+
+    private final Glacier glacier = new Glacier(this, new S3LocationFeature(this, regions), trust, key);
 
     private final Encryption encryption = S3Session.isAwsHostname(host.getHostname())
-            ? new KMSEncryptionFeature(this, acl, trust, key) : null;
-
-    private final RegionEndpointCache regions = new RegionEndpointCache();
+            ? new KMSEncryptionFeature(this, new S3LocationFeature(this, regions), acl, trust, key) : null;
 
     private final WebsiteCloudFrontDistributionConfiguration cloudfront = new WebsiteCloudFrontDistributionConfiguration(this,
             new S3LocationFeature(this, regions), trust, key) {

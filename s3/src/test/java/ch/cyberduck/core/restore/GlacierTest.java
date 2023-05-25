@@ -28,6 +28,7 @@ import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -61,7 +62,7 @@ public class GlacierTest extends AbstractS3Test {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertEquals("GLACIER", new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getStorageClass());
-        final Glacier feature = new Glacier(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final Glacier feature = new Glacier(session, new S3LocationFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         feature.restore(test, new DisabledLoginCallback());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }

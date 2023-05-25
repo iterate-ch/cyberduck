@@ -57,15 +57,15 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private final S3Session session;
     private final PathContainerService containerService;
     private final ClientConfiguration configuration;
-    private final Location locationFeature;
+    private final Location location;
 
-    public KMSEncryptionFeature(final S3Session session, final S3AccessControlListFeature acl, final X509TrustManager trust, final X509KeyManager key) {
+    public KMSEncryptionFeature(final S3Session session, final Location location, final S3AccessControlListFeature acl, final X509TrustManager trust, final X509KeyManager key) {
         super(session, acl);
         this.session = session;
+        this.location = location;
         final Host bookmark = session.getHost();
         this.configuration = new CustomClientConfiguration(bookmark,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
-        this.locationFeature = session.getFeature(Location.class);
         this.containerService = session.getFeature(PathContainerService.class);
     }
 
@@ -130,9 +130,9 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private AWSKMS client(final Path container) throws BackgroundException {
         final AWSKMSClientBuilder builder = AWSKMSClientBuilder.standard()
-            .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
-            .withClientConfiguration(configuration);
-        final Location.Name region = locationFeature.getLocation(container);
+                .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(session.getClient().getProviderCredentials()))
+                .withClientConfiguration(configuration);
+        final Location.Name region = location.getLocation(container);
         if(S3Session.isAwsHostname(session.getHost().getHostname(), false)) {
             if(Location.unknown.equals(region)) {
                 builder.withRegion(Regions.DEFAULT_REGION);

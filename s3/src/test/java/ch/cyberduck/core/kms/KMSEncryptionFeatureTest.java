@@ -33,6 +33,7 @@ import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
+import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
@@ -88,13 +89,13 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetKeys_eu_west_1() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new S3LocationFeature(session), new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(kms.getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback()).isEmpty());
     }
 
     @Test
     public void testGetKeys_ap_southeast_2() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new S3LocationFeature(session), new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Set<Encryption.Algorithm> keys = kms.getKeys(new Path("test-ap-southeast-2-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
         assertTrue(keys.contains(Encryption.Algorithm.NONE));
         assertTrue(keys.contains(S3EncryptionFeature.SSE_AES256));
@@ -111,6 +112,6 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        new KMSEncryptionFeature(session, new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
+        new KMSEncryptionFeature(session, new S3LocationFeature(session), new S3AccessControlListFeature(session), new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledLoginCallback());
     }
 }

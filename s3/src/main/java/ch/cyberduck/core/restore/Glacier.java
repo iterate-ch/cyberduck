@@ -51,14 +51,14 @@ public class Glacier implements Restore {
 
     private final S3Session session;
     private final ClientConfiguration configuration;
-    private final Location locationFeature;
+    private final Location location;
 
-    public Glacier(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
+    public Glacier(final S3Session session, final Location location, final X509TrustManager trust, final X509KeyManager key) {
         this.session = session;
+        this.location = location;
         final Host bookmark = session.getHost();
         this.configuration = new CustomClientConfiguration(bookmark,
-            new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
-        this.locationFeature = session.getFeature(Location.class);
+                new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
     }
 
     /**
@@ -126,6 +126,6 @@ public class Glacier implements Restore {
     }
 
     protected Location.Name getRegion(final Path container) throws BackgroundException {
-        return locationFeature.getLocation(container);
+        return location.getLocation(container);
     }
 }
