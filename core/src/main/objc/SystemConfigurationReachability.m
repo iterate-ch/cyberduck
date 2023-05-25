@@ -96,8 +96,8 @@ static void _ReachabilityCallbackFunction(SCNetworkReachabilityRef target, SCNet
     return YES;
 }
 
-- (SCNetworkConnectionFlags)getFlags {
-	SCNetworkConnectionFlags flags;
+- (SCNetworkReachabilityFlags)getFlags {
+	SCNetworkReachabilityFlags flags;
 	if(!SCNetworkReachabilityGetFlags(target, &flags)) {
         NSLog(@"Error getting reachability flags for %@", url);
         return NO;

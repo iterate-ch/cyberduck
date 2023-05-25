@@ -84,8 +84,8 @@ public class SystemConfigurationReachability implements Reachability {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determined reachability flags %s for %s", flags, url));
         }
-        final boolean reachable = (flags & Native.kSCNetworkFlagsReachable) == Native.kSCNetworkFlagsReachable;
-        final boolean connectionRequired = (flags & Native.kSCNetworkFlagsConnectionRequired) == Native.kSCNetworkFlagsConnectionRequired;
+        final boolean reachable = (flags & Native.kSCNetworkReachabilityFlagsReachable) == Native.kSCNetworkReachabilityFlagsReachable;
+        final boolean connectionRequired = (flags & Native.kSCNetworkReachabilityFlagsConnectionRequired) == Native.kSCNetworkReachabilityFlagsConnectionRequired;
         return reachable && !connectionRequired;
     }
 
@@ -102,13 +102,15 @@ public class SystemConfigurationReachability implements Reachability {
             ch.cyberduck.core.library.Native.load("core");
         }
 
-        public static final int kSCNetworkFlagsTransientConnection = 1 << 0;
-        public static final int kSCNetworkFlagsReachable = 1 << 1;
-        public static final int kSCNetworkFlagsConnectionRequired = 1 << 2;
-        public static final int kSCNetworkFlagsConnectionAutomatic = 1 << 3;
-        public static final int kSCNetworkFlagsInterventionRequired = 1 << 4;
-        public static final int kSCNetworkFlagsIsLocalAddress = 1 << 16;
-        public static final int kSCNetworkFlagsIsDirect = 1 << 17;
+        public static final int kSCNetworkReachabilityFlagsTransientConnection = 1 << 0;
+        public static final int kSCNetworkReachabilityFlagsReachable = 1 << 1;
+        public static final int kSCNetworkReachabilityFlagsConnectionRequired = 1 << 2;
+        public static final int kSCNetworkReachabilityFlagsConnectionOnTraffic = 1 << 3;
+        public static final int kSCNetworkReachabilityFlagsInterventionRequired = 1 << 4;
+        public static final int kSCNetworkReachabilityFlagsConnectionOnDemand = 1 << 5;
+        public static final int kSCNetworkReachabilityFlagsIsLocalAddress = 1 << 16;
+        public static final int kSCNetworkReachabilityFlagsIsDirect = 1 << 17;
+        public static final int kSCNetworkReachabilityFlagsIsWWAN = 1 << 18;
 
         private static final _Class CLASS = Rococoa.createClass("SystemConfigurationReachability", _Class.class);
 

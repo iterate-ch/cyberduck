@@ -34,6 +34,6 @@
 - (BOOL)startReachabilityMonitor;
 - (BOOL)stopReachabilityMonitor;
 
-- (SCNetworkConnectionFlags)getFlags;
+- (SCNetworkReachabilityFlags)getFlags;
 
 @end
