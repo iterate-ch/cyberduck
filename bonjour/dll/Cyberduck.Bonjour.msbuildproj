@@ -1,0 +1,21 @@
+<Project Sdk="IKVM.Net.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <LangVersion>1.8</LangVersion>
+        <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core" />
+        <PackageReference Include="IKVM" />
+        <PackageReference Include="IKVM.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Convert Include="$(TargetDir)bonjour.jar" />
+        <Convert Include="$(TargetDir)dnssd.jar" />
+    </ItemGroup>
+
+</Project>

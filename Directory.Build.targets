@@ -19,14 +19,29 @@
     <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.41" />
 
     <ItemGroup>
+        <CyberduckReference Update="Core">
+          <ProjectPath>$(CyberduckDir)core\dll\Cyberduck.Core.msbuildproj</ProjectPath>
+        </CyberduckReference>
         <CyberduckReference Update="Core.Native">
             <ProjectPath>$(CyberduckDir)core\src\main\csharp\Cyberduck.Core.Native.csproj</ProjectPath>
         </CyberduckReference>
         <CyberduckReference Update="Core.Refresh">
             <ProjectPath>$(CyberduckDir)core\native\refresh\src\main\csharp\Cyberduck.Core.Refresh.csproj</ProjectPath>
         </CyberduckReference>
+        <CyberduckReference Update="Bonjour">
+          <ProjectPath>$(CyberduckDir)bonjour\dll\Cyberduck.Bonjour.msbuildproj</ProjectPath>
+        </CyberduckReference>
         <CyberduckReference Update="Bonjour.Native">
             <ProjectPath>$(CyberduckDir)bonjour\src\main\csharp\Cyberduck.Bonjour.Native.csproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Cryptomator">
+          <ProjectPath>$(CyberduckDir)cryptomator\dll\Cyberduck.Cryptomator.msbuildproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Protocols">
+          <ProjectPath>$(CyberduckDir)protocols\dll\Cyberduck.Protocols.msbuildproj</ProjectPath>
+        </CyberduckReference>
+        <CyberduckReference Update="Cli">
+          <ProjectPath>$(CyberduckDir)cli\dll\Cyberduck.Cli.msbuildproj</ProjectPath>
         </CyberduckReference>
     </ItemGroup>
 

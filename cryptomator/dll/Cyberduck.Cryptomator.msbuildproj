@@ -1,0 +1,24 @@
+<Project Sdk="IKVM.Net.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <LangVersion>1.8</LangVersion>
+        <ClassLoader>ikvm.runtime.AppDomainAssemblyClassLoader</ClassLoader>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CyberduckReference Include="Core" />
+        <PackageReference Include="IKVM" />
+        <PackageReference Include="IKVM.MSBuild" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Convert Include="$(TargetDir)cryptolib.jar" />
+        <Convert Include="$(TargetDir)cryptomator.jar" />
+        <Convert Include="$(TargetDir)jackson-annotations.jar" />
+        <Convert Include="$(TargetDir)jackson-core.jar" />
+        <Convert Include="$(TargetDir)jackson-databind.jar" />
+        <Convert Include="$(TargetDir)java-jwt.jar" />
+        <Convert Include="$(TargetDir)siv-mode.jar" />
+    </ItemGroup>
+</Project>

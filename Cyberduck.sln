@@ -52,6 +52,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "i18n-gen", "core\i18n-gen\i
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "package", "windows\src\main\package\package.wapproj", "{55CDD736-9A8A-4091-AC99-60E2F9C73269}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Core", "core\dll\Cyberduck.Core.msbuildproj", "{700080FF-8673-400D-8E0A-80F5B9ECC6A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Bonjour", "bonjour\dll\Cyberduck.Bonjour.msbuildproj", "{8F1F7D55-70A4-4E9A-BF0A-AF27369C67FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Protocols", "protocols\dll\Cyberduck.Protocols.msbuildproj", "{9EC33FB0-4334-403D-9E69-0586F7E6695F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Cryptomator", "cryptomator\dll\Cyberduck.Cryptomator.msbuildproj", "{C5D057E6-48B7-48C5-A7E2-66A21258BD04}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cyberduck.Cli", "cli\dll\Cyberduck.Cli.msbuildproj", "{82651949-B606-4CEF-BEEF-117466CC70BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Windows = Debug|Windows
@@ -116,6 +126,26 @@ Global
 		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Release|Windows.ActiveCfg = Release|x64
 		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Release|Windows.Build.0 = Release|x64
 		{55CDD736-9A8A-4091-AC99-60E2F9C73269}.Release|Windows.Deploy.0 = Release|x64
+		{700080FF-8673-400D-8E0A-80F5B9ECC6A1}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{700080FF-8673-400D-8E0A-80F5B9ECC6A1}.Debug|Windows.Build.0 = Debug|Any CPU
+		{700080FF-8673-400D-8E0A-80F5B9ECC6A1}.Release|Windows.ActiveCfg = Release|Any CPU
+		{700080FF-8673-400D-8E0A-80F5B9ECC6A1}.Release|Windows.Build.0 = Release|Any CPU
+		{8F1F7D55-70A4-4E9A-BF0A-AF27369C67FB}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{8F1F7D55-70A4-4E9A-BF0A-AF27369C67FB}.Debug|Windows.Build.0 = Debug|Any CPU
+		{8F1F7D55-70A4-4E9A-BF0A-AF27369C67FB}.Release|Windows.ActiveCfg = Release|Any CPU
+		{8F1F7D55-70A4-4E9A-BF0A-AF27369C67FB}.Release|Windows.Build.0 = Release|Any CPU
+		{9EC33FB0-4334-403D-9E69-0586F7E6695F}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{9EC33FB0-4334-403D-9E69-0586F7E6695F}.Debug|Windows.Build.0 = Debug|Any CPU
+		{9EC33FB0-4334-403D-9E69-0586F7E6695F}.Release|Windows.ActiveCfg = Release|Any CPU
+		{9EC33FB0-4334-403D-9E69-0586F7E6695F}.Release|Windows.Build.0 = Release|Any CPU
+		{C5D057E6-48B7-48C5-A7E2-66A21258BD04}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{C5D057E6-48B7-48C5-A7E2-66A21258BD04}.Debug|Windows.Build.0 = Debug|Any CPU
+		{C5D057E6-48B7-48C5-A7E2-66A21258BD04}.Release|Windows.ActiveCfg = Release|Any CPU
+		{C5D057E6-48B7-48C5-A7E2-66A21258BD04}.Release|Windows.Build.0 = Release|Any CPU
+		{82651949-B606-4CEF-BEEF-117466CC70BB}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{82651949-B606-4CEF-BEEF-117466CC70BB}.Debug|Windows.Build.0 = Debug|Any CPU
+		{82651949-B606-4CEF-BEEF-117466CC70BB}.Release|Windows.ActiveCfg = Release|Any CPU
+		{82651949-B606-4CEF-BEEF-117466CC70BB}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +168,11 @@ Global
 		{D1286C4A-9D6A-4904-B9AD-CB7688483EDB} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
 		{ABB0D3AD-BCDA-4F73-88C3-C67B76AAB6FE} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
 		{55CDD736-9A8A-4091-AC99-60E2F9C73269} = {7D32EE61-B6F0-4978-B500-45172B181283}
+		{700080FF-8673-400D-8E0A-80F5B9ECC6A1} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
+		{8F1F7D55-70A4-4E9A-BF0A-AF27369C67FB} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
+		{9EC33FB0-4334-403D-9E69-0586F7E6695F} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
+		{C5D057E6-48B7-48C5-A7E2-66A21258BD04} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
+		{82651949-B606-4CEF-BEEF-117466CC70BB} = {72B4BA09-65D8-4C49-930E-B14104B2AB1B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {289E6003-15D5-4377-ADA6-2E7093785BCD}

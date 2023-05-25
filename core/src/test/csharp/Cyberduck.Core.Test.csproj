@@ -1,24 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <CyberduckReference Include="Core" />
+    <CyberduckReference Include="Core;Core.Native" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="@(IKVMReferences)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="../../main/csharp/Cyberduck.Core.Native.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="IKVM" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="nunit" />
     <PackageReference Include="NUnit.Console" />

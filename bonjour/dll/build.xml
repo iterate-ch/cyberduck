@@ -1,54 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
- *	$Revision: 6757 $
- *	$Date: 2010-08-25 13:25:44 +0200 (Mi, 25 Aug 2010) $
- *
- *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
- *  http://cyberduck.io/
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.package
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	Bug fixes, suggestions and comments should be sent to:
- *	dkocher@cyberduck.io
- -->
-<project name="Cyberduck Native Libraries" basedir=".">
+<project name="Cyberduck.Bonjour" basedir=".">
 
     <import file="../../build.xml"/>
 
-    <property name="ikvm.home" value="${build}/ikvm"/>
+    <condition property="msbuild.configuration" value="Debug">
+        <equals arg1="${configuration}" arg2="debug" />
+    </condition>
+    <condition property="msbuild.configuration" value="Release">
+        <equals arg1="${configuration}" arg2="release" />
+    </condition>
 
-    <target name="dll" if="platform.windows">
-        <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask">
-            <classpath path="${lib.ext}/ant-ikvmc.0.5.jar"/>
+    <target name="init-msbuild">
+        <taskdef name="msbuild"
+                 classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
         </taskdef>
-        <mkdir dir="${build}"/>
-        <!-- Create DLL Cyberduck.Bonjour -->
-        <ikvmc target="library" out="${build}/Cyberduck.Bonjour.dll" home="${ikvm.home}"
-               classloader="ikvm.runtime.AppDomainAssemblyClassLoader" version="${version}.${revision}" debug="${ikvm.debug}"
-               verbose="false">
-            <reference path="${build}/Cyberduck.Core.dll"/>
-            <arg value="-skipDuplicates"/>
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-                <exclude name="asm-*.jar"/>
-                <exclude name="cglib-*.jar"/>
-                <exclude name="*-sources.jar"/>
-                <exclude name="*-tests.jar"/>
-            </fileset>
-            <outputfilter>
-                <contains>IKVMC0109</contains>
-                <contains>class is already available in referenced assembly</contains>
-            </outputfilter>
-        </ikvmc>
     </target>
 
-    <target name="build" depends="version,dll" />
+    <target name="restore" depends="init-msbuild">
+        <msbuild buildfile="${module}\Cyberduck.Bonjour.msbuildproj">
+            <target name="Restore" />
+        </msbuild>
+    </target>
+
+    <target name="build-windows" depends="init-msbuild,version,restore" if="platform.windows">
+        <msbuild buildfile="${home}\Cyberduck.sln">
+            <target name="src\libs\Cyberduck_Bonjour" />
+
+            <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="Copyright" value="${copyright}" />
+            <property name="Version" value="${version}.${revision}" />
+        </msbuild>
+    </target>
+
+    <target name="_build" depends="build-windows" />
+
+    <target name="build" depends="_build,version" />
 </project>

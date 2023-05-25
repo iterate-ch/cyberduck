@@ -78,7 +78,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this.key = key;
         try {
             // Default provider
-            context = SSLContext.getInstance("TLSv1.3");
+            context = SSLContext.getInstance("TLSv1.2");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
