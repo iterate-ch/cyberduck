@@ -13,6 +13,30 @@
     <option name="DOWHILE_BRACE_FORCE" value="3" />
     <option name="WHILE_BRACE_FORCE" value="3" />
     <option name="FOR_BRACE_FORCE" value="3" />
+    <DBN-PSQL>
+      <case-options enabled="true">
+        <option name="KEYWORD_CASE" value="lower" />
+        <option name="FUNCTION_CASE" value="lower" />
+        <option name="PARAMETER_CASE" value="lower" />
+        <option name="DATATYPE_CASE" value="lower" />
+        <option name="OBJECT_CASE" value="preserve" />
+      </case-options>
+      <formatting-settings enabled="false" />
+    </DBN-PSQL>
+    <DBN-SQL>
+      <case-options enabled="true">
+        <option name="KEYWORD_CASE" value="lower" />
+        <option name="FUNCTION_CASE" value="lower" />
+        <option name="PARAMETER_CASE" value="lower" />
+        <option name="DATATYPE_CASE" value="lower" />
+        <option name="OBJECT_CASE" value="preserve" />
+      </case-options>
+      <formatting-settings enabled="false">
+        <option name="STATEMENT_SPACING" value="one_line" />
+        <option name="CLAUSE_CHOP_DOWN" value="chop_down_if_statement_long" />
+        <option name="ITERATION_ELEMENTS_WRAPPING" value="chop_down_if_not_single" />
+      </formatting-settings>
+    </DBN-SQL>
     <JavaCodeStyleSettings>
       <option name="GENERATE_FINAL_LOCALS" value="true" />
       <option name="GENERATE_FINAL_PARAMETERS" value="true" />
@@ -36,6 +60,9 @@
         </value>
       </option>
     </JavaCodeStyleSettings>
+    <ScalaCodeStyleSettings>
+      <option name="MULTILINE_STRING_CLOSING_QUOTES_ON_NEW_LINE" value="true" />
+    </ScalaCodeStyleSettings>
     <editorconfig>
       <option name="ENABLED" value="false" />
     </editorconfig>
@@ -126,7 +153,6 @@
       <option name="DOWHILE_BRACE_FORCE" value="3" />
       <option name="WHILE_BRACE_FORCE" value="3" />
       <option name="FOR_BRACE_FORCE" value="3" />
-      <option name="PARENT_SETTINGS_INSTALLED" value="true" />
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="8" />
       </indentOptions>
@@ -145,7 +171,6 @@
       <option name="DOWHILE_BRACE_FORCE" value="3" />
       <option name="WHILE_BRACE_FORCE" value="3" />
       <option name="FOR_BRACE_FORCE" value="3" />
-      <option name="PARENT_SETTINGS_INSTALLED" value="true" />
     </codeStyleSettings>
   </code_scheme>
 </component>
