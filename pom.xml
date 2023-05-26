@@ -67,7 +67,6 @@
         <module>cli/linux</module>
         <module>cli/windows</module>
         <module>cli/osx</module>
-        <module>oidc</module>
     </modules>
 
     <scm>
