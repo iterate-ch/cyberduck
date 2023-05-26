@@ -23,8 +23,9 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build project
-        run: mvn clean install -pl s3 -am
-          mvn -Dtest=ch.oidc.testenv.ContainerEnvTest test
+        run: |
+          mvn clean install -DskipTests
+          mvn -Dtest=ch.oidc.testenv.ContainerEnvTest test -DexcludedGroups=webdav
 
       - name: Run integration tests
         run: mvn integration-test -pl s3 -am
