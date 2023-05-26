@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 17
+          distribution: 'adopt'
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
