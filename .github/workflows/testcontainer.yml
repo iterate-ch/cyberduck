@@ -20,7 +20,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v1
 
       - name: Build project
         run: mvn clean install -pl s3 -am
