@@ -14,9 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.output.ProxyOutputStream;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.hierynomus.msdtyp.AccessMask;
 import com.hierynomus.msfscc.FileAttributes;
@@ -27,8 +24,6 @@ import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.share.File;
 
 public class SMBWriteFeature extends AppendWriteFeature<Void> {
-    private static final Logger logger = LogManager.getLogger(SMBReadFeature.class);
-
     private final SMBSession session;
 
     public SMBWriteFeature(SMBSession session) {
@@ -69,26 +64,23 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
     private static final class SMBOutputStream extends ProxyOutputStream {
 
-        private OutputStream stream;
         private File file;
         private long fileSize;
 
         public SMBOutputStream(OutputStream stream, File file) {
             super(stream);
-            this.stream = stream;
             this.file = file;
         }
 
         @Override
-        public void close() {
+        public void close() throws IOException {
             try {
-                stream.close();
-            } catch (IOException e) {
-                logger.log(Level.WARN, "Could not close stream %s.", stream);
+                super.close();
+            } finally {
+                file.flush();
+                file.setLength(fileSize);
+                file.close();
             }
-            file.flush();
-            file.setLength(fileSize);
-            file.close();
         }
 
         @Override

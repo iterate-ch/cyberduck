@@ -89,8 +89,6 @@ public class SMBCopyFeature implements Copy {
             targetFile.close();
         }
 
-        sourceFile.close();
-        targetFile.close();
     }
 
     @Override

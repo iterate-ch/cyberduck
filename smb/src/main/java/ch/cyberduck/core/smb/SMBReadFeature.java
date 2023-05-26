@@ -74,25 +74,21 @@ public class SMBReadFeature implements Read {
 
     private final class SMBInputStream extends ProxyInputStream {
 
-        private final InputStream stream;
         private final File file;
 
 
         public SMBInputStream(InputStream stream, File file) {
             super(stream);
-            this.stream = stream;
             this.file = file;
         }
 
         @Override
-        public int read() throws IOException {
-            return stream.read();
-        }
-
-        @Override
         public void close() throws IOException {
-            super.close();
-            file.close();
+            try {
+                super.close();
+            } finally {
+                file.close();
+            }
         }
 
     }
