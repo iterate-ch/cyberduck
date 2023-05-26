@@ -23,7 +23,7 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build project
-        run: mvn clean install
+        run: mvn clean install -pl s3 -am
 
       - name: Run integration tests
-        run: mvn integration-test
+        run: mvn integration-test -pl s3 -am
