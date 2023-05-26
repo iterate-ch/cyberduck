@@ -27,3 +27,4 @@ jobs:
 
       - name: Run integration tests
         run: mvn integration-test -pl s3 -am
+          mvn -Dtest=ch.oidc.testenv.ContainerEnvTest test
