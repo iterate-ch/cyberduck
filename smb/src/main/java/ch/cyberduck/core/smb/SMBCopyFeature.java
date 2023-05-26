@@ -1,8 +1,6 @@
 package ch.cyberduck.core.smb;
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -54,17 +52,6 @@ public class SMBCopyFeature implements Copy {
             session.getFeature(Directory.class).mkdir(target, null);
         }
 
-        ListService listService = session.getFeature(ListService.class);
-        AttributedList<Path> list = listService.list(source, null);
-
-        for(Path path : list) {
-            String fileName = path.getName();
-            if(!fileName.equals(".") && !fileName.equals("..")) {
-                Path sourceFile = new Path(source, path.getName(), path.getType());
-                Path targetFile = new Path(target, path.getName(), path.getType());
-                copy(sourceFile, targetFile, status, prompt, listener);
-            }
-        }
     }
 
     private void copyFile(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
@@ -108,6 +95,6 @@ public class SMBCopyFeature implements Copy {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return true;
+        return false;
     }
 }
