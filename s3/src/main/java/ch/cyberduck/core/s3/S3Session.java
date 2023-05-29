@@ -47,9 +47,12 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -87,6 +90,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private final PreferencesReader preferences
             = new HostPreferences(host);
+
+    private OAuth2RequestInterceptor authorizationService;
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
@@ -175,6 +180,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+
+        if (host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            configuration.addInterceptorLast(authorizationService);
+            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        }
+
         // Only for AWS
         if(S3Session.isAwsHostname(host.getHostname())) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
@@ -187,6 +200,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if (host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            authorizationService.authorize(host, prompt, cancel);
+
+        }
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
                 final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
