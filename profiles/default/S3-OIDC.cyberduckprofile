@@ -28,15 +28,21 @@
         <key>Default Nickname</key>
         <string>MinIO</string>
         <key>OAuth Authorization Url</key>
-        <string>http://localhost:8080/auth/realms/cyberduckrealm/protocol/openid-connect/auth</string>
+        <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/auth</string>
         <key>OAuth Token Url</key>
-        <string>http://localhost:8080/auth/realms/cyberduckrealm/protocol/openid-connect/token</string>
+        <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/token</string>
         <key>OAuth Client ID</key>
         <string>test_client_id</string>
         <key>OAuth Client Secret</key>
         <string>test_client_secret</string>
         <key>OAuth Redirect Url</key>
         <string>x-cyberduck-action:oauth</string>
+        <key>Scopes</key>
+        <array>
+            <string>openid</string>
+            <string>profile</string>
+            <string>minio-authorization</string>
+        </array>
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>
