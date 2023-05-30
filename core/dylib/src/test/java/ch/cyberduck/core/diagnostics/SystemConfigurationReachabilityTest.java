@@ -17,52 +17,35 @@ public class SystemConfigurationReachabilityTest {
     public void testMonitor() {
         final Reachability r = new SystemConfigurationReachability();
         final Reachability.Monitor monitor = r.monitor(new Host(new TestProtocol(), "cyberduck.ch", 80),
-            new Reachability.Callback() {
-                @Override
-                public void change() {
+                new Reachability.Callback() {
+                    @Override
+                    public void change() {
+                    }
                 }
-            }
         ).start();
         assertSame(monitor, monitor.stop());
     }
 
     @Test
-    public void testIsReachablePort80() {
+    public void testIsReachable() {
         final Reachability r = new SystemConfigurationReachability();
         assertTrue(r.isReachable(
-                new Host(new TestProtocol(), "cyberduck.ch", 80)
-        ));
-    }
-
-    @Test
-    public void testIsReachablePort22() {
-        final Reachability r = new SystemConfigurationReachability();
-        assertTrue(r.isReachable(
-                new Host(new TestProtocol(), "cyberduck.ch", 22)
-        ));
+                new Host(new TestProtocol(), "cyberduck.ch")));
     }
 
     @Test
     public void testNotReachablePortSubdomain() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(), "a.cyberduck.ch", 22)
+                new Host(new TestProtocol(), "a.cyberduck.ch")
         ));
     }
 
     @Test
-    public void testNotReachableWrongHostname() {
+    public void testNotReachableWrongDomain() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
-            new Host(new TestProtocol(), "cyberduck.ch.f", 80)
-        ));
-    }
-
-    @Test
-    public void testNotReachableWrongPort() {
-        final Reachability r = new SystemConfigurationReachability();
-        assertFalse(r.isReachable(
-            new Host(new TestProtocol(), "cyberduck.ch", 23)
+                new Host(new TestProtocol(), "cyberduck.f")
         ));
     }
 
@@ -70,23 +53,23 @@ public class SystemConfigurationReachabilityTest {
     public void testReachabilityLocalDisk() {
         final Reachability r = new SystemConfigurationReachability();
         assertTrue(r.isReachable(
-            new Host(new AbstractProtocol() {
+                new Host(new AbstractProtocol() {
 
-                @Override
-                public String getIdentifier() {
-                    return Scheme.file.name();
-                }
+                    @Override
+                    public String getIdentifier() {
+                        return Scheme.file.name();
+                    }
 
-                @Override
-                public String getDescription() {
-                    return Scheme.file.toString();
-                }
+                    @Override
+                    public String getDescription() {
+                        return Scheme.file.toString();
+                    }
 
-                @Override
-                public Scheme getScheme() {
-                    return Scheme.file;
-                }
-            }, "cyberduck.ch", 23)
+                    @Override
+                    public Scheme getScheme() {
+                        return Scheme.file;
+                    }
+                }, "cyberduck.ch", 23)
         ));
     }
 }
