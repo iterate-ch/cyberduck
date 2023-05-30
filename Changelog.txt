@@ -3,7 +3,6 @@ https://cyberduck.io/
 
 8.6.0
 - [Feature] Add preference "Use Keychain" when unlocking vaults (Cryptomator) (#14662)
-- [Feature] Ask for permission to automatically download and install new updates (macOS)
 - [Bugfix] Slow listing of directory contents (Backblaze B2) (#14527)
 - [Bugfix] Set newly calculated nonces and checksum when retrying upload (Cryptomator) (#14547)
 - [Bugfix] Unable to enable connection profiles from Preferences
