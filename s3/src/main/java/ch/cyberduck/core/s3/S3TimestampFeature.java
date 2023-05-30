@@ -51,8 +51,8 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
         return new Header(S3TimestampFeature.METADATA_MODIFICATION_DATE, String.valueOf(millis / 1000));
     }
 
-    public static Long fromHeaders(final HashMap<String, String> response) {
-        final HashMap<String, String> headers = new HashMap<>(response.entrySet()
+    public static Long fromHeaders(final Map<String, String> response) {
+        final Map<String, String> headers = new HashMap<>(response.entrySet()
                 .stream()
                 .map(entry -> Maps.immutableEntry(StringUtils.lowerCase(entry.getKey()), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
