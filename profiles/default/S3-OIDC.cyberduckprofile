@@ -32,9 +32,9 @@
         <key>OAuth Token Url</key>
         <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/token</string>
         <key>OAuth Client ID</key>
-        <string>test_client_id</string>
+        <string>minio</string>
         <key>OAuth Client Secret</key>
-        <string>test_client_secret</string>
+        <string>password</string>
         <key>OAuth Redirect Url</key>
         <string>x-cyberduck-action:oauth</string>
         <key>Scopes</key>
