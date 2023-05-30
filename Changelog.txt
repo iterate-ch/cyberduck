@@ -5,7 +5,6 @@ https://cyberduck.io/
 - [Feature] Add preference "Use Keychain" when unlocking vaults (Cryptomator) (#14662)
 - [Bugfix] Slow listing of directory contents (Backblaze B2) (#14527)
 - [Bugfix] Set newly calculated nonces and checksum when retrying upload (Cryptomator) (#14547)
-- [Bugfix] Unable to enable connection profiles from Preferences
 - [Bugfix] Allow tilde character in keys (S3, Google Storage) (#14590)
 - [Bugfix] Support sso_session configuration directive (S3) (#14568)
 - [Bugfix] Allow synchronizing of folders with different folder names as parameters (CLI) (#13911)
