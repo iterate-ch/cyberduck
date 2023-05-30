@@ -52,7 +52,7 @@ public class BrickTimestampFeatureTest extends AbstractBrickTest {
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final Path file = new BrickDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(),
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         new BrickTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new BrickAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
