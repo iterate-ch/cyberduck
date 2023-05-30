@@ -34,9 +34,13 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityReque
 public class NonAwsSTSCredentialsConfigurator extends STSCredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(NonAwsSTSCredentialsConfigurator.class);
 
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
 
-    public NonAwsSTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
+    public NonAwsSTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt, final X509TrustManager trust1, final X509KeyManager key1) {
        super(trust, key, prompt);
+        this.trust = trust;
+        this.key = key;
     }
 
     @Override
