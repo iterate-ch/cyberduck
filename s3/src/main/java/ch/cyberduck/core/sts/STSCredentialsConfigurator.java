@@ -248,7 +248,7 @@ public class STSCredentialsConfigurator {
                     log.debug(String.format("Configure credentials from basic profile %s", basicProfile.getProfileName()));
                 }
                 final Map<String, String> profileProperties = basicProfile.getProperties();
-                if(profileProperties.containsKey("sso_start_url") || profileProperties.containsKey("sso_session")) {
+                if(profileProperties.containsKey("sso_start_url")) {
                     // Read cached SSO credentials
                     final CachedCredential cached = this.fetchSsoCredentials(profileProperties, awsDirectory);
                     credentials.setUsername(cached.accessKey);
