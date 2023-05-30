@@ -28,14 +28,29 @@ package ch.cyberduck.core.oidc.testenv;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.HashSet;
 
 public class ContainerEnvTest {
+
+    protected S3Session session;
 
     //    private static final Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
 
@@ -50,4 +65,13 @@ public class ContainerEnvTest {
             .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
             .withExposedService("minio_1", 9000, Wait.forListeningPort());
 
+
+    @Before
+    public void setup() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3-OIDC.cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials());
+        session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
+    }
 }
