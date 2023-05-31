@@ -30,6 +30,7 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
 
 public class NonAwsSTSCredentialsConfigurator extends STSCredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(NonAwsSTSCredentialsConfigurator.class);
@@ -46,13 +47,22 @@ public class NonAwsSTSCredentialsConfigurator extends STSCredentialsConfigurator
                 new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
 
 
-        final AWSSecurityTokenService service = AWSSecurityTokenServiceClientBuilder.standard().build();
+        final AWSSecurityTokenService service = AWSSecurityTokenServiceClientBuilder
+                .standard()
+                .withClientConfiguration(configuration)
+                .build();
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
                 .withWebIdentityToken("token")
                 .withPolicy("policy");
-        service.assumeRoleWithWebIdentity(webIdReq);
 
-        return null;
+        AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
+        com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
+
+        credentials.setUsername(cred.getAccessKeyId());
+        credentials.setPassword(cred.getSecretAccessKey());
+        credentials.setToken(cred.getSessionToken());
+
+        return credentials;
     }
 }
