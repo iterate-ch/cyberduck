@@ -127,13 +127,15 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             if(file.attributes().getVault() != null) {
                 return listener.load(session, file.attributes().getVault(),
                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"), new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
                 return listener.load(session, directory.attributes().getVault(),
                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"), new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
             }
         }
         return Vault.DISABLED;
