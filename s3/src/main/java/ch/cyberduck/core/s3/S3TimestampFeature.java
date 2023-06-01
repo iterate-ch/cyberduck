@@ -58,12 +58,20 @@ public class S3TimestampFeature extends DefaultTimestampFeature {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         if(headers.containsKey(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))) {
             try {
-                return Double.valueOf(headers.get(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))).longValue() * 1000;
+                return normalizeToMilliseconds(Double.valueOf(headers.get(StringUtils.lowerCase(S3TimestampFeature.METADATA_MODIFICATION_DATE))).longValue());
             }
             catch(NumberFormatException ignored) {
                 // ignore
             }
         }
         return -1L;
+    }
+
+    private static Long normalizeToMilliseconds(final Long ts) {
+        if(String.valueOf(ts).length() < 12) {
+            // Assume ts in seconds
+            return ts * 1000;
+        }
+        return ts;
     }
 }
