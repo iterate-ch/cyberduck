@@ -44,7 +44,7 @@ public class SMBTimestampFeatureTest extends AbstractSMBTest {
         session.getFeature(Touch.class).touch(path, new TransferStatus())
         .withAttributes(session.getFeature(AttributesFinder.class).find(path));
         
-        // make sure timestamps are different before test/
+        // make sure timestamps are different
         long oldTime = session.getFeature(AttributesFinder.class).find(path).getAccessedDate();
         status.setTimestamp(oldTime + 2000);
 
