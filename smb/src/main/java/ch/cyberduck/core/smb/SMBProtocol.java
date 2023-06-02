@@ -58,7 +58,7 @@ public class SMBProtocol extends AbstractProtocol {
 
     @Override
     public Statefulness getStatefulness() {
-        return Statefulness.stateful;
+        return Statefulness.stateless;
     }
 
     @Override
