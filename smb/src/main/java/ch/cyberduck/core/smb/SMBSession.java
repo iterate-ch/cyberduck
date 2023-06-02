@@ -12,6 +12,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
@@ -168,6 +169,9 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
         }
         if(type == AttributesFinder.class) {
             return (T) new SMBAttributesFinderFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new SMBTimestampFeature(this);
         }
         return super._getFeature(type);
     }
