@@ -39,7 +39,7 @@ public class DisabledPeriodicUpdater implements PeriodicUpdateChecker {
     }
 
     @Override
-    public boolean isUpdateInProgress(final Object item) {
+    public boolean isUpdateInProgress() {
         return false;
     }
 }

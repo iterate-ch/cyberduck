@@ -29,8 +29,7 @@ public interface UpdateChecker {
     boolean hasUpdatePrivileges();
 
     /**
-     * @param item Menu item or button to validate
      * @return True if user interface to check for update should be enabled
      */
-    boolean isUpdateInProgress(Object item);
+    boolean isUpdateInProgress();
 }

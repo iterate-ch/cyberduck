@@ -1439,7 +1439,7 @@ public class MainController extends BundleController implements NSApplication.De
         final Selector action = item.action();
         if(action.equals(Foundation.selector("updateMenuClicked:"))) {
             if(updater.hasUpdatePrivileges()) {
-                return !updater.isUpdateInProgress(item);
+                return !updater.isUpdateInProgress();
             }
             return false;
         }
