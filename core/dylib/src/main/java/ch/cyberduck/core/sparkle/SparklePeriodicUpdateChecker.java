@@ -55,7 +55,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         updater.clearFeedURLFromUserDefaults();
         // Update checks are scheduled using own timer from super class
         updater.setAutomaticallyChecksForUpdates(false);
-        updater.setAutomaticallyDownloadsUpdates(false);
+        updater.setAutomaticallyDownloadsUpdates(preferences.getBoolean("update.check.auto"));
         updater.setUserAgentString(new PreferencesUseragentProvider().get());
         updater.setSendsSystemProfile(false);
         if(!updater.startUpdater(null)) {
