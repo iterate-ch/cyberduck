@@ -47,6 +47,7 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -183,8 +184,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
 
         if (host.getProtocol().getOAuthAuthorizationUrl() != null) {
-            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get().find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+//            authorizationService.withParameter("grant_type", "password");
+//            authorizationService.withParameter("username", "testi");
+//            authorizationService.withParameter("password", "test");
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         }

@@ -27,6 +27,8 @@
         <string>localhost:9000</string>
         <key>Default Nickname</key>
         <string>MinIO</string>
+        <key>Authorization</key>
+        <string>PasswordGrant</string>
         <key>OAuth Authorization Url</key>
         <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/auth</string>
         <key>OAuth Token Url</key>
