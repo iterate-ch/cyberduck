@@ -71,6 +71,6 @@ public class ResolverTest {
 
     @Test
     public void testResolvePublicDNSIPv6ForHybrid() throws Exception {
-        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true).resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver().resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback()).getHostAddress());
     }
 }

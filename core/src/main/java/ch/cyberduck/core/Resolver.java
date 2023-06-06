@@ -46,16 +46,6 @@ public final class Resolver {
     private final ThreadFactory threadFactory
             = new NamedThreadFactory("resolver");
 
-    private final boolean preferIPv6;
-
-    public Resolver() {
-        this(PreferencesFactory.get().getBoolean("connection.dns.ipv6"));
-    }
-
-    public Resolver(final boolean preferIPv6) {
-        this.preferIPv6 = preferIPv6;
-    }
-
     /**
      * This method is blocking until the hostname has been resolved or the lookup has been canceled using #cancel
      *
@@ -73,9 +63,6 @@ public final class Resolver {
                 try {
                     final InetAddress[] allByName = InetAddress.getAllByName(hostname);
                     Arrays.stream(allByName).findFirst().ifPresent(resolved::set);
-                    if(preferIPv6) {
-                        Arrays.stream(allByName).filter(inetAddress -> inetAddress instanceof Inet6Address).findFirst().ifPresent(resolved::set);
-                    }
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Resolved %s to %s", hostname, resolved.get().getHostAddress()));
                     }
