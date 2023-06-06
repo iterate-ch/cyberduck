@@ -42,4 +42,9 @@ public class DisabledPeriodicUpdater implements PeriodicUpdateChecker {
     public boolean isUpdateInProgress() {
         return false;
     }
+
+    @Override
+    public void addHandler(final Handler handler) {
+        //
+    }
 }

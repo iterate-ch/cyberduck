@@ -27,6 +27,8 @@ import ch.cyberduck.core.sparkle.bindings.SPUStandardUserDriver;
 import ch.cyberduck.core.sparkle.bindings.SPUStandardUserDriverDelegate;
 import ch.cyberduck.core.sparkle.bindings.SPUUpdater;
 import ch.cyberduck.core.sparkle.bindings.SPUUpdaterDelegate;
+import ch.cyberduck.core.sparkle.bindings.SPUUserUpdateState;
+import ch.cyberduck.core.sparkle.bindings.SUAppcastItem;
 import ch.cyberduck.core.updater.AbstractPeriodicUpdateChecker;
 
 import org.apache.logging.log4j.LogManager;
@@ -92,6 +94,37 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     }
 
     private final class SparklePeriodicUpdateCheckerDelegate extends ProxyController implements SPUUpdaterDelegate, SPUStandardUserDriverDelegate {
+        private final Logger log = LogManager.getLogger(SparklePeriodicUpdateCheckerDelegate.class);
+
+        @Override
+        public boolean supportsGentleScheduledUpdateReminders() {
+            return !handlers.isEmpty();
+        }
+
+        @Override
+        public boolean standardUserDriverShouldHandleShowingScheduledUpdate_andInImmediateFocus(final SUAppcastItem item, final boolean immediateFocus) {
+            // If the standard user driver will show the update in immediate focus (e.g. near app launch), then let
+            // Sparkle take care of showing the update. Otherwise, we will handle showing any other scheduled updates
+            if(!immediateFocus) {
+                return !handlers.isEmpty();
+            }
+            return true;
+        }
+
+        @Override
+        public void standardUserDriverWillHandleShowingUpdate_forUpdate_state(final boolean handleShowingUpdate, final SUAppcastItem item, final SPUUserUpdateState state) {
+            if(!handleShowingUpdate) {
+                for(Handler handler : handlers) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Notify handler %s with update %s", handler, item));
+                    }
+                    if(handler.handle(new Update(item.versionString(), item.displayVersionString()))) {
+                        break;
+                    }
+                }
+            }
+        }
+
         @Override
         public String feedURLStringForUpdater(final ID updater) {
             return SparklePeriodicUpdateChecker.this.getFeedUrl();
