@@ -19,6 +19,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+
 import org.apache.http.conn.DnsResolver;
 
 import java.net.InetAddress;
@@ -31,7 +32,7 @@ public class CustomDnsResolver implements DnsResolver {
     @Override
     public InetAddress[] resolve(String host) throws UnknownHostException {
         try {
-            return new InetAddress[]{resolver.resolve(host, new DisabledCancelCallback())};
+            return resolver.resolve(host, new DisabledCancelCallback());
         }
         catch(ResolveFailedException | ResolveCanceledException e) {
             throw new UnknownHostException(e.getDetail(false));
