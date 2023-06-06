@@ -126,6 +126,20 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
         }
 
         @Override
+        public void updater_didFindValidUpdate(final SPUUpdater updater, final SUAppcastItem item) {
+            if(updater.automaticallyDownloadsUpdates()) {
+                for(Handler handler : handlers) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Notify handler %s with update %s", handler, item));
+                    }
+                    if(handler.handle(new Update(item.versionString(), item.displayVersionString()))) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        @Override
         public String feedURLStringForUpdater(final ID updater) {
             return SparklePeriodicUpdateChecker.this.getFeedUrl();
         }
