@@ -61,6 +61,16 @@ public interface SPUUpdaterDelegate {
     }
 
     /**
+     * Returns whether Sparkle should prompt the user about checking for new updates automatically.
+     *
+     * @param updater The updater instance.
+     * @return YES if the updater should prompt for permission to check for new updates automatically, otherwise NO
+     */
+    default boolean updaterShouldPromptForPermissionToCheckForUpdates(SPUUpdater updater) {
+        return false;
+    }
+
+    /**
      * Called when a new valid update is found by the update driver.
      *
      * @param updater The updater instance.
