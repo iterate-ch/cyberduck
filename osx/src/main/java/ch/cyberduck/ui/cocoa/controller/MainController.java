@@ -70,6 +70,7 @@ import ch.cyberduck.core.profiles.PeriodicProfilesUpdater;
 import ch.cyberduck.core.profiles.ProfilesUpdater;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.sparkle.MenuItemSparkleUpdateHandler;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -295,7 +296,11 @@ public class MainController extends BundleController implements NSApplication.De
      * Remove software update menu item if no update feed available
      */
     private void updateUpdateMenu() {
-        if(!updater.hasUpdatePrivileges()) {
+        if(updater.hasUpdatePrivileges()) {
+            final NSMenuItem item = this.applicationMenu.itemAtIndex(new NSInteger(1));
+            updater.addHandler(new MenuItemSparkleUpdateHandler(item));
+        }
+        else {
             this.applicationMenu.removeItemAtIndex(new NSInteger(1));
         }
     }
@@ -1439,6 +1444,10 @@ public class MainController extends BundleController implements NSApplication.De
         final Selector action = item.action();
         if(action.equals(Foundation.selector("updateMenuClicked:"))) {
             if(updater.hasUpdatePrivileges()) {
+                if(item.representedObject() != null) {
+                    // Allow to run update when found
+                    return true;
+                }
                 return !updater.isUpdateInProgress();
             }
             return false;
