@@ -26,6 +26,8 @@
         <key>Default Hostname</key>
         <string>localhost:9000</string>
         <key>Default Nickname</key>
+        <key>Scheme</key>
+        <string>http</string>
         <string>MinIO</string>
         <key>Authorization</key>
         <string>PasswordGrant</string>
