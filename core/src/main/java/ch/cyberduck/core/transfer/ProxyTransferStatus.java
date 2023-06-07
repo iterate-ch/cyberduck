@@ -16,6 +16,7 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamProgress;
@@ -41,6 +42,11 @@ public class ProxyTransferStatus extends TransferStatus implements StreamCancela
     @Override
     public void setComplete() {
         progress.setComplete();
+    }
+
+    @Override
+    public void setFailure(final BackgroundException failure) {
+        progress.setFailure(failure);
     }
 
     @Override
