@@ -15,7 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ExpiringObjectHolder<T> {
+    private static final Logger log = LogManager.getLogger(ExpiringObjectHolder.class);
 
     private final Long timeToLiveMillis;
 
@@ -34,6 +38,9 @@ public class ExpiringObjectHolder<T> {
     public T get() {
         if(updated + timeToLiveMillis > System.currentTimeMillis()) {
             return object;
+        }
+        if(log.isWarnEnabled()) {
+            log.warn(String.format("Expired object %s", object));
         }
         return object = null;
     }
