@@ -68,7 +68,7 @@ public class B2ObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> objects = new AttributedList<>();
-            Marker marker = new Marker(this.createPrefix(directory), null);
+            Marker marker = new Marker(null, null);
             final String containerId = fileid.getVersionId(containerService.getContainer(directory));
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
