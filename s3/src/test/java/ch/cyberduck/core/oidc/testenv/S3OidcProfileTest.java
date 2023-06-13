@@ -14,7 +14,6 @@ package ch.cyberduck.core.oidc.testenv;/*
  */
 
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -32,7 +31,7 @@ public class S3OidcProfileTest {
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                this.getClass().getResourceAsStream("/S3-OIDC.cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3-OIDC-Testing.cyberduckprofile"));
         assertEquals("minio", profile.getOAuthClientId());
         assertEquals("password", profile.getOAuthClientSecret());
         assertNotNull(profile.getOAuthAuthorizationUrl());
