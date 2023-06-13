@@ -33,9 +33,7 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             get
             {
-                return local ??= new(Runtime.Packaged.GetValueOrDefault()
-                    ? ApplicationData.Current.LocalCacheFolder.Path
-                    : Path.Combine(EnvironmentInfo.LocalAppDataPath, Runtime.DataFolderName));
+                return local ??= new(Path.Combine(EnvironmentInfo.LocalAppDataPath, Runtime.DataFolderName));
             }
         }
 
