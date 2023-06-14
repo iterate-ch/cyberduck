@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -52,16 +53,19 @@ public class B2ObjectListService implements ListService {
     private final B2Session session;
 
     private final int chunksize;
+    private final VersioningConfiguration versioning;
     private final B2VersionIdProvider fileid;
 
     public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid) {
-        this(session, fileid, new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"));
+        this(session, fileid, new HostPreferences(session.getHost()).getInteger("b2.listing.chunksize"),
+                new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("b2.listing.versioning.enable")));
     }
 
-    public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid, final int chunksize) {
+    public B2ObjectListService(final B2Session session, final B2VersionIdProvider fileid, final int chunksize, final VersioningConfiguration versioning) {
         this.session = session;
         this.fileid = fileid;
         this.chunksize = chunksize;
+        this.versioning = versioning;
     }
 
     @Override
@@ -77,13 +81,21 @@ public class B2ObjectListService implements ListService {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("List directory %s with marker %s", directory, marker));
                 }
-                // In alphabetical order by file name, and by reverse of date/time uploaded for
-                // versions of files with the same name.
-                final B2ListFilesResponse response = session.getClient().listFileVersions(
-                        containerId,
-                        marker.nextFilename, marker.nextFileId, chunksize,
-                        this.createPrefix(directory),
-                        String.valueOf(Path.DELIMITER));
+                final B2ListFilesResponse response;
+                if(versioning.isEnabled()) {
+                    // In alphabetical order by file name, and by reverse of date/time uploaded for
+                    // versions of files with the same name.
+                    response = session.getClient().listFileVersions(containerId,
+                            marker.nextFilename, marker.nextFileId, chunksize,
+                            this.createPrefix(directory),
+                            String.valueOf(Path.DELIMITER));
+                }
+                else {
+                    response = session.getClient().listFileNames(containerId,
+                            marker.nextFilename, chunksize,
+                            this.createPrefix(directory),
+                            String.valueOf(Path.DELIMITER));
+                }
                 marker = this.parse(directory, objects, response, revisions);
                 if(null == marker.nextFileId) {
                     if(!response.getFiles().isEmpty()) {
