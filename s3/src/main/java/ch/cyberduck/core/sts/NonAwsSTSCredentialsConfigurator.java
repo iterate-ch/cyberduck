@@ -27,6 +27,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.WebIdentityTokenCredentialsProvider;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
@@ -43,21 +50,37 @@ public class NonAwsSTSCredentialsConfigurator extends STSCredentialsConfigurator
     @Override
     public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
+
         final ClientConfiguration configuration = new CustomClientConfiguration(host,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
 
-
         final AWSSecurityTokenService service = AWSSecurityTokenServiceClientBuilder
                 .standard()
-                .withClientConfiguration(configuration)
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(String.format("%s://%s:%s", host.getProtocol().getScheme(), host.getHostname(),
+                        host.getPort()), null))
+                .withCredentials(new AWSCredentialsProvider() {
+                    @Override
+                    public AWSCredentials getCredentials() {
+                        return new AnonymousAWSCredentials();
+                    }
+
+                    @Override
+                    public void refresh() {
+
+                    }
+                })
                 .build();
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
-                .withWebIdentityToken("token")
-                .withPolicy("policy");
+                .withWebIdentityToken(credentials.getOauth().getAccessToken());
+//                .withPolicy("policy")
+//                .withRoleArn("consoleAdmin")
+//                .withRoleSessionName("testSession");
+//                .putCustomQueryParameter("Version", "2011-06-15");
 
         AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
         com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
+        System.out.println(cred.toString());
 
         credentials.setUsername(cred.getAccessKeyId());
         credentials.setPassword(cred.getSecretAccessKey());

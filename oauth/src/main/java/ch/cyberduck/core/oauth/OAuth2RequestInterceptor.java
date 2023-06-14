@@ -115,8 +115,8 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
             if(log.isInfoEnabled()) {
                 log.info(String.format("Authorizing service request with OAuth2 tokens %s", tokens));
             }
-            request.removeHeaders(HttpHeaders.AUTHORIZATION);
-            request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
+//            request.removeHeaders(HttpHeaders.AUTHORIZATION);
+//            request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
         }
     }
 
