@@ -84,7 +84,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         //TODO read a file
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("arn:aws:s3:::cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ReadFeature(session).read(new Path(container, "test.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new S3ReadFeature(session).read(new Path(container, "testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
 //    @Test(expected = IllegalArgumentException.class)

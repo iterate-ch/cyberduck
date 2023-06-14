@@ -46,7 +46,6 @@ services:
       - "9001:9001"
     volumes:
       - ./data:/data
-      - ./minio/testfolder/test.txt:/data/test.txt
     environment:
       MINIO_ROOT_USER: cyberduckAccessKey
       MINIO_ROOT_PASSWORD: cyberduckSecretKey
@@ -66,11 +65,13 @@ services:
     image: minio/mc
     depends_on:
       - minio
+    volumes:
+      - ./testfile.txt:/testfile.txt
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 cyberduckAccessKey cyberduckSecretKey;
       /usr/bin/mc mb myminio/cyberduckbucket;
       /usr/bin/mc policy set public myminio/cyberduckbucket;
-      /usr/bin/mc cp /data/test.txt myminio/cyberduckbucket/test.txt;
+      /usr/bin/mc cp /testfile.txt myminio/cyberduckbucket/testfile.txt;
       exit 0;
       "
