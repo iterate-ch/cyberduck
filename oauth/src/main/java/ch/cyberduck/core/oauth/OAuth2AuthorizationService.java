@@ -53,7 +53,6 @@ import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
-import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -136,26 +135,25 @@ public class OAuth2AuthorizationService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
         }
-
+        final TokenResponse response;
         switch(flowType) {
             case AuthorizationCode:
-                final IdTokenResponse authorizationCodeResponse = this.authorizeWithCode(bookmark, prompt);
-                return credentials.withToken(authorizationCodeResponse.getIdToken()).withOauth(new OAuthTokens(
-                        authorizationCodeResponse.getAccessToken(), authorizationCodeResponse.getRefreshToken(),
-                        null == authorizationCodeResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + authorizationCodeResponse.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
+                response = this.authorizeWithCode(bookmark, prompt);
+                break;
             case PasswordGrant:
-                final TokenResponse passwordGrantResponse = this.authorizeWithPassword(credentials);
-                return credentials.withOauth(new OAuthTokens(
-                        passwordGrantResponse.getAccessToken(), passwordGrantResponse.getRefreshToken(),
-                        null == passwordGrantResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + passwordGrantResponse.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
+                response = this.authorizeWithPassword(credentials);
+                break;
             default:
                 throw new LoginCanceledException();
         }
+        // Save access key and refresh key
+        return credentials.withOauth(new OAuthTokens(
+                response.getAccessToken(), response.getRefreshToken(),
+                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
     }
 
-    private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
+    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -311,8 +309,6 @@ public class OAuth2AuthorizationService {
         private String refreshToken;
         private String scope;
 
-        private String idToken;
-
         @Override
         public PermissiveTokenResponse set(final String fieldName, final Object value) {
             if("access_token".equals(fieldName)) {
@@ -320,9 +316,6 @@ public class OAuth2AuthorizationService {
             }
             else if("refresh_token".equals(fieldName)) {
                 refreshToken = (String) value;
-            }
-            else if("id_token".equals(fieldName)) {
-                idToken = (String) value;
             }
             else if("token_type".equals(fieldName)) {
                 tokenType = (String) value;
@@ -352,16 +345,15 @@ public class OAuth2AuthorizationService {
             return this;
         }
 
-        public IdTokenResponse toTokenResponse() {
-            return new IdTokenResponse()
+        public TokenResponse toTokenResponse() {
+            return new TokenResponse()
                     .setTokenType(tokenType)
                     .setScope(scope)
                     .setExpiresInSeconds(expiresInSeconds)
                     .setAccessToken(accessToken)
-                    .setRefreshToken(refreshToken)
-                    .setIdToken(idToken);
-
+                    .setRefreshToken(refreshToken);
         }
     }
 
 }
+ 

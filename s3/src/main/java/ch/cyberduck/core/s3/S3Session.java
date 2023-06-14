@@ -227,16 +227,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         else {
             final Credentials credentials;
             // Only for AWS
-            // TODO the following snippet should work again - add condition if no STS URL
-//            if(isAwsHostname(host.getHostname())) {
-//                // Try auto-configure
-//                credentials = new STSCredentialsConfigurator(
-//                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
-//            }
-//            // get temporary credentials for MinIO with Web Identity (OIDC)
-//            else
-            // TODO only if STS URL in configuration
-                if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            if(isAwsHostname(host.getHostname())) {
+                // Try auto-configure
+                credentials = new STSCredentialsConfigurator(
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
+            }
+            // get temporary credentials for MinIO with Web Identity (OIDC)
+            else if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
                 credentials = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust,
                         host.getHostname()), key, prompt).configure(host);
             }
