@@ -125,7 +125,7 @@ public final class TerminalOptionsBuilder {
 
         options.addOption(Option.builder("P")
                 .longOpt(Params.preserve.name())
-                .desc("Preserve permissions and modification date for transferred files").build());
+                .desc("Preserve permission, ACL, metadata and modification date").build());
         options.addOption(Option.builder("r")
                 .longOpt(Params.retry.name())
                 .desc("Retry failed connection attempts")
