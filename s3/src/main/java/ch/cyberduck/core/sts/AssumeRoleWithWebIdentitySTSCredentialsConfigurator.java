@@ -16,51 +16,45 @@ package ch.cyberduck.core.sts;/*
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.WebIdentityTokenCredentialsProvider;
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
 
-public class NonAwsSTSCredentialsConfigurator extends STSCredentialsConfigurator {
-    private static final Logger log = LogManager.getLogger(NonAwsSTSCredentialsConfigurator.class);
+public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCredentialsConfigurator {
+    private static final Logger log = LogManager.getLogger(AssumeRoleWithWebIdentitySTSCredentialsConfigurator.class);
 
 
-    public NonAwsSTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
-       super(trust, key, prompt);
+    public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
+        super(trust, key, prompt);
     }
 
     @Override
     public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
 
-        final ClientConfiguration configuration = new CustomClientConfiguration(host,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
-
+        // STS API is open, no authorization required
         final AWSSecurityTokenService service = AWSSecurityTokenServiceClientBuilder
                 .standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(String.format("%s://%s:%s", host.getProtocol().getScheme(), host.getHostname(),
-                        host.getPort()), null))
+                // TODO hard-coded STS-endpoint
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(String.format("https://sts.amazonaws.com"), null))
                 .withCredentials(new AWSCredentialsProvider() {
                     @Override
                     public AWSCredentials getCredentials() {
+                        //         // https://www.demo2s.com/java/amazon-aws-assumerolewithwebidentityrequest-tutorial-with-examples.html
                         return new AnonymousAWSCredentials();
                     }
 
@@ -71,21 +65,32 @@ public class NonAwsSTSCredentialsConfigurator extends STSCredentialsConfigurator
                 })
                 .build();
 
+
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
-                .withWebIdentityToken(credentials.getOauth().getAccessToken());
-//                .withPolicy("policy")
-//                .withRoleArn("consoleAdmin")
-//                .withRoleSessionName("testSession");
-//                .putCustomQueryParameter("Version", "2011-06-15");
+                // TODO check with DK: make configurable in profile/bookmark?
+                .withWebIdentityToken(credentials.getToken())
+                // TODO hard-coded -> connection profile/bookmark?
+                .withDurationSeconds(3000)
+                // TODO hard-coded -> connection profile/bookmark?
+                .withRoleArn("arn:aws:iam::930717317329:role/google-Test-Role")
+                // TODO hard-coded -> connection profile/bookmark?
+                .withRoleSessionName("cyberduck-test");
+                // TODO do we need to make (ad-hoc) policy configurable as well?
 
-        AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
-        com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
-        System.out.println(cred.toString());
+        try {
+            AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
+            com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
 
-        credentials.setUsername(cred.getAccessKeyId());
-        credentials.setPassword(cred.getSecretAccessKey());
-        credentials.setToken(cred.getSessionToken());
+            // TODO is this the right way? Something goes wrong, the token gets empty, Caused by: com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException: 1 validation error detected: Value at 'webIdentityToken' failed to satisfy constraint: Member must have length greater than or equal to 4
+            credentials.setUsername(cred.getAccessKeyId());
+            credentials.setPassword(cred.getSecretAccessKey());
+            credentials.setToken(cred.getSessionToken());
+            return credentials;
+        }
+        catch(AWSSecurityTokenServiceException e) {
+            throw e;
+        }
 
-        return credentials;
+
     }
 }

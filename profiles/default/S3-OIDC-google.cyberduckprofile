@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>s3-sts-google</string>
+        <key>Bundled</key>
+        <true/>
+        <key>Description</key>
+        <string>S3 STS AssumeRoleWithWebIdentity with Google</string>
+        <key>Default Nickname</key>
+        <string>S3 STS</string>
+        <key>Default Hostname</key>
+        <string>s3.amazonaws.com</string>
+        <key>Regions</key>
+        <array>
+            <string>eu-central-1</string>
+        </array>
+        <key>Scheme</key>
+        <string>https</string>
+        <key>Authorization</key>
+        <string>AuthorizationCode</string>
+        <key>OAuth Authorization Url</key>
+        <string>https://accounts.google.com/o/oauth2/auth</string>
+        <key>OAuth Token Url</key>
+        <string>https://oauth2.googleapis.com/token</string>
+        <key>Scopes</key>
+        <array>
+            <string>openid</string>
+        </array>
+        <key>OAuth Client ID</key>
+        <string>996125414232-s922bvdt21nceeh5dq1gb6av8plpj7hr.apps.googleusercontent.com</string>
+        <key>OAuth Redirect Url</key>
+        <string>io.cyberduck:oauth</string>
+        <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+    </dict>
+</plist>
