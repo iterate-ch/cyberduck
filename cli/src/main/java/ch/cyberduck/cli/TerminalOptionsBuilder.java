@@ -124,12 +124,12 @@ public final class TerminalOptionsBuilder {
             .hasArg().argName("location").build());
 
         options.addOption(Option.builder("P")
-            .longOpt(Params.preserve.name())
-            .desc("Preserve permissions and modificatin date for transferred files").build());
+                .longOpt(Params.preserve.name())
+                .desc("Preserve permissions and modification date for transferred files").build());
         options.addOption(Option.builder("r")
-            .longOpt(Params.retry.name())
-            .desc("Retry failed connection attempts")
-            .optionalArg(true).argName("count").build());
+                .longOpt(Params.retry.name())
+                .desc("Retry failed connection attempts")
+                .optionalArg(true).argName("count").build());
         options.addOption(Option.builder()
             .longOpt(Params.udt.name())
             .desc("Use UDT protocol if applicable").build());
