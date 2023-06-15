@@ -15,19 +15,54 @@ package ch.cyberduck.core.vault;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-public class VaultRegistryFactory {
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-    public static VaultRegistry create(final PasswordCallback callback) {
-        return create(PasswordStoreFactory.get(), callback);
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+public class VaultRegistryFactory extends Factory<VaultRegistry> {
+    private static final Logger log = LogManager.getLogger(VaultRegistryFactory.class);
+
+    public VaultRegistryFactory() {
+        super("factory.vaultregistry.class");
     }
 
-    public static VaultRegistry create(final HostPasswordStore keychain, final PasswordCallback callback) {
+    public static VaultRegistry get(final PasswordCallback callback) {
+        return get(PasswordStoreFactory.get(), callback);
+    }
+
+    public static VaultRegistry get(final HostPasswordStore keychain, final PasswordCallback callback) {
         return PreferencesFactory.get().getBoolean("cryptomator.enable") ?
-                new DefaultVaultRegistry(keychain, callback) : VaultRegistry.DISABLED;
+                new VaultRegistryFactory().create(keychain, callback) : VaultRegistry.DISABLED;
+    }
+
+    public VaultRegistry create(final HostPasswordStore keychain, final PasswordCallback callback) {
+        if(null == clazz) {
+            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
+        }
+        try {
+            final Constructor<? extends VaultRegistry> constructor = ConstructorUtils
+                    .getMatchingAccessibleConstructor(clazz, keychain.getClass(), callback.getClass());
+            if(null == constructor) {
+                log.warn(String.format("No matching constructor for parameters %s,%s", keychain.getClass(), callback.getClass()));
+                // Call default constructor for disabled implementations
+                return clazz.getDeclaredConstructor().newInstance();
+            }
+            return constructor.newInstance(keychain, callback);
+        }
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException |
+              NoSuchMethodException e) {
+            log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
+            return VaultRegistry.DISABLED;
+        }
     }
 }
