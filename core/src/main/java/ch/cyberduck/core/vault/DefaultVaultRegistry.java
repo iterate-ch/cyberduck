@@ -102,17 +102,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         super.clear();
     }
 
-    @Override
-    public Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
-        return this.find(session, file, true);
-    }
-
     /**
      * @param session Connection
      * @param file    File
      * @param lookup  Find and load any vault
      * @return Open or disabled vault
      */
+    @Override
     public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
