@@ -279,7 +279,7 @@ public class Terminal {
             source = SessionPoolFactory.create(connect, transcript, host,
                     new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                     new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                    VaultRegistryFactory.create(login));
+                    VaultRegistryFactory.get(login));
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
@@ -368,7 +368,7 @@ public class Terminal {
                     destination = SessionPoolFactory.create(connect, transcript, target,
                             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
                             new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
-                            VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                            VaultRegistryFactory.get(new TerminalPasswordCallback()));
                     return this.transfer(login, new CopyTransfer(
                                     host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
                             source, destination);
