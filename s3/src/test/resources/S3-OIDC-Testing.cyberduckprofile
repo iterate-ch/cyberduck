@@ -51,10 +51,6 @@
             <string>profile</string>
             <string>minio-authorization</string>
         </array>
-        <key>Regions</key>
-        <array>
-            <string>us-east-1</string>
-        </array>
         <key>Password Configurable</key>
         <false/>
         <key>Username Configurable</key>
