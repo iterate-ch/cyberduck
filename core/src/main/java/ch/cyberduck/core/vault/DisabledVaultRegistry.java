@@ -22,7 +22,7 @@ import ch.cyberduck.core.features.Vault;
 public class DisabledVaultRegistry implements VaultRegistry {
 
     @Override
-    public Vault find(final Session session, final Path file) {
+    public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
         return Vault.DISABLED;
     }
 

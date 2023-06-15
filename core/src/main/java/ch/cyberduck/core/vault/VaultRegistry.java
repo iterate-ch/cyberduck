@@ -28,7 +28,11 @@ public interface VaultRegistry {
      * @return Vault for file or disabled vault if file is not inside a vault
      * @see Vault#DISABLED
      */
-    Vault find(Session session, Path file) throws VaultUnlockCancelException;
+    default Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
+        return this.find(session, file, true);
+    }
+
+    Vault find(Session session, Path file, boolean lookup) throws VaultUnlockCancelException;
 
     /**
      * Add vault to registry
