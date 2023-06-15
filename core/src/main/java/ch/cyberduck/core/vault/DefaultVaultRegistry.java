@@ -144,6 +144,10 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             // No proxying for disabled features
             return null;
         }
+        return this._getFeature(session, type, proxy);
+    }
+
+    protected <T> T _getFeature(final Session<?> session, final Class<T> type, final T proxy) {
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
                     new LoadingVaultLookupListener(this, prompt))
