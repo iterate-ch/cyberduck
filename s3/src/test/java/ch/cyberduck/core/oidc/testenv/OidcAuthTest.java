@@ -83,7 +83,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         //TODO read a file
         final TransferStatus status = new TransferStatus();
-        final Path container = new Path("myminio, cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path( "", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3ReadFeature(session).read(new Path(container, "testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
