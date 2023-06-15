@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import ch.cyberduck.core.LoginOptions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +36,6 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResul
 
 public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(AssumeRoleWithWebIdentitySTSCredentialsConfigurator.class);
-
 
     public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
         super(trust, key, prompt);
@@ -69,6 +69,10 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCred
 //                .withRoleSessionName("testSession");
 //                .putCustomQueryParameter("Version", "2011-06-15");
 
+        if(log.isDebugEnabled()) {
+            log.debug("Assuming role with web identity for host: {}", host);
+        }
+
         AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
         com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
         System.out.println(cred.toString());
@@ -76,6 +80,10 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCred
         credentials.setUsername(cred.getAccessKeyId());
         credentials.setPassword(cred.getSecretAccessKey());
         credentials.setToken(cred.getSessionToken());
+
+        if(log.isDebugEnabled()){
+            log.debug("Configured STS credentials for host: {}", host);
+        }
 
         return credentials;
     }
