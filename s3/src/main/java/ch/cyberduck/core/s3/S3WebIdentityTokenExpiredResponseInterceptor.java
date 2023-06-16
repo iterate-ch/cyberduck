@@ -17,9 +17,11 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator;
@@ -37,10 +39,14 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
 
     private final Host host;
     private final AssumeRoleWithWebIdentitySTSCredentialsConfigurator configurator;
+    private final OAuth2RequestInterceptor authorizationService;
 
-    public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+    public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust,
+                                                        final X509KeyManager key, final LoginCallback prompt,
+                                                        OAuth2RequestInterceptor authorizationService) {
         this.host = session.getHost();
         this.configurator = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(trust, key, prompt);
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -49,11 +55,15 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_FORBIDDEN:
                     try {
+                        authorizationService.refresh();
                         host.setCredentials(configurator.configure(host));
                         return true;
                     }
                     catch(LoginFailureException | LoginCanceledException e) {
                         log.warn(String.format("Attempt to renew expired token failed. %s", e.getMessage()));
+                    }
+                    catch(BackgroundException e) {
+                        throw new RuntimeException(e);
                     }
             }
         }

@@ -183,14 +183,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
 
-        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
-            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
-            configuration.addInterceptorLast(authorizationService);
-            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-        }
+//        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+//            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+//                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+//                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+//                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+//            configuration.addInterceptorLast(authorizationService);
+//            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+//        }
 
         // Only for AWS
         if(S3Session.isAwsHostname(host.getHostname())) {
@@ -200,7 +200,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         // TODO check with DK: what's the criterion on host to go for AssumeRoleWithWebIdentity?
         // TODO check with DK: the logic seems to be upside down: currently, the OAuth2 interceptor is triggered every time the OAuth credentials expire.
         configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt, authorizationService));
         final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
         client.setRegionEndpointCache(regions);
         return client;
@@ -209,6 +209,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             authorizationService.authorize(host, prompt, cancel);
 
         }
