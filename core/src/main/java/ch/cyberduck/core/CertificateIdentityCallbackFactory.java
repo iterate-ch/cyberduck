@@ -53,11 +53,13 @@ public class CertificateIdentityCallbackFactory extends Factory<CertificateIdent
         }
     }
 
+    private static final CertificateIdentityCallbackFactory singleton = new CertificateIdentityCallbackFactory();
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static CertificateIdentityCallback get(final Controller c) {
-        return new CertificateIdentityCallbackFactory().create(c);
+        return singleton.create(c);
     }
 }

@@ -53,11 +53,13 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
         }
     }
 
+    private static final UserDateFormatterFactory singleton = new UserDateFormatterFactory();
+
     public static AbstractUserDateFormatter get() {
         return get(TimeZone.getDefault().getID());
     }
 
     public static AbstractUserDateFormatter get(final String tz) {
-        return new UserDateFormatterFactory().create(tz);
+        return singleton.create(tz);
     }
 }
