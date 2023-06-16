@@ -215,7 +215,10 @@ public class KeychainLoginService implements LoginService {
                 log.debug(String.format("Reset credentials for %s", bookmark));
             }
             // No updated credentials. Nullify input
-            credentials.reset();
+            switch(session.getHost().getProtocol().getStatefulness()) {
+                case stateless:
+                    credentials.reset();
+            }
             throw e;
         }
     }
@@ -242,6 +245,9 @@ public class KeychainLoginService implements LoginService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reset credentials for %s", bookmark));
         }
-        credentials.reset();
+        switch(bookmark.getProtocol().getStatefulness()) {
+            case stateless:
+                credentials.reset();
+        }
     }
 }
