@@ -23,7 +23,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>googledrive</artifactId>
     <properties>
-        <google-api-services-drive-version>v3-rev20230603-2.0.0</google-api-services-drive-version>
+        <google-api-services-drive-version>v3-rev20230610-2.0.0</google-api-services-drive-version>
     </properties>
     <dependencies>
         <dependency>
