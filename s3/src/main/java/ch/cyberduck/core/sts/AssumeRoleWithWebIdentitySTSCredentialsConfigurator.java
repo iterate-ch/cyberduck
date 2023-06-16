@@ -16,23 +16,37 @@ package ch.cyberduck.core.sts;/*
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import ch.cyberduck.core.LoginOptions;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSSessionCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
+import com.amazonaws.auth.profile.internal.AllProfiles;
+import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(AssumeRoleWithWebIdentitySTSCredentialsConfigurator.class);
@@ -45,7 +59,36 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCred
     public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
 
-        final AWSSecurityTokenService service = AWSSecurityTokenServiceClientBuilder
+        final AWSSecurityTokenService service = this.getTokenService(host, null, null, null, null);
+
+        AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
+                .withWebIdentityToken(credentials.getOauth().getAccessToken());
+//                .withPolicy("policy")
+//                .withRoleArn("consoleAdmin")
+//                .withRoleSessionName("testSession");
+//                .putCustomQueryParameter("Version", "2011-06-15");
+
+        if(log.isDebugEnabled()) {
+            log.debug("Assuming role with web identity for host: {}", host);
+        }
+
+        AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
+        com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
+
+        if(log.isDebugEnabled()) {
+            log.debug(cred.toString());
+        }
+
+        credentials.setUsername(cred.getAccessKeyId());
+        credentials.setPassword(cred.getSecretAccessKey());
+        credentials.setToken(cred.getSessionToken());
+
+        return credentials;
+    }
+
+    @Override
+    public AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
+        return AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(String.format("%s://%s:%s", host.getProtocol().getScheme(), host.getHostname(),
                         host.getPort()), null))
@@ -61,30 +104,5 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCred
                     }
                 })
                 .build();
-
-        AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
-                .withWebIdentityToken(credentials.getOauth().getAccessToken());
-//                .withPolicy("policy")
-//                .withRoleArn("consoleAdmin")
-//                .withRoleSessionName("testSession");
-//                .putCustomQueryParameter("Version", "2011-06-15");
-
-        if(log.isDebugEnabled()) {
-            log.debug("Assuming role with web identity for host: {}", host);
-        }
-
-        AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
-        com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
-        System.out.println(cred.toString());
-
-        credentials.setUsername(cred.getAccessKeyId());
-        credentials.setPassword(cred.getSecretAccessKey());
-        credentials.setToken(cred.getSessionToken());
-
-        if(log.isDebugEnabled()){
-            log.debug("Configured STS credentials for host: {}", host);
-        }
-
-        return credentials;
     }
 }
