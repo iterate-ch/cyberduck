@@ -26,12 +26,20 @@ public interface VaultRegistry {
      * @param session Connection
      * @param file    File
      * @return Vault for file or disabled vault if file is not inside a vault
+     * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      * @see Vault#DISABLED
      */
     default Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
         return this.find(session, file, true);
     }
 
+    /**
+     * @param session Connection
+     * @param file    File
+     * @param lookup  Attempt to unlock vault when not already registered
+     * @return Vault for file or disabled vault if file is not inside a vault
+     * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
+     */
     Vault find(Session session, Path file, boolean lookup) throws VaultUnlockCancelException;
 
     /**
@@ -54,8 +62,51 @@ public interface VaultRegistry {
      */
     void clear();
 
+    /**
+     * Wrap proxy with implementation looking up vault and wrap with cryptographic feature
+     *
+     * @param session Connection
+     * @param type    Feature type
+     * @param proxy   Proxy implementation to wrap with vault lookup
+     * @return Feature implementation or null when not supported
+     */
     @SuppressWarnings("unchecked")
     <T> T getFeature(Session<?> session, Class<T> type, T proxy);
 
-    boolean contains(Path vault);
+    /**
+     * @return True if directory is registered as vault or is contained in vault
+     */
+    boolean contains(Path directory);
+
+    class DisabledVaultRegistry implements VaultRegistry {
+        @Override
+        public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
+            return Vault.DISABLED;
+        }
+
+        @Override
+        public void clear() {
+            //
+        }
+
+        @Override
+        public <T> T getFeature(final Session<?> session, final Class<T> type, final T proxy) {
+            return proxy;
+        }
+
+        @Override
+        public boolean contains(final Path vault) {
+            return false;
+        }
+
+        @Override
+        public boolean add(final Vault vault) {
+            return false;
+        }
+
+        @Override
+        public boolean close(final Path vault) {
+            return false;
+        }
+    }
 }
