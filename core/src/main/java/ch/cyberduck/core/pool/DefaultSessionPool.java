@@ -245,7 +245,7 @@ public class DefaultSessionPool implements SessionPool {
     }
 
     @Override
-    public VaultRegistry getVault() {
+    public VaultRegistry getVaultRegistry() {
         return registry;
     }
 

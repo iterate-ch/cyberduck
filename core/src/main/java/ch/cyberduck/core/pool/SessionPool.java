@@ -60,7 +60,7 @@ public interface SessionPool {
     /**
      * @return Shared vaults for sessions
      */
-    VaultRegistry getVault();
+    VaultRegistry getVaultRegistry();
 
     /**
      * @return Current pool connection state
@@ -105,7 +105,7 @@ public interface SessionPool {
         }
 
         @Override
-        public VaultRegistry getVault() {
+        public VaultRegistry getVaultRegistry() {
             return VaultRegistry.DISABLED;
         }
 
@@ -177,7 +177,7 @@ public interface SessionPool {
         }
 
         @Override
-        public VaultRegistry getVault() {
+        public VaultRegistry getVaultRegistry() {
             return VaultRegistry.DISABLED;
         }
 
