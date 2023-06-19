@@ -33,11 +33,11 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -48,7 +48,6 @@ import java.util.HashSet;
 
 public abstract class AbstractOidcTest {
 
-    protected S3Session session;
     protected Profile profile = null;
 
     @ClassRule
@@ -60,9 +59,13 @@ public abstract class AbstractOidcTest {
             .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
             .withExposedService("minio_1", 9000, Wait.forListeningPort());
 
+    @BeforeClass
+    public static void beforeAll() {
+        compose.start();
+    }
+
     @Before
     public void setup() throws BackgroundException {
-        compose.start();
         profile = readProfile();
     }
 

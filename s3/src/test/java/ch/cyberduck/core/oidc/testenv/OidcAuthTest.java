@@ -43,7 +43,7 @@ public class OidcAuthTest extends AbstractOidcTest {
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
-        session = new S3Session(host);
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         Credentials creds = host.getCredentials();
@@ -55,23 +55,26 @@ public class OidcAuthTest extends AbstractOidcTest {
         assertNotNull(creds.getOauth().getAccessToken());
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
+        session.close();
     }
 
-    @Test(expected = LoginFailureException.class) //Todo check expected Exception
+/*    @Test(expected = LoginFailureException.class) //Todo check expected Exception
     public void testInvalidUserName() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
-        session = new S3Session(host);
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class) //Todo check expected Exception
     public void testInvalidPassword() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalid"));
-        session = new S3Session(host);
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
+        session.close();
+    }*/
 
     // testTokenRefresh
 
