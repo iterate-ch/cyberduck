@@ -33,13 +33,17 @@ import java.lang.reflect.InvocationTargetException;
 public class TransferErrorCallbackControllerFactory extends Factory<TransferErrorCallback> {
     private static final Logger log = LogManager.getLogger(TransferErrorCallbackControllerFactory.class);
 
+    private Constructor<? extends TransferErrorCallback> constructor;
+
     public TransferErrorCallbackControllerFactory() {
         super("factory.transfererrorcallback.class");
     }
 
     public TransferErrorCallback create(final Controller c) {
         try {
-            final Constructor<? extends TransferErrorCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
+            }
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
@@ -53,12 +57,14 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
         }
     }
 
+    private static final TransferErrorCallbackControllerFactory singleton = new TransferErrorCallbackControllerFactory();
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static TransferErrorCallback get(final Controller c) {
         return new SynchronizedTransferErrorCallback(new CancelTransferErrorCallback(new FailFastTransferErrorCallback(
-                new TransferErrorCallbackControllerFactory().create(c))));
+                singleton.create(c))));
     }
 }

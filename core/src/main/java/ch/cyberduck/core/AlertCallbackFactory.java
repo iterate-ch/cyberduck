@@ -52,11 +52,13 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
         }
     }
 
+    private static final AlertCallbackFactory singleton = new AlertCallbackFactory();
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static AlertCallback get(final Controller c) {
-        return new AlertCallbackFactory().create(c);
+        return singleton.create(c);
     }
 }

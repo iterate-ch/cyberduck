@@ -48,7 +48,8 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
                 }
                 return constructor.newInstance(c);
             }
-            catch(InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+            catch(InstantiationException | InvocationTargetException | IllegalAccessException |
+                  NoSuchMethodException e) {
                 log.error(String.format("Failure loading callback class %s. %s", clazz, e.getMessage()));
                 return new DisabledHostKeyCallback();
             }
@@ -56,11 +57,13 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
         return new DisabledHostKeyCallback();
     }
 
+    private static final HostKeyCallbackFactory singleton = new HostKeyCallbackFactory();
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static HostKeyCallback get(final Controller c, final Protocol protocol) {
-        return new HostKeyCallbackFactory().create(c, protocol);
+        return singleton.create(c, protocol);
     }
 }
