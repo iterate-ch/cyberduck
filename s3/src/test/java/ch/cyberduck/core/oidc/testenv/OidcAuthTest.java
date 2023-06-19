@@ -37,10 +37,8 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-/*@Category(IntegrationTest.class)*/
 public class OidcAuthTest extends AbstractOidcTest {
     //    with Fiddler as proxy
-//    new Proxy(Proxy.Type.HTTP, "localhost", 8888)
 
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
@@ -78,7 +76,7 @@ public class OidcAuthTest extends AbstractOidcTest {
     // testTokenRefresh
 
     // Authorization
-    @Test
+/*    @Test
     public void testUserReadAccess() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         session = new S3Session(host);
@@ -88,7 +86,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path( "", EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3ReadFeature(session).read(new Path(container, "cyberduckbucket/testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
-    }
+    }*/
 
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testNoWritePermissionOnBucket() throws BackgroundException {

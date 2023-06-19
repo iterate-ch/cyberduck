@@ -2,12 +2,12 @@ name: Unit Tests
 
 on:
   workflow_dispatch:
-  #push:
-   # branches:
-    #  - master
-  #pull_request:
-   # branches:
-    #  - master
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -22,8 +22,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v1
       - run: choco install bonjour
         if: runner.os == 'Windows'
       - uses: ilammy/msvc-dev-cmd@v1
@@ -40,5 +38,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
       - name: Build with Maven
-        run: mvn --no-transfer-progress verify -DskipITs -DskipSign --batch-mode -Drevision=0 -pl s3 -am --fail-never
-        #run: mvn --no-transfer-progress verify -DskipITs -DskipSign --batch-mode -Drevision=0
+        run: mvn --no-transfer-progress verify -DskipITs -DskipSign --batch-mode -Drevision=0
