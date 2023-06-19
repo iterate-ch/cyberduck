@@ -22,14 +22,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.experimental.categories.Category;
 
-@Category(IntegrationTest.class)
 public abstract class AbstractSMBTest {
 
     @ClassRule

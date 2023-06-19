@@ -26,14 +26,11 @@ import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SMBSessionTest extends AbstractSMBTest {
 
     @Test
