@@ -54,7 +54,7 @@ public abstract class AbstractOidcTest {
     public static DockerComposeContainer compose = new DockerComposeContainer(
             new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
             //.withPull(false)
-            .withLocalCompose(true)
+            //.withLocalCompose(true)
             //.withOptions("--compatibility")
             .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
             .withExposedService("minio_1", 9000, Wait.forListeningPort());
