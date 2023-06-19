@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,16 +36,24 @@ public class UploadTransferItemFinder implements TransferItemFinder {
     public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
         final Local local = LocalFactory.get(input.getOptionValues(action.name())[1]);
         final Set<TransferItem> items = new HashSet<>();
-        items.add(resolve(remote, local));
+        // Append local name to remote target
+        final boolean append = !Arrays.asList(input.getArgs()).isEmpty();
+        items.add(resolve(remote, local, append));
         for(String arg : input.getArgs()) {
-            items.add(resolve(remote, LocalFactory.get(arg)));
+            items.add(resolve(remote, LocalFactory.get(arg), append));
         }
         return items;
     }
 
-    protected static TransferItem resolve(final Path remote, final Local local) {
+    protected static TransferItem resolve(final Path remote, final Local local, final boolean append) {
         if(local.isDirectory()) {
             // Local path resolves to folder
+            if(remote.isDirectory()) {
+                if(append) {
+                    return new TransferItem(new Path(remote, local.getName(), EnumSet.of(Path.Type.directory)), local);
+                }
+            }
+            // Append local name to remote target
             return new TransferItem(remote, local);
         }
         // Local path resolves to file

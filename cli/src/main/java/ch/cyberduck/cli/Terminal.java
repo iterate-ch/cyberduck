@@ -389,8 +389,12 @@ public class Terminal {
 
     protected void configure(final CommandLine input) {
         final boolean preserve = input.hasOption(TerminalOptionsBuilder.Params.preserve.name());
+        preferences.setDefault("queue.upload.acl.change", String.valueOf(preserve));
         preferences.setDefault("queue.upload.permissions.change", String.valueOf(preserve));
         preferences.setDefault("queue.upload.timestamp.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.file.metadata.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.file.redundancy.change", String.valueOf(preserve));
+        preferences.setDefault("queue.upload.file.encryption.change", String.valueOf(preserve));
         preferences.setDefault("queue.download.permissions.change", String.valueOf(preserve));
         preferences.setDefault("queue.download.timestamp.change", String.valueOf(preserve));
         final boolean retry = input.hasOption(TerminalOptionsBuilder.Params.retry.name());

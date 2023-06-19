@@ -1,4 +1,4 @@
-package ch.cyberduck.core.diagnostics;
+package ch.cyberduck.core;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -15,24 +15,15 @@ package ch.cyberduck.core.diagnostics;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Host;
+import org.junit.Test;
 
-public class ChainedReachability extends DisabledReachability {
+import static org.junit.Assert.assertNotNull;
 
-    private final Reachability[] delegates;
+public class ConnectionTimeoutFactoryTest {
 
-    public ChainedReachability(final Reachability... delegates) {
-        this.delegates = delegates;
-    }
-
-
-    @Override
-    public boolean isReachable(final Host bookmark) {
-        for(Reachability delegate : delegates) {
-            if(!delegate.isReachable(bookmark)) {
-                return false;
-            }
-        }
-        return true;
+    @Test
+    public void testCreate() {
+        assertNotNull(ConnectionTimeoutFactory.get());
+        assertNotNull(ConnectionTimeoutFactory.get(new Host(new TestProtocol())));
     }
 }

@@ -33,6 +33,8 @@ import static ch.cyberduck.core.threading.ThreadPool.DEFAULT_THREAD_NAME_PREFIX;
 public class ThreadPoolFactory extends Factory<ThreadPool> {
     private static final Logger log = LogManager.getLogger(ThreadPoolFactory.class);
 
+    private Constructor<? extends ThreadPool> constructor;
+
     public ThreadPoolFactory() {
         super("factory.threadpool.class");
     }
@@ -52,8 +54,10 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority,
                                 final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
         try {
-            final Constructor<? extends ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
-                    prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
+                        prefix.getClass(), size.getClass(), priority.getClass(), queue.getClass(), handler.getClass());
+            }
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
                 // Call default constructor for disabled implementations
@@ -65,6 +69,8 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
             throw new FactoryException(e.getMessage(), e);
         }
     }
+
+    private static final ThreadPoolFactory singleton = new ThreadPoolFactory();
 
     public static ThreadPool get() {
         return get(new LoggingUncaughtExceptionHandler());
@@ -115,6 +121,6 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
-        return new ThreadPoolFactory().create(prefix, size, priority, queue, handler);
+        return singleton.create(prefix, size, priority, queue, handler);
     }
 }

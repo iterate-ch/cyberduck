@@ -49,11 +49,13 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
         }
     }
 
+    private static final PasswordCallbackFactory singleton = new PasswordCallbackFactory();
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static PasswordCallback get(final Controller c) {
-        return new PasswordCallbackFactory().create(c);
+        return singleton.create(c);
     }
 }

@@ -34,7 +34,6 @@ import org.apache.commons.io.output.ProxyOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.rococoa.Foundation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -202,10 +201,8 @@ public class FinderLocal extends Local {
             // Ignore failure resolving path
             return null; // NSURL.fileURLWithPath(this.getAbsolute());
         }
-        if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
-            if(!resolved.startAccessingSecurityScopedResource()) {
-                throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
-            }
+        if(!resolved.startAccessingSecurityScopedResource()) {
+            throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
         }
         return resolved;
     }
@@ -216,9 +213,7 @@ public class FinderLocal extends Local {
             return;
         }
         final NSURL resolved = (NSURL) lock;
-        if(resolved.respondsToSelector(Foundation.selector("stopAccessingSecurityScopedResource"))) {
-            resolved.stopAccessingSecurityScopedResource();
-        }
+        resolved.stopAccessingSecurityScopedResource();
     }
 
     @Override
