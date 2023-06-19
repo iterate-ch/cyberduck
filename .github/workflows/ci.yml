@@ -17,6 +17,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v1
       - name: Cache local Maven repository
         uses: actions/cache@v3
         with:
