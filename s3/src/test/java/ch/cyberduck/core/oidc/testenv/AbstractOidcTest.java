@@ -39,7 +39,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.slf4j.Logger;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
@@ -50,12 +52,15 @@ public abstract class AbstractOidcTest {
 
     protected Profile profile = null;
 
+    private static Logger logger;
     @ClassRule
     public static DockerComposeContainer compose = new DockerComposeContainer(
             new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
-            //.withPull(false)
-            //.withLocalCompose(true)
+            .withPull(false)
+            .withLocalCompose(true)
             //.withOptions("--compatibility")
+            .withLogConsumer("keycloak_1", new Slf4jLogConsumer(logger))
+            .withLogConsumer("minio_1", new Slf4jLogConsumer(logger))
             .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
             .withExposedService("minio_1", 9000, Wait.forListeningPort());
 
