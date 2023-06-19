@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 public class OidcAuthTest extends AbstractOidcTest {
     //    with Fiddler as proxy
 
-/*    @Test
+    @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
@@ -56,7 +56,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
         session.close();
-    }*/
+    }
 
 /*    @Test(expected = LoginFailureException.class) //Todo check expected Exception
     public void testInvalidUserName() throws BackgroundException {

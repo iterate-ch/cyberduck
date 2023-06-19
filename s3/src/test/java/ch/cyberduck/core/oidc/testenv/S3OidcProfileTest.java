@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 
 public class S3OidcProfileTest {
 
-/*    @Test
+    @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
@@ -38,5 +38,5 @@ public class S3OidcProfileTest {
         assertNotNull(profile.getOAuthTokenUrl());
         assertFalse(profile.getOAuthScopes().isEmpty());
 //        assertEquals(Protocol.DirectoryTimestamp.explicit, profile.getDirectoryTimestamp());
-    }*/
+    }
 }
