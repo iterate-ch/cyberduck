@@ -56,11 +56,12 @@ public abstract class AbstractOidcTest {
             .withPull(false)
             .withLocalCompose(true)
             .withOptions("--compatibility")
-            .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-            .withExposedService("minio_1", 9000, Wait.forListeningPort());
+            .withExposedService("keycloak_1", 8080)
+            .withExposedService("minio_1", 9000);
 
     @BeforeClass
     public static void beforeAll() {
+        compose.stop();
         compose.start();
     }
 
@@ -76,7 +77,7 @@ public abstract class AbstractOidcTest {
     }
 
     @AfterClass
-    public static void disconnect() {
+    public static void disconnect() throws Exception {
         compose.stop();
     }
 }
