@@ -37,7 +37,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
+/*@Category(IntegrationTest.class)*/
 public class OidcAuthTest extends AbstractOidcTest {
     //    with Fiddler as proxy
 //    new Proxy(Proxy.Type.HTTP, "localhost", 8888)

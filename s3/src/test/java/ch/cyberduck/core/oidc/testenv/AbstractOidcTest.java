@@ -53,7 +53,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
-@Category(IntegrationTest.class)
+/*@Category(IntegrationTest.class)*/
 public class AbstractOidcTest {
 
     protected S3Session session;
