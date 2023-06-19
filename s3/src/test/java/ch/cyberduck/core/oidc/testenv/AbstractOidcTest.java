@@ -51,26 +51,19 @@ import java.util.HashSet;
 public abstract class AbstractOidcTest {
 
     protected Profile profile = null;
-    private static DockerComposeContainer dockerComposeContainer;
-/*    @ClassRule
+
+    @ClassRule
     public static DockerComposeContainer compose = new DockerComposeContainer(
             new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
             .withPull(false)
             .withLocalCompose(true)
             //.withOptions("--compatibility")
             .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-            .withExposedService("minio_1", 9000, Wait.forListeningPort());*/
+            .withExposedService("minio_1", 9000, Wait.forListeningPort());
 
     @BeforeClass
     public static void beforeAll() {
-        dockerComposeContainer = new DockerComposeContainer(
-                new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
-                .withPull(false)
-                .withLocalCompose(true)
-                //.withOptions("--compatibility")
-                .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-                .withExposedService("minio_1", 9000, Wait.forListeningPort());
-        dockerComposeContainer.start();
+        compose.start();
     }
 
     @Before
@@ -86,6 +79,6 @@ public abstract class AbstractOidcTest {
 
     @AfterClass
     public static void disconnect() {
-        dockerComposeContainer.stop();
+        compose.stop();
     }
 }
