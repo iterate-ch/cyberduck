@@ -150,6 +150,7 @@ public class B2ObjectListService implements ListService {
                 }
                 catch(NotfoundException e) {
                     // No placeholder object or hidden flag set
+                    log.warn(String.format("Missing placeholder object for prefix %s", info.getFileName()));
                     placeholder.attributes().setDuplicate(true);
                 }
                 objects.add(placeholder);
