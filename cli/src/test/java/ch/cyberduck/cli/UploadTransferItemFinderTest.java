@@ -34,16 +34,17 @@ public class UploadTransferItemFinderTest {
     public void testResolveFolderToFolder() {
         final Local temp = new TemporarySupportDirectoryFinder().find();
         final Path folder = new Path("/d", EnumSet.of(Path.Type.directory));
-        final TransferItem item = UploadTransferItemFinder.resolve(folder, temp);
-        assertEquals(folder, item.remote);
-        assertEquals(temp, item.local);
+        assertEquals(folder, UploadTransferItemFinder.resolve(folder, temp, false).remote);
+        assertEquals(temp, UploadTransferItemFinder.resolve(folder, temp, false).local);
+        assertEquals(new Path(folder, temp.getName(), EnumSet.of(Path.Type.directory)), UploadTransferItemFinder.resolve(folder, temp, true).remote);
+        assertEquals(temp, UploadTransferItemFinder.resolve(folder, temp, true).local);
     }
 
     @Test
     public void testResolveFileToFile() {
         final Local temp = new FlatTemporaryFileService().create(new AlphanumericRandomStringService().random());
         final Path file = new Path("/f", EnumSet.of(Path.Type.file));
-        final TransferItem item = UploadTransferItemFinder.resolve(file, temp);
+        final TransferItem item = UploadTransferItemFinder.resolve(file, temp, false);
         assertEquals(file, item.remote);
         assertEquals(temp, item.local);
     }
@@ -52,7 +53,7 @@ public class UploadTransferItemFinderTest {
     public void testResolveFileToFolder() {
         final Local temp = new FlatTemporaryFileService().create(new AlphanumericRandomStringService().random());
         final Path folder = new Path("/d", EnumSet.of(Path.Type.directory));
-        final TransferItem item = UploadTransferItemFinder.resolve(folder, temp);
+        final TransferItem item = UploadTransferItemFinder.resolve(folder, temp, false);
         assertEquals(new Path("/d/" + temp.getName(), EnumSet.of(Path.Type.file)), item.remote);
         assertEquals(temp, item.local);
     }

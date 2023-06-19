@@ -292,11 +292,11 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         final Path file12 = new Path(folder2, "32-f", EnumSet.of(Path.Type.file));
         new B2TouchFeature(session, fileid).touch(file11, new TransferStatus());
         new B2TouchFeature(session, fileid).touch(file12, new TransferStatus());
-
         final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener());
         assertEquals(1, list.size());
-        assertEquals(folder2, list.iterator().next());
-
+        final Path foundFolder2 = list.iterator().next();
+        assertEquals(folder2, foundFolder2);
+        assertTrue(foundFolder2.attributes().isDuplicate());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(bucket, file11, file12), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

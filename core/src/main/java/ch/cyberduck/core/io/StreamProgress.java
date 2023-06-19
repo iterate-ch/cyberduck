@@ -17,12 +17,21 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+
 public interface StreamProgress {
     void setComplete();
+
+    void setFailure(final BackgroundException failure);
 
     StreamProgress noop = new StreamProgress() {
         @Override
         public void setComplete() {
+            //
+        }
+
+        @Override
+        public void setFailure(final BackgroundException failure) {
             //
         }
     };

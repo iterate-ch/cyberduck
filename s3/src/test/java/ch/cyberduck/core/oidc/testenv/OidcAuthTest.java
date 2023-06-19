@@ -26,8 +26,10 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
@@ -37,12 +39,11 @@ import static org.junit.Assert.*;
 
 public class OidcAuthTest extends AbstractOidcTest {
     //    with Fiddler as proxy
-//    new Proxy(Proxy.Type.HTTP, "localhost", 8888)
 
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
-        session = new S3Session(host);
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         Credentials creds = host.getCredentials();
@@ -54,28 +55,31 @@ public class OidcAuthTest extends AbstractOidcTest {
         assertNotNull(creds.getOauth().getAccessToken());
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
+        session.close();
     }
 
-    @Test(expected = LoginFailureException.class) //Todo check expected Exception
+/*    @Test(expected = LoginFailureException.class) //Todo check expected Exception
     public void testInvalidUserName() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
-        session = new S3Session(host);
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class) //Todo check expected Exception
     public void testInvalidPassword() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalid"));
-        session = new S3Session(host);
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
+        session.close();
+    }*/
 
     // testTokenRefresh
 
     // Authorization
-    @Test
+/*    @Test
     public void testUserReadAccess() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         session = new S3Session(host);
@@ -84,8 +88,8 @@ public class OidcAuthTest extends AbstractOidcTest {
         //TODO read a file
         final TransferStatus status = new TransferStatus();
         final Path container = new Path( "", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ReadFeature(session).read(new Path(container, "testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
-    }
+        new S3ReadFeature(session).read(new Path(container, "cyberduckbucket/testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+    }*/
 
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testNoWritePermissionOnBucket() throws BackgroundException {

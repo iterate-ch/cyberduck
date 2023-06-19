@@ -27,8 +27,8 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class LocalFactory extends Factory<Local> {
 
-    private final Constructor<? extends Local> constructor
-            = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
+    private Constructor<? extends Local> constructorCreateFromString;
+    private Constructor<? extends Local> constructorCreateFromParentString;
 
     protected LocalFactory() {
         super("factory.local.class");
@@ -41,7 +41,10 @@ public final class LocalFactory extends Factory<Local> {
 
     protected Local create(final String path) {
         try {
-            return constructor.newInstance(path);
+            if(null == constructorCreateFromString) {
+                constructorCreateFromString = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
+            }
+            return constructorCreateFromString.newInstance(path);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
@@ -50,27 +53,31 @@ public final class LocalFactory extends Factory<Local> {
 
     protected Local create(final Local parent, final String path) {
         try {
-            final Constructor<? extends Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
-            return constructor.newInstance(parent, path);
+            if(null == constructorCreateFromParentString) {
+                constructorCreateFromParentString = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
+            }
+            return constructorCreateFromParentString.newInstance(parent, path);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
 
+    private static final LocalFactory singleton = new LocalFactory();
+
     public static Local get(final Local parent, final String name) {
-        return new LocalFactory().create(parent, name);
+        return singleton.create(parent, name);
     }
 
     public static Local get(final String parent, final String name) {
-        return new LocalFactory().create(new LocalFactory().create(parent), name);
+        return singleton.create(singleton.create(parent), name);
     }
 
     public static Local get(final String path) {
-        return new LocalFactory().create(path);
+        return singleton.create(path);
     }
 
     public static Local get() {
-        return new LocalFactory().create();
+        return singleton.create();
     }
 }

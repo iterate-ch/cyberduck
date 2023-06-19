@@ -80,10 +80,12 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Info
 
             Load = ReactiveCommand.CreateFromTask(OnLoadAsync);
             Save = ReactiveCommand.CreateFromTask(OnSaveAsync);
-            AddMetadata = ReactiveCommand.Create<MetadataTemplateProvider.Template>(OnAddMetadata);
-            busy = Observable.CombineLatest(Load.IsExecuting, Save.IsExecuting, (l, s) => l | s).ToProperty(this, nameof(Busy));
-
             Save.InvokeCommand(Load);
+            var busyObservable = Observable.CombineLatest(Load.IsExecuting, Save.IsExecuting, (l, s) => l | s).Replay(1).RefCount();
+            busy = busyObservable.ToProperty(this, nameof(Busy));
+
+            AddMetadata = ReactiveCommand.Create<MetadataTemplateProvider.Template>(OnAddMetadata, busyObservable.Select(s => !s));
+
             var loadScan = Load.Scan((List: metadata, ChangeSet: metadata.ToObservableChangeSet(), Subscriptions: new CompositeDisposable()), (acc, val) =>
             {
                 var (List, ChangeSet, Subscriptions) = acc;

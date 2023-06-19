@@ -33,6 +33,7 @@ import ch.cyberduck.core.SleepPreventer;
 import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
@@ -451,7 +452,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Cancel retry for %s", item));
                             }
-                            segment.setFailure();
+                            segment.setFailure(e);
                             // Prompt to continue or abort for application errors
                             if(error.prompt(item, segment, e, table.size())) {
                                 // Continue
@@ -509,7 +510,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         }
                         else {
                             log.warn(String.format("Skip concatenating segments for failed transfer %s", status));
-                            status.setFailure();
+                            status.setFailure(new ConnectionCanceledException());
                         }
                     }
                     return status;
