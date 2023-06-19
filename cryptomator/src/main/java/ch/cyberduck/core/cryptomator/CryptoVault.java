@@ -347,12 +347,11 @@ public class CryptoVault implements Vault {
     }
 
     protected void open(final VaultConfig vaultConfig, final CharSequence passphrase) throws BackgroundException {
-        this.open(vaultConfig, passphrase, createFilenameProvider(vaultConfig), createDirectoryProvider(vaultConfig));
+        this.open(vaultConfig, passphrase, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
     }
 
-
-    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase, final CryptoFilename filenameProvider,
-                        final CryptoDirectory directoryProvider) throws BackgroundException {
+    protected void open(final VaultConfig vaultConfig, final CharSequence passphrase,
+                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         try {
             final Masterkey masterKey = this.getMasterKey(vaultConfig.getMkfile(), passphrase);
             this.open(vaultConfig, masterKey, filenameProvider, directoryProvider);
@@ -366,18 +365,16 @@ public class CryptoVault implements Vault {
     }
 
     protected void open(final VaultConfig vaultConfig, final Masterkey masterKey) throws BackgroundException {
-        this.open(vaultConfig, masterKey, createFilenameProvider(vaultConfig), createDirectoryProvider(vaultConfig));
+        this.open(vaultConfig, masterKey, this.createFilenameProvider(vaultConfig), this.createDirectoryProvider(vaultConfig));
     }
 
-    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey, final CryptoFilename filenameProvider,
-                        final CryptoDirectory directoryProvider) throws BackgroundException {
-
+    protected void open(final VaultConfig vaultConfig, final Masterkey masterKey,
+                        final CryptoFilename filenameProvider, final CryptoDirectory directoryProvider) throws BackgroundException {
         this.vaultVersion = vaultConfig.version;
         final CryptorProvider provider = CryptorProvider.forScheme(vaultConfig.getCipherCombo());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Initialized crypto provider %s", provider));
         }
-
         vaultConfig.verify(masterKey.getEncoded(), VAULT_VERSION);
         this.cryptor = provider.provide(masterKey, FastSecureRandomProvider.get().provide());
         this.fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
