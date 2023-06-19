@@ -44,7 +44,7 @@ public class SingleTransferItemFinderTest {
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
         assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get(System.getProperty("user.dir") + "/remote")),
-            found.iterator().next());
+                found.iterator().next());
     }
 
     @Test
@@ -56,8 +56,7 @@ public class SingleTransferItemFinderTest {
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)));
         assertFalse(found.isEmpty());
         assertEquals(new TransferItem(new Path("/cdn.cyberduck.ch/remote", EnumSet.of(Path.Type.file)), LocalFactory.get(String.format("%s/f", temp))),
-            found.iterator().next());
-
+                found.iterator().next());
     }
 
     @Test
@@ -78,7 +77,7 @@ public class SingleTransferItemFinderTest {
         final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.directory)));
         assertFalse(found.isEmpty());
         assertEquals(new TransferItem(new Path("/remote/f", EnumSet.of(Path.Type.file)), LocalFactory.get(String.format("%s/f", temp))),
-            found.iterator().next());
+                found.iterator().next());
     }
 
     @Test
@@ -92,6 +91,42 @@ public class SingleTransferItemFinderTest {
         final Local temp = LocalFactory.get(System.getProperty("java.io.tmpdir"));
         assertTrue(temp.getType().contains(Path.Type.directory));
         assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.directory)), temp), iter.next());
+    }
+
+    @Test
+    public void testUploadFilesWithExpandedGlobToDirectoryTarget() throws Exception {
+        final CommandLineParser parser = new PosixParser();
+        final String temp = System.getProperty("java.io.tmpdir");
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", String.format("%s/f1", temp),
+                String.format("%s/f2", temp)});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.directory)));
+        assertFalse(found.isEmpty());
+        assertEquals(2, found.size());
+        final Iterator<TransferItem> iter = found.iterator();
+        assertEquals(new TransferItem(new Path("/remote/f1", EnumSet.of(Path.Type.file)), new Local(temp, "f1")), iter.next());
+        assertEquals(new TransferItem(new Path("/remote/f2", EnumSet.of(Path.Type.file)), new Local(temp, "f2")), iter.next());
+    }
+
+    @Test
+    public void testUploadFoldersWithExpandedGlobToDirectoryTarget() throws Exception {
+        final CommandLineParser parser = new PosixParser();
+        final String temp = System.getProperty("java.io.tmpdir");
+        final Local d1 = new Local(String.format("%s/d1", temp));
+        d1.mkdir();
+        final Local d2 = new Local(String.format("%s/d2", temp));
+        d2.mkdir();
+        final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", String.format("%s/d1", temp),
+                String.format("%s/d2", temp)});
+
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.directory)));
+        assertFalse(found.isEmpty());
+        assertEquals(2, found.size());
+        final Iterator<TransferItem> iter = found.iterator();
+        assertEquals(new TransferItem(new Path("/remote/d1", EnumSet.of(Path.Type.directory)), new Local(temp, "d1")), iter.next());
+        assertEquals(new TransferItem(new Path("/remote/d2", EnumSet.of(Path.Type.directory)), new Local(temp, "d2")), iter.next());
+        d1.delete();
+        d2.delete();
     }
 
     @Test
@@ -117,7 +152,7 @@ public class SingleTransferItemFinderTest {
         assertFalse(found.isEmpty());
         final Iterator<TransferItem> iter = found.iterator();
         assertEquals(new TransferItem(new Path("/remote/f", EnumSet.of(Path.Type.file)), LocalFactory.get(String.format("%s/f", temp))),
-            iter.next());
+                iter.next());
     }
 
     @Test
@@ -130,6 +165,6 @@ public class SingleTransferItemFinderTest {
         assertFalse(found.isEmpty());
         final Iterator<TransferItem> iter = found.iterator();
         assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.directory)), LocalFactory.get(String.format("%s/remote", temp))),
-            iter.next());
+                iter.next());
     }
 }

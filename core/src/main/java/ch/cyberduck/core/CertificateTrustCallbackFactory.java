@@ -53,11 +53,13 @@ public class CertificateTrustCallbackFactory extends Factory<CertificateTrustCal
         }
     }
 
+    private static final CertificateTrustCallbackFactory singleton = new CertificateTrustCallbackFactory();
+
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
     public static CertificateTrustCallback get(final Controller c) {
-        return new CertificateTrustCallbackFactory().create(c);
+        return singleton.create(c);
     }
 }

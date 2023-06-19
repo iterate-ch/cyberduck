@@ -33,7 +33,7 @@ public class DefaultInetAddressReachability extends DisabledReachability {
     public boolean isReachable(final Host host) {
         try {
             return InetAddress.getByName(host.getHostname()).isReachable(
-                    ConnectionTimeoutFactory.get().getTimeout() * 1000
+                    ConnectionTimeoutFactory.get(host).getTimeout() * 1000
             );
         }
         catch(IOException e) {

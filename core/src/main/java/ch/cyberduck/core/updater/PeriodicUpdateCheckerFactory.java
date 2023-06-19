@@ -29,13 +29,17 @@ import java.lang.reflect.InvocationTargetException;
 public class PeriodicUpdateCheckerFactory extends Factory<PeriodicUpdateChecker> {
     private static final Logger log = LogManager.getLogger(PeriodicUpdateCheckerFactory.class);
 
+    private Constructor<? extends PeriodicUpdateChecker> constructor;
+
     public PeriodicUpdateCheckerFactory() {
         super("factory.updater.class");
     }
 
     public PeriodicUpdateChecker create(final Controller controller) {
         try {
-            final Constructor<? extends PeriodicUpdateChecker> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
+            }
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations
@@ -49,11 +53,13 @@ public class PeriodicUpdateCheckerFactory extends Factory<PeriodicUpdateChecker>
         }
     }
 
+    private static final PeriodicUpdateCheckerFactory singleton = new PeriodicUpdateCheckerFactory();
+
     public static PeriodicUpdateChecker get() {
         return get(new SingleThreadController());
     }
 
     public static PeriodicUpdateChecker get(final Controller controller) {
-        return new PeriodicUpdateCheckerFactory().create(controller);
+        return singleton.create(controller);
     }
 }

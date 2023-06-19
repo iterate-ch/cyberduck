@@ -16,7 +16,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 
+import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -31,7 +33,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-public class KeychainStoreTest {
+public class KeychainX509KeyManagerTest {
 
     private static KeyStore keychain;
 
@@ -40,7 +42,7 @@ public class KeychainStoreTest {
         keychain = KeyStore.getInstance("KeychainStore", "Apple");
         keychain.load(null, null);
         KeyStore kspkcs12 = KeyStore.getInstance("pkcs12");
-        kspkcs12.load(KeychainStoreTest.class.getResourceAsStream("/test.p12"), "test".toCharArray());
+        kspkcs12.load(KeychainX509KeyManagerTest.class.getResourceAsStream("/test.p12"), "test".toCharArray());
         Key key = kspkcs12.getKey("test", "test".toCharArray());
         Certificate[] chain = kspkcs12.getCertificateChain("test");
         keychain.setKeyEntry("myClient", key, "null".toCharArray(), chain);
@@ -55,10 +57,15 @@ public class KeychainStoreTest {
 
     @Test
     public void testGetAliasesForIssuerDN() {
-        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).withKeyStore(
-            keychain).init();
+        final CertificateStoreX509KeyManager m = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(),
+                new Host(new TestProtocol()), new DisabledCertificateStore(), new LazyInitializer<KeyStore>() {
+            @Override
+            protected KeyStore initialize() {
+                return keychain;
+            }
+        }).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
-            new X500Principal("CN=iterate GmbH - Test")
+                new X500Principal("CN=iterate GmbH - Test")
         });
         assertNotNull(aliases);
         assertFalse(Arrays.asList(aliases).isEmpty());
@@ -67,8 +74,13 @@ public class KeychainStoreTest {
     @Test
     @Ignore
     public void testLoadPrivateKeyFromKeychain() {
-        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).withKeyStore(
-            keychain).init();
+        final CertificateStoreX509KeyManager m = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(),
+                new Host(new TestProtocol()), new DisabledCertificateStore(), new LazyInitializer<KeyStore>() {
+            @Override
+            protected KeyStore initialize() {
+                return keychain;
+            }
+        }).init();
         assertTrue(m.list().contains("myclient"));
         assertNotNull(m.getPrivateKey("myClient"));
     }

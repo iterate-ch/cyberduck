@@ -70,7 +70,8 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
                 return this.cache(file, info.getBucketId());
             }
             // Files that have been hidden will not be returned
-            final B2ListFilesResponse response = session.getClient().listFileNames(this.getVersionId(containerService.getContainer(file)), containerService.getKey(file), 1);
+            final B2ListFilesResponse response = session.getClient().listFileNames(
+                    this.getVersionId(containerService.getContainer(file)), containerService.getKey(file), 1);
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
                     // Cache in file attributes

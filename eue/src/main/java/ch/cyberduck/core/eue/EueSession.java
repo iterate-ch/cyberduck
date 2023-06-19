@@ -277,7 +277,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     }
 
     public UserSharesModel userShares() throws BackgroundException {
-        if(this.userShares.get() == null) {
+        if(userShares.get() == null) {
             try {
                 userShares.set(new GetUserSharesApi(new EueApiClient(this)).shareGet(null, null));
             }

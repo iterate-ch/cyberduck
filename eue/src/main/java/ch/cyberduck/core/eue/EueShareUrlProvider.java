@@ -37,7 +37,7 @@ public class EueShareUrlProvider implements UrlProvider {
 
     public EueShareUrlProvider(final Host host, final UserSharesModel shares) {
         this.host = host;
-        this.shares = shares;
+        this.shares = null == shares ? new UserSharesModel() : shares;
     }
 
     @Override
