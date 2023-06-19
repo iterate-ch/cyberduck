@@ -41,17 +41,19 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
-
+@Category(IntegrationTest.class)
 public class AbstractOidcTest {
 
     protected S3Session session;

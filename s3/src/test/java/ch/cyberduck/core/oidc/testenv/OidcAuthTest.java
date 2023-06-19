@@ -26,8 +26,10 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
@@ -35,6 +37,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class OidcAuthTest extends AbstractOidcTest {
     //    with Fiddler as proxy
 //    new Proxy(Proxy.Type.HTTP, "localhost", 8888)
@@ -84,7 +87,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         //TODO read a file
         final TransferStatus status = new TransferStatus();
         final Path container = new Path( "", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ReadFeature(session).read(new Path(container, "testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new S3ReadFeature(session).read(new Path(container, "cyberduckbucket/testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
     }
 
 //    @Test(expected = IllegalArgumentException.class)
