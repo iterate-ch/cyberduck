@@ -73,7 +73,7 @@ public class AzureCopyFeature implements Copy {
             }
             listener.sent(status.getLength());
             // Copy original file attributes
-            return copy.withAttributes(source.attributes());
+            return copy.withAttributes(new AzureAttributesFinderFeature(session, context).find(copy));
         }
         catch(StorageException e) {
             throw new AzureExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -81,5 +81,10 @@ public class AzureCopyFeature implements Copy {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !target.isRoot();
     }
 }

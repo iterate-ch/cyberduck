@@ -27,6 +27,8 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
         assertTrue(new AzureFindFeature(session, null).find(container));
         assertEquals(container.attributes(), new AzureAttributesFinderFeature(session, null).find(container));
         assertThrows(ConflictException.class, () -> feature.mkdir(container, new TransferStatus()));
+        new AzureTouchFeature(session, null).touch(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertEquals(container.attributes(), new AzureAttributesFinderFeature(session, null).find(container));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(container));
     }
@@ -49,6 +51,8 @@ public class AzureDirectoryFeatureTest extends AbstractAzureTest {
                 EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(placeholder.getType().contains(Path.Type.placeholder));
         assertTrue(new AzureFindFeature(session, null).find(placeholder));
+        assertEquals(placeholder.attributes(), new AzureAttributesFinderFeature(session, null).find(placeholder));
+        new AzureTouchFeature(session, null).touch(new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(placeholder.attributes(), new AzureAttributesFinderFeature(session, null).find(placeholder));
         new AzureDeleteFeature(session, null).delete(Collections.<Path>singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new AzureFindFeature(session, null).find(placeholder));
