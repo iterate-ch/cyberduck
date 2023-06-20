@@ -35,29 +35,26 @@ import com.microsoft.azure.storage.OperationContext;
 public class AzureMoveFeature implements Move {
 
     private final AzureSession session;
-
     private final OperationContext context;
 
     private final PathContainerService containerService
-        = new DirectoryDelimiterPathContainerService();
-
-    private final Delete delete;
+            = new DirectoryDelimiterPathContainerService();
 
     public AzureMoveFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
-        this.delete = new AzureDeleteFeature(session, context);
         this.context = context;
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
+        return new AzureCopyFeature(session, context).isSupported(source, target)
+                && new AzureDeleteFeature(session, context).isSupported(source);
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         final Path copy = new AzureCopyFeature(session, context).copy(file, renamed, new TransferStatus().withLength(file.attributes().getSize()), connectionCallback, new DisabledStreamListener());
-        delete.delete(Collections.singletonList(file), connectionCallback, callback);
+        new AzureDeleteFeature(session, context).delete(Collections.singletonList(file), connectionCallback, callback);
         return copy;
     }
 }
