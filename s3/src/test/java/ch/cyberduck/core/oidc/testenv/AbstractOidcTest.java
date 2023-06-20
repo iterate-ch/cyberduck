@@ -48,6 +48,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 
+import com.amazonaws.waiters.WaiterHandler;
+
 public abstract class AbstractOidcTest {
 
     protected Profile profile = null;
@@ -59,7 +61,7 @@ public abstract class AbstractOidcTest {
             .withLocalCompose(true)
             .withOptions("--compatibility")
             .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-            .withExposedService("minio_1", 9000, Wait.forListeningPort());
+            .withExposedService("minio_1", 9000, Wait.forHttp("http://localhost:8080/realms/cyberduckrealm/.well-known/openid-configuration"));
 
     @BeforeClass
     public static void beforeAll() {

@@ -21,10 +21,6 @@ services:
       KC_METRICS_ENABLED: "true"
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/dev/certs/keycloak-server.crt.pem
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/dev/certs/keycloak-server.key.pem
-    healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:8080/login || exit 1" ]
-      interval: 10s
-      retries: 5
     volumes:
       - ./keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
       - ./certs:/opt/keycloak/dev/certs
@@ -34,9 +30,6 @@ services:
 
   minio:
     build: ./minio
-    depends_on:
-      keycloak:
-        condition: service_healthy
     restart: on-failure
     ports:
       - "9000:9000"
