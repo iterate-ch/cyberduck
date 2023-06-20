@@ -26,19 +26,7 @@ services:
       - ./certs:/opt/keycloak/dev/certs
     command: start-dev --import-realm --db=dev-mem --health-enabled=true
 
-  healthcheck:
-    image: busybox
-    networks:
-      - mynetwork
-    depends_on:
-      keycloak:
-        condition: service_started
-    command:  sh -c "until wget -q -O- http://host.docker.internal:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
-    healthcheck:
-      test: ["CMD-SHELL", "exit 0"]
-      interval: 1s
-      timeout: 1s
-      retries: 5
+
 
   minio:
     build: ./minio
