@@ -60,8 +60,8 @@ public abstract class AbstractOidcTest {
             .withPull(false)
             .withLocalCompose(true)
             .withOptions("--compatibility")
-            .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-            .withExposedService("minio_1", 9000, Wait.forSuccessfulCommand("until wget -q -O- http://localhost:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"));
+            .withExposedService("keycloak_1", 8080, Wait.forHttp("http://localhost:8080/realms/cyberduckrealm/.well-known/openid-configuration"))
+            .withExposedService("minio_1", 9000, Wait.forListeningPort());
 
     @BeforeClass
     public static void beforeAll() {
