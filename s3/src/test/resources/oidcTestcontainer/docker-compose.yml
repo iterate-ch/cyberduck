@@ -21,7 +21,6 @@ services:
       KC_METRICS_ENABLED: "true"
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/dev/certs/keycloak-server.crt.pem
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/dev/certs/keycloak-server.key.pem
-      minio: localhost
     volumes:
       - ./keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
       - ./certs:/opt/keycloak/dev/certs
@@ -29,11 +28,11 @@ services:
 
   healthcheck:
     image: busybox
+    networks:
+      - mynetwork
     depends_on:
       keycloak:
         condition: service_started
-    networks:
-      - mynetwork
     command:  sh -c "until wget -q -O- http://host.docker.internal:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
@@ -63,7 +62,6 @@ services:
       MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
       MINIO_IDENTITY_OPENID_SCOPES: openid,email,minio-authorization
       MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "true"
-      keycloak: localhost
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:9001/login || exit 1" ]
       interval: 10s
