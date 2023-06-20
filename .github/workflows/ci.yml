@@ -31,3 +31,5 @@ jobs:
       - name: Publish Test Report
         if: ${{ always() }}
         uses: ScaCap/action-surefire-report@v1.7.0
+variables:
+  TESTCONTAINERS_HOST_OVERRIDE: "host.docker.internal"

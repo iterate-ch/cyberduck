@@ -2,6 +2,7 @@ version: '3'
 
 services:
 
+
   keycloak:
     build: ./keycloak
     ports:
