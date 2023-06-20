@@ -22,7 +22,11 @@ jobs:
           distribution: 'temurin'
           java-version: 17
       - name: Setup docker for MacOS
-        uses: docker-practice/actions-setup-docker@master
+        run: |
+              brew install docker
+              colima start
+              # For testcontainers to find the Colima socket
+              sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
         if: runner.os == 'macos'
       - run: choco install bonjour
         if: runner.os == 'Windows'
