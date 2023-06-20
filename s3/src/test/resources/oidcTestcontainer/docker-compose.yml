@@ -5,8 +5,10 @@ services:
   keycloak:
     build: ./keycloak
     ports:
-      - "192.168.1.129:8080:8080"
-      - "192.168.1.129:8443:8443"
+      - "8080:8080"
+      - "8443:8443"
+    expose:
+      - "8080"
     networks:
       - mynetwork
     environment:
@@ -47,8 +49,10 @@ services:
         condition: service_completed_successfully
     restart: on-failure
     ports:
-      - "192.168.1.130:9000:9000"
-      - "192.168.1.130:9001:9001"
+      - "9000:9000"
+      - "9001:9001"
+    expose:
+      - "9000"
     networks:
       - mynetwork
     volumes:
@@ -85,8 +89,5 @@ services:
       "
 
 networks:
-  mynetwork:
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.1.128/24
+  example-network:
+    driver: bridge
