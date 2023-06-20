@@ -7,6 +7,8 @@ services:
     ports:
       - "8080:8080"
       - "8443:8443"
+    networks:
+      - mynetwork
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -44,6 +46,8 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    networks:
+      - mynetwork
     volumes:
       - ./data:/data
     environment:
@@ -76,3 +80,10 @@ services:
       /usr/bin/mc cp /testfile.txt myminio/cyberduckbucket/testfile.txt;
       exit 0;
       "
+
+networks:
+  mynetwork:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.2.0/24
