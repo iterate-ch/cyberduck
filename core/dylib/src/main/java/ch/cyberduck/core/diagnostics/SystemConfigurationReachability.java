@@ -24,6 +24,7 @@ import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostnameConfiguratorFactory;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
 import org.apache.logging.log4j.LogManager;
@@ -97,11 +98,11 @@ public class SystemConfigurationReachability extends ChainedReachability {
         return false;
     }
 
-    protected static String toURL(final Host host) {
-        StringBuilder url = new StringBuilder(host.getProtocol().getScheme().toString());
+    protected static String toURL(final Host bookmark) {
+        StringBuilder url = new StringBuilder(bookmark.getProtocol().getScheme().toString());
         url.append("://");
-        url.append(new PunycodeConverter().convert(host.getHostname()));
-        url.append(":").append(host.getPort());
+        url.append(new PunycodeConverter().convert(HostnameConfiguratorFactory.get(bookmark.getProtocol()).getHostname(bookmark.getHostname())));
+        url.append(":").append(bookmark.getPort());
         return url.toString();
     }
 
