@@ -23,14 +23,12 @@ jobs:
           distribution: 'temurin'
           java-version: 17
       - name: Setup docker for MacOS
-        run: brew install docker
+        run: |
+          brew install docker
+          colima start
+          # For testcontainers to find the Colima socket
+          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
         if: runner.os == 'macos'
-      - name: Setup docker for windows
-        uses: docker-practice/actions-setup-docker@master
-        with:
-          docker_channel: stable
-          docker_version: "20.10"
-        if: runner.os == 'Windows'
       - run: choco install bonjour
         if: runner.os == 'Windows'
       - uses: ilammy/msvc-dev-cmd@v1
