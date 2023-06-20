@@ -54,7 +54,7 @@ public class CustomClientConfiguration extends ClientConfiguration {
             @Override
             public InetAddress[] resolve(final String host) throws UnknownHostException {
                 try {
-                    return new InetAddress[]{new Resolver().resolve(host, new DisabledCancelCallback())};
+                    return new Resolver().resolve(host, new DisabledCancelCallback());
                 }
                 catch(ResolveFailedException | ResolveCanceledException e) {
                     throw new UnknownHostException(e.getDetail(false));

@@ -17,7 +17,7 @@ public class ResolverTest {
 
     @Test
     public void testResolve() throws Exception {
-        assertEquals("52.31.8.231", new Resolver().resolve("cyberduck.io", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("52.31.8.231", new Resolver().resolve("cyberduck.io", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class ResolverTest {
         catch(ResolveFailedException e) {
             //
         }
-        assertNotNull(resolver.resolve("cyberduck.io", new DisabledCancelCallback()).getHostAddress());
+        assertNotNull(resolver.resolve("cyberduck.io", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
@@ -48,29 +48,29 @@ public class ResolverTest {
         catch(ResolveCanceledException e) {
             //
         }
-        assertNotNull(resolver.resolve("cyberduck.io", new DisabledCancelCallback()).getHostAddress());
+        assertNotNull(resolver.resolve("cyberduck.io", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
     public void testResolveIPv6Localhost() throws Exception {
-        assertEquals("localhost", new Resolver().resolve("::1", new DisabledCancelCallback()).getHostName());
-        assertEquals("0:0:0:0:0:0:0:1", new Resolver().resolve("::1", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("localhost", new Resolver().resolve("::1", new DisabledCancelCallback())[0].getHostName());
+        assertEquals("0:0:0:0:0:0:0:1", new Resolver().resolve("::1", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
     @Ignore
     public void testResolveLinkLocalZoneIndexInterfaceName() throws Exception {
-        assertEquals("andaman.local", new Resolver().resolve("andaman.local", new DisabledCancelCallback()).getHostName());
-        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("andaman.local", new Resolver().resolve("andaman.local", new DisabledCancelCallback())[0].getHostName());
+        assertEquals("fe80:0:0:0:c62c:3ff:fe0b:8670%en0", new Resolver().resolve("fe80::c62c:3ff:fe0b:8670%en0", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
     public void testResolvePublicDNSIPv6Only() throws Exception {
-        assertEquals("2001:470:a085:999:0:0:0:21", new Resolver().resolve("ftp6.netbsd.org", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("2001:470:a085:999:0:0:0:21", new Resolver().resolve("ftp6.netbsd.org", new DisabledCancelCallback())[0].getHostAddress());
     }
 
     @Test
     public void testResolvePublicDNSIPv6ForHybrid() throws Exception {
-        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true).resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback()).getHostAddress());
+        assertEquals("2600:3c02:0:0:f03c:91ff:fe89:e8b1", new Resolver(true).resolve("intronetworks.cs.luc.edu", new DisabledCancelCallback())[0].getHostAddress());
     }
 }
