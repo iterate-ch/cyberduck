@@ -5,8 +5,8 @@ services:
   keycloak:
     build: ./keycloak
     ports:
-      - "192.168.2.10:8080:8080"
-      - "192.168.2.10:8443:8443"
+      - "8080:8080"
+      - "8443:8443"
     networks:
       - mynetwork
     environment:
@@ -30,7 +30,7 @@ services:
     depends_on:
       keycloak:
         condition: service_started
-    command:  sh -c "until wget -q -O- http://192.168.2.10:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
+    command:  sh -c "until wget -q -O- http://host.docker.internal:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
       interval: 1s
@@ -44,8 +44,8 @@ services:
         condition: service_completed_successfully
     restart: on-failure
     ports:
-      - "192.168.2.11:9000:9000"
-      - "192.168.2.11:9001:9001"
+      - "9000:9000"
+      - "9001:9001"
     networks:
       - mynetwork
     volumes:
@@ -53,14 +53,14 @@ services:
     environment:
       MINIO_ROOT_USER: cyberduckAccessKey
       MINIO_ROOT_PASSWORD: cyberduckSecretKey
-      MINIO_IDENTITY_OPENID_CONFIG_URL: http://192.168.2.10:8080/realms/cyberduckrealm/.well-known/openid-configuration
+      MINIO_IDENTITY_OPENID_CONFIG_URL: http://host.docker.internal:8080/realms/cyberduckrealm/.well-known/openid-configuration
       MINIO_IDENTITY_OPENID_CLIENT_ID: minio
       MINIO_IDENTITY_OPENID_CLIENT_SECRET: password
       MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
       MINIO_IDENTITY_OPENID_SCOPES: openid,email,minio-authorization
       MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "true"
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://192.168.2.11:9001/login || exit 1" ]
+      test: [ "CMD-SHELL", "curl --fail http://localhost:9001/login || exit 1" ]
       interval: 10s
       retries: 5
     command: server /data --console-address :9001
@@ -83,7 +83,4 @@ services:
 
 networks:
   mynetwork:
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.2.0/24
+    driver: "bridge"
