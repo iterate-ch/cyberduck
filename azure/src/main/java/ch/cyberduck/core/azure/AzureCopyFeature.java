@@ -45,7 +45,6 @@ public class AzureCopyFeature implements Copy {
     private static final Logger log = LogManager.getLogger(AzureCopyFeature.class);
 
     private final AzureSession session;
-
     private final OperationContext context;
 
     private final PathContainerService containerService
@@ -82,10 +81,5 @@ public class AzureCopyFeature implements Copy {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }
