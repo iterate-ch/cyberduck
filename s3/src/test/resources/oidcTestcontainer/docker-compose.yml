@@ -21,6 +21,7 @@ services:
       KC_METRICS_ENABLED: "true"
       KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/dev/certs/keycloak-server.crt.pem
       KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/dev/certs/keycloak-server.key.pem
+      minio: localhost
     volumes:
       - ./keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
       - ./certs:/opt/keycloak/dev/certs
@@ -62,6 +63,7 @@ services:
       MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
       MINIO_IDENTITY_OPENID_SCOPES: openid,email,minio-authorization
       MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "true"
+      keycloak: localhost
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail http://localhost:9001/login || exit 1" ]
       interval: 10s
@@ -86,4 +88,3 @@ services:
 
 networks:
   mynetwork:
-    driver: "bridge"
