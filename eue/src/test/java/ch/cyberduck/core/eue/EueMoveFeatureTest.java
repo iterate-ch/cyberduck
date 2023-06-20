@@ -23,6 +23,8 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -57,13 +59,12 @@ public class EueMoveFeatureTest extends AbstractEueSessionTest {
         assertTrue(new EueFindFeature(session, fileid).find(targetFile));
         assertFalse(new DefaultFindFeature(session).find(sourceFile));
         assertTrue(new DefaultFindFeature(session).find(targetFile));
-        assertEquals(targetFile.attributes(), new EueAttributesFinderFeature(session, fileid).find(targetFile));
-        assertEquals(sourceAttr.getSize(),
-                new EueAttributesFinderFeature(session, fileid).find(targetFile).getSize());
-        assertNotEquals(sourceAttr.getETag(),
-                new EueAttributesFinderFeature(session, fileid).find(targetFile).getETag());
-        assertEquals(sourceAttr.getFileId(),
-                new EueAttributesFinderFeature(session, fileid).find(targetFile).getFileId());
+        final PathAttributes targetAttributes = new EueAttributesFinderFeature(session, fileid).find(targetFile);
+        assertEquals(targetFile.attributes(), targetAttributes);
+        assertEquals(sourceAttr.getSize(), targetAttributes.getSize());
+        assertNotEquals(sourceAttr.getETag(), targetAttributes.getETag());
+        assertEquals(sourceAttr.getFileId(), targetAttributes.getFileId());
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, targetFile.attributes(), targetAttributes));
         new EueDeleteFeature(session, fileid).delete(Arrays.asList(sourceFolder, targetFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -23,6 +23,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -53,6 +55,7 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
         assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), new StoregateAttributesFinderFeature(session, nodeid).find(target)));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
