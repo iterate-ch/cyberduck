@@ -30,6 +30,8 @@ services:
     depends_on:
       keycloak:
         condition: service_started
+    networks:
+      - mynetwork
     command:  sh -c "until wget -q -O- http://host.docker.internal:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
