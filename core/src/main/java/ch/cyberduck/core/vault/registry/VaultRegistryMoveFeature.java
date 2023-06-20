@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,9 +39,9 @@ public class VaultRegistryMoveFeature implements Move {
     private final Session<?> session;
     private Session<?> destination;
     private final Move proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryMoveFeature(final Session<?> session, final Move proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryMoveFeature(final Session<?> session, final Move proxy, final VaultRegistry registry) {
         this.session = session;
         this.destination = session;
         this.proxy = proxy;

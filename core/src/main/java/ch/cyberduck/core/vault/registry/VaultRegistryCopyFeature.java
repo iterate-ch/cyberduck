@@ -23,7 +23,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 public class VaultRegistryCopyFeature implements Copy {
@@ -31,10 +31,10 @@ public class VaultRegistryCopyFeature implements Copy {
     private final Session<?> session;
     private Session<?> destination;
     private final Copy proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
 
-    public VaultRegistryCopyFeature(final Session<?> session, final Copy proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryCopyFeature(final Session<?> session, final Copy proxy, final VaultRegistry registry) {
         this.session = session;
         this.destination = session;
         this.proxy = proxy;
