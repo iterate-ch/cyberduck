@@ -26,6 +26,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.DeleteNodesRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SDSBatchDeleteFeature implements Delete {
+    private static final Logger log = LogManager.getLogger(SDSBatchDeleteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -64,7 +67,14 @@ public class SDSBatchDeleteFeature implements Delete {
                 new NodesApi(session.getClient()).removeNodes(new DeleteNodesRequest().nodeIds(nodes), StringUtils.EMPTY);
             }
             catch(ApiException e) {
-                throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, files.keySet().iterator().next());
+                switch(e.getCode()) {
+                    case 400:
+                        log.warn(String.format("Ignore failure %s", e));
+                        new SDSDeleteFeature(session, nodeid).delete(files, prompt, callback);
+                        break;
+                    default:
+                        throw new SDSExceptionMappingService(nodeid).map("Cannot delete {0}", e, files.keySet().iterator().next());
+                }
             }
         }
         for(List<Long> nodes : trashed.values()) {
