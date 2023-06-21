@@ -58,7 +58,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         session.close();
     }
 
-/*    @Test(expected = LoginFailureException.class) //Todo check expected Exception
+    @Test(expected = LoginFailureException.class) //Todo check expected Exception
     public void testInvalidUserName() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
@@ -74,7 +74,7 @@ public class OidcAuthTest extends AbstractOidcTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
-    }*/
+    }
 
     // testTokenRefresh
 

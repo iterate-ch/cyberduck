@@ -18,8 +18,8 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
@@ -30,25 +30,28 @@ import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 
-public class STSCredentialsConfiguratorTest {
+public class AWSProfileSTSCredentialsConfiguratorTest {
 
     @Test
     public void testConfigure() throws Exception {
-        new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol()));
+        new AWSProfileSTSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+                .reload().configure(new Host(new TestProtocol()));
     }
 
     @Test
     public void readFailureForInvalidAWSCredentialsProfileEntry() throws Exception {
-        PreferencesFactory.get().setProperty("local.user.home", new File("src/test/resources/invalid").getAbsolutePath());
         final Credentials credentials = new Credentials("test_s3_profile");
-        final Credentials verify = new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
+        final Credentials verify = new AWSProfileSTSCredentialsConfigurator(LocalFactory.get(new File("src/test/resources/invalid/.aws").getAbsolutePath()),
+                new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, credentials));
         assertEquals(credentials, verify);
     }
 
     @Test
     public void readSuccessForValidAWSCredentialsProfileEntry() throws Exception {
-        PreferencesFactory.get().setProperty("local.user.home", new File("src/test/resources/valid").getAbsolutePath());
-        final Credentials verify = new STSCredentialsConfigurator(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback()).configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
+        final Credentials verify = new AWSProfileSTSCredentialsConfigurator(LocalFactory.get(new File("src/test/resources/valid/.aws").getAbsolutePath())
+                , new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledPasswordCallback())
+                .reload().configure(new Host(new TestProtocol(), StringUtils.EMPTY, new Credentials("test_s3_profile")));
         assertEquals("EXAMPLEKEYID", verify.getUsername());
         assertEquals("EXAMPLESECRETKEY", verify.getPassword());
         assertEquals("EXAMPLETOKEN", verify.getToken());

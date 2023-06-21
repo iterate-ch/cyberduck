@@ -49,11 +49,15 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
     public void testMove() throws Exception {
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0L, test.attributes().getSize());
-        final Path target = new DAVMoveFeature(session).move(test,
+        final TransferStatus status = new TransferStatus();
+        new DAVTimestampFeature(session).setTimestamp(test, status.withTimestamp(5000L));
+        final PathAttributes attr = new DAVAttributesFinderFeature(session).find(test);
+        final Path target = new DAVMoveFeature(session).move(test.withAttributes(status.getResponse()),
                 new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new DAVFindFeature(session).find(test));
         assertTrue(new DAVFindFeature(session).find(target));
-        assertEquals(test.attributes(), target.attributes());
+        assertEquals(status.getResponse(), target.attributes());
+        assertEquals(attr, new DAVAttributesFinderFeature(session).find(target));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

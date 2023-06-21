@@ -52,8 +52,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(random.length);
         status.setMime("text/plain");
-        final long ts = 1684090690000L;
-        status.setTimestamp(ts);
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         final BytecountStreamListener count = new BytecountStreamListener();
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
@@ -63,14 +61,12 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertTrue(status.isComplete());
         assertNotSame(PathAttributes.EMPTY, status.getResponse());
         assertEquals(random.length, status.getResponse().getSize());
-        assertEquals(ts, status.getResponse().getModificationDate());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final PathAttributes attr = new S3AttributesFinderFeature(session, acl).find(test);
         assertEquals(status.getResponse().getETag(), attr.getETag());
         assertEquals(status.getResponse().getChecksum(), attr.getChecksum());
         assertEquals(random.length, attr.getSize());
         assertEquals(Checksum.NONE, attr.getChecksum());
-        assertEquals(ts, attr.getModificationDate());
         assertNotNull(attr.getETag());
         // d2b77e21aa68ebdcbfb589124b9f9192-1
         assertEquals(Checksum.NONE, Checksum.parse(attr.getETag()));

@@ -44,26 +44,26 @@ import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKE
 public class S3MoveFeature implements Move {
     private static final Logger log = LogManager.getLogger(S3MoveFeature.class);
 
-    private final PathContainerService containerService;
     private final S3Session session;
-    private final S3AccessControlListFeature accessControlListFeature;
-    private final Delete delete;
+    private final PathContainerService containerService;
+    private final S3ThresholdCopyFeature proxy;
+    private final S3DefaultDeleteFeature delete;
 
     public S3MoveFeature(final S3Session session, final S3AccessControlListFeature acl) {
         this.session = session;
-        this.accessControlListFeature = acl;
-        this.delete = new S3DefaultDeleteFeature(session);
         this.containerService = session.getFeature(PathContainerService.class);
+        this.proxy = new S3ThresholdCopyFeature(session, acl);
+        this.delete = new S3DefaultDeleteFeature(session);
     }
 
     @Override
     public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        Path copy;
+        Path target;
         if(source.attributes().getCustom().containsKey(KEY_DELETE_MARKER)) {
             // Delete marker, copy not supported but we have to retain the delete marker at the target
-            copy = new Path(renamed);
-            copy.attributes().setVersionId(null);
-            delete.delete(Collections.singletonMap(copy, status), connectionCallback, callback);
+            target = new Path(renamed);
+            target.attributes().setVersionId(null);
+            delete.delete(Collections.singletonMap(target, status), connectionCallback, callback);
             try {
                 // Find version id of moved delete marker
                 final Path bucket = containerService.getContainer(renamed);
@@ -72,7 +72,7 @@ public class S3MoveFeature implements Move {
                         String.valueOf(Path.DELIMITER), 1, null, null, false);
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
-                    copy.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                    target.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
                 }
                 else {
@@ -85,26 +85,26 @@ public class S3MoveFeature implements Move {
         }
         else {
             try {
-                copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
+                target = proxy.copy(source, renamed, status.withLength(source.attributes().getSize()), connectionCallback, new DisabledStreamListener());
                 // Copy source path and nullify version id to add a delete marker
                 delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).withVersionId(null)), status),
-                    connectionCallback, callback);
+                        connectionCallback, callback);
             }
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
                     // No placeholder object to copy, create a new one at the target
-                    copy = session.getFeature(Directory.class).mkdir(renamed, new TransferStatus().withRegion(source.attributes().getRegion()));
+                    target = session.getFeature(Directory.class).mkdir(renamed, new TransferStatus().withRegion(source.attributes().getRegion()));
                 }
                 else {
                     throw e;
                 }
             }
         }
-        return copy;
+        return target;
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
+        return proxy.isSupported(source, target) && delete.isSupported(source);
     }
 }

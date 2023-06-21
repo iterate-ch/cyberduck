@@ -39,12 +39,16 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.slf4j.Logger;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
+
+import com.amazonaws.waiters.WaiterHandler;
 
 public abstract class AbstractOidcTest {
 

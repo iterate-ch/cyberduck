@@ -48,6 +48,7 @@ public class SFTPMoveFeatureTest extends AbstractSFTPTest {
         assertFalse(new SFTPFindFeature(session).find(test));
         assertTrue(new SFTPFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
+        assertEquals(test.attributes(), new SFTPAttributesFinderFeature(session).find(target));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
