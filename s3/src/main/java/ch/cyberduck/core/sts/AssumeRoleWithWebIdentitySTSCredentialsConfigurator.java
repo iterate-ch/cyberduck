@@ -48,7 +48,7 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityReque
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCredentialsConfigurator {
+public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AWSProfileSTSCredentialsConfigurator {
     private static final Logger log = LogManager.getLogger(AssumeRoleWithWebIdentitySTSCredentialsConfigurator.class);
 
     public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
@@ -56,7 +56,7 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends STSCred
     }
 
     @Override
-    public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
+    public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
 
         final AWSSecurityTokenService service = this.getTokenService(host, null, null, null, null);
