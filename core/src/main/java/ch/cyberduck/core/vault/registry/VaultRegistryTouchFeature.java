@@ -21,16 +21,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.DefaultVaultRegistry;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 public class VaultRegistryTouchFeature<R> implements Touch<R> {
 
     private final Session<?> session;
     private final Touch<R> proxy;
-    private final DefaultVaultRegistry registry;
+    private final VaultRegistry registry;
 
-    public VaultRegistryTouchFeature(final Session<?> session, final Touch<R> proxy, final DefaultVaultRegistry registry) {
+    public VaultRegistryTouchFeature(final Session<?> session, final Touch<R> proxy, final VaultRegistry registry) {
         this.session = session;
         this.proxy = proxy;
         this.registry = registry;

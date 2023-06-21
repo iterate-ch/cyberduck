@@ -21,12 +21,15 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,14 +51,17 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     @Test
     public void testMove() throws Exception {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3AccessControlListFeature acl = new S3AccessControlListFeature(session);
-        assertNull(new S3TouchFeature(session, acl).touch(test, new TransferStatus().withMime("text/plain")).attributes().getVersionId());
+        final Path test = new S3TouchFeature(session, acl).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+        assertNull(test.attributes().getVersionId());
         assertTrue(new S3FindFeature(session, acl).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session, acl).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new S3FindFeature(session, acl).find(test));
         assertTrue(new S3FindFeature(session, acl).find(renamed));
+        final PathAttributes targetAttr = new S3AttributesFinderFeature(session, acl).find(renamed);
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, renamed.attributes(), targetAttr));
         final Map<String, String> metadata = new S3MetadataFeature(session, acl).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));

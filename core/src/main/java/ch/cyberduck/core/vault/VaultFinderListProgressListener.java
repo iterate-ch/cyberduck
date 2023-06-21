@@ -45,9 +45,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
-        if(new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename").equals(file.getName())) {
+        if(new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename").equals(file.getName()) ||
+                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename").equals(file.getName())) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found master key %s", file));
+                log.info(String.format("Found vault config or masterkey file %s", file));
             }
             try {
                 final Vault vault = listener.load(session, directory,

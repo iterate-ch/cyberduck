@@ -303,8 +303,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     if(StringUtils.equals(node.getEndPoint(), host.getHostname())) {
                         break;
                     }
-                    if(StringUtils.equals(node.getEndPoint(), new Resolver().resolve(host.getHostname(),
-                        new DisabledCancelCallback()).getHostAddress())) {
+                    if(StringUtils.equals(node.getEndPoint(), new Resolver().resolve(
+                            host.getHostname(), new DisabledCancelCallback())[0].getHostAddress())) {
                         break;
                     }
                     log.warn(String.format("Redirect to %s for file %s", node.getEndPoint(), file));

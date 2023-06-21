@@ -57,11 +57,13 @@ public class VaultRegistryFindFeature implements Find {
         if(vault.equals(Vault.DISABLED)) {
             if(autodetect) {
                 final Path directory = file.getParent();
+                final Path vaultConfig = new Path(directory,
+                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"), EnumSet.of(Path.Type.file));
                 final Path key = new Path(directory,
                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"), EnumSet.of(Path.Type.file));
-                if(proxy.find(key, listener)) {
+                if(proxy.find(vaultConfig, listener) || proxy.find(key, listener)) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Found master key %s", key));
+                        log.info(String.format("Found vault config %s or masterkey %s", vaultConfig, key));
                     }
                     try {
                         if(log.isInfoEnabled()) {
@@ -72,7 +74,7 @@ public class VaultRegistryFindFeature implements Find {
                                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
                                         new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8))
                                 .getFeature(session, Find.class, proxy)
-                            .find(file, listener);
+                                .find(file, listener);
                     }
                     catch(VaultUnlockCancelException e) {
                         // Continue

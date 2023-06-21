@@ -65,8 +65,8 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator;
-import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -233,7 +233,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             // Only for AWS
             if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
-                credentials = new STSCredentialsConfigurator(
+                credentials = new AWSProfileSTSCredentialsConfigurator(
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
             }
             // get temporary credentials for MinIO with Web Identity (OIDC)

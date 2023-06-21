@@ -36,6 +36,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptReadFeature;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -64,16 +66,17 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMove() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
+                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionId = test.attributes().getVersionId();
-        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(versionId,
-            new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getVersionId());
+        final Path target = new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test,
+                new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertEquals(versionId, target.attributes().getVersionId());
         assertEquals(versionId, new SDSAttributesFinderFeature(session, nodeid).find(target).getVersionId());
         assertFalse(new SDSFindFeature(session, nodeid).find(test));
         assertTrue(new SDSFindFeature(session, nodeid).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), new SDSAttributesFinderFeature(session, nodeid).find(target)));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -49,4 +49,9 @@ public class S3ThresholdCopyFeature implements Copy {
             return new S3CopyFeature(session, accessControlListFeature).copy(source, copy, status, callback, listener);
         }
     }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return new S3CopyFeature(session, accessControlListFeature).isSupported(source, target);
+    }
 }

@@ -17,7 +17,6 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -28,23 +27,23 @@ import java.util.Collections;
 
 public class GoogleStorageMoveFeature implements Move {
 
-    private final PathContainerService containerService;
-    private final GoogleStorageSession session;
+    private final GoogleStorageDeleteFeature delete;
+    private final GoogleStorageCopyFeature proxy;
 
     public GoogleStorageMoveFeature(final GoogleStorageSession session) {
-        this.session = session;
-        this.containerService = session.getFeature(PathContainerService.class);
+        this.proxy = new GoogleStorageCopyFeature(session);
+        this.delete = new GoogleStorageDeleteFeature(session);
     }
 
     @Override
-    public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new GoogleStorageCopyFeature(session).copy(source, target, status, connectionCallback, new DisabledStreamListener());
-        new GoogleStorageDeleteFeature(session).delete(Collections.singletonMap(source, status), connectionCallback, callback);
+    public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+        final Path copy = proxy.copy(source, renamed, status, connectionCallback, new DisabledStreamListener());
+        delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
         return copy;
     }
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
+        return proxy.isSupported(source, target) && delete.isSupported(source);
     }
 }

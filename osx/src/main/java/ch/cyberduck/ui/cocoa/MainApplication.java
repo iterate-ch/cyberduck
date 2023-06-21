@@ -28,6 +28,7 @@ import ch.cyberduck.core.ctera.CteraProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
+import ch.cyberduck.core.eue.EueProtocol;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -107,7 +108,8 @@ public final class MainApplication {
                     new NextcloudProtocol(),
                     new OwncloudProtocol(),
                     new CteraProtocol(),
-                    new BoxProtocol()
+                    new BoxProtocol(),
+                    new EueProtocol()
             );
             protocols.load();
             final MainController c = new MainController();

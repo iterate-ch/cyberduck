@@ -74,6 +74,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.vault.LoadingVaultLookupListener;
+import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.AttributesWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
@@ -276,10 +277,10 @@ public class Terminal {
             final Host host = new CommandLineUriParser(input, protocols).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input),
                     login, new TerminalHostKeyVerifier(reader), progress);
+            final VaultRegistry registry = VaultRegistryFactory.get(login);
             source = SessionPoolFactory.create(connect, transcript, host,
                     new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
-                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
-                    VaultRegistryFactory.create(login));
+                    new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)), registry);
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
@@ -301,7 +302,7 @@ public class Terminal {
                     log.debug(String.format("Attempting to load vault from %s", vault));
                 }
                 try {
-                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
+                    this.execute(new TerminalBackgroundAction<>(controller, source, new LoadVaultWorker(new LoadingVaultLookupListener(source.getVaultRegistry(),
                             new TerminalPasswordCallback()), vault)));
                 }
                 catch(TerminalBackgroundException e) {
@@ -367,8 +368,7 @@ public class Terminal {
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, target,
                             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
-                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
-                            VaultRegistryFactory.create(new TerminalPasswordCallback()));
+                            new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)), registry);
                     return this.transfer(login, new CopyTransfer(
                                     host, target, Collections.singletonMap(remote, new CommandLinePathParser(input, protocols).parse(input.getOptionValues(action.name())[1]))).withCache(cache),
                             source, destination);
