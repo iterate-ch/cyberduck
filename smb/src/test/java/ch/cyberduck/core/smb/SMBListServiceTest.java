@@ -20,14 +20,17 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Category(TestcontainerTest.class)
 public class SMBListServiceTest extends AbstractSMBTest {
 
     @Test

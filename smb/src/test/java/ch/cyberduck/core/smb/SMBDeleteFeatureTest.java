@@ -21,14 +21,17 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Category(TestcontainerTest.class)
 public class SMBDeleteFeatureTest extends AbstractSMBTest {
 
     @Test
