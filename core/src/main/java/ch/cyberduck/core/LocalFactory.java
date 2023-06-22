@@ -63,21 +63,33 @@ public final class LocalFactory extends Factory<Local> {
         }
     }
 
-    private static final LocalFactory singleton = new LocalFactory();
+    private static LocalFactory singleton;
 
-    public static Local get(final Local parent, final String name) {
+    public static synchronized Local get(final Local parent, final String name) {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create(parent, name);
     }
 
-    public static Local get(final String parent, final String name) {
+    public static synchronized Local get(final String parent, final String name) {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create(singleton.create(parent), name);
     }
 
-    public static Local get(final String path) {
+    public static synchronized Local get(final String path) {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create(path);
     }
 
-    public static Local get() {
+    public static synchronized Local get() {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create();
     }
 }

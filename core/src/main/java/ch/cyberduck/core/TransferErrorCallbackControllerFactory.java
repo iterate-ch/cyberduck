@@ -57,14 +57,16 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
         }
     }
 
-    private static final TransferErrorCallbackControllerFactory singleton = new TransferErrorCallbackControllerFactory();
+    private static TransferErrorCallbackControllerFactory singleton;
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static TransferErrorCallback get(final Controller c) {
-        return new SynchronizedTransferErrorCallback(new CancelTransferErrorCallback(new FailFastTransferErrorCallback(
-                singleton.create(c))));
+    public static synchronized TransferErrorCallback get(final Controller c) {
+        if(null == singleton) {
+            singleton = new TransferErrorCallbackControllerFactory();
+        }
+        return new SynchronizedTransferErrorCallback(new CancelTransferErrorCallback(new FailFastTransferErrorCallback(singleton.create(c))));
     }
 }

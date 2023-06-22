@@ -53,13 +53,16 @@ public class PeriodicUpdateCheckerFactory extends Factory<PeriodicUpdateChecker>
         }
     }
 
-    private static final PeriodicUpdateCheckerFactory singleton = new PeriodicUpdateCheckerFactory();
+    private static PeriodicUpdateCheckerFactory singleton;
 
-    public static PeriodicUpdateChecker get() {
+    public static synchronized PeriodicUpdateChecker get() {
         return get(new SingleThreadController());
     }
 
-    public static PeriodicUpdateChecker get(final Controller controller) {
+    public static synchronized PeriodicUpdateChecker get(final Controller controller) {
+        if(null == singleton) {
+            singleton = new PeriodicUpdateCheckerFactory();
+        }
         return singleton.create(controller);
     }
 }

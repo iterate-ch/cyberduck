@@ -57,13 +57,16 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
         return new DisabledHostKeyCallback();
     }
 
-    private static final HostKeyCallbackFactory singleton = new HostKeyCallbackFactory();
+    private static HostKeyCallbackFactory singleton;
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static HostKeyCallback get(final Controller c, final Protocol protocol) {
+    public static synchronized HostKeyCallback get(final Controller c, final Protocol protocol) {
+        if(null == singleton) {
+            singleton = new HostKeyCallbackFactory();
+        }
         return singleton.create(c, protocol);
     }
 }

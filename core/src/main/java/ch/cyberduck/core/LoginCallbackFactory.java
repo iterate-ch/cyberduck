@@ -53,13 +53,16 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
         }
     }
 
-    private static final LoginCallbackFactory singleton = new LoginCallbackFactory();
+    private static LoginCallbackFactory singleton;
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static LoginCallback get(final Controller c) {
+    public static synchronized LoginCallback get(final Controller c) {
+        if(null == singleton) {
+            singleton = new LoginCallbackFactory();
+        }
         return singleton.create(c);
     }
 }
