@@ -159,8 +159,7 @@ public class UploadTransfer extends Transfer {
         final AttributesFinder attributes;
         if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
             find = new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
-            attributes = new CachingAttributesFinderFeature(cache,
-                    source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
         else {
             find = new CachingFindFeature(cache, source.getFeature(Find.class));
