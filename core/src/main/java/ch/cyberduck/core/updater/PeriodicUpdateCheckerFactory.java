@@ -31,7 +31,7 @@ public class PeriodicUpdateCheckerFactory extends Factory<PeriodicUpdateChecker>
 
     private Constructor<? extends PeriodicUpdateChecker> constructor;
 
-    public PeriodicUpdateCheckerFactory() {
+    private PeriodicUpdateCheckerFactory() {
         super("factory.updater.class");
     }
 

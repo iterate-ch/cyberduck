@@ -31,7 +31,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
 
     private Constructor<? extends HostKeyCallback> constructor;
 
-    protected HostKeyCallbackFactory() {
+    private HostKeyCallbackFactory() {
         super("factory.hostkeycallback.class");
     }
 

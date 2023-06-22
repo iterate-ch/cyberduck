@@ -30,7 +30,7 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
 
     private Constructor<? extends AlertCallback> constructor;
 
-    protected AlertCallbackFactory() {
+    private AlertCallbackFactory() {
         super("factory.alertcallback.class");
     }
 

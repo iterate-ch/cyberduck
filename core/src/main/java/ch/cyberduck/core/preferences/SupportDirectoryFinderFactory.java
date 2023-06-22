@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class SupportDirectoryFinderFactory extends Factory<SupportDirectoryFinder> {
 
-    protected SupportDirectoryFinderFactory() {
+    private SupportDirectoryFinderFactory() {
         super("factory.supportdirectoryfinder.class");
     }
 

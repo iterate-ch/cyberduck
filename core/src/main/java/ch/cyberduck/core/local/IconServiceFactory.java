@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class IconServiceFactory extends Factory<IconService> {
 
-    protected IconServiceFactory() {
+    private IconServiceFactory() {
         super("factory.iconservice.class");
     }
 

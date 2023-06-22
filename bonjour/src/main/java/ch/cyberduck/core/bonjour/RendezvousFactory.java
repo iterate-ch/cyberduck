@@ -22,9 +22,9 @@ package ch.cyberduck.core.bonjour;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-public class RendezvousFactory extends Factory<Rendezvous> {
+public final class RendezvousFactory extends Factory<Rendezvous> {
 
-    protected RendezvousFactory() {
+    private RendezvousFactory() {
         super("factory.rendezvous.class");
     }
 

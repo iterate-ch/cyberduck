@@ -31,7 +31,7 @@ public class CertificateTrustCallbackFactory extends Factory<CertificateTrustCal
 
     private Constructor<? extends CertificateTrustCallback> constructor;
 
-    protected CertificateTrustCallbackFactory() {
+    private CertificateTrustCallbackFactory() {
         super("factory.certificatetrustcallback.class");
     }
 

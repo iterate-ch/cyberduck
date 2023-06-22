@@ -23,7 +23,7 @@ import ch.cyberduck.core.serializer.Reader;
 
 public class ProfileReaderFactory extends Factory<Reader<Profile>> {
 
-    protected ProfileReaderFactory() {
+    private ProfileReaderFactory() {
         super("factory.reader.profile.class");
     }
 

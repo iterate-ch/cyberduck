@@ -31,7 +31,7 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
 
     private Constructor<? extends LoginCallback> constructor;
 
-    protected LoginCallbackFactory() {
+    private LoginCallbackFactory() {
         super("factory.logincallback.class");
     }
 

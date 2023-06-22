@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class SecureRandomProviderFactory extends Factory<SecureRandomProvider> {
 
-    public SecureRandomProviderFactory() {
+    private SecureRandomProviderFactory() {
         super("factory.securerandom.class");
     }
 

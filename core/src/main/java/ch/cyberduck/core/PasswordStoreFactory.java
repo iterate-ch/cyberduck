@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 
 public class PasswordStoreFactory extends Factory<HostPasswordStore> {
 
-    protected PasswordStoreFactory() {
+    private PasswordStoreFactory() {
         super("factory.passwordstore.class");
     }
 

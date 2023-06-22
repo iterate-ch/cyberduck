@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class LogDirectoryFinderFactory extends Factory<LogDirectoryFinder> {
 
-    protected LogDirectoryFinderFactory() {
+    private LogDirectoryFinderFactory() {
         super("factory.logdirectoryfinder.class");
     }
 

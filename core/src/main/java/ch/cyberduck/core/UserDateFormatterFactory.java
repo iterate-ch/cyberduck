@@ -32,7 +32,7 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
 
     private Constructor<? extends AbstractUserDateFormatter> constructor;
 
-    protected UserDateFormatterFactory() {
+    private UserDateFormatterFactory() {
         super("factory.dateformatter.class");
     }
 

@@ -27,7 +27,7 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
 
     private Constructor<? extends PasswordCallback> constructor;
 
-    protected PasswordCallbackFactory() {
+    private PasswordCallbackFactory() {
         super("factory.passwordcallback.class");
     }
 

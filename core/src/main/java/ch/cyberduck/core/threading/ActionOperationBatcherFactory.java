@@ -32,7 +32,7 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
 
     private Constructor<? extends ActionOperationBatcher> constructor;
 
-    public ActionOperationBatcherFactory() {
+    private ActionOperationBatcherFactory() {
         super("factory.autorelease.class");
     }
 

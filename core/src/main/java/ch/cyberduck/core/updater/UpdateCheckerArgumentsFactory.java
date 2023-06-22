@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class UpdateCheckerArgumentsFactory extends Factory<UpdateCheckerArguments> {
 
-    public UpdateCheckerArgumentsFactory() {
+    private UpdateCheckerArgumentsFactory() {
         super("factory.updater.arguments.class");
     }
 

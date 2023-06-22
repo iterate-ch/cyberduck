@@ -22,17 +22,16 @@ import ch.cyberduck.core.Factory;
 
 public class NotificationServiceFactory extends Factory<NotificationService> {
 
-    private static NotificationService notifier;
+    private static NotificationService singleton;
 
-    public NotificationServiceFactory() {
+    private NotificationServiceFactory() {
         super("factory.notification.class");
     }
 
     public static synchronized NotificationService get() {
-        if(null == notifier) {
-            notifier = new NotificationServiceFactory().create();
-            notifier.setup();
+        if(null == singleton) {
+            singleton = new NotificationServiceFactory().create().setup();
         }
-        return notifier;
+        return singleton;
     }
 }

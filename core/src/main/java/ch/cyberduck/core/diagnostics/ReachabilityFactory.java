@@ -23,7 +23,7 @@ import ch.cyberduck.core.Factory;
 
 public class ReachabilityFactory extends Factory<Reachability> {
 
-    protected ReachabilityFactory() {
+    private ReachabilityFactory() {
         super("factory.reachability.class");
     }
 

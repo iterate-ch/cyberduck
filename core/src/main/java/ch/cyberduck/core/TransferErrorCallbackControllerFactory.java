@@ -35,7 +35,7 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
 
     private Constructor<? extends TransferErrorCallback> constructor;
 
-    public TransferErrorCallbackControllerFactory() {
+    private TransferErrorCallbackControllerFactory() {
         super("factory.transfererrorcallback.class");
     }
 
