@@ -18,25 +18,13 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SleepPreventer;
-import ch.cyberduck.core.SleepPreventerFactory;
-import ch.cyberduck.core.TransferItemCache;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
@@ -424,7 +412,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 final Session<?> source = borrow(Connection.source);
                                 final Session<?> destination = borrow(Connection.destination);
                                 try {
-                                    final TransferPathFilter resume = transfer.filter(source, destination, TransferAction.resume, progress);
+                                    // Reset cache
+                                    final TransferPathFilter resume = transfer
+                                            .withCache(new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size")))
+                                            .filter(source, destination, TransferAction.resume, progress);
                                     if(log.isDebugEnabled()) {
                                         log.debug(String.format("Ask filter %s to accept retry for segment %s of %s", resume, segment, item));
                                     }
