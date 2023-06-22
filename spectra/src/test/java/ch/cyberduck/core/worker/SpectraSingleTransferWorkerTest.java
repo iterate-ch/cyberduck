@@ -22,9 +22,11 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -34,7 +36,6 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AttributesAdapter;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.spectra.SpectraAttributesFinderFeature;
@@ -56,6 +57,7 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.VaultTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
@@ -76,7 +78,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SpectraSingleTransferWorkerTest {
+public class SpectraSingleTransferWorkerTest extends VaultTest {
 
     @Ignore
     @Test(expected = ConflictException.class)
@@ -92,8 +94,8 @@ public class SpectraSingleTransferWorkerTest {
             public Scheme getScheme() {
                 return Scheme.http;
             }
-        }, System.getProperties().getProperty("spectra.hostname"), Integer.parseInt(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+        }, PROPERTIES.get("spectra.hostname"), Integer.parseInt(PROPERTIES.get("spectra.port")), new Credentials(
+                PROPERTIES.get("spectra.user"), PROPERTIES.get("spectra.key")
         ));
         final BytecountStreamListener counter = new BytecountStreamListener();
         final AtomicBoolean failed = new AtomicBoolean();
@@ -146,8 +148,10 @@ public class SpectraSingleTransferWorkerTest {
                 return super._getFeature(type);
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path container = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
