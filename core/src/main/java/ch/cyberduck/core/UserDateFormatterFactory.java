@@ -32,7 +32,7 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
 
     private Constructor<? extends AbstractUserDateFormatter> constructor;
 
-    protected UserDateFormatterFactory() {
+    private UserDateFormatterFactory() {
         super("factory.dateformatter.class");
     }
 
@@ -53,13 +53,16 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
         }
     }
 
-    private static final UserDateFormatterFactory singleton = new UserDateFormatterFactory();
+    private static UserDateFormatterFactory singleton;
 
-    public static AbstractUserDateFormatter get() {
+    public static synchronized AbstractUserDateFormatter get() {
         return get(TimeZone.getDefault().getID());
     }
 
-    public static AbstractUserDateFormatter get(final String tz) {
+    public static synchronized AbstractUserDateFormatter get(final String tz) {
+        if(null == singleton) {
+            singleton = new UserDateFormatterFactory();
+        }
         return singleton.create(tz);
     }
 }

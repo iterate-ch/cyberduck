@@ -32,7 +32,7 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
 
     private Constructor<? extends ActionOperationBatcher> constructor;
 
-    public ActionOperationBatcherFactory() {
+    private ActionOperationBatcherFactory() {
         super("factory.autorelease.class");
     }
 
@@ -54,13 +54,16 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
         }
     }
 
-    private static final ActionOperationBatcherFactory singleton = new ActionOperationBatcherFactory();
+    private static ActionOperationBatcherFactory singleton;
 
-    public static ActionOperationBatcher get() {
+    public static synchronized ActionOperationBatcher get() {
         return get(1);
     }
 
-    public static ActionOperationBatcher get(final Integer batchsize) {
+    public static synchronized ActionOperationBatcher get(final Integer batchsize) {
+        if(null == singleton) {
+            singleton = new ActionOperationBatcherFactory();
+        }
         return singleton.create(batchsize);
     }
 }

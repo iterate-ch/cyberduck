@@ -19,7 +19,7 @@ import ch.cyberduck.core.Factory;
 
 public class ProxyConfigurationFactory extends Factory<ProxyFinder.Configuration> {
 
-    protected ProxyConfigurationFactory() {
+    private ProxyConfigurationFactory() {
         super("factory.proxy.configuration.class");
     }
 
