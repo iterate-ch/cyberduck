@@ -24,7 +24,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <sardine-version>5.14</sardine-version>
+        <sardine-version>5.12</sardine-version>
         <milton-api.version>3.1.1.488</milton-api.version>
     </properties>
 
@@ -42,7 +42,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.webdav</groupId>
+            <groupId>com.github.lookfirst</groupId>
             <artifactId>sardine</artifactId>
             <version>${sardine-version}</version>
         </dependency>
