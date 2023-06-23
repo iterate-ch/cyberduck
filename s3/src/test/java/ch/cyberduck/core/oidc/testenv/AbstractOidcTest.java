@@ -28,17 +28,26 @@ package ch.cyberduck.core.oidc.testenv;/*
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.test.EmbeddedTest;
 
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
+import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.junit.runners.Suite;
 import org.slf4j.Logger;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -50,18 +59,21 @@ import java.util.HashSet;
 
 import com.amazonaws.waiters.WaiterHandler;
 
+@Category(EmbeddedTest.class)
 public abstract class AbstractOidcTest {
 
     protected Profile profile = null;
+    private static DockerComposeContainer<?> compose;
 
-    @ClassRule
-    public static DockerComposeContainer compose = new DockerComposeContainer(
-            new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
-            .withPull(false)
-            .withLocalCompose(true)
-            .withOptions("--compatibility")
-            .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
-            .withExposedService("minio_1", 9000, Wait.forListeningPort());
+    static {
+        compose = new DockerComposeContainer<>(
+                new File("src/test/resources/oidcTestcontainer/docker-compose.yml"))
+                .withPull(false)
+                .withLocalCompose(true)
+                .withOptions("--compatibility")
+                .withExposedService("keycloak_1", 8080, Wait.forListeningPort())
+                .withExposedService("minio_1", 9000, Wait.forListeningPort());
+    }
 
     @BeforeClass
     public static void beforeAll() {
@@ -81,6 +93,5 @@ public abstract class AbstractOidcTest {
 
     @AfterClass
     public static void disconnect() {
-        compose.stop();
     }
 }

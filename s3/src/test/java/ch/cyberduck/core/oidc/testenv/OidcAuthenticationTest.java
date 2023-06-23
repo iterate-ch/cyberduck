@@ -15,31 +15,25 @@ package ch.cyberduck.core.oidc.testenv;/*
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.test.IntegrationTest;
+import ch.cyberduck.test.EmbeddedTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
-import java.util.EnumSet;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class OidcAuthTest extends AbstractOidcTest {
-    //    with Fiddler as proxy
-
+@Category(EmbeddedTest.class)
+public class OidcAuthenticationTest extends AbstractOidcTest {
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
@@ -55,66 +49,49 @@ public class OidcAuthTest extends AbstractOidcTest {
         assertNotNull(creds.getOauth().getAccessToken());
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
-        session.close();
+
     }
 
-    @Test(expected = LoginFailureException.class) //Todo check expected Exception
+    @Test(expected = LoginFailureException.class)
     public void testInvalidUserName() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("WrongUsername", "rouser"));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
+
     }
 
-    @Test(expected = LoginFailureException.class) //Todo check expected Exception
+    @Test(expected = LoginFailureException.class)
     public void testInvalidPassword() throws BackgroundException {
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalid"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "invalidPassword"));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.close();
+
     }
 
-    // testTokenRefresh
 
-    // Authorization
 /*    @Test
-    public void testUserReadAccess() throws BackgroundException {
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
-        session = new S3Session(host);
+    public void testTokenRefresh() throws BackgroundException, InterruptedException {
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        //TODO read a file
-        final TransferStatus status = new TransferStatus();
-        final Path container = new Path( "", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new S3ReadFeature(session).read(new Path(container, "cyberduckbucket/testfile.txt", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
+        String firstRefreshToken = host.getCredentials().getOauth().getRefreshToken();
+        Long validTime = host.getCredentials().getOauth().getExpiryInMilliseconds() - System.currentTimeMillis();
+        System.out.println(String.format("Access Token is valid for %s seconds.", validTime / 1000));
+        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        Thread.sleep(1100 * 60);
+        assertTrue(host.getCredentials().getOauth().isExpired());
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        String secondAccessToken = host.getCredentials().getOauth().getAccessToken();
+        String secondRefreshToken = host.getCredentials().getOauth().getRefreshToken();
+        assertNotEquals(firstAccessToken, secondAccessToken);
+        assertNotEquals(firstRefreshToken, secondRefreshToken);
     }*/
-
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testNoWritePermissionOnBucket() throws BackgroundException {
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
-//        session = new S3Session(host);
-//        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-//        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-//        //TODO write a file
-//    }
-
-    // testUserWriteAccess
-
-    // testNoWritePermissionOnBucket
-    // testNoReadPermissionOnBucket
-
-
-
-
-    // testNoWritePermissionOnFolder
-    // testNoReadPermissionOnFolder
-
-
-
-    // testUserWithRightPolicy
-    // testUserWithWrongPolicy
 
 
     //separate STS Service test - maybe not possible

@@ -89,6 +89,7 @@
 
         <ikvm-version>8.0.312.b07-8</ikvm-version>
         <java-native-dll>8u312b07</java-native-dll>
+        <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
     </properties>
 
     <dependencyManagement>
@@ -508,7 +509,8 @@
                         <environmentVariables>
                             <DYLD_FALLBACK_FRAMEWORK_PATH>${project.build.directory}</DYLD_FALLBACK_FRAMEWORK_PATH>
                         </environmentVariables>
-                        <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
+                        <!--<excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>-->
+                        <excludedGroups>${excludedGroups}</excludedGroups>
                         <trimStackTrace>false</trimStackTrace>
                     </configuration>
                     <dependencies>
@@ -932,6 +934,12 @@
             </activation>
             <properties>
                 <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
+            </properties>
+        </profile>
+        <profile>
+            <id>no-testcontainers</id>
+            <properties>
+                <excludedGroups>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.EmbeddedTest</excludedGroups>
             </properties>
         </profile>
     </profiles>

@@ -83,7 +83,7 @@ services:
       - ./testfile.txt:/testfile.txt
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio alias-cyberduckbucket cyberduckAccessKey cyberduckSecretKey;
+      /usr/bin/mc alias set myminio http://192.168.2.142:9000 cyberduckAccessKey cyberduckSecretKey;
       /usr/bin/mc mb myminio/cyberduckbucket;
       /usr/bin/mc policy set public myminio/cyberduckbucket;
       /usr/bin/mc share upload --recursive myminio/mydata;
