@@ -7,9 +7,8 @@ services:
     ports:
       - "8080:8080"
       - "8443:8443"
-    expose:
-      - "8080"
     environment:
+      #TZ: Europe/Zurich
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       KEYCLOAK_IMPORT: /tmp/keycloak-realm.json
@@ -52,11 +51,10 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
-    expose:
-      - "9000"
     volumes:
       - ./data:/data
     environment:
+      #TZ: Europe/Zurich
       MINIO_ROOT_USER: cyberduckAccessKey
       MINIO_ROOT_PASSWORD: cyberduckSecretKey
       MINIO_IDENTITY_OPENID_CONFIG_URL: http://192.168.2.140:8080/realms/cyberduckrealm/.well-known/openid-configuration
@@ -90,6 +88,9 @@ services:
       /usr/bin/mc cp /testfile.txt myminio/cyberduckbucket/testfile.txt;
       exit 0;
       "
+    networks:
+      network:
+        ipv4_address: 192.168.2.143
 
 networks:
   network:
