@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -31,12 +32,14 @@ import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jets3t.service.security.AWSSessionCredentials;
 
 public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(S3WebIdentityTokenExpiredResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
+    private final S3Session session;
     private final Host host;
     private final AssumeRoleWithWebIdentitySTSCredentialsConfigurator configurator;
     private final OAuth2RequestInterceptor authorizationService;
@@ -44,6 +47,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust,
                                                         final X509KeyManager key, final LoginCallback prompt,
                                                         OAuth2RequestInterceptor authorizationService) {
+        this.session = session;
         this.host = session.getHost();
         this.configurator = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(trust, key, prompt);
         this.authorizationService = authorizationService;
@@ -55,8 +59,12 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_FORBIDDEN:
                     try {
-                        authorizationService.refresh();
-                        host.setCredentials(configurator.configure(host));
+                        session.refreshOAuthTokens();
+                        Credentials credentials = configurator.configure(host);
+                        session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                                new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                                        credentials.getToken()));
+                        System.out.println(session.getClient().getProviderCredentials().getAccessKey());
                         return true;
                     }
                     catch(LoginFailureException | LoginCanceledException e) {

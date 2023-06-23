@@ -26,6 +26,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -183,6 +184,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
 
+        // TODO use STS URL in profile/bookmark as criterion instead
+        final boolean isAssumeRoleWithWebIdentity = host.getProtocol().getDefaultPort() == 9000;
+        //
+        if((host.getProtocol().getOAuthAuthorizationUrl() != null) && !isAssumeRoleWithWebIdentity) {
+            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        }
+
 //        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
 //            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
 //                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
@@ -193,14 +201,16 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 //        }
 
         // Only for AWS
-        if(S3Session.isAwsHostname(host.getHostname())) {
+        if(S3Session.isAwsHostname(host.getHostname()) && ! isAssumeRoleWithWebIdentity) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
         }
-        // TODO check with DK: what's the criterion on host to go for AssumeRoleWithWebIdentity?
-        // TODO check with DK: the logic seems to be upside down: currently, the OAuth2 interceptor is triggered every time the OAuth credentials expire.
-        configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt, authorizationService));
+        //
+        else if(isAssumeRoleWithWebIdentity) {
+            configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this,
+                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt, authorizationService));
+        }
+
         final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
         client.setRegionEndpointCache(regions);
         return client;
@@ -301,6 +311,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
         }
         return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
+    }
+
+    public void refreshOAuthTokens() throws BackgroundException {
+        OAuthTokens freshTokens = authorizationService.refresh();
+        host.getCredentials().withOauth(freshTokens);
     }
 
     @Override
