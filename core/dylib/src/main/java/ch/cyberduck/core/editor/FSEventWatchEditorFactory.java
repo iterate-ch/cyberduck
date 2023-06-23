@@ -35,7 +35,7 @@ public class FSEventWatchEditorFactory extends EditorFactory {
     private final Set<Application> editors = new HashSet<>();
     private final ApplicationFinder finder = ApplicationFinderFactory.get();
 
-    private FSEventWatchEditorFactory() {
+    public FSEventWatchEditorFactory() {
         this.add(new Application("com.apple.TextEdit", "TextEdit"));
         this.add(new Application("com.apple.dt.Xcode", "Xcode"));
         this.add(new Application("de.codingmonkeys.SubEthaEdit", "SubEthaEdit"));
