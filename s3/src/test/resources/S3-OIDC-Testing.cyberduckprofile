@@ -57,5 +57,9 @@
         <false/>
         <key>Path Configurable</key>
         <true/>
+        <key>Properties</key>
+        <array>
+            <string>s3.bucket.virtualhost.disable=true</string>
+        </array>
     </dict>
 </plist>

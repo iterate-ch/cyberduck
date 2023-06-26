@@ -100,6 +100,7 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AWSProf
 
                     @Override
                     public void refresh() {
+                        System.out.println("-----------------------CALL REFRESH METHOD-----------------------------------------------------------------------------------");
 
                     }
                 })

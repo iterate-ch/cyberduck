@@ -16,9 +16,12 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
@@ -43,6 +46,8 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     private final Host host;
     private final AssumeRoleWithWebIdentitySTSCredentialsConfigurator configurator;
     private final OAuth2RequestInterceptor authorizationService;
+
+    private final LoginCallback prompt;
 
     public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust,
                                                         final X509KeyManager key, final LoginCallback prompt,

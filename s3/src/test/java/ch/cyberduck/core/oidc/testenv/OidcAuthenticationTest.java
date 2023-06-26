@@ -18,9 +18,12 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
+import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.EmbeddedTest;
 
@@ -28,6 +31,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
 import java.util.Optional;
 
 import static org.junit.Assert.*;

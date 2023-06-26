@@ -211,6 +211,33 @@ public abstract class AbstractProtocol implements Protocol {
         return true;
     }
 
+
+    @Override
+    public String getSTSEndpoint() {
+        return null;
+    }
+
+    @Override
+    public String getSTSRoleArn() {
+        return null;
+    }
+
+    @Override
+    public int getSTSDurationSeconds() {
+        return 900;
+    }
+
+    @Override
+    public String getSTSPolicy() {
+        return null;
+    }
+
+    @Override
+    public String getSTSRoleSessionName() {
+        return "CyberduckSession";
+    }
+
+
     @Override
     public String getDefaultHostname() {
         // Blank by default
