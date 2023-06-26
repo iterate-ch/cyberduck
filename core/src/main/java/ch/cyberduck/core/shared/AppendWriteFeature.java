@@ -27,6 +27,6 @@ public abstract class AppendWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public Append append(final Path file, final TransferStatus status) throws BackgroundException {
-        return new Append(true).withStatus(status);
+        return new Append(status.isExists()).withStatus(status);
     }
 }
