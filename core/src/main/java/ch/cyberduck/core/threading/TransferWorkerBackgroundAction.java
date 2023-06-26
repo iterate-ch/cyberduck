@@ -41,6 +41,11 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
     }
 
     @Override
+    public T call() throws BackgroundException {
+        return this.run();
+    }
+
+    @Override
     public T run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run worker %s", worker));
