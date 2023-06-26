@@ -191,14 +191,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         }
 
-//        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
-//            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-//                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
-//                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-//                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
-//            configuration.addInterceptorLast(authorizationService);
-//            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-//        }
+        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+        }
 
         // Only for AWS
         if(S3Session.isAwsHostname(host.getHostname()) && ! isAssumeRoleWithWebIdentity) {
@@ -218,14 +216,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
-            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
-                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+//        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+//            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
+//                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+//                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+//                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
             authorizationService.authorize(host, prompt, cancel);
 
-        }
+//        }
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
                 final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
@@ -255,6 +253,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 credentials = host.getCredentials();
             }
             if(StringUtils.isNotBlank(credentials.getToken())) {
+                System.out.println("SessionToken MinIO: " + credentials.getToken());
                 client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
                         new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                 credentials.getToken()));
@@ -314,8 +313,38 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     public void refreshOAuthTokens() throws BackgroundException {
-        OAuthTokens freshTokens = authorizationService.refresh();
-        host.getCredentials().withOauth(freshTokens);
+        host.getCredentials().setOauth(authorizationService.refresh());
+    }
+
+    public void testafterrefresh() throws BackgroundException {
+        try {
+            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
+            final Location.Name location = new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<Location.Name>() {
+                @Override
+                public Location.Name call() throws BackgroundException {
+                    return new S3LocationFeature(S3Session.this, regions).getLocation(home);
+                }
+            }).call();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved region %s", location));
+            }
+            if(!Location.unknown.equals(location)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set default region to %s determined from %s", location, home));
+                }
+                //
+                host.setProperty("s3.location", location.getIdentifier());
+                // Used when creating canonical string for signature
+                client.getConfiguration().setProperty("storage-service.default-region", location.getIdentifier());
+            }
+        }
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Failure %s querying region", e));
+            final Path home = new DefaultHomeFinderService(this).find();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Retrieved %s", home));
+            }
+        }
     }
 
     @Override

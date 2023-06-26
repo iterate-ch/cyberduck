@@ -32,10 +32,16 @@ import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jets3t.service.S3ServiceException;
+import com.google.api.client.http.HttpStatusCodes;
 import org.jets3t.service.security.AWSSessionCredentials;
+
+import java.io.IOException;
 
 public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(S3WebIdentityTokenExpiredResponseInterceptor.class);
@@ -56,6 +62,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
         this.host = session.getHost();
         this.configurator = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(trust, key, prompt);
         this.authorizationService = authorizationService;
+        this.prompt = prompt;
     }
 
     @Override
@@ -64,18 +71,34 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
             switch(response.getStatusLine().getStatusCode()) {
                 case HttpStatus.SC_FORBIDDEN:
                     try {
-                        session.refreshOAuthTokens();
+                        if (host.getCredentials().getOauth().isExpired()) {
+                            try {
+                                host.getCredentials().setOauth(authorizationService.refresh());
+                            }
+                            catch(InteroperabilityException | LoginFailureException e3) {
+                                log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
+                                authorizationService.authorize(host, prompt, new DisabledCancelCallback());
+                            }
+                        }
+
+                        log.debug("OAuth refreshed. Refreshing STS token.");
+                        System.out.println("Username:" + host.getCredentials().getUsername());
+                        System.out.println("SessionToken:" + host.getCredentials().getToken());
+                        System.out.println("Acc Key:" + session.getClient().getProviderCredentials().getAccessKey());
                         Credentials credentials = configurator.configure(host);
+                        System.out.println("SessionToken MinIO: " + credentials.getToken());
                         session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
                                 new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                         credentials.getToken()));
-                        System.out.println(session.getClient().getProviderCredentials().getAccessKey());
+                        System.out.println("SessionToken:" + host.getCredentials().getToken());
+                        System.out.println("Acc Key:" + session.getClient().getProviderCredentials().getAccessKey());
+                        System.out.println(session.getClient().getProviderCredentials().getSecretKey());
+
+                        session.testafterrefresh();
                         return true;
                     }
-                    catch(LoginFailureException | LoginCanceledException e) {
-                        log.warn(String.format("Attempt to renew expired token failed. %s", e.getMessage()));
-                    }
                     catch(BackgroundException e) {
+                        log.error("Failed to refresh OAuth in order to get STS", e);
                         throw new RuntimeException(e);
                     }
             }
