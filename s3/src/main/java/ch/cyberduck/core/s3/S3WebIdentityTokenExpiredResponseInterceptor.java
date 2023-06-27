@@ -44,7 +44,6 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     private final Host host;
     private final AssumeRoleWithWebIdentitySTSCredentialsConfigurator configurator;
     private final OAuth2RequestInterceptor authorizationService;
-
     private final LoginCallback prompt;
 
     public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust,
@@ -79,7 +78,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                                 new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                         credentials.getToken()));
 
-                        return false;
+                        return true;
                     }
                     catch(BackgroundException e) {
                         log.error("Failed to refresh OAuth in order to get STS", e);

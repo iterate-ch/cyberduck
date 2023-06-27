@@ -68,6 +68,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator;
+import ch.cyberduck.core.sts.STSSecurityTokenHeaderHttpRequestInterceptor;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -207,6 +208,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         else if(isAssumeRoleWithWebIdentity) {
             configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt, authorizationService));
+            configuration.addInterceptorLast(new STSSecurityTokenHeaderHttpRequestInterceptor(this));
         }
 
         final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
