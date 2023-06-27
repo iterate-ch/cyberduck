@@ -79,8 +79,8 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-            new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5242880L, 5),
-            new B2WriteFeature(session, fileid), cryptomator);
+                new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5000000L, 5),
+                new B2WriteFeature(session, fileid), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = RandomUtils.nextBytes(5242885);
         IOUtils.write(content, local.getOutputStream(false));
@@ -121,8 +121,8 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new B2DeleteFeature(session, fileid), cryptomator);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), writeStatus), new DisabledConnectionCallback());
         final CryptoUploadFeature m = new CryptoUploadFeature<>(session,
-            new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5242880L, 5),
-            new B2WriteFeature(session, fileid), cryptomator);
+                new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid), 5000000L, 5),
+                new B2WriteFeature(session, fileid), cryptomator);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         IOUtils.write(content, local.getOutputStream(false));
         final BytecountStreamListener counter = new BytecountStreamListener();

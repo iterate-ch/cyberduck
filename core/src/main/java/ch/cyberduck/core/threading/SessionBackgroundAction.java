@@ -97,36 +97,31 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public T call() throws BackgroundException {
-        try {
-            return new DefaultRetryCallable<>(pool.getHost(), new BackgroundExceptionCallable<T>() {
-                @Override
-                public T call() throws BackgroundException {
-                    // Reset status
-                    SessionBackgroundAction.this.reset();
-                    // Run action
-                    return SessionBackgroundAction.this.run();
-                }
-            }, this, this).call();
-        }
-        catch(BackgroundException e) {
-            failure = e;
-            throw e;
-        }
+        return new DefaultRetryCallable<>(pool.getHost(), new BackgroundExceptionCallable<T>() {
+            @Override
+            public T call() throws BackgroundException {
+                // Reset status
+                SessionBackgroundAction.this.reset();
+                // Run action
+                return SessionBackgroundAction.this.run();
+            }
+        }, this, this).call();
     }
 
     @Override
     public T run() throws BackgroundException {
-        final Session<?> session = pool.borrow(this).withListener(this);
-        BackgroundException failure = null;
         try {
-            return this.run(session);
+            final Session<?> session = pool.borrow(this).withListener(this);
+            try {
+                return this.run(session);
+            }
+            finally {
+                pool.release(session.removeListener(this), failure);
+            }
         }
         catch(BackgroundException e) {
             failure = e;
             throw e;
-        }
-        finally {
-            pool.release(session.removeListener(this), failure);
         }
     }
 

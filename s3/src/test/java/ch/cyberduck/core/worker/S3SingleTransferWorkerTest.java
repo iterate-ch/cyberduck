@@ -24,7 +24,6 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.local.DefaultTemporaryFileService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
@@ -111,7 +110,7 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
     }
 
     @Test
-    public void testTransferredSizeRepeat() throws Exception {
+    public void testUploadMultipartTransferWithFailure() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[6 * 1024 * 1024]; // Minimum multipart upload size
         new Random().nextBytes(content);
@@ -120,10 +119,24 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
         out.close();
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
-        ));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.upload.multipart".equals(key)) {
+                    return String.valueOf(true);
+                }
+                if("s3.upload.multipart.partsize.minimum".equals(key)) {
+                    return String.valueOf(content.length);
+                }
+                if("s3.upload.multipart.threshold".equals(key)) {
+                    return String.valueOf(content.length);
+                }
+                return super.getProperty(key);
+            }
+        };
         final AtomicBoolean failed = new AtomicBoolean();
         final S3Session session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
@@ -153,8 +166,10 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return super._getFeature(type);
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        new LoginConnectionService(new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
         final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(session.getHost(), test, local);
@@ -165,7 +180,81 @@ public class S3SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
+
+        }.run(session));
+        local.delete();
+        assertTrue(t.isComplete());
+        assertEquals(content.length, new S3AttributesFinderFeature(session, new S3AccessControlListFeature(session)).find(test).getSize());
+        assertEquals(content.length, counter.getRecv(), 0L);
+        assertEquals(content.length, counter.getSent(), 0L);
+        assertTrue(failed.get());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testUploadTransferWithFailure() throws Exception {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        final byte[] content = new byte[6144];
+        new Random().nextBytes(content);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+                this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+                PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.upload.multipart".equals(key)) {
+                    return String.valueOf(false);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final AtomicBoolean failed = new AtomicBoolean();
+        final S3Session session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Upload.class) {
+                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this, new S3AccessControlListFeature(this)), new S3AccessControlListFeature(this), 5 * 1024L * 1024L, 5) {
+                        @Override
+                        protected InputStream decorate(final InputStream in, final MessageDigest digest) {
+                            if(failed.get()) {
+                                // Second attempt successful
+                                return in;
+                            }
+                            return new CountingInputStream(in) {
+                                @Override
+                                protected void beforeRead(final int n) throws IOException {
+                                    failed.set(true);
+                                    throw new SocketTimeoutException();
+                                }
+                            };
+                        }
+                    };
+                }
+                return super._getFeature(type);
+            }
+        };
+        new LoginConnectionService(new DisabledLoginCallback(),
+                new DisabledHostKeyCallback(),
+                new DisabledPasswordStore(),
+                new DisabledProgressListener()).connect(session, new DisabledCancelCallback());
+        final Path home = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path test = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(session.getHost(), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener();
+        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+                new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
         local.delete();

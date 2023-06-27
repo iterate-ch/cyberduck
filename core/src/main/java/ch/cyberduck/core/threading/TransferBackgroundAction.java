@@ -163,8 +163,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
     public boolean alert(final BackgroundException e) {
         if(super.alert(e)) {
             // Upon retry do not suggest to overwrite already completed items from the transfer
-            options.reloadRequested = false;
-            options.resumeRequested = true;
+            options.reload(false).resume(true);
             return true;
         }
         return false;

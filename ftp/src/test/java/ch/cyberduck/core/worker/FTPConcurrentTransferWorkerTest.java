@@ -20,6 +20,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
+import ch.cyberduck.core.ftp.FTPAttributesFinderFeature;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPWriteFeature;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.PooledSessionFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -68,7 +70,7 @@ import static org.junit.Assert.assertTrue;
 public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
 
     @Test
-    public void testTransferredSizeRepeat() throws Exception {
+    public void testUploadTransferWithFailure() throws Exception {
         Assume.assumeTrue(Factory.Platform.getDefault() != Factory.Platform.Name.windows);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = new byte[98305];
@@ -78,23 +80,22 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(session.getHost(), test, local);
+        final Host host = new Host(session.getHost()) {
+            @Override
+            public String getProperty(final String key) {
+                if("queue.connections.limit.ftp".equals(key)) {
+                    return String.valueOf(2);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final Transfer t = new UploadTransfer(host, test, local);
         final BytecountStreamListener counter = new BytecountStreamListener();
-        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                //
-            }
-
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                return new Credentials("test", "test");
-            }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
         final DefaultSessionPool pool = new DefaultSessionPool(connect,
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), session.getHost(),
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host,
                 new GenericObjectPool<>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                        session.getHost(), new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                        host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
                     @Override
                     public Session create() {
                         return new FTPSession(session.getHost()) {
@@ -112,7 +113,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
                                             super.afterWrite(n);
                                             if(this.getByteCount() >= 42768L) {
                                                 // Buffer size
-                                                assertEquals(32768L, counter.getSent());
+                                                assertEquals(new HostPreferences(host).getLong("connection.chunksize"), counter.getSent());
                                                 failed.set(true);
                                                 throw new SocketTimeoutException();
                                             }
@@ -150,7 +151,11 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         assertTrue(worker.run(session));
         local.delete();
         assertTrue(t.isComplete());
+        assertEquals(content.length, t.getTransferred(), 0L);
+        assertEquals(t.getTransferred(), counter.getRecv(), 0L);
+        assertEquals(t.getTransferred(), counter.getSent(), 0L);
         assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new FTPAttributesFinderFeature(session).find(test).getSize());
         assertEquals(content.length, counter.getRecv(), 0L);
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
@@ -158,7 +163,7 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
     }
 
     @Test
-    public void testConcurrentSessions() throws Exception {
+    public void testUpload() throws Exception {
         final int files = 20;
         final int connections = 2;
         final List<TransferItem> list = new ArrayList<>();
@@ -166,22 +171,21 @@ public class FTPConcurrentTransferWorkerTest extends AbstractFTPTest {
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path(String.format("/t%d", i), EnumSet.of(Path.Type.file)), file));
         }
-        final Transfer transfer = new UploadTransfer(session.getHost(), list);
+        final Host host = new Host(session.getHost()) {
+            @Override
+            public String getProperty(final String key) {
+                if("queue.connections.limit.ftp".equals(key)) {
+                    return String.valueOf(connections);
+                }
+                return super.getProperty(key);
+            }
+        };
+        final Transfer transfer = new UploadTransfer(host, list);
         final DefaultSessionPool pool = new DefaultSessionPool(
-                new LoginConnectionService(new DisabledLoginCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
-                        return new Credentials(username, "test");
-                    }
-
-                    @Override
-                    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
-                        //
-                    }
-                }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
                         new DisabledProgressListener()),
                 new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), session.getHost());
+                new DefaultVaultRegistry(new DisabledPasswordCallback()), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
                 pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
                 transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
