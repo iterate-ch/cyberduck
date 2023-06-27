@@ -174,8 +174,7 @@ public class EueSession extends HttpSession<CloseableHttpClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
-            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel
-            ));
+            authorizationService.refresh(authorizationService.authorize(host, prompt, cancel));
         }
         catch(InteroperabilityException e) {
             // Perm.INVALID_GRANT
