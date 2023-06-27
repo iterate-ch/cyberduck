@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - feature/sts-refresh
+      - master
   pull_request:
     branches:
       - master
