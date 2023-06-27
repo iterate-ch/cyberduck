@@ -34,6 +34,8 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -43,6 +45,7 @@ import synapticloop.b2.exception.B2ApiException;
 import synapticloop.b2.response.B2AuthorizeAccountResponse;
 
 public class B2Session extends HttpSession<B2ApiClient> {
+    private static final Logger log = LogManager.getLogger(B2Session.class);
 
     private B2ErrorResponseInterceptor retryHandler;
 
@@ -57,7 +60,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     protected B2ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(
-            this, fileid));
+                this, fileid));
         configuration.addInterceptorLast(retryHandler);
         return new B2ApiClient(configuration.build());
     }
@@ -89,6 +92,17 @@ public class B2Session extends HttpSession<B2ApiClient> {
                 listService.withBucket(new Path(PathNormalizer.normalize(response.getBucketName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             }
             retryHandler.setTokens(accountId, applicationKey, response.getAuthorizationToken());
+            final int recommendedPartSize = response.getRecommendedPartSize();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set large upload part size to %d", recommendedPartSize));
+            }
+            host.setProperty("b2.upload.largeobject.size", String.valueOf(recommendedPartSize));
+            host.setProperty("b2.copy.largeobject.size", String.valueOf(recommendedPartSize));
+            final int absoluteMinimumPartSize = response.getAbsoluteMinimumPartSize();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set large upload minimum part size to %d", absoluteMinimumPartSize));
+            }
+            host.setProperty("b2.upload.largeobject.size.minimum", String.valueOf(absoluteMinimumPartSize));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(fileid).map(e);
