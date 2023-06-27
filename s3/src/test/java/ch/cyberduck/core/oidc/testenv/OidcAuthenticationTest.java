@@ -53,7 +53,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         assertNotNull(creds.getOauth().getAccessToken());
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
-
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class)
@@ -62,7 +62,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-
+        session.close();
     }
 
     @Test(expected = LoginFailureException.class)
@@ -71,7 +71,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-
+        session.close();
     }
 
 

@@ -19,7 +19,6 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
-
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -37,6 +36,5 @@ public class S3OidcProfileTest {
         assertNotNull(profile.getOAuthAuthorizationUrl());
         assertNotNull(profile.getOAuthTokenUrl());
         assertFalse(profile.getOAuthScopes().isEmpty());
-//        assertEquals(Protocol.DirectoryTimestamp.explicit, profile.getDirectoryTimestamp());
     }
 }
