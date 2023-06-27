@@ -1,4 +1,6 @@
-package ch.cyberduck.core.oidc.testenv;/*
+package ch.cyberduck.core.oidc.testenv;
+
+/*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -45,7 +47,6 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         Credentials creds = host.getCredentials();
-        System.out.println(creds.toString());
         assertNotEquals(StringUtils.EMPTY, creds.getUsername());
         assertNotEquals(StringUtils.EMPTY, creds.getPassword());
         // credentials from STS are written to the client object in the S3Session and not into the Credential object from the Host.
@@ -85,7 +86,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
         String firstRefreshToken = host.getCredentials().getOauth().getRefreshToken();
         Long validTime = host.getCredentials().getOauth().getExpiryInMilliseconds() - System.currentTimeMillis();
-        System.out.println(String.format("Access Token is valid for %s seconds.", validTime / 1000));
+        log.info(String.format("Access Token is valid for %s seconds.", validTime / 1000));
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1100 * 60);

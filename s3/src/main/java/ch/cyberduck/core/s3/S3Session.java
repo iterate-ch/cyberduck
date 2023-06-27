@@ -26,7 +26,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -218,14 +217,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-//        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
-//            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-//                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
-//                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
-//                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
-            authorizationService.authorize(host, prompt, cancel);
+        authorizationService.authorize(host, prompt, cancel);
 
-//        }
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
                 final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();

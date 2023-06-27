@@ -30,8 +30,6 @@ services:
   healthcheck:
     image: busybox
     hostname: healthcheck
-    links:
-      - keycloak
     depends_on:
       keycloak:
         condition: service_started
@@ -48,8 +46,6 @@ services:
   minio:
     build: ./minio
     hostname: minio
-    links:
-      - keycloak
     depends_on:
       healthcheck:
         condition: service_completed_successfully
@@ -80,8 +76,6 @@ services:
   createbuckets:
     image: minio/mc
     hostname: createbuckets
-    links:
-      - minio
     depends_on:
       - minio
     volumes:
