@@ -253,7 +253,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 credentials = host.getCredentials();
             }
             if(StringUtils.isNotBlank(credentials.getToken())) {
-                System.out.println("SessionToken MinIO: " + credentials.getToken());
                 client.setProviderCredentials(credentials.isAnonymousLogin() ? null :
                         new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                 credentials.getToken()));
@@ -310,41 +309,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
         }
         return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
-    }
-
-    public void refreshOAuthTokens() throws BackgroundException {
-        host.getCredentials().setOauth(authorizationService.refresh());
-    }
-
-    public void testafterrefresh() throws BackgroundException {
-        try {
-            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
-            final Location.Name location = new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<Location.Name>() {
-                @Override
-                public Location.Name call() throws BackgroundException {
-                    return new S3LocationFeature(S3Session.this, regions).getLocation(home);
-                }
-            }).call();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved region %s", location));
-            }
-            if(!Location.unknown.equals(location)) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set default region to %s determined from %s", location, home));
-                }
-                //
-                host.setProperty("s3.location", location.getIdentifier());
-                // Used when creating canonical string for signature
-                client.getConfiguration().setProperty("storage-service.default-region", location.getIdentifier());
-            }
-        }
-        catch(AccessDeniedException | InteroperabilityException e) {
-            log.warn(String.format("Failure %s querying region", e));
-            final Path home = new DefaultHomeFinderService(this).find();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Retrieved %s", home));
-            }
-        }
     }
 
     @Override

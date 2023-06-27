@@ -20,9 +20,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -32,16 +30,10 @@ import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.S3ServiceException;
-import com.google.api.client.http.HttpStatusCodes;
 import org.jets3t.service.security.AWSSessionCredentials;
-
-import java.io.IOException;
 
 public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(S3WebIdentityTokenExpiredResponseInterceptor.class);
@@ -74,6 +66,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                         if (host.getCredentials().getOauth().isExpired()) {
                             try {
                                 host.getCredentials().setOauth(authorizationService.refresh());
+                                log.debug("OAuth refreshed. Refreshing STS token.");
                             }
                             catch(InteroperabilityException | LoginFailureException e3) {
                                 log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
@@ -81,20 +74,11 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                             }
                         }
 
-                        log.debug("OAuth refreshed. Refreshing STS token.");
-                        System.out.println("Username:" + host.getCredentials().getUsername());
-                        System.out.println("SessionToken:" + host.getCredentials().getToken());
-                        System.out.println("Acc Key:" + session.getClient().getProviderCredentials().getAccessKey());
                         Credentials credentials = configurator.configure(host);
-                        System.out.println("SessionToken MinIO: " + credentials.getToken());
                         session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
                                 new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                         credentials.getToken()));
-                        System.out.println("SessionToken:" + host.getCredentials().getToken());
-                        System.out.println("Acc Key:" + session.getClient().getProviderCredentials().getAccessKey());
-                        System.out.println(session.getClient().getProviderCredentials().getSecretKey());
 
-                        session.testafterrefresh();
                         return false;
                     }
                     catch(BackgroundException e) {
