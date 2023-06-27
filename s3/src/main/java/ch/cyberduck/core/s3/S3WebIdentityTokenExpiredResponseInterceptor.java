@@ -95,7 +95,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                         System.out.println(session.getClient().getProviderCredentials().getSecretKey());
 
                         session.testafterrefresh();
-                        return true;
+                        return false;
                     }
                     catch(BackgroundException e) {
                         log.error("Failed to refresh OAuth in order to get STS", e);
