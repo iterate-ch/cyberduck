@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
@@ -29,11 +30,15 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.security.AWSSessionCredentials;
+
+import java.io.IOException;
 
 public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
     private static final Logger log = LogManager.getLogger(S3WebIdentityTokenExpiredResponseInterceptor.class);
@@ -59,38 +64,68 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount <= MAX_RETRIES) {
-            switch(response.getStatusLine().getStatusCode()) {
-                case HttpStatus.SC_FORBIDDEN:
-                    try {
-                        if (host.getCredentials().getOauth().isExpired()) {
-                            try {
-                                host.getCredentials().setOauth(authorizationService.refresh());
-                                log.debug("OAuth refreshed. Refreshing STS token.");
-                            }
-                            catch(InteroperabilityException | LoginFailureException e3) {
-                                log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
-                                authorizationService.authorize(host, prompt, new DisabledCancelCallback());
-                            }
+            if (400 <= response.getStatusLine().getStatusCode() && response.getStatusLine().getStatusCode() < 500) {
+                try {
+                    final S3ServiceException failure;
+                    if(null != response.getEntity()) {
+                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                        failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
+                                EntityUtils.toString(response.getEntity()));
+                    }
+                    // minio sometimes packs the error code and description in the http header
+                    else{
+                        failure = new S3ServiceException(response.getStatusLine().getReasonPhrase());
+                        if(response.containsHeader("x-minio-error-code")) {
+                            failure.setErrorCode(response.getFirstHeader("x-minio-error-code").getValue());
+                            failure.setErrorMessage(response.getFirstHeader("x-minio-error-desc").getValue());
                         }
-
-                        Credentials credentials = configurator.configure(host);
-                        session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                                new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
-                                        credentials.getToken()));
-
-                        return true;
                     }
-                    catch(BackgroundException e) {
-                        log.error("Failed to refresh OAuth in order to get STS", e);
-                        throw new RuntimeException(e);
+
+                    failure.setResponseCode(response.getStatusLine().getStatusCode());
+                    BackgroundException s3exception = new S3ExceptionMappingService().map(failure);
+
+                    if(failure.getErrorCode().equals("InvalidAccessKeyId") || s3exception instanceof ExpiredTokenException) {
+                        refreshOAuthAndSTS();
                     }
+                    return true;
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure parsing response entity from %s", response));
+                }
             }
         }
+
         else {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Skip retry for response %s after %d executions", response, executionCount));
             }
         }
         return false;
+    }
+
+    private void refreshOAuthAndSTS() {
+        try {
+            if(host.getCredentials().getOauth().isExpired()) {
+                try {
+                    host.getCredentials().setOauth(authorizationService.refresh());
+                    log.debug("OAuth refreshed. Refreshing STS token.");
+                }
+                catch(InteroperabilityException | LoginFailureException e3) {
+                    log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
+                    authorizationService.authorize(host, prompt, new DisabledCancelCallback());
+                }
+            }
+
+            Credentials credentials = configurator.configure(host);
+            session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                    new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                            credentials.getToken()));
+
+
+        }
+        catch(BackgroundException e) {
+            log.error("Failed to refresh OAuth in order to get STS", e);
+            throw new RuntimeException(e);
+        }
     }
 }
