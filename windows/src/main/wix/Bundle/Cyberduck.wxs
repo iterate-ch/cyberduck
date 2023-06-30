@@ -370,9 +370,6 @@
       <Component Id="sharepoint.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft SharePoint.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="sharepointsite.cyberduckprofile">
-        <File Source="$(var.cyberduck.TargetDir)/profiles/Microsoft SharePoint Site.cyberduckprofile" KeyPath="yes" Checksum="yes" />
-      </Component>
       <Component Id="rackspace.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
