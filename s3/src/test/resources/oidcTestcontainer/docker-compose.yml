@@ -4,7 +4,6 @@ services:
 
   keycloak:
     build: ./keycloak
-    hostname: keycloak
     ports:
       - "8080:8080"
       - "8443:8443"
@@ -29,11 +28,10 @@ services:
 
   healthcheck:
     image: busybox
-    hostname: healthcheck
     depends_on:
       keycloak:
         condition: service_started
-    command:  sh -c "until wget -q -O- http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
+    command:  sh -c "until wget -q -O- http://192.168.2.140:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
       interval: 1s
@@ -45,7 +43,6 @@ services:
 
   minio:
     build: ./minio
-    hostname: minio
     depends_on:
       healthcheck:
         condition: service_completed_successfully
@@ -58,7 +55,7 @@ services:
     environment:
       MINIO_ROOT_USER: cyberduckAccessKey
       MINIO_ROOT_PASSWORD: cyberduckSecretKey
-      MINIO_IDENTITY_OPENID_CONFIG_URL: http://keycloak:8080/realms/cyberduckrealm/.well-known/openid-configuration
+      MINIO_IDENTITY_OPENID_CONFIG_URL: http://192.168.2.140:8080/realms/cyberduckrealm/.well-known/openid-configuration
       MINIO_IDENTITY_OPENID_CLIENT_ID: minio
       MINIO_IDENTITY_OPENID_CLIENT_SECRET: password
       MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
@@ -75,7 +72,6 @@ services:
 
   createbuckets:
     image: minio/mc
-    hostname: createbuckets
     depends_on:
       - minio
     volumes:

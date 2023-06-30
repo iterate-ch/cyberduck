@@ -184,9 +184,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
 
-        // TODO use STS URL in profile/bookmark as criterion instead
-        final boolean isAssumeRoleWithWebIdentity = host.getProtocol().getDefaultPort() == 9000;
-        //
+        final boolean isAssumeRoleWithWebIdentity = host.getProtocol().getSTSEndpoint() != null;
+
         if((host.getProtocol().getOAuthAuthorizationUrl() != null) && !isAssumeRoleWithWebIdentity) {
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         }
@@ -203,7 +202,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
         }
-        //
+
         else if(isAssumeRoleWithWebIdentity) {
             configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt, authorizationService));
@@ -217,7 +216,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        authorizationService.authorize(host, prompt, cancel);
+        if (host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            authorizationService.authorize(host, prompt, cancel);
+        }
 
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {

@@ -546,48 +546,6 @@ public class Profile implements Protocol {
     }
 
     @Override
-    public String getSTSRoleArn() {
-        final String v = this.value("STS RoleArn");
-        if(StringUtils.isBlank(v)) {
-            return parent.getSTSRoleArn();
-        }
-        return v;
-    }
-
-    @Override
-    public int getSTSDurationSeconds() {
-        final String v = this.value("STS DurationSeconds");
-        if(StringUtils.isBlank(v)) {
-            return parent.getSTSDurationSeconds();
-        }
-        try {
-            return Integer.parseInt(v);
-        }
-        catch(NumberFormatException e) {
-            log.warn(String.format("Port %s is not a number", e.getMessage()));
-        }
-        return parent.getSTSDurationSeconds();
-    }
-
-    @Override
-    public String getSTSPolicy() {
-        final String v = this.value("STS Policy");
-        if(StringUtils.isBlank(v)) {
-            return parent.getSTSPolicy();
-        }
-        return v;
-    }
-
-    @Override
-    public String getSTSRoleSessionName() {
-        final String v = this.value("STS RoleSessionName");
-        if(StringUtils.isBlank(v)) {
-            return parent.getSTSRoleSessionName();
-        }
-        return v;
-    }
-
-    @Override
     public Map<String, String> getProperties() {
         final List<String> properties = this.list("Properties");
         if(properties.isEmpty()) {

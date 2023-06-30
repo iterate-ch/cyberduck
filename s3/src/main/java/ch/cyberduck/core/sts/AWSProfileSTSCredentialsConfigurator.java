@@ -81,8 +81,8 @@ public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigur
     private static final Logger log = LogManager.getLogger(AWSProfileSTSCredentialsConfigurator.class);
 
     private final Local directory;
-    private final X509TrustManager trust;
-    private final X509KeyManager key;
+    protected final X509TrustManager trust;
+    protected final X509KeyManager key;
     private final PasswordCallback prompt;
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 

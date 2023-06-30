@@ -218,27 +218,6 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public String getSTSRoleArn() {
-        return null;
-    }
-
-    @Override
-    public int getSTSDurationSeconds() {
-        return 900;
-    }
-
-    @Override
-    public String getSTSPolicy() {
-        return null;
-    }
-
-    @Override
-    public String getSTSRoleSessionName() {
-        return "CyberduckSession";
-    }
-
-
-    @Override
     public String getDefaultHostname() {
         // Blank by default
         return PreferencesFactory.get().getProperty("connection.hostname.default");
