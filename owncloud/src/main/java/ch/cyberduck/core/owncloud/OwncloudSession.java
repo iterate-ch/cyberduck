@@ -17,8 +17,10 @@ package ch.cyberduck.core.owncloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Home;
@@ -36,16 +38,48 @@ import ch.cyberduck.core.nextcloud.NextcloudListService;
 import ch.cyberduck.core.nextcloud.NextcloudShareProvider;
 import ch.cyberduck.core.nextcloud.NextcloudUrlProvider;
 import ch.cyberduck.core.nextcloud.NextcloudWriteFeature;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
 import ch.cyberduck.core.shared.DelegatingHomeFeature;
 import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
+
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
 
 public class OwncloudSession extends DAVSession {
 
+    private OAuth2RequestInterceptor authorizationService;
+
     public OwncloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
+    }
+
+    @Override
+    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) {
+        final HttpClientBuilder configuration = super.getConfiguration(proxy, prompt);
+        if(host.getProtocol().isOAuthConfigurable()) {
+            authorizationService = new OAuth2RequestInterceptor(configuration.build(), host)
+                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()))
+                    .withRedirectUri(CYBERDUCK_REDIRECT_URI);
+            configuration.addInterceptorLast(authorizationService);
+            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
+        }
+        return configuration;
+    }
+
+    @Override
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if(host.getProtocol().isOAuthConfigurable()) {
+            authorizationService.authorize(host, prompt, cancel);
+        }
+        super.login(proxy, prompt, cancel);
     }
 
     @Override

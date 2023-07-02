@@ -105,10 +105,14 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     protected DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        // Always inject new pool to builder on connect because the pool is shutdown on disconnect
-        final HttpClientBuilder pool = builder.build(proxy, this, prompt);
-        pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
-        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), pool);
+        final HttpClientBuilder configuration = this.getConfiguration(proxy, prompt);
+        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
+    }
+
+    protected HttpClientBuilder getConfiguration(final Proxy proxy, final LoginCallback prompt) {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.setRedirectStrategy(new DAVRedirectStrategy(redirect));
+        return configuration;
     }
 
     @Override
