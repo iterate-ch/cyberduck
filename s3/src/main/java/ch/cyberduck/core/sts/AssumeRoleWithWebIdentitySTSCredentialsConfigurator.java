@@ -20,12 +20,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.preferences.HostPreferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,44 +58,27 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AWSProf
         String rolearnProp = "s3.assumerole.rolearn";
         String rolesessionnameProp = "s3.assumerole.rolesessionname";
 
-        if (StringUtils.isBlank(host.getProperty(durationsecondsProp))) {
-            webIdReq = webIdReq.withDurationSeconds(Integer.getInteger(host.getProperty(durationsecondsProp)));
-        }
-        else if(host.getProtocol().getProperties().containsKey(durationsecondsProp)) {
-            System.out.println("set duration second with profile value: " + host.getProtocol().getProperties().get(durationsecondsProp));
-            webIdReq = webIdReq.withDurationSeconds(Integer.getInteger(host.getProtocol().getProperties().get(durationsecondsProp)));
-        }
-        else if(StringUtils.isNotBlank(PreferencesFactory.get().getProperty(durationsecondsProp))) {
-            webIdReq = webIdReq.withDurationSeconds(new HostPreferences(host).getInteger(durationsecondsProp));
+        if (new HostPreferences(host).getInteger(durationsecondsProp) != 0) {
+            int durationSeconds = new HostPreferences(host).getInteger(durationsecondsProp);
+            // AWS: provide a value from 900 seconds (15 minutes) up to the maximum session duration setting for the role. This setting can have a value from 1 hour to 12 hours (43200 seconds).
+            // MinIO: The maximum value is 604800 or 7 days.
+            if (900 <= durationSeconds && durationSeconds <= 43200) {
+                webIdReq = webIdReq.withDurationSeconds(new HostPreferences(host).getInteger(durationsecondsProp));
+            }
+            else {
+                throw new IllegalArgumentException("DurationSeconds parameter is out of bounds");
+            }
         }
 
-        if (StringUtils.isBlank(host.getProperty(policyProp))) {
-            webIdReq = webIdReq.withPolicy(host.getProperty(policyProp));
-        }
-        else if(host.getProtocol().getProperties().containsKey(policyProp)) {
-            webIdReq = webIdReq.withPolicy(host.getProtocol().getProperties().get(policyProp));
-        }
-        else if(StringUtils.isNotBlank(PreferencesFactory.get().getProperty(policyProp))) {
+        if (new HostPreferences(host).getProperty(policyProp) != null) {
             webIdReq = webIdReq.withPolicy(new HostPreferences(host).getProperty(policyProp));
         }
 
-        if (StringUtils.isBlank(host.getProperty(rolearnProp))) {
-            webIdReq = webIdReq.withRoleArn(host.getProperty(rolearnProp));
-        }
-        else if(host.getProtocol().getProperties().containsKey(rolearnProp)) {
-            webIdReq = webIdReq.withRoleArn(host.getProtocol().getProperties().get(rolearnProp));
-        }
-        else if(StringUtils.isNotBlank(PreferencesFactory.get().getProperty(rolearnProp))) {
+        if (new HostPreferences(host).getProperty(rolearnProp) != null) {
             webIdReq = webIdReq.withRoleArn(new HostPreferences(host).getProperty(rolearnProp));
         }
 
-        if (StringUtils.isBlank(host.getProperty(rolesessionnameProp))) {
-            webIdReq = webIdReq.withRoleSessionName(host.getProperty(rolesessionnameProp));
-        }
-        else if(host.getProtocol().getProperties().containsKey(rolesessionnameProp)) {
-            webIdReq = webIdReq.withRoleSessionName(host.getProtocol().getProperties().get(rolesessionnameProp));
-        }
-        else if(StringUtils.isNotBlank(PreferencesFactory.get().getProperty(rolesessionnameProp))) {
+        if (new HostPreferences(host).getProperty(rolesessionnameProp) != null) {
             webIdReq = webIdReq.withRoleSessionName(new HostPreferences(host).getProperty(rolesessionnameProp));
         }
 

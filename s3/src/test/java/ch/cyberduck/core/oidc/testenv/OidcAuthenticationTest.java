@@ -85,8 +85,6 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
         String firstRefreshToken = host.getCredentials().getOauth().getRefreshToken();
-        Long validTime = host.getCredentials().getOauth().getExpiryInMilliseconds() - System.currentTimeMillis();
-        log.info(String.format("Access Token is valid for %s seconds.", validTime / 1000));
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1100 * 30);

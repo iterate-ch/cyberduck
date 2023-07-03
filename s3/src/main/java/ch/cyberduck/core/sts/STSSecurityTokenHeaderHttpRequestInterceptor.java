@@ -27,6 +27,8 @@ import org.apache.logging.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.security.AWSSessionCredentials;
 
+import java.io.IOException;
+
 public class STSSecurityTokenHeaderHttpRequestInterceptor implements HttpRequestInterceptor {
     private static final Logger log = LogManager.getLogger(STSSecurityTokenHeaderHttpRequestInterceptor.class);
 
@@ -39,7 +41,7 @@ public class STSSecurityTokenHeaderHttpRequestInterceptor implements HttpRequest
     }
 
     @Override
-    public void process(final org.apache.http.HttpRequest request, final HttpContext context) {
+    public void process(final org.apache.http.HttpRequest request, final HttpContext context) throws IOException {
         if (!request.getFirstHeader(securityTokenHeaderKey).getValue().trim().equals(
                 ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken().trim())) {
 
@@ -50,8 +52,7 @@ public class STSSecurityTokenHeaderHttpRequestInterceptor implements HttpRequest
             }
             catch(ServiceException e) {
                 log.error("failed to reauthenticate the request after receiving refreshed STS Credentials");
-                //TODO what kind of Exception here?
-                throw new RuntimeException(e);
+                throw new IOException(e);
             }
 
             // set the recalculated authentication hash with the refreshed STS credentials to the failed request
