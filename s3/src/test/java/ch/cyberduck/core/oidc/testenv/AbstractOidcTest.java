@@ -57,7 +57,6 @@ public abstract class AbstractOidcTest {
     @BeforeClass
     public static void beforeAll() {
         compose.start();
-
     }
 
     @Before

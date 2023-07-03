@@ -62,7 +62,7 @@ services:
       MINIO_IDENTITY_OPENID_SCOPES: openid,email,minio-authorization
       MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "true"
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://minio:9001/login || exit 1" ]
+      test: [ "CMD-SHELL", "curl --fail http://192.168.2.142:9001/login || exit 1" ]
       interval: 10s
       retries: 5
     command: server /data --console-address :9001
