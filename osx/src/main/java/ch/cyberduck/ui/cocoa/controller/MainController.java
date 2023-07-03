@@ -1256,11 +1256,17 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.check(false);
                 break;
             default:
+                String action = null;
                 if(StringUtils.contains(url, ":oauth")) {
+                    action = StringUtils.substringAfter(url, ":oauth");
+                }
+                if(StringUtils.contains(url, "://oauth")) {
+                    action = StringUtils.substringAfter(url, "://oauth");
+                }
+                if(null != action) {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Handle %s as OAuth callback", url));
                     }
-                    final String action = StringUtils.substringAfter(url, ":oauth");
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
@@ -1276,7 +1282,7 @@ public class MainController extends BundleController implements NSApplication.De
                     oauth.notify(state, code);
                 }
                 else if(StringUtils.startsWith(url, CteraProtocol.CTERA_REDIRECT_URI)) {
-                    final String action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
+                    action = StringUtils.removeStart(url, String.format("%s:", preferences.getProperty("oauth.handler.scheme")));
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
