@@ -24,6 +24,8 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -43,12 +45,17 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends Abstrac
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials credentials = new Credentials(host.getCredentials());
+        final Credentials hostCredentials = new Credentials(host.getCredentials());
 
         service = this.getTokenService(host, null, null, null, null);
 
-        AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
-                .withWebIdentityToken(credentials.getOauth().getAccessToken());
+        AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest();
+        if(hostCredentials.getToken().isEmpty()) {
+            webIdReq = webIdReq.withWebIdentityToken(hostCredentials.getOauth().getAccessToken());
+        }
+        else {
+            webIdReq = webIdReq.withWebIdentityToken(hostCredentials.getToken());
+        }
 
         String durationsecondsProp = "s3.assumerole.durationseconds";
         String policyProp = "s3.assumerole.policy";
@@ -67,19 +74,19 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends Abstrac
             }
         }
 
-        if (new HostPreferences(host).getProperty(policyProp) != null) {
+        if (StringUtils.isBlank(new HostPreferences(host).getProperty(policyProp))) {
             webIdReq = webIdReq.withPolicy(new HostPreferences(host).getProperty(policyProp));
         }
 
-        if (new HostPreferences(host).getProperty(rolearnProp) != null) {
+        if (StringUtils.isBlank(new HostPreferences(host).getProperty(rolearnProp))) {
             webIdReq = webIdReq.withRoleArn(new HostPreferences(host).getProperty(rolearnProp));
         }
 
-        if (new HostPreferences(host).getProperty(rolesessionnameProp) != null) {
+        if (StringUtils.isBlank(new HostPreferences(host).getProperty(rolesessionnameProp))) {
             webIdReq = webIdReq.withRoleSessionName(new HostPreferences(host).getProperty(rolesessionnameProp));
         }
 
-
+        Credentials credentials = new Credentials();
         try {
             AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
             com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
