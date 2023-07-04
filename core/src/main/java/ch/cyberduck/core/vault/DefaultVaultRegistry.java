@@ -102,14 +102,8 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         super.clear();
     }
 
-    /**
-     * @param session Connection
-     * @param file    File
-     * @param lookup  Find and load any vault
-     * @return Open or disabled vault
-     */
     @Override
-    public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
+    public Vault find(final Session session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
         for(Vault vault : this) {
             if(vault.contains(file)) {
                 if(log.isDebugEnabled()) {
@@ -118,7 +112,7 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
                 return vault;
             }
         }
-        if(lookup) {
+        if(unlock) {
             final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, prompt);
             if(file.attributes().getVault() != null) {
                 return listener.load(session, file.attributes().getVault(),
