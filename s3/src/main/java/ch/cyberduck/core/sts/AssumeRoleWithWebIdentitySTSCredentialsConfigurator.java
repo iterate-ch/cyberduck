@@ -24,9 +24,6 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -34,13 +31,13 @@ import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
 
-public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AWSProfileSTSCredentialsConfigurator {
-    private static final Logger log = LogManager.getLogger(AssumeRoleWithWebIdentitySTSCredentialsConfigurator.class);
+public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AbstractSTSCredentialsConfigurator {
 
-    public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
+    public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, PasswordCallback prompt) {
         super(trust, key, prompt);
     }
 
@@ -48,7 +45,7 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AWSProf
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
 
-        final AWSSecurityTokenService service = this.getTokenService(host, null, null, null, null);
+        service = this.getTokenService(host, null, null, null, null);
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
                 .withWebIdentityToken(credentials.getOauth().getAccessToken());
@@ -82,21 +79,29 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AWSProf
             webIdReq = webIdReq.withRoleSessionName(new HostPreferences(host).getProperty(rolesessionnameProp));
         }
 
-        AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
-        com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
 
-        if(log.isDebugEnabled()) {
-            log.debug(cred.toString());
+        try {
+            AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
+            com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
+
+            host.setProperty("sts.credentials.expiration", String.valueOf(result.getCredentials().getExpiration().getTime()));
+
+            if(log.isDebugEnabled()) {
+                log.debug(cred.toString());
+            }
+
+            credentials.setUsername(cred.getAccessKeyId());
+            credentials.setPassword(cred.getSecretAccessKey());
+            credentials.setToken(cred.getSessionToken());
         }
-
-        credentials.setUsername(cred.getAccessKeyId());
-        credentials.setPassword(cred.getSecretAccessKey());
-        credentials.setToken(cred.getSessionToken());
+//        catch(Inva)
+        catch(AWSSecurityTokenServiceException e) {
+            log.error(e.getErrorMessage());
+        }
 
         return credentials;
     }
 
-    @Override
     public AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
         final ClientConfiguration configuration = new CustomClientConfiguration(host,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
