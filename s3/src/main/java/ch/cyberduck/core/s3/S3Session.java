@@ -68,6 +68,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -95,6 +96,7 @@ import org.jets3t.service.utils.SignatureUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -306,9 +308,24 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                             // Generate AWS-flavoured ISO8601 timestamp string
                             final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
                             // Canonical request string
+                            final URI uri;
+                            try {
+                                uri = new URI(request.getRequestLine().getUri());
+                            }
+                            catch(URISyntaxException e) {
+                                throw new IOException(e);
+                            }
+                            final Map<String, String> headers = new HashMap<>();
+                            for(Header header : request.getAllHeaders()) {
+                                if(HttpHeaders.CONNECTION.equals(header.getName())) {
+                                    continue;
+                                }
+                                headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())),
+                                        StringUtils.trim(header.getValue()));
+                            }
                             final String canonicalRequestString =
-                                    SignatureUtils.awsV4BuildCanonicalRequestString(
-                                            message, requestPayloadHexSHA256Hash, region);
+                                    SignatureUtils.awsV4BuildCanonicalRequestString(uri,
+                                            request.getRequestLine().getMethod(), headers, requestPayloadHexSHA256Hash);
                             // String to sign
                             final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
                                     authenticationHeaderSignatureVersion.toString(), canonicalRequestString,
