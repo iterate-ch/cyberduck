@@ -110,8 +110,13 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
     public Credentials assumeRoleWithWebIdentity() throws BackgroundException {
         AWSSecurityTokenService service = this.getTokenService(host);
 
-        AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
-                .withWebIdentityToken(tokens.getAccessToken());
+        AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest();
+        if(StringUtils.isNotBlank(tokens.getIdToken())) {
+            webIdReq.withWebIdentityToken(tokens.getIdToken());
+        }
+        else {
+            webIdReq.withWebIdentityToken(tokens.getAccessToken());
+        }
 
 
         if (new HostPreferences(host).getInteger("s3.assumerole.durationseconds") != 0) {

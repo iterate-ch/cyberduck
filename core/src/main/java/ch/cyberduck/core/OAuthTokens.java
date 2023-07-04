@@ -18,16 +18,22 @@ package ch.cyberduck.core;
 import org.apache.commons.lang3.StringUtils;
 
 public final class OAuthTokens {
-    public static final OAuthTokens EMPTY = new OAuthTokens(null, null, Long.MAX_VALUE);
+    public static final OAuthTokens EMPTY = new OAuthTokens(null, null, Long.MAX_VALUE, null);
 
     private final String accessToken;
     private final String refreshToken;
     private final Long expiryInMilliseconds;
+    private final String idToken;
 
     public OAuthTokens(final String accessToken, final String refreshToken, final Long expiryInMilliseconds) {
+        this(accessToken, refreshToken, expiryInMilliseconds, null);
+    }
+
+    public OAuthTokens(final String accessToken, final String refreshToken, final Long expiryInMilliseconds, final String idToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiryInMilliseconds = expiryInMilliseconds;
+        this.idToken = idToken;
     }
 
     public boolean validate() {
@@ -45,6 +51,8 @@ public final class OAuthTokens {
     public Long getExpiryInMilliseconds() {
         return expiryInMilliseconds;
     }
+
+    public String getIdToken() { return idToken; }
 
     public boolean isExpired() {
         return System.currentTimeMillis() >= expiryInMilliseconds;
