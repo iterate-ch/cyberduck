@@ -19,6 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -39,51 +40,40 @@ import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResul
 
 public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AbstractSTSCredentialsConfigurator {
 
-    public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, PasswordCallback prompt) {
+    private OAuth2RequestInterceptor authorizationService;
+
+    public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key,
+                                                               PasswordCallback prompt, OAuth2RequestInterceptor authorizationService) {
         super(trust, key, prompt);
+        this.authorizationService = authorizationService;
     }
 
     @Override
     public Credentials configure(final Host host) {
-        final Credentials hostCredentials = new Credentials(host.getCredentials());
-
         service = this.getTokenService(host, null, null, null, null);
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest();
-        if(hostCredentials.getToken().isEmpty()) {
-            webIdReq = webIdReq.withWebIdentityToken(hostCredentials.getOauth().getAccessToken());
+        if(StringUtils.isNotBlank(authorizationService.getTokens().getIdToken())) {
+            webIdReq.withWebIdentityToken(authorizationService.getTokens().getIdToken());
         }
         else {
-            webIdReq = webIdReq.withWebIdentityToken(hostCredentials.getToken());
+            webIdReq.withWebIdentityToken(authorizationService.getTokens().getAccessToken());
         }
 
-        String durationsecondsProp = "s3.assumerole.durationseconds";
-        String policyProp = "s3.assumerole.policy";
-        String rolearnProp = "s3.assumerole.rolearn";
-        String rolesessionnameProp = "s3.assumerole.rolesessionname";
-
-        if (new HostPreferences(host).getInteger(durationsecondsProp) != 0) {
-            int durationSeconds = new HostPreferences(host).getInteger(durationsecondsProp);
-            // AWS: provide a value from 900 seconds (15 minutes) up to the maximum session duration setting for the role. This setting can have a value from 1 hour to 12 hours (43200 seconds).
-            // MinIO: The maximum value is 604800 or 7 days.
-            if (900 <= durationSeconds && durationSeconds <= 43200) {
-                webIdReq = webIdReq.withDurationSeconds(new HostPreferences(host).getInteger(durationsecondsProp));
-            }
-            else {
-                throw new IllegalArgumentException("DurationSeconds parameter is out of bounds");
-            }
+        if (new HostPreferences(host).getInteger("s3.assumerole.durationseconds") != 0) {
+            webIdReq.withDurationSeconds(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"));
         }
 
-        if (StringUtils.isBlank(new HostPreferences(host).getProperty(policyProp))) {
-            webIdReq = webIdReq.withPolicy(new HostPreferences(host).getProperty(policyProp));
+        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.policy"))) {
+            webIdReq.withPolicy(new HostPreferences(host).getProperty("s3.assumerole.policy"));
         }
 
-        if (StringUtils.isBlank(new HostPreferences(host).getProperty(rolearnProp))) {
-            webIdReq = webIdReq.withRoleArn(new HostPreferences(host).getProperty(rolearnProp));
+        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolearn"))) {
+            webIdReq.withRoleArn(new HostPreferences(host).getProperty("s3.assumerole.rolearn"));
         }
 
-        if (StringUtils.isBlank(new HostPreferences(host).getProperty(rolesessionnameProp))) {
-            webIdReq = webIdReq.withRoleSessionName(new HostPreferences(host).getProperty(rolesessionnameProp));
+        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"))) {
+            webIdReq.withRoleSessionName(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"));
         }
 
         Credentials credentials = new Credentials();
@@ -127,8 +117,6 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends Abstrac
                     }
                 })
                 .withClientConfiguration(configuration)
-//                TODO may be obsolete because of 'withEndpointConfiguration'. Needs to be tested against AWS
-//                .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.US_EAST_1)
                 .build();
     }
 }

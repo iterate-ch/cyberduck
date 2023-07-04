@@ -56,7 +56,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                                                         OAuth2RequestInterceptor authorizationService) {
         this.session = session;
         this.host = session.getHost();
-        this.configurator = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(trust, key, prompt);
+        this.configurator = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(trust, key, prompt, authorizationService);
         this.authorizationService = authorizationService;
         this.prompt = prompt;
     }

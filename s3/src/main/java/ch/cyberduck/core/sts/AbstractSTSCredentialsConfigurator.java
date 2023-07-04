@@ -23,10 +23,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import com.amazonaws.auth.profile.internal.BasicProfile;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 
 /**
@@ -40,8 +36,6 @@ public abstract class AbstractSTSCredentialsConfigurator implements CredentialsC
     protected final X509KeyManager key;
     protected final PasswordCallback prompt;
     protected AWSSecurityTokenService service;
-
-    private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
     public AbstractSTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, PasswordCallback prompt) {
         this.trust = trust;

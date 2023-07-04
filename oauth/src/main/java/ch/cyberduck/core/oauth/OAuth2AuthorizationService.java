@@ -140,16 +140,16 @@ public class OAuth2AuthorizationService {
         switch(flowType) {
             case AuthorizationCode:
                 final IdTokenResponse authorizationCodeResponse = this.authorizeWithCode(bookmark, prompt);
-                return credentials.withToken(authorizationCodeResponse.getIdToken()).withOauth(new OAuthTokens(
-                        authorizationCodeResponse.getAccessToken(), authorizationCodeResponse.getRefreshToken(),
+                return credentials.withOauth(new OAuthTokens(authorizationCodeResponse.getAccessToken(), authorizationCodeResponse.getRefreshToken(),
                         null == authorizationCodeResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + authorizationCodeResponse.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
+                                System.currentTimeMillis() + authorizationCodeResponse.getExpiresInSeconds() * 1000,
+                        authorizationCodeResponse.getIdToken())).withSaved(new LoginOptions().keychain).getOauth();
             case PasswordGrant:
                 final TokenResponse passwordGrantResponse = this.authorizeWithPassword(credentials);
                 return credentials.withOauth(new OAuthTokens(
                         passwordGrantResponse.getAccessToken(), passwordGrantResponse.getRefreshToken(),
                         null == passwordGrantResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + passwordGrantResponse.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
+                                System.currentTimeMillis() + passwordGrantResponse.getExpiresInSeconds() * 1000, null)).withSaved(new LoginOptions().keychain).getOauth();
             default:
                 throw new LoginCanceledException();
         }
@@ -255,7 +255,7 @@ public class OAuth2AuthorizationService {
             log.debug(String.format("Refresh expired tokens %s", tokens));
         }
         try {
-            final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
+            final IdTokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     tokens.getRefreshToken())
                     .setScopes(scopes.isEmpty() ? null : scopes)
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
@@ -263,9 +263,9 @@ public class OAuth2AuthorizationService {
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
             if(StringUtils.isBlank(response.getRefreshToken())) {
-                return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds);
+                return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds, response.getIdToken());
             }
-            return new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds);
+            return new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds, response.getIdToken());
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);

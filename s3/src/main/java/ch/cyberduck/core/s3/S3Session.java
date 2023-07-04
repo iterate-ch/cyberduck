@@ -186,11 +186,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
         final boolean isAssumeRoleWithWebIdentity = host.getProtocol().getSTSEndpoint() != null;
 
-        if((host.getProtocol().getOAuthAuthorizationUrl() != null) && !isAssumeRoleWithWebIdentity) {
+        if((host.getProtocol().isOAuthConfigurable()) && !isAssumeRoleWithWebIdentity) {
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         }
 
-        if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+        if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
                     .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
@@ -216,7 +216,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if (host.getProtocol().getOAuthAuthorizationUrl() != null) {
+        if (host.getProtocol().isOAuthConfigurable()) {
             authorizationService.authorize(host, prompt, cancel);
         }
 
@@ -241,9 +241,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
             }
             // get temporary credentials for MinIO with Web Identity (OIDC)
-            else if(host.getProtocol().getOAuthAuthorizationUrl() != null) {
+            else if(host.getProtocol().isOAuthConfigurable()) {
                 credentials = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust,
-                        host.getHostname()), key, prompt).configure(host);
+                        host.getHostname()), key, prompt, authorizationService).configure(host);
             }
             else {
                 credentials = host.getCredentials();
