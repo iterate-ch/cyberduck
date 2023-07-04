@@ -64,7 +64,7 @@ public class S3LoggingFeature implements Logging {
             final LoggingConfiguration configuration = new LoggingConfiguration(status.isLoggingEnabled(),
                     status.getTargetBucketName());
             try {
-                configuration.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(
+                configuration.setContainers(new S3BucketListService(session).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                         new DisabledListProgressListener()).toList());
             }
