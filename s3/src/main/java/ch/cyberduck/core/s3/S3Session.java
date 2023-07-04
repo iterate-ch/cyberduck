@@ -90,6 +90,7 @@ import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.security.ProviderCredentials;
+import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 import org.jets3t.service.utils.SignatureUtils;
 
@@ -269,14 +270,48 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws IOException {
                 if(client.isAuthenticatedConnection()) {
+                    final ProviderCredentials credentials = client.getProviderCredentials();
+                    final String bucketName = context.getAttribute("bucket").toString();
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Use bucket name %s from context for %s signature", bucketName, authenticationHeaderSignatureVersion));
+                    }
+                    final URI uri;
+                    try {
+                        uri = new URI(request.getRequestLine().getUri());
+                    }
+                    catch(URISyntaxException e) {
+                        throw new IOException(e);
+                    }
                     switch(authenticationHeaderSignatureVersion) {
                         case AWS2:
+                            String path = uri.getRawPath();
+                            // If bucket name is not already part of the full path, add it.
+                            // This can be the case if the Host name has a bucket-name prefix,
+                            // or if the Host name constitutes the bucket name for DNS-redirects.
+                            if(!StringUtils.startsWith(path, bucketName)) {
+                                path = String.format("/%s%s", bucketName, path);
+                            }
+                            final String queryString = uri.getRawQuery();
+                            if(StringUtils.isNotBlank(queryString)) {
+                                path += String.format("?%s", queryString);
+                            }
+                            // Generate a canonical string representing the operation.
+                            final String canonicalString = RestUtils.makeServiceCanonicalString(
+                                    request.getRequestLine().getMethod(),
+                                    path,
+                                    this.getHeadersAsObject(request),
+                                    null,
+                                    getRestHeaderPrefix(),
+                                    client.getResourceParameterNames());
+                            // Sign the canonical string.
+                            final String signedCanonical = ServiceUtils.signWithHmacSha1(
+                                    credentials.getSecretKey(), canonicalString);
+                            // Add encoded authorization to connection as HTTP Authorization header.
+                            final String authorizationString = getSignatureIdentifier() + " "
+                                    + credentials.getAccessKey() + ":" + signedCanonical;
+                            request.setHeader(HttpHeaders.AUTHORIZATION, authorizationString);
                             break;
                         case AWS4HMACSHA256:
-                            final String bucketName = context.getAttribute("bucket").toString();
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Use bucket name %s from context for %s signature", bucketName, authenticationHeaderSignatureVersion));
-                            }
                             String region = regions.getRegionForBucketName(bucketName);
                             if(null == region) {
                                 final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
@@ -308,21 +343,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                             // Generate AWS-flavoured ISO8601 timestamp string
                             final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
                             // Canonical request string
-                            final URI uri;
-                            try {
-                                uri = new URI(request.getRequestLine().getUri());
-                            }
-                            catch(URISyntaxException e) {
-                                throw new IOException(e);
-                            }
-                            final Map<String, String> headers = new HashMap<>();
-                            for(Header header : request.getAllHeaders()) {
-                                if(HttpHeaders.CONNECTION.equals(header.getName())) {
-                                    continue;
-                                }
-                                headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())),
-                                        StringUtils.trim(header.getValue()));
-                            }
+                            final Map<String, String> headers = this.getHeadersAsString(request);
                             final String canonicalRequestString =
                                     SignatureUtils.awsV4BuildCanonicalRequestString(uri,
                                             request.getRequestLine().getMethod(), headers, requestPayloadHexSHA256Hash);
@@ -330,7 +351,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                             final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
                                     authenticationHeaderSignatureVersion.toString(), canonicalRequestString,
                                     timestampISO8601, region);
-                            final ProviderCredentials credentials = client.getProviderCredentials();
                             // Signing key
                             final byte[] signingKey = SignatureUtils.awsV4BuildSigningKey(
                                     credentials.getSecretKey(), timestampISO8601, region);
@@ -347,6 +367,28 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                             break;
                     }
                 }
+            }
+
+            private Map<String, String> getHeadersAsString(final HttpRequest request) {
+                final Map<String, String> headers = new HashMap<>();
+                for(Header header : request.getAllHeaders()) {
+                    if(HttpHeaders.CONNECTION.equals(header.getName())) {
+                        continue;
+                    }
+                    headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
+                }
+                return headers;
+            }
+
+            private Map<String, Object> getHeadersAsObject(final HttpRequest request) {
+                final Map<String, Object> headers = new HashMap<>();
+                for(Header header : request.getAllHeaders()) {
+                    if(HttpHeaders.CONNECTION.equals(header.getName())) {
+                        continue;
+                    }
+                    headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
+                }
+                return headers;
             }
         });
         final RequestEntityRestStorageService client = new RequestEntityRestStorageService(this, configuration);
