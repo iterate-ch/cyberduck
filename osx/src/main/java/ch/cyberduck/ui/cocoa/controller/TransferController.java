@@ -713,9 +713,9 @@ public final class TransferController extends WindowController implements Transf
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                final TransferOptions options = new TransferOptions();
-                options.resumeRequested = true;
-                options.reloadRequested = false;
+                final TransferOptions options = new TransferOptions()
+                        .resume(true)
+                        .reload(false);
                 this.start(transfer, options);
             }
         }
@@ -728,9 +728,9 @@ public final class TransferController extends WindowController implements Transf
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                final TransferOptions options = new TransferOptions();
-                options.resumeRequested = false;
-                options.reloadRequested = true;
+                final TransferOptions options = new TransferOptions()
+                        .resume(false)
+                        .reload(true);
                 this.start(transfer, options);
             }
         }
