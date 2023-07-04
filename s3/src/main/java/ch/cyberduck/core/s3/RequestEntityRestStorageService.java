@@ -38,7 +38,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,7 +53,6 @@ import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.security.AWSSessionCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
@@ -90,7 +89,6 @@ public class RequestEntityRestStorageService extends RestS3Service {
         properties.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
         properties.setProperty("storage-service.request-signature-version", signatureVersion.toString());
         properties.setProperty("storage-service.disable-live-md5", String.valueOf(true));
-        properties.setProperty("storage-service.default-region", bookmark.getRegion());
         properties.setProperty("xmlparser.sanitize-listings", String.valueOf(false));
         for(Map.Entry<String, String> property : bookmark.getProtocol().getProperties().entrySet()) {
             properties.setProperty(property.getKey(), property.getValue());
@@ -266,32 +264,14 @@ public class RequestEntityRestStorageService extends RestS3Service {
             default:
                 throw new IllegalArgumentException(String.format("Unrecognised HTTP method name %s", method));
         }
-        // Set mandatory Request headers.
-        if(request.getFirstHeader("Date") == null) {
-            request.setHeader("Date", ServiceUtils.formatRfc822Date(getCurrentTimeWithOffset()));
-        }
-        if(preferences.getBoolean("s3.upload.expect-continue")) {
-            if("PUT".equals(request.getMethod())) {
-                // #7621
-                request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
-            }
-        }
-        if(preferences.getBoolean("s3.bucket.requesterpays")) {
-            // Only for AWS
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                // Downloading Objects in Requester Pays Buckets
-                if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
-                    if(!preferences.getBoolean("s3.bucket.requesterpays")) {
-                        // For GET and POST requests, include x-amz-request-payer : requester in the header
-                        request.addHeader("x-amz-request-payer", "requester");
-                    }
-                }
-            }
-        }
-        if(this.getProviderCredentials() instanceof AWSSessionCredentials) {
-            request.setHeader(Constants.AMZ_SECURITY_TOKEN, ((AWSSessionCredentials) getProviderCredentials()).getSessionToken());
-        }
         return request;
+    }
+
+    @Override
+    protected HttpResponse performRequest(final String bucketName, final HttpUriRequest httpMethod, final int[] expectedResponseCodes) throws ServiceException {
+        final BasicHttpContext context = new BasicHttpContext();
+        context.setAttribute("bucket", bucketName);
+        return super.performRequest(bucketName, httpMethod, expectedResponseCodes, context);
     }
 
     protected static String createRegionSpecificEndpoint(final Host host, final String region) {
@@ -428,7 +408,6 @@ public class RequestEntityRestStorageService extends RestS3Service {
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
-        super.authorizeHttpRequest(bucketName, httpMethod, context, forceRequestSignatureVersion);
     }
 
     @Override
