@@ -30,8 +30,6 @@ import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.impl.rest.httpclient.JetS3tRequestAuthorizer;
 import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
@@ -39,12 +37,10 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
 
     private final RequestEntityRestStorageService service;
     private final Host host;
-    private final JetS3tRequestAuthorizer authorizer;
 
-    public S3BucketRegionRedirectStrategy(final RequestEntityRestStorageService service, final Host host, final JetS3tRequestAuthorizer authorizer) {
+    public S3BucketRegionRedirectStrategy(final RequestEntityRestStorageService service, final Host host) {
         this.service = service;
         this.host = host;
-        this.authorizer = authorizer;
     }
 
     @Override
@@ -74,15 +70,6 @@ public class S3BucketRegionRedirectStrategy extends DefaultRedirectStrategy {
                     RequestEntityRestStorageService.createRegionSpecificEndpoint(host, region));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Determined bucket %s from request %s", bucketName, request));
-            }
-            try {
-                authorizer.authorizeHttpRequest(bucketName, redirect, context, null);
-            }
-            catch(ServiceException e) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Failure %s authorizing request %s", e, request));
-                }
-                throw new RedirectException(e.getMessage(), e);
             }
             // Update cache with new region
             if(bucketName != null) {

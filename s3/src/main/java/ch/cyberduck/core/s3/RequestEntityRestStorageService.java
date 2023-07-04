@@ -101,7 +101,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         this.session = session;
         this.properties = this.getJetS3tProperties();
         // Client configuration
-        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session.getHost(), this));
+        configuration.setRedirectStrategy(new S3BucketRegionRedirectStrategy(this, session.getHost()));
         this.setHttpClient(configuration.build());
     }
 
