@@ -343,8 +343,9 @@ public class Credentials implements Comparable<Credentials> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Credentials{");
         sb.append("user='").append(user).append('\'');
+        sb.append(", password='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(password)))).append('\'');
         sb.append(", oauth='").append(oauth).append('\'');
-        sb.append(", token='").append(token).append('\'');
+        sb.append(", token='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(token)))).append('\'');
         sb.append(", identity=").append(identity);
         sb.append('}');
         return sb.toString();
