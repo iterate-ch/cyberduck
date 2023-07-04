@@ -69,6 +69,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.client.methods.HttpGet;
@@ -235,6 +236,16 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 });
             }
         }
+        configuration.addInterceptorLast(new HttpRequestInterceptor() {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) {
+                // Ensure the required Host header is set prior to signing.
+                final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+                if(host != null) {
+                    request.setHeader(HttpHeaders.HOST, String.format("%s:%d", host.getHostName(), host.getPort()));
+                }
+            }
+        });
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             private final RFC822DateFormatter formatter = new RFC822DateFormatter();
 
