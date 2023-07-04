@@ -242,7 +242,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 // Ensure the required Host header is set prior to signing.
                 final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
                 if(host != null) {
-                    request.setHeader(HttpHeaders.HOST, String.format("%s:%d", host.getHostName(), host.getPort()));
+                    request.setHeader(HttpHeaders.HOST, host.toHostString());
                 }
             }
         });
@@ -267,19 +267,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws IOException {
                 if(client.isAuthenticatedConnection()) {
-                    final URI requestURI;
-                    try {
-                        if(new URI(request.getRequestLine().getUri()).isAbsolute()) {
-                            requestURI = new URI(request.getRequestLine().getUri());
-                        }
-                        else {
-                            requestURI = URI.create(String.format("%s%s",
-                                    context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST).toString(), request.getRequestLine().getUri()));
-                        }
-                    }
-                    catch(URISyntaxException e) {
-                        throw new IOException(e);
-                    }
                     switch(authenticationHeaderSignatureVersion) {
                         case AWS2:
                             break;
@@ -290,7 +277,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                             }
                             String region = regions.getRegionForBucketName(bucketName);
                             if(null == region) {
-                                region = SignatureUtils.awsRegionForRequest(requestURI);
+                                final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
+                                if(host != null) {
+                                    try {
+                                        region = SignatureUtils.awsRegionForRequest(new URI(host.toURI()));
+                                    }
+                                    catch(URISyntaxException e) {
+                                        throw new IOException(e);
+                                    }
+                                }
                                 if(region != null) {
                                     if(log.isDebugEnabled()) {
                                         log.debug(String.format("Cache region %s for bucket %s", region, bucketName));
