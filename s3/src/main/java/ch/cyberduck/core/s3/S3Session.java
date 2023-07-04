@@ -245,7 +245,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 // Ensure the required Host header is set prior to signing.
                 final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
                 if(host != null) {
-                    request.setHeader(HttpHeaders.HOST, host.toHostString());
+                    request.setHeader(HttpHeaders.HOST, host.getHostName());
                 }
             }
         });
