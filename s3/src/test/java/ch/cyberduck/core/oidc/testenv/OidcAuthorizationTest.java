@@ -37,13 +37,13 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ch.cyberduck.test.EmbeddedTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
-@Category(EmbeddedTest.class)
+@Category(TestcontainerTest.class)
 public class OidcAuthorizationTest extends AbstractOidcTest {
 
     @Test

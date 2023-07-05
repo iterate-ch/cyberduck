@@ -1,4 +1,4 @@
-package ch.cyberduck.test;/*
+package ch.cyberduck.core.exception;/*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
@@ -13,5 +13,16 @@ package ch.cyberduck.test;/*
  * GNU General Public License for more details.
  */
 
-public @interface EmbeddedTest {
+public class WebIdentityTokenExpiredException extends LoginFailureException {
+    public WebIdentityTokenExpiredException(final String detail) {
+        super(detail);
+    }
+
+    public WebIdentityTokenExpiredException(final String detail, final Throwable cause) {
+        super(detail, cause);
+    }
+
+    public WebIdentityTokenExpiredException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
 }

@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.test.EmbeddedTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +37,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 
-@Category(EmbeddedTest.class)
+@Category(TestcontainerTest.class)
 public abstract class AbstractOidcTest {
 
     protected static final Logger log = LogManager.getLogger(AbstractOidcTest.class);

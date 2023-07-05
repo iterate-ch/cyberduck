@@ -20,14 +20,16 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.WebIdentityTokenExpiredException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.test.EmbeddedTest;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -38,7 +40,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-@Category(EmbeddedTest.class)
+@Category(TestcontainerTest.class)
 public class OidcAuthenticationTest extends AbstractOidcTest {
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
@@ -75,7 +77,6 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.close();
     }
 
-
     @Test
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
@@ -95,6 +96,37 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         assertNotEquals(firstAccessToken, secondAccessToken);
         assertNotEquals(firstRefreshToken, secondRefreshToken);
     }
+
+    @Test
+    public void testOauthTokenExpired() throws BackgroundException, InterruptedException {
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        final S3Session session = new S3Session(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        Thread.sleep(1100 * 30);
+        assertTrue(host.getCredentials().getOauth().isExpired());
+    }
+
+/*    @Test(expected = WebIdentityTokenExpiredException.class)
+    public void testSTSTokenExpired() throws BackgroundException, InterruptedException {
+        final Credentials c = new Credentials("rawuser", "rawuser");
+        final Host host = new Host(profile, profile.getDefaultHostname(), c);
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+
+        String expiredAccessToken = "expired_access_token";
+        String refreshToken = host.getCredentials().getOauth().getRefreshToken();
+        c.setOauth(new OAuthTokens(expiredAccessToken, refreshToken, -1L));
+
+
+        final S3Session session = new S3Session(host);
+
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+
+    }*/
 
 
     //separate STS Service test - maybe not possible

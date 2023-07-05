@@ -23,8 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.exception.WebIdentityTokenExpiredException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator;
@@ -92,6 +92,9 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                 catch(IOException e) {
                     log.warn(String.format("Failure parsing response entity from %s", response));
                 }
+                catch(WebIdentityTokenExpiredException e) {
+                    log.warn("Failure refreshing token");
+                }
             }
         }
 
@@ -103,7 +106,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
         return false;
     }
 
-    private void refreshOAuthAndSTS() {
+    private void refreshOAuthAndSTS() throws WebIdentityTokenExpiredException {
         try {
             if(host.getCredentials().getOauth().isExpired()) {
                 try {
@@ -115,17 +118,19 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                     authorizationService.authorize(host, prompt, new DisabledCancelCallback());
                 }
             }
-
-            Credentials credentials = configurator.configure(host);
-            session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                    new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
-                            credentials.getToken()));
-
-
+            try {
+                Credentials credentials = authorizationService.assumeRoleWithWebIdentity();
+                session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                        new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                                credentials.getToken()));
+            }
+            catch(IllegalArgumentException e) {
+                log.error("Failed to configure credentials", e);
+            }
         }
         catch(BackgroundException e) {
             log.error("Failed to refresh OAuth in order to get STS", e);
-            throw new RuntimeException(e);
+            throw new WebIdentityTokenExpiredException("Failed to refresh OAuth in order to get STS", e);
         }
     }
 }
