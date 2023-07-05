@@ -105,7 +105,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, CreateDownloadShareRequest options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, CreateDownloadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create download share for %s", file));
@@ -178,7 +178,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create upload share for %s", file));

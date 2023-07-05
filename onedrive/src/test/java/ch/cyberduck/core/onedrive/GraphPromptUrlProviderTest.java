@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphPromptUrlProvider;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
@@ -42,7 +43,7 @@ public class GraphPromptUrlProviderTest extends AbstractOneDriveTest {
     public void toUrl() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderService().find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session, fileid).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotEquals(DescriptiveUrl.EMPTY, new GraphPromptUrlProvider(session).toDownloadUrl(file, null, new DisabledPasswordCallback()));
+        assertNotEquals(DescriptiveUrl.EMPTY, new GraphPromptUrlProvider(session).toDownloadUrl(file, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback()));
         new GraphDeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

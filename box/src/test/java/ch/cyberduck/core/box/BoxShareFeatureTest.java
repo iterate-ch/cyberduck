@@ -43,7 +43,7 @@ public class BoxShareFeatureTest extends AbstractBoxTest {
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(directory, PromptUrlProvider.Type.download));
         assertFalse(feature.isSupported(directory, PromptUrlProvider.Type.upload));
-        assertNotNull(feature.toDownloadUrl(directory, null, new DisabledPasswordCallback()).getUrl());
+        assertNotNull(feature.toDownloadUrl(directory, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
@@ -55,7 +55,7 @@ public class BoxShareFeatureTest extends AbstractBoxTest {
         final BoxShareFeature feature = new BoxShareFeature(session, fileid);
         assertTrue(feature.isSupported(test, PromptUrlProvider.Type.download));
         assertFalse(feature.isSupported(test, PromptUrlProvider.Type.upload));
-        assertNotNull(feature.toDownloadUrl(test, null, new DisabledPasswordCallback()).getUrl());
+        assertNotNull(feature.toDownloadUrl(test, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new BoxDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

@@ -42,7 +42,7 @@ public class GoogleStoragePublicUrlProvider implements PromptUrlProvider<Void, V
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         final GoogleStorageAccessControlListFeature acl = new GoogleStorageAccessControlListFeature(session);
         final Acl permission = acl.getPermission(file);
         final Acl.GroupUser everyone = new Acl.GroupUser(Acl.GroupUser.EVERYONE);
@@ -55,7 +55,7 @@ public class GoogleStoragePublicUrlProvider implements PromptUrlProvider<Void, V
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) {
         return DescriptiveUrl.EMPTY;
     }
 }

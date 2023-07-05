@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ObjectExpiration;
@@ -51,16 +52,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-            new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxDownloads(null), new DisabledPasswordCallback());
+                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
@@ -72,16 +73,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(room,
-            new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxDownloads(null), new DisabledPasswordCallback());
+                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
@@ -94,16 +95,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-            new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxDownloads(null), new DisabledPasswordCallback());
+                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
@@ -117,16 +118,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                new CreateDownloadShareRequest()
-                    .expiration(new ObjectExpiration().enableExpiration(false))
-                    .notifyCreator(false)
-                    .sendMail(true)
-                    .mailRecipients(null)
-                    .sendSms(false)
-                    .password(null)
-                    .mailSubject(null)
-                    .mailBody(null)
-                    .maxDownloads(null), new DisabledPasswordCallback());
+                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                            .expiration(new ObjectExpiration().enableExpiration(false))
+                            .notifyCreator(false)
+                            .sendMail(true)
+                            .mailRecipients(null)
+                            .sendSms(false)
+                            .password(null)
+                            .mailSubject(null)
+                            .mailBody(null)
+                            .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -140,17 +141,17 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                new CreateDownloadShareRequest()
-                    .expiration(new ObjectExpiration().enableExpiration(false))
-                    .notifyCreator(false)
-                    .sendMail(false)
-                    .mailRecipients(null)
-                    .sendSms(true)
-                    .smsRecipients("invalid")
-                    .password("p")
-                    .mailSubject(null)
-                    .mailBody(null)
-                    .maxDownloads(null), new DisabledPasswordCallback());
+                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                            .expiration(new ObjectExpiration().enableExpiration(false))
+                            .notifyCreator(false)
+                            .sendMail(false)
+                            .mailRecipients(null)
+                            .sendSms(true)
+                            .smsRecipients("invalid")
+                            .password("p")
+                            .mailSubject(null)
+                            .mailBody(null)
+                            .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -164,16 +165,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                new CreateDownloadShareRequest()
-                    .expiration(new ObjectExpiration().enableExpiration(false))
-                    .notifyCreator(false)
-                    .sendMail(false)
-                    .mailRecipients(null)
-                    .sendSms(false)
-                    .password("p")
-                    .mailSubject(null)
-                    .mailBody(null)
-                    .maxDownloads(null), new DisabledPasswordCallback());
+                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                            .expiration(new ObjectExpiration().enableExpiration(false))
+                            .notifyCreator(false)
+                            .sendMail(false)
+                            .mailRecipients(null)
+                            .sendSms(false)
+                            .password("p")
+                            .mailSubject(null)
+                            .mailBody(null)
+                            .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -187,15 +188,15 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                new CreateDownloadShareRequest()
-                    .expiration(new ObjectExpiration().enableExpiration(false))
-                    .notifyCreator(false)
-                    .sendMail(true)
-                    .mailRecipients("a@b")
-                    .sendSms(false)
-                    .mailSubject(null)
-                    .mailBody(null)
-                    .maxDownloads(null), new DisabledPasswordCallback());
+                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                            .expiration(new ObjectExpiration().enableExpiration(false))
+                            .notifyCreator(false)
+                            .sendMail(true)
+                            .mailRecipients("a@b")
+                            .sendSms(false)
+                            .mailSubject(null)
+                            .mailBody(null)
+                            .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -208,16 +209,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-            new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(1744300800000L)))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxDownloads(null), new DisabledPasswordCallback());
+                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(1744300800000L)))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
@@ -230,16 +231,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-            new CreateDownloadShareRequest()
-                .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(17443L)))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxDownloads(null), new DisabledPasswordCallback());
+                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                        .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(17443L)))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertEquals(DescriptiveUrl.Type.signed, url.getType());
         assertTrue(url.getUrl().startsWith("https://duck.dracoon.com/public/download-shares/"));
@@ -253,7 +254,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                new CreateDownloadShareRequest()
+                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -261,9 +262,9 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                         .password(null)
                         .mailRecipients(null)
                         .mailSubject(null)
-                .mailBody(null)
-                .maxDownloads(null), new DisabledPasswordCallback() {
-                @Override
+                        .mailBody(null)
+                        .maxDownloads(null), new DisabledPasswordCallback() {
+                    @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new VaultCredentials("eth[oh8uv4Eesij");
                 }
@@ -282,16 +283,16 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                    new CreateDownloadShareRequest()
+                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
                             .expiration(new ObjectExpiration().enableExpiration(false))
                             .notifyCreator(false)
                             .sendMail(false)
                             .sendSms(false)
                             .password(null)
                             .mailRecipients(null)
-                    .mailSubject(null)
-                    .mailBody(null)
-                    .maxDownloads(null), new DisabledPasswordCallback());
+                            .mailSubject(null)
+                            .mailBody(null)
+                            .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -303,17 +304,17 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(room,
-            new CreateUploadShareRequest()
-                .name(new AlphanumericRandomStringService().random())
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxSize(null)
+                PromptUrlProvider.Sharee.world, new CreateUploadShareRequest()
+                        .name(new AlphanumericRandomStringService().random())
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxSize(null)
                 .maxSlots(null)
                 .notes(null)
                 .filesExpiryPeriod(null), new DisabledPasswordCallback());
@@ -330,7 +331,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(folder,
-                new CreateUploadShareRequest()
+                PromptUrlProvider.Sharee.world, new CreateUploadShareRequest()
                         .name(new AlphanumericRandomStringService().random())
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
@@ -338,9 +339,9 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                         .sendSms(false)
                         .password(null)
                         .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxSize(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxSize(null)
                 .maxSlots(null)
                 .notes(null)
                 .filesExpiryPeriod(null), new DisabledPasswordCallback());
@@ -356,17 +357,17 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(test,
-            new CreateUploadShareRequest()
-                .name(new AlphanumericRandomStringService().random())
-                .expiration(new ObjectExpiration().enableExpiration(false))
-                .notifyCreator(false)
-                .sendMail(false)
-                .sendSms(false)
-                .password(null)
-                .mailRecipients(null)
-                .mailSubject(null)
-                .mailBody(null)
-                .maxSize(null)
+                PromptUrlProvider.Sharee.world, new CreateUploadShareRequest()
+                        .name(new AlphanumericRandomStringService().random())
+                        .expiration(new ObjectExpiration().enableExpiration(false))
+                        .notifyCreator(false)
+                        .sendMail(false)
+                        .sendSms(false)
+                        .password(null)
+                        .mailRecipients(null)
+                        .mailSubject(null)
+                        .mailBody(null)
+                        .maxSize(null)
                 .maxSlots(null)
                 .notes(null)
                 .filesExpiryPeriod(null), new DisabledPasswordCallback());

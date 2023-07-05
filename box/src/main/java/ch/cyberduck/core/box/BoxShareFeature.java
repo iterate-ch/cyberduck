@@ -60,7 +60,7 @@ public class BoxShareFeature implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         if(file.isDirectory()) {
             return this.createFolderSharedLink(file, callback);
         }
@@ -68,7 +68,7 @@ public class BoxShareFeature implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         throw new UnsupportedException();
     }
 

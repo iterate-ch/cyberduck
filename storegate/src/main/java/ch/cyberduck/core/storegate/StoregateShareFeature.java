@@ -50,7 +50,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             final Host bookmark = session.getHost();
             final CreateFileShareRequest request = new CreateFileShareRequest()
@@ -68,7 +68,7 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             final Host bookmark = session.getHost();
             final CreateFileShareRequest request = new CreateFileShareRequest()

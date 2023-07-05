@@ -48,7 +48,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create temporary link for %s", file));
@@ -70,7 +70,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create temporary upload link for %s", file));

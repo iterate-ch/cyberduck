@@ -48,7 +48,7 @@ public class DownloadShareWorker<Options> extends Worker<DescriptiveUrl> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", provider));
         }
-        return provider.toDownloadUrl(file, options, callback);
+        return provider.toDownloadUrl(file, PromptUrlProvider.Sharee.world, options, callback);
     }
 
     @Override

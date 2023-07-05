@@ -44,7 +44,7 @@ public class S3PublicUrlProviderTest extends AbstractS3Test {
         final S3PublicUrlProvider provider = new S3PublicUrlProvider(session, new S3AccessControlListFeature(session));
         assertFalse(provider.isSupported(bucket, PromptUrlProvider.Type.download));
         assertTrue(provider.isSupported(test, PromptUrlProvider.Type.download));
-        final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());
+        final DescriptiveUrl url = provider.toDownloadUrl(test, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

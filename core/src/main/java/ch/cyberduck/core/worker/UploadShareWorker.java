@@ -48,7 +48,7 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", provider));
         }
-        return provider.toUploadUrl(file, options, callback);
+        return provider.toUploadUrl(file, PromptUrlProvider.Sharee.world, options, callback);
     }
 
     @Override

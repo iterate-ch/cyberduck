@@ -44,7 +44,7 @@ public class B2AuthorizedUrlProviderTest extends AbstractB2Test {
         new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
         final B2AuthorizedUrlProvider provider = new B2AuthorizedUrlProvider(session, fileid);
         assertFalse(provider.isSupported(bucket, PromptUrlProvider.Type.download));
-        final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());
+        final DescriptiveUrl url = provider.toDownloadUrl(test, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

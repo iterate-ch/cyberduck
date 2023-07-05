@@ -35,12 +35,12 @@ public class DefaulPromptUrlProvider implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) {
         return proxy.toUrl(file).find(DescriptiveUrl.Type.signed);
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

@@ -46,14 +46,14 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toDownloadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         final Permission permission = new Permission();
         // To make a file public you will need to assign the role reader to the type anyone
         permission.setRole("reader");
         permission.setType("anyone");
         try {
             session.getClient().permissions().create(fileid.getFileId(file), permission)
-                .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
+                    .setSupportsAllDrives(new HostPreferences(session.getHost()).getBoolean("googledrive.teamdrive.enable")).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService(fileid).map("Failure to write attributes of {0}", e, file);
@@ -62,7 +62,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
     }
 
     @Override
-    public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
+    public DescriptiveUrl toUploadUrl(final Path file, final Sharee sharee, final Object options, final PasswordCallback callback) throws BackgroundException {
         return DescriptiveUrl.EMPTY;
     }
 }

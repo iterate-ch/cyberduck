@@ -16,20 +16,66 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+
+import java.util.Collections;
+import java.util.Set;
 
 @Optional
 public interface PromptUrlProvider<Download, Upload> {
     boolean isSupported(Path file, Type type);
 
-    DescriptiveUrl toDownloadUrl(Path file, Download options, PasswordCallback callback) throws BackgroundException;
+    /**
+     * Retrieve list of users from server
+     *
+     * @return List of possible users to select from
+     */
+    default Set<Sharee> getSharees() throws BackgroundException {
+        return Collections.singleton(Sharee.world);
+    }
 
-    DescriptiveUrl toUploadUrl(Path file, Upload options, PasswordCallback callback) throws BackgroundException;
+    DescriptiveUrl toDownloadUrl(Path file, Sharee sharee, Download options, PasswordCallback callback) throws BackgroundException;
+
+    DescriptiveUrl toUploadUrl(Path file, Sharee sharee, Upload options, PasswordCallback callback) throws BackgroundException;
 
     enum Type {
         download,
         upload
+    }
+
+    class Sharee {
+        private final String identifier;
+        private final String description;
+
+        public Sharee(final String identifier, final String description) {
+            this.identifier = identifier;
+            this.description = description;
+        }
+
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Sharee{");
+            sb.append("identifier='").append(identifier).append('\'');
+            sb.append(", description='").append(description).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
+
+        public static final Sharee world = new Sharee(null, LocaleFactory.localizedString("AllUsers", "S3"));
+    }
+
+    interface ShareeCallback {
+        Sharee prompt(Set<Sharee> sharees);
     }
 }

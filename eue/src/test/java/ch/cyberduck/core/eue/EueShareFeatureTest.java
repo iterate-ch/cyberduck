@@ -46,7 +46,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueShareFeature feature = new EueShareFeature(session, fileid);
         try {
-            feature.toDownloadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+            feature.toDownloadUrl(sourceFolder, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new Credentials(null, "test");
@@ -67,7 +67,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueShareFeature feature = new EueShareFeature(session, fileid);
-        final DescriptiveUrl url = feature.toDownloadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+        final DescriptiveUrl url = feature.toDownloadUrl(sourceFolder, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
@@ -75,7 +75,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         // Test returning same share
-        assertEquals(url, feature.toDownloadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+        assertEquals(url, feature.toDownloadUrl(sourceFolder, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
@@ -93,7 +93,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         createFile(fileid, file, RandomUtils.nextBytes(0));
         assertTrue(new EueFindFeature(session, fileid).find(file));
         final EueShareFeature feature = new EueShareFeature(session, fileid);
-        final DescriptiveUrl url = feature.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        final DescriptiveUrl url = feature.toDownloadUrl(file, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
@@ -101,7 +101,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         // Test returning same share
-        assertEquals(url, feature.toDownloadUrl(file, null, new DisabledPasswordCallback() {
+        assertEquals(url, feature.toDownloadUrl(file, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
@@ -116,7 +116,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         final EueResourceIdProvider fileid = new EueResourceIdProvider(session);
         final Path sourceFolder = new EueDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final EueShareFeature feature = new EueShareFeature(session, fileid);
-        final DescriptiveUrl url = feature.toUploadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+        final DescriptiveUrl url = feature.toUploadUrl(sourceFolder, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
@@ -124,7 +124,7 @@ public class EueShareFeatureTest extends AbstractEueSessionTest {
         });
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         // Test returning same share
-        assertEquals(url, feature.toUploadUrl(sourceFolder, null, new DisabledPasswordCallback() {
+        assertEquals(url, feature.toUploadUrl(sourceFolder, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(null, new AlphanumericRandomStringService().random());
