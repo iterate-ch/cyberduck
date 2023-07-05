@@ -35,26 +35,28 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
     private final Session<?> session;
     private final VaultLookupListener listener;
     private final ListProgressListener progress;
+    private final String config;
+    private final String masterkey;
+    private final byte[] pepper;
 
     public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener listener, final ListProgressListener progress) {
         this.session = session;
         this.listener = listener;
         this.progress = progress;
+        this.config = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename");
+        this.masterkey = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename");
+        this.pepper = new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) throws ConnectionCanceledException {
         final Path directory = file.getParent();
-        if(new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename").equals(file.getName()) ||
-                new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename").equals(file.getName())) {
+        if(config.equals(file.getName()) || masterkey.equals(file.getName())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found vault config or masterkey file %s", file));
             }
             try {
-                final Vault vault = listener.load(session, directory,
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.masterkey.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.config.filename"),
-                        new HostPreferences(session.getHost()).getProperty("cryptomator.vault.pepper").getBytes(StandardCharsets.UTF_8));
+                final Vault vault = listener.load(session, directory, masterkey, config, pepper);
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }

@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class RevealServiceFactory extends Factory<RevealService> {
 
-    public RevealServiceFactory() {
+    private RevealServiceFactory() {
         super("factory.reveal.class");
     }
 

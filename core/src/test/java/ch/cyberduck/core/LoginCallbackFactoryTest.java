@@ -1,7 +1,7 @@
-package ch.cyberduck.core.updater;
+package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,21 @@ package ch.cyberduck.core.updater;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.threading.MainAction;
 
-public class UpdateCheckerArgumentsFactory extends Factory<UpdateCheckerArguments> {
+import org.junit.Test;
 
-    private UpdateCheckerArgumentsFactory() {
-        super("factory.updater.arguments.class");
-    }
+import static org.junit.Assert.assertNotNull;
 
-    public static UpdateCheckerArguments get() {
-        return new UpdateCheckerArgumentsFactory().create();
+public class LoginCallbackFactoryTest {
+
+    @Test
+    public void testCreate() {
+        assertNotNull(LoginCallbackFactory.get(new AbstractController() {
+            @Override
+            public void invoke(final MainAction runnable, final boolean wait) {
+
+            }
+        }));
     }
 }

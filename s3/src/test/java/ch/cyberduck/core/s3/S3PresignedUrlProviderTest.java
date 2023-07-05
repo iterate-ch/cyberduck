@@ -104,12 +104,18 @@ public class S3PresignedUrlProviderTest extends AbstractS3Test {
     public void testDnsBucketNamingDisabled() {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
                 PROPERTIES.get("s3.key"), PROPERTIES.get("s3.secret")
-        ));
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        )) {
+            @Override
+            public String getProperty(final String key) {
+                if("s3.bucket.virtualhost.disable".equals(key)) {
+                    return String.valueOf(true);
+                }
+                return super.getProperty(key);
+            }
+        };
         final S3Session session = new S3Session(host);
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
-        session.getHost().setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final String url = new S3PresignedUrlProvider(session).create(PROPERTIES.get("s3.secret"),
                 "test-bucket", "region", "f", "GET", expiry.getTimeInMillis());
         assertNotNull(url);

@@ -133,7 +133,9 @@ public class CryptoDeleteV7Feature implements Delete, Trash {
                         }
                         metadata.add(dataRoot);
                     }
-                    metadata.add(vault.getMasterkey());
+                    if(vault.getMasterkey() != null) {
+                        metadata.add(vault.getMasterkey());
+                    }
                     if(find.find(vault.getConfig())) {
                         metadata.add(vault.getConfig());
                     }

@@ -314,7 +314,7 @@ public class PreferencesController extends ToolbarWindowController {
                 this.configureDefaultProtocolHandlerCombobox(this.defaultSFTPHandlerCombobox, Scheme.sftp);
                 break;
             case profiles:
-                profilesPanelController.load();
+                profilesPanelController.load(this);
                 break;
         }
     }

@@ -30,7 +30,7 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
 
     private Constructor<? extends AlertCallback> constructor;
 
-    protected AlertCallbackFactory() {
+    private AlertCallbackFactory() {
         super("factory.alertcallback.class");
     }
 
@@ -52,13 +52,16 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
         }
     }
 
-    private static final AlertCallbackFactory singleton = new AlertCallbackFactory();
+    private static AlertCallbackFactory singleton;
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static AlertCallback get(final Controller c) {
+    public static synchronized AlertCallback get(final Controller c) {
+        if(null == singleton) {
+            singleton = new AlertCallbackFactory();
+        }
         return singleton.create(c);
     }
 }

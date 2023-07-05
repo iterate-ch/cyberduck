@@ -19,17 +19,17 @@ public interface NotificationFilterService {
     boolean shouldSuppress();
 
     final class Factory extends ch.cyberduck.core.Factory<NotificationFilterService> {
-        private static NotificationFilterService notificationFilter;
+        private static NotificationFilterService singleton;
 
-        public Factory() {
+        private Factory() {
             super("factory.notification.filter.class");
         }
 
         public static synchronized NotificationFilterService get() {
-            if(null == notificationFilter) {
-                notificationFilter = new Factory().create();
+            if(null == singleton) {
+                singleton = new Factory().create();
             }
-            return notificationFilter;
+            return singleton;
         }
     }
 }

@@ -46,8 +46,8 @@ import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.transfer.AutoTransferConnectionLimiter;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -69,11 +69,11 @@ import java.util.List;
 public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private static final Logger log = LogManager.getLogger(AbstractDownloadFilter.class);
 
+    private final PreferencesReader preferences;
     private final Session<?> session;
     private final SymlinkResolver<Path> symlinkResolver;
     private final QuarantineService quarantine = QuarantineServiceFactory.get();
     private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
-    private final Preferences preferences = PreferencesFactory.get();
     private final IconService icon = IconServiceFactory.get();
 
     protected AttributesFinder attribute;
@@ -84,6 +84,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         this.session = session;
         this.options = options;
         this.attribute = session.getFeature(AttributesFinder.class);
+        this.preferences = new HostPreferences(session.getHost());
     }
 
     @Override

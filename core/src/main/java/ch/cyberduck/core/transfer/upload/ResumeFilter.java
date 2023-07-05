@@ -92,14 +92,12 @@ public class ResumeFilter extends AbstractUploadFilter {
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = super.prepare(file, local, parent, progress);
         if(file.isFile()) {
-            if(status.isExists()) {
-                final Write.Append append = upload.append(file, status);
-                if(append.append && append.size < status.getLength()) {
-                    // Append to existing file
-                    status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
-                    status.setLength(status.getLength() - append.size);
-                    status.setOffset(append.size);
-                }
+            final Write.Append append = upload.append(file, status);
+            if(append.append && append.size < status.getLength()) {
+                // Append to existing file
+                status.withRename((Path) null).withDisplayname((Path) null).setAppend(true);
+                status.setLength(status.getLength() - append.size);
+                status.setOffset(append.size);
             }
         }
         return status;

@@ -22,7 +22,7 @@ import ch.cyberduck.core.Factory;
 
 public class ApplicationResourcesFinderFactory extends Factory<ApplicationResourcesFinder> {
 
-    protected ApplicationResourcesFinderFactory() {
+    private ApplicationResourcesFinderFactory() {
         super("factory.applicationresourcesfinder.class");
     }
 

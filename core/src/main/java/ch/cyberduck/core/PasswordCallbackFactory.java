@@ -27,7 +27,7 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
 
     private Constructor<? extends PasswordCallback> constructor;
 
-    protected PasswordCallbackFactory() {
+    private PasswordCallbackFactory() {
         super("factory.passwordcallback.class");
     }
 
@@ -49,13 +49,16 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
         }
     }
 
-    private static final PasswordCallbackFactory singleton = new PasswordCallbackFactory();
+    private static PasswordCallbackFactory singleton;
 
     /**
      * @param c Window controller
      * @return Login controller instance for the current platform.
      */
-    public static PasswordCallback get(final Controller c) {
+    public static synchronized PasswordCallback get(final Controller c) {
+        if(null == singleton) {
+            singleton = new PasswordCallbackFactory();
+        }
         return singleton.create(c);
     }
 }

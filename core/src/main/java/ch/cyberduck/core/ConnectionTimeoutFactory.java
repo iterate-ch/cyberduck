@@ -45,7 +45,7 @@ public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout> {
         }
     }
 
-    private static final ConnectionTimeoutFactory singleton = new ConnectionTimeoutFactory();
+    private static ConnectionTimeoutFactory singleton;
 
     public static ConnectionTimeout get() {
         return get(PreferencesFactory.get());
@@ -55,7 +55,10 @@ public class ConnectionTimeoutFactory extends Factory<ConnectionTimeout> {
         return get(new HostPreferences(host));
     }
 
-    public static ConnectionTimeout get(final PreferencesReader preferences) {
+    public static synchronized ConnectionTimeout get(final PreferencesReader preferences) {
+        if(null == singleton) {
+            singleton = new ConnectionTimeoutFactory();
+        }
         return singleton.create(preferences);
     }
 }

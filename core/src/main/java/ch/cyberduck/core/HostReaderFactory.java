@@ -22,7 +22,7 @@ import ch.cyberduck.core.serializer.Reader;
 
 public class HostReaderFactory extends Factory<Reader<Host>> {
 
-    protected HostReaderFactory() {
+    private HostReaderFactory() {
         super("factory.reader.host.class");
     }
 

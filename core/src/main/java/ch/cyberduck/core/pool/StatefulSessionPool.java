@@ -64,15 +64,17 @@ public class StatefulSessionPool extends StatelessSessionPool {
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
         try {
-            if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
-                if(log.isWarnEnabled()) {
-                    log.warn(String.format("Close session %s after failure %s", session, failure));
-                }
-                try {
-                    connect.close(conn);
-                }
-                catch(final BackgroundException e) {
-                    log.warn(String.format("Ignore failure %s closing connection", e));
+            if(failure != null) {
+                if(diagnostics.determine(failure) == FailureDiagnostics.Type.network) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Close session %s after failure %s", session, failure));
+                    }
+                    try {
+                        connect.close(conn);
+                    }
+                    catch(final BackgroundException e) {
+                        log.warn(String.format("Ignore failure %s closing connection", e));
+                    }
                 }
             }
         }

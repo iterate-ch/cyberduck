@@ -590,7 +590,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
                 try {
-                    distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(bookmark.getRegion())).list(
+                    distribution.setContainers(new S3BucketListService(session).list(
                         new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                         new DisabledListProgressListener()).toList());
                 }
@@ -632,7 +632,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 distribution.setInvalidationStatus(this.readInvalidationStatus(client, distribution));
             }
             if(this.getFeature(DistributionLogging.class, method) != null) {
-                distribution.setContainers(new S3BucketListService(session, new S3LocationFeature.S3Region(bookmark.getRegion())).list(
+                distribution.setContainers(new S3BucketListService(session).list(
                     new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
                     new DisabledListProgressListener()).toList());
             }

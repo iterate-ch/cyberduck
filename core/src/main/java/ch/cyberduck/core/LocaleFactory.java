@@ -24,24 +24,24 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LocaleFactory extends Factory<Locale> {
 
-    public LocaleFactory() {
+    private LocaleFactory() {
         super("factory.locale.class");
     }
 
-    private static Locale locale;
+    private static Locale singleton;
 
     /**
      * @return Locale instance for the current platform.
      */
     public static synchronized Locale get() {
-        if(null == locale) {
+        if(null == singleton) {
             set(new LocaleFactory().create());
         }
-        return locale;
+        return singleton;
     }
 
     public static synchronized void set(Locale l) {
-        locale = l;
+        singleton = l;
     }
 
     /**

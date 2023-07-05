@@ -30,7 +30,7 @@ public final class LocalFactory extends Factory<Local> {
     private Constructor<? extends Local> constructorCreateFromString;
     private Constructor<? extends Local> constructorCreateFromParentString;
 
-    protected LocalFactory() {
+    private LocalFactory() {
         super("factory.local.class");
     }
 
@@ -39,7 +39,7 @@ public final class LocalFactory extends Factory<Local> {
         return this.create(PreferencesFactory.get().getProperty("local.user.home"));
     }
 
-    protected Local create(final String path) {
+    private Local create(final String path) {
         try {
             if(null == constructorCreateFromString) {
                 constructorCreateFromString = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
@@ -51,7 +51,7 @@ public final class LocalFactory extends Factory<Local> {
         }
     }
 
-    protected Local create(final Local parent, final String path) {
+    private Local create(final Local parent, final String path) {
         try {
             if(null == constructorCreateFromParentString) {
                 constructorCreateFromParentString = ConstructorUtils.getMatchingAccessibleConstructor(clazz, parent.getClass(), path.getClass());
@@ -63,21 +63,33 @@ public final class LocalFactory extends Factory<Local> {
         }
     }
 
-    private static final LocalFactory singleton = new LocalFactory();
+    private static LocalFactory singleton;
 
-    public static Local get(final Local parent, final String name) {
+    public static synchronized Local get(final Local parent, final String name) {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create(parent, name);
     }
 
-    public static Local get(final String parent, final String name) {
+    public static synchronized Local get(final String parent, final String name) {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create(singleton.create(parent), name);
     }
 
-    public static Local get(final String path) {
+    public static synchronized Local get(final String path) {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create(path);
     }
 
-    public static Local get() {
+    public static synchronized Local get() {
+        if(null == singleton) {
+            singleton = new LocalFactory();
+        }
         return singleton.create();
     }
 }

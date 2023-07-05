@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
@@ -155,8 +154,7 @@ public class DownloadTransfer extends Transfer {
         final AttributesFinder attributes;
         if(roots.size() > 1 || roots.stream().filter(item -> item.remote.isDirectory()).findAny().isPresent()) {
             find = new CachingFindFeature(cache, source.getFeature(Find.class, new DefaultFindFeature(source)));
-            attributes = new CachingAttributesFinderFeature(cache,
-                    source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
+            attributes = new CachingAttributesFinderFeature(cache, source.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(source)));
         }
         else {
             find = new CachingFindFeature(cache, source.getFeature(Find.class));
@@ -305,7 +303,7 @@ public class DownloadTransfer extends Transfer {
                          final TransferStatus overall, final TransferStatus segment, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Transfer file %s with options %s", file, options));
+            log.debug(String.format("Transfer file %s with options %s and status %s", file, options, segment));
         }
         if(file.isSymbolicLink()) {
             if(symlinkResolver.resolve(file)) {
@@ -329,9 +327,8 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            download.download(file, local, bandwidth, new DownloadStreamListener(this,
-                    this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
-                            new IconUpdateStreamListener(streamListener, segment, local) : streamListener), segment, connectionCallback);
+            download.download(file, local, bandwidth, this.options.icon && segment.getLength() > PreferencesFactory.get().getLong("queue.download.icon.threshold") && !overall.isSegmented() ?
+                    new IconUpdateStreamListener(streamListener, segment, local) : streamListener, segment, connectionCallback);
         }
     }
 
@@ -346,20 +343,5 @@ public class DownloadTransfer extends Transfer {
     public void stop() {
         cache.clear();
         super.stop();
-    }
-
-    private static final class DownloadStreamListener extends DelegateStreamListener {
-        private final DownloadTransfer transfer;
-
-        public DownloadStreamListener(final DownloadTransfer transfer, final StreamListener delegate) {
-            super(delegate);
-            this.transfer = transfer;
-        }
-
-        @Override
-        public void recv(final long bytes) {
-            transfer.addTransferred(bytes);
-            super.recv(bytes);
-        }
     }
 }

@@ -23,7 +23,7 @@ import ch.cyberduck.core.serializer.Writer;
 
 public class ProfileWriterFactory extends Factory<Writer<Profile>> {
 
-    protected ProfileWriterFactory() {
+    private ProfileWriterFactory() {
         super("factory.writer.profile.class");
     }
 

@@ -576,9 +576,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (!transfer.isRunning())
                 {
-                    TransferOptions options = new TransferOptions();
-                    options.resumeRequested = false;
-                    options.reloadRequested = true;
+                    TransferOptions options = new TransferOptions()
+                        .resume(false)
+                        .reload(true);
                     StartTransfer(transfer, options);
                 }
             }
@@ -600,9 +600,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (!transfer.isRunning())
                 {
-                    TransferOptions options = new TransferOptions();
-                    options.resumeRequested = true;
-                    options.reloadRequested = false;
+                    TransferOptions options = new TransferOptions()
+                        .resume(true)
+                        .reload(false);
                     StartTransfer(transfer, options);
                 }
             }

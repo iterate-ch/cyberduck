@@ -35,7 +35,7 @@ public class TemporaryFileServiceFactory extends Factory<TemporaryFileService> {
         return new TemporaryFileServiceFactory().create();
     }
 
-    public TemporaryFileServiceFactory() {
+    private TemporaryFileServiceFactory() {
         super("factory.temporaryfiles.class");
     }
 }

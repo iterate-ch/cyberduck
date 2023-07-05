@@ -70,57 +70,60 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
         }
     }
 
-    private static final ThreadPoolFactory singleton = new ThreadPoolFactory();
+    private static ThreadPoolFactory singleton;
 
-    public static ThreadPool get() {
+    public static synchronized ThreadPool get() {
         return get(new LoggingUncaughtExceptionHandler());
     }
 
-    public static ThreadPool get(final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final Thread.UncaughtExceptionHandler handler) {
         return get(DEFAULT_THREAD_NAME_PREFIX, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
     }
 
-    public static ThreadPool get(final String prefix, final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final String prefix, final Thread.UncaughtExceptionHandler handler) {
         return get(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), handler);
     }
 
-    public static ThreadPool get(final int size) {
+    public static synchronized ThreadPool get(final int size) {
         return get(DEFAULT_THREAD_NAME_PREFIX, size);
     }
 
-    public static ThreadPool get(final int size, final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final int size, final Thread.UncaughtExceptionHandler handler) {
         return get(ThreadPool.DEFAULT_THREAD_NAME_PREFIX, size, handler);
     }
 
-    public static ThreadPool get(final String prefix, final int size) {
+    public static synchronized ThreadPool get(final String prefix, final int size) {
         return get(prefix, size, ThreadPool.Priority.norm);
     }
 
-    public static ThreadPool get(final String prefix, final ThreadPool.Priority priority) {
+    public static synchronized ThreadPool get(final String prefix, final ThreadPool.Priority priority) {
         return get(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), priority);
     }
 
-    public static ThreadPool get(final String prefix, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final String prefix, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
         return get(prefix, PreferencesFactory.get().getInteger("threading.pool.size.max"), priority, handler);
     }
 
-    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority) {
+    public static synchronized ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority) {
         return get(prefix, size, priority, new LoggingUncaughtExceptionHandler());
     }
 
-    public static ThreadPool get(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final String prefix, final int size, final Thread.UncaughtExceptionHandler handler) {
         return get(prefix, size, ThreadPool.Priority.norm, handler);
     }
 
-    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
         return get(prefix, size, priority, new LinkedBlockingQueue<>(size), handler);
     }
 
-    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue) {
+    public static synchronized ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue) {
         return get(prefix, size, priority, queue, new LoggingUncaughtExceptionHandler());
     }
 
-    public static ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
+    public static synchronized ThreadPool get(final String prefix, final int size, final ThreadPool.Priority priority, final BlockingQueue<Runnable> queue, final Thread.UncaughtExceptionHandler handler) {
+        if(null == singleton) {
+            singleton = new ThreadPoolFactory();
+        }
         return singleton.create(prefix, size, priority, queue, handler);
     }
 }

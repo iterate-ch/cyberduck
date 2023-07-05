@@ -16,12 +16,9 @@ package ch.cyberduck.core.transfer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 public class AutoTransferConnectionLimiter implements TransferConnectionLimiter {
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     @Override
     public int getLimit(final Host host) {
@@ -29,6 +26,7 @@ public class AutoTransferConnectionLimiter implements TransferConnectionLimiter 
             case newconnection:
                 return 1;
         }
+        final HostPreferences preferences = new HostPreferences(host);
         if(TransferConnectionLimiter.AUTO == preferences.getInteger("queue.connections.limit")) {
             // Determine number of connections depending on protocol
             final int limit = preferences.getInteger(String.format("queue.connections.limit.%s",
