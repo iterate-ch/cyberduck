@@ -117,7 +117,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
-    private OAuth2RequestInterceptor authorizationService;
+    private STSCredentialsRequestInterceptor authorizationService;
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
@@ -213,11 +213,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         }
 
-        if(host.getProtocol().isOAuthConfigurable()) {
-            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+        if((host.getProtocol().isOAuthConfigurable())) {
+            authorizationService = new STSCredentialsRequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, trust, key, prompt, this)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+
+            configuration.addInterceptorLast(authorizationService);
         }
 
         // Only for AWS
@@ -452,8 +454,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             // get temporary credentials for MinIO with Web Identity (OIDC)
             else if(host.getProtocol().isOAuthConfigurable()) {
-                credentials = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust,
-                        host.getHostname()), key, prompt, authorizationService).configure(host);
+                credentials = authorizationService.assumeRoleWithWebIdentity();
             }
             else {
                 credentials = host.getCredentials();

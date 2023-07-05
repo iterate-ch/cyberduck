@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.WebIdentityTokenExpiredException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.AssumeRoleWithWebIdentitySTSCredentialsConfigurator;
+import ch.cyberduck.core.sts.STSCredentialsRequestInterceptor;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.BufferedHttpEntity;
@@ -47,16 +47,14 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
 
     private final S3Session session;
     private final Host host;
-    private final AssumeRoleWithWebIdentitySTSCredentialsConfigurator configurator;
-    private final OAuth2RequestInterceptor authorizationService;
+    private final STSCredentialsRequestInterceptor authorizationService;
     private final LoginCallback prompt;
 
     public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust,
                                                         final X509KeyManager key, final LoginCallback prompt,
-                                                        OAuth2RequestInterceptor authorizationService) {
+                                                        STSCredentialsRequestInterceptor authorizationService) {
         this.session = session;
         this.host = session.getHost();
-        this.configurator = new AssumeRoleWithWebIdentitySTSCredentialsConfigurator(trust, key, prompt, authorizationService);
         this.authorizationService = authorizationService;
         this.prompt = prompt;
     }

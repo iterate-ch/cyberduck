@@ -1,7 +1,7 @@
 package ch.cyberduck.core.sts;
 
 /*
- * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,13 +19,22 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.protocol.HttpContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jets3t.service.security.AWSSessionCredentials;
+
+import java.io.IOException;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
@@ -37,27 +46,61 @@ import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityResult;
+import com.google.api.client.auth.oauth2.Credential;
 
-public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends AbstractSTSCredentialsConfigurator {
+public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
+    private static final Logger log = LogManager.getLogger(STSCredentialsRequestInterceptor.class);
 
-    private OAuth2RequestInterceptor authorizationService;
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
+    private final PasswordCallback prompt;
+    private final S3Session session;
 
-    public AssumeRoleWithWebIdentitySTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key,
-                                                               PasswordCallback prompt, OAuth2RequestInterceptor authorizationService) {
-        super(trust, key, prompt);
-        this.authorizationService = authorizationService;
+    private long stsExpiryInMilliseconds;
+
+    public STSCredentialsRequestInterceptor(HttpClient client, Host host, final X509TrustManager trust, final X509KeyManager key,
+                                            PasswordCallback prompt, S3Session session) {
+        super(client, host);
+        this.trust = trust;
+        this.key = key;
+        this.prompt = prompt;
+        this.session = session;
     }
 
     @Override
-    public Credentials configure(final Host host) {
-        service = this.getTokenService(host, null, null, null, null);
+    public void process(final org.apache.http.HttpRequest request, final HttpContext context) throws IOException {
+        if(System.currentTimeMillis() >= stsExpiryInMilliseconds) {
+            if(getTokens().isExpired()) {
+                try {
+                    this.save(this.refresh(getTokens()));
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure %s refreshing OAuth tokens %s", e, getTokens()));
+                    // Follow-up error 401 handled in oAuth error interceptor
+                }
+            }
+            try {
+                Credentials credentials = assumeRoleWithWebIdentity();
+                session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                        new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                                credentials.getToken()));
+            }
+            catch(AWSSecurityTokenServiceException e) {
+                log.warn(String.format("Failure %s to fetch temporary sts credentials", e));
+                // Follow-up error 400 or 403 handled in sts error interceptor
+            }
+        }
+    }
+
+    public Credentials assumeRoleWithWebIdentity() {
+        AWSSecurityTokenService service = this.getTokenService(host, null, null, null, null);
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest();
-        if(StringUtils.isNotBlank(authorizationService.getTokens().getIdToken())) {
-            webIdReq.withWebIdentityToken(authorizationService.getTokens().getIdToken());
+        if(StringUtils.isNotBlank(getTokens().getIdToken())) {
+            webIdReq.withWebIdentityToken(getTokens().getIdToken());
         }
         else {
-            webIdReq.withWebIdentityToken(authorizationService.getTokens().getAccessToken());
+            webIdReq.withWebIdentityToken(getTokens().getAccessToken());
         }
 
         if (new HostPreferences(host).getInteger("s3.assumerole.durationseconds") != 0) {
@@ -81,25 +124,21 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends Abstrac
             AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
             com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
 
-            host.setProperty("sts.credentials.expiration", String.valueOf(result.getCredentials().getExpiration().getTime()));
+            if(log.isDebugEnabled()) { log.debug(cred.toString()); }
 
-            if(log.isDebugEnabled()) {
-                log.debug(cred.toString());
-            }
+            stsExpiryInMilliseconds = cred.getExpiration().getTime();
 
             credentials.setUsername(cred.getAccessKeyId());
             credentials.setPassword(cred.getSecretAccessKey());
             credentials.setToken(cred.getSessionToken());
         }
-//        catch(Inva)
         catch(AWSSecurityTokenServiceException e) {
             log.error(e.getErrorMessage());
         }
-
         return credentials;
     }
 
-    public AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
+    private AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
         final ClientConfiguration configuration = new CustomClientConfiguration(host,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
         return AWSSecurityTokenServiceClientBuilder
@@ -118,5 +157,29 @@ public class AssumeRoleWithWebIdentitySTSCredentialsConfigurator extends Abstrac
                 })
                 .withClientConfiguration(configuration)
                 .build();
+    }
+
+    @Override
+    public STSCredentialsRequestInterceptor withMethod(final Credential.AccessMethod method) {
+        super.withMethod(method);
+        return this;
+    }
+
+    @Override
+    public STSCredentialsRequestInterceptor withRedirectUri(final String redirectUri) {
+        super.withRedirectUri(redirectUri);
+        return this;
+    }
+
+    @Override
+    public STSCredentialsRequestInterceptor withFlowType(final FlowType flowType) {
+        super.withFlowType(flowType);
+        return this;
+    }
+
+    @Override
+    public STSCredentialsRequestInterceptor withParameter(final String key, final String value) {
+        super.withParameter(key, value);
+        return this;
     }
 }
