@@ -378,23 +378,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             final class HttpHeaderFilter implements Predicate<Header> {
                 @Override
                 public boolean test(final Header header) {
-                    if(HttpHeaders.AUTHORIZATION.equals(header.getName())) {
-                        // Delete any previously set authorization header
-                        return false;
-                    }
-                    if(HttpHeaders.CONNECTION.equals(header.getName())) {
-                        return false;
-                    }
-                    if(HttpHeaders.PROXY_AUTHORIZATION.equals(header.getName())) {
-                        return false;
-                    }
-                    if(HttpHeaders.PROXY_AUTHENTICATE.equals(header.getName())) {
-                        return false;
-                    }
-                    if("Proxy-Connection".equals(header.getName())) {
-                        return false;
-                    }
-                    return true;
+                    return !new HostPreferences(host).getList("s3.signature.headers.exclude").stream()
+                            .filter(s -> StringUtils.equalsIgnoreCase(s, header.getName())).findAny().isPresent();
                 }
             }
 
