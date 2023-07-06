@@ -406,30 +406,48 @@ namespace Ch.Cyberduck.Ui.Controller
 
         bool ICyberduck.OAuth(Uri result)
         {
-            var success = false;
-            string state = default, code = default;
-            if (result.AbsolutePath == "oauth")
+            if (!Find(result, out var state, out var code))
             {
-                success = true;
-                var query = HttpUtility.ParseQueryString(result.Query);
-                state = query.Get("state");
-                code = query.Get("code");
+                return false;
             }
-            if (result.OriginalString.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
+
+            if (Logger.isDebugEnabled())
             {
-                success = true;
-                var query = HttpUtility.ParseQueryString(result.Query);
-                code = query.Get("ActivationCode");
+                Logger.debug($"Notify OAuth with {state} ({code})");
             }
-            if (success)
+
+            OAuth2TokenListenerRegistry.get().notify(state, code);
+            return true;
+
+            // Local find-method of getting OAuth-parameters
+            static bool Find(Uri result, out string state, out string code)
             {
-                if (Logger.isDebugEnabled())
+                (state, code) = (default, default);
+                if (result.OriginalString.StartsWith(CteraProtocol.CTERA_REDIRECT_URI))
                 {
-                    Logger.debug($"Notify OAuth with {state} ({code})");
+                    var query = HttpUtility.ParseQueryString(result.Query);
+                    (state, code) = (default, query.Get("ActivationCode"));
+                    return true;
                 }
-                OAuth2TokenListenerRegistry.get().notify(state, code);
+
+                // Gate AbsoluteUri
+                if (!result.IsAbsoluteUri)
+                {
+                    return false;
+                }
+
+                // Authority, AbsolutePath and HostNameType will throw if not AbsoluteUri.
+                switch (result)
+                {
+                    case { HostNameType: UriHostNameType.Unknown, AbsolutePath: "oauth" }:
+                    case { Authority: "oauth" }:
+                        var query = HttpUtility.ParseQueryString(result.Query);
+                        (state, code) = (query.Get("state"), query.Get("code"));
+                        return true;
+                }
+
+                return false;
             }
-            return success;
         }
 
         void ICyberduck.QuickConnect(string arg)
@@ -847,7 +865,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (_updater.hasUpdatePrivileges())
                 {
                     long next = PreferencesFactory.get().getLong("update.check.timestamp") + PreferencesFactory.get().getLong("update.check.interval") * 1000;
-                    if(next < DateTimeOffset.Now.ToUnixTimeMilliseconds())
+                    if (next < DateTimeOffset.Now.ToUnixTimeMilliseconds())
                     {
                         _updater.check(true);
                     }

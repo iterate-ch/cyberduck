@@ -44,6 +44,10 @@ public class BrowserOAuth2AuthorizationCodeProvider implements OAuth2Authorizati
             return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
                     bookmark, prompt, authorizationCodeUrl, redirectUri, state);
         }
+        if(StringUtils.contains(redirectUri, "://oauth")) {
+            return new CustomSchemeHandlerOAuth2AuthorizationCodeProvider().prompt(
+                    bookmark, prompt, authorizationCodeUrl, redirectUri, state);
+        }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for authentication code for state %s", state));
         }
