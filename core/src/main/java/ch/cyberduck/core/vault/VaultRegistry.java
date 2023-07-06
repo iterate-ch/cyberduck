@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.preferences.HostPreferences;
 
 public interface VaultRegistry {
     VaultRegistry DISABLED = new DisabledVaultRegistry();
@@ -30,17 +31,17 @@ public interface VaultRegistry {
      * @see Vault#DISABLED
      */
     default Vault find(final Session session, final Path file) throws VaultUnlockCancelException {
-        return this.find(session, file, true);
+        return this.find(session, file, new HostPreferences(session.getHost()).getBoolean("cryptomator.vault.autoload"));
     }
 
     /**
      * @param session Connection
      * @param file    File
-     * @param lookup  Attempt to unlock vault when not already registered
+     * @param unlock  Attempt to unlock vault when not already registered but file has vault referenced in attributes
      * @return Vault for file or disabled vault if file is not inside a vault
      * @throws VaultUnlockCancelException Attempt to unlock vault was canceled by user
      */
-    Vault find(Session session, Path file, boolean lookup) throws VaultUnlockCancelException;
+    Vault find(Session session, Path file, boolean unlock) throws VaultUnlockCancelException;
 
     /**
      * Add vault to registry
@@ -80,7 +81,7 @@ public interface VaultRegistry {
 
     class DisabledVaultRegistry implements VaultRegistry {
         @Override
-        public Vault find(final Session session, final Path file, final boolean lookup) throws VaultUnlockCancelException {
+        public Vault find(final Session session, final Path file, final boolean unlock) throws VaultUnlockCancelException {
             return Vault.DISABLED;
         }
 
