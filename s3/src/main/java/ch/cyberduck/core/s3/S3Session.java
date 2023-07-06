@@ -97,11 +97,14 @@ import org.jets3t.service.utils.SignatureUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.amazonaws.auth.internal.SignerConstants;
 
@@ -286,7 +289,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     throw new IOException(e);
                 }
                 switch(authenticationHeaderSignatureVersion) {
-                    case AWS2:
+                    case AWS2: {
                         String path = uri.getRawPath();
                         // If bucket name is not already part of the full path, add it.
                         // This can be the case if the Host name has a bucket-name prefix,
@@ -314,7 +317,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                                 + credentials.getAccessKey() + ":" + signedCanonical;
                         request.setHeader(HttpHeaders.AUTHORIZATION, authorizationString);
                         break;
-                    case AWS4HMACSHA256:
+                    }
+                    case AWS4HMACSHA256: {
                         String region = regions.getRegionForBucketName(bucketName);
                         if(null == region) {
                             final HttpHost host = (HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST);
@@ -346,10 +350,9 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                         // Generate AWS-flavoured ISO8601 timestamp string
                         final String timestampISO8601 = message.getFirstHeader(S3_ALTERNATE_DATE).getValue();
                         // Canonical request string
-                        final Map<String, String> headers = this.getHeadersAsString(request);
                         final String canonicalRequestString =
                                 SignatureUtils.awsV4BuildCanonicalRequestString(uri,
-                                        request.getRequestLine().getMethod(), headers, requestPayloadHexSHA256Hash);
+                                        request.getRequestLine().getMethod(), this.getHeadersAsString(request), requestPayloadHexSHA256Hash);
                         // String to sign
                         final String stringToSign = SignatureUtils.awsV4BuildStringToSign(
                                 authenticationHeaderSignatureVersion.toString(), canonicalRequestString,
@@ -368,15 +371,36 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                                         timestampISO8601, region);
                         message.setHeader(HttpHeaders.AUTHORIZATION, authorizationHeaderValue);
                         break;
+                    }
+                }
+            }
+
+            final class HttpHeaderFilter implements Predicate<Header> {
+                @Override
+                public boolean test(final Header header) {
+                    if(HttpHeaders.AUTHORIZATION.equals(header.getName())) {
+                        // Delete any previously set authorization header
+                        return false;
+                    }
+                    if(HttpHeaders.CONNECTION.equals(header.getName())) {
+                        return false;
+                    }
+                    if(HttpHeaders.PROXY_AUTHORIZATION.equals(header.getName())) {
+                        return false;
+                    }
+                    if(HttpHeaders.PROXY_AUTHENTICATE.equals(header.getName())) {
+                        return false;
+                    }
+                    if("Proxy-Connection".equals(header.getName())) {
+                        return false;
+                    }
+                    return true;
                 }
             }
 
             private Map<String, String> getHeadersAsString(final HttpRequest request) {
                 final Map<String, String> headers = new HashMap<>();
-                for(Header header : request.getAllHeaders()) {
-                    if(HttpHeaders.CONNECTION.equals(header.getName())) {
-                        continue;
-                    }
+                for(Header header : Arrays.stream(request.getAllHeaders()).filter(new HttpHeaderFilter()).collect(Collectors.toList())) {
                     headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
                 }
                 return headers;
@@ -384,10 +408,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
             private Map<String, Object> getHeadersAsObject(final HttpRequest request) {
                 final Map<String, Object> headers = new HashMap<>();
-                for(Header header : request.getAllHeaders()) {
-                    if(HttpHeaders.CONNECTION.equals(header.getName())) {
-                        continue;
-                    }
+                for(Header header : Arrays.stream(request.getAllHeaders()).filter(new HttpHeaderFilter()).collect(Collectors.toList())) {
                     headers.put(StringUtils.lowerCase(StringUtils.trim(header.getName())), StringUtils.trim(header.getValue()));
                 }
                 return headers;
