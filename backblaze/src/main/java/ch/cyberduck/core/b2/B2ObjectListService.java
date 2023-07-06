@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultPathContainerService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -144,15 +143,6 @@ public class B2ObjectListService implements ListService {
                 final Path placeholder = new Path(directory.isDirectory() ? directory : directory.getParent(),
                         PathNormalizer.name(StringUtils.chomp(info.getFileName(), String.valueOf(Path.DELIMITER))),
                         EnumSet.of(Path.Type.directory, Path.Type.placeholder));
-                // Read .bzEmpty
-                try {
-                    placeholder.withAttributes(attr.find(placeholder, new DisabledListProgressListener()));
-                }
-                catch(NotfoundException e) {
-                    // No placeholder object or hidden flag set
-                    log.warn(String.format("Missing placeholder object for prefix %s", info.getFileName()));
-                    placeholder.attributes().setDuplicate(true);
-                }
                 objects.add(placeholder);
                 continue;
             }

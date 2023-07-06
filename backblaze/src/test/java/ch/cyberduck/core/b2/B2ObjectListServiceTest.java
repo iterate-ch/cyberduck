@@ -302,7 +302,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             assertEquals(1, list.size());
             final Path foundFolder1 = list.iterator().next();
             assertEquals(folder1, foundFolder1);
-            assertTrue(foundFolder1.attributes().isDuplicate());
+            assertFalse(foundFolder1.attributes().isDuplicate());
         }
         // Nullify version to add delete marker
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(file1).withAttributes(new PathAttributes(file1.attributes()).withVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -332,20 +332,20 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             assertEquals(1, list.size());
             final Path foundFolder1 = list.iterator().next();
             assertEquals(folder1, foundFolder1);
-            assertTrue(foundFolder1.attributes().isDuplicate());
+            assertFalse(foundFolder1.attributes().isDuplicate());
         }
         {
             final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener());
             assertEquals(1, list.size());
             final Path foundFolder2 = list.iterator().next();
             assertEquals(folder2, foundFolder2);
-            assertTrue(foundFolder2.attributes().isDuplicate());
+            assertFalse(foundFolder2.attributes().isDuplicate());
         }
         // Nullify version to add delete marker
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file.withAttributes(new PathAttributes(file.attributes()).withVersionId(null))), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder1, new DisabledListProgressListener()));
         assertTrue(new B2ObjectListService(session, fileid).list(folder1, new DisabledListProgressListener()).contains(folder2));
-        assertFalse(new DefaultFindFeature(session).find(folder2, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder2, new DisabledListProgressListener()));
         assertEquals(2, new B2ObjectListService(session, fileid).list(folder2, new DisabledListProgressListener()).size());
         assertThrows(NotfoundException.class, () -> new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(folder2, new DisabledListProgressListener()));
         for(Path f : new B2ObjectListService(session, fileid).list(folder2, new DisabledListProgressListener())) {
