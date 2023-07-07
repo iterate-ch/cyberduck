@@ -62,8 +62,6 @@
         ul li ul li {
             list-style-type: disc;
         }
-
-
     </style>
 </head>
 
@@ -83,23 +81,36 @@
     <a target="_blank" href="https://trac.cyberduck.io/milestone/8.6.2"><strong>Version 8.6.2</strong></a>
 </p>
 <ul>
-    <li>Segmented downloads with multiple connections per file causes transfers to fail (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/13374">#13374</a>)
+    <li><span class="label label-warning">Bugfix</span> Segmented downloads with multiple connections per file causes
+        transfers to fail (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/13374">#13374</a>)
     </li>
-    <li>Copy or move files between containers (Azure) (<a
+    <li><span class="label label-warning">Bugfix</span> Use recommended part size from authorization response for large
+        file uploads (Backblaze B2) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/14856">#14856</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Skip determining if directory only contains hidden files
+        (Backblaze B2) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/14775">#14775</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Does not show folders by default that do not contain a .bzEmpty
+        placeolder file (Backblaze B2) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/14768">#14768</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Make settings in Preferences → Connection → Timeouts apply for
+        transfers (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/14737">#14737</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Copy or move files between containers (Azure) (<a
             target="_blank" href="https://trac.cyberduck.io/ticket/14826">#14826</a>)
     </li>
-    <li>Upload with glob pattern including folders for local source has wrong target on server (CLI) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/14800">#14800</a>)
+    <li><span class="label label-warning">Bugfix</span> Upload with glob pattern including folders for local source has
+        wrong target on server (CLI) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/14800">#14800</a>)
     </li>
-    <li>Use recommended part size from authorization response for large file uploads (Backblaze B2) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/14856">#14856</a>)
-    </li>
-    <li>Make settings in Preferences → Connection → Timeouts apply for transfers (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/14737">#14737</a>)
-    </li>
-    <li>Should not attempt to read metadata of existing files with no --preserve flag passed (CLI) (<a
-            target="_blank" href="https://trac.cyberduck.io/ticket/14802">#14802</a>)
+    <li><span class="label label-warning">Bugfix</span> Should not attempt to read metadata of existing files with no
+        --preserve flag passed (CLI) (<a
+                target="_blank" href="https://trac.cyberduck.io/ticket/14802">#14802</a>)
     </li>
 </ul>
 

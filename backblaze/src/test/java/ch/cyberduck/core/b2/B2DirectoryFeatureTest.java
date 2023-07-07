@@ -79,7 +79,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
 
     @Test
     public void testCreatePlaceholder() throws Exception {
-        final Path bucket = new Path("/XyFraJKj", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path bucket = new Path("/test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         assertTrue(directory.getType().contains(Path.Type.placeholder));
