@@ -49,7 +49,6 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
-import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
@@ -207,30 +206,20 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
 
-        final boolean isAssumeRoleWithWebIdentity = host.getProtocol().getSTSEndpoint() != null;
-
-        if((host.getProtocol().isOAuthConfigurable()) && !isAssumeRoleWithWebIdentity) {
-            configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-        }
-
         if((host.getProtocol().isOAuthConfigurable())) {
             authorizationService = new STSCredentialsRequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, trust, key, prompt, this)
+                    .find(host.getProtocol().getSTSEndpoint()), this, prompt).build(), host, trust, key, this)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
 
             configuration.addInterceptorLast(authorizationService);
+            configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this, prompt, authorizationService));
         }
 
         // Only for AWS
-        if(S3Session.isAwsHostname(host.getHostname()) && ! isAssumeRoleWithWebIdentity) {
+        if(S3Session.isAwsHostname(host.getHostname())) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
                     new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
-        }
-
-        else if(isAssumeRoleWithWebIdentity) {
-            configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this,
-                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt, authorizationService));
         }
 
         if(preferences.getBoolean("s3.upload.expect-continue")) {
@@ -446,15 +435,15 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         else {
             final Credentials credentials;
+            // get temporary STS credentials with oAuth token
+            if(host.getProtocol().isOAuthConfigurable()) {
+                credentials = authorizationService.assumeRoleWithWebIdentity();
+            }
             // Only for AWS
-            if(isAwsHostname(host.getHostname())) {
+            else if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 credentials = new AWSProfileSTSCredentialsConfigurator(
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
-            }
-            // get temporary credentials for MinIO with Web Identity (OIDC)
-            else if(host.getProtocol().isOAuthConfigurable()) {
-                credentials = authorizationService.assumeRoleWithWebIdentity();
             }
             else {
                 credentials = host.getCredentials();

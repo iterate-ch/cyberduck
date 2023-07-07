@@ -20,11 +20,9 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.WebIdentityTokenExpiredException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
@@ -110,7 +108,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         assertTrue(host.getCredentials().getOauth().isExpired());
     }
 
-/*    @Test(expected = WebIdentityTokenExpiredException.class)
+/*    @Test(expected = ExpiredTokenException.class)
     public void testSTSTokenExpired() throws BackgroundException, InterruptedException {
         final Credentials c = new Credentials("rawuser", "rawuser");
         final Host host = new Host(profile, profile.getDefaultHostname(), c);

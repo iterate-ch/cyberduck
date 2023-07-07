@@ -17,9 +17,9 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3Session;
@@ -53,17 +53,15 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
 
     private final X509TrustManager trust;
     private final X509KeyManager key;
-    private final PasswordCallback prompt;
     private final S3Session session;
 
     private long stsExpiryInMilliseconds;
 
     public STSCredentialsRequestInterceptor(HttpClient client, Host host, final X509TrustManager trust, final X509KeyManager key,
-                                            PasswordCallback prompt, S3Session session) {
+                                            S3Session session) {
         super(client, host);
         this.trust = trust;
         this.key = key;
-        this.prompt = prompt;
         this.session = session;
     }
 
@@ -76,7 +74,7 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
                 }
                 catch(BackgroundException e) {
                     log.warn(String.format("Failure %s refreshing OAuth tokens %s", e, getTokens()));
-                    // Follow-up error 401 handled in oAuth error interceptor
+                    // Follow-up error 401 handled in web identity token expired interceptor
                 }
             }
             try {
@@ -85,15 +83,15 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
                         new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                 credentials.getToken()));
             }
-            catch(AWSSecurityTokenServiceException e) {
+            catch(BackgroundException e) {
                 log.warn(String.format("Failure %s to fetch temporary sts credentials", e));
-                // Follow-up error 400 or 403 handled in sts error interceptor
+                // Follow-up error 400 or 403 handled in web identity token expired interceptor
             }
         }
     }
 
-    public Credentials assumeRoleWithWebIdentity() {
-        AWSSecurityTokenService service = this.getTokenService(host, null, null, null, null);
+    public Credentials assumeRoleWithWebIdentity() throws BackgroundException {
+        AWSSecurityTokenService service = this.getTokenService(host);
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest();
         if(StringUtils.isNotBlank(getTokens().getIdToken())) {
@@ -133,14 +131,14 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
             credentials.setToken(cred.getSessionToken());
         }
         catch(AWSSecurityTokenServiceException e) {
-            log.error(e.getErrorMessage());
+            throw new LoginFailureException(e.getMessage(), e);
         }
         return credentials;
     }
 
-    private AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
+    private AWSSecurityTokenService getTokenService(final Host host) {
         final ClientConfiguration configuration = new CustomClientConfiguration(host,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getProtocol().getSTSEndpoint()), key);
         return AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getProtocol().getSTSEndpoint(), null))

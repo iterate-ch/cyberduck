@@ -23,10 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.WebIdentityTokenExpiredException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSCredentialsRequestInterceptor;
 
 import org.apache.http.HttpResponse;
@@ -50,8 +47,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     private final STSCredentialsRequestInterceptor authorizationService;
     private final LoginCallback prompt;
 
-    public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust,
-                                                        final X509KeyManager key, final LoginCallback prompt,
+    public S3WebIdentityTokenExpiredResponseInterceptor(final S3Session session, final LoginCallback prompt,
                                                         STSCredentialsRequestInterceptor authorizationService) {
         this.session = session;
         this.host = session.getHost();
@@ -62,7 +58,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount <= MAX_RETRIES) {
-            if (400 <= response.getStatusLine().getStatusCode() && response.getStatusLine().getStatusCode() < 500) {
+            if (400 <= response.getStatusLine().getStatusCode() && response.getStatusLine().getStatusCode() <= 403) {
                 try {
                     final S3ServiceException failure;
                     if(null != response.getEntity()) {
@@ -90,9 +86,6 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                 catch(IOException e) {
                     log.warn(String.format("Failure parsing response entity from %s", response));
                 }
-                catch(WebIdentityTokenExpiredException e) {
-                    log.warn("Failure refreshing token");
-                }
             }
         }
 
@@ -104,7 +97,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
         return false;
     }
 
-    private void refreshOAuthAndSTS() throws WebIdentityTokenExpiredException {
+    private void refreshOAuthAndSTS() {
         try {
             if(host.getCredentials().getOauth().isExpired()) {
                 try {
@@ -113,7 +106,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                 }
                 catch(InteroperabilityException | LoginFailureException e3) {
                     log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
-                    authorizationService.authorize(host, prompt, new DisabledCancelCallback());
+                    authorizationService.save(authorizationService.authorize(host, prompt, new DisabledCancelCallback()));
                 }
             }
             try {
@@ -122,13 +115,12 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                         new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
                                 credentials.getToken()));
             }
-            catch(IllegalArgumentException e) {
-                log.error("Failed to configure credentials", e);
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure %s fetching temporary STS credentials with oAuth token", e));
             }
         }
         catch(BackgroundException e) {
-            log.error("Failed to refresh OAuth in order to get STS", e);
-            throw new WebIdentityTokenExpiredException("Failed to refresh OAuth in order to get STS", e);
+            log.warn(String.format("Failure %s refreshing OAuth tokens", e));
         }
     }
 }

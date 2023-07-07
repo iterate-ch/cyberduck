@@ -32,6 +32,8 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,9 +77,13 @@ import com.google.common.io.BaseEncoding;
 /**
  * Configure credentials from AWS CLI configuration and SSO cache
  */
-public class AWSProfileSTSCredentialsConfigurator extends AbstractSTSCredentialsConfigurator {
+public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigurator {
+    private static final Logger log = LogManager.getLogger(AWSProfileSTSCredentialsConfigurator.class);
 
     private final Local directory;
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
+    private final PasswordCallback prompt;
 
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
@@ -86,8 +92,10 @@ public class AWSProfileSTSCredentialsConfigurator extends AbstractSTSCredentials
     }
 
     public AWSProfileSTSCredentialsConfigurator(final Local directory, final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
-        super(trust, key, prompt);
         this.directory = directory;
+        this.trust = trust;
+        this.key = key;
+        this.prompt = prompt;
     }
 
     @Override
@@ -133,6 +141,7 @@ public class AWSProfileSTSCredentialsConfigurator extends AbstractSTSCredentials
                 }
                 else {
                     final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
+                    final AWSSecurityTokenService service;
                     if(sourceProfile.getProperties().containsKey("sso_start_url")) {
                         // Read cached SSO credentials
                         final CachedCredential cached = this.fetchSsoCredentials(sourceProfile.getProperties());
@@ -244,7 +253,7 @@ public class AWSProfileSTSCredentialsConfigurator extends AbstractSTSCredentials
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
                         }
-                        service = this.getTokenService(host,
+                        final AWSSecurityTokenService service = this.getTokenService(host,
                                 host.getRegion(),
                                 basicProfile.getAwsAccessIdKey(),
                                 basicProfile.getAwsSecretAccessKey(),
