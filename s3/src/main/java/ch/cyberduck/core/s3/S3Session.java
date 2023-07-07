@@ -208,7 +208,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
         if((host.getProtocol().isOAuthConfigurable())) {
             authorizationService = new STSCredentialsRequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getSTSEndpoint()), this, prompt).build(), host, trust, key, this)
+                    .find(host.getProtocol().getSTSEndpoint()), this, prompt).build(), host, trust, key, prompt, this)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
 

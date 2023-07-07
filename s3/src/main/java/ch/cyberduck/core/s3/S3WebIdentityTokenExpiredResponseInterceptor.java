@@ -58,7 +58,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount <= MAX_RETRIES) {
-            if (400 <= response.getStatusLine().getStatusCode() && response.getStatusLine().getStatusCode() <= 403) {
+            if (400 == response.getStatusLine().getStatusCode() || response.getStatusLine().getStatusCode() == 403) {
                 try {
                     final S3ServiceException failure;
                     if(null != response.getEntity()) {

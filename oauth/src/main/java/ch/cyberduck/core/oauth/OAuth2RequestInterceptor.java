@@ -102,17 +102,6 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
 
     @Override
     public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
-        refreshIfExpired();
-        if(StringUtils.isNotBlank(tokens.getAccessToken())) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Authorizing service request with OAuth2 tokens %s", tokens));
-            }
-            request.removeHeaders(HttpHeaders.AUTHORIZATION);
-            request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
-        }
-    }
-
-    protected void refreshIfExpired() {
         if(tokens.isExpired()) {
             try {
                 this.save(this.refresh(tokens));
@@ -121,6 +110,13 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 log.warn(String.format("Failure %s refreshing OAuth tokens %s", e, tokens));
                 // Follow-up error 401 handled in error interceptor
             }
+        }
+        if(StringUtils.isNotBlank(tokens.getAccessToken())) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Authorizing service request with OAuth2 tokens %s", tokens));
+            }
+            request.removeHeaders(HttpHeaders.AUTHORIZATION);
+            request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", tokens.getAccessToken())));
         }
     }
 

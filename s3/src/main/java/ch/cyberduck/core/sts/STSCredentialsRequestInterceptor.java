@@ -16,9 +16,12 @@ package ch.cyberduck.core.sts;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
@@ -28,6 +31,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.LogManager;
@@ -53,31 +57,52 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
 
     private final X509TrustManager trust;
     private final X509KeyManager key;
+    private final LoginCallback prompt;
     private final S3Session session;
 
     private long stsExpiryInMilliseconds;
 
     public STSCredentialsRequestInterceptor(HttpClient client, Host host, final X509TrustManager trust, final X509KeyManager key,
-                                            S3Session session) {
+                                            LoginCallback prompt, S3Session session) {
         super(client, host);
         this.trust = trust;
         this.key = key;
+        this.prompt = prompt;
         this.session = session;
     }
 
     @Override
-    public void process(final org.apache.http.HttpRequest request, final HttpContext context) throws IOException {
+    public void process(final org.apache.http.HttpRequest request, final HttpContext context) throws HttpException, IOException {
         if(System.currentTimeMillis() >= stsExpiryInMilliseconds) {
-            super.refreshIfExpired();
             try {
-                Credentials credentials = assumeRoleWithWebIdentity();
-                session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
-                        new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
-                                credentials.getToken()));
+                if(getTokens().isExpired()) {
+                    try {
+                        this.save(this.refresh(getTokens()));
+                    }
+                    catch(InteroperabilityException | LoginFailureException e3) {
+                        log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
+                        try {
+                            this.save(this.authorize(host, prompt, new DisabledCancelCallback()));
+                        }
+                        catch(BackgroundException e) {
+                            log.warn(String.format("Failure %s OAuth authentication", e));
+                            throw new BackgroundException(e);
+                        }
+                    }
+                }
+                try {
+                    Credentials credentials = assumeRoleWithWebIdentity();
+                    session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
+                            new AWSSessionCredentials(credentials.getUsername(), credentials.getPassword(),
+                                    credentials.getToken()));
+                }
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure %s to fetch temporary sts credentials", e));
+                    // Follow-up error 400 or 403 handled in web identity token expired interceptor
+                }
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure %s to fetch temporary sts credentials", e));
-                // Follow-up error 400 or 403 handled in web identity token expired interceptor
+                log.warn(String.format("Failure %s getting web identity", e));
             }
         }
     }
