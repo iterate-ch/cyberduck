@@ -1,0 +1,97 @@
+version: '3'
+
+services:
+
+  keycloak:
+    build: ./keycloak
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_IMPORT: /tmp/keycloak-realm.json
+      PROXY_ADDRESS_FORWARDING: "true"
+      KEYCLOAK_LOGLEVEL: DEBUG
+      DB_VENDOR: h2
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      #KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/dev/certs/keycloak-server.crt.pem
+      #KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/dev/certs/keycloak-server.key.pem
+    volumes:
+      - ./keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
+    command: start-dev --import-realm --db=dev-mem --health-enabled=true
+    networks:
+      network:
+       ipv4_address: 192.168.2.140
+
+  healthcheck:
+    image: busybox
+    depends_on:
+      keycloak:
+        condition: service_started
+    command:  sh -c "until wget -q -O- http://192.168.2.140:8080/realms/cyberduckrealm/.well-known/openid-configuration >/dev/null 2>&1; do sleep 1; done"
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+    networks:
+      network:
+        ipv4_address: 192.168.2.141
+
+  minio:
+    build: ./minio
+    depends_on:
+      healthcheck:
+        condition: service_completed_successfully
+    restart: on-failure
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data:/data
+    environment:
+      MINIO_ROOT_USER: cyberduckAccessKey
+      MINIO_ROOT_PASSWORD: cyberduckSecretKey
+      MINIO_IDENTITY_OPENID_CONFIG_URL: http://192.168.2.140:8080/realms/cyberduckrealm/.well-known/openid-configuration
+      MINIO_IDENTITY_OPENID_CLIENT_ID: minio
+      MINIO_IDENTITY_OPENID_CLIENT_SECRET: password
+      MINIO_IDENTITY_OPENID_DISPLAY_NAME: SSO_Keycloak
+      MINIO_IDENTITY_OPENID_SCOPES: openid,email,minio-authorization
+      MINIO_IDENTITY_OPENID_REDIRECT_URI_DYNAMIC: "true"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://192.168.2.142:9001/login || exit 1" ]
+      interval: 10s
+      retries: 5
+    command: server /data --console-address :9001
+    networks:
+     network:
+      ipv4_address: 192.168.2.142
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      - minio
+    volumes:
+      - ./testfile.txt:/testfile.txt
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://192.168.2.142:9000 cyberduckAccessKey cyberduckSecretKey;
+      /usr/bin/mc mb myminio/cyberduckbucket;
+      /usr/bin/mc policy set public myminio/cyberduckbucket;
+      /usr/bin/mc share upload --recursive myminio/mydata;
+      /usr/bin/mc cp /testfile.txt myminio/cyberduckbucket/testfile.txt;
+      exit 0;
+      "
+    networks:
+      network:
+       ipv4_address: 192.168.2.143
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24
+          gateway: 192.168.2.1

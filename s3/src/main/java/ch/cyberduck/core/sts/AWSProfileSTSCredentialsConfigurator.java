@@ -84,6 +84,7 @@ public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigur
     private final X509TrustManager trust;
     private final X509KeyManager key;
     private final PasswordCallback prompt;
+
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
     public AWSProfileSTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {

@@ -52,7 +52,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     private OAuthTokens tokens = OAuthTokens.EMPTY;
 
     private final HostPasswordStore store = PasswordStoreFactory.get();
-    private final Host host;
+    protected final Host host;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Host host) {
         this(client, host,
@@ -142,5 +142,9 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     public OAuth2RequestInterceptor withParameter(final String key, final String value) {
         super.withParameter(key, value);
         return this;
+    }
+
+    public OAuthTokens getTokens() {
+        return tokens;
     }
 }

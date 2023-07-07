@@ -211,6 +211,12 @@ public abstract class AbstractProtocol implements Protocol {
         return true;
     }
 
+
+    @Override
+    public String getSTSEndpoint() {
+        return null;
+    }
+
     @Override
     public String getDefaultHostname() {
         // Blank by default

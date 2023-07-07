@@ -53,6 +53,7 @@ import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
+import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -135,25 +136,26 @@ public class OAuth2AuthorizationService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
         }
-        final TokenResponse response;
+        // Save access key and refresh key
         switch(flowType) {
             case AuthorizationCode:
-                response = this.authorizeWithCode(bookmark, prompt);
-                break;
+                final IdTokenResponse authorizationCodeResponse = this.authorizeWithCode(bookmark, prompt);
+                return credentials.withOauth(new OAuthTokens(authorizationCodeResponse.getAccessToken(), authorizationCodeResponse.getRefreshToken(),
+                        null == authorizationCodeResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
+                                System.currentTimeMillis() + authorizationCodeResponse.getExpiresInSeconds() * 1000,
+                        authorizationCodeResponse.getIdToken())).withSaved(new LoginOptions().keychain).getOauth();
             case PasswordGrant:
-                response = this.authorizeWithPassword(credentials);
-                break;
+                final TokenResponse passwordGrantResponse = this.authorizeWithPassword(credentials);
+                return credentials.withOauth(new OAuthTokens(
+                        passwordGrantResponse.getAccessToken(), passwordGrantResponse.getRefreshToken(),
+                        null == passwordGrantResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
+                                System.currentTimeMillis() + passwordGrantResponse.getExpiresInSeconds() * 1000, null)).withSaved(new LoginOptions().keychain).getOauth();
             default:
                 throw new LoginCanceledException();
         }
-        // Save access key and refresh key
-        return credentials.withOauth(new OAuthTokens(
-                response.getAccessToken(), response.getRefreshToken(),
-                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
-                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
     }
 
-    private TokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
+    private IdTokenResponse authorizeWithCode(final Host bookmark, final LoginCallback prompt) throws BackgroundException {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
@@ -253,7 +255,7 @@ public class OAuth2AuthorizationService {
             log.debug(String.format("Refresh expired tokens %s", tokens));
         }
         try {
-            final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
+            final IdTokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     tokens.getRefreshToken())
                     .setScopes(scopes.isEmpty() ? null : scopes)
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
@@ -261,9 +263,9 @@ public class OAuth2AuthorizationService {
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
             if(StringUtils.isBlank(response.getRefreshToken())) {
-                return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds);
+                return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds, response.getIdToken());
             }
-            return new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds);
+            return new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds, response.getIdToken());
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);
@@ -303,6 +305,7 @@ public class OAuth2AuthorizationService {
     }
 
     public static final class PermissiveTokenResponse extends GenericJson {
+        private String idToken;
         private String accessToken;
         private String tokenType;
         private Long expiresInSeconds;
@@ -311,6 +314,9 @@ public class OAuth2AuthorizationService {
 
         @Override
         public PermissiveTokenResponse set(final String fieldName, final Object value) {
+            if("id_token".equals(fieldName)) {
+                idToken = (String) value;
+            }
             if("access_token".equals(fieldName)) {
                 accessToken = (String) value;
             }
@@ -345,14 +351,16 @@ public class OAuth2AuthorizationService {
             return this;
         }
 
-        public TokenResponse toTokenResponse() {
-            return new TokenResponse()
+        public IdTokenResponse toTokenResponse() {
+            return new IdTokenResponse()
                     .setTokenType(tokenType)
                     .setScope(scope)
                     .setExpiresInSeconds(expiresInSeconds)
                     .setAccessToken(accessToken)
-                    .setRefreshToken(refreshToken);
+                    .setRefreshToken(refreshToken)
+                    .setIdToken(idToken);
         }
     }
 
 }
+ 
