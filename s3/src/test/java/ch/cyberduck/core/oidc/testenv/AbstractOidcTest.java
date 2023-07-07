@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
@@ -41,8 +42,9 @@ import java.util.HashSet;
 public abstract class AbstractOidcTest {
 
     protected static final Logger log = LogManager.getLogger(AbstractOidcTest.class);
-    protected Profile profile = null;
-    private static DockerComposeContainer<?> compose;
+    protected static Profile profile = null;
+    private static Network network;
+    private static final DockerComposeContainer<?> compose;
 
     static {
         compose = new DockerComposeContainer<>(
@@ -72,6 +74,8 @@ public abstract class AbstractOidcTest {
 
     @AfterClass
     public static void disconnect() {
-
+        if (compose == null && network != null) {
+            network.close();
+        }
     }
 }

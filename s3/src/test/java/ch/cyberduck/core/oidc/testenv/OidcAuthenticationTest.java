@@ -29,6 +29,7 @@ import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
@@ -82,20 +83,19 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
-        String firstRefreshToken = host.getCredentials().getOauth().getRefreshToken();
+
+        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
+        String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1100 * 30);
-        assertTrue(host.getCredentials().getOauth().isExpired());
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
-        String secondAccessToken = host.getCredentials().getOauth().getAccessToken();
-        String secondRefreshToken = host.getCredentials().getOauth().getRefreshToken();
-        assertNotEquals(firstAccessToken, secondAccessToken);
-        assertNotEquals(firstRefreshToken, secondRefreshToken);
+        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
+        assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
+        session.close();
     }
 
-    @Test
+    /*@Test
     public void testOauthTokenExpired() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
@@ -105,8 +105,10 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1100 * 30);
+        // oAuth tokens are saved in STSCredentialsInterceptor
         assertTrue(host.getCredentials().getOauth().isExpired());
-    }
+        session.close();
+    }*/
 
 /*    @Test(expected = ExpiredTokenException.class)
     public void testSTSTokenExpired() throws BackgroundException, InterruptedException {
