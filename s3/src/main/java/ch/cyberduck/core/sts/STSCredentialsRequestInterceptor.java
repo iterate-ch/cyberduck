@@ -68,15 +68,7 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
     @Override
     public void process(final org.apache.http.HttpRequest request, final HttpContext context) throws IOException {
         if(System.currentTimeMillis() >= stsExpiryInMilliseconds) {
-            if(getTokens().isExpired()) {
-                try {
-                    this.save(this.refresh(getTokens()));
-                }
-                catch(BackgroundException e) {
-                    log.warn(String.format("Failure %s refreshing OAuth tokens %s", e, getTokens()));
-                    // Follow-up error 401 handled in web identity token expired interceptor
-                }
-            }
+            super.refreshIfExpired();
             try {
                 Credentials credentials = assumeRoleWithWebIdentity();
                 session.getClient().setProviderCredentials(credentials.isAnonymousLogin() ? null :
