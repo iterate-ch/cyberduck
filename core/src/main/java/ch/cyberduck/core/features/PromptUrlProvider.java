@@ -20,6 +20,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.util.Collections;
 import java.util.Set;
@@ -76,6 +77,6 @@ public interface PromptUrlProvider<Download, Upload> {
     }
 
     interface ShareeCallback {
-        Sharee prompt(Set<Sharee> sharees);
+        Sharee prompt(Set<Sharee> sharees) throws ConnectionCanceledException;
     }
 }

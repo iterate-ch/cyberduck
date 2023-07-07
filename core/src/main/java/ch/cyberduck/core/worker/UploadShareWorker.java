@@ -28,6 +28,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
     private static final Logger log = LogManager.getLogger(UploadShareWorker.class);
@@ -35,11 +37,13 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
     private final Path file;
     private final Options options;
     private final PasswordCallback callback;
+    private final PromptUrlProvider.ShareeCallback prompt;
 
-    public UploadShareWorker(final Path file, final Options options, final PasswordCallback callback) {
+    public UploadShareWorker(final Path file, final Options options, final PasswordCallback callback, final PromptUrlProvider.ShareeCallback prompt) {
         this.file = file;
         this.options = options;
         this.callback = callback;
+        this.prompt = prompt;
     }
 
     @Override
@@ -48,7 +52,13 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", provider));
         }
-        return provider.toUploadUrl(file, PromptUrlProvider.Sharee.world, options, callback);
+        final Set<PromptUrlProvider.Sharee> sharees = provider.getSharees();
+        if(!sharees.stream().filter(s -> !s.equals(PromptUrlProvider.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
+            return provider.toUploadUrl(file, prompt.prompt(sharees), options, callback);
+        }
+        else {
+            return provider.toUploadUrl(file, PromptUrlProvider.Sharee.world, options, callback);
+        }
     }
 
     @Override
@@ -59,6 +69,6 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Prepare {0} ({1})", "Status"),
-            this.toString(Collections.singletonList(file)), LocaleFactory.localizedString("URL", "Download"));
+                this.toString(Collections.singletonList(file)), LocaleFactory.localizedString("URL", "Download"));
     }
 }
