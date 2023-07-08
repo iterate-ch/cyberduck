@@ -216,6 +216,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
 
             configuration.addInterceptorLast(authorizationService);
+            configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this, prompt, authorizationService));
         }
 
         // Only for AWS
