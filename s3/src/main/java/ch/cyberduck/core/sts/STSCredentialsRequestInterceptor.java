@@ -24,11 +24,13 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
@@ -110,6 +112,23 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
 
         AssumeRoleWithWebIdentityRequest webIdReq = new AssumeRoleWithWebIdentityRequest()
                 .withWebIdentityToken(tokens.getAccessToken());
+
+
+        if (new HostPreferences(host).getInteger("s3.assumerole.durationseconds") != 0) {
+            webIdReq.withDurationSeconds(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"));
+        }
+
+        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.policy"))) {
+            webIdReq.withPolicy(new HostPreferences(host).getProperty("s3.assumerole.policy"));
+        }
+
+        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolearn"))) {
+            webIdReq.withRoleArn(new HostPreferences(host).getProperty("s3.assumerole.rolearn"));
+        }
+
+        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"))) {
+            webIdReq.withRoleSessionName(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"));
+        }
 
 
         Credentials credentials = new Credentials();
