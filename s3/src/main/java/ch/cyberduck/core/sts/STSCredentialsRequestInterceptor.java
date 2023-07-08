@@ -152,10 +152,10 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
 
     private AWSSecurityTokenService getTokenService(final Host host) {
         final ClientConfiguration configuration = new CustomClientConfiguration(host,
-                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+                new ThreadLocalHostnameDelegatingTrustManager(trust, host.getProtocol().getSTSEndpoint()), key);
         return AWSSecurityTokenServiceClientBuilder
                 .standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getHostname(), null))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getProtocol().getSTSEndpoint(), null))
                 .withCredentials(new AWSCredentialsProvider() {
                     @Override
                     public AWSCredentials getCredentials() {
