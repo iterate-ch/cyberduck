@@ -20,16 +20,22 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.s3.S3AccessControlListFeature;
+import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.TestcontainerTest;
 
+import org.jets3t.service.security.AWSSessionCredentials;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -68,6 +74,49 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
+    }
+
+    @Test
+    public void testTokenRefresh() throws BackgroundException, InterruptedException {
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        final S3Session session = new S3Session(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
+        String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
+        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        Thread.sleep(1100 * 30);
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
+        assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
+        Thread.sleep(1000 * 310);
+        new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container);
+        session.close();
+    }
+
+    @Test
+    public void testOauthTokenExpiredValidSTS() throws BackgroundException, InterruptedException {
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
+        host.setProperty("s3.assumerole.durationseconds", "1000");
+        assertEquals(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"), 1000);
+        final S3Session session = new S3Session(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
+        String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
+        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        Thread.sleep(1100 * 30);
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+        // with Minio: the sts credentials expire with the oAuth access token although the sts credentials is set on a longer duration
+        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
+        assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
         session.close();
     }
 }
