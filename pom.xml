@@ -934,5 +934,11 @@
                 <main.basedir>${maven.multiModuleProjectDirectory}</main.basedir>
             </properties>
         </profile>
+        <profile>
+            <id>no-testcontainers</id>
+            <properties>
+                <excludedGroups>ch.cyberduck.test.IntegrationTest,ch.cyberduck.test.TestcontainerTest</excludedGroups>
+            </properties>
+        </profile>
     </profiles>
 </project>
