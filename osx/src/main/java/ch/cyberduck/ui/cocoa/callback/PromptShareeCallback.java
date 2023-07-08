@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.callback;
 
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.ui.cocoa.controller.ShareeController;
@@ -25,16 +26,19 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class PromptShareeCallback implements PromptUrlProvider.ShareeCallback {
+
+    private final Host host;
     private final WindowController parent;
 
-    public PromptShareeCallback(final WindowController parent) {
+    public PromptShareeCallback(final Host host, final WindowController parent) {
+        this.host = host;
         this.parent = parent;
     }
 
     @Override
     public PromptUrlProvider.Sharee prompt(final Set<PromptUrlProvider.Sharee> sharees) throws ConnectionCanceledException {
         final AtomicReference<PromptUrlProvider.Sharee> selected = new AtomicReference<>();
-        final ShareeController controller = new ShareeController(sharees, selected::set);
+        final ShareeController controller = new ShareeController(host, sharees, selected::set);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new ConnectionCanceledException();

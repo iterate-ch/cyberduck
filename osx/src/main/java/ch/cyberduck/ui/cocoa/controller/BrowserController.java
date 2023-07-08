@@ -160,7 +160,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class BrowserController extends WindowController implements NSToolbar.Delegate, NSMenu.Validation, QLPreviewPanelController {
     private static final Logger log = LogManager.getLogger(BrowserController.class);
@@ -2570,7 +2569,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void shareFileButtonClicked(final ID sender) {
         final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
-                        new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(this)) {
+                        new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
                             @Override
                             public void cleanup(final DescriptiveUrl url) {
                                 // Display
@@ -2615,7 +2614,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void requestFilesButtonClicked(final ID sender) {
         final Path file = null != this.getSelectedPath() ? this.getSelectedPath() : this.workdir();
         this.background(new WorkerBackgroundAction<>(this, pool,
-                        new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(this)) {
+                        new UploadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this), new PromptShareeCallback(pool.getHost(), this)) {
                             @Override
                             public void cleanup(final DescriptiveUrl url) {
                                 final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Share…", "Main"),
