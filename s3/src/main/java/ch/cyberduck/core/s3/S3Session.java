@@ -49,7 +49,6 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
-import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
@@ -66,6 +65,7 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
+import ch.cyberduck.core.sts.STSCredentialsRequestInterceptor;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -119,7 +119,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     private final PreferencesReader preferences
             = new HostPreferences(host);
 
-    private OAuth2RequestInterceptor authorizationService;
+    private STSCredentialsRequestInterceptor authorizationService;
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
@@ -210,8 +210,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
 
         if((host.getProtocol().isOAuthConfigurable())) {
-            authorizationService = new OAuth2RequestInterceptor(builder.build(ProxyFactory.get()
-                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host)
+            authorizationService = new STSCredentialsRequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getOAuthAuthorizationUrl()), this, prompt).build(), host, trust, key, prompt, this)
                     .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
 
