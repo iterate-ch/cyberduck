@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation; either version 2 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Protocol</key>
+        <string>s3</string>
+        <key>Vendor</key>
+        <string>s3-sts</string>
+        <key>Bundled</key>
+        <true/>
+        <key>Description</key>
+        <string>S3 STS AssumeRoleWithWebIdentity</string>
+        <key>Default Hostname</key>
+        <string>localhost</string>
+        <key>Default Port</key>
+        <string>9000</string>
+        <key>Default Nickname</key>
+        <string>MinIO</string>
+        <key>Scheme</key>
+        <string>http</string>
+        <key>Authorization</key>
+        <string>PasswordGrant</string>
+        <key>OAuth Authorization Url</key>
+        <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/auth</string>
+        <key>OAuth Token Url</key>
+        <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/token</string>
+        <key>OAuth Client ID</key>
+        <string>minio</string>
+        <key>OAuth Client Secret</key>
+        <string>password</string>
+        <key>OAuth Redirect Url</key>
+        <string>x-cyberduck-action:oauth</string>
+        <key>STS Endpoint</key>
+        <string>http://localhost:9000</string>
+        <key>Scopes</key>
+        <array>
+            <string>openid</string>
+            <string>profile</string>
+            <string>minio-authorization</string>
+        </array>
+        <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
+        <false/>
+        <key>Path Configurable</key>
+        <true/>
+        <key>Properties</key>
+        <array>
+            <string>s3.bucket.virtualhost.disable=true</string>
+        </array>
+    </dict>
+</plist>
