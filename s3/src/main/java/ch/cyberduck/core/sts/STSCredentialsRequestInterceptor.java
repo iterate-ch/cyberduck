@@ -199,4 +199,8 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
         super.withParameter(key, value);
         return this;
     }
+
+    public long getStsExpiryInMilliseconds() {
+        return stsExpiryInMilliseconds;
+    }
 }

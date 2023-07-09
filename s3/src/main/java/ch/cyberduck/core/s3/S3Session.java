@@ -440,8 +440,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         else {
             final Credentials credentials;
+            // get temporary STS credentials with oAuth token
+            if(host.getProtocol().isOAuthConfigurable()) {
+                credentials = authorizationService.assumeRoleWithWebIdentity();
+            }
             // Only for AWS
-            if(isAwsHostname(host.getHostname())) {
+            else if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 credentials = new AWSProfileSTSCredentialsConfigurator(
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
@@ -504,6 +508,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
         }
         return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
+    }
+
+    public STSCredentialsRequestInterceptor getAuthorizationService() {
+        return authorizationService;
     }
 
     @Override
