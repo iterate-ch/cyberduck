@@ -16,8 +16,6 @@ services:
       DB_VENDOR: h2
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
-      #KC_HTTPS_CERTIFICATE_FILE: /opt/keycloak/dev/certs/keycloak-server.crt.pem
-      #KC_HTTPS_CERTIFICATE_KEY_FILE: /opt/keycloak/dev/certs/keycloak-server.key.pem
     volumes:
       - ./keycloak/keycloak-realm.json:/opt/keycloak/data/import/keycloak-realm.json
     command: start-dev --import-realm --db=dev-mem --health-enabled=true
