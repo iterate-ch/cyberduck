@@ -10,7 +10,7 @@
                               Height="175"
                               Icon="{xaml:Icon 'cyberduck-application'}"
                               ResizeMode="NoResize"
-                              Title="{xaml:Text 'Share…', Table=Main}"
+                              Title="{xaml:Text 'Create Download Share', Table=Share}"
                               Width="450"
                               WindowStartupLocation="CenterScreen">
     <DockPanel>
@@ -23,14 +23,14 @@
                 KeyboardNavigation.TabNavigation="Local">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right">
-                <Button Content="{xaml:Text 'Choose…'}"
+                <Button Content="{xaml:Text 'Create', Table=Share}"
                         Height="23"
                         IsDefault="true"
                         Margin="5.5"
                         MinWidth="75"
                         Name="chooseButton"
                         Padding="11,0" />
-                <Button Content="{xaml:Text Cancel, Table=Alert}"
+                <Button Content="{xaml:Text Cancel, Table=Share}"
                         Height="23"
                         IsCancel="true"
                         Margin="5.5"
@@ -67,7 +67,7 @@
                                     Grid.Row="0">
                 <HeaderedContentControl.Header>
                     <TextBlock Name="shareesLabel"
-                               Text="{xaml:Text 'Share…', Table=Main}" />
+                               Text="{xaml:Text 'Send share to:', Table=Share}" />
                 </HeaderedContentControl.Header>
 
                 <ComboBox Name="sharees"

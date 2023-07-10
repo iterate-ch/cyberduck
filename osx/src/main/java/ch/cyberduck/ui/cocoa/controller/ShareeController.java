@@ -55,9 +55,10 @@ public class ShareeController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(), 64));
-        alert.setMessageText(LocaleFactory.localizedString("Share…", "Main"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Choose"));
-        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
+        alert.setMessageText(LocaleFactory.localizedString("Create Download Share", "Share"));
+        alert.setInformativeText(LocaleFactory.localizedString("Send share to:", "Share"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Share"));
+        alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Share"));
         super.loadBundle(alert);
     }
 
