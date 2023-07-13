@@ -1,0 +1,79 @@
+﻿<local:PromptShareeWindowBase x:Class="Ch.Cyberduck.Core.Refresh.Views.PromptShareeWindow"
+                              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                              xmlns:dvm="clr-namespace:Ch.Cyberduck.Core.Refresh.ViewModels.Dialogs"
+                              xmlns:local="clr-namespace:Ch.Cyberduck.Core.Refresh.Views"
+                              xmlns:xaml="clr-namespace:Ch.Cyberduck.Core.Refresh.Xaml"
+                              mc:Ignorable="d"
+                              Height="175"
+                              Icon="{xaml:Icon 'cyberduck-application'}"
+                              ResizeMode="NoResize"
+                              Title="{xaml:Text 'Share…', Table=Main}"
+                              Width="450"
+                              WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <Border BorderThickness="0,1,0,0"
+                BorderBrush="{x:Static SystemColors.ControlDarkBrush}"
+                Background="{x:Static SystemColors.ControlLightBrush}"
+                Padding="5.5,5.5"
+                DockPanel.Dock="Bottom"
+                KeyboardNavigation.TabIndex="1"
+                KeyboardNavigation.TabNavigation="Local">
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <Button Content="{xaml:Text 'Choose…'}"
+                        Height="23"
+                        IsDefault="true"
+                        Margin="5.5"
+                        MinWidth="75"
+                        Name="chooseButton"
+                        Padding="11,0" />
+                <Button Content="{xaml:Text Cancel, Table=Alert}"
+                        Height="23"
+                        IsCancel="true"
+                        Margin="5.5"
+                        MinWidth="75"
+                        Name="cancelButton"
+                        Padding="11,0" />
+            </StackPanel>
+        </Border>
+
+        <Grid Margin="5.5"
+              KeyboardNavigation.TabIndex="0"
+              KeyboardNavigation.TabNavigation="Local">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Image Name="protocolImage"
+                   Height="64"
+                   HorizontalAlignment="Left"
+                   Margin="5.5"
+                   VerticalAlignment="Top"
+                   Width="64"
+                   Grid.Column="0"
+                   Grid.Row="0" />
+
+            <HeaderedContentControl IsTabStop="False"
+                                    Margin="5.5"
+                                    Grid.Column="1"
+                                    Grid.Row="0">
+                <HeaderedContentControl.Header>
+                    <TextBlock Name="shareesLabel"
+                               Text="{xaml:Text 'Share…', Table=Main}" />
+                </HeaderedContentControl.Header>
+
+                <ComboBox Name="sharees"
+                          DisplayMemberPath="Description"
+                          AutomationProperties.LabeledBy="{Binding ElementName=shareesLabel}" />
+            </HeaderedContentControl>
+        </Grid>
+    </DockPanel>
+</local:PromptShareeWindowBase>

@@ -36,6 +36,7 @@ using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
+using Ch.Cyberduck.Core.Refresh.Interactivity;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
@@ -3671,7 +3672,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _file;
 
                 public InnerDownloadShareWorker(BrowserController controller, Path file)
-                    : base(file, null, PasswordCallbackFactory.get(controller))
+                    : base(file, null, PasswordCallbackFactory.get(controller), new DialogPromptShareeCallback(controller.Session.getHost(), controller.View.Handle, controller))
                 {
                     _controller = controller;
                     _file = file;
@@ -3716,7 +3717,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Path _file;
 
                 public InnerUploadShareWorker(BrowserController controller, Path file)
-                    : base(file, null, PasswordCallbackFactory.get(controller))
+                    : base(file, null, PasswordCallbackFactory.get(controller), new DialogPromptShareeCallback(controller.Session.getHost(), controller.View.Handle, controller))
                 {
                     _controller = controller;
                     _file = file;

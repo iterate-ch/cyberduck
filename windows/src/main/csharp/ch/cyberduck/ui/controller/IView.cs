@@ -28,6 +28,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
     public interface IView : ISynchronizeInvoke
     {
+        IntPtr Handle { get; }
+
         bool Visible { get; set; }
         bool ReleaseWhenClose { set; }
         bool IsHandleCreated { get; }
