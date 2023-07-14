@@ -54,7 +54,7 @@ public class DownloadShareWorker<Options> extends Worker<DescriptiveUrl> {
         }
         final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.download);
         if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
-            return provider.toDownloadUrl(file, prompt.prompt(sharees), options, callback);
+            return provider.toDownloadUrl(file, prompt.prompt(Share.Type.download, sharees), options, callback);
         }
         else {
             return provider.toDownloadUrl(file, Share.Sharee.world, options, callback);

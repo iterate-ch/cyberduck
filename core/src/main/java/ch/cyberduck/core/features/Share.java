@@ -77,6 +77,6 @@ public interface Share<Download, Upload> {
     }
 
     interface ShareeCallback {
-        Sharee prompt(Set<Sharee> sharees) throws ConnectionCanceledException;
+        Sharee prompt(Type type, Set<Sharee> sharees) throws ConnectionCanceledException;
     }
 }

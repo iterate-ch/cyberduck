@@ -36,9 +36,9 @@ public final class PromptShareeCallback implements Share.ShareeCallback {
     }
 
     @Override
-    public Share.Sharee prompt(final Set<Share.Sharee> sharees) throws ConnectionCanceledException {
+    public Share.Sharee prompt(final Share.Type type, final Set<Share.Sharee> sharees) throws ConnectionCanceledException {
         final AtomicReference<Share.Sharee> selected = new AtomicReference<>();
-        final ShareeController controller = new ShareeController(host, sharees, selected::set);
+        final ShareeController controller = new ShareeController(host, type, sharees, selected::set);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
             throw new ConnectionCanceledException();

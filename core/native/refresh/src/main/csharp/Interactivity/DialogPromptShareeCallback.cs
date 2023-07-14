@@ -24,7 +24,7 @@ public class DialogPromptShareeCallback : Share.ShareeCallback
             this.parent) = (controller, host, parent);
     }
 
-    public Share.Sharee prompt(Set sharees)
+    public Share.Sharee prompt(Share.Type type, Set sharees)
     {
         var viewModel = new PromptShareeViewModel(host.getProtocol(), sharees);
         var action = new PromptShareeAction(viewModel, parent);

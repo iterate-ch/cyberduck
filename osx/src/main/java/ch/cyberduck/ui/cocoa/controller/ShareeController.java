@@ -41,11 +41,13 @@ public class ShareeController extends AlertController {
     private NSPopUpButton shareePopup;
 
     private final Host host;
+    private final Share.Type type;
     private final Set<Share.Sharee> sharees;
     private final ShareeController.Callback callback;
 
-    public ShareeController(final Host host, final Set<Share.Sharee> sharees, final Callback callback) {
+    public ShareeController(final Host host, final Share.Type type, final Set<Share.Sharee> sharees, final Callback callback) {
         this.host = host;
+        this.type = type;
         this.sharees = sharees;
         this.callback = callback;
     }
@@ -55,7 +57,11 @@ public class ShareeController extends AlertController {
         final NSAlert alert = NSAlert.alert();
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(), 64));
-        alert.setMessageText(LocaleFactory.localizedString("Create Download Share", "Share"));
+        switch(type) {
+            case download:
+                alert.setMessageText(LocaleFactory.localizedString("Create Download Share", "Share"));
+                break;
+        }
         alert.setInformativeText(LocaleFactory.localizedString("Send share to:", "Share"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Share"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Share"));

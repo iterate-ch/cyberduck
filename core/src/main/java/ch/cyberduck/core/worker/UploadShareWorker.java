@@ -54,7 +54,7 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
         }
         final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.upload);
         if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
-            return provider.toUploadUrl(file, prompt.prompt(sharees), options, callback);
+            return provider.toUploadUrl(file, prompt.prompt(Share.Type.upload, sharees), options, callback);
         }
         else {
             return provider.toUploadUrl(file, Share.Sharee.world, options, callback);
