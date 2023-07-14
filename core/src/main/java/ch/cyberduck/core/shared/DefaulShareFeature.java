@@ -1,7 +1,7 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.shared;
 
 /*
- * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,18 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
-public class DefaulPromptUrlProvider implements PromptUrlProvider {
+public class DefaulShareFeature implements Share {
 
     private final UrlProvider proxy;
 
-    public DefaulPromptUrlProvider(final UrlProvider proxy) {
+    public DefaulShareFeature(final UrlProvider proxy) {
         this.proxy = proxy;
     }
 

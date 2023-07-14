@@ -26,7 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ObjectExpiration;
@@ -52,7 +52,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                Share.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -73,7 +73,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(room,
-                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                Share.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -95,7 +95,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                Share.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -118,7 +118,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                    Share.Sharee.world, new CreateDownloadShareRequest()
                             .expiration(new ObjectExpiration().enableExpiration(false))
                             .notifyCreator(false)
                             .sendMail(true)
@@ -141,7 +141,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                    Share.Sharee.world, new CreateDownloadShareRequest()
                             .expiration(new ObjectExpiration().enableExpiration(false))
                             .notifyCreator(false)
                             .sendMail(false)
@@ -165,7 +165,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                    Share.Sharee.world, new CreateDownloadShareRequest()
                             .expiration(new ObjectExpiration().enableExpiration(false))
                             .notifyCreator(false)
                             .sendMail(false)
@@ -188,7 +188,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                    Share.Sharee.world, new CreateDownloadShareRequest()
                             .expiration(new ObjectExpiration().enableExpiration(false))
                             .notifyCreator(false)
                             .sendMail(true)
@@ -209,7 +209,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                Share.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(1744300800000L)))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -231,7 +231,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                Share.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(true).expireAt(new DateTime(17443L)))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -254,7 +254,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                Share.Sharee.world, new CreateDownloadShareRequest()
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
                         .sendMail(false)
@@ -283,7 +283,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
             final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
-                    PromptUrlProvider.Sharee.world, new CreateDownloadShareRequest()
+                    Share.Sharee.world, new CreateDownloadShareRequest()
                             .expiration(new ObjectExpiration().enableExpiration(false))
                             .notifyCreator(false)
                             .sendMail(false)
@@ -304,7 +304,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(room,
-                PromptUrlProvider.Sharee.world, new CreateUploadShareRequest()
+                Share.Sharee.world, new CreateUploadShareRequest()
                         .name(new AlphanumericRandomStringService().random())
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
@@ -331,7 +331,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), true);
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(folder,
-                PromptUrlProvider.Sharee.world, new CreateUploadShareRequest()
+                Share.Sharee.world, new CreateUploadShareRequest()
                         .name(new AlphanumericRandomStringService().random())
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)
@@ -357,7 +357,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(test,
-                PromptUrlProvider.Sharee.world, new CreateUploadShareRequest()
+                Share.Sharee.world, new CreateUploadShareRequest()
                         .name(new AlphanumericRandomStringService().random())
                         .expiration(new ObjectExpiration().enableExpiration(false))
                         .notifyCreator(false)

@@ -24,7 +24,7 @@ import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -41,10 +41,10 @@ public class ShareeController extends AlertController {
     private NSPopUpButton shareePopup;
 
     private final Host host;
-    private final Set<PromptUrlProvider.Sharee> sharees;
+    private final Set<Share.Sharee> sharees;
     private final ShareeController.Callback callback;
 
-    public ShareeController(final Host host, final Set<PromptUrlProvider.Sharee> sharees, final Callback callback) {
+    public ShareeController(final Host host, final Set<Share.Sharee> sharees, final Callback callback) {
         this.host = host;
         this.sharees = sharees;
         this.callback = callback;
@@ -66,16 +66,16 @@ public class ShareeController extends AlertController {
         view = NSView.create(new NSRect(alert.window().frame().size.width.doubleValue(), 0));
         shareePopup = NSPopUpButton.buttonWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 26));
         shareePopup.setFrameOrigin(new NSPoint(0, 0));
-        shareePopup.addItemWithTitle(PromptUrlProvider.Sharee.world.getDescription());
+        shareePopup.addItemWithTitle(Share.Sharee.world.getDescription());
         shareePopup.menu().addItem(NSMenuItem.separatorItem());
-        sharees.stream().sorted(Comparator.comparing(PromptUrlProvider.Sharee::getDescription)).forEach(sharee -> {
-            if(!sharee.equals(PromptUrlProvider.Sharee.world)) {
+        sharees.stream().sorted(Comparator.comparing(Share.Sharee::getDescription)).forEach(sharee -> {
+            if(!sharee.equals(Share.Sharee.world)) {
                 shareePopup.addItemWithTitle(sharee.getDescription());
                 final NSMenuItem item = shareePopup.itemWithTitle(sharee.getDescription());
                 item.setRepresentedObject(sharee.getIdentifier());
             }
         });
-        shareePopup.selectItemAtIndex(shareePopup.indexOfItemWithRepresentedObject(PromptUrlProvider.Sharee.world.getIdentifier()));
+        shareePopup.selectItemAtIndex(shareePopup.indexOfItemWithRepresentedObject(Share.Sharee.world.getIdentifier()));
         // Override accessory view with location menu added
         view.addSubview(shareePopup);
         return view;
@@ -85,12 +85,12 @@ public class ShareeController extends AlertController {
     public void callback(final int returncode) {
         switch(returncode) {
             case DEFAULT_OPTION:
-                callback.callback(new PromptUrlProvider.Sharee(shareePopup.selectedItem().representedObject(), null));
+                callback.callback(new Share.Sharee(shareePopup.selectedItem().representedObject(), null));
                 break;
         }
     }
 
     public interface Callback {
-        void callback(final PromptUrlProvider.Sharee region);
+        void callback(final Share.Sharee region);
     }
 }

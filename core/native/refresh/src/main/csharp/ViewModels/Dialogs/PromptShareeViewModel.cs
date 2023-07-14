@@ -18,7 +18,7 @@ namespace Ch.Cyberduck.Core.Refresh.ViewModels.Dialogs;
 public class PromptShareeViewModel : ReactiveObject
 {
     private readonly ObservableAsPropertyHelper<ShareeItemViewModel> selectedShareeView;
-    private PromptUrlProvider.Sharee selectedSharee;
+    private Share.Sharee selectedSharee;
 
     public ReactiveCommand<Unit, Unit> Cancel { get; }
 
@@ -30,7 +30,7 @@ public class PromptShareeViewModel : ReactiveObject
 
     public Protocol Protocol { get; }
 
-    public PromptUrlProvider.Sharee SelectedSharee
+    public Share.Sharee SelectedSharee
     {
         get => selectedSharee;
         set => this.RaiseAndSetIfChanged(ref selectedSharee, value);
@@ -49,21 +49,21 @@ public class PromptShareeViewModel : ReactiveObject
         Cancel = ReactiveCommand.CreateFromObservable(OnCancel);
         Confirm = ReactiveCommand.CreateFromObservable(OnConfirm);
 
-        var worldSharee = new ShareeItemViewModel(PromptUrlProvider.Sharee.world);
+        var worldSharee = new ShareeItemViewModel(Share.Sharee.world);
         var shareesSet = sharees
-            .AsEnumerable<PromptUrlProvider.Sharee>()
-            .Where(s => !PromptUrlProvider.Sharee.world.equals(s))
+            .AsEnumerable<Share.Sharee>()
+            .Where(s => !Share.Sharee.world.equals(s))
             .ToDictionary(sharee => sharee, model => new ShareeItemViewModel(model));
 
         List<ShareeItemViewModel> viewModels = new() { worldSharee };
         viewModels.AddRange(
             shareesSet.OrderBy(x => x.Key.getDescription()).Select(x => x.Value));
-        shareesSet[PromptUrlProvider.Sharee.world] = worldSharee;
+        shareesSet[Share.Sharee.world] = worldSharee;
         Items = viewModels.AsReadOnly();
 
         selectedSharee = worldSharee.Sharee;
         selectedShareeView = this.WhenValueChanged(x => x.SelectedSharee)
-            .Select((Func<PromptUrlProvider.Sharee, ShareeItemViewModel>)shareesSet.Lookup)
+            .Select((Func<Share.Sharee, ShareeItemViewModel>)shareesSet.Lookup)
             .ToProperty(this, nameof(SelectedShareeView));
     }
 
@@ -77,9 +77,9 @@ public class PromptShareeViewModel : ReactiveObject
     {
         public string Description { get; }
 
-        public PromptUrlProvider.Sharee Sharee { get; }
+        public Share.Sharee Sharee { get; }
 
-        public ShareeItemViewModel(PromptUrlProvider.Sharee sharee)
+        public ShareeItemViewModel(Share.Sharee sharee)
         {
             Sharee = sharee;
             Description = sharee.getDescription();

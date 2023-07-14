@@ -20,12 +20,12 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import org.jets3t.service.acl.Permission;
 
-public class S3PublicUrlProvider implements PromptUrlProvider<Void, Void> {
+public class S3PublicUrlProvider implements Share<Void, Void> {
 
     private final S3Session session;
     private final S3AccessControlListFeature acl;

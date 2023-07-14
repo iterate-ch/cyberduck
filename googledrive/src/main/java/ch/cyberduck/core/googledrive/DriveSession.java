@@ -172,7 +172,7 @@ public class DriveSession extends HttpSession<Drive> {
         if(type == UrlProvider.class) {
             return (T) new DriveUrlProvider();
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new DriveSharingUrlProvider(this, fileid);
         }
         if(type == FileIdProvider.class) {

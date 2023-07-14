@@ -21,7 +21,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,9 +37,9 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
     private final Path file;
     private final Options options;
     private final PasswordCallback callback;
-    private final PromptUrlProvider.ShareeCallback prompt;
+    private final Share.ShareeCallback prompt;
 
-    public UploadShareWorker(final Path file, final Options options, final PasswordCallback callback, final PromptUrlProvider.ShareeCallback prompt) {
+    public UploadShareWorker(final Path file, final Options options, final PasswordCallback callback, final Share.ShareeCallback prompt) {
         this.file = file;
         this.options = options;
         this.callback = callback;
@@ -48,16 +48,16 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
 
     @Override
     public DescriptiveUrl run(final Session<?> session) throws BackgroundException {
-        final PromptUrlProvider<Void, Options> provider = session.getFeature(PromptUrlProvider.class);
+        final Share<Void, Options> provider = session.getFeature(Share.class);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", provider));
         }
-        final Set<PromptUrlProvider.Sharee> sharees = provider.getSharees();
-        if(!sharees.stream().filter(s -> !s.equals(PromptUrlProvider.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
+        final Set<Share.Sharee> sharees = provider.getSharees();
+        if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
             return provider.toUploadUrl(file, prompt.prompt(sharees), options, callback);
         }
         else {
-            return provider.toUploadUrl(file, PromptUrlProvider.Sharee.world, options, callback);
+            return provider.toUploadUrl(file, Share.Sharee.world, options, callback);
         }
     }
 

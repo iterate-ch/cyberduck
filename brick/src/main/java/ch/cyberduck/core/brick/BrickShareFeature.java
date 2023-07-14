@@ -25,7 +25,7 @@ import ch.cyberduck.core.brick.io.swagger.client.ApiException;
 import ch.cyberduck.core.brick.io.swagger.client.api.BundlesApi;
 import ch.cyberduck.core.brick.io.swagger.client.model.BundlesBody;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,7 +33,7 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collections;
 
-public class BrickShareFeature implements PromptUrlProvider {
+public class BrickShareFeature implements Share {
 
     private final BrickSession session;
 

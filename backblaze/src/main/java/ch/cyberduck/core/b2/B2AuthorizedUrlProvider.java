@@ -24,7 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -38,7 +38,7 @@ import java.util.TimeZone;
 
 import synapticloop.b2.exception.B2ApiException;
 
-public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
+public class B2AuthorizedUrlProvider implements Share<Void, Void> {
     private static final Logger log = LogManager.getLogger(B2AuthorizedUrlProvider.class);
 
     private final PathContainerService containerService

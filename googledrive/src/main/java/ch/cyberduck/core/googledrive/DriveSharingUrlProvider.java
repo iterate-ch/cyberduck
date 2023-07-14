@@ -19,14 +19,14 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import java.io.IOException;
 
 import com.google.api.services.drive.model.Permission;
 
-public class DriveSharingUrlProvider implements PromptUrlProvider {
+public class DriveSharingUrlProvider implements Share {
 
     private final DriveSession session;
     private final DriveFileIdProvider fileid;

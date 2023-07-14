@@ -20,11 +20,11 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 
 import org.jets3t.service.acl.Permission;
 
-public class GoogleStoragePublicUrlProvider implements PromptUrlProvider<Void, Void> {
+public class GoogleStoragePublicUrlProvider implements Share<Void, Void> {
 
     private final GoogleStorageSession session;
 

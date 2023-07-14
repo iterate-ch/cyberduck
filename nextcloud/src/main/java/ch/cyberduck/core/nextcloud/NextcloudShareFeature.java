@@ -28,7 +28,7 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 
-public class NextcloudShareProvider implements PromptUrlProvider {
+public class NextcloudShareFeature implements Share {
 
     private final DAVSession session;
 
@@ -73,7 +73,7 @@ public class NextcloudShareProvider implements PromptUrlProvider {
      */
     private static final int SHARE_PERMISSIONS_CREATE = 4;
 
-    public NextcloudShareProvider(final DAVSession session) {
+    public NextcloudShareFeature(final DAVSession session) {
         this.session = session;
     }
 

@@ -37,7 +37,7 @@ import ch.cyberduck.core.eue.io.swagger.client.model.UserSharesModel;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +47,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
-public class EueShareFeature implements PromptUrlProvider<ShareCreationRequestModel, ShareCreationRequestModel> {
+public class EueShareFeature implements Share<ShareCreationRequestModel, ShareCreationRequestModel> {
     private static final Logger log = LogManager.getLogger(EueShareFeature.class);
 
     private static final String GUEST_E_MAIL = "!ano";

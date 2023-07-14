@@ -20,7 +20,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -44,9 +44,9 @@ public class DriveSharingUrlProviderTest extends AbstractDriveTest {
         final DriveSharingUrlProvider provider = new DriveSharingUrlProvider(session, fileid);
         // Set web view link
         test.setAttributes(new DriveAttributesFinderFeature(session, fileid).find(test));
-        assertFalse(provider.isSupported(test, PromptUrlProvider.Type.upload));
-        assertTrue(provider.isSupported(test, PromptUrlProvider.Type.download));
-        final DescriptiveUrl url = provider.toDownloadUrl(test, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback());
+        assertFalse(provider.isSupported(test, Share.Type.upload));
+        assertTrue(provider.isSupported(test, Share.Type.download));
+        final DescriptiveUrl url = provider.toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

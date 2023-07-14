@@ -63,7 +63,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     private OAuth2RequestInterceptor authorizationService;
 
     private DropboxLockFeature locking;
-    private DropboxShareUrlProvider share;
+    private DropboxShareFeature share;
 
     private PathRoot root = PathRoot.HOME;
 
@@ -104,11 +104,11 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 // The features listed below are only available to customers on Dropbox Professional, Standard, Advanced, and Enterprise.
                 case PRO:
                 case BUSINESS:
-                    share = new DropboxPasswordShareUrlProvider(this);
+                    share = new DropboxPasswordShareFeature(this);
                     locking = new DropboxLockFeature(this);
                     break;
                 default:
-                    share = new DropboxShareUrlProvider(this);
+                    share = new DropboxShareFeature(this);
                     locking = null;
                     break;
             }
@@ -164,7 +164,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         if(type == UrlProvider.class) {
             return (T) new DropboxUrlProvider(this);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) share;
         }
         if(type == Find.class) {

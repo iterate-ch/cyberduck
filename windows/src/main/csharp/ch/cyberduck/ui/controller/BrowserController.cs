@@ -327,8 +327,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsMounted())
             {
                 var selected = SelectedPath ?? Workdir;
-                PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
-                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.upload);
+                Share feature = (Share)Session.getFeature(typeof(Share));
+                return feature != null && feature.isSupported(selected, Share.Type.upload);
             }
             return false;
         }
@@ -380,8 +380,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsMounted())
             {
                 var selected = SelectedPath ?? Workdir;
-                PromptUrlProvider feature = (PromptUrlProvider)Session.getFeature(typeof(PromptUrlProvider));
-                return feature != null && feature.isSupported(selected, PromptUrlProvider.Type.download);
+                Share feature = (Share)Session.getFeature(typeof(Share));
+                return feature != null && feature.isSupported(selected, Share.Type.download);
             }
             return false;
         }

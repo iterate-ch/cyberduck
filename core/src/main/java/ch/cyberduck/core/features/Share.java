@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @Optional
-public interface PromptUrlProvider<Download, Upload> {
+public interface Share<Download, Upload> {
     boolean isSupported(Path file, Type type);
 
     /**

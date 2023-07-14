@@ -242,7 +242,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         if(type == Lock.class) {
             return (T) new StoregateLockFeature(this, fileid);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new StoregateShareFeature(this, fileid);
         }
         if(type == Timestamp.class) {

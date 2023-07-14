@@ -19,7 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -40,7 +40,7 @@ public class BrickShareFeatureTest extends AbstractBrickTest {
             EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final Path test = new BrickTouchFeature(session).touch(
             new Path(directory, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(new BrickShareFeature(session).toDownloadUrl(test, PromptUrlProvider.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
+        assertNotNull(new BrickShareFeature(session).toDownloadUrl(test, Share.Sharee.world, null, new DisabledPasswordCallback()).getUrl());
         new BrickDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

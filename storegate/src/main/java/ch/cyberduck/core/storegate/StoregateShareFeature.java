@@ -22,7 +22,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FileSharesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFileShareRequest;
@@ -30,7 +30,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFileShareReques
 import java.net.URI;
 import java.text.MessageFormat;
 
-public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
+public class StoregateShareFeature implements Share<Void, Void> {
 
     private final StoregateSession session;
     private final StoregateIdProvider fileid;

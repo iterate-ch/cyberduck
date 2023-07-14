@@ -30,7 +30,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
-import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Share;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Upload;
@@ -134,7 +134,7 @@ public class BoxSession extends HttpSession<CloseableHttpClient> {
         if(type == AttributesFinder.class) {
             return (T) new BoxAttributesFinderFeature(this, fileid);
         }
-        if(type == PromptUrlProvider.class) {
+        if(type == Share.class) {
             return (T) new BoxShareFeature(this, fileid);
         }
         return super._getFeature(type);

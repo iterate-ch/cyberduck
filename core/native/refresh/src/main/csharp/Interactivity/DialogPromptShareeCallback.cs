@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace Ch.Cyberduck.Core.Refresh.Interactivity;
 
-public class DialogPromptShareeCallback : PromptUrlProvider.ShareeCallback
+public class DialogPromptShareeCallback : Share.ShareeCallback
 {
     private readonly Controller controller;
     private readonly Host host;
@@ -24,7 +24,7 @@ public class DialogPromptShareeCallback : PromptUrlProvider.ShareeCallback
             this.parent) = (controller, host, parent);
     }
 
-    public PromptUrlProvider.Sharee prompt(Set sharees)
+    public Share.Sharee prompt(Set sharees)
     {
         var viewModel = new PromptShareeViewModel(host.getProtocol(), sharees);
         var action = new PromptShareeAction(viewModel, parent);
