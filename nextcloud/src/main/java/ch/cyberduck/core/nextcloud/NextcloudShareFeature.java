@@ -87,61 +87,66 @@ public class NextcloudShareFeature implements Share {
     }
 
     @Override
-    public Set<Sharee> getSharees() throws BackgroundException {
-        final Host bookmark = session.getHost();
-        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
-                bookmark.getHostname(),
-                SHARE_TYPE_USER // User
-        ));
-        final HttpGet resource = new HttpGet(request.toString());
-        resource.setHeader("OCS-APIRequest", "true");
-        resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
-        final Set<Sharee> sharees = new LinkedHashSet<>(
-                Collections.singletonList(Sharee.world)
-        );
-        try {
-            sharees.addAll(session.getClient().execute(resource, new AbstractResponseHandler<List<Sharee>>() {
-                        @Override
-                        public List<Sharee> handleResponse(final HttpResponse response) throws IOException {
-                            final StatusLine statusLine = response.getStatusLine();
-                            final HttpEntity entity = response.getEntity();
-                            if(statusLine.getStatusCode() >= 300) {
-                                final StringAppender message = new StringAppender();
-                                message.append(statusLine.getReasonPhrase());
-                                final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
-                                message.append(error.meta.message);
-                                throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
-                            }
-                            return super.handleResponse(response);
-                        }
-
-                        @Override
-                        public List<Sharee> handleEntity(final HttpEntity entity) throws IOException {
-                            final XmlMapper mapper = new XmlMapper();
-                            final ocs value = mapper.readValue(entity.getContent(), ocs.class);
-                            if(value.data != null) {
-                                if(value.data.users != null) {
-                                    final List<Sharee> sharees = new ArrayList<>();
-                                    for(ocs.user user : value.data.users) {
-                                        final String id = user.value.shareWith;
-                                        final String label = String.format("%s (%s)", user.label, user.shareWithDisplayNameUnique);
-                                        sharees.add(new Sharee(id, label));
+    public Set<Sharee> getSharees(final Type type) throws BackgroundException {
+        switch(type) {
+            case upload:
+                return Collections.singleton(Sharee.world);
+            default:
+                final Host bookmark = session.getHost();
+                final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/sharees?lookup=true&shareType=%d&itemType=file",
+                        bookmark.getHostname(),
+                        SHARE_TYPE_USER // User
+                ));
+                final HttpGet resource = new HttpGet(request.toString());
+                resource.setHeader("OCS-APIRequest", "true");
+                resource.setHeader(HttpHeaders.ACCEPT, ContentType.APPLICATION_XML.getMimeType());
+                final Set<Sharee> sharees = new LinkedHashSet<>(
+                        Collections.singletonList(Sharee.world)
+                );
+                try {
+                    sharees.addAll(session.getClient().execute(resource, new AbstractResponseHandler<List<Sharee>>() {
+                                @Override
+                                public List<Sharee> handleResponse(final HttpResponse response) throws IOException {
+                                    final StatusLine statusLine = response.getStatusLine();
+                                    final HttpEntity entity = response.getEntity();
+                                    if(statusLine.getStatusCode() >= 300) {
+                                        final StringAppender message = new StringAppender();
+                                        message.append(statusLine.getReasonPhrase());
+                                        final ocs error = new XmlMapper().readValue(entity.getContent(), ocs.class);
+                                        message.append(error.meta.message);
+                                        throw new HttpResponseException(statusLine.getStatusCode(), message.toString());
                                     }
-                                    return sharees;
+                                    return super.handleResponse(response);
+                                }
+
+                                @Override
+                                public List<Sharee> handleEntity(final HttpEntity entity) throws IOException {
+                                    final XmlMapper mapper = new XmlMapper();
+                                    final ocs value = mapper.readValue(entity.getContent(), ocs.class);
+                                    if(value.data != null) {
+                                        if(value.data.users != null) {
+                                            final List<Sharee> sharees = new ArrayList<>();
+                                            for(ocs.user user : value.data.users) {
+                                                final String id = user.value.shareWith;
+                                                final String label = String.format("%s (%s)", user.label, user.shareWithDisplayNameUnique);
+                                                sharees.add(new Sharee(id, label));
+                                            }
+                                            return sharees;
+                                        }
+                                    }
+                                    return Collections.emptyList();
                                 }
                             }
-                            return Collections.emptyList();
-                        }
-                    }
-            ));
+                    ));
+                }
+                catch(HttpResponseException e) {
+                    throw new DefaultHttpResponseExceptionMappingService().map(e);
+                }
+                catch(IOException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+                }
+                return sharees;
         }
-        catch(HttpResponseException e) {
-            throw new DefaultHttpResponseExceptionMappingService().map(e);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        return sharees;
     }
 
     /**

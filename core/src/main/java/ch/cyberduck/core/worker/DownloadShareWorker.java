@@ -52,7 +52,7 @@ public class DownloadShareWorker<Options> extends Worker<DescriptiveUrl> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", provider));
         }
-        final Set<Share.Sharee> sharees = provider.getSharees();
+        final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.download);
         if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
             return provider.toDownloadUrl(file, prompt.prompt(sharees), options, callback);
         }

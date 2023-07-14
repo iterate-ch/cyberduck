@@ -64,7 +64,7 @@ public class NextcloudShareFeatureTest extends AbstractNextcloudTest {
         final Path home = new NextcloudHomeFeature(session.getHost()).find();
         final Path file = new DAVTouchFeature(session).touch(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final NextcloudShareFeature provider = new NextcloudShareFeature(session);
-        final Set<Share.Sharee> sharees = provider.getSharees();
+        final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.download);
         assertFalse(sharees.isEmpty());
         assertTrue(sharees.contains(Share.Sharee.world));
         sharees.remove(Share.Sharee.world);

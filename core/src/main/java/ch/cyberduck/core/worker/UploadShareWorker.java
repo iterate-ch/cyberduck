@@ -52,7 +52,7 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run with feature %s", provider));
         }
-        final Set<Share.Sharee> sharees = provider.getSharees();
+        final Set<Share.Sharee> sharees = provider.getSharees(Share.Type.upload);
         if(!sharees.stream().filter(s -> !s.equals(Share.Sharee.world)).collect(Collectors.toSet()).isEmpty()) {
             return provider.toUploadUrl(file, prompt.prompt(sharees), options, callback);
         }

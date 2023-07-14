@@ -34,7 +34,7 @@ public interface Share<Download, Upload> {
      *
      * @return List of possible users to select from
      */
-    default Set<Sharee> getSharees() throws BackgroundException {
+    default Set<Sharee> getSharees(final Type type) throws BackgroundException {
         return Collections.singleton(Sharee.world);
     }
 
