@@ -118,10 +118,11 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.close();
     }
 
-    // only use with the below specified changes in the keycloak config json file and run as separate test
-    // set config keycloak-realm.json:
-    //      "access.token.lifespan": "930"
-    //      "ssoSessionMaxLifespan": 1100,
+    /** only use with the below specified changes in the keycloak config json file and run as separate test
+     * set config keycloak-realm.json:
+     *      "access.token.lifespan": "930"
+     *      "ssoSessionMaxLifespan": 1100,
+     */
     /*@Test
     public void testSTSCredentialsExpiredValidOAuthToken() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
@@ -141,4 +142,28 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
         assertEquals(firstAccessToken, authorizationService.getTokens().getAccessToken());
     }*/
+
+    /**
+     *     This test fails if the x-minio Headers are not read because of InvalidAccessKeyId error code which has no response body.
+     *     Adjust the sleep time according to the network latency
+     */
+//    @Test
+//    public void testBucketRequestBeforeTokenExpiryFailsBecauseOfLatency() throws BackgroundException, InterruptedException {
+//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+//        final S3Session session = new S3Session(host);
+//        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+//        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+//
+//        String firstAccessToken = session.getAuthorizationService().getTokens().getIdToken();
+//        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
+//
+//        // Time of latency may vary and so the time needs to be adjusted accordingly
+//        Thread.sleep(28820);
+//        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+//        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+//
+//        assertNotEquals(firstAccessToken, session.getAuthorizationService().getTokens().getIdToken());
+//        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
+//        session.close();
+//    }
 }

@@ -99,15 +99,13 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
 
     private void refreshOAuthAndSTS() {
         try {
-            if(authorizationService.getTokens().isExpired()) {
-                try {
-                    host.getCredentials().setOauth(authorizationService.refresh());
-                    log.debug("OAuth refreshed. Refreshing STS token.");
-                }
-                catch(InteroperabilityException | LoginFailureException e3) {
-                    log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
-                    authorizationService.save(authorizationService.authorize(host, prompt, new DisabledCancelCallback()));
-                }
+            try {
+                authorizationService.save(authorizationService.refresh());
+                log.debug("OAuth refreshed. Refreshing STS token.");
+            }
+            catch(InteroperabilityException | LoginFailureException e3) {
+                log.warn(String.format("Failure %s refreshing OAuth tokens", e3));
+                authorizationService.save(authorizationService.authorize(host, prompt, new DisabledCancelCallback()));
             }
             try {
                 Credentials credentials = authorizationService.assumeRoleWithWebIdentity();
