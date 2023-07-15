@@ -113,41 +113,35 @@ export_strings() {
 
 export_strings_legacy() {
 	if [ "$language" = "all" ] ; then
-	{
 		echo "*** Updating all localizations...";
     for lproj in $(ls . | grep lproj); do
       language=$lproj;
       echo "*** Updating $language Localization...";
-          if [ "$nibfile" = "all" ] ; then
+        if [ "$stringsfile" = "all" ] ; then
           for n in $(ls $language | grep $extension); do
             nib=`basename $n $extension`
             echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
             $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
           done;
-          fi;
-          if [ "$nibfile" != "all" ] ; then
-        nib=`basename $nibfile $extension`
-        echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
-        $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-          fi;
-    done;
-	}
-	else
-	{
-		echo "*** Updating $language Localization...";
-        if [ "$nibfile" = "all" ] ; then
-    		for n in `ls $language | grep $extension`; do
-    			nib=`basename $n $extension`
-    			echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
-    			$convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
-    		done;
-        fi;
-        if [ "$nibfile" != "all" ] ; then
-          nib=`basename $nibfile $extension`
+        else
+          nib=`basename $stringsfile ".strings"`
           echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
           $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
         fi;
-	}
+    done;
+	else
+		echo "*** Updating $language Localization...";
+      if [ "$stringsfile" = "all" ] ; then
+        for n in `ls $language | grep $extension`; do
+          nib=`basename $n $extension`
+          echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+          $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+        done;
+      else
+        nib=`basename $stringsfile ".strings"`
+        echo "Update $language/$nib.strings.1 from $base_language/$nib.strings"
+        $convertstrings $base_language/$nib.strings $language/$nib.strings > $language/$nib.strings.1
+      fi;
 	fi;
 }
 
