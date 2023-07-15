@@ -14,6 +14,8 @@
   ~ GNU General Public License for more details.
   -->
 
+<!-- this profile was used for manual testing with a google IDP and MinIO. Adapt this with your google and minio webservices. -->
+
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
@@ -26,42 +28,40 @@
         <key>Description</key>
         <string>S3 STS AssumeRoleWithWebIdentity</string>
         <key>Default Hostname</key>
-        <string>localhost</string>
-        <key>Default Port</key>
-        <string>9000</string>
+        <string>testminiogoogle.duckdns.org</string>
         <key>Default Nickname</key>
-        <string>MinIO</string>
+        <string>MinIO-Google-Webbased-Test</string>
         <key>Scheme</key>
-        <string>http</string>
+        <string>https</string>
         <key>Authorization</key>
-        <string>PasswordGrant</string>
+        <string>AuthorizationCode</string>
         <key>OAuth Authorization Url</key>
-        <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/auth</string>
+        <string>https://accounts.google.com/o/oauth2/v2/auth</string>
         <key>OAuth Token Url</key>
-        <string>http://localhost:8080/realms/cyberduckrealm/protocol/openid-connect/token</string>
+        <string>https://oauth2.googleapis.com/token</string>
         <key>OAuth Client ID</key>
-        <string>minio</string>
+        <string>Your-Google-Client-ID</string>
         <key>OAuth Client Secret</key>
-        <string>password</string>
+        <string>Your-Google-CLient-Secret</string>
         <key>OAuth Redirect Url</key>
-        <string>x-cyberduck-action:oauth</string>
+        <string>https://cyberduck.io/oauth/</string>
         <key>STS Endpoint</key>
-        <string>http://localhost:9000</string>
+        <string>https://testminiogoogle.duckdns.org</string>
         <key>Scopes</key>
         <array>
             <string>openid</string>
             <string>profile</string>
-            <string>minio-authorization</string>
         </array>
         <key>Password Configurable</key>
-        <true/>
+        <false/>
         <key>Username Configurable</key>
-        <true/>
+        <false/>
         <key>Path Configurable</key>
         <true/>
         <key>Properties</key>
         <array>
             <string>s3.bucket.virtualhost.disable=true</string>
+	    <string>s3.assumerole.rolearn=arn:minio:iam:::role/Your-Configured-Role-ID</string>
         </array>
     </dict>
 </plist>

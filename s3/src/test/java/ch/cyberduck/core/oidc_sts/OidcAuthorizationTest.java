@@ -1,4 +1,4 @@
-package ch.cyberduck.core.oidc.testenv;
+package ch.cyberduck.core.oidc_sts;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -34,15 +34,17 @@ import ch.cyberduck.core.s3.S3ReadFeature;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.test.TestcontainerTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ch.cyberduck.test.TestcontainerTest;
 
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 @Category(TestcontainerTest.class)
 public class OidcAuthorizationTest extends AbstractOidcTest {
 
@@ -50,7 +52,6 @@ public class OidcAuthorizationTest extends AbstractOidcTest {
     public void testAuthorizationFindBucket() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -62,7 +63,6 @@ public class OidcAuthorizationTest extends AbstractOidcTest {
     public void testAuthorizationUserReadAccessOnBucket() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
         final S3Session session = new S3Session(host);
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
@@ -75,7 +75,6 @@ public class OidcAuthorizationTest extends AbstractOidcTest {
     public void testAuthorizationWritePermissionOnBucket() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         final S3Session session = new S3Session(host);
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -90,7 +89,6 @@ public class OidcAuthorizationTest extends AbstractOidcTest {
     @Test(expected = AccessDeniedException.class)
     public void testAuthorizationNoWritePermissionOnBucket() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());

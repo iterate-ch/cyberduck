@@ -41,8 +41,7 @@ import org.jets3t.service.security.AWSSessionCredentials;
 import java.io.IOException;
 
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.AnonymousAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
@@ -86,7 +85,6 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
                         }
                         catch(BackgroundException e) {
                             log.warn(String.format("Failure %s OAuth authentication", e));
-                            throw new BackgroundException(e);
                         }
                     }
                 }
@@ -119,19 +117,19 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
         }
 
 
-        if (new HostPreferences(host).getInteger("s3.assumerole.durationseconds") != 0) {
+        if(new HostPreferences(host).getInteger("s3.assumerole.durationseconds") != 0) {
             webIdReq.withDurationSeconds(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"));
         }
 
-        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.policy"))) {
+        if(StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.policy"))) {
             webIdReq.withPolicy(new HostPreferences(host).getProperty("s3.assumerole.policy"));
         }
 
-        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolearn"))) {
+        if(StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolearn"))) {
             webIdReq.withRoleArn(new HostPreferences(host).getProperty("s3.assumerole.rolearn"));
         }
 
-        if (StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"))) {
+        if(StringUtils.isNotBlank(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"))) {
             webIdReq.withRoleSessionName(new HostPreferences(host).getProperty("s3.assumerole.rolesessionname"));
         }
 
@@ -141,7 +139,9 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
             AssumeRoleWithWebIdentityResult result = service.assumeRoleWithWebIdentity(webIdReq);
             com.amazonaws.services.securitytoken.model.Credentials cred = result.getCredentials();
 
-            if(log.isDebugEnabled()) { log.debug(cred.toString()); }
+            if(log.isDebugEnabled()) {
+                log.debug(cred.toString());
+            }
 
             stsExpiryInMilliseconds = cred.getExpiration().getTime();
 
@@ -161,17 +161,7 @@ public class STSCredentialsRequestInterceptor extends OAuth2RequestInterceptor {
         return AWSSecurityTokenServiceClientBuilder
                 .standard()
                 .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(host.getProtocol().getSTSEndpoint(), null))
-                .withCredentials(new AWSCredentialsProvider() {
-                    @Override
-                    public AWSCredentials getCredentials() {
-                        return new AnonymousAWSCredentials();
-                    }
-
-                    @Override
-                    public void refresh() {
-
-                    }
-                })
+                .withCredentials(new AWSStaticCredentialsProvider(new AnonymousAWSCredentials()))
                 .withClientConfiguration(configuration)
                 .build();
     }

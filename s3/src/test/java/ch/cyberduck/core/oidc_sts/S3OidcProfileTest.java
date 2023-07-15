@@ -1,4 +1,4 @@
-package ch.cyberduck.core.oidc.testenv;
+package ch.cyberduck.core.oidc_sts;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -21,6 +21,7 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
+
 import java.util.Collections;
 import java.util.HashSet;
 

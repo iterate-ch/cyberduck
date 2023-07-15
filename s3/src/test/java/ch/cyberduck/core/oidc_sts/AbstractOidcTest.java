@@ -1,4 +1,4 @@
-package ch.cyberduck.core.oidc.testenv;
+package ch.cyberduck.core.oidc_sts;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -74,7 +74,7 @@ public abstract class AbstractOidcTest {
 
     @AfterClass
     public static void disconnect() {
-        if (compose == null && network != null) {
+        if(compose == null && network != null) {
             network.close();
         }
     }

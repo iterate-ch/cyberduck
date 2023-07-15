@@ -51,7 +51,6 @@ import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.PasswordTokenRequest;
 import com.google.api.client.auth.oauth2.RefreshTokenRequest;
-import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.auth.openidconnect.IdTokenResponse;
 import com.google.api.client.http.GenericUrl;
@@ -136,21 +135,24 @@ public class OAuth2AuthorizationService {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
         }
-        // Save access key and refresh key
+
+        final IdTokenResponse response;
+        // Save access token, refresh token and id token
         switch(flowType) {
             case AuthorizationCode:
-                final IdTokenResponse authorizationCodeResponse = this.authorizeWithCode(bookmark, prompt);
-                return credentials.withToken(authorizationCodeResponse.getIdToken()).withOauth(new OAuthTokens(
-                        authorizationCodeResponse.getAccessToken(), authorizationCodeResponse.getRefreshToken(),
-                        null == authorizationCodeResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + authorizationCodeResponse.getExpiresInSeconds() * 1000, authorizationCodeResponse.getIdToken()))
+                response = this.authorizeWithCode(bookmark, prompt);
+                return credentials.withToken(response.getIdToken()).withOauth(new OAuthTokens(
+                                response.getAccessToken(), response.getRefreshToken(),
+                                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
                         .withSaved(new LoginOptions().keychain).getOauth();
             case PasswordGrant:
-                final TokenResponse passwordGrantResponse = this.authorizeWithPassword(credentials);
+                response = this.authorizeWithPassword(credentials);
                 return credentials.withOauth(new OAuthTokens(
-                        passwordGrantResponse.getAccessToken(), passwordGrantResponse.getRefreshToken(),
-                        null == passwordGrantResponse.getExpiresInSeconds() ? System.currentTimeMillis() :
-                                System.currentTimeMillis() + passwordGrantResponse.getExpiresInSeconds() * 1000)).withSaved(new LoginOptions().keychain).getOauth();
+                                response.getAccessToken(), response.getRefreshToken(),
+                                null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
+                                        System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
+                        .withSaved(new LoginOptions().keychain).getOauth();
             default:
                 throw new LoginCanceledException();
         }
@@ -219,7 +221,7 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private TokenResponse authorizeWithPassword(final Credentials credentials) throws BackgroundException {
+    private IdTokenResponse authorizeWithPassword(final Credentials credentials) throws BackgroundException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Request tokens for user %s", credentials.getUsername()));
@@ -256,7 +258,7 @@ public class OAuth2AuthorizationService {
             log.debug(String.format("Refresh expired tokens %s", tokens));
         }
         try {
-            final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
+            final IdTokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                     tokens.getRefreshToken())
                     .setScopes(scopes.isEmpty() ? null : scopes)
                     .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
@@ -264,9 +266,9 @@ public class OAuth2AuthorizationService {
                     .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
             if(StringUtils.isBlank(response.getRefreshToken())) {
-                return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds);
+                return new OAuthTokens(response.getAccessToken(), tokens.getRefreshToken(), expiryInMilliseconds, response.getIdToken());
             }
-            return new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds);
+            return new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds, response.getIdToken());
         }
         catch(TokenResponseException e) {
             throw new OAuthExceptionMappingService().map(e);

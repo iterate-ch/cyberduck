@@ -1,4 +1,4 @@
-package ch.cyberduck.core.oidc.testenv;
+package ch.cyberduck.core.oidc_sts;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -49,12 +49,13 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+
         Credentials creds = host.getCredentials();
         assertNotEquals(StringUtils.EMPTY, creds.getUsername());
         assertNotEquals(StringUtils.EMPTY, creds.getPassword());
-        // credentials from STS are written to the client object in the S3Session and not into the Credential object from the Host.
+        // credentials from STS are written to the S3Session's client object and not into the credential object from the Host.
         assertTrue(creds.getToken().isEmpty());
-        assertNotNull(creds.getOauth().getAccessToken());
+        assertNotNull(creds.getOauth().getIdToken());
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
         session.close();
@@ -81,26 +82,28 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
     @Test
     public void testTokenRefresh() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
 
+        String firstAccessToken = session.getAuthorizationService().getTokens().getIdToken();
         String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
         String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
+
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1100 * 30);
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+
+        assertNotEquals(firstAccessToken, session.getAuthorizationService().getTokens().getIdToken());
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
         assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
         session.close();
     }
 
     @Test
-    public void testSTSCredentialExpiryTimeIsBoundToOAuthExpiryTime() throws BackgroundException, InterruptedException {
+    public void testSTSCredentialExpiryTimeIsBoundToOAuthExpiryTime() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         host.setProperty("s3.assumerole.durationseconds", "900");
         assertEquals(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"), 900);
         final S3Session session = new S3Session(host);
@@ -122,7 +125,6 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
     /*@Test
     public void testSTSCredentialsExpiredValidOAuthToken() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
-        host.setProperty("s3.bucket.virtualhost.disable", String.valueOf(true));
         host.setProperty("s3.assumerole.durationseconds", "900");
         assertEquals(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"), 900);
         final S3Session session = new S3Session(host);

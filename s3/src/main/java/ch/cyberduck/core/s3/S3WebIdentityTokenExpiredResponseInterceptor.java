@@ -58,7 +58,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount <= MAX_RETRIES) {
-            if (400 == response.getStatusLine().getStatusCode() || response.getStatusLine().getStatusCode() == 403) {
+            if(400 == response.getStatusLine().getStatusCode() || response.getStatusLine().getStatusCode() == 403) {
                 try {
                     final S3ServiceException failure;
                     if(null != response.getEntity()) {
@@ -67,7 +67,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
                                 EntityUtils.toString(response.getEntity()));
                     }
                     // minio sometimes packs the error code and description in the http header
-                    else{
+                    else {
                         failure = new S3ServiceException(response.getStatusLine().getReasonPhrase());
                         if(response.containsHeader("x-minio-error-code")) {
                             failure.setErrorCode(response.getFirstHeader("x-minio-error-code").getValue());
@@ -99,7 +99,7 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
 
     private void refreshOAuthAndSTS() {
         try {
-            if(host.getCredentials().getOauth().isExpired()) {
+            if(authorizationService.getTokens().isExpired()) {
                 try {
                     host.getCredentials().setOauth(authorizationService.refresh());
                     log.debug("OAuth refreshed. Refreshing STS token.");

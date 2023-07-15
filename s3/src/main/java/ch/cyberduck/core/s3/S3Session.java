@@ -422,7 +422,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        if (host.getProtocol().isOAuthConfigurable()) {
+        if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService.authorize(host, prompt, cancel);
         }
 
