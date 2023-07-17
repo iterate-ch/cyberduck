@@ -73,7 +73,7 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_BAD_GATEWAY:
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
-            case 429:
+            case HttpStatus.SC_TOO_MANY_REQUESTS:
                 // Too Many Requests. Rate limiting
             case 509:
                 // Bandwidth Limit Exceeded
