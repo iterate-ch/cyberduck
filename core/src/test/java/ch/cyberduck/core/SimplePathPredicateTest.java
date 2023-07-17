@@ -34,6 +34,19 @@ public class SimplePathPredicateTest {
         assertFalse(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
     }
 
+    @Test
+    public void testSamePrefix() {
+        {
+            final Path t = new Path("/f/vault", EnumSet.of(Path.Type.file));
+            assertFalse(new SimplePathPredicate(t).test(new Path("/f/v", EnumSet.of(Path.Type.directory))));
+            assertFalse(new SimplePathPredicate(t).isChild(new SimplePathPredicate(new Path("/f/v", EnumSet.of(Path.Type.directory)))));
+        }
+        {
+            final Path t = new Path("/f/vault/d", EnumSet.of(Path.Type.file));
+            assertFalse(new SimplePathPredicate(t).test(new Path("/f/v", EnumSet.of(Path.Type.directory))));
+            assertFalse(new SimplePathPredicate(t).isChild(new SimplePathPredicate(new Path("/f/v", EnumSet.of(Path.Type.directory)))));
+        }
+    }
 
     @Test
     public void testParent() {

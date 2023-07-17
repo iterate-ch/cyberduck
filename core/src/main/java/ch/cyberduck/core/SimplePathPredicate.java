@@ -71,7 +71,7 @@ public class SimplePathPredicate implements CacheReference<Path> {
         if(directory.path.equals(String.valueOf(Path.DELIMITER))) {
             return true;
         }
-        return StringUtils.startsWith(path, directory.path);
+        return StringUtils.startsWith(path, directory.path + Path.DELIMITER);
     }
 
     @Override
