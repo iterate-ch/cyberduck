@@ -50,7 +50,6 @@
         <key>Scopes</key>
         <array>
             <string>openid</string>
-            <string>profile</string>
             <string>minio-authorization</string>
         </array>
         <key>Password Configurable</key>
