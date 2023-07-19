@@ -39,7 +39,7 @@ public class ActionOperationBatcherFactory extends Factory<ActionOperationBatche
     public ActionOperationBatcher create(final Integer batchsize) {
         try {
             if(null == constructor) {
-                ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, batchsize.getClass());
             }
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", batchsize.getClass()));
