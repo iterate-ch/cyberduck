@@ -1415,7 +1415,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="294">
-                                <rect key="frame" x="74" y="79" width="219" height="28"/>
+                                <rect key="frame" x="9" y="86" width="284" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="Zeitlimit beim Öffnen von Verbindungen (Sekunden):" id="295">
                                     <font key="font" metaFont="smallSystem"/>
