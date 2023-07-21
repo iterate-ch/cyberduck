@@ -41,7 +41,7 @@
           <Shortcut Id="ApplicationStartMenuShortcut"
             Name="Cyberduck"
             Advertise="yes"
-            Description="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser"
+            Description="Libre FTP, SFTP, WebDAV, SMB, S3 and OpenStack Swift browser"
             Directory="ApplicationProgramsFolder"
             WorkingDirectory="INSTALLLOCATION"
             Icon="icon.ico">
@@ -67,7 +67,7 @@
         <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
 
         <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
+        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, SMB, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationName" Value="!(bind.property.ProductName)" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\DefaultIcon" Value="[APPLICATIONFOLDER]Cyberduck.exe,1" Type="string" />
@@ -287,6 +287,7 @@
           <RegistryValue Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="smb" Value="Cyberduck.ProtocolHandler" Type="string"/>
           <RegistryValue Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
           <RegistryValue Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
         </RegistryKey>
@@ -310,6 +311,10 @@
       <Component Id="DAVS.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="davs" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
         <RegistryValue Root="HKCR" Key="davs" Value="URL:Distributed Authoring and Versioning Protocol over TLS" Type="string" />
+      </Component>
+      <Component Id="SMB.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="smb" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="smb" Value="URL:Server Message Block" Type="string" />
       </Component>
       <Component Id="S3.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="s3" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
