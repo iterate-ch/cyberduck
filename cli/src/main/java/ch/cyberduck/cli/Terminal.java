@@ -57,6 +57,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
+import ch.cyberduck.core.smb.SMBProtocol;
 import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -137,6 +138,7 @@ public class Terminal {
                 new SFTPProtocol(),
                 new DAVProtocol(),
                 new DAVSSLProtocol(),
+                new SMBProtocol(),
                 new SwiftProtocol(),
                 new S3Protocol(),
                 new GoogleStorageProtocol(),
