@@ -18,6 +18,7 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpRange;
@@ -27,6 +28,7 @@ import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -110,7 +112,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                     throw canceled.get();
                 }
                 final byte[] content = Arrays.copyOfRange(b, off, len);
-                new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final StoregateApiClient client = session.getClient();
@@ -161,7 +163,16 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<FileMetada
                         }
                         return null; //Void
                     }
-                }, overall).call();
+                }, overall) {
+                    @Override
+                    public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                        if(super.retry(failure, progress, cancel)) {
+                            canceled.set(null);
+                            return true;
+                        }
+                        return false;
+                    }
+                }.call();
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);

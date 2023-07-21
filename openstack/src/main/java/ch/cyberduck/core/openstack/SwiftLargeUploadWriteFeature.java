@@ -20,12 +20,14 @@ import ch.cyberduck.core.DefaultPathContainerService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -112,7 +114,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                 if(null != canceled.get()) {
                     throw canceled.get();
                 }
-                completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
+                completed.add(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
                     @Override
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().withLength(len);
@@ -147,7 +149,16 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<StorageObjec
                         stored.setSize(status.getLength());
                         return stored;
                     }
-                }, overall).call());
+                }, overall) {
+                    @Override
+                    public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                        if(super.retry(failure, progress, cancel)) {
+                            canceled.set(null);
+                            return true;
+                        }
+                        return false;
+                    }
+                }.call());
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
