@@ -1,1 +1,2 @@
-Hi there!
+Hi there user!
+Lorem ipsum dolor sit amet!

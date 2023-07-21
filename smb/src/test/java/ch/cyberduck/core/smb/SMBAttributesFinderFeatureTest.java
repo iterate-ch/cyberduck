@@ -39,7 +39,7 @@ public class SMBAttributesFinderFeatureTest extends AbstractSMBTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
+            f.find(new Path(SMBUtils.convertedAbsolutePath(test), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
@@ -56,30 +56,13 @@ public class SMBAttributesFinderFeatureTest extends AbstractSMBTest {
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
+            f.find(new Path(SMBUtils.convertedAbsolutePath(test), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
             // Expected
         }
     }
-
-    // TODO: implement after SMB Lock Feature is implemented
-   /* @Test
-    public void testFindLock() throws Exception {
-        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final AttributesFinder f = session.getFeature(AttributesFinder.class);
-        assertNull(f.find(test).getLockId());
-        try {
-            final String lockId = new DAVLockFeature(session).lock(test);
-            assertNotNull(f.find(test).getLockId());
-            new DAVLockFeature(session).unlock(test, lockId);
-        }
-        catch(InteroperabilityException e) {
-            // No lock support
-        }
-    }*/
 
     @Test
     public void testFindNoPropfind() throws Exception {

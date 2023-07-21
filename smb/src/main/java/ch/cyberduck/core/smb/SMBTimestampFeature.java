@@ -1,5 +1,10 @@
 package ch.cyberduck.core.smb;
 
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,11 +17,6 @@ import com.hierynomus.mssmb2.SMB2CreateOptions;
 import com.hierynomus.mssmb2.SMB2ShareAccess;
 import com.hierynomus.mssmb2.SMBApiException;
 import com.hierynomus.smbj.share.File;
-
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultTimestampFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SMBTimestampFeature extends DefaultTimestampFeature {
 
@@ -43,7 +43,7 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
 
         createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        try (File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions)) {
+        try (File fileEntry = session.share.openFile(SMBUtils.convertedAbsolutePath(file), accessMask, fileAttributes, shareAccessSet, smb2CreateDisposition, createOptions)) {
             FileTime creationTime = fileEntry.getFileInformation().getBasicInformation().getCreationTime();
             FileTime time = FileTime.ofEpochMillis(status.getTimestamp());
 
@@ -51,9 +51,8 @@ public class SMBTimestampFeature extends DefaultTimestampFeature {
             fileEntry.setFileInformation(fileBasicInformation);
         }
         catch(SMBApiException e) {
-            throw new SMBExceptionMappingService().map("Setting timestamp on file {0} failed", e, file);
+            throw new SMBExceptionMappingService().map("Cannot change timestamp of {0}", e, file);
         }
-
     }
-    
+
 }

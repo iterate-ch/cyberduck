@@ -50,7 +50,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
             createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
 
-            File fileEntry = session.share.openFile(file.getAbsolute(), accessMask, fileAttributes,
+            File fileEntry = session.share.openFile(SMBUtils.convertedAbsolutePath(file), accessMask, fileAttributes,
                     shareAccessSet, smb2CreateDisposition, createOptions);
 
             return new VoidStatusOutputStream(new SMBOutputStream(fileEntry.getOutputStream(), fileEntry));
@@ -64,7 +64,7 @@ public class SMBWriteFeature extends AppendWriteFeature<Void> {
 
     private static final class SMBOutputStream extends ProxyOutputStream {
 
-        private File file;
+        private final File file;
         private long fileSize;
 
         public SMBOutputStream(OutputStream stream, File file) {

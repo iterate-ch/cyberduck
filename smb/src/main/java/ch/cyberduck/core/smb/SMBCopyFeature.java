@@ -8,6 +8,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,28 +35,26 @@ public class SMBCopyFeature implements Copy {
                      StreamListener listener) throws BackgroundException {
         try {
             if(source.isFile()) {
-                copyFile(source, target, status, prompt, listener);
+                copyFile(source, target);
             }
             else {
-                copyDirectory(source, target, status, prompt, listener);
+                copyDirectory(target);
             }
             return target;
         }
         catch(SMBApiException e) {
-            throw new SMBExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map("Cannot copy {0}", e, source);
         }
     }
 
-    private void copyDirectory(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
-                               StreamListener listener) throws BackgroundException {
+    private void copyDirectory(Path target) throws BackgroundException {
         if(!session.share.folderExists(target.toString())) {
             session.getFeature(Directory.class).mkdir(target, null);
         }
 
     }
 
-    private void copyFile(Path source, Path target, TransferStatus status, ConnectionCallback prompt,
-                          StreamListener listener) throws BackgroundException {
+    private void copyFile(Path source, Path target) throws BackgroundException {
 
         Set<SMB2ShareAccess> shareAccessSet = new HashSet<>();
         shareAccessSet.add(SMB2ShareAccess.FILE_SHARE_READ);
@@ -72,10 +71,10 @@ public class SMBCopyFeature implements Copy {
 
         createOptions.add(SMB2CreateOptions.FILE_NON_DIRECTORY_FILE);
 
-        File sourceFile = session.share.openFile(source.getAbsolute(), accessMask, fileAttributes,
+        File sourceFile = session.share.openFile(SMBUtils.convertedAbsolutePath(source), accessMask, fileAttributes,
                 shareAccessSet, smb2CreateDisposition, createOptions);
 
-        File targetFile = session.share.openFile(target.getAbsolute(), accessMask, fileAttributes,
+        File targetFile = session.share.openFile(SMBUtils.convertedAbsolutePath(target), accessMask, fileAttributes,
                 shareAccessSet, smb2CreateDisposition, createOptions);
 
         try {
@@ -91,8 +90,4 @@ public class SMBCopyFeature implements Copy {
 
     }
 
-    @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return false;
-    }
 }

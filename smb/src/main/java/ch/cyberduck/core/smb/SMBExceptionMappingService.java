@@ -61,6 +61,9 @@ public class SMBExceptionMappingService extends AbstractExceptionMappingService<
                 case STATUS_CONNECTION_DISCONNECTED:
                 case STATUS_CONNECTION_RESET:
                     return new ConnectionRefusedException(exception.getMessage(), exception.getCause());
+                case STATUS_PATH_NOT_COVERED:
+                    return new UnsupportedException("This folder is a DFS Share, which is currently not supported", exception.getCause());
+
                 default:
                     return new InteroperabilityException(exception.getMessage(), exception.getCause());
             }

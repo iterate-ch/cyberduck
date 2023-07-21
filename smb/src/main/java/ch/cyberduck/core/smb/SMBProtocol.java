@@ -78,8 +78,11 @@ public class SMBProtocol extends AbstractProtocol {
 
     @Override
     public boolean isUTCTimezone() {
-        // TODO: check if this is correct
         return false;
     }
 
+    @Override
+    public String getUsernamePlaceholder() {
+        return "username@domain/share";
+    }
 }

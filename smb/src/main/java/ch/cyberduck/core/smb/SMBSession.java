@@ -4,6 +4,8 @@ import ch.cyberduck.core.ConnectionTimeoutFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -88,8 +90,8 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             domain = "WORKGROUP";
         }
         else {
-            username = parts[0];
-            domain = parts[1];
+            username = domainUsername.substring(0, domainUsername.lastIndexOf('@'));
+            domain = domainUsername.substring(domainUsername.lastIndexOf('@') + 1);
         }
 
         final AuthenticationContext ac = new AuthenticationContext(username, host.getCredentials().getPassword().toCharArray(), domain);
@@ -99,7 +101,7 @@ public class SMBSession extends ch.cyberduck.core.Session<SMBClient> {
             share = (DiskShare) session.connectShare(shareString);
         }
         catch(SMBRuntimeException e) {
-            throw new SMBExceptionMappingService().map(e);
+            throw new SMBExceptionMappingService().map(LocaleFactory.localizedString("Login failed", "Credentials"), e);
         }
 
     }

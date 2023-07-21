@@ -24,7 +24,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
 
         try {
 
-            FileAllInformation fileInformation = session.share.getFileInformation(file.getAbsolute());
+            FileAllInformation fileInformation = session.share.getFileInformation(SMBUtils.convertedAbsolutePath(file));
             if(file.isDirectory() && !fileInformation.getStandardInformation().isDirectory()) {
                 throw new NotfoundException("Path found but type is not directory");
             }
@@ -36,7 +36,7 @@ public class SMBAttributesFinderFeature implements AttributesFinder {
             attributes.setModificationDate(fileInformation.getBasicInformation().getLastWriteTime().toEpochMillis());
             attributes.setCreationDate(fileInformation.getBasicInformation().getCreationTime().toEpochMillis());
             attributes.setSize(fileInformation.getStandardInformation().getEndOfFile());
-            attributes.setDisplayname(fileInformation.getNameInformation().substring(1));
+            attributes.setDisplayname(file.getName());
 
             return attributes;
         }
