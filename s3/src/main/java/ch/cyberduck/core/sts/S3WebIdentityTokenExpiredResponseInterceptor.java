@@ -1,7 +1,7 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.sts;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,9 +24,11 @@ import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
-import ch.cyberduck.core.sts.STSCredentialsRequestInterceptor;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
+import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -58,34 +60,38 @@ public class S3WebIdentityTokenExpiredResponseInterceptor extends DisabledServic
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         if(executionCount <= MAX_RETRIES) {
-            if(400 == response.getStatusLine().getStatusCode() || response.getStatusLine().getStatusCode() == 403) {
-                try {
-                    final S3ServiceException failure;
-                    if(null != response.getEntity()) {
-                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                        failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
-                                EntityUtils.toString(response.getEntity()));
-                    }
-                    // minio sometimes packs the error code and description in the http header
-                    else {
-                        failure = new S3ServiceException(response.getStatusLine().getReasonPhrase());
-                        if(response.containsHeader("x-minio-error-code")) {
-                            failure.setErrorCode(response.getFirstHeader("x-minio-error-code").getValue());
-                            failure.setErrorMessage(response.getFirstHeader("x-minio-error-desc").getValue());
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_BAD_REQUEST:
+                case HttpStatus.SC_FORBIDDEN:
+                    try {
+                        final S3ServiceException failure;
+                        if(null != response.getEntity()) {
+                            EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                            failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
+                                    EntityUtils.toString(response.getEntity()));
                         }
-                    }
+                        // In case of a http HEAD request minio packs the error code and description in the response header
+                        else {
+                            failure = new S3ServiceException(response.getStatusLine().getReasonPhrase());
+                            if(response.containsHeader("x-minio-error-code")) {
+                                failure.setErrorCode(response.getFirstHeader("x-minio-error-code").getValue());
+                            }
+                            if(response.containsHeader("x-minio-error-desc")) {
+                                failure.setErrorMessage(response.getFirstHeader("x-minio-error-desc").getValue());
+                            }
+                        }
 
-                    failure.setResponseCode(response.getStatusLine().getStatusCode());
-                    BackgroundException s3exception = new S3ExceptionMappingService().map(failure);
+                        failure.setResponseCode(response.getStatusLine().getStatusCode());
+                        BackgroundException s3exception = new S3ExceptionMappingService().map(failure);
 
-                    if(failure.getErrorCode().equals("InvalidAccessKeyId") || s3exception instanceof ExpiredTokenException) {
-                        refreshOAuthAndSTS();
+                        if(failure.getErrorCode().equals("InvalidAccessKeyId") || s3exception instanceof ExpiredTokenException) {
+                            refreshOAuthAndSTS();
+                        }
+                        return true;
                     }
-                    return true;
-                }
-                catch(IOException e) {
-                    log.warn(String.format("Failure parsing response entity from %s", response));
-                }
+                    catch(IOException e) {
+                        log.warn(String.format("Failure parsing response entity from %s", response));
+                    }
             }
         }
 

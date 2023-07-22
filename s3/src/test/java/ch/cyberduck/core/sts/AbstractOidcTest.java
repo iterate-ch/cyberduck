@@ -1,4 +1,4 @@
-package ch.cyberduck.core.oidc_sts;
+package ch.cyberduck.core.sts;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.

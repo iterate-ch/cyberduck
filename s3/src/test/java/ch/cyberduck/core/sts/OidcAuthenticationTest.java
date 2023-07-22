@@ -1,4 +1,4 @@
-package ch.cyberduck.core.oidc_sts;
+package ch.cyberduck.core.sts;
 
 /*
  * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
@@ -28,7 +28,6 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.sts.STSCredentialsRequestInterceptor;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.security.AWSSessionCredentials;

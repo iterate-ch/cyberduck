@@ -141,7 +141,7 @@ public class OAuth2AuthorizationService {
         switch(flowType) {
             case AuthorizationCode:
                 response = this.authorizeWithCode(bookmark, prompt);
-                return credentials.withToken(response.getIdToken()).withOauth(new OAuthTokens(
+                return credentials.withOauth(new OAuthTokens(
                                 response.getAccessToken(), response.getRefreshToken(),
                                 null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
                                         System.currentTimeMillis() + response.getExpiresInSeconds() * 1000, response.getIdToken()))
