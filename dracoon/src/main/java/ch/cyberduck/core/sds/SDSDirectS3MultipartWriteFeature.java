@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -41,6 +42,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3FileUploadPart;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -151,13 +153,13 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                     throw canceled.get();
                 }
                 partNumber++;
-                completed.put(partNumber, new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Checksum>() {
+                completed.put(partNumber, new DefaultRetryCallable<Checksum>(session.getHost(), new BackgroundExceptionCallable<Checksum>() {
                     @Override
                     public Checksum call() throws BackgroundException {
                         try {
                             final PresignedUrlList presignedUrlList = new NodesApi(session.getClient()).generatePresignedUrlsFiles(
-                                new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size((long) len),
-                                createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                                    new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size((long) len),
+                                    createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                             for(PresignedUrl url : presignedUrlList.getUrls()) {
                                 final HttpPut request = new HttpPut(url.getUrl());
                                 request.setEntity(new ByteArrayEntity(b, off, len));
@@ -181,7 +183,7 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                                         default:
                                             EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
                                             throw new DefaultHttpResponseExceptionMappingService().map(
-                                                new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                                     }
                                 }
                                 finally {
@@ -201,7 +203,16 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
                             throw new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file);
                         }
                     }
-                }, overall).call());
+                }, overall) {
+                    @Override
+                    public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                        if(super.retry(failure, progress, cancel)) {
+                            canceled.set(null);
+                            return true;
+                        }
+                        return false;
+                    }
+                }.call());
             }
             catch(BackgroundException e) {
                 throw new IOException(e.getMessage(), e);
@@ -248,7 +259,8 @@ public class SDSDirectS3MultipartWriteFeature extends AbstractHttpWriteFeature<N
             catch(ApiException e) {
                 throw new IOException(new SDSExceptionMappingService(nodeid).map("Upload {0} failed", e, file));
             }
-            catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException | UnknownVersionException e) {
+            catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException |
+                  UnknownVersionException e) {
                 throw new IOException(new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file));
             }
             finally {

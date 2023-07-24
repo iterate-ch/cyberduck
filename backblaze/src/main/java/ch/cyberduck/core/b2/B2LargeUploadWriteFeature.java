@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -148,7 +150,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Write segment %d for %s", segment, file));
                     }
-                    completed.add(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
+                    completed.add(new DefaultRetryCallable<B2UploadPartResponse>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().withLength(len);
@@ -167,7 +169,16 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<BaseB2Response>
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                         }
-                    }, overall).call());
+                    }, overall) {
+                        @Override
+                        public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                            if(super.retry(failure, progress, cancel)) {
+                                canceled.set(null);
+                                return true;
+                            }
+                            return false;
+                        }
+                    }.call());
                 }
             }
             catch(BackgroundException e) {

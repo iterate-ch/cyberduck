@@ -18,6 +18,7 @@ package ch.cyberduck.core.eue;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.eue.io.swagger.client.ApiException;
 import ch.cyberduck.core.eue.io.swagger.client.model.ResourceCreationResponseEntry;
 import ch.cyberduck.core.eue.io.swagger.client.model.UploadType;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -164,7 +166,7 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                     result.set(stream.getStatus());
                 }
                 else {
-                    new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<EueUploadHelper.UploadResponse>() {
+                    new DefaultRetryCallable<EueUploadHelper.UploadResponse>(session.getHost(), new BackgroundExceptionCallable<EueUploadHelper.UploadResponse>() {
                         @Override
                         public EueUploadHelper.UploadResponse call() throws BackgroundException {
                             final CloseableHttpClient client = session.getClient();
@@ -203,7 +205,16 @@ public class EueMultipartWriteFeature implements MultipartWrite<EueWriteFeature.
                             }
                             return null;
                         }
-                    }, overall).call();
+                    }, overall) {
+                        @Override
+                        public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
+                            if(super.retry(failure, progress, cancel)) {
+                                canceled.set(null);
+                                return true;
+                            }
+                            return false;
+                        }
+                    }.call();
                     offset += len;
                 }
             }
