@@ -284,7 +284,7 @@ public class Terminal {
             final Path remote;
             if(StringUtils.startsWith(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                remote = new TildePathExpander(home).expand(new CommandLinePathParser(input, protocols).parse(uri));
+                remote = new Path(new TildePathExpander(home).expand(new CommandLinePathParser(input, protocols).parse(uri).getAbsolute()), EnumSet.of(Path.Type.directory));
             }
             else {
                 remote = new CommandLinePathParser(input, protocols).parse(uri);
@@ -293,7 +293,7 @@ public class Terminal {
                 final Path vault;
                 if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
                     final Path home = this.execute(new TerminalBackgroundAction<>(controller, source, new HomeFinderWorker()));
-                    vault = new TildePathExpander(home).expand(new Path(input.getOptionValue(action.name()), EnumSet.of(Path.Type.directory, Path.Type.vault)));
+                    vault = new Path(new TildePathExpander(home).expand(input.getOptionValue(action.name())), EnumSet.of(Path.Type.directory, Path.Type.vault));
                 }
                 else {
                     vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));

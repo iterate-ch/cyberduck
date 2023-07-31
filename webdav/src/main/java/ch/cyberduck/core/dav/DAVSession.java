@@ -169,7 +169,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return;
         }
         try {
-            final Path home = new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host)).find();
+            final Path home = new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(this)).find();
             final HttpHead head = new HttpHead(new DAVPathEncoder().encode(home));
             try {
                 client.execute(head, new MicrosoftIISFeaturesResponseHandler());
@@ -234,7 +234,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     public boolean alert(final ConnectionCallback callback) throws BackgroundException {
         if(super.alert(callback)) {
             // Propose protocol change if HEAD request redirects to HTTPS
-            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
+            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(this)).find();
             try {
                 final RequestConfig context = client.context().getRequestConfig();
                 final HttpHead request = new HttpHead(new DAVPathEncoder().encode(home));

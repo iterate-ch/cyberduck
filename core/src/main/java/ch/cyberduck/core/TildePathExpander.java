@@ -31,14 +31,13 @@ public class TildePathExpander {
         this.workdir = workdir;
     }
 
-    public Path expand(final Path remote) {
+    public String expand(final String remote) {
         return this.expand(remote, PREFIX);
     }
 
-    protected Path expand(final Path remote, final String format) {
-        if(remote.getAbsolute().startsWith(format)) {
-            return new Path(StringUtils.replaceOnce(remote.getAbsolute(), format, workdir.getAbsolute()),
-                    remote.getType());
+    public String expand(final String remote, final String format) {
+        if(remote.startsWith(format)) {
+            return StringUtils.replaceOnce(remote, format, workdir.getAbsolute());
         }
         return remote;
     }

@@ -18,31 +18,44 @@ package ch.cyberduck.core.shared;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TildePathExpander;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Home;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.EnumSet;
+
 public class DefaultPathHomeFeature extends AbstractHomeFeature {
     private static final Logger log = LogManager.getLogger(DefaultPathHomeFeature.class);
 
-    private final Host host;
+    private final Session<?> session;
 
-    public DefaultPathHomeFeature(final Host host) {
-        this.host = host;
+    public DefaultPathHomeFeature(final Session<?> session) {
+        this.session = session;
     }
 
     @Override
     public Path find() throws BackgroundException {
-        if(StringUtils.isNotBlank(host.getDefaultPath())) {
-            return PathNormalizer.compose(ROOT, host.getDefaultPath());
+        if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
+            if(StringUtils.startsWith(session.getHost().getDefaultPath(), Path.HOME)) {
+                final Home feature = session.getFeature(Home.class);
+                if(null == feature) {
+                    // No native implementation
+                }
+                else {
+                    return new Path(new TildePathExpander(feature.find()).expand(session.getHost().getDefaultPath(), Path.HOME), EnumSet.of(Path.Type.directory));
+                }
+            }
+            return PathNormalizer.compose(ROOT, session.getHost().getDefaultPath());
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("No default path set for bookmark %s", host));
+            log.debug(String.format("No default path set for bookmark %s", session));
         }
         // No default path configured
         return null;
