@@ -49,7 +49,7 @@ public class DefaultPathHomeFeature extends AbstractHomeFeature {
                     // No native implementation
                 }
                 else {
-                    return new Path(new TildePathExpander(feature.find()).expand(session.getHost().getDefaultPath(), Path.HOME), EnumSet.of(Path.Type.directory));
+                    return new Path(new TildePathExpander(feature.find()).expand(session.getHost().getDefaultPath(), Path.HOME + Path.DELIMITER), EnumSet.of(Path.Type.directory));
                 }
             }
             return PathNormalizer.compose(ROOT, session.getHost().getDefaultPath());

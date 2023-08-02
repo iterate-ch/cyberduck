@@ -30,7 +30,7 @@ public class TildePathExpanderTest {
     @Test
     public void testExpand() {
         final String expanded = new TildePathExpander(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)))
-                .expand("~/f", "~");
+                .expand("~/f", "~/");
         assertEquals("/home/jenkins/f", expanded);
     }
 

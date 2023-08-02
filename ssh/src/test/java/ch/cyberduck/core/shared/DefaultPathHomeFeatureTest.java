@@ -33,5 +33,9 @@ public class DefaultPathHomeFeatureTest extends AbstractSFTPTest {
         assertNull(feature.find());
         session.getHost().setDefaultPath("~/d");
         assertEquals("/d", feature.find().getAbsolute());
+        session.getHost().setDefaultPath("~d");
+        assertEquals("/~d", feature.find().getAbsolute());
+        session.getHost().setDefaultPath("/~d");
+        assertEquals("/~d", feature.find().getAbsolute());
     }
 }
