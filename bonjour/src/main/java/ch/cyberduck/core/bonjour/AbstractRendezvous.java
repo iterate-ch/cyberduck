@@ -80,10 +80,11 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * Defined TXT keys: u=<username> p=<password> path=<path>
      */
     private static final String SERVICE_TYPE_WEBDAV_TLS = "_webdavs._tcp";
+    private static final String SERVICE_TYPE_SMB = "_smb._tcp";
 
     public String[] getServiceTypes() {
         return new String[]{
-                SERVICE_TYPE_SFTP, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV, SERVICE_TYPE_WEBDAV_TLS
+                SERVICE_TYPE_SFTP, SERVICE_TYPE_FTP, SERVICE_TYPE_WEBDAV, SERVICE_TYPE_WEBDAV_TLS, SERVICE_TYPE_SMB
         };
     }
 
@@ -200,6 +201,9 @@ public abstract class AbstractRendezvous implements Rendezvous {
         }
         if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
             return protocols.forScheme(Scheme.davs);
+        }
+        if(fullname.contains(SERVICE_TYPE_SMB)) {
+            return protocols.forScheme(Scheme.smb);
         }
         log.warn(String.format("Cannot find service type in %s", fullname));
         return null;
