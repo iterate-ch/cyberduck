@@ -124,7 +124,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<File> implements
                                     final File f = session.getClient().getObjectParser().parseAndClose(
                                             new InputStreamReader(postResponse.getEntity().getContent(), StandardCharsets.UTF_8), File.class);
                                     if(null != status.getTimestamp()) {
-                                        new DriveTimestampFeature(session, fileid).setTimestamp(file, status.getTimestamp());
+                                        new DriveTimestampFeature(session, fileid).setTimestamp(file, status);
                                         f.setModifiedTime(new DateTime(status.getTimestamp()));
                                     }
                                     return f;
