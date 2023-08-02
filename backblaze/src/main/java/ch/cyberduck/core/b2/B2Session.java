@@ -27,6 +27,7 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -92,17 +93,19 @@ public class B2Session extends HttpSession<B2ApiClient> {
                 listService.withBucket(new Path(PathNormalizer.normalize(response.getBucketName()), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             }
             retryHandler.setTokens(accountId, applicationKey, response.getAuthorizationToken());
-            final int recommendedPartSize = response.getRecommendedPartSize();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set large upload part size to %d", recommendedPartSize));
+            if(new HostPreferences(host).getBoolean("b2.upload.largeobject.auto")) {
+                final int recommendedPartSize = response.getRecommendedPartSize();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set large upload part size to %d", recommendedPartSize));
+                }
+                host.setProperty("b2.upload.largeobject.size", String.valueOf(recommendedPartSize));
+                host.setProperty("b2.copy.largeobject.size", String.valueOf(recommendedPartSize));
+                final int absoluteMinimumPartSize = response.getAbsoluteMinimumPartSize();
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set large upload minimum part size to %d", absoluteMinimumPartSize));
+                }
+                host.setProperty("b2.upload.largeobject.size.minimum", String.valueOf(absoluteMinimumPartSize));
             }
-            host.setProperty("b2.upload.largeobject.size", String.valueOf(recommendedPartSize));
-            host.setProperty("b2.copy.largeobject.size", String.valueOf(recommendedPartSize));
-            final int absoluteMinimumPartSize = response.getAbsoluteMinimumPartSize();
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set large upload minimum part size to %d", absoluteMinimumPartSize));
-            }
-            host.setProperty("b2.upload.largeobject.size.minimum", String.valueOf(absoluteMinimumPartSize));
         }
         catch(B2ApiException e) {
             throw new B2ExceptionMappingService(fileid).map(e);
