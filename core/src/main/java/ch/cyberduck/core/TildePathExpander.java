@@ -35,9 +35,14 @@ public class TildePathExpander {
         return this.expand(remote, PREFIX);
     }
 
-    public String expand(final String remote, final String format) {
-        if(remote.startsWith(format)) {
-            return StringUtils.replaceOnce(remote, format, workdir.getAbsolute());
+    /**
+     * @param remote Path
+     * @param prefix Prefix to replace in path
+     * @return Absolute path with prefix replaced with working directory path
+     */
+    public String expand(final String remote, final String prefix) {
+        if(remote.startsWith(prefix)) {
+            return StringUtils.replaceOnce(remote, prefix, workdir.getAbsolute());
         }
         return remote;
     }
