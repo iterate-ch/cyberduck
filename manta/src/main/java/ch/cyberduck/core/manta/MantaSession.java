@@ -35,6 +35,9 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -181,7 +184,7 @@ public class MantaSession extends HttpSession<MantaClient> {
             return (T) new MantaUrlProviderFeature(this);
         }
         else if(type == Home.class) {
-            return (T) new MantaHomeFinderFeature(host);
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new MantaHomeFinderFeature(host));
         }
         else if(type == Search.class) {
             return (T) new MantaSearchFeature(this);

@@ -46,6 +46,9 @@ import ch.cyberduck.core.sftp.openssh.OpenSSHJumpHostConfigurator;
 import ch.cyberduck.core.sftp.openssh.OpenSSHPreferredAuthenticationsConfigurator;
 import ch.cyberduck.core.sftp.openssh.WindowsOpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.TildeResolvingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -500,7 +503,7 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new CustomOriginCloudFrontDistributionConfiguration(host, trust, key);
         }
         if(type == Home.class) {
-            return (T) new SFTPHomeDirectoryService(this);
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new TildeResolvingHomeFeature(host, new SFTPHomeDirectoryService(this)));
         }
         if(type == Quota.class) {
             return (T) new SFTPQuotaFeature(this);

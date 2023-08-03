@@ -16,21 +16,22 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
+import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class DefaultPathHomeFeatureTest extends AbstractSFTPTest {
+public class TildeResolvingHomeFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testFind() throws Exception {
-        final DefaultPathHomeFeature feature = new DefaultPathHomeFeature(session);
-        assertNull(feature.find());
+        final TildeResolvingHomeFeature feature = new TildeResolvingHomeFeature(session.getHost(), new SFTPHomeDirectoryService(session));
+        assertNotNull(feature.find());
         session.getHost().setDefaultPath("~/d");
         assertEquals("/d", feature.find().getAbsolute());
         session.getHost().setDefaultPath("~d");
