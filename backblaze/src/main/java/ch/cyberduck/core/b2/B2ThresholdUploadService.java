@@ -74,14 +74,18 @@ public class B2ThresholdUploadService implements Upload<BaseB2Response> {
 
     protected boolean threshold(final Long length) {
         if(length > threshold) {
-            if(!new HostPreferences(session.getHost()).getBoolean("b2.upload.largeobject")) {
-                // Disabled by user
-                if(length < new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.required.threshold")) {
-                    log.warn("Large upload is disabled with property b2.upload.largeobject.required.threshold");
-                    return false;
+            if(length > new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.size")) {
+                if(!new HostPreferences(session.getHost()).getBoolean("b2.upload.largeobject")) {
+                    // Disabled by user
+                    if(length < new HostPreferences(session.getHost()).getLong("b2.upload.largeobject.required.threshold")) {
+                        log.warn("Large upload is disabled with property b2.upload.largeobject.required.threshold");
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+            // Large files must have at least 2 parts
+            return false;
         }
         else {
             // Below threshold
