@@ -76,7 +76,7 @@ public class RemoteProfilesFinder implements ProfilesFinder {
         }
         final ProfileFilter filter = new ProfileFilter();
         final AttributedList<Path> list = session.getFeature(ListService.class).list(new DelegatingHomeFeature(
-                new DefaultPathHomeFeature(session.getHost())).find(), new DisabledListProgressListener());
+                new DefaultPathHomeFeature(session)).find(), new DisabledListProgressListener());
         return list.filter(filter).toStream().map(file -> visitor.visit(new RemoteProfileDescription(protocols, file,
                 new LazyInitializer<Local>() {
                     @Override

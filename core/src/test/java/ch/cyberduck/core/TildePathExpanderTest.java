@@ -28,24 +28,22 @@ import static org.junit.Assert.assertSame;
 public class TildePathExpanderTest {
 
     @Test
-    public void testExpand() throws Exception {
-        final Path expanded = new TildePathExpander(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)))
-                .expand(new Path("~/f", EnumSet.of(Path.Type.file)));
-        assertEquals(new Path("/home/jenkins/f", EnumSet.of(Path.Type.file)), expanded);
-        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), expanded.getParent());
+    public void testExpand() {
+        final String expanded = new TildePathExpander(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)))
+                .expand("~/f", "~/");
+        assertEquals("/home/jenkins/f", expanded);
     }
 
     @Test
-    public void testExpandPathWithDirectory() throws Exception {
-        final Path expanded = new TildePathExpander(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)))
-                .expand(new Path("/~/f/s", EnumSet.of(Path.Type.file)));
-        assertEquals(new Path("/home/jenkins/f/s", EnumSet.of(Path.Type.file)), expanded);
-        assertEquals(new Path("/home/jenkins/f", EnumSet.of(Path.Type.directory)), expanded.getParent());
+    public void testExpandPathWithDirectory() {
+        final String expanded = new TildePathExpander(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)))
+                .expand("/~/f/s");
+        assertEquals("/home/jenkins/f/s", expanded);
     }
 
     @Test
-    public void testNoExpand() throws Exception {
-        final Path f = new Path("/f", EnumSet.of(Path.Type.file));
+    public void testNoExpand() {
+        final String f = "/f";
         assertSame(f, new TildePathExpander(new Path("/home/jenkins", EnumSet.of(Path.Type.directory))).expand(f));
     }
 }

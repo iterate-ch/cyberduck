@@ -225,7 +225,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return;
         }
         try {
-            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(host)).find();
+            final Path home = new DelegatingHomeFeature(new DefaultPathHomeFeature(this)).find();
             final Location.Name location = new S3PathStyleFallbackAdapter<>(client, new BackgroundExceptionCallable<Location.Name>() {
                 @Override
                 public Location.Name call() throws BackgroundException {

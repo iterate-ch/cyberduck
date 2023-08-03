@@ -27,9 +27,13 @@ public class DefaultHomeFinderService implements Home {
     private final Home chain;
 
     public DefaultHomeFinderService(final Session<?> session) {
-        // Chained implementation with precedence workdir > default path > remote default
-        this.chain = new PathAttributesHomeFeature(session, new DelegatingHomeFeature(new WorkdirHomeFeature(session.getHost()),
-                new DefaultPathHomeFeature(session.getHost()), session.getFeature(Home.class)), session.getFeature(AttributesFinder.class), session.getFeature(PathContainerService.class));
+        this.chain = new PathAttributesHomeFeature(session,
+                // Chained implementation with precedence workdir > default path > remote default
+                new DelegatingHomeFeature(
+                        new WorkdirHomeFeature(session.getHost()),
+                        new DefaultPathHomeFeature(session),
+                        session.getFeature(Home.class)),
+                session.getFeature(AttributesFinder.class), session.getFeature(PathContainerService.class));
     }
 
     @Override
