@@ -41,6 +41,9 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -189,7 +192,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
             return (T) new IRODSCopyFeature(this);
         }
         if(type == Home.class) {
-            return (T) new IRODSHomeFinderService(this);
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new IRODSHomeFinderService(this));
         }
         if(type == AttributesFinder.class) {
             return (T) new IRODSAttributesFinderFeature(this);

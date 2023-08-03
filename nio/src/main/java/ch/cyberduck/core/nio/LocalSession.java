@@ -39,6 +39,9 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultPathHomeFeature;
+import ch.cyberduck.core.shared.DelegatingHomeFeature;
+import ch.cyberduck.core.shared.WorkdirHomeFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -172,7 +175,7 @@ public class LocalSession extends Session<FileSystem> {
             }
         }
         if(type == Home.class) {
-            return (T) new LocalHomeFinderFeature();
+            return (T) new DelegatingHomeFeature(new WorkdirHomeFeature(host), new DefaultPathHomeFeature(host), new LocalHomeFinderFeature());
         }
         if(type == Quota.class) {
             return (T) new LocalQuotaFeature(this);
