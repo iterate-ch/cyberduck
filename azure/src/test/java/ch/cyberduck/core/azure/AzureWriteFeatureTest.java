@@ -54,7 +54,7 @@ public class AzureWriteFeatureTest extends AbstractAzureTest {
         final Map<String, String> metadata = new AzureMetadataFeature(session, context).getMetadata(test);
         assertEquals("text/plain", metadata.get("Content-Type"));
         assertEquals("public,max-age=86400", metadata.get("Cache-Control"));
-        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.withRemote(attributes)).size, 0L);
+        assertEquals(content.length, new AzureWriteFeature(session, context).append(test, status.exists(true).withRemote(attributes)).size, 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new AzureReadFeature(session, context).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
