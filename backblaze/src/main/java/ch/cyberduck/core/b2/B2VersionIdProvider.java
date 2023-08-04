@@ -104,6 +104,6 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
         if(versioning.isEnabled()) {
             return super.cache(file, id);
         }
-        return null;
+        return id;
     }
 }
