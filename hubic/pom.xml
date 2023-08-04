@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>8.6.2</version>
+        <version>8.6.3-SNAPSHOT</version>
     </parent>
     <artifactId>hubic</artifactId>
     <packaging>jar</packaging>
