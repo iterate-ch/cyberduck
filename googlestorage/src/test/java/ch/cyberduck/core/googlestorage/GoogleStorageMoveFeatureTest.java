@@ -49,12 +49,12 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageMetadataFeature(session).getMetadata(test).isEmpty());
         final Path renamed = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        final Path moved = new GoogleStorageMoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
         final PathAttributes targetAttr = new GoogleStorageAttributesFinderFeature(session).find(renamed);
-        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
-        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, renamed.attributes(), targetAttr));
+        assertEquals(moved.attributes(), targetAttr);
+        assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, moved.attributes(), targetAttr));
         assertEquals(1, new GoogleStorageObjectListService(session).list(bucket, new DisabledListProgressListener())
                 .filter(new SearchFilter(renamed.getName())).size());
         final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(renamed);
