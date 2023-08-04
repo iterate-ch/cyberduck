@@ -901,7 +901,7 @@ public class MainController extends BundleController implements NSApplication.De
      * (applicationWillFinishLaunching is sent before applicationOpenFile.)
      */
     @Override
-    public void applicationDidFinishLaunching(NSNotification notification) {
+    public void applicationWillFinishLaunching(NSNotification notification) {
         // Opt-in of automatic window tabbing
         NSWindow.setAllowsAutomaticWindowTabbing(true);
         // Load main menu
