@@ -31,6 +31,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import java.io.File;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileVersionList;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneratePresignedUrlsRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.LogEventList;
 import ch.cyberduck.core.sds.io.swagger.client.model.MissingKeysResponse;
@@ -38,6 +39,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.MoveNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeParentList;
+import ch.cyberduck.core.sds.io.swagger.client.model.NodeVirusProtectionInfo;
 import ch.cyberduck.core.sds.io.swagger.client.model.PendingAssignmentList;
 import ch.cyberduck.core.sds.io.swagger.client.model.PendingAssignmentsRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.PresignedUrlList;
@@ -45,6 +47,9 @@ import ch.cyberduck.core.sds.io.swagger.client.model.RestoreDeletedNodesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupsAddBatchRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomGroupsDeleteBatchRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomGuestUserAddRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomPolicies;
+import ch.cyberduck.core.sds.io.swagger.client.model.RoomPoliciesRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomUserList;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomUsersAddBatchRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.RoomUsersDeleteBatchRequest;
@@ -60,6 +65,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomWebhookRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetBatchRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
+import ch.cyberduck.core.sds.io.swagger.client.model.VirusProtectionVerdictRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.ZipDownloadRequest;
 
 import java.util.ArrayList;
@@ -67,7 +73,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class NodesApi {
+public class NodesApi {
   private ApiClient apiClient;
 
   public NodesApi() {
@@ -130,6 +136,51 @@ import java.util.Map;
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Add guest users to a room
+   * ### Description: Add guest users to a room  ### Precondition: User needs to be a &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Room Administrator&lt;/span&gt;. To add new members, the user needs the right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; non-members add&lt;/span&gt;, which is included in any role. &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Guest User Policy&lt;/span&gt; needs to be enabled.   ### Postcondition: New or existing Guest-Users now have guest-permissions for this room  ### Further Information: Batch function.
+   * @param body  (required)
+   * @param roomId Room ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void addRoomGuestUsers(RoomGuestUserAddRequest body, Long roomId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling addRoomGuestUsers");
+    }
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling addRoomGuestUsers");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/guest_users"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Cancel file upload
@@ -213,8 +264,8 @@ import java.util.Map;
   /**
    * Complete file upload
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.9.0&lt;/h3&gt;  ### Use &#x60;uploads&#x60; API  ### Description: Finishes an upload and closes the corresponding upload channel.  ### Precondition: An upload channel has been created and data has been transmitted.  ### Postcondition: The upload is finished and the temporary file is moved to the productive environment.  ### Further Information: The provided file name might be changed in accordance with the resolution strategy:   * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.   Download share id (if exists) gets changed if: - node with the same name exists in the target container - &#x60;resolutionStrategy&#x60; is &#x60;overwrite&#x60; - &#x60;keepShareLinks&#x60; is &#x60;true&#x60;  ### Node naming convention: * Node (room, folder, file) names are limited to **150** characters. * Illegal names:   &#x60;&#x27;CON&#x27;, &#x27;PRN&#x27;, &#x27;AUX&#x27;, &#x27;NUL&#x27;, &#x27;COM1&#x27;, &#x27;COM2&#x27;, &#x27;COM3&#x27;, &#x27;COM4&#x27;, &#x27;COM5&#x27;, &#x27;COM6&#x27;, &#x27;COM7&#x27;, &#x27;COM8&#x27;, &#x27;COM9&#x27;, &#x27;LPT1&#x27;, &#x27;LPT2&#x27;, &#x27;LPT3&#x27;, &#x27;LPT4&#x27;, &#x27;LPT5&#x27;, &#x27;LPT6&#x27;, &#x27;LPT7&#x27;, &#x27;LPT8&#x27;, &#x27;LPT9&#x27;, (and any of those with an extension)&#x60; * Illegal characters in names:   &#x60;&#x27;\\\\&#x27;, &#x27;&lt;&#x27;,&#x27;&gt;&#x27;, &#x27;:&#x27;, &#x27;\\\&quot;&#x27;, &#x27;|&#x27;, &#x27;?&#x27;, &#x27;*&#x27;, &#x27;/&#x27;, leading &#x27;-&#x27;, trailing &#x27;.&#x27; &#x60;
-   * @param body  (required)
    * @param uploadId Upload channel ID (required)
+   * @param body  (optional)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return Node
@@ -222,12 +273,8 @@ import java.util.Map;
    * @deprecated
    */
   @Deprecated
-  public Node completeFileUpload(CompleteUploadRequest body, String uploadId, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
+  public Node completeFileUpload(String uploadId, CompleteUploadRequest body, String xSdsDateFormat, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling completeFileUpload");
-    }
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
       throw new ApiException(400, "Missing the required parameter 'uploadId' when calling completeFileUpload");
@@ -633,11 +680,13 @@ import java.util.Map;
   }
   /**
    * Download files / folders as ZIP archive
-   * ### Description:   Download multiple files in a ZIP archive.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in auth parent room.  ### Postcondition: Stream is returned.  ### Further Information: None.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.44.0&lt;/h3&gt;  ### Description:   Download multiple files in a ZIP archive.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in auth parent room.  ### Postcondition: Stream is returned.  ### Further Information: None.
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
+  @Deprecated
   public void downloadZipArchive(ZipDownloadRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
@@ -804,12 +853,14 @@ import java.util.Map;
   }
   /**
    * Generate download URL for ZIP download
-   * ### Description:   Create a download URL to retrieve several files in one ZIP archive.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: Download URL is generated and returned.  ### Further Information: The token is necessary to access &#x60;downloads&#x60; resources.   ZIP download is only available for files and folders.
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.44.0&lt;/h3&gt;  ### Description:   Create a download URL to retrieve several files in one ZIP archive.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: Download URL is generated and returned.  ### Further Information: The token is necessary to access &#x60;downloads&#x60; resources.   ZIP download is only available for files and folders.
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return DownloadTokenGenerateResponse
    * @throws ApiException if fails to make API call
+   * @deprecated
    */
+  @Deprecated
   public DownloadTokenGenerateResponse generateDownloadUrlForZipArchive(ZipDownloadRequest body, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = body;
     // verify the required parameter 'body' is set
@@ -888,6 +939,47 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<PresignedUrlList> localVarReturnType = new GenericType<PresignedUrlList>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Generate Virus Protection Verdict Information
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.44.0&lt;/h3&gt;  ### Description: Retrieve information about the virus protection verdicts of a list of node IDs  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room. Room is not encrypted. Global System Policy \&quot;Virus Protection\&quot; is enabled. Room Policy \&quot;Virus Protection is enabled\&quot;.  ### Postcondition: Information returned.    
+   * @param body  (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return List&lt;NodeVirusProtectionInfo&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public List<NodeVirusProtectionInfo> generateVirusProtectionInfo(VirusProtectionVerdictRequest body, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling generateVirusProtectionInfo");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/files/generate_verdict_info";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<List<NodeVirusProtectionInfo>> localVarReturnType = new GenericType<List<NodeVirusProtectionInfo>>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -1045,6 +1137,46 @@ import java.util.Map;
     // create path and map variables
     String localVarPath = "/v4/nodes/{node_id}/favorite"
       .replaceAll("\\{" + "node_id" + "\\}", apiClient.escapeString(nodeId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Remove malicious File
+   * ### Description: Permanently delete a malicious file.  ### Precondition: Authenticated user with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; delete&lt;/span&gt; permissions on supplied nodes (for folders or files) or on superordinated node (for rooms).  ### Postcondition: Malicious file gets permanently deleted.  ### Further Information: None.
+   * @param maliciousFileId Malicious file ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void removeMaliciousFile(Long maliciousFileId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'maliciousFileId' is set
+    if (maliciousFileId == null) {
+      throw new ApiException(400, "Missing the required parameter 'maliciousFileId' when calling removeMaliciousFile");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/malicious_files/{malicious_file_id}"
+      .replaceAll("\\{" + "malicious_file_id" + "\\}", apiClient.escapeString(maliciousFileId.toString()));
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
@@ -1392,6 +1524,55 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
+   * Request list of file versions
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.37.0&lt;/h3&gt;  ### Description:   Request a list of file versions. Both nodes and deleted nodes are included, depending on the user&#x27;s permissions.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read/read recycle bin&lt;/span&gt; permissions in parent room.  ### Postcondition: List of file versions is returned.  ### Further Information: Maximum number of file versions is 500. The list is sorted by ID DESC. 
+   * @param referenceId Reference ID (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+   * @param offset Range offset (optional)
+   * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return FileVersionList
+   * @throws ApiException if fails to make API call
+   */
+  public FileVersionList requestFileVersionList(Long referenceId, String xSdsDateFormat, Integer offset, Integer limit, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'referenceId' is set
+    if (referenceId == null) {
+      throw new ApiException(400, "Missing the required parameter 'referenceId' when calling requestFileVersionList");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/files/versions/{reference_id}"
+      .replaceAll("\\{" + "reference_id" + "\\}", apiClient.escapeString(referenceId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
+
+    if (xSdsDateFormat != null)
+      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<FileVersionList> localVarReturnType = new GenericType<FileVersionList>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
    * Request list of webhooks that are assigned or can be assigned to this room
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.19.0&lt;/h3&gt;  ### Description:   Get a list of webhooks for the room scope with their assignment status.  ### Precondition: User needs to be a &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Room Administrator&lt;/span&gt;.  ### Postcondition: List of webhooks is returned.  ### Further Information:  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;isAssigned:eq:true&#x60;   Get a list of assigned webhooks to the room.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;isAssigned&#x60;** | Assigned/unassigned webhooks filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; |  &lt;/details&gt;
    * @param roomId Room ID (required)
@@ -1630,11 +1811,11 @@ import java.util.Map;
   }
   /**
    * Request list of nodes
-   * ### Description:   Provides a hierarchical list of file system nodes (rooms, folders or files) of a given parent that are accessible by the current user.  ### Precondition: Authenticated user.  ### Postcondition: List of nodes is returned.  ### Further Information: &#x60;EncryptionInfo&#x60; is **NOT** provided.  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;type:eq:room:folder|perm:eq:read&#x60;   Get nodes where type equals (&#x60;room&#x60; **OR** &#x60;folder&#x60;) **AND** user has &#x60;read&#x60; permissions.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;type&#x60; | Node type filter | &#x60;eq&#x60; | Node type equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:room:folder&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;room&#x60;&lt;/li&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | &#x60;perm&#x60; | Permission filter | &#x60;eq&#x60; | Permission equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;perm:eq:read:create:delete&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;manage&#x60;&lt;/li&gt;&lt;li&gt;&#x60;read&#x60;&lt;/li&gt;&lt;li&gt;&#x60;change&#x60;&lt;/li&gt;&lt;li&gt;&#x60;create&#x60;&lt;/li&gt;&lt;li&gt;&#x60;delete&#x60;&lt;/li&gt;&lt;li&gt;&#x60;manageDownloadShare&#x60;&lt;/li&gt;&lt;li&gt;&#x60;manageUploadShare&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canReadRecycleBin&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canRestoreRecycleBin&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canDeleteRecycleBin&#x60;&lt;/li&gt;&lt;/ul&gt; | | &#x60;childPerm&#x60; | Same as &#x60;perm&#x60;, but less restrictive (applies to child nodes only).&lt;br&gt;Child nodes of the parent node which do not meet the filter condition&lt;br&gt;are **NOT** returned. | &#x60;eq&#x60; | cf. &#x60;perm&#x60; | cf. &#x60;perm&#x60; | | &#x60;name&#x60; | Node name filter | &#x60;cn, eq&#x60; | Node name contains / equals value. | &#x60;search String&#x60; | | &#x60;encrypted&#x60; | Node encryption status filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | &#x60;branchVersion&#x60; | Node branch version filter | &#x60;ge, le&#x60; | Branch version is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;branchVersion:ge:1423280937404&#x60;&amp;#124;&#x60;branchVersion:le:1523280937404&#x60; | &#x60;version number&#x60; | | &#x60;timestampCreation&#x60; | Creation timestamp filter | &#x60;ge, le&#x60; | Creation timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampCreation:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampCreation:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;timestampModification&#x60; | Modification timestamp filter | &#x60;ge, le&#x60; | Modification timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampModification:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampModification:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; |  &lt;/details&gt;  ---  ### Sorting: Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort criteria are possible.   Fields are connected via logical conjunction **AND**.   Nodes are sorted by type first, then by sent sort string.    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;name:desc|fileType:asc&#x60;   Sort by &#x60;name&#x60; descending **AND** &#x60;fileType&#x60; ascending.  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;name&#x60; | Node name | | &#x60;createdAt&#x60; | Creation date | | &#x60;createdBy&#x60; | Creator first name, last name | | &#x60;updatedAt&#x60; | Last modification date | | &#x60;updatedBy&#x60; | Last modifier first name, last name | | &#x60;fileType&#x60; | File type (extension) | | &#x60;classification&#x60; | Classification ID:&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - internal&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | &#x60;size&#x60; | Node size | | &#x60;cntDeletedVersions&#x60; | Number of deleted versions of this file / folder (**NOT** recursive; for files and folders only) | | &#x60;timestampCreation&#x60; | Creation timestamp | | &#x60;timestampModification&#x60; | Modification timestamp |  &lt;/details&gt;  ### Deprecated sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &lt;del&gt;&#x60;cntChildren&#x60;&lt;/del&gt; | Number of direct children (**NOT** recursive; for rooms and folders only) |  &lt;/details&gt;
+   * ### Description:   Provides a hierarchical list of file system nodes (rooms, folders or files) of a given parent that are accessible by the current user.  ### Precondition: Authenticated user.  ### Postcondition: List of nodes is returned.  ### Further Information: &#x60;EncryptionInfo&#x60; is **NOT** provided.  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;type:eq:room:folder|perm:eq:read&#x60;   Get nodes where type equals (&#x60;room&#x60; **OR** &#x60;folder&#x60;) **AND** user has &#x60;read&#x60; permissions.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;type&#x60; | Node type filter | &#x60;eq&#x60; | Node type equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:room:folder&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;room&#x60;&lt;/li&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | &#x60;perm&#x60; | Permission filter | &#x60;eq&#x60; | Permission equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;perm:eq:read:create:delete&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;manage&#x60;&lt;/li&gt;&lt;li&gt;&#x60;read&#x60;&lt;/li&gt;&lt;li&gt;&#x60;change&#x60;&lt;/li&gt;&lt;li&gt;&#x60;create&#x60;&lt;/li&gt;&lt;li&gt;&#x60;delete&#x60;&lt;/li&gt;&lt;li&gt;&#x60;manageDownloadShare&#x60;&lt;/li&gt;&lt;li&gt;&#x60;manageUploadShare&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canReadRecycleBin&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canRestoreRecycleBin&#x60;&lt;/li&gt;&lt;li&gt;&#x60;canDeleteRecycleBin&#x60;&lt;/li&gt;&lt;/ul&gt; | | &#x60;childPerm&#x60; | Same as &#x60;perm&#x60;, but less restrictive (applies to child nodes only).&lt;br&gt;Child nodes of the parent node which do not meet the filter condition&lt;br&gt;are **NOT** returned. | &#x60;eq&#x60; | cf. &#x60;perm&#x60; | cf. &#x60;perm&#x60; | | &#x60;name&#x60; | Node name filter | &#x60;cn, eq&#x60; | Node name contains / equals value. | &#x60;search String&#x60; | | &#x60;encrypted&#x60; | Node encryption status filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | &#x60;branchVersion&#x60; | Node branch version filter | &#x60;ge, le&#x60; | Branch version is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;branchVersion:ge:1423280937404&#x60;&amp;#124;&#x60;branchVersion:le:1523280937404&#x60; | &#x60;version number&#x60; | | &#x60;timestampCreation&#x60; | Creation timestamp filter | &#x60;ge, le&#x60; | Creation timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampCreation:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampCreation:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;timestampModification&#x60; | Modification timestamp filter | &#x60;ge, le&#x60; | Modification timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampModification:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampModification:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;referenceId&#x60;           | Reference ID filter               | &#x60;eq&#x60; | Reference ID equals value.   | &#x60;Integer &#x60; | &lt;/details&gt;  ---  ### Sorting: Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort criteria are possible.   Fields are connected via logical conjunction **AND**.   Nodes are sorted by type first, then by sent sort string.    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;name:desc|fileType:asc&#x60;   Sort by &#x60;name&#x60; descending **AND** &#x60;fileType&#x60; ascending.  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;name&#x60; | Node name | | &#x60;createdAt&#x60; | Creation date | | &#x60;createdBy&#x60; | Creator first name, last name | | &#x60;updatedAt&#x60; | Last modification date | | &#x60;updatedBy&#x60; | Last modifier first name, last name | | &#x60;fileType&#x60; | File type (extension) | | &#x60;classification&#x60; | Classification ID:&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - internal&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | &#x60;size&#x60; | Node size | | &#x60;cntDeletedVersions&#x60; | Number of deleted versions of this file / folder (**NOT** recursive; for files and folders only) | | &#x60;timestampCreation&#x60; | Creation timestamp | | &#x60;timestampModification&#x60; | Modification timestamp |  &lt;/details&gt;  ### Deprecated sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &lt;del&gt;&#x60;cntChildren&#x60;&lt;/del&gt; | Number of direct children (**NOT** recursive; for rooms and folders only) |  &lt;/details&gt;
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param depthLevel * &#x60;0&#x60; - top level nodes only  * &#x60;n&#x60; (any positive number) - include &#x60;n&#x60; levels starting from the current node (optional)
    * @param parentId Parent node ID.  Only rooms and folders can be parents.  Parent ID &#x60;0&#x60; or empty is the root node. (optional)
-   * @param roomManager Show all rooms for management perspective.  Only possible for _Rooms Managers_.  For all other users, it will be ignored. (optional)
+   * @param roomManager Show all rooms for management perspective.  Only possible for _Rooms Managers_ / _Room Admins_.  For all other users, it will be ignored. (optional)
    * @param filter Filter string (optional)
    * @param sort Sort string (optional)
    * @param offset Range offset (optional)
@@ -1837,6 +2018,48 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
+   * Request Room Policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.32.0&lt;/h3&gt;  ### Description:   Retrieve the room policies: * &#x60;defaultExpirationPeriod&#x60;  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in that room.  ### Postcondition: Room Policies returned.  ### Further Information: &#x60;defaultExpirationPeriod&#x60;: Default policy room expiration period in seconds. All existing and future files in a room will have their expiration date set to this period after their respective upload. Existing files can be set to expire earlier afterwards. &#x60;0&#x60; means no default expiration policy will be enforced.    
+   * @param roomId Room ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return RoomPolicies
+   * @throws ApiException if fails to make API call
+   */
+  public RoomPolicies requestRoomPolicies(Long roomId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling requestRoomPolicies");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/policies"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<RoomPolicies> localVarReturnType = new GenericType<RoomPolicies>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
    * Request room rescue key
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.24.0&lt;/h3&gt;  ### Description:   Returns the file key for the room emergency password / rescue key of a certain file (if available).  ### Precondition: User with &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read&lt;/span&gt; permissions in parent room.  ### Postcondition: File key is returned.  ### Further Information: None.
    * @param fileId File ID (required)
@@ -2018,7 +2241,7 @@ import java.util.Map;
   }
   /**
    * Request room granted user(s) or / and user(s) that can be granted
-   * ### Description:   Retrieve a list of users that are and / or can be granted to the room.  ### Precondition: Any permissions on target room.  ### Postcondition: None.  ### Further Information: List of users is returned.  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &gt; &#x60;permissionsManage:eq:true|user:cn:searchString&#x60;   Get all users that have &#x60;manage&#x60; permissions to this room **AND** whose (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;) is like &#x60;searchString&#x60;.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;user&#x60; | User filter | &#x60;cn&#x60; | User contains value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;). | &#x60;search String&#x60; | | &#x60;userId&#x60; | User ID filter | &#x60;eq&#x60; | User ID equals value. | &#x60;positive Integer&#x60; | | &#x60;isGranted&#x60; | Filter the users that have (no) access to this room.&lt;br&gt;**This filter is only available for room administrators.**&lt;br&gt;**Other users can only look for users in their rooms, so this filter is &#x60;true&#x60; and **CANNOT** be overridden.** | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | &#x60;permissionsManage&#x60; | Filter the users that do (not) have &#x60;manage&#x60; permissions in this room. | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | &#x60;effectivePerm&#x60; | Filter users with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;: DIRECT **AND** EFFECTIVE **AND** OVER GROUP permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**.&lt;br&gt;OVER GROUP means: e.g. user gets &#x60;read&#x60; permissions on desired room through **group membership**. | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;false&#x60; |  &lt;/details&gt;  ### Deprecated filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &lt;del&gt;&#x60;displayName&#x60;&lt;/del&gt; | User display name filter (use &#x60;user&#x60; filter) | &#x60;cn&#x60; | User display name contains value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60;). | &#x60;search String&#x60; |  &lt;/details&gt;  ---  ### Sorting: Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort criteria are possible.   Fields are connected via logical conjunction **AND**.  &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;user:desc&#x60;   Sort by &#x60;user&#x60; descending.  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;user&#x60;** | User - sort by &#x60;firstName&#x60;, &#x60;lastName&#x60;, &#x60;username&#x60;, &#x60;email&#x60; (in this order) |  &lt;/details&gt;
+   * ### Description:   Retrieve a list of users that are and / or can be granted to the room.  ### Precondition: Any permissions on target room.  ### Postcondition: None.  ### Further Information: List of users is returned.  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &gt; &#x60;permissionsManage:eq:true|user:cn:searchString&#x60;   Get all users that have &#x60;manage&#x60; permissions to this room **AND** whose (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;) is like &#x60;searchString&#x60;.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;user&#x60; | User filter | &#x60;cn&#x60; | User contains value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;). | &#x60;search String&#x60; | | &#x60;userId&#x60; | User ID filter | &#x60;eq&#x60; | User ID equals value. | &#x60;positive Integer&#x60; | | &#x60;isGranted&#x60; | Filter the users that have (no) access to this room.&lt;br&gt;**This filter is only available for room administrators.**&lt;br&gt;**Other users can only look for users in their rooms, so this filter is &#x60;true&#x60; and **CANNOT** be overridden.** | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;true&#x60; | | &#x60;permissionsManage&#x60; | Filter the users that do (not) have &#x60;manage&#x60; permissions in this room. | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | &#x60;effectivePerm&#x60; | Filter users with DIRECT or DIRECT **AND** EFFECTIVE permissions&lt;ul&gt;&lt;li&gt;&#x60;false&#x60;: DIRECT permissions&lt;/li&gt;&lt;li&gt;&#x60;true&#x60;: DIRECT **AND** EFFECTIVE permissions&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;: DIRECT **AND** EFFECTIVE **AND** OVER GROUP permissions&lt;/li&gt;&lt;/ul&gt;DIRECT means: e.g. room administrator grants &#x60;read&#x60; permissions to group of users **directly** on desired room.&lt;br&gt;EFFECTIVE means: e.g. group of users gets &#x60;read&#x60; permissions on desired room through **inheritance**.&lt;br&gt;OVER GROUP means: e.g. user gets &#x60;read&#x60; permissions on desired room through **group membership**. | &#x60;eq&#x60; |  | &lt;ul&gt;&lt;li&gt;&#x60;true&#x60;&lt;/li&gt;&lt;li&gt;&#x60;false&#x60;&lt;/li&gt;&lt;li&gt;&#x60;any&#x60;&lt;/li&gt;&lt;/ul&gt;default: &#x60;false&#x60; | | &#x60;hasRole&#x60; | User role filter&lt;br&gt;For more Roles information please call &#x60;GET /roles API&#x60; | &#x60;eq&#x60;, &#x60;neq&#x60; | User role  equals value. | &lt;ul&gt;&lt;li&gt;&#x60;CONFIG_MANAGER&#x60; - Manage global configs&lt;/li&gt;&lt;li&gt;&#x60;USER_MANAGER&#x60; - Manage Users&lt;/li&gt;&lt;li&gt;&#x60;GROUP_MANAGER&#x60; - Manage User-Groups&lt;/li&gt;&lt;li&gt;&#x60;ROOM_MANAGER&#x60; - Manage top level Data Rooms&lt;/li&gt;&lt;li&gt;&#x60;LOG_AUDITOR&#x60; - Read logs&lt;/li&gt;&lt;li&gt;&#x60;NONMEMBER_VIEWER&#x60; - View users and groups when having room manage permission&lt;/li&gt;&lt;li&gt;&#x60;USER&#x60; - Regular User role&lt;/li&gt;&lt;li&gt;&#x60;GUEST_USER&#x60; - Guest User role&lt;/li&gt;&lt;/ul&gt; |  &lt;/details&gt;  ### Deprecated filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &lt;del&gt;&#x60;displayName&#x60;&lt;/del&gt; | User display name filter (use &#x60;user&#x60; filter) | &#x60;cn&#x60; | User display name contains value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60;). | &#x60;search String&#x60; |  &lt;/details&gt;  ---  ### Sorting: Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort criteria are possible.   Fields are connected via logical conjunction **AND**.  &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;user:desc&#x60;   Sort by &#x60;user&#x60; descending.  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;user&#x60;** | User - sort by &#x60;firstName&#x60;, &#x60;lastName&#x60;, &#x60;username&#x60;, &#x60;email&#x60; (in this order) |  &lt;/details&gt;
    * @param roomId Room ID (required)
    * @param offset Range offset (optional)
    * @param limit Range limit.  Maximum 500.   For more results please use paging (&#x60;offset&#x60; + &#x60;limit&#x60;). (optional)
@@ -2335,7 +2558,7 @@ import java.util.Map;
   }
   /**
    * Search nodes
-   * ### Description:   Provides a flat list of file system nodes (rooms, folders or files) of a given parent that are accessible by the current user.  ### Precondition: Authenticated user is allowed to &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128065; see&lt;/span&gt; nodes (i.e. &#x60;isBrowsable &#x3D; true&#x60;).  ### Postcondition: List of nodes is returned.  ### Further Information:   Output is limited to **500** entries.   For more results please use filter criteria and paging (&#x60;offset&#x60; + &#x60;limit&#x60;).   &#x60;EncryptionInfo&#x60; is **NOT** provided.   Wildcard character is the asterisk character: &#x60;*&#x60;  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;type:eq:file|createdAt:ge:2015-01-01&#x60;   Get nodes where type equals &#x60;file&#x60; **AND** file creation date is **&gt;&#x3D;** &#x60;2015-01-01&#x60;.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | &#x60;type&#x60; | Node type filter | &#x60;eq&#x60; | Node type equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:room:folder&#x60; | &lt;ul&gt;&lt;li&gt;&#x60;room&#x60;&lt;/li&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | &#x60;fileType&#x60; | File type filter (file extension) | &#x60;cn, eq&#x60; | File type contains / equals value. | &#x60;search String&#x60; | | &#x60;classification&#x60; | Classification filter | &#x60;eq&#x60; | Classification equals value. | &lt;ul&gt;&lt;li&gt;&#x60;1&#x60; - public&lt;/li&gt;&lt;li&gt;&#x60;2&#x60; - internal&lt;/li&gt;&lt;li&gt;&#x60;3&#x60; - confidential&lt;/li&gt;&lt;li&gt;&#x60;4&#x60; - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | &#x60;createdBy&#x60; | Creator login filter | &#x60;cn, eq&#x60; | Creator login contains / equals value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;). | &#x60;search String&#x60; | | &#x60;createdById&#x60; | Creator ID filter | &#x60;eq&#x60; | Creator ID equals value. | &#x60;positive Integer  or -1 for external user&#x60; | | &#x60;createdAt&#x60; | Creation date filter | &#x60;ge, le&#x60; | Creation date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;createdAt:ge:2016-12-31&#x60;&amp;#124;&#x60;createdAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;updatedBy&#x60; | Last modifier login filter | &#x60;cn, eq&#x60; | Last modifier login contains / equals value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;). | &#x60;search String&#x60; | | &#x60;updatedById&#x60; | Last modifier ID filter | &#x60;eq&#x60; | Modifier ID equals value. | &#x60;positive Integer or -1 for external user&#x60; | | &#x60;updatedAt&#x60; | Last modification date filter | &#x60;ge, le&#x60; | Last modification date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;updatedAt:ge:2016-12-31&#x60;&amp;#124;&#x60;updatedAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;expireAt&#x60; | Expiration date filter | &#x60;ge, le&#x60; | Expiration date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;expireAt:ge:2016-12-31&#x60;&amp;#124;&#x60;expireAt:le:2018-01-01&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;size&#x60; | Node size filter | &#x60;ge, le&#x60; | Node size is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;size:ge:5&#x60;&amp;#124;&#x60;size:le:10&#x60; | &#x60;size in bytes&#x60; | | &#x60;isFavorite&#x60; | Favorite filter | &#x60;eq&#x60; |  | &#x60;true or false&#x60; | | &#x60;branchVersion&#x60; | Node branch version filter | &#x60;ge, le&#x60; | Branch version is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;branchVersion:ge:1423280937404&#x60;&amp;#124;&#x60;branchVersion:le:1523280937404&#x60; | &#x60;version number&#x60; | | &#x60;parentPath&#x60; | Parent path | &#x60;cn, eq&#x60; | Parent path contains / equals  value. | &#x60;search String&#x60; | | &#x60;timestampCreation&#x60; | Creation timestamp filter | &#x60;ge, le&#x60; | Creation timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampCreation:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampCreation:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;timestampModification&#x60; | Modification timestamp filter | &#x60;ge, le&#x60; | Modification timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampModification:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampModification:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; |  &lt;/details&gt;  ---  ### Sorting: Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort criteria are possible.   Fields are connected via logical conjunction **AND**.  &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;name:desc|size:asc&#x60;   Sort by &#x60;name&#x60; descending **AND** &#x60;size&#x60; ascending.  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;name&#x60; | Node name | | &#x60;createdAt&#x60; | Creation date | | &#x60;createdBy&#x60; | Creator first name, last name | | &#x60;updatedAt&#x60; | Last modification date | | &#x60;updatedBy&#x60; | Last modifier first name, last name | | &#x60;fileType&#x60; | File type (extension) | | &#x60;classification&#x60; | Classification ID:&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - internal&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | &#x60;size&#x60; | Node size | | &#x60;cntDeletedVersions&#x60; | Number of deleted versions of this file / folder (**NOT** recursive; for files and folders only) | | &#x60;type&#x60; | Node type (room, folder, file) | | &#x60;parentPath&#x60; | Parent path | | &#x60;timestampCreation&#x60; | Creation timestamp | | &#x60;timestampModification&#x60; | Modification timestamp |  &lt;/details&gt;  ### Deprecated sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &lt;del&gt;&#x60;cntChildren&#x60;&lt;/del&gt; | Number of direct children (**NOT** recursive; for rooms and folders only) |  &lt;/details&gt;
+   * ### Description:   Provides a flat list of file system nodes (rooms, folders or files) of a given parent that are accessible by the current user.  ### Precondition: Authenticated user is allowed to &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128065; see&lt;/span&gt; nodes (i.e. &#x60;isBrowsable &#x3D; true&#x60;).  ### Postcondition: List of nodes is returned.  ### Further Information:   Output is limited to **500** entries.   For more results please use filter criteria and paging (&#x60;offset&#x60; + &#x60;limit&#x60;).   &#x60;EncryptionInfo&#x60; is **NOT** provided.   Wildcard character is the asterisk character: &#x60;*&#x60;  ### Filtering: All filter fields are connected via logical conjunction (**AND**)   Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;    &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;type:eq:file|createdAt:ge:2015-01-01&#x60;   Get nodes where type equals &#x60;file&#x60; **AND** file creation date is **&gt;&#x3D;** &#x60;2015-01-01&#x60;.  &lt;/details&gt;  ### Filtering options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60;            | Filter Description                | &#x60;OPERATOR&#x60; | Operator Description                                                                                                                                                                                                                                                                | &#x60;VALUE&#x60; | |:------------------------|:----------------------------------| :--- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| :--- | | &#x60;type&#x60;                  | Node type filter                  | &#x60;eq&#x60; | Node type equals value.&lt;br&gt;Multiple values are allowed and will be connected via logical disjunction (**OR**).&lt;br&gt;e.g. &#x60;type:eq:room:folder&#x60;                                                                                                                                        | &lt;ul&gt;&lt;li&gt;&#x60;room&#x60;&lt;/li&gt;&lt;li&gt;&#x60;folder&#x60;&lt;/li&gt;&lt;li&gt;&#x60;file&#x60;&lt;/li&gt;&lt;/ul&gt; | | &#x60;fileType&#x60;              | File type filter (file extension) | &#x60;cn, eq&#x60; | File type contains / equals value.                                                                                                                                                                                                                                                  | &#x60;search String&#x60; | | &#x60;classification&#x60;        | Classification filter             | &#x60;eq&#x60; | Classification equals value.                                                                                                                                                                                                                                                        | &lt;ul&gt;&lt;li&gt;&#x60;1&#x60; - public&lt;/li&gt;&lt;li&gt;&#x60;2&#x60; - internal&lt;/li&gt;&lt;li&gt;&#x60;3&#x60; - confidential&lt;/li&gt;&lt;li&gt;&#x60;4&#x60; - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | &#x60;createdBy&#x60;             | Creator login filter              | &#x60;cn, eq&#x60; | Creator login contains / equals value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;).                                                                                                                                                                             | &#x60;search String&#x60; | | &#x60;createdById&#x60;           | Creator ID filter                 | &#x60;eq&#x60; | Creator ID equals value.                                                                                                                                                                                                                                                            | &#x60;positive Integer  or -1 for external user&#x60; | | &#x60;createdAt&#x60;             | Creation date filter              | &#x60;ge, le&#x60; | Creation date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;createdAt:ge:2016-12-31&#x60;&amp;#124;&#x60;createdAt:le:2018-01-01&#x60;                                                                | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;updatedBy&#x60;             | Last modifier login filter        | &#x60;cn, eq&#x60; | Last modifier login contains / equals value (&#x60;firstName&#x60; **OR** &#x60;lastName&#x60; **OR** &#x60;email&#x60; **OR** &#x60;username&#x60;).                                                                                                                                                                       | &#x60;search String&#x60; | | &#x60;updatedById&#x60;           | Last modifier ID filter           | &#x60;eq&#x60; | Modifier ID equals value.                                                                                                                                                                                                                                                           | &#x60;positive Integer or -1 for external user&#x60; | | &#x60;updatedAt&#x60;             | Last modification date filter     | &#x60;ge, le&#x60; | Last modification date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;updatedAt:ge:2016-12-31&#x60;&amp;#124;&#x60;updatedAt:le:2018-01-01&#x60;                                                       | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;expireAt&#x60;              | Expiration date filter            | &#x60;ge, le&#x60; | Expiration date is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;expireAt:ge:2016-12-31&#x60;&amp;#124;&#x60;expireAt:le:2018-01-01&#x60;                                                                | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;size&#x60;                  | Node size filter                  | &#x60;ge, le&#x60; | Node size is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;size:ge:5&#x60;&amp;#124;&#x60;size:le:10&#x60;                                                                                               | &#x60;size in bytes&#x60; | | &#x60;isFavorite&#x60;            | Favorite filter                   | &#x60;eq&#x60; |                                                                                                                                                                                                                                                                                     | &#x60;true or false&#x60; | | &#x60;branchVersion&#x60;         | Node branch version filter        | &#x60;ge, le&#x60; | Branch version is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;branchVersion:ge:1423280937404&#x60;&amp;#124;&#x60;branchVersion:le:1523280937404&#x60;                                                 | &#x60;version number&#x60; | | &#x60;parentPath&#x60;            | Parent path                       | &#x60;cn, eq&#x60; | Parent path contains / equals  value.                                                                                                                                                                                                                                               | &#x60;search String&#x60; | | &#x60;timestampCreation&#x60;     | Creation timestamp filter         | &#x60;ge, le&#x60; | Creation timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampCreation:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampCreation:le:2018-01-01T11:00:00.540&#x60;             | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;timestampModification&#x60; | Modification timestamp filter     | &#x60;ge, le&#x60; | Modification timestamp is greater / less equals than value.&lt;br&gt;Multiple operator values are allowed and will be connected via logical conjunction (**AND**).&lt;br&gt;e.g. &#x60;timestampModification:ge:2016-12-31T23:00:00.123&#x60;&amp;#124;&lt;br&gt;&#x60;timestampModification:le:2018-01-01T11:00:00.540&#x60; | &#x60;Date (yyyy-MM-dd)&#x60; | | &#x60;referenceId&#x60;           | Reference ID filter               | &#x60;eq&#x60; | Reference ID equals value.                                                                                                                                                                                                                                                          | &#x60;Integer &#x60; | &lt;/details&gt;  ---  ### Sorting: Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort criteria are possible.   Fields are connected via logical conjunction **AND**.  &lt;details style&#x3D;\&quot;padding-left: 10px\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/summary&gt;  &#x60;name:desc|size:asc&#x60;   Sort by &#x60;name&#x60; descending **AND** &#x60;size&#x60; ascending.  &lt;/details&gt;  ### Sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &#x60;name&#x60; | Node name | | &#x60;createdAt&#x60; | Creation date | | &#x60;createdBy&#x60; | Creator first name, last name | | &#x60;updatedAt&#x60; | Last modification date | | &#x60;updatedBy&#x60; | Last modifier first name, last name | | &#x60;fileType&#x60; | File type (extension) | | &#x60;classification&#x60; | Classification ID:&lt;ul&gt;&lt;li&gt;1 - public&lt;/li&gt;&lt;li&gt;2 - internal&lt;/li&gt;&lt;li&gt;3 - confidential&lt;/li&gt;&lt;li&gt;4 - strictly confidential&lt;/li&gt;&lt;/ul&gt; | | &#x60;size&#x60; | Node size | | &#x60;cntDeletedVersions&#x60; | Number of deleted versions of this file / folder (**NOT** recursive; for files and folders only) | | &#x60;type&#x60; | Node type (room, folder, file) | | &#x60;parentPath&#x60; | Parent path | | &#x60;timestampCreation&#x60; | Creation timestamp | | &#x60;timestampModification&#x60; | Modification timestamp |  &lt;/details&gt;  ### Deprecated sorting options: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | &lt;del&gt;&#x60;cntChildren&#x60;&lt;/del&gt; | Number of direct children (**NOT** recursive; for rooms and folders only) |  &lt;/details&gt;
    * @param searchString Search string (required)
    * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param depthLevel * &#x60;0&#x60; - top level nodes only (default)  * &#x60;-1&#x60; - full tree  * &#x60;n&#x60; (any positive number) - include &#x60;n&#x60; levels starting from the current node (optional)
@@ -2389,6 +2612,51 @@ import java.util.Map;
 
     GenericType<NodeList> localVarReturnType = new GenericType<NodeList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Set room policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.32.0&lt;/h3&gt;  ### Description:   Set the room policies: * &#x60;defaultExpirationPeriod&#x60; * &#x60;virusProtectionEnabled&#x60;  ### Precondition: User needs to be a &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Room Administrator&lt;/span&gt;.  ### Postcondition: Room policy is set.  ### Further Information: &#x60;defaultExpirationPeriod&#x60;: Default policy room expiration period in seconds. All existing and future files in a room will have their expiration date set to this period after their respective upload. Existing files can be set to expire earlier afterwards. &#x60;0&#x60; means no default expiration policy will be enforced. This removes all expiration dates from existing files.  &#x60;virusProtectionEnabled&#x60;: Status of room policy for virus-protection. Can be activated for unencrypted data rooms. If enabled, the files are sent to the German IT security company G DATA CyberDefense for verification. 
+   * @param body  (required)
+   * @param roomId Room ID (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @throws ApiException if fails to make API call
+   */
+  public void setRoomPolicies(RoomPoliciesRequest body, Long roomId, String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = body;
+    // verify the required parameter 'body' is set
+    if (body == null) {
+      throw new ApiException(400, "Missing the required parameter 'body' when calling setRoomPolicies");
+    }
+    // verify the required parameter 'roomId' is set
+    if (roomId == null) {
+      throw new ApiException(400, "Missing the required parameter 'roomId' when calling setRoomPolicies");
+    }
+    // create path and map variables
+    String localVarPath = "/v4/nodes/rooms/{room_id}/policies"
+      .replaceAll("\\{" + "room_id" + "\\}", apiClient.escapeString(roomId.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
    * Set room&#x27;s rescue key pair
@@ -2612,7 +2880,7 @@ import java.util.Map;
   }
   /**
    * Updates a list of  file’s metadata
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.25.0&lt;/h3&gt;  ### Description:   Updates a list of file’s metadata.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change&lt;/span&gt; permissions in parent room.  ### Postcondition: File&#x27;s metadata is changed.  ### Further Information: Maximum number of shares is 200 
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.25.0&lt;/h3&gt;  ### Description:   Updates a list of file’s metadata.  ### Precondition: User has &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change&lt;/span&gt; permissions in parent room.  ### Postcondition: File&#x27;s metadata is changed.  ### Further Information: Maximum number of files is 200 
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
@@ -2892,8 +3160,8 @@ import java.util.Map;
   /**
    * Upload file
    * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128679; Deprecated since v4.9.0&lt;/h3&gt;  ### Use &#x60;uploads&#x60; API  ### Description:   Uploads a file or parts of it in an active upload channel.  ### Precondition: An upload channel has been created.  ### Postcondition: A file or parts of it are uploaded to a temporary location.  ### Further Information: This endpoints supports chunked upload.    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * provided &#x60;Content-Type&#x60;     For both file upload types set the correct &#x60;Content-Type&#x60; header and body.    ### Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/nodes/files/uploads/{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * any other &#x60;Content-Type&#x60;   &#x60;&#x60;&#x60; POST /api/v4/nodes/files/uploads/{upload_id}  HTTP/1.1  Header: ... Content-Type: { ... } ...  Body: raw content &#x60;&#x60;&#x60;
-   * @param file  (required)
    * @param uploadId Upload channel ID (required)
+   * @param file  (optional)
    * @param contentRange Content-Range   e.g. &#x60;bytes 0-999/3980&#x60; (optional)
    * @param xSdsAuthToken Authentication token (optional)
    * @return ChunkUploadResponse
@@ -2903,12 +3171,8 @@ import java.util.Map;
    * @see <a href="https://tools.ietf.org/html/rfc7233">Upload file Documentation</a>
    */
   @Deprecated
-  public ChunkUploadResponse uploadFileAsMultipart(File file, String uploadId, String contentRange, String xSdsAuthToken) throws ApiException {
+  public ChunkUploadResponse uploadFileAsMultipart(String uploadId, File file, String contentRange, String xSdsAuthToken) throws ApiException {
     Object localVarPostBody = null;
-    // verify the required parameter 'file' is set
-    if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileAsMultipart");
-    }
     // verify the required parameter 'uploadId' is set
     if (uploadId == null) {
       throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadFileAsMultipart");

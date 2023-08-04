@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class SystemAuthConfigApi {
+public class SystemAuthConfigApi {
   private ApiClient apiClient;
 
   public SystemAuthConfigApi() {
@@ -51,7 +51,7 @@ import java.util.Map;
 
   /**
    * Create Active Directory configuration
-   * ### Description: Create a new Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: New Active Directory configuration created.  ### Further Information: None.
+   * ### Description: Create a new Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: New Active Directory configuration created.  ### Further Information: None.
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return ActiveDirectoryConfig
@@ -217,7 +217,7 @@ import java.util.Map;
   }
   /**
    * Remove Active Directory configuration
-   * ### Description: Delete an existing Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration is removed.  ### Further Information: None.
+   * ### Description: Delete an existing Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration is removed.  ### Further Information: None.
    * @param adId Active Directory ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
@@ -373,7 +373,7 @@ import java.util.Map;
   }
   /**
    * Request Active Directory configuration
-   * ### Description:   Retrieve the configuration of an Active Directory.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration is returned.  ### Further Information: None.
+   * ### Description:   Retrieve the configuration of an Active Directory.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration is returned.  ### Further Information: None.
    * @param adId Active Directory ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return ActiveDirectoryConfig
@@ -415,7 +415,7 @@ import java.util.Map;
   }
   /**
    * Request list of Active Directory configurations
-   * ### Description:   Retrieve a list of configured Active Directories.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: List of Active Directory configurations is returned.  ### Further Information: None.
+   * ### Description:   Retrieve a list of configured Active Directories.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: List of Active Directory configurations is returned.  ### Further Information: None.
    * @param xSdsAuthToken Authentication token (optional)
    * @return ActiveDirectoryConfigList
    * @throws ApiException if fails to make API call
@@ -651,7 +651,7 @@ import java.util.Map;
   }
   /**
    * Test Active Directory configuration
-   * ### Description:   Test Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration is returned if successful.  ### Further Information: DRACOON tries to establish a connection with the provided information.
+   * ### Description:   Test Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration is returned if successful.  ### Further Information: DRACOON tries to establish a connection with the provided information.
    * @param body  (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return TestActiveDirectoryConfigResponse
@@ -692,7 +692,7 @@ import java.util.Map;
   }
   /**
    * Test RADIUS server availability
-   * ### Description:   Test RADIUS configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: RADIUS configuration is returned if successful.  ### Further Information: DRACOON tries to establish a connection with the provided information.
+   * ### Description:   Test RADIUS configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; read global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: RADIUS configuration is returned if successful.  ### Further Information: DRACOON tries to establish a connection with the provided information.
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
@@ -726,7 +726,7 @@ import java.util.Map;
   }
   /**
    * Update Active Directory configuration
-   * ### Description:   Update an existing Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; and role &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128100; Config Manager&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration updated.  ### Further Information: None.
+   * ### Description:   Update an existing Active Directory configuration.  ### Precondition: Right &lt;span style&#x3D;&#x27;padding: 3px; background-color: #F6F7F8; border: 1px solid #000; border-radius: 5px; display: inline;&#x27;&gt;&amp;#128275; change global config&lt;/span&gt; of the Provider Customer required.  ### Postcondition: Active Directory configuration updated.  ### Further Information: None.
    * @param body  (required)
    * @param adId Active Directory ID (required)
    * @param xSdsAuthToken Authentication token (optional)

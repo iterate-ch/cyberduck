@@ -12,18 +12,21 @@ import ch.cyberduck.core.sds.io.swagger.client.model.ClassificationPoliciesConfi
 import ch.cyberduck.core.sds.io.swagger.client.model.ConfigOptionList;
 import ch.cyberduck.core.sds.io.swagger.client.model.ErrorResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.GeneralSettingsInfo;
+import ch.cyberduck.core.sds.io.swagger.client.model.GuestUsersPoliciesConfig;
 import ch.cyberduck.core.sds.io.swagger.client.model.InfrastructureProperties;
 import ch.cyberduck.core.sds.io.swagger.client.model.NotificationChannelList;
 import ch.cyberduck.core.sds.io.swagger.client.model.PasswordPoliciesConfig;
+import ch.cyberduck.core.sds.io.swagger.client.model.ProductPackageResponseList;
 import ch.cyberduck.core.sds.io.swagger.client.model.S3TagList;
 import ch.cyberduck.core.sds.io.swagger.client.model.SystemDefaults;
+import ch.cyberduck.core.sds.io.swagger.client.model.VirusProtectionPoliciesConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.JavaClientCodegen", date = "2021-08-16T11:28:10.116221+02:00[Europe/Zurich]")public class ConfigApi {
+public class ConfigApi {
   private ApiClient apiClient;
 
   public ConfigApi() {
@@ -79,8 +82,8 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
-   * Request classification policies (NEW)
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.30.0&lt;/h3&gt;  ### Description: Retrieve a list of classification policies: * &#x60;shareClassificationPolicies&#x60;  ### Precondition: Authenticated user.  ### Postcondition: List of configured classification policies is returned.  ### Further Information: &#x60;classificationRequiresSharePassword&#x60;: When a node has this classification or higher, it can not be shared without a password. &#x60;0&#x60; means no password will be enforced. 
+   * Request classification policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.30.0&lt;/h3&gt;  ### Description: Retrieve a list of classification policies: * &#x60;shareClassificationPolicies&#x60;  ### Precondition: Authenticated user.  ### Postcondition: List of configured classification policies is returned.  ### Further Information: &#x60;classificationRequiresSharePassword&#x60;: When a node has this classification or higher, it cannot be shared without a password. If the node is an encrypted file this policy has no effect. &#x60;0&#x60; means no password will be enforced. 
    * @param xSdsAuthToken Authentication token (optional)
    * @return ClassificationPoliciesConfig
    * @throws ApiException if fails to make API call
@@ -115,8 +118,44 @@ import java.util.Map;
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
+   * Request list of currently enabled product packages
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.38.0&lt;/h3&gt;  ### Description:   Returns a list of currently enabled product packages.  ### Precondition: Authenticated user  ### Postcondition: List of currently enabled Product Packages is returned.  ### Further Information: 
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return ProductPackageResponseList
+   * @throws ApiException if fails to make API call
+   */
+  public ProductPackageResponseList requestCurrentProductPackages(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/config/info/product_packages/current";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ProductPackageResponseList> localVarReturnType = new GenericType<ProductPackageResponseList>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
    * Request general settings
-   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.6.0&lt;/h3&gt;  ### Description: Returns a list of configurable general settings.  ### Precondition: Authenticated user.  ### Postcondition: List of configurable general settings is returned.  ### Further Information: None.  ### Configurable general settings: &lt;details open style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Setting | Description | Value | | :--- | :--- | :--- | | &#x60;sharePasswordSmsEnabled&#x60; | Determines whether sending of share passwords via SMS is allowed. | &#x60;true or false&#x60; | | &#x60;cryptoEnabled&#x60; | Determines whether client-side encryption is enabled.&lt;br&gt;Can only be enabled once; disabling is **NOT** possible. | &#x60;true or false&#x60; | | &#x60;emailNotificationButtonEnabled&#x60; | Determines whether email notification button is enabled. | &#x60;true or false&#x60; | | &#x60;eulaEnabled&#x60; | Determines whether EULA is enabled.&lt;br&gt;Each user has to confirm the EULA at first login. | &#x60;true or false&#x60; | | &#x60;useS3Storage&#x60; | Defines if S3 is used as storage backend.&lt;br&gt;Can only be enabled once; disabling is **NOT** possible. | &#x60;true or false&#x60; | | &#x60;s3TagsEnabled&#x60; | Determines whether S3 tags are enabled | &#x60;true or false&#x60; | | &#x60;homeRoomsActive&#x60; | Determines whether each AD user has a personal home room | &#x60;true or false&#x60; | | &#x60;homeRoomParentId&#x60; | Defines a node under which all personal home rooms are located. **NULL** if &#x60;homeRoomsActive&#x60; is &#x60;false&#x60; | &#x60;Long&#x60; | | &#x60;subscriptionPlan&#x60; | Subscription Plan. &lt;br&gt; 0 &#x3D; Standard, 1 &#x3D; Premium, 2 &#x3D; Free | &#x60;Integer&#x60; |  &lt;/details&gt;  ### Deprecated general settings: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Setting | Description | Value | | :--- | :--- | :--- | | &lt;del&gt;&#x60;mediaServerEnabled&#x60;&lt;/del&gt; | Determines whether media server is enabled.&lt;br&gt;Returns boolean value dependent on conjunction of &#x60;mediaServerConfigEnabled&#x60; AND &#x60;mediaServerEnabled&#x60; | &#x60;true or false&#x60; | | &lt;del&gt;&#x60;weakPasswordEnabled&#x60;&lt;/del&gt; | Determines whether weak password is allowed.&lt;br&gt;Use &#x60;GET /system/config/policies/passwords&#x60; API to get configured password policies. | &#x60;true or false&#x60; |  &lt;/details&gt;
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.6.0&lt;/h3&gt;  ### Description: Returns a list of configurable general settings.  ### Precondition: Authenticated user.  ### Postcondition: List of configurable general settings is returned.  ### Further Information: None.  ### Configurable general settings: &lt;details open style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Setting | Description | Value | | :--- | :--- | :--- | | &#x60;sharePasswordSmsEnabled&#x60; | Determines whether sending of share passwords via SMS is allowed. | &#x60;true or false&#x60; | | &#x60;cryptoEnabled&#x60; | Determines whether client-side encryption is enabled.&lt;br&gt;Can only be enabled once; disabling is **NOT** possible. | &#x60;true or false&#x60; | | &#x60;emailNotificationButtonEnabled&#x60; | Determines whether email notification button is enabled. | &#x60;true or false&#x60; | | &#x60;eulaEnabled&#x60; | Determines whether EULA is enabled.&lt;br&gt;Each user has to confirm the EULA at first login. | &#x60;true or false&#x60; | | &#x60;useS3Storage&#x60; | Defines if S3 is used as storage backend.&lt;br&gt;Can only be enabled once; disabling is **NOT** possible. | &#x60;true or false&#x60; | | &#x60;s3TagsEnabled&#x60; | Determines whether S3 tags are enabled | &#x60;true or false&#x60; | | &#x60;homeRoomsActive&#x60; | Determines whether each AD user has a personal home room | &#x60;true or false&#x60; | | &#x60;homeRoomParentId&#x60; | Defines a node under which all personal home rooms are located. **NULL** if &#x60;homeRoomsActive&#x60; is &#x60;false&#x60; | &#x60;Long&#x60; | | &#x60;subscriptionPlan&#x60; | Subscription Plan. &lt;br&gt; 0 &#x3D; Pro, 1 &#x3D; Premium, 2 &#x3D; Basic | &#x60;Integer&#x60; |  &lt;/details&gt;  ### Deprecated general settings: &lt;details style&#x3D;\&quot;padding: 10px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px;\&quot;&gt; &lt;summary style&#x3D;\&quot;cursor: pointer; outline: none\&quot;&gt;&lt;strong&gt;Expand&lt;/strong&gt;&lt;/summary&gt;  | Setting | Description | Value | | :--- | :--- | :--- | | &lt;del&gt;&#x60;mediaServerEnabled&#x60;&lt;/del&gt; | Determines whether media server is enabled.&lt;br&gt;Returns boolean value dependent on conjunction of &#x60;mediaServerConfigEnabled&#x60; AND &#x60;mediaServerEnabled&#x60; | &#x60;true or false&#x60; | | &lt;del&gt;&#x60;weakPasswordEnabled&#x60;&lt;/del&gt; | Determines whether weak password is allowed.&lt;br&gt;Use &#x60;GET /system/config/policies/passwords&#x60; API to get configured password policies. | &#x60;true or false&#x60; |  &lt;/details&gt;
    * @param xSdsAuthToken Authentication token (optional)
    * @return GeneralSettingsInfo
    * @throws ApiException if fails to make API call
@@ -148,6 +187,42 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<GeneralSettingsInfo> localVarReturnType = new GenericType<GeneralSettingsInfo>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request guest users policies
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.40.0&lt;/h3&gt;  ### Description: Retrieve a list of guest users policies.  ### Precondition: Authenticated user.  ### Postcondition: List of configured guest users policies is returned.  ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return GuestUsersPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public GuestUsersPoliciesConfig requestGuestUsersPoliciesConfigInfo(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/config/info/policies/guest_users";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<GuestUsersPoliciesConfig> localVarReturnType = new GenericType<GuestUsersPoliciesConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -256,6 +331,42 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<PasswordPoliciesConfig> localVarReturnType = new GenericType<PasswordPoliciesConfig>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request list of product packages
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.38.0&lt;/h3&gt;  ### Description:   Returns a list of product packages.  ### Precondition: Authenticated user  ### Postcondition: List of Product Packages is returned.  ### Further Information: 
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return ProductPackageResponseList
+   * @throws ApiException if fails to make API call
+   */
+  public ProductPackageResponseList requestProductPackages(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/config/info/product_packages";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ProductPackageResponseList> localVarReturnType = new GenericType<ProductPackageResponseList>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**
@@ -368,6 +479,42 @@ import java.util.Map;
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<ConfigOptionList> localVarReturnType = new GenericType<ConfigOptionList>() {};
+    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+  }
+  /**
+   * Request virus protection
+   * &lt;h3 style&#x3D;&#x27;padding: 5px; background-color: #F6F7F8; border: 1px solid #AAA; border-radius: 5px; display: table-cell;&#x27;&gt;&amp;#128640; Since v4.44.0&lt;/h3&gt;  ### Description: Retrieve virus-protection policy.  ### Precondition: Authenticated user.  ### Postcondition: Virus-protection policy is returned.  ### Further Information: None.
+   * @param xSdsAuthToken Authentication token (optional)
+   * @return VirusProtectionPoliciesConfig
+   * @throws ApiException if fails to make API call
+   */
+  public VirusProtectionPoliciesConfig requestVirusProtectionPolicyConfigInfo(String xSdsAuthToken) throws ApiException {
+    Object localVarPostBody = null;
+    // create path and map variables
+    String localVarPath = "/v4/config/info/policies/virus_protection";
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    if (xSdsAuthToken != null)
+      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+    final String[] localVarAccepts = {
+      "application/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<VirusProtectionPoliciesConfig> localVarReturnType = new GenericType<VirusProtectionPoliciesConfig>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
   }
   /**

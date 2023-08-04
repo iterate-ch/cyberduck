@@ -143,7 +143,7 @@ public class SDSUploadService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Complete file upload for %s with token %s", file, uploadToken));
             }
-            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(body, uploadToken, StringUtils.EMPTY);
+            final Node upload = new UploadsApi(session.getClient()).completeFileUploadByToken(uploadToken, body, StringUtils.EMPTY);
             if(!upload.isIsEncrypted()) {
                 final Checksum checksum = status.getChecksum();
                 if(Checksum.NONE != checksum) {
