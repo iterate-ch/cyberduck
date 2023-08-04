@@ -85,6 +85,6 @@ public class AzureCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !target.isRoot();
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }
