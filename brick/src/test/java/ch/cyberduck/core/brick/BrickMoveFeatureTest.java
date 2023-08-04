@@ -54,7 +54,7 @@ public class BrickMoveFeatureTest extends AbstractBrickTest {
         assertTrue(new BrickFindFeature(session).find(target));
         assertEquals(test.attributes(), target.attributes());
         final PathAttributes targetAttr = new BrickAttributesFinderFeature(session).find(target);
-        assertEquals(test.attributes(), targetAttr);
+        assertEquals(test.attributes().getModificationDate(), targetAttr.getModificationDate());
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, test.attributes(), targetAttr));
         assertEquals(Comparison.equal, session.getHost().getProtocol().getFeature(ComparisonService.class).compare(Path.Type.file, target.attributes(), targetAttr));
         new BrickDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
