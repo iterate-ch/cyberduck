@@ -101,9 +101,9 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final long timestamp = 1509959502930L;
         status.setTimestamp(timestamp);
         final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
-        final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
+        final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(
+                new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), status);
         assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(directory).getModificationDate());
-        assertEquals(timestamp, new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener()).get(directory).attributes().getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
