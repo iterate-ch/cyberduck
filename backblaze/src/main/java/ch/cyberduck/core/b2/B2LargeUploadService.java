@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.HostPreferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
@@ -91,11 +92,23 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     }
 
     @Override
+    public BaseB2Response upload(final Path file, final Local local, final BandwidthThrottle throttle,
+                                 final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final long partSize;
+        if(file.getType().contains(Path.Type.encrypted)) {
+            // For uploads to vault part size must be a multiple of 32 * 1024. Recommended partsize from B2 API may not meet that requirement.
+            partSize = PreferencesFactory.get().getLong("b2.upload.largeobject.size");
+        }
+        else {
+            partSize = this.partSize;
+        }
+        return this.upload(file, local, throttle, listener, status, callback,
+                partSize < status.getLength() ? partSize : PreferencesFactory.get().getLong("b2.upload.largeobject.size.minimum"));
+    }
+
     public BaseB2Response upload(final Path file, final Local local,
-                                 final BandwidthThrottle throttle,
-                                 final StreamListener listener,
-                                 final TransferStatus status,
-                                 final ConnectionCallback callback) throws BackgroundException {
+                                 final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status,
+                                 final ConnectionCallback callback, final Long partSize) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
         try {
             // Get the results of the uploads in the order they were submitted
