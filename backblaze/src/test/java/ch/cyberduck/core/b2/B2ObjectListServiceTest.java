@@ -248,10 +248,9 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
 
     @Test
     public void testListRevisionsNoVersioning() throws Exception {
-        final B2VersionIdProvider fileid = new B2VersionIdProvider(session, VersioningConfiguration.empty());
+        final B2VersionIdProvider fileid = new B2VersionIdProvider(session);
         final Path bucket = new B2DirectoryFeature(session, fileid,
-                new B2WriteFeature(session, fileid, new B2AttributesFinderFeature(session, fileid,
-                        VersioningConfiguration.empty()))).mkdir(new Path(
+                new B2WriteFeature(session, fileid)).mkdir(new Path(
                 String.format("test-%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume)), new TransferStatus());
         final String name = new AsciiRandomStringService().random();
         final Path file = new Path(bucket, name, EnumSet.of(Path.Type.file));
@@ -260,18 +259,16 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid, new B2AttributesFinderFeature(session, fileid,
-                    VersioningConfiguration.empty())).write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse response = (B2FileResponse) out.getStatus();
-            assertNotNull(response.getFileId());
-            assertNull(file.attributes().getVersionId());
+            assertEquals(response.getFileId(), file.attributes().getVersionId());
             final AttributedList<Path> list = new B2ObjectListService(session, fileid, 10,
                     VersioningConfiguration.empty()).list(bucket, new DisabledListProgressListener());
             assertTrue(list.contains(file));
             assertNull(list.find(new SimplePathPredicate(file)).attributes().getRevision());
-            assertNull(list.find(new SimplePathPredicate(file)).attributes().getVersionId());
+            assertEquals(response.getFileId(), list.find(new SimplePathPredicate(file)).attributes().getVersionId());
             assertEquals(content.length, list.find(new SimplePathPredicate(file)).attributes().getSize());
             assertEquals(bucket, list.find(new SimplePathPredicate(file)).getParent());
         }
@@ -281,23 +278,21 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new SHA1ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid, new B2AttributesFinderFeature(session, fileid,
-                    VersioningConfiguration.empty())).write(file, status, new DisabledConnectionCallback());
+            final HttpResponseOutputStream<BaseB2Response> out = new B2WriteFeature(session, fileid).write(file, status, new DisabledConnectionCallback());
             IOUtils.write(content, out);
             out.close();
             final B2FileResponse response = (B2FileResponse) out.getStatus();
-            assertNotNull(response.getFileId());
-            assertNull(file.attributes().getVersionId());
+            assertEquals(response.getFileId(), file.attributes().getVersionId());
             final AttributedList<Path> list = new B2ObjectListService(session, fileid, 10,
                     VersioningConfiguration.empty()).list(bucket, new DisabledListProgressListener());
             assertEquals(1, list.size());
             assertTrue(list.contains(file));
             assertEquals(bucket, list.get(file).getParent());
             assertNull(list.get(file).attributes().getRevision());
-            assertNull(list.find(new SimplePathPredicate(file)).attributes().getVersionId());
+            assertEquals(response.getFileId(), list.find(new SimplePathPredicate(file)).attributes().getVersionId());
         }
         // Add hide marker
-        new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new B2DeleteFeature(session, fileid, VersioningConfiguration.empty()).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new B2ObjectListService(session, fileid, 1, VersioningConfiguration.empty()).list(bucket, new DisabledListProgressListener()).isEmpty());
         assertFalse(new B2FindFeature(session, fileid).find(file));
         assertFalse(new DefaultFindFeature(session).find(file));

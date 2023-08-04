@@ -127,7 +127,7 @@ public class B2ObjectListService implements ListService {
 
     private Marker parse(final Path directory, final AttributedList<Path> objects,
                          final B2ListFilesResponse response, final Map<String, Long> revisions) {
-        final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid, versioning);
+        final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
                 continue;
