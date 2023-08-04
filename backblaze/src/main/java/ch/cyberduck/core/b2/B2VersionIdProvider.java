@@ -19,11 +19,9 @@ import ch.cyberduck.core.CachingVersionIdProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.VersionIdProvider;
-import ch.cyberduck.core.preferences.HostPreferences;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,44 +39,35 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
 
     private final PathContainerService containerService = new B2PathContainerService();
     private final B2Session session;
-    private final VersioningConfiguration versioning;
 
     public B2VersionIdProvider(final B2Session session) {
-        this(session, new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("b2.listing.versioning.enable")));
-    }
-
-    public B2VersionIdProvider(final B2Session session, final VersioningConfiguration versioning) {
         super(session.getCaseSensitivity());
         this.session = session;
-        this.versioning = versioning;
     }
 
     @Override
     public String getVersionId(final Path file) throws BackgroundException {
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
+            }
+            return file.attributes().getVersionId();
+        }
+        final String cached = super.getVersionId(file);
+        if(cached != null) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Return cached versionid %s for file %s", cached, file));
+            }
+            return cached;
+        }
         try {
             if(containerService.isContainer(file)) {
-                if(StringUtils.isNotBlank(file.attributes().getFileId())) {
-                    return file.attributes().getFileId();
-                }
                 final B2BucketResponse info = session.getClient().listBucket(file.getName());
                 if(null == info) {
                     throw new NotfoundException(file.getAbsolute());
                 }
                 // Cache in file attributes
-                return info.getBucketId();
-            }
-            if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Return version %s from attributes for file %s", file.attributes().getVersionId(), file));
-                }
-                return file.attributes().getVersionId();
-            }
-            final String cached = super.getVersionId(file);
-            if(cached != null) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Return cached versionid %s for file %s", cached, file));
-                }
-                return cached;
+                return this.cache(file, info.getBucketId());
             }
             // Files that have been hidden will not be returned
             final B2ListFilesResponse response = session.getClient().listFileNames(
@@ -97,13 +86,5 @@ public class B2VersionIdProvider extends CachingVersionIdProvider implements Ver
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-    }
-
-    @Override
-    public String cache(final Path file, final String id) {
-        if(versioning.isEnabled()) {
-            return super.cache(file, id);
-        }
-        return id;
     }
 }
