@@ -53,16 +53,20 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private static final Logger log = LogManager.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
-        = new B2PathContainerService();
+            = new B2PathContainerService();
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
-        = new ThreadLocal<>();
+            = new ThreadLocal<>();
 
     public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid) {
-        super(new B2AttributesFinderFeature(session, fileid));
+        this(session, fileid, new B2AttributesFinderFeature(session, fileid));
+    }
+
+    public B2WriteFeature(final B2Session session, final B2VersionIdProvider fileid, final B2AttributesFinderFeature attributes) {
+        super(attributes);
         this.session = session;
         this.fileid = fileid;
     }

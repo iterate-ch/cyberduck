@@ -22,12 +22,14 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesAdapter;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,10 +58,16 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
 
     private final B2Session session;
     private final B2VersionIdProvider fileid;
+    private final VersioningConfiguration versioning;
 
     public B2AttributesFinderFeature(final B2Session session, final B2VersionIdProvider fileid) {
+        this(session, fileid, new VersioningConfiguration(new HostPreferences(session.getHost()).getBoolean("b2.listing.versioning.enable")));
+    }
+
+    public B2AttributesFinderFeature(final B2Session session, final B2VersionIdProvider fileid, final VersioningConfiguration versioning) {
         this.session = session;
         this.fileid = fileid;
+        this.versioning = versioning;
     }
 
     @Override
@@ -155,7 +163,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         if(!response.getFileInfo().isEmpty()) {
             attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         }
-        attributes.setVersionId(response.getFileId());
+        if(versioning.isEnabled()) {
+            attributes.setVersionId(response.getFileId());
+        }
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
             final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);
@@ -197,7 +207,9 @@ public class B2AttributesFinderFeature implements AttributesFinder, AttributesAd
         if(!response.getFileInfo().isEmpty()) {
             attributes.setMetadata(new HashMap<>(response.getFileInfo()));
         }
-        attributes.setVersionId(response.getFileId());
+        if(versioning.isEnabled()) {
+            attributes.setVersionId(response.getFileId());
+        }
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
             final String value = response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS);

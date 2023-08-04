@@ -126,8 +126,8 @@ public class B2ObjectListService implements ListService {
     }
 
     private Marker parse(final Path directory, final AttributedList<Path> objects,
-                         final B2ListFilesResponse response, final Map<String, Long> revisions) throws BackgroundException {
-        final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid);
+                         final B2ListFilesResponse response, final Map<String, Long> revisions) {
+        final B2AttributesFinderFeature attr = new B2AttributesFinderFeature(session, fileid, versioning);
         for(B2FileInfoResponse info : response.getFiles()) {
             if(StringUtils.equals(PathNormalizer.name(info.getFileName()), B2PathContainerService.PLACEHOLDER)) {
                 continue;
@@ -147,14 +147,16 @@ public class B2ObjectListService implements ListService {
                 continue;
             }
             final PathAttributes attributes = attr.toAttributes(info);
-            long revision = 0;
-            if(revisions.containsKey(info.getFileName())) {
-                // Later version already found
-                attributes.setDuplicate(true);
-                revision = revisions.get(info.getFileName()) + 1L;
-                attributes.setRevision(revision);
+            if(versioning.isEnabled()) {
+                long revision = 0;
+                if(revisions.containsKey(info.getFileName())) {
+                    // Later version already found
+                    attributes.setDuplicate(true);
+                    revision = revisions.get(info.getFileName()) + 1L;
+                    attributes.setRevision(revision);
+                }
+                revisions.put(info.getFileName(), revision);
             }
-            revisions.put(info.getFileName(), revision);
             final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(info.getFileName()),
                     info.getAction() == Action.start ? EnumSet.of(Path.Type.file, Path.Type.upload) : EnumSet.of(Path.Type.file), attributes);
             fileid.cache(f, info.getFileId());
