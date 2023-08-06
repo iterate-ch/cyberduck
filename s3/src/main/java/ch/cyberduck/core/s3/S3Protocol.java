@@ -47,10 +47,10 @@ public class S3Protocol extends AbstractProtocol {
     private static final Logger log = LogManager.getLogger(S3Protocol.class);
 
     private final AWSCredentialsConfigurator credentials = new AWSCredentialsConfigurator(
-        new AWSCredentialsProviderChain(
-            new ProfileCredentialsProvider(),
-            new EnvironmentVariableCredentialsProvider()
-        )
+            new AWSCredentialsProviderChain(
+                    new ProfileCredentialsProvider(),
+                    new EnvironmentVariableCredentialsProvider()
+            )
     );
 
     @Override
@@ -145,7 +145,7 @@ public class S3Protocol extends AbstractProtocol {
             catch(IllegalArgumentException e) {
                 log.warn(String.format("Unsupported authentication context %s", protocol.getAuthorization()));
                 return S3Protocol.AuthenticationHeaderSignatureVersion.valueOf(
-                    PreferencesFactory.get().getProperty("s3.signature.version"));
+                        PreferencesFactory.get().getProperty("s3.signature.version"));
             }
         }
 

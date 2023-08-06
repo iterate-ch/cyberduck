@@ -180,6 +180,11 @@ public interface Protocol extends Comparable<Protocol>, Serializable {
     String[] getSchemes();
 
     /**
+     * @return Default STS Endpoint URL.
+     */
+    String getSTSEndpoint();
+
+    /**
      * @return Default hostname for server
      */
     String getDefaultHostname();
