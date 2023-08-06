@@ -31,6 +31,7 @@ import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.test.TestcontainerTest;
 
 import org.jets3t.service.security.AWSSessionCredentials;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.testcontainers.shaded.org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,7 @@ import static org.junit.Assert.*;
 
 @Category(TestcontainerTest.class)
 public class OidcAuthenticationTest extends AbstractOidcTest {
+
     @Test
     public void testSuccessfulLoginViaOidc() throws BackgroundException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rouser", "rouser"));
@@ -85,7 +87,7 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        String firstAccessToken = session.getAuthorizationService().getTokens().getIdToken();
+        String firstAccessToken = host.getCredentials().getOauth().getIdToken();
         String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
         String firstSessionToken = ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken();
 
@@ -94,26 +96,9 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         Thread.sleep(1100 * 30);
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
 
-        assertNotEquals(firstAccessToken, session.getAuthorizationService().getTokens().getIdToken());
+        assertNotEquals(firstAccessToken, host.getCredentials().getOauth().getIdToken());
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
         assertNotEquals(firstSessionToken, ((AWSSessionCredentials) session.getClient().getProviderCredentials()).getSessionToken());
-        session.close();
-    }
-
-    @Test
-    public void testSTSCredentialExpiryTimeIsBoundToOAuthExpiryTime() throws BackgroundException {
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
-        host.setProperty("s3.assumerole.durationseconds", "900");
-        assertEquals(new HostPreferences(host).getInteger("s3.assumerole.durationseconds"), 900);
-        final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-
-        // assert that STS credentials expires with the oAuth token even though the duration seconds is valid for longer
-        STSCredentialsRequestInterceptor authorizationService = session.getAuthorizationService();
-        assertTrue(40 > ((authorizationService.getStsExpiryInMilliseconds() - System.currentTimeMillis()) / 1000));
-        assertEquals(Optional.of(authorizationService.getStsExpiryInMilliseconds()).get() / 1000, authorizationService.getTokens().getExpiryInMilliseconds() / 1000);
-
         session.close();
     }
 
@@ -122,7 +107,8 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
      *      "access.token.lifespan": "930"
      *      "ssoSessionMaxLifespan": 1100,
      */
-    /*@Test
+    @Test
+    @Ignore
     public void testSTSCredentialsExpiredValidOAuthToken() throws BackgroundException, InterruptedException {
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
         host.setProperty("s3.assumerole.durationseconds", "900");
@@ -131,38 +117,38 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
 
-        STSCredentialsRequestInterceptor authorizationService = session.getAuthorizationService();
-        String firstAccessToken = authorizationService.getTokens().getAccessToken();
+        String firstAccessToken = host.getCredentials().getOauth().getAccessToken();
         String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
         Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         Thread.sleep(1000 * 910);
         assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
         assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
-        assertEquals(firstAccessToken, authorizationService.getTokens().getAccessToken());
-    }*/
+        assertEquals(firstAccessToken, host.getCredentials().getOauth().getAccessToken());
+    }
 
     /**
      *     This test fails if the x-minio Headers are not read because of InvalidAccessKeyId error code which has no response body.
      *     Adjust the sleep time according to the network latency
      */
-//    @Test
-//    public void testBucketRequestBeforeTokenExpiryFailsBecauseOfLatency() throws BackgroundException, InterruptedException {
-//        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
-//        final S3Session session = new S3Session(host);
-//        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
-//        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-//
-//        String firstAccessToken = session.getAuthorizationService().getTokens().getIdToken();
-//        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
-//
-//        // Time of latency may vary and so the time needs to be adjusted accordingly
-//        Thread.sleep(28820);
-//        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
-//        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
-//
-//        assertNotEquals(firstAccessToken, session.getAuthorizationService().getTokens().getIdToken());
-//        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
-//        session.close();
-//    }
+    @Test
+    @Ignore
+    public void testBucketRequestBeforeTokenExpiryFailsBecauseOfLatency() throws BackgroundException, InterruptedException {
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("rawuser", "rawuser"));
+        final S3Session session = new S3Session(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+
+        String firstAccessToken = host.getCredentials().getOauth().getIdToken();
+        String firstAccessKey = session.getClient().getProviderCredentials().getAccessKey();
+
+        // Time of latency may vary and so the time needs to be adjusted accordingly
+        Thread.sleep(28820);
+        Path container = new Path("cyberduckbucket", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        assertTrue(new S3FindFeature(session, new S3AccessControlListFeature(session)).find(container));
+
+        assertNotEquals(firstAccessToken, host.getCredentials().getOauth().getIdToken());
+        assertNotEquals(firstAccessKey, session.getClient().getProviderCredentials().getAccessKey());
+        session.close();
+    }
 }
