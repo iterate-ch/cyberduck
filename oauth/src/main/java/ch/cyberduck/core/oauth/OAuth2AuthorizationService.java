@@ -358,13 +358,16 @@ public class OAuth2AuthorizationService {
         }
 
         public IdTokenResponse toTokenResponse() {
-            return new IdTokenResponse()
+            final IdTokenResponse response = new IdTokenResponse()
                     .setTokenType(tokenType)
                     .setScope(scope)
                     .setExpiresInSeconds(expiresInSeconds)
                     .setAccessToken(accessToken)
-                    .setRefreshToken(refreshToken)
-                    .setIdToken(idToken);
+                    .setRefreshToken(refreshToken);
+            if(null == idToken) {
+                return response;
+            }
+            return response.setIdToken(idToken);
         }
     }
 
