@@ -89,6 +89,11 @@ public class S3Protocol extends AbstractProtocol {
     }
 
     @Override
+    public String getSTSEndpoint() {
+        return "sts.amazonaws.com";
+    }
+
+    @Override
     public Set<Location.Name> getRegions(final List<String> regions) {
         return regions.stream().map(S3LocationFeature.S3Region::new).collect(Collectors.toSet());
     }
