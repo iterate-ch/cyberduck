@@ -540,6 +540,15 @@ public class Profile implements Protocol {
     }
 
     @Override
+    public String getSTSEndpoint() {
+        final String v = this.value("STS Endpoint");
+        if(StringUtils.isBlank(v)) {
+            return parent.getSTSEndpoint();
+        }
+        return v;
+    }
+
+    @Override
     public Map<String, String> getProperties() {
         final List<String> properties = this.list("Properties");
         if(properties.isEmpty()) {

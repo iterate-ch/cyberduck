@@ -48,9 +48,11 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.preferences.PreferencesReader;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.restore.Glacier;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultPathHomeFeature;
@@ -63,6 +65,8 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
+import ch.cyberduck.core.sts.S3WebIdentityTokenExpiredResponseInterceptor;
+import ch.cyberduck.core.sts.STSCredentialsRequestInterceptor;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -115,6 +119,8 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     private final PreferencesReader preferences
             = new HostPreferences(host);
+
+    private STSCredentialsRequestInterceptor authorizationService;
 
     private final S3AccessControlListFeature acl = new S3AccessControlListFeature(this);
 
@@ -203,6 +209,17 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     protected RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt, final CancelCallback cancel) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+
+        if((host.getProtocol().isOAuthConfigurable())) {
+            authorizationService = new STSCredentialsRequestInterceptor(builder.build(ProxyFactory.get()
+                    .find(host.getProtocol().getSTSEndpoint()), this, prompt).build(), host, trust, key, prompt, this)
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+                    .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()));
+
+            configuration.addInterceptorLast(authorizationService);
+            configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this, prompt, authorizationService));
+        }
+
         // Only for AWS
         if(S3Session.isAwsHostname(host.getHostname())) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
@@ -406,6 +423,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        if(host.getProtocol().isOAuthConfigurable()) {
+            authorizationService.authorize(host, prompt, cancel);
+        }
+
         if(Scheme.isURL(host.getProtocol().getContext())) {
             try {
                 final Credentials temporary = new AWSSessionCredentialsRetriever(trust, key, this, host.getProtocol().getContext()).get();
@@ -420,8 +441,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         else {
             final Credentials credentials;
+            // get temporary STS credentials with oAuth token
+            if(host.getProtocol().isOAuthConfigurable()) {
+                credentials = authorizationService.assumeRoleWithWebIdentity();
+            }
             // Only for AWS
-            if(isAwsHostname(host.getHostname())) {
+            else if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 credentials = new AWSProfileSTSCredentialsConfigurator(
                         new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
@@ -484,6 +509,10 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com(\\.cn)?");
         }
         return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
+    }
+
+    public STSCredentialsRequestInterceptor getAuthorizationService() {
+        return authorizationService;
     }
 
     @Override
