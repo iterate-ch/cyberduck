@@ -279,7 +279,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             if(credentials.getOauth().getExpiryInMilliseconds() != null) {
                 this.deletePassword(this.getOAuthHostname(bookmark), String.format("%s OAuth2 Token Expiry", prefix));
             }
-            if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
+            if(StringUtils.isNotBlank(credentials.getOauth().getIdToken())) {
                 this.deletePassword(protocol.getScheme(), bookmark.getPort(), this.getOAuthHostname(bookmark),
                         String.format("%s OIDC Id Token", prefix));
             }
