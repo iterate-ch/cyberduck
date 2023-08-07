@@ -355,13 +355,19 @@ public class OAuth2AuthorizationService {
         }
 
         public IdTokenResponse toTokenResponse() {
-            return new IdTokenResponse()
+            IdTokenResponse tokenResponse = new IdTokenResponse()
                     .setTokenType(tokenType)
                     .setScope(scope)
                     .setExpiresInSeconds(expiresInSeconds)
-                    .setAccessToken(accessToken)
-                    .setRefreshToken(refreshToken)
-                    .setIdToken(idToken);
+                    .setRefreshToken(refreshToken);
+
+            if(StringUtils.isNotBlank(accessToken)) {
+                tokenResponse.setAccessToken(accessToken);
+            }
+            if(StringUtils.isNotBlank(idToken)) {
+                tokenResponse.setIdToken(idToken);
+            }
+            return tokenResponse;
         }
     }
 
