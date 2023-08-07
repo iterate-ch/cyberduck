@@ -583,7 +583,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSUrlProvider(this);
         }
         if(type == Share.class) {
-            return (T) new SDSSharesUrlProvider(this, nodeid);
+            return (T) new SDSShareFeature(this, nodeid);
         }
         if(type == Quota.class) {
             return (T) new SDSQuotaFeature(this, nodeid);

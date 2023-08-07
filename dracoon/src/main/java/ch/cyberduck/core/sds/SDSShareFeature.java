@@ -55,13 +55,13 @@ import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 
-public class SDSSharesUrlProvider implements Share<CreateDownloadShareRequest, CreateUploadShareRequest> {
-    private static final Logger log = LogManager.getLogger(SDSSharesUrlProvider.class);
+public class SDSShareFeature implements Share<CreateDownloadShareRequest, CreateUploadShareRequest> {
+    private static final Logger log = LogManager.getLogger(SDSShareFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
-    public SDSSharesUrlProvider(final SDSSession session, final SDSNodeIdProvider nodeid) {
+    public SDSShareFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
     }
