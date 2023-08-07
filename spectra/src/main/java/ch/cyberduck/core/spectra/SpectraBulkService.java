@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.HostPreferences;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
-import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -42,7 +41,6 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jets3t.service.ServiceException;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -364,7 +362,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             final RequestEntityRestStorageService client = session.getClient();
             final HttpPut request = new HttpPut(String.format("%s://%s:%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(),
                 session.getHost().getHostname(), session.getHost().getPort()));
-            client.authorizeHttpRequest(null, request, null, null);
             final HttpResponse response = client.getHttpClient().execute(request);
             if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
                 throw new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
@@ -375,9 +372,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
-        }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map(e);
         }
     }
 }
