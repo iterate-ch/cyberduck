@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
@@ -31,7 +32,7 @@ public interface LoginService {
      * @param pompt    Login prompt
      * @param options  Login mechanism features
      */
-    void validate(Host bookmark, LoginCallback pompt, LoginOptions options) throws LoginCanceledException, LoginFailureException;
+    void validate(Host bookmark, LoginCallback pompt, LoginOptions options) throws ConnectionCanceledException, LoginFailureException;
 
     /**
      * Login and prompt on failure
