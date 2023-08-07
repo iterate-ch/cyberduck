@@ -219,12 +219,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new S3WebIdentityTokenExpiredResponseInterceptor(this, prompt, authorizationService));
         }
-
-        // Only for AWS
-        if(S3Session.isAwsHostname(host.getHostname())) {
-            configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
-                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
-        }
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             final String header = HTTP.EXPECT_DIRECTIVE;
             if(log.isDebugEnabled()) {
@@ -277,15 +271,19 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 request.setHeader(S3_ALTERNATE_DATE, SignatureUtils.formatAwsFlavouredISO8601Date(client.getCurrentTimeWithOffset()));
             }
         });
-        configuration.addInterceptorLast(new HttpRequestInterceptor() {
-            @Override
-            public void process(final HttpRequest request, final HttpContext context) {
-                final ProviderCredentials credentials = client.getProviderCredentials();
-                if(credentials instanceof AWSSessionCredentials) {
-                    request.setHeader(SECURITY_TOKEN, ((AWSSessionCredentials) credentials).getSessionToken());
+        if(host.getProtocol().isTokenConfigurable()) {
+            configuration.addInterceptorLast(new HttpRequestInterceptor() {
+                @Override
+                public void process(final HttpRequest request, final HttpContext context) {
+                    final ProviderCredentials credentials = client.getProviderCredentials();
+                    if(credentials instanceof AWSSessionCredentials) {
+                        request.setHeader(SECURITY_TOKEN, ((AWSSessionCredentials) credentials).getSessionToken());
+                    }
                 }
-            }
-        });
+            });
+            configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
+                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
+        }
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws IOException {

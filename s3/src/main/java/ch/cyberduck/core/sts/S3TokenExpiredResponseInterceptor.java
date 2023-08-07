@@ -1,7 +1,7 @@
-package ch.cyberduck.core.s3;
+package ch.cyberduck.core.sts;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,14 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -41,11 +43,15 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
     private static final int MAX_RETRIES = 1;
 
     private final S3Session session;
-    private final AWSProfileSTSCredentialsConfigurator configurator;
+    private final CredentialsConfigurator configurator;
 
     public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
+        this(session, new AWSProfileSTSCredentialsConfigurator(trust, key, prompt));
+    }
+
+    public S3TokenExpiredResponseInterceptor(final S3Session session, final AWSProfileSTSCredentialsConfigurator configurator) {
         this.session = session;
-        this.configurator = new AWSProfileSTSCredentialsConfigurator(trust, key, prompt);
+        this.configurator = configurator;
     }
 
     @Override
