@@ -65,6 +65,7 @@ public final class OAuthTokens {
         final StringBuilder sb = new StringBuilder("OAuthTokens{");
         sb.append("accessToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(accessToken)))).append('\'');
         sb.append(", refreshToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(refreshToken)))).append('\'');
+        sb.append(", idToken='").append(StringUtils.repeat("*", Integer.min(8, StringUtils.length(idToken)))).append('\'');
         sb.append(", expiryInMilliseconds=").append(expiryInMilliseconds);
         sb.append('}');
         return sb.toString();
