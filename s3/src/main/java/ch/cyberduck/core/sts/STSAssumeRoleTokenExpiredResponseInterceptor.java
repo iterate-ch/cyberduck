@@ -17,16 +17,23 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.security.AWSSessionCredentials;
+
+import java.io.IOException;
 
 public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorResponseInterceptor {
     private static final Logger log = LogManager.getLogger(STSAssumeRoleTokenExpiredResponseInterceptor.class);
@@ -34,7 +41,8 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
     private static final int MAX_RETRIES = 1;
 
     private final S3Session session;
-    private final STSAssumeRoleCredentialsRequestInterceptor service;
+    private final OAuth2RequestInterceptor oauth;
+    private final STSAssumeRoleCredentialsRequestInterceptor sts;
 
     public STSAssumeRoleTokenExpiredResponseInterceptor(final S3Session session,
                                                         final OAuth2RequestInterceptor oauth,
@@ -42,7 +50,8 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                                                         final LoginCallback prompt) {
         super(session.getHost(), oauth, prompt);
         this.session = session;
-        this.service = sts;
+        this.oauth = oauth;
+        this.sts = sts;
     }
 
     @Override
@@ -54,12 +63,33 @@ public class STSAssumeRoleTokenExpiredResponseInterceptor extends OAuth2ErrorRes
                 }
         }
         switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
             case HttpStatus.SC_BAD_REQUEST:
+                final S3ServiceException failure;
+                try {
+                    if(null != response.getEntity()) {
+                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
+                        failure = new S3ServiceException(response.getStatusLine().getReasonPhrase(),
+                                EntityUtils.toString(response.getEntity()));
+                        if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
+                            if(log.isWarnEnabled()) {
+                                log.warn(String.format("Handle failure %s", failure));
+                            }
+                        }
+                        else {
+                            // Ignore other 400 failures
+                            return false;
+                        }
+                    }
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure parsing response entity from %s", response));
+                }
+                // Break through
+            case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     try {
                         log.warn(String.format("Attempt to refresh STS token for failure %s", response));
-                        final STSTokens tokens = service.refresh();
+                        final STSTokens tokens = sts.refresh(oauth.getTokens());
                         session.getClient().setProviderCredentials(new AWSSessionCredentials(tokens.getAccessKey(),
                                 tokens.getSecretAccessKey(), tokens.getSessionToken()));
                         // Try again
