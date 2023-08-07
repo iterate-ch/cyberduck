@@ -20,9 +20,7 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>s3-sts</string>
-        <key>Bundled</key>
-        <true/>
+        <string>s3-sts-minio-keycloak</string>
         <key>Description</key>
         <string>S3 STS AssumeRoleWithWebIdentity</string>
         <key>Default Hostname</key>
