@@ -17,13 +17,10 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -33,6 +30,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
 
 import java.io.IOException;
@@ -45,11 +43,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
     private final S3Session session;
     private final CredentialsConfigurator configurator;
 
-    public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
-        this(session, new AWSProfileSTSCredentialsConfigurator(trust, key, prompt));
-    }
-
-    public S3TokenExpiredResponseInterceptor(final S3Session session, final AWSProfileSTSCredentialsConfigurator configurator) {
+    public S3TokenExpiredResponseInterceptor(final S3Session session, final CredentialsConfigurator configurator) {
         this.session = session;
         this.configurator = configurator;
     }
@@ -73,8 +67,14 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                                 if(log.isDebugEnabled()) {
                                     log.debug(String.format("Reconfigure client with credentials %s", credentials));
                                 }
-                                session.getClient().setProviderCredentials(new AWSSessionCredentials(
-                                        credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                                if(credentials.isTokenAuthentication()) {
+                                    session.getClient().setProviderCredentials(new AWSSessionCredentials(
+                                            credentials.getUsername(), credentials.getPassword(), credentials.getToken()));
+                                }
+                                else {
+                                    session.getClient().setProviderCredentials(new AWSCredentials(
+                                            credentials.getUsername(), credentials.getPassword()));
+                                }
                                 return true;
                             }
                         }
