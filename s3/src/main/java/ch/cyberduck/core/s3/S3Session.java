@@ -509,10 +509,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return hostname.matches("([a-z0-9\\-]+\\.)?s3(\\.dualstack)?(\\.[a-z0-9\\-]+)?(\\.vpce)?\\.amazonaws\\.com");
     }
 
-    public STSCredentialsRequestInterceptor getAuthorizationService() {
-        return authorizationService;
-    }
-
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
