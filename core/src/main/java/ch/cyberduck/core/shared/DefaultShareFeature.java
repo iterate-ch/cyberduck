@@ -22,11 +22,11 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Share;
 
-public class DefaulShareFeature implements Share {
+public class DefaultShareFeature implements Share {
 
     private final UrlProvider proxy;
 
-    public DefaulShareFeature(final UrlProvider proxy) {
+    public DefaultShareFeature(final UrlProvider proxy) {
         this.proxy = proxy;
     }
 

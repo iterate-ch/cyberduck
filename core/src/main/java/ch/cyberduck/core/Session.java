@@ -34,7 +34,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.shared.DefaulShareFeature;
+import ch.cyberduck.core.shared.DefaultShareFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -319,7 +319,7 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DefaultUrlProvider(host);
         }
         if(type == Share.class) {
-            return (T) new DefaulShareFeature(this.getFeature(UrlProvider.class));
+            return (T) new DefaultShareFeature(this.getFeature(UrlProvider.class));
         }
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
