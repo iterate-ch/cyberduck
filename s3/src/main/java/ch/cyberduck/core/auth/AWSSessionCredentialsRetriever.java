@@ -16,6 +16,7 @@ package ch.cyberduck.core.auth;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -37,6 +38,8 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,6 +51,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.MalformedJsonException;
 
 public class AWSSessionCredentialsRetriever {
+    private static final Logger log = LogManager.getLogger(AWSSessionCredentialsRetriever.class);
 
     private final TranscriptListener transcript;
     private final ProtocolFactory factory;
@@ -67,7 +71,37 @@ public class AWSSessionCredentialsRetriever {
         this.url = url;
     }
 
+    public static class Configurator implements CredentialsConfigurator {
+
+        private final AWSSessionCredentialsRetriever retriever;
+        private final String url;
+
+        public Configurator(final X509TrustManager trust, final X509KeyManager key, final TranscriptListener transcript, final String url) {
+            this.url = url;
+            this.retriever = new AWSSessionCredentialsRetriever(trust, key, transcript, url);
+        }
+
+        @Override
+        public Configurator reload() {
+            return this;
+        }
+
+        @Override
+        public Credentials configure(final Host host) {
+            try {
+                return retriever.get();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Ignore failure %s retrieving credentials from %s", e, url));
+                return host.getCredentials();
+            }
+        }
+    }
+
     public Credentials get() throws BackgroundException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure credentials from %s", url));
+        }
         final Host address = new HostParser(factory).get(url);
         final Path access = new Path(PathNormalizer.normalize(address.getDefaultPath()), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));

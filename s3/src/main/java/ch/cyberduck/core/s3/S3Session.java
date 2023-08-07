@@ -21,6 +21,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListProgressListener;
@@ -284,7 +286,12 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 }
             });
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
-                    new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
+                    S3Session.isAwsHostname(host.getHostname()) ?
+                            Scheme.isURL(host.getProtocol().getContext()) ?
+                                    // Obtain credentials from instance metadata
+                                    new AWSSessionCredentialsRetriever.Configurator(trust, key, this, host.getProtocol().getContext()) :
+                                    new AWSProfileSTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt) : CredentialsConfigurator.DISABLED
+            ));
         }
         configuration.addInterceptorLast(new HttpRequestInterceptor() {
             @Override
