@@ -54,8 +54,8 @@ public class OidcAuthenticationTest extends AbstractOidcTest {
         Credentials creds = host.getCredentials();
         assertNotEquals(StringUtils.EMPTY, creds.getUsername());
         assertNotEquals(StringUtils.EMPTY, creds.getPassword());
-        // credentials from STS are written to the S3Session's client object and not into the credential object from the Host.
-        assertTrue(creds.getToken().isEmpty());
+
+        assertFalse(creds.getToken().isEmpty());
         assertNotNull(creds.getOauth().getIdToken());
         assertNotNull(creds.getOauth().getRefreshToken());
         assertNotEquals(Optional.of(Long.MAX_VALUE).get(), creds.getOauth().getExpiryInMilliseconds());
