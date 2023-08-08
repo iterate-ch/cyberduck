@@ -17,6 +17,7 @@ package ch.cyberduck.core.sts;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
@@ -90,5 +91,9 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
             }
         }
         return false;
+    }
+
+    public Credentials refresh() throws BackgroundException {
+        return configurator.reload().configure(session.getHost());
     }
 }

@@ -225,9 +225,10 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testBucketVirtualHostStyleCustomHost() {
+    public void testBucketVirtualHostStyleCustomHost() throws Exception {
         final Host host = new Host(new S3Protocol(), "test-eu-central-1-cyberduck");
-        assertFalse(new S3Session(host).connect(new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
+        assertFalse(new S3Session(host).connect
+                        (new DisabledProxyFinder().find(host.getHostname()), new DisabledHostKeyCallback(), new DisabledLoginCallback(), new DisabledCancelCallback())
                 .getDisableDnsBuckets());
     }
 
