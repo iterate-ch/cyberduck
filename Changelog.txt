@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+8.6.3
+- [Bugfix] Failure configuring credentials from AWS CLI setup (S3) (#14970)
+
 8.6.2
 - [Feature] Allow to open connections without copying authentication code after login (Microsoft OneDrive, Sharepoint)
 - [Bugfix] Segmented downloads with multiple connections per file causes transfers to fail (#13374)
