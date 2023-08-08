@@ -341,7 +341,6 @@ public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigur
      * @return Null on error reading from file or expired SSO credentials in cache
      */
     private CachedCredential fetchSsoCredentials(final Map<String, String> properties) {
-        final Local awsDirectory = LocalFactory.get(LocalFactory.get(), ".aws");
         // See https://github.com/boto/botocore/blob/412aeb96c9a6ebc72aa1bdf33e58ddd48c7b048d/botocore/credentials.py#L2078-L2098
         try {
             final ObjectMapper mapper = JsonMapper.builder()
@@ -364,7 +363,7 @@ public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigur
             final String hash = BaseEncoding.base16().lowerCase().encode(hashCode.asBytes());
             final String cachedCredentialsJson = String.format("%s.json", hash);
             final Local cachedCredentialsFile =
-                    LocalFactory.get(LocalFactory.get(LocalFactory.get(awsDirectory, "cli"), "cache"), cachedCredentialsJson);
+                    LocalFactory.get(LocalFactory.get(LocalFactory.get(directory, "cli"), "cache"), cachedCredentialsJson);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempting to read SSO credentials from %s", cachedCredentialsFile.getAbsolute()));
             }
