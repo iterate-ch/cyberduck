@@ -18,11 +18,13 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LoginCanceledException;
+
 public interface JumphostConfigurator {
 
     Host getJumphost(String alias);
 
-    JumphostConfigurator reload();
+    JumphostConfigurator reload() throws LoginCanceledException;
 
     JumphostConfigurator DISABLED = new JumphostConfigurator() {
         @Override

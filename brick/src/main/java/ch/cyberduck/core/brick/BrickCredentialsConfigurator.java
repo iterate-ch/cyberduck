@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.exception.LoginCanceledException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +42,7 @@ public class BrickCredentialsConfigurator implements CredentialsConfigurator {
     }
 
     @Override
-    public CredentialsConfigurator reload() {
+    public CredentialsConfigurator reload() throws LoginCanceledException {
         return this;
     }
 }
