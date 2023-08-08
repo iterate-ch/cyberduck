@@ -66,7 +66,6 @@ import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
-import ch.cyberduck.core.sts.S3TokenExpiredResponseInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleTokenExpiredResponseInterceptor;
 import ch.cyberduck.core.sts.STSTokens;
