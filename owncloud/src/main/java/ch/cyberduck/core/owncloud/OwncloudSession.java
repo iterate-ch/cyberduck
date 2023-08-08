@@ -51,8 +51,6 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
-
 public class OwncloudSession extends DAVSession {
 
     private OAuth2RequestInterceptor authorizationService;
@@ -67,7 +65,7 @@ public class OwncloudSession extends DAVSession {
         if(host.getProtocol().isOAuthConfigurable()) {
             authorizationService = new OAuth2RequestInterceptor(configuration.build(), host)
                     .withFlowType(OAuth2AuthorizationService.FlowType.valueOf(host.getProtocol().getAuthorization()))
-                    .withRedirectUri(CYBERDUCK_REDIRECT_URI);
+                    .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
             configuration.addInterceptorLast(authorizationService);
             configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         }
