@@ -205,7 +205,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 credentials = new AWSProfileSTSCredentialsConfigurator(
-                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).configure(host);
+                        new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt).reload().configure(host);
             }
             else {
                 credentials = host.getCredentials();
