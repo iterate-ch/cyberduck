@@ -1,7 +1,7 @@
-package ch.cyberduck.core.sts;
+package ch.cyberduck.core.s3;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2023 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,8 +77,8 @@ import com.google.common.io.BaseEncoding;
 /**
  * Configure credentials from AWS CLI configuration and SSO cache
  */
-public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigurator {
-    private static final Logger log = LogManager.getLogger(AWSProfileSTSCredentialsConfigurator.class);
+public class S3CredentialsConfigurator implements CredentialsConfigurator {
+    private static final Logger log = LogManager.getLogger(S3CredentialsConfigurator.class);
 
     private final Local directory;
     private final X509TrustManager trust;
@@ -86,11 +86,11 @@ public class AWSProfileSTSCredentialsConfigurator implements CredentialsConfigur
     private final PasswordCallback prompt;
     private final Map<String, BasicProfile> profiles = new LinkedHashMap<>();
 
-    public AWSProfileSTSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
+    public S3CredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
         this(LocalFactory.get(LocalFactory.get(), ".aws"), trust, key, prompt);
     }
 
-    public AWSProfileSTSCredentialsConfigurator(final Local directory, final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
+    public S3CredentialsConfigurator(final Local directory, final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
         this.directory = directory;
         this.trust = trust;
         this.key = key;

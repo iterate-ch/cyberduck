@@ -65,7 +65,6 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.sts.AWSProfileSTSCredentialsConfigurator;
 import ch.cyberduck.core.sts.STSAssumeRoleCredentialsRequestInterceptor;
 import ch.cyberduck.core.sts.STSAssumeRoleTokenExpiredResponseInterceptor;
 import ch.cyberduck.core.sts.STSTokens;
@@ -227,7 +226,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
                 }
                 else {
                     configuration.setServiceUnavailableRetryStrategy(token = new S3TokenExpiredResponseInterceptor(this,
-                            new AWSProfileSTSCredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt)));
+                            new S3CredentialsConfigurator(new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt)));
                 }
             }
         }
